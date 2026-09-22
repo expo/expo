@@ -5,6 +5,7 @@ import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 
 import { type CheckedInResolvedTarget, isCheckedInResolvedTarget } from './CheckedInManifest';
+import type { BuildFlavor } from './Prebuilder.types';
 import type { ObjcTarget, SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
   applyCheckedInTarget,
@@ -12,6 +13,7 @@ import {
   buildSwiftSettings,
   expandTransitiveExternalDeps,
   findSiblingProductDependencies,
+  resolveCompilerFlags,
   type ExternalDepResolver,
 } from './SPMPackage';
 import type { ResolvedTarget } from './SPMPackage.types';
@@ -479,4 +481,170 @@ describe('applyCheckedInTarget', () => {
     assert.ok('publicHeadersPath' in merged, 'The manifest owns the key even when it has no value');
     assert.equal(merged.publicHeadersPath, undefined);
   });
+});
+
+describe('resolveCompilerFlags', () => {
+  /** Asserts the thrown diagnostic names the target and points at the offending key or value. */
+  function expectRejection(flags: unknown, offender: RegExp, buildType: BuildFlavor = 'Debug') {
+    assert.throws(
+      () => resolveCompilerFlags(flags, buildType, 'FixtureSqlite'),
+      (error: Error) => {
+        assert.ok(!(error instanceof TypeError), `Expected a diagnostic, got ${error.stack}`);
+        assert.match(error.message, /target "FixtureSqlite"/);
+        assert.match(error.message, offender);
+        return true;
+      }
+    );
+  }
+
+  it('applies a bare array to both C and C++', () => {
+    assert.deepEqual(resolveCompilerFlags(['-DFOO=1'], 'Debug', 'FixtureSqlite'), {
+      c: ['-DFOO=1'],
+      cxx: ['-DFOO=1'],
+    });
+  });
+
+  it('applies common flags to both build flavors', () => {
+    const flags = { common: ['-DSQLITE_ENABLE_SESSION'] };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DSQLITE_ENABLE_SESSION'],
+      cxx: ['-DSQLITE_ENABLE_SESSION'],
+    });
+    assert.deepEqual(resolveCompilerFlags(flags, 'Release', 'FixtureSqlite'), {
+      c: ['-DSQLITE_ENABLE_SESSION'],
+      cxx: ['-DSQLITE_ENABLE_SESSION'],
+    });
+  });
+
+  it('applies debug flags only to a Debug build', () => {
+    const flags = { common: ['-DCOMMON'], debug: ['-DDEBUG_ONLY'] };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DCOMMON', '-DDEBUG_ONLY'],
+      cxx: ['-DCOMMON', '-DDEBUG_ONLY'],
+    });
+    assert.deepEqual(resolveCompilerFlags(flags, 'Release', 'FixtureSqlite'), {
+      c: ['-DCOMMON'],
+      cxx: ['-DCOMMON'],
+    });
+  });
+
+  it('applies release flags only to a Release build', () => {
+    const flags = { common: ['-DCOMMON'], release: ['-DRELEASE_ONLY'] };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Release', 'FixtureSqlite'), {
+      c: ['-DCOMMON', '-DRELEASE_ONLY'],
+      cxx: ['-DCOMMON', '-DRELEASE_ONLY'],
+    });
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DCOMMON'],
+      cxx: ['-DCOMMON'],
+    });
+  });
+
+  it('splits a per-language variant between C and C++', () => {
+    const flags = { common: { c: ['-DC_ONLY'] }, debug: { cxx: ['-std=c++20'] } };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DC_ONLY'],
+      cxx: ['-std=c++20'],
+    });
+  });
+
+  it('accepts an empty object as no flags', () => {
+    assert.deepEqual(resolveCompilerFlags({}, 'Debug', 'FixtureSqlite'), { c: [], cxx: [] });
+  });
+
+  it('accepts an object whose only variant does not apply to this build', () => {
+    assert.deepEqual(
+      resolveCompilerFlags({ debug: ['-DDEBUG_ONLY'] }, 'Release', 'FixtureSqlite'),
+      {
+        c: [],
+        cxx: [],
+      }
+    );
+  });
+
+  it('rejects the per-language shape written at the top level', () => {
+    expectRejection({ c: ['-DFOO'] }, /"c"/);
+  });
+
+  it('rejects a misspelled build variant', () => {
+    expectRejection({ debugg: ['-DFOO'] }, /"debugg"/);
+  });
+
+  it('rejects an unknown key inside a variant', () => {
+    expectRejection({ common: { swift: ['-DFOO'] } }, /"swift"/);
+  });
+
+  it('rejects a string where a list of flags belongs', () => {
+    expectRejection({ common: '-DFOO' }, /"-DFOO"/);
+  });
+
+  it('rejects a non-string item in a flag list', () => {
+    expectRejection({ common: [1] }, /contains 1, which is not a flag string/);
+  });
+
+  it('rejects a malformed variant that this build would not apply', () => {
+    // A Release-only mistake must not wait for a Release build to surface.
+    expectRejection({ release: { swift: ['-DFOO'] } }, /"swift"/, 'Debug');
+  });
+
+  it('spells out the accepted shapes so the config can be fixed from the message alone', () => {
+    assert.throws(
+      () => resolveCompilerFlags({ debugg: ['-DFOO'] }, 'Debug', 'FixtureSqlite'),
+      (error: Error) => {
+        assert.match(error.message, /"compilerFlags": \["-DFOO=1"\]/);
+        assert.match(error.message, /"common"/);
+        assert.match(error.message, /"debug"/);
+        assert.match(error.message, /"release"/);
+        assert.match(error.message, /"c": \[\.\.\.\], "cxx": \[\.\.\.\]/);
+        assert.match(error.message, /spm\.config\.json/);
+        return true;
+      }
+    );
+  });
+});
+
+describe('malformed compilerFlags reaching the resolver from its call sites', () => {
+  // JSON can hold a falsy malformed value, and a truthiness guard skips validation for every one
+  // of them — the same silent drop the validation exists to stop, moved up one frame.
+  const falsyMalformed = [null, '', 0, false];
+
+  for (const value of falsyMalformed) {
+    const label = JSON.stringify(value) ?? String(value);
+
+    it(`rejects ${label} on a Swift target`, () => {
+      assert.throws(
+        () =>
+          buildSwiftSettings(['ExpoModulesCore'], null, '/tmp/pkg', 'Debug', {
+            type: 'swift',
+            name: 'FixtureSwift',
+            path: 'ios',
+            compilerFlags: value,
+          } as unknown as SwiftTarget),
+        /Cannot read "compilerFlags" for target "FixtureSwift"/
+      );
+    });
+
+    it(`rejects ${label} on an ObjC target`, () => {
+      assert.throws(
+        () =>
+          buildCSettings(
+            {
+              type: 'objc',
+              name: 'FixtureObjC',
+              path: 'ios',
+              compilerFlags: value,
+            } as unknown as ObjcTarget,
+            [],
+            null,
+            '/repo/packages/precompile/.build/fixture/spm',
+            'Fixture',
+            '1.0.0',
+            '/repo/packages/fixture',
+            '/repo/packages/precompile/.build/fixture',
+            'Debug'
+          ),
+        /Cannot read "compilerFlags" for target "FixtureObjC"/
+      );
+    });
+  }
 });

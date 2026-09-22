@@ -23,14 +23,7 @@ import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
-import {
-  ObjcTarget,
-  SwiftTarget,
-  CppTarget,
-  SPMProduct,
-  CompilerFlags,
-  CompilerFlagsVariant,
-} from './SPMConfig.types';
+import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
 import {
   ExternalDependencyConfig,
   PackageSwiftContext,
@@ -285,6 +278,93 @@ function derivePackageNameFromUrl(url: string): string {
   return name;
 }
 
+const BUILD_VARIANT_KEYS = ['common', 'debug', 'release'] as const;
+const LANGUAGE_KEYS = ['c', 'cxx'] as const;
+
+type BuildVariantKey = (typeof BUILD_VARIANT_KEYS)[number];
+type LanguageKey = (typeof LANGUAGE_KEYS)[number];
+
+function isBuildVariantKey(key: string): key is BuildVariantKey {
+  return (BUILD_VARIANT_KEYS as readonly string[]).includes(key);
+}
+
+function isLanguageKey(key: string): key is LanguageKey {
+  return (LANGUAGE_KEYS as readonly string[]).includes(key);
+}
+
+function isUnknownArray(value: unknown): value is unknown[] {
+  return Array.isArray(value);
+}
+
+function isUnknownRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function describeJsonValue(value: unknown): string {
+  return value === undefined ? 'undefined' : JSON.stringify(value);
+}
+
+function compilerFlagsError(targetName: string, problem: string): Error {
+  return new Error(
+    `Cannot read "compilerFlags" for target "${targetName}": ${problem}. The config schema does ` +
+      `not allow that shape, and the flags it holds would never reach the compiler, so the target ` +
+      `would build without them. Write the flags in its spm.config.json as either\n` +
+      `  "compilerFlags": ["-DFOO=1"]\n` +
+      `or\n` +
+      `  "compilerFlags": { "common": [...], "debug": [...], "release": [...] }\n` +
+      `where each build variant is itself either a list of flag strings or ` +
+      `{ "c": [...], "cxx": [...] }.`
+  );
+}
+
+function parseFlagList(value: unknown, label: string, targetName: string): string[] {
+  if (!isUnknownArray(value)) {
+    throw compilerFlagsError(
+      targetName,
+      `${label} is ${describeJsonValue(value)}, not a list of flags`
+    );
+  }
+  return value.map((flag) => {
+    if (typeof flag !== 'string') {
+      throw compilerFlagsError(
+        targetName,
+        `${label} contains ${describeJsonValue(flag)}, which is not a flag string`
+      );
+    }
+    return flag;
+  });
+}
+
+function parseVariant(
+  value: unknown,
+  label: string,
+  targetName: string
+): { c: string[]; cxx: string[] } {
+  if (isUnknownArray(value)) {
+    const flags = parseFlagList(value, label, targetName);
+    return { c: flags, cxx: [...flags] };
+  }
+  if (!isUnknownRecord(value)) {
+    throw compilerFlagsError(
+      targetName,
+      `${label} is ${describeJsonValue(value)}, neither a list of flags nor a per-language object`
+    );
+  }
+  for (const key of Object.keys(value)) {
+    if (!isLanguageKey(key)) {
+      throw compilerFlagsError(
+        targetName,
+        `${label} has the key "${key}", and a build variant names only the languages ` +
+          `${LANGUAGE_KEYS.map((language) => `"${language}"`).join(' and ')}`
+      );
+    }
+  }
+  return {
+    c: value.c === undefined ? [] : parseFlagList(value.c, `${label}.c`, targetName),
+    cxx: value.cxx === undefined ? [] : parseFlagList(value.cxx, `${label}.cxx`, targetName),
+  };
+}
+
 /**
  * Resolves compiler flags from the various shorthand formats to normalized { c: string[], cxx: string[] }
  *
@@ -292,38 +372,49 @@ function derivePackageNameFromUrl(url: string): string {
  * - Array shorthand: `["-DFOO=1"]` → common flags for both c and cxx
  * - Object with common/debug/release: `{ common: [...], debug: [...], release: [...] }`
  * - Each variant can be array (both c/cxx) or per-language: `{ c: [...], cxx: [...] }`
+ *
+ * The flags arrive as unvalidated JSON, so every other shape is rejected here rather than
+ * resolving to no flags at all: a target that silently drops its defines still builds, and
+ * fails much later at a `#ifdef` guard that never opened.
  */
-function resolveCompilerFlags(
-  flags: CompilerFlags,
-  buildType: BuildFlavor
+export function resolveCompilerFlags(
+  flags: unknown,
+  buildType: BuildFlavor,
+  targetName: string
 ): { c: string[]; cxx: string[] } {
+  if (isUnknownArray(flags)) {
+    const common = parseFlagList(flags, '"compilerFlags"', targetName);
+    return { c: common, cxx: [...common] };
+  }
+  if (!isUnknownRecord(flags)) {
+    throw compilerFlagsError(
+      targetName,
+      `"compilerFlags" is ${describeJsonValue(flags)}, neither a list of flags nor an object of ` +
+        `build variants`
+    );
+  }
+
   const result = { c: [] as string[], cxx: [] as string[] };
-
-  // Helper to add a variant's flags to the result
-  const addVariant = (variant: CompilerFlagsVariant | undefined) => {
-    if (!variant) return;
-    if (Array.isArray(variant)) {
-      // Array shorthand: apply to both c and cxx
-      result.c.push(...variant);
-      result.cxx.push(...variant);
-    } else {
-      // Object with c/cxx keys
-      if (variant.c) result.c.push(...variant.c);
-      if (variant.cxx) result.cxx.push(...variant.cxx);
+  // Every variant is parsed, including the one this build will not apply, so a Release-only
+  // mistake surfaces on a Debug build too.
+  const variants = new Map<BuildVariantKey, { c: string[]; cxx: string[] }>();
+  for (const [key, value] of Object.entries(flags)) {
+    if (!isBuildVariantKey(key)) {
+      throw compilerFlagsError(
+        targetName,
+        isLanguageKey(key)
+          ? `"${key}" names a language, which belongs inside a build variant`
+          : `"${key}" is not a build variant`
+      );
     }
-  };
+    variants.set(key, parseVariant(value, `"${key}"`, targetName));
+  }
 
-  if (Array.isArray(flags)) {
-    // Top-level array shorthand: treat as common flags for both c and cxx
-    result.c.push(...flags);
-    result.cxx.push(...flags);
-  } else {
-    // Object with common/debug/release keys
-    addVariant(flags.common);
-    if (buildType === 'Debug') {
-      addVariant(flags.debug);
-    } else {
-      addVariant(flags.release);
+  for (const key of ['common', buildType === 'Debug' ? 'debug' : 'release'] as const) {
+    const variant = variants.get(key);
+    if (variant) {
+      result.c.push(...variant.c);
+      result.cxx.push(...variant.cxx);
     }
   }
 
@@ -992,8 +1083,8 @@ export function buildSwiftSettings(
   // to Clang when the Swift compiler processes C module imports.
   // This is necessary for C targets with #ifdef-guarded APIs (e.g., SQLITE_ENABLE_SESSION)
   // where the defines must be visible during Swift's module import, not just C compilation.
-  if (target?.compilerFlags) {
-    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType);
+  if (target?.compilerFlags !== undefined) {
+    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType, target.name);
     const xccFlags: string[] = [];
     for (const flag of resolvedFlags.c) {
       xccFlags.push('-Xcc', flag);
@@ -1191,8 +1282,8 @@ export function buildCSettings(
   // - Array shorthand: ["-DFOO=1"] → common flags for both c and cxx
   // - Object with common/debug/release: { common: [...], debug: [...], release: [...] }
   // - Each variant can be array or { c: [...], cxx: [...] }
-  if (target.compilerFlags) {
-    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType);
+  if (target.compilerFlags !== undefined) {
+    const resolvedFlags = resolveCompilerFlags(target.compilerFlags, buildType, target.name);
     // Substitute variables like ${REACT_NATIVE_MINOR_VERSION} in compiler flags
     const cFlags = substituteCompilerFlagVariables(resolvedFlags.c, pkgPath);
     const cxxFlags = substituteCompilerFlagVariables(resolvedFlags.cxx, pkgPath);
