@@ -18,7 +18,7 @@ export default class IntentLauncherScreen extends React.Component {
     appIconBase64: '',
   };
 
-  renderSettingsLink(title: string, activityAction: ActivityAction, intentParams = {}) {
+  renderSettingsLink(title: string, activityAction: ActivityAction | string, intentParams = {}) {
     return (
       <View style={styles.section}>
         <Button
@@ -121,6 +121,22 @@ export default class IntentLauncherScreen extends React.Component {
           'Application Details for a non-existing package',
           ActivityAction.APPLICATION_DETAILS_SETTINGS,
           { data: 'package:package.name.that.doesnt.exist' }
+        )}
+        {this.renderSettingsLink(
+          'Expo Go listing, restricted to Play Store',
+          'android.intent.action.VIEW',
+          {
+            data: 'https://play.google.com/store/apps/details?id=host.exp.exponent',
+            packageName: 'com.android.vending',
+          }
+        )}
+        {this.renderSettingsLink(
+          'Expo Go listing, restricted to a non-existing package',
+          'android.intent.action.VIEW',
+          {
+            data: 'https://play.google.com/store/apps/details?id=host.exp.exponent',
+            packageName: 'package.name.that.doesnt.exist',
+          }
         )}
         {this.renderOpenApplicationButton('Open Play Store', 'com.android.vending')}
         {this.renderGetAppIconButton('Load Play Store Icon', 'com.android.vending')}
