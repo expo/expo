@@ -1,7 +1,7 @@
 /**
- * Module discovery & classification for the Expo SwiftPM plugin: locate built
- * xcframeworks, find module roots, and decide whether a module needs React wired
- * in / is pure-Swift. Filesystem reads only; the React-detection predicate is
+ * Module discovery & classification for the Expo SwiftPM plugin: find module
+ * roots and Apple source directories, and decide whether a module needs React
+ * wired in / is pure-Swift. Filesystem reads only; the React-detection predicate is
  * split out as a pure function (`textImportsReact`) for unit testing.
  */
 

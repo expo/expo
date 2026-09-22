@@ -876,7 +876,7 @@ function sourceDependencies(react, codegenPkgPath) {
 }
 
 /**
- * Option A: emit a CONSUMPTION Package.swift for a source module that ships a
+ * Emit a CONSUMPTION Package.swift for a source module that ships a
  * checked-in Package.swift. Re-declares its library targets against the real source
  * (via a `root` symlink), injects RN's invariant React product set, and points
  * compilation at Expo's binary-free framework interface tree. RN owns the merge;
@@ -936,7 +936,7 @@ function emitSourceManifestPackage({
 /**
  * Emit a source consumption package for a module WITHOUT a checked-in Package.swift,
  * from its resolved descriptor. Pure-Swift modules only (single Swift target over the
- * module's `ios` sources). It compiles against Expo's invariant interface tree,
+ * module's `ios` or `apple` sources). It compiles against Expo's invariant interface tree,
  * plus RN's invariant React products.
  */
 function emitPureSwiftSourcePackage({

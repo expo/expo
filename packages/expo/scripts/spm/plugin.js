@@ -26,8 +26,11 @@
  * everything shells out via `execFileSync` (see cli.js) rather than awaiting.
  *
  * The logic is split across sibling modules — cli.js (I/O), classify.js
- * (discovery), react-descriptor.js + manifests.js (rendering) — with unit tests
- * in __tests__/. This file is just the orchestrator.
+ * (discovery), app-target.js (the app's Xcode target), flavored-frameworks.js
+ * (precompiled frameworks), react-descriptor.js + manifests.js (rendering),
+ * podspec.js (podspec reading), autolink-gate.js (`autolinkWhen` gates),
+ * script-phases.js (build script phases), diagnostics.js (errors and
+ * warnings) — with unit tests in __tests__/. This file is just the orchestrator.
  */
 
 'use strict';
@@ -322,7 +325,7 @@ module.exports = function expoSpmPlugin(context) {
       let declaredSpmProducts = [];
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
-        // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
+        // Module ships a checked-in Package.swift → mirror its targets + inject deps.
         const e = emitSourceManifestPackage({
           moduleRoot,
           react,
