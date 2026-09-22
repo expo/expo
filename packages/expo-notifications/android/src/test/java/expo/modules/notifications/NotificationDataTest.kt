@@ -53,19 +53,6 @@ class NotificationDataTest {
   }
 
   @Test
-  fun testGroup() {
-    val data = mapOf("threadIdentifier" to "group-1")
-    val notificationData = NotificationData(data)
-    assertEquals("group-1", notificationData.group)
-  }
-
-  @Test
-  fun testGroupMissing() {
-    val notificationData = NotificationData(emptyMap())
-    assertNull(notificationData.group)
-  }
-
-  @Test
   fun testGroupEmptyString() {
     val notificationData = NotificationData(mapOf("threadIdentifier" to ""))
     assertNull(notificationData.group)

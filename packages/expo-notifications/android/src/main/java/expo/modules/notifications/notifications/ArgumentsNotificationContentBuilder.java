@@ -151,8 +151,6 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
 
   @Nullable
   protected String getGroup(ReadableArguments payload) {
-    String group = payload.getString(THREAD_IDENTIFIER_KEY, null);
-    // An empty string would create a nameless group; treat it as no group (iOS reports it as null too)
-    return group == null || group.isEmpty() ? null : group;
+    return payload.getString(THREAD_IDENTIFIER_KEY, null);
   }
 }

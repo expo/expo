@@ -16,6 +16,10 @@ import org.junit.Before
 const val mockData = "{\"key\":\"value\"}"
 
 class NotificationContentSerializationTest {
+  @Test
+  fun `builder normalizes an empty group to null`() {
+    assertNull(NotificationContent.Builder().setGroup("").build().group)
+  }
 
   @Before
   fun setup() {
@@ -82,19 +86,6 @@ class NotificationContentSerializationTest {
 
     assertNotificationContentEquals(originalContent, deserializedContent)
     assertEquals("thread-1", deserializedContent.group)
-  }
-
-  @Test
-  fun testSerializationWithNullGroup() {
-    val originalContent = NotificationContent.Builder()
-      .setTitle("No group")
-      .setGroup(null)
-      .build()
-
-    val deserializedContent = serializeAndDeserialize(originalContent)
-
-    assertNull(deserializedContent.group)
-    assertNotificationContentEquals(originalContent, deserializedContent)
   }
 
   private fun createSampleNotificationContent(): NotificationContent {

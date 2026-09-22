@@ -451,6 +451,8 @@ open class NotificationsService : BroadcastReceiver() {
         }
         intent.putExtra(EVENT_TYPE_KEY, GROUPED_NOTIFICATION_DELETED_TYPE)
         intent.putExtra(NOTIFICATION_KEY, notification)
+        // Byte-array copy: Parcelable extras can come back null from a PendingIntent, see #38908
+        marshalObject(notification)?.let { intent.putExtra(NOTIFICATION_BYTES_KEY, it) }
       }
       return PendingIntent.getBroadcast(
         context,
@@ -768,10 +770,10 @@ open class NotificationsService : BroadcastReceiver() {
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
     val response = getNotificationResponseFromBroadcastIntent(intent)
     getHandlingDelegate(context).handleNotificationResponse(response)
-    // A tap on an auto-cancel notification removes it without firing its delete intent;
-    // clean up the group summary it may have orphaned. Action buttons do not dismiss.
+    // Auto-cancel on tap does not fire the delete intent. Action buttons do not dismiss.
+    val content = response.notification.notificationRequest.content
     val isTap = response.actionIdentifier == NotificationResponse.DEFAULT_ACTION_IDENTIFIER
-    if (isTap && response.notification.notificationRequest.content.isAutoDismiss) {
+    if (isTap && content.isAutoDismiss && content.group != null) {
       getPresentationDelegate(context).removeOrphanedGroupSummaries(response.notification)
     }
   }
@@ -779,9 +781,12 @@ open class NotificationsService : BroadcastReceiver() {
   open fun onNotificationsDropped(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotificationsDropped()
 
-  /** Fired by the deleteIntent of grouped notifications when the user swipes one away. */
-  open fun onGroupedNotificationDeleted(context: Context, intent: Intent) =
-    getPresentationDelegate(context).removeOrphanedGroupSummaries(intent.getParcelableExtra(NOTIFICATION_KEY)!!)
+  open fun onGroupedNotificationDeleted(context: Context, intent: Intent) {
+    val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)
+      ?: unmarshalObject(Notification.CREATOR, intent.getByteArrayExtra(NOTIFICATION_BYTES_KEY))
+      ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
+    getPresentationDelegate(context).removeOrphanedGroupSummaries(notification)
+  }
 
   //endregion
 

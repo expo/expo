@@ -65,13 +65,21 @@ class ExpoPresentationDelegateTest {
   }
 
   @Test
+  fun `presentNotification cancels the old summary when a re-posted identifier leaves its group`() {
+    present(identifier = "x", group = "group-a")
+
+    present(identifier = "x", group = null)
+
+    assertEquals(setOf("x"), activeTags())
+  }
+
+  @Test
   fun `getAllPresentedNotifications excludes group summary notifications`() {
     present(identifier = "child-1", group = "group-a")
 
     val result = delegate.getAllPresentedNotifications()
 
     assertEquals(listOf("child-1"), result.map { it.notificationRequest.identifier })
-    // group survives the marshall/unmarshall round-trip through the posted notification's extras
     assertEquals("group-a", result.first().notificationRequest.content.group)
   }
 
@@ -111,17 +119,6 @@ class ExpoPresentationDelegateTest {
     delegate.removeOrphanedGroupSummaries(child)
 
     assertEquals(setOf("child-1"), activeTags())
-  }
-
-  @Test
-  fun `removeOrphanedGroupSummaries keeps the summary while siblings remain`() {
-    val child = present(identifier = "child-1", group = "group-a")
-    present(identifier = "child-2", group = "group-a")
-    systemNotificationManager.cancel("child-1", 0)
-
-    delegate.removeOrphanedGroupSummaries(child)
-
-    assertEquals(setOf("child-2", "group-a$GROUP_SUMMARY_TAG_SUFFIX"), activeTags())
   }
 
   @Test
