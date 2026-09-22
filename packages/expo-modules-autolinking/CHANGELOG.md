@@ -17,6 +17,7 @@
 - [iOS] Publish each product's iOS deployment floor as `iosDeploymentTarget` in the `prebuilt-metadata` document, so consumers outside CocoaPods can read it from the product's own config instead of its podspec. ([#50096](https://github.com/expo/expo/pull/50096) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Publish each product's SPM package dependencies as `spmDependencies` in the `prebuilt-metadata` document, so consumers can find the XCFrameworks that ship beside a precompiled product without reading its config. ([#50152](https://github.com/expo/expo/pull/50152) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Publish the full SwiftPM coordinates of each product's package dependencies as `spmPackages` in the `prebuilt-metadata` document, so a consumer that declares them itself has the URL, product name and version requirement.
+- [iOS] Share the optional `prebuilt-metadata` fields between internal and external products. The document is unchanged.
 
 ## 58.0.2 — 2026-09-15
 

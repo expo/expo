@@ -30,6 +30,7 @@
 ### 💡 Others
 
 - [iOS] The SwiftPM autolinking plugin no longer reads the iOS deployment floor out of a module's podspec. The floor comes from `expo-modules-autolinking prebuilt-metadata` alone, so a podspec that states it in a form the reader refused no longer fails the sync. ([#50112](https://github.com/expo/expo/pull/50112) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Simplify the SwiftPM autolinking plugin's internals: resolve each pod's identity once, pass manifest arguments as named options, and share the helpers its lookups, diagnostics and tests repeated. The generated packages are unchanged.
 - [iOS] Bring the `Package.swift` the SwiftPM autolinking plugin generates up to what CocoaPods already carries: a module's build settings, its declared iOS deployment floor and its `PrivacyInfo.xcprivacy`, plus `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target. Modules the plugin cannot place are now reported with the reason and the fix, including one whose `Package.swift` depends on a target the generated package cannot declare. The podspec reader no longer mistakes a `test_spec`'s linkage for the module's own. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
