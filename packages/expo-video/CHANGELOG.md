@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix native controls never appearing on iOS 27 when a `VideoView` enters the window during a screen transition. ([#50486](https://github.com/expo/expo/pull/50486) by [@wwisheess](https://github.com/wwisheess))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-21
