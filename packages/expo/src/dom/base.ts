@@ -41,6 +41,12 @@ export function getBaseURL(): string {
 }
 
 /**
+ * The path segment of the directory that `expo-updates` downloads an update's assets into.
+ * It is the same name on Android and iOS.
+ */
+const UPDATES_DIRECTORY_SEGMENT = '/.expo-internal/';
+
+/**
  * Get the base URL for the DOM Components when serving from updates
  */
 function getUpdatesBaseURL(): string | null {
@@ -53,13 +59,19 @@ function getUpdatesBaseURL(): string | null {
   // If updates is installed and enabled, and we're not running from an embedded launch, we should serve the DOM Components from the `.expo-internal` directory
   if (shouldServeDomFromUpdates) {
     const localAssets = ExpoUpdates?.localAssets ?? {};
-    const anyLocalAsset = Object.values(localAssets).find(
-      (asset) =>
-        !asset.startsWith('file:///android_res/') && !asset.startsWith('file:///android_asset/')
+    // `localAssets` also holds the embedded assets, which `expo-updates` serves from the app
+    // binary rather than from the updates directory. Their directory is not where this update's
+    // DOM Components HTML is, and the order of the map is not defined, so only accept an asset
+    // that `expo-updates` downloaded into the updates directory.
+    const updatesDirectoryAsset = Object.values(localAssets).find((asset) =>
+      asset.includes(UPDATES_DIRECTORY_SEGMENT)
     );
-    if (anyLocalAsset) {
-      // Try to get the `.expo-internal` directory from the first local asset
-      return anyLocalAsset.slice(0, anyLocalAsset.lastIndexOf('/'));
+    if (updatesDirectoryAsset) {
+      const segmentIndex = updatesDirectoryAsset.indexOf(UPDATES_DIRECTORY_SEGMENT);
+      return updatesDirectoryAsset.slice(
+        0,
+        segmentIndex + UPDATES_DIRECTORY_SEGMENT.length - 1 // keep `.expo-internal`, drop the trailing slash
+      );
     }
   }
   return null;
