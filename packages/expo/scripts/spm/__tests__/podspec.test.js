@@ -6,7 +6,7 @@ const path = require('path');
 
 const { linkageDeclaration, xcconfigLinkerFlags, readPodspecs } = require('../podspec');
 
-const spec = (...body) => ['Pod::Spec.new do |s|', ...body, 'end', ''].join('\n');
+const { spec } = require('./helpers');
 
 describe('linkageDeclaration', () => {
   it.each([

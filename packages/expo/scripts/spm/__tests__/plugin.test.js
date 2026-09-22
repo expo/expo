@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 
 jest.mock('../cli', () => ({
@@ -51,9 +50,18 @@ const {
   resolveFlavoredFramework,
   resolveSpmDependencyFrameworks,
 } = require('../flavored-frameworks');
-const expoSpmPlugin = require('../plugin');
+const {
+  captureConsole,
+  makeTempDir,
+  metadataEntry,
+  printed,
+  removeTempDirs,
+  runPlugin,
+  spec,
+  thrownBy,
+} = require('./helpers');
 
-const spec = (...body) => ['Pod::Spec.new do |s|', ...body, 'end', ''].join('\n');
+afterAll(removeTempDirs);
 
 function pureSwiftModule(root, podName, podspec) {
   const podspecDir = path.join(root, 'ios');
@@ -106,13 +114,19 @@ function restoreModuleMocks() {
   prepareCompileInterfaces.mockImplementation(() => '/abs/interfaces');
 }
 
+/** The arguments the framework resolver was called with for one package. */
+const resolvedFor = (packageName) =>
+  resolveFlavoredFramework.mock.calls
+    .map(([args]) => args)
+    .find((args) => args.packageName === packageName);
+
 describe('the pure-Swift branch', () => {
-  let logs;
+  const logs = captureConsole();
   let outDir;
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-plugin-'));
+    const tmp = makeTempDir('expo-spm-plugin-');
     outDir = path.join(tmp, 'out');
     const dirs = {
       core: pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec()),
@@ -166,25 +180,8 @@ describe('the pure-Swift branch', () => {
       ],
       extraDependencies: [],
     });
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: outDir,
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
-
-  afterAll(() => Object.values(logs).forEach((spy) => spy.mockRestore()));
 
   it('fails the sync for a module whose linkage only its podspec declares', () => {
     expect(thrown).toBeInstanceOf(UnsupportedModulesError);
@@ -196,7 +193,7 @@ describe('the pure-Swift branch', () => {
         snippet: "s.frameworks = 'Photos', 'PhotosUI'",
       }),
     ]);
-    const report = logs.error.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.error);
     expect(report).toContain('ExpoMediaLibrary.podspec:3');
     expect(report).toContain('linkerSettings');
   });
@@ -208,7 +205,7 @@ describe('the pure-Swift branch', () => {
   });
 
   it('finds the podspec under ios/ when the pod points at the module root', () => {
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report).toContain('ExpoLocalization.podspec:3');
     expect(
       fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoLocalization', 'Package.swift'))
@@ -216,7 +213,7 @@ describe('the pure-Swift branch', () => {
   });
 
   it('emits a module that links through its xcconfig, and warns about the flags', () => {
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report).toContain('warning: Expo module "expo-screen-capture"');
     expect(report).toContain('ExpoScreenCapture.podspec:4');
     expect(report).toContain('-lc++');
@@ -227,17 +224,12 @@ describe('the pure-Swift branch', () => {
 });
 
 describe('the module registry', () => {
-  let logs;
+  const logs = captureConsole({ each: true });
+  let tmp;
   let outDir;
   let appIosDir;
 
-  const run = () =>
-    expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: appIosDir,
-      projectRoot: path.dirname(appIosDir),
-    });
+  const run = () => runPlugin(tmp);
 
   const writesProvider = (body) => () => {
     const providerPath = path.join(outDir, 'expo', 'ExpoModulesProvider.swift');
@@ -247,7 +239,7 @@ describe('the module registry', () => {
   };
 
   beforeEach(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-provider-'));
+    tmp = makeTempDir('expo-spm-provider-');
     outDir = path.join(tmp, 'out');
     appIosDir = path.join(tmp, 'app', 'ios');
     // ExpoModulesCore is the only pod the framework resolver mock covers, so it
@@ -270,14 +262,7 @@ describe('the module registry', () => {
       entitlementPath: null,
       podfilePropertiesPath: null,
     });
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
   });
-
-  afterEach(() => Object.values(logs).forEach((spy) => spy.mockRestore()));
 
   it('generates the provider for the app target that compiles it', () => {
     resolveAppTarget.mockReturnValue({
@@ -310,9 +295,7 @@ describe('the module registry', () => {
     expect(run).toThrow(/ExpoModulesProvider\.swift/);
     expect(run).toThrow(/expo-modules-autolinking exited with code 1/);
     expect(run).toThrow(/react-native spm/);
-    expect(logs.warn.mock.calls.map(([text]) => text).join('\n')).not.toContain(
-      'ExpoModulesProvider'
-    );
+    expect(printed(logs.warn)).not.toContain('ExpoModulesProvider');
   });
 
   it('fails the sync when generation writes no provider although modules resolved', () => {
@@ -363,9 +346,7 @@ describe('the module registry', () => {
     generateModulesProvider.mockImplementation(writesProvider('// no modules\n'));
 
     expect(run).not.toThrow();
-    expect(logs.warn.mock.calls.map(([text]) => text).join('\n')).toContain(
-      'ExpoModulesProvider.swift is EMPTY'
-    );
+    expect(printed(logs.warn)).toContain('ExpoModulesProvider.swift is EMPTY');
   });
 });
 
@@ -373,12 +354,12 @@ describe('the module registry', () => {
 // the pod → npm package → product join. The plugin reads identity from it
 // instead of re-deriving it from the filesystem.
 describe('module identity from the prebuilt-metadata document', () => {
-  let logs;
+  captureConsole();
   let thrown;
   let dirs;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-identity-'));
+    const tmp = makeTempDir('expo-spm-identity-');
     dirs = {
       core: pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec()),
       // The podspec sits outside the npm package, so only the document knows its root.
@@ -437,33 +418,10 @@ describe('module identity from the prebuilt-metadata document', () => {
       },
     });
     resolveFlavoredFramework.mockClear();
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: path.join(tmp, 'out'),
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
-
-  const resolvedFor = (packageName) =>
-    resolveFlavoredFramework.mock.calls
-      .map(([args]) => args)
-      .find((args) => args.packageName === packageName);
+  afterAll(restoreModuleMocks);
 
   // The artifact is named after the PRODUCT: react-native-skia ships RNSkia.xcframework.
   it('looks the xcframework up under the product name, not the pod name', () => {
@@ -523,12 +481,12 @@ describe('module identity from the prebuilt-metadata document', () => {
 });
 
 describe('the watched module roots', () => {
-  let logs;
+  captureConsole();
   let watchPaths;
   let packageRoot;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-watch-'));
+    const tmp = makeTempDir('expo-spm-watch-');
     const outDir = path.join(tmp, 'out');
     const podspecDir = pureSwiftModule(path.join(tmp, 'podspecs'), 'ExpoModulesCore', spec());
     packageRoot = path.join(tmp, 'node_modules', 'expo-modules-core');
@@ -557,22 +515,10 @@ describe('the watched module roots', () => {
       fs.writeFileSync(providerPath, 'ExpoModulesCore.self\n');
       return providerPath;
     });
-    logs = {
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    ({ watchPaths } = expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-    }));
+    ({ watchPaths } = runPlugin(tmp));
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('watches the staleness inputs under the documented package root', () => {
     expect(watchPaths).toContain(path.join(packageRoot, 'expo-module.config.json'));
@@ -582,11 +528,11 @@ describe('the watched module roots', () => {
 // The product name has to reach the artifact declaration, not just the resolver
 // call: react-native-skia ships RNSkia.xcframework.
 describe('a precompiled product whose name differs from its pod name', () => {
-  let logs;
+  captureConsole();
   let result;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-product-'));
+    const tmp = makeTempDir('expo-spm-product-');
     const outDir = path.join(tmp, 'out');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const skiaPodspecDir = path.join(tmp, 'podspecs', 'skia');
@@ -629,22 +575,10 @@ describe('a precompiled product whose name differs from its pod name', () => {
       fs.writeFileSync(providerPath, 'ExpoModulesCore.self\n');
       return providerPath;
     });
-    logs = {
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    result = expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-    });
+    result = runPlugin(tmp);
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('declares the framework under the product name', () => {
     expect(result.flavoredFrameworks.map((f) => f.frameworkName)).toEqual([
@@ -655,13 +589,13 @@ describe('a precompiled product whose name differs from its pod name', () => {
 });
 
 describe('the source-emit pass', () => {
-  let logs;
+  captureConsole();
   let outDir;
   let packageRoot;
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-source-root-'));
+    const tmp = makeTempDir('expo-spm-source-root-');
     outDir = path.join(tmp, 'out');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     // The Swift sources live in the npm package; the pod points elsewhere, so
@@ -701,28 +635,10 @@ describe('the source-emit pass', () => {
       fs.writeFileSync(providerPath, 'ExpoModulesCore.self\n');
       return providerPath;
     });
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: outDir,
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('emits the pure-Swift package found at the documented root', () => {
     expect(thrown).toBeNull();
@@ -749,21 +665,12 @@ describe('the source-emit pass', () => {
 // CocoaPods raises every Expo module to ExpoModulesCore's deployment floor, and the
 // prebuilt-metadata document is the only place that floor comes from.
 describe('the iOS deployment floor', () => {
-  let logs;
+  captureConsole();
   let outDir;
   let thrown;
 
-  const entry = (packageRoot, podspecDir, productName, iosDeploymentTarget) => ({
-    type: 'internal',
-    npmPackage: productName,
-    packageRoot,
-    podspecDir,
-    productName,
-    iosDeploymentTarget,
-  });
-
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-floor-'));
+    const tmp = makeTempDir('expo-spm-floor-');
     outDir = path.join(tmp, 'out');
     const roots = {
       core: path.join(tmp, 'expo-modules-core'),
@@ -810,10 +717,14 @@ describe('the iOS deployment floor', () => {
       extraDependencies: [],
     });
     prebuiltMetadata.mockReturnValue({
-      ExpoModulesCore: entry(roots.core, dirs.core, 'ExpoModulesCore', '16.4'),
-      ExpoLow: entry(roots.low, dirs.low, 'ExpoLow', '15.0'),
-      ExpoHigh: entry(roots.high, dirs.high, 'ExpoHigh', '17.0'),
-      ExpoDisagreeing: entry(roots.disagreeing, dirs.disagreeing, 'ExpoDisagreeing', '17.5'),
+      ExpoModulesCore: metadataEntry(roots.core, 'ExpoModulesCore', {
+        iosDeploymentTarget: '16.4',
+      }),
+      ExpoLow: metadataEntry(roots.low, 'ExpoLow', { iosDeploymentTarget: '15.0' }),
+      ExpoHigh: metadataEntry(roots.high, 'ExpoHigh', { iosDeploymentTarget: '17.0' }),
+      ExpoDisagreeing: metadataEntry(roots.disagreeing, 'ExpoDisagreeing', {
+        iosDeploymentTarget: '17.5',
+      }),
     });
     generateModulesProvider.mockReset();
     generateModulesProvider.mockImplementation(() => {
@@ -822,28 +733,10 @@ describe('the iOS deployment floor', () => {
       fs.writeFileSync(providerPath, 'ExpoModulesCore.self\n');
       return providerPath;
     });
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: outDir,
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   const emitted = (product) =>
     fs.readFileSync(path.join(outDir, 'expo', 'expo-source', product, 'Package.swift'), 'utf8');
@@ -873,13 +766,13 @@ describe('the iOS deployment floor', () => {
 // A precompiled module links its SwiftPM packages (SDWebImage, ZXingObjC, …) as
 // separate XCFrameworks. RN takes them in the same flat array as the modules.
 describe('the SwiftPM packages a precompiled module links', () => {
-  let logs;
+  const logs = captureConsole();
   let result;
   let roots;
   let compiled;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-deps-plugin-'));
+    const tmp = makeTempDir('expo-spm-deps-plugin-');
     const outDir = path.join(tmp, 'out');
     roots = { core: path.join(tmp, 'expo-modules-core'), image: path.join(tmp, 'expo-image') };
     const core = pureSwiftModule(roots.core, 'ExpoModulesCore', spec());
@@ -940,22 +833,10 @@ describe('the SwiftPM packages a precompiled module links', () => {
       compiled = frameworks.map((framework) => framework.frameworkName);
       return '/abs/interfaces';
     });
-    logs = {
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    result = expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-    });
+    result = runPlugin(tmp);
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('resolves them from the precompiled pods that declare them', () => {
     expect(resolveSpmDependencyFrameworks).toHaveBeenCalledWith([
@@ -986,24 +867,24 @@ describe('the SwiftPM packages a precompiled module links', () => {
   });
 
   it('warns about the pods a precompiled module depends on that nothing provides', () => {
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report).toContain('warning: Expo module "expo-image" (pod ExpoImage)');
     expect(report).toContain('SomeUnmappedPod');
   });
 
   it('keeps the dependencies it resolved, and their subspecs, out of that warning', () => {
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report).not.toContain('SDWebImage');
     expect(report).not.toContain('libavif');
   });
 });
 
 describe('a dependency that collides with a precompiled module', () => {
-  let logs;
+  captureConsole();
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-collision-'));
+    const tmp = makeTempDir('expo-spm-collision-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const fooRoot = path.join(tmp, 'expo-foo');
     const fooPodspecDir = mixedModule(fooRoot, 'ExpoFoo');
@@ -1031,27 +912,10 @@ describe('a dependency that collides with a precompiled module', () => {
     resolveSpmDependencyFrameworks.mockReturnValue([
       { id: 'expo-foo', frameworkName: 'Foo', flavors: { debug: '/abs/Foo.xcframework' } },
     ]);
-    logs = {
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: path.join(tmp, 'out'),
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('fails the sync naming both products, instead of handing React Native a graph it rejects', () => {
     expect(thrown).not.toBeNull();
@@ -1062,11 +926,11 @@ describe('a dependency that collides with a precompiled module', () => {
 });
 
 describe('a package whose first pod alone is precompiled', () => {
-  let logs;
+  const logs = captureConsole();
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-multipod-'));
+    const tmp = makeTempDir('expo-spm-multipod-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const multiPodspecDir = mixedModule(path.join(tmp, 'expo-multi'), 'ExpoMulti');
     fs.writeFileSync(
@@ -1095,28 +959,10 @@ describe('a package whose first pod alone is precompiled', () => {
         ? { id: frameworkName.toLowerCase(), frameworkName }
         : null
     );
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: path.join(tmp, 'out'),
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   // The sibling pod is buildable neither way, so the sync fails on it — as it did
   // before this change. The warning is what must not double.
@@ -1126,18 +972,18 @@ describe('a package whose first pod alone is precompiled', () => {
   });
 
   it('warns about its unmapped dependencies once, not once per pass', () => {
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report.match(/warning: Expo module "expo-multi"/g)).toHaveLength(1);
   });
 });
 
 describe('the checked-in manifest branch', () => {
-  let logs;
+  const logs = captureConsole();
   let outDir;
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-plugin-manifest-'));
+    const tmp = makeTempDir('expo-spm-plugin-manifest-');
     outDir = path.join(tmp, 'out');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const vendored = path.join(tmp, 'expo-vendored');
@@ -1176,25 +1022,8 @@ describe('the checked-in manifest branch', () => {
       ],
       extraDependencies: [],
     });
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: outDir,
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
-
-  afterAll(() => Object.values(logs).forEach((spy) => spy.mockRestore()));
 
   it('fails the sync for a manifest depending on a target it cannot declare', () => {
     expect(thrown).toBeInstanceOf(UnsupportedModulesError);
@@ -1205,7 +1034,7 @@ describe('the checked-in manifest branch', () => {
         dependencies: [{ target: 'ExpoVendored', dependsOn: 'VendoredKit', kind: 'binary' }],
       }),
     ]);
-    expect(logs.error.mock.calls.map(([text]) => text).join('\n')).toContain(
+    expect(printed(logs.error)).toContain(
       'target "ExpoVendored" depends on "VendoredKit", a binary target'
     );
   });
@@ -1221,12 +1050,12 @@ describe('the checked-in manifest branch', () => {
 // the raw autolinking.json). Its `root` is where Node resolves the package from
 // the app — a resolved answer to the question the filesystem walk guesses at.
 describe('the module root React Native autolinked', () => {
-  let logs;
+  captureConsole();
   let roots;
   let podspecDirs;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-autolinked-'));
+    const tmp = makeTempDir('expo-spm-autolinked-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     roots = {
       documented: path.join(tmp, 'node_modules', 'expo-documented'),
@@ -1277,16 +1106,7 @@ describe('the module root React Native autolinked', () => {
     resolveFlavoredFramework.mockClear();
     findModuleRoot.mockClear();
     providerWrittenTo(path.join(tmp, 'out'));
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    expoSpmPlugin({
-      react: null,
-      outputDir: path.join(tmp, 'out'),
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
+    runPlugin(tmp, {
       autolinking: {
         dependencies: {
           'expo-documented': { root: roots.documentedElsewhere },
@@ -1297,15 +1117,7 @@ describe('the module root React Native autolinked', () => {
     });
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
-
-  const resolvedFor = (packageName) =>
-    resolveFlavoredFramework.mock.calls
-      .map(([args]) => args)
-      .find((args) => args.packageName === packageName);
+  afterAll(restoreModuleMocks);
 
   it('keeps the documented root when the document and autolinking disagree', () => {
     expect(resolvedFor('expo-documented')).toMatchObject({ moduleRoot: roots.documented });
@@ -1325,12 +1137,12 @@ describe('the module root React Native autolinked', () => {
 // React Native passes `autolinkingData ?? {}`, so an empty object is a value of
 // the contract, not a broken call.
 describe('a sync React Native passes no autolinking data for', () => {
-  let logs;
+  captureConsole();
   let root;
   let podspecDir;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-no-autolinking-'));
+    const tmp = makeTempDir('expo-spm-no-autolinking-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     root = path.join(tmp, 'node_modules', 'expo-walked');
     podspecDir = pureSwiftModule(root, 'ExpoWalked', spec());
@@ -1348,31 +1160,13 @@ describe('a sync React Native passes no autolinking data for', () => {
     resolveFlavoredFramework.mockClear();
     findModuleRoot.mockClear();
     providerWrittenTo(path.join(tmp, 'out'));
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    expoSpmPlugin({
-      react: null,
-      outputDir: path.join(tmp, 'out'),
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-      autolinking: {},
-    });
+    runPlugin(tmp, { autolinking: {} });
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('resolves every module root by walking the filesystem, as before', () => {
-    expect(
-      resolveFlavoredFramework.mock.calls
-        .map(([args]) => args)
-        .find((args) => args.packageName === 'expo-walked')
-    ).toMatchObject({ moduleRoot: root });
+    expect(resolvedFor('expo-walked')).toMatchObject({ moduleRoot: root });
     expect(findModuleRoot).toHaveBeenCalledWith(podspecDir);
   });
 });
@@ -1380,11 +1174,11 @@ describe('a sync React Native passes no autolinking data for', () => {
 // Two real copies of one package: the plugin builds the documented one while the
 // app's JavaScript imports the autolinked one.
 describe('a module installed twice', () => {
-  let logs;
+  const logs = captureConsole();
   let roots;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-two-copies-'));
+    const tmp = makeTempDir('expo-spm-two-copies-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     roots = {
       linked: path.join(tmp, 'node_modules', 'expo-linked'),
@@ -1434,16 +1228,7 @@ describe('a module installed twice', () => {
       },
     });
     providerWrittenTo(path.join(tmp, 'out'));
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    expoSpmPlugin({
-      react: null,
-      outputDir: path.join(tmp, 'out'),
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
+    runPlugin(tmp, {
       autolinking: {
         dependencies: {
           'expo-linked': { root: roots.linkedThrough },
@@ -1453,22 +1238,17 @@ describe('a module installed twice', () => {
     });
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
-
-  const warnings = () => logs.warn.mock.calls.map(([text]) => text).join('\n');
+  afterAll(restoreModuleMocks);
 
   // The module root is resolved once per pass; the warning belongs to the module.
   it('warns once, naming both directories', () => {
-    expect(warnings().match(/warning: Expo module "expo-duplicated"/g)).toHaveLength(1);
-    expect(warnings()).toContain(roots.duplicated);
-    expect(warnings()).toContain(roots.duplicatedCopy);
+    expect(printed(logs.warn).match(/warning: Expo module "expo-duplicated"/g)).toHaveLength(1);
+    expect(printed(logs.warn)).toContain(roots.duplicated);
+    expect(printed(logs.warn)).toContain(roots.duplicatedCopy);
   });
 
   it('says nothing about a root reached through a symlink', () => {
-    expect(warnings()).not.toContain('expo-linked');
+    expect(printed(logs.warn)).not.toContain('expo-linked');
   });
 });
 
@@ -1476,12 +1256,12 @@ describe('a module installed twice', () => {
 // documents a second copy is built from that copy even when its first pod
 // agrees with the root the app imports.
 describe('a module whose pods document two different copies', () => {
-  let logs;
+  const logs = captureConsole();
   let roots;
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-pod-copies-')));
+    const tmp = fs.realpathSync(makeTempDir('expo-spm-pod-copies-'));
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     roots = {
       multi: path.join(tmp, 'node_modules', 'expo-multi'),
@@ -1524,37 +1304,18 @@ describe('a module whose pods document two different copies', () => {
       },
     });
     providerWrittenTo(path.join(tmp, 'out'));
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: path.join(tmp, 'out'),
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-        autolinking: { dependencies: { 'expo-multi': { root: roots.multi } } },
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() =>
+      runPlugin(tmp, { autolinking: { dependencies: { 'expo-multi': { root: roots.multi } } } })
+    );
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
-
-  const warnings = () => logs.warn.mock.calls.map(([text]) => text).join('\n');
+  afterAll(restoreModuleMocks);
 
   // The first pod agrees with the autolinked root; only the second one does not.
   it('warns about the copy its second pod builds from', () => {
-    expect(warnings()).toContain('Expo module "expo-multi" is installed twice');
-    expect(warnings().match(/is installed twice/g)).toHaveLength(1);
-    expect(warnings()).toContain(roots.multiCopy);
+    expect(printed(logs.warn)).toContain('Expo module "expo-multi" is installed twice');
+    expect(printed(logs.warn).match(/is installed twice/g)).toHaveLength(1);
+    expect(printed(logs.warn)).toContain(roots.multiCopy);
   });
 
   // The pure-Swift branch emits the first pod only, so the second is uncovered.
@@ -1568,11 +1329,11 @@ describe('a module whose pods document two different copies', () => {
 // that file through the autolinking CLI but installs nothing from it, so it names
 // the pods and builds on.
 describe('the extra CocoaPods dependencies an app declares', () => {
-  let logs;
+  const logs = captureConsole({ each: true });
   let outDir;
 
   const run = (extraDependencies) => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-extra-pods-'));
+    const tmp = makeTempDir('expo-spm-extra-pods-');
     outDir = path.join(tmp, 'out');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const podspecDir = pureSwiftModule(path.join(tmp, 'expo-extra'), 'ExpoExtra', spec());
@@ -1587,27 +1348,10 @@ describe('the extra CocoaPods dependencies an app declares', () => {
       extraDependencies,
     });
     providerWrittenTo(outDir);
-    return expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-      autolinking: {},
-    });
+    return runPlugin(tmp, { autolinking: {} });
   };
 
-  beforeEach(() => {
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-  });
-
-  afterEach(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterEach(restoreModuleMocks);
 
   // A pod the plugin cannot install is not a reason to fail the sync: a warning
   // reports it, and every package the plugin can emit is still emitted.
@@ -1619,7 +1363,7 @@ describe('the extra CocoaPods dependencies an app declares', () => {
       ])
     ).not.toThrow();
 
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report).toContain('MyLocalPod');
     expect(report).toContain('Firebase');
     expect(report).toContain('Podfile.properties.json');
@@ -1631,20 +1375,18 @@ describe('the extra CocoaPods dependencies an app declares', () => {
   it('says nothing when the app declares no extra pods', () => {
     run([]);
 
-    expect(logs.warn.mock.calls.map(([text]) => text).join('\n')).not.toContain(
-      'Podfile.properties.json'
-    );
+    expect(printed(logs.warn)).not.toContain('Podfile.properties.json');
   });
 });
 
 // A source-emitted module has no XCFramework to link its SwiftPM dependencies
 // into, so the generated manifest has to declare them itself.
 describe('the SwiftPM packages a source-emitted module declares', () => {
-  let logs;
+  const logs = captureConsole();
   let manifest;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-source-deps-plugin-'));
+    const tmp = makeTempDir('expo-spm-source-deps-plugin-');
     const outDir = path.join(tmp, 'out');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const imageRoot = path.join(tmp, 'expo-image');
@@ -1692,26 +1434,14 @@ describe('the SwiftPM packages a source-emitted module declares', () => {
       },
     });
     providerWrittenTo(outDir);
-    logs = {
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-    });
+    runPlugin(tmp);
     manifest = fs.readFileSync(
       path.join(outDir, 'expo', 'expo-source', 'ExpoImage', 'Package.swift'),
       'utf8'
     );
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('declares them in the generated manifest', () => {
     expect(manifest).toContain(
@@ -1725,7 +1455,7 @@ describe('the SwiftPM packages a source-emitted module declares', () => {
   });
 
   it('counts them as counterparts of the pods its podspec depends on', () => {
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report).toContain('warning: Expo module "expo-image" (pod ExpoImage)');
     expect(report).toContain('SomeUnmappedPod');
     expect(report).not.toContain('SDWebImage');
@@ -1742,11 +1472,11 @@ describe('the SwiftPM packages a source-emitted module declares', () => {
 // rather than in an spm.config.json, and those cover the pods its podspec names just
 // as the pure-Swift branch's do.
 describe('the SwiftPM packages a checked-in manifest declares', () => {
-  let logs;
+  const logs = captureConsole();
   let manifest;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-manifest-deps-plugin-'));
+    const tmp = makeTempDir('expo-spm-manifest-deps-plugin-');
     const outDir = path.join(tmp, 'out');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const imageRoot = path.join(tmp, 'expo-image');
@@ -1807,26 +1537,14 @@ describe('the SwiftPM packages a checked-in manifest declares', () => {
       extraDependencies: [],
     });
     providerWrittenTo(outDir);
-    logs = {
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: path.join(tmp, 'app', 'ios'),
-      projectRoot: path.join(tmp, 'app'),
-    });
+    runPlugin(tmp);
     manifest = fs.readFileSync(
       path.join(outDir, 'expo', 'expo-source', 'ExpoImage', 'Package.swift'),
       'utf8'
     );
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('mirrors them into the generated manifest', () => {
     expect(manifest).toContain(
@@ -1836,7 +1554,7 @@ describe('the SwiftPM packages a checked-in manifest declares', () => {
   });
 
   it('counts them as counterparts of the pods its podspec depends on', () => {
-    const report = logs.warn.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.warn);
     expect(report).toContain('warning: Expo module "expo-image" (pod ExpoImage)');
     expect(report).toContain('SomeUnmappedPod');
     expect(report).not.toContain('SDWebImage');
@@ -1848,11 +1566,11 @@ describe('the SwiftPM packages a checked-in manifest declares', () => {
 });
 
 describe('a pure-Swift package shipping a companion pod', () => {
-  let logs;
+  const logs = captureConsole();
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-companion-'));
+    const tmp = makeTempDir('expo-spm-companion-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const camera = pureSwiftModule(
       path.join(tmp, 'expo-camera'),
@@ -1876,31 +1594,13 @@ describe('a pure-Swift package shipping a companion pod', () => {
       ],
       extraDependencies: [],
     });
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: path.join(tmp, 'out'),
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it('emits the single target the pure-Swift branch builds', () => {
-    const report = logs.log.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.log);
     expect(report).toContain('source pure-Swift (1): ExpoCamera\n');
   });
 
@@ -1908,7 +1608,7 @@ describe('a pure-Swift package shipping a companion pod', () => {
   // emitted too would drop the companion out of the install with no diagnostic at
   // all — it fails at runtime with "Cannot find native module" instead.
   it('reports the companion pod it does not build', () => {
-    const report = logs.error.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.error);
     expect(report).toContain('ExpoCameraBarcodeScanning');
     expect(thrown).toBeInstanceOf(UnsupportedModulesError);
     expect(thrown.unsupported.map((u) => u.podName)).toEqual(['ExpoCameraBarcodeScanning']);
@@ -1919,12 +1619,12 @@ describe('a pure-Swift package shipping a companion pod', () => {
 // branch marks every pod of the package emitted, which is only right BECAUSE the
 // manifest covers them all — unlike the pure-Swift branch above, which emits one.
 describe('a checked-in manifest declaring a product per pod', () => {
-  let logs;
+  const logs = captureConsole();
   let manifest;
   let thrown;
 
   beforeAll(() => {
-    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-manifest-multipod-'));
+    const tmp = makeTempDir('expo-spm-manifest-multipod-');
     const outDir = path.join(tmp, 'out');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     const cameraRoot = path.join(tmp, 'expo-camera');
@@ -1976,32 +1676,14 @@ describe('a checked-in manifest declaring a product per pod', () => {
       extraDependencies: [],
     });
     providerWrittenTo(outDir);
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
-    try {
-      expoSpmPlugin({
-        react: null,
-        outputDir: outDir,
-        appRoot: path.join(tmp, 'app', 'ios'),
-        projectRoot: path.join(tmp, 'app'),
-      });
-      thrown = null;
-    } catch (error) {
-      thrown = error;
-    }
+    thrown = thrownBy(() => runPlugin(tmp));
     manifest = fs.readFileSync(
       path.join(outDir, 'expo', 'expo-source', 'ExpoCamera', 'Package.swift'),
       'utf8'
     );
   });
 
-  afterAll(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
-    restoreModuleMocks();
-  });
+  afterAll(restoreModuleMocks);
 
   it("mirrors a target for each of the package's pods", () => {
     expect(manifest).toContain('name: "ExpoCamera"');
@@ -2009,7 +1691,7 @@ describe('a checked-in manifest declaring a product per pod', () => {
   });
 
   it('covers every pod of the package, so none is reported uncovered', () => {
-    const report = logs.log.mock.calls.map(([text]) => text).join('\n');
+    const report = printed(logs.log);
     expect(report).toContain('not supported (0): —');
     expect(logs.error).not.toHaveBeenCalled();
     expect(thrown).toBeNull();
@@ -2024,18 +1706,12 @@ describe('a product gated by an autolinkWhen condition', () => {
     podfileProperty: 'expo.camera.barcode-scanner-enabled',
     disabledValue: 'false',
   };
-  let logs;
+  const logs = captureConsole({ each: true });
   let tmp;
   let cameraRoot;
 
-  const documented = (packageRoot, productName, autolinkWhen = null) => ({
-    packageRoot,
-    productName,
-    ...(autolinkWhen != null && { autolinkWhen }),
-  });
-
   beforeEach(() => {
-    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-gated-'));
+    tmp = makeTempDir('expo-spm-gated-');
     const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
     cameraRoot = path.join(tmp, 'expo-camera');
     const camera = pureSwiftModule(cameraRoot, 'ExpoCamera', spec());
@@ -2084,15 +1760,9 @@ describe('a product gated by an autolinkWhen condition', () => {
       ],
       extraDependencies: [],
     });
-    logs = {
-      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
-      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
-      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
-    };
   });
 
   afterEach(() => {
-    Object.values(logs).forEach((spy) => spy.mockRestore());
     runDumpPackage.mockReset();
     restoreModuleMocks();
   });
@@ -2118,18 +1788,15 @@ describe('a product gated by an autolinkWhen condition', () => {
     });
     prebuiltMetadata.mockReturnValue(metadata);
     providerWrittenTo(outDir);
-    const result = expoSpmPlugin({
-      react: null,
-      outputDir: outDir,
-      appRoot: appIosDir,
-      projectRoot: path.join(tmp, 'app'),
-    });
-    return { result, report: logs.log.mock.calls.map(([text]) => text).join('\n') };
+    const result = runPlugin(tmp);
+    return { result, report: printed(logs.log) };
   };
 
   const cameraMetadata = (gate) => ({
-    ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
-    ExpoCameraBarcodeScanning: documented(cameraRoot, 'ExpoCameraBarcodeScanning', gate),
+    ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
+    ExpoCameraBarcodeScanning: metadataEntry(cameraRoot, 'ExpoCameraBarcodeScanning', {
+      autolinkWhen: gate,
+    }),
   });
 
   it('wires the gated product when the condition is met', () => {
@@ -2181,7 +1848,7 @@ describe('a product gated by an autolinkWhen condition', () => {
   // path that fails to match must never silently drop one.
   it('wires a product no metadata entry names', () => {
     const { result, report } = run({
-      metadata: { ExpoCamera: documented(cameraRoot, 'ExpoCamera') },
+      metadata: { ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera') },
       properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
     });
 
@@ -2197,11 +1864,11 @@ describe('a product gated by an autolinkWhen condition', () => {
   it('ignores a same-named product gated in another package', () => {
     const { result, report } = run({
       metadata: {
-        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
-        OtherBarcodeScanning: documented(
+        ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
+        OtherBarcodeScanning: metadataEntry(
           path.join(tmp, 'other-camera'),
           'ExpoCameraBarcodeScanning',
-          barcodeGate
+          { autolinkWhen: barcodeGate }
         ),
       },
       properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
@@ -2219,11 +1886,11 @@ describe('a product gated by an autolinkWhen condition', () => {
   it('wires a product gated on a pod the document declares', () => {
     const { result, report } = run({
       metadata: {
-        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
-        ExpoCameraBarcodeScanning: documented(cameraRoot, 'ExpoCameraBarcodeScanning', {
-          podName: 'RNWorklets',
+        ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
+        ExpoCameraBarcodeScanning: metadataEntry(cameraRoot, 'ExpoCameraBarcodeScanning', {
+          autolinkWhen: { podName: 'RNWorklets' },
         }),
-        RNWorklets: documented(path.join(tmp, 'react-native-worklets'), 'RNWorklets'),
+        RNWorklets: metadataEntry(path.join(tmp, 'react-native-worklets'), 'RNWorklets'),
       },
     });
 
@@ -2268,8 +1935,10 @@ describe('a product gated by an autolinkWhen condition', () => {
   it('matches the entry by its product name, not by its pod key', () => {
     const { result, report } = run({
       metadata: {
-        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
-        ExpoCameraBarcodeScanner: documented(cameraRoot, 'ExpoCameraBarcodeScanning', barcodeGate),
+        ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
+        ExpoCameraBarcodeScanner: metadataEntry(cameraRoot, 'ExpoCameraBarcodeScanning', {
+          autolinkWhen: barcodeGate,
+        }),
       },
       properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
     });
@@ -2283,7 +1952,7 @@ describe('a product gated by an autolinkWhen condition', () => {
   it('matches an entry naming no product by its pod key', () => {
     const { result, report } = run({
       metadata: {
-        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+        ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
         ExpoCameraBarcodeScanning: { packageRoot: cameraRoot, autolinkWhen: barcodeGate },
       },
       properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
@@ -2311,7 +1980,7 @@ describe('a product gated by an autolinkWhen condition', () => {
   it('keeps a product whose entry documents an unusable package root', () => {
     const { result, report } = run({
       metadata: {
-        ExpoCamera: documented(cameraRoot, 'ExpoCamera'),
+        ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
         ExpoCameraBarcodeScanning: { packageRoot: 17, autolinkWhen: barcodeGate },
       },
       properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
