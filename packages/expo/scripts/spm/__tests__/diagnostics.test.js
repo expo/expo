@@ -835,3 +835,91 @@ describe('Swift packages the generated package cannot declare', () => {
     expect(text).not.toContain('undefined');
   });
 });
+
+describe('a module with only some pods precompiled', () => {
+  const artifactDirs = [
+    '/precompiled/expo-dual/output',
+    '/repo/packages/precompile/.build/expo-dual/output',
+    '/node_modules/expo-dual/prebuilds/output',
+  ];
+  const pending = (extra) => ({
+    podName: 'ExpoDualExtras',
+    packageName: 'expo-dual',
+    moduleRoot: '/node_modules/expo-dual',
+    hasSources: true,
+    pureSwift: true,
+    prebuildProduct: null,
+    precompiledSiblings: ['ExpoDual'],
+    artifactDirs,
+    ...extra,
+  });
+  const entries = (extra) =>
+    classifyUnsupported({ pending: [pending(extra)], coreAvailable: true });
+
+  it('classifies the pod that is not precompiled, naming the siblings that are', () => {
+    expect(entries()).toEqual([
+      {
+        reason: 'partially-precompiled',
+        podName: 'ExpoDualExtras',
+        packageName: 'expo-dual',
+        moduleRoot: '/node_modules/expo-dual',
+        precompiledSiblings: ['ExpoDual'],
+        artifactDirs,
+        prebuildProduct: null,
+      },
+    ]);
+  });
+
+  it('reports it before the prebuild route, which would not explain the double link', () => {
+    expect(
+      entries({ prebuildProduct: { name: 'ExpoDualExtras', sourceOnly: false } })[0].reason
+    ).toBe('partially-precompiled');
+  });
+
+  it('names both pods, the double link, and the all-or-none remedies', () => {
+    const report = renderUnsupportedReport(entries());
+    expect(report).toMatch(/^error: Expo module "expo-dual" \(pod ExpoDualExtras\)/);
+    expect(report).toContain('ExpoDual ');
+    expect(report).toContain('twice');
+    expect(report).toContain('et prebuild expo-dual');
+    expect(report).toContain('spm.config.json');
+    expect(report).toContain('"exclude": ["expo-dual"]');
+    expect(report).toContain('Module path: /node_modules/expo-dual');
+  });
+
+  it('lists every precompiled sibling', () => {
+    const report = renderUnsupportedReport(
+      entries({ precompiledSiblings: ['ExpoDual', 'ExpoDualKit'] })
+    );
+    expect(report).toContain('ExpoDual, ExpoDualKit');
+  });
+
+  it('names every directory the artifact resolver searches, in its order, and both artifact forms', () => {
+    const report = renderUnsupportedReport(entries());
+    const positions = artifactDirs.map((dir) => report.indexOf(dir));
+    expect(positions.every((position) => position >= 0)).toBe(true);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    expect(report).toContain('ExpoDual.xcframework');
+    expect(report).toContain('ExpoDual.tar.gz');
+    expect(report).toContain('debug/xcframeworks');
+    expect(report).toContain('release/xcframeworks');
+    expect(report).toContain("add a product for ExpoDualExtras to expo-dual's spm.config.json");
+  });
+
+  it('says so when spm.config.json already declares the pod it asks to build', () => {
+    const report = renderUnsupportedReport(
+      entries({ prebuildProduct: { name: 'ExpoDualExtras', sourceOnly: false } })
+    );
+    expect(report).toContain('already declares "ExpoDualExtras"');
+    expect(report).toContain('et prebuild expo-dual');
+  });
+
+  it('does not promise an XCFramework for a source-only product', () => {
+    const report = renderUnsupportedReport(
+      entries({ prebuildProduct: { name: 'ExpoDualExtras', sourceOnly: true } })
+    );
+    expect(report).toContain('sourceOnly');
+    expect(report).not.toContain('et prebuild');
+    expect(report).toMatch(/^ {2}1\. To build it from source instead/m);
+  });
+});

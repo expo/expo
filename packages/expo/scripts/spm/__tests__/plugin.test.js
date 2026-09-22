@@ -46,6 +46,7 @@ const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
 const { UnsupportedModulesError } = require('../diagnostics');
 const {
+  artifactBaseDirs,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveSpmDependencyFrameworks,
@@ -1043,6 +1044,198 @@ describe('the checked-in manifest branch', () => {
     expect(
       fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoVendored', 'Package.swift'))
     ).toBe(false);
+  });
+});
+
+describe.each([
+  ['a checked-in manifest', 'ExpoDual'],
+  ['a checked-in manifest', 'ExpoDualExtras'],
+  ['pure-Swift sources', 'ExpoDual'],
+  ['pure-Swift sources', 'ExpoDualExtras'],
+])('a two-pod module with %s whose only precompiled pod is %s', (kind, precompiledPod) => {
+  const sourcePod = precompiledPod === 'ExpoDual' ? 'ExpoDualExtras' : 'ExpoDual';
+  const logs = captureConsole();
+  let outDir;
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-plugin-partial-');
+    outDir = path.join(tmp, 'out');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const dual = path.join(tmp, 'expo-dual');
+    const dualPodspecDir = pureSwiftModule(dual, 'ExpoDual', spec());
+    fs.writeFileSync(path.join(dualPodspecDir, 'ExpoDualExtras.podspec'), spec());
+    if (kind === 'a checked-in manifest') {
+      fs.writeFileSync(path.join(dual, 'Package.swift'), '// swift-tools-version: 6.0\n');
+      runDumpPackage.mockReturnValue(
+        JSON.stringify({
+          name: 'ExpoDual',
+          products: [{ name: 'ExpoDual', type: { library: ['automatic'] }, targets: ['ExpoDual'] }],
+          targets: [{ name: 'ExpoDual', type: 'regular', path: 'ios', dependencies: [] }],
+        })
+      );
+    }
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', precompiledPod].includes(frameworkName)
+        ? { id: frameworkName, frameworkName }
+        : null
+    );
+    resolveExpoModules.mockReturnValue({
+      modules: [
+        {
+          packageName: 'expo-modules-core',
+          pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+        },
+        {
+          packageName: 'expo-dual',
+          pods: [
+            { podName: 'ExpoDual', podspecDir: dualPodspecDir },
+            { podName: 'ExpoDualExtras', podspecDir: dualPodspecDir },
+          ],
+        },
+      ],
+      extraDependencies: [],
+    });
+    thrown = thrownBy(() => runPlugin(tmp));
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('fails the sync for the pod that is not precompiled, naming the one that is', () => {
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown.unsupported).toEqual([
+      expect.objectContaining({
+        reason: 'partially-precompiled',
+        podName: sourcePod,
+        packageName: 'expo-dual',
+        precompiledSiblings: [precompiledPod],
+      }),
+    ]);
+    expect(printed(logs.error)).toContain(`error: Expo module "expo-dual" (pod ${sourcePod})`);
+  });
+
+  it('emits no source package for the module, so the precompiled pod is linked once', () => {
+    expect(fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoDual'))).toBe(false);
+  });
+});
+
+describe('a partially precompiled module', () => {
+  const logs = captureConsole({ each: true });
+
+  afterEach(restoreModuleMocks);
+
+  function syncPartialModule({ sources, pods, precompiled }) {
+    const tmp = makeTempDir('expo-spm-plugin-partial-');
+    const outDir = path.join(tmp, 'out');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const moduleRoot = path.join(tmp, 'expo-dual');
+    const podspecDir = pureSwiftModule(moduleRoot, pods[0], spec());
+    for (const podName of pods.slice(1)) {
+      fs.writeFileSync(path.join(podspecDir, `${podName}.podspec`), spec());
+    }
+    if (sources !== 'swift') {
+      fs.writeFileSync(path.join(podspecDir, 'B.m'), '// objc\n');
+    }
+    if (sources === 'mixed with a manifest') {
+      fs.writeFileSync(path.join(moduleRoot, 'Package.swift'), '// swift-tools-version: 6.0\n');
+      runDumpPackage.mockReturnValue(
+        JSON.stringify({
+          name: 'ExpoDual',
+          products: [{ name: 'ExpoDual', type: { library: ['automatic'] }, targets: ['ExpoDual'] }],
+          targets: [{ name: 'ExpoDual', type: 'regular', path: 'ios', dependencies: [] }],
+        })
+      );
+    }
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', ...precompiled].includes(frameworkName)
+        ? { id: frameworkName, frameworkName }
+        : null
+    );
+    resolveExpoModules.mockReturnValue({
+      modules: [
+        {
+          packageName: 'expo-modules-core',
+          pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+        },
+        { packageName: 'expo-dual', pods: pods.map((podName) => ({ podName, podspecDir })) },
+      ],
+      extraDependencies: [],
+    });
+    const thrown = thrownBy(() => runPlugin(tmp));
+    const sourceDir = path.join(outDir, 'expo', 'expo-source');
+    return {
+      thrown,
+      report: printed(logs.error),
+      moduleRoot,
+      sourcePackages: fs.existsSync(sourceDir) ? fs.readdirSync(sourceDir) : [],
+    };
+  }
+
+  it('is refused when a checked-in manifest covers mixed-language sources', () => {
+    const { thrown, sourcePackages } = syncPartialModule({
+      sources: 'mixed with a manifest',
+      pods: ['ExpoDual', 'ExpoDualExtras'],
+      precompiled: ['ExpoDual'],
+    });
+    expect(thrown.unsupported).toEqual([
+      expect.objectContaining({ reason: 'partially-precompiled', podName: 'ExpoDualExtras' }),
+    ]);
+    expect(sourcePackages).toEqual([]);
+  });
+
+  it('keeps the mixed-language report when it has no manifest, since it is never built from source', () => {
+    const { thrown, sourcePackages } = syncPartialModule({
+      sources: 'mixed',
+      pods: ['ExpoDual', 'ExpoDualExtras'],
+      precompiled: ['ExpoDual'],
+    });
+    expect(thrown.unsupported).toEqual([
+      expect.objectContaining({ reason: 'mixed-no-manifest', podName: 'ExpoDualExtras' }),
+    ]);
+    expect(sourcePackages).toEqual([]);
+  });
+
+  it('reports every pod that is not precompiled', () => {
+    const { thrown } = syncPartialModule({
+      sources: 'swift',
+      pods: ['ExpoDual', 'ExpoDualExtras', 'ExpoDualKit', 'ExpoDualUI'],
+      precompiled: ['ExpoDual', 'ExpoDualKit'],
+    });
+    expect(thrown.unsupported).toEqual([
+      expect.objectContaining({
+        reason: 'partially-precompiled',
+        podName: 'ExpoDualExtras',
+        precompiledSiblings: ['ExpoDual', 'ExpoDualKit'],
+      }),
+      expect.objectContaining({
+        reason: 'partially-precompiled',
+        podName: 'ExpoDualUI',
+        precompiledSiblings: ['ExpoDual', 'ExpoDualKit'],
+      }),
+    ]);
+  });
+
+  it('names every directory the artifact resolver searches, in its order', () => {
+    const previous = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    process.env.EXPO_PRECOMPILED_MODULES_PATH = '/precompiled';
+    try {
+      const { report, moduleRoot } = syncPartialModule({
+        sources: 'swift',
+        pods: ['ExpoDual', 'ExpoDualExtras'],
+        precompiled: ['ExpoDual'],
+      });
+      const searched = artifactBaseDirs('expo-dual', moduleRoot);
+      expect(searched).toHaveLength(3);
+      const positions = searched.map((dir) => report.indexOf(dir));
+      expect(positions.every((position) => position >= 0)).toBe(true);
+      expect(positions).toEqual([...positions].sort((a, b) => a - b));
+    } finally {
+      if (previous === undefined) {
+        delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+      } else {
+        process.env.EXPO_PRECOMPILED_MODULES_PATH = previous;
+      }
+    }
   });
 });
 
