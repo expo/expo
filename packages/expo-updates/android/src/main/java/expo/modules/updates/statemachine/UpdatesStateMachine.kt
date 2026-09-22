@@ -114,16 +114,31 @@ class UpdatesStateMachine(
   private fun transition(event: UpdatesStateEvent): Boolean {
     val allowedEvents: Set<UpdatesStateEventType> = updatesStateAllowedEvents[state] ?: setOf()
     if (!allowedEvents.contains(event.type)) {
-      logger.warn("UpdatesState: invalid transition requested, event dropped: state = $state, event = ${event.type}")
+      logger.warn(droppedEventWarning(event))
       return false
     }
     val newStateValue = updatesStateTransitions[event.type] ?: UpdatesStateValue.Idle
     if (!validUpdatesStateValues.contains(newStateValue)) {
-      logger.warn("UpdatesState: invalid transition requested, event dropped: state = $state, event = ${event.type}")
+      logger.warn(droppedEventWarning(event))
       return false
     }
     state = newStateValue
     return true
+  }
+
+  /**
+   The warning written when an event is dropped. It carries the error text of an error event,
+   because some callers do not log the failure themselves before sending the event, which would
+   leave the updates log with no record of what was lost.
+   */
+  private fun droppedEventWarning(event: UpdatesStateEvent): String {
+    val errorMessage = when (event) {
+      is UpdatesStateEvent.CheckError -> event.error.message
+      is UpdatesStateEvent.DownloadError -> event.error.message
+      else -> null
+    }
+    val error = errorMessage?.let { ", error = $it" } ?: ""
+    return "UpdatesState: invalid transition requested, event dropped: state = $state, event = ${event.type}$error"
   }
 
   fun sendContextToJS() {

@@ -89,6 +89,23 @@ internal enum UpdatesStateEvent {
     }
   }
 
+  /**
+   The failure text carried by an error event. The state machine logs it when it drops an event,
+   so the message does not disappear with the event.
+   */
+  var errorMessage: String? {
+    switch self {
+    case let .checkError(errorMessage):
+      return errorMessage
+    case let .downloadError(errorMessage):
+      return errorMessage
+    case .startStartup, .endStartup, .check, .checkCompleteUnavailable, .checkCompleteWithUpdate,
+      .checkCompleteWithRollback, .download, .downloadCompleteUnavailable, .downloadCompleteWithUpdate,
+      .downloadCompleteWithRollback, .downloadProgress, .restart:
+      return nil
+    }
+  }
+
   var toMap: [String: Any] {
     switch self {
     case .checkCompleteWithUpdate(manifest: let manifest):
@@ -418,17 +435,27 @@ internal class UpdatesStateMachine {
   private func transition(_ event: UpdatesStateEvent) -> Bool {
     let allowedEvents: Set<UpdatesStateEvent.InternalType> = UpdatesStateMachine.updatesStateAllowedEvents[state] ?? []
     if !allowedEvents.contains(event.type) {
-      logger.warn(message: "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)")
+      logger.warn(message: droppedEventWarning(event))
       return false
     }
     let newStateValue = UpdatesStateMachine.updatesStateTransitions[event.type] ?? .idle
     if !validUpdatesStateValues.contains(newStateValue) {
-      logger.warn(message: "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)")
+      logger.warn(message: droppedEventWarning(event))
       return false
     }
     // Successful transition
     state = newStateValue
     return true
+  }
+
+  /**
+   The warning written when an event is dropped. It carries the error text of an error event,
+   because some callers do not log the failure themselves before sending the event, which would
+   leave the updates log with no record of what was lost.
+   */
+  private func droppedEventWarning(_ event: UpdatesStateEvent) -> String {
+    let error = event.errorMessage.map { ", error = \($0)" } ?? ""
+    return "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)\(error)"
   }
 
   /**

@@ -66,9 +66,18 @@ class UpdatesStateMachineTest {
     // The persistent file log handler writes asynchronously.
     Thread.sleep(500)
     val logs = UpdatesLogReader(filesDirectory).getLogEntries(Date(now.time - 5000))
+    val warning = logs.singleOrNull { it.contains("invalid transition requested, event dropped") }
+    Assert.assertNotNull("Expected a warning about the dropped event, got: $logs", warning)
+
+    // Some callers reach processStateEvent without logging the failure themselves, so this warning
+    // is the only record of what was lost. It must name the event and carry its error message.
     Assert.assertTrue(
-      "Expected a warning about the dropped event, got: $logs",
-      logs.any { it.contains("invalid transition requested, event dropped") }
+      "Expected the warning to name the dropped event, got: $warning",
+      warning!!.contains("event = DownloadError")
+    )
+    Assert.assertTrue(
+      "Expected the warning to carry the discarded error message, got: $warning",
+      warning.contains("boom")
     )
   }
 

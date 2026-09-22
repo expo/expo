@@ -205,4 +205,39 @@ struct UpdatesStateMachineTests {
     #expect(machine.getStateForTesting() == .idle)
     #expect(machine.context.downloadError == nil)
   }
+
+  @Test
+  func `the warning for a dropped event carries the error message it discarded`() async throws {
+    // A unique category keeps this suite's entries out of the production log file, as
+    // `UpdatesLogReaderTests` does.
+    let category = "expo-updates-tests-\(UUID().uuidString)"
+    let logger = UpdatesLogger(category: category)
+    let logReader = UpdatesLogReader(category: category)
+    let since = Date()
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: logger, eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    // Some callers reach `processStateEvent` without logging the failure themselves, so this
+    // warning is the only record of what was lost.
+    machine.processEventForTesting(.downloadError(errorMessage: "Failed to download remote update: HTTP 502"))
+
+    let entry = try await droppedEventWarning(logReader: logReader, newerThan: since)
+    #expect(entry.contains("event = downloadError"))
+    #expect(entry.contains("Failed to download remote update: HTTP 502"))
+  }
+
+  /// The log handler writes asynchronously, so poll until the warning lands.
+  private func droppedEventWarning(logReader: UpdatesLogReader, newerThan: Date) async throws -> String {
+    for _ in 0..<50 {
+      let entries = logReader.getLogEntries(newerThan: newerThan).filter { entry in
+        entry.contains("invalid transition requested, event dropped")
+      }
+      if let entry = entries.first {
+        return entry
+      }
+      try await Task.sleep(for: .milliseconds(100))
+    }
+    Issue.record("No dropped-event warning was written to the updates log")
+    return ""
+  }
 }
