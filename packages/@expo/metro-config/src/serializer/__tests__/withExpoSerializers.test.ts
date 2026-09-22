@@ -1,16 +1,175 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
 
+import * as workerScan from '../chunking/findUnsupportedWorkerAsyncDependency';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
   createJSVirtualModule,
   serializeSplitAsync,
   serializeTo,
 } from '../fork/__tests__/serializer-test-utils';
+import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
+import * as chunkSerializer from '../serializeChunks';
 import type { SerialAsset } from '../withExpoSerializers';
 import {
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
+
+describe('worker compatibility', () => {
+  let bundle: Awaited<ReturnType<typeof microBundle>>;
+  let chunkSerializerSpy: jest.SpyInstance;
+  beforeAll(async () => {
+    bundle = await microBundle({
+      fs: { 'index.js': `import('./route');`, 'route.js': 'export const value = 1;' },
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        chunkingStrategy: 'bitset',
+      },
+    });
+  });
+  beforeEach(() => {
+    chunkSerializerSpy = jest.spyOn(chunkSerializer, 'graphToSerialAssetsAsync');
+  });
+  afterEach(() => {
+    chunkSerializerSpy.mockRestore();
+  });
+
+  async function serialize(graph = bundle[2], options: ExpoSerializerOptions = bundle[3]) {
+    const serializer = createSerializerFromSerialProcessors({ projectRoot }, [], null);
+    await serializer(bundle[0], bundle[1], graph, options);
+  }
+
+  async function createWorkerBundle(workerSource: string) {
+    return microBundle({
+      fs: {
+        'index.js': `import './shared'; require.unstable_resolveWorker('./worker');`,
+        'worker.js': workerSource,
+        'shared.js': `export const load = () => import('./target');`,
+        'target.js': `export const value = 1;`,
+        'nested.js': `import './shared';`,
+      },
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        chunkingStrategy: 'bitset',
+      },
+    });
+  }
+
+  it.each(['async', 'maybeSync', 'prefetch'] as const)(
+    'falls back for a shared worker importer with a %s edge',
+    async (asyncType) => {
+      const [entry, , graph, options] = await createWorkerBundle(`import './shared';`);
+      const shared = graph.dependencies.get('/app/shared.js')!;
+      const [key, dependency] = [...shared.dependencies].find(
+        ([, dep]) => dep.data.data.asyncType === 'async'
+      )!;
+      shared.dependencies.set(key, {
+        ...dependency,
+        data: { ...dependency.data, data: { ...dependency.data.data, asyncType } },
+      });
+      expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toEqual({
+        workerEntry: '/app/worker.js',
+        importer: '/app/shared.js',
+        target: '/app/target.js',
+        asyncType,
+      });
+      await serialize(graph, options);
+
+      expect(chunkSerializerSpy).toHaveBeenCalledWith(
+        { projectRoot },
+        expect.objectContaining({ chunkingStrategy: 'legacy' }),
+        bundle[0],
+        bundle[1],
+        graph,
+        expect.anything()
+      );
+    }
+  );
+
+  it('finds async edges inside nested workers', async () => {
+    const [entry, , graph] = await createWorkerBundle(
+      `require.unstable_resolveWorker('./nested');`
+    );
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toEqual({
+      workerEntry: '/app/nested.js',
+      importer: '/app/shared.js',
+      target: '/app/target.js',
+      asyncType: 'async',
+    });
+  });
+
+  it('ignores weak worker edges even when the fixture manufactures their target', async () => {
+    const [entry, , graph] = await createWorkerBundle(`require.resolveWeak('./shared');`);
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
+  });
+
+  it('does not treat page-only async edges as worker edges', async () => {
+    const [, , graph, options] = await createWorkerBundle(`import './target';`);
+    await serialize(graph, options);
+
+    expect(chunkSerializerSpy).toHaveBeenCalledWith(
+      { projectRoot },
+      expect.objectContaining({ chunkingStrategy: 'bitset' }),
+      bundle[0],
+      bundle[1],
+      graph,
+      expect.anything()
+    );
+  });
+
+  it('ignores unresolved worker edges', async () => {
+    const [entry, , graph] = await createWorkerBundle(`import('./target');`);
+    const worker = graph.dependencies.get('/app/worker.js')!;
+    for (const [key, dependency] of worker.dependencies) {
+      if (dependency.data.data.asyncType === 'async') {
+        worker.dependencies.set(key, { data: dependency.data });
+      }
+    }
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
+  });
+
+  it('does not scan workers when splitting is disabled', async () => {
+    const [, , graph, original] = await createWorkerBundle(`import('./target');`);
+    const options = original as ExpoSerializerOptions;
+    const scan = jest.spyOn(workerScan, 'findUnsupportedWorkerAsyncDependency');
+    try {
+      await serialize(graph, {
+        ...options,
+        serializerOptions: { ...options.serializerOptions, splitChunks: false },
+      });
+
+      expect(chunkSerializerSpy).toHaveBeenCalledWith(
+        { projectRoot },
+        expect.objectContaining({ chunkingStrategy: 'legacy', splitChunks: false }),
+        bundle[0],
+        bundle[1],
+        graph,
+        expect.anything()
+      );
+      expect(scan).not.toHaveBeenCalled();
+    } finally {
+      scan.mockRestore();
+    }
+  });
+
+  it('terminates on synchronous worker cycles', async () => {
+    const [entry, , graph] = await microBundle({
+      fs: {
+        'index.js': `require.unstable_resolveWorker('./worker');`,
+        'worker.js': `import './other';`,
+        'other.js': `import './worker';`,
+      },
+      options: { platform: 'web', dev: false, splitChunks: true },
+    });
+    expect(workerScan.findUnsupportedWorkerAsyncDependency(entry, graph)).toBeUndefined();
+  });
+});
 
 describe(withSerializerPlugins, () => {
   it(`executes in the expected order`, async () => {

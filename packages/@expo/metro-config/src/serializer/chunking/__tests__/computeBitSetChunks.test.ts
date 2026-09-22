@@ -462,6 +462,7 @@ describe('raw entrypoint reachability', () => {
     );
     const analysis = analyzeBitSetGraph([entry], graph, { isLazyBundle: false });
     expect(analysis.entryPoints.map((e) => e.module.path)).toEqual(['/app/index.js']);
+    expect([...analysis.workerEntries].map((m) => m.path)).toEqual(['/app/worker.js']);
     for (const name of ['weak', 'hidden', 'worker', 'worker-dep']) {
       expect(
         analysis.dependentEntriesByModule.has(graph.dependencies.get(`/app/${name}.js`)!)
