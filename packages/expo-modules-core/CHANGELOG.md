@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Avoid Kotlin reflection when sorting task service providers.
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
