@@ -93,6 +93,8 @@ export async function microBundle({
   options?: {
     dev?: boolean;
     lazy?: boolean;
+    /** Include weak-only modules to preserve older test fixtures. */
+    legacyTraverseWeakDependencies?: boolean;
     platform?: string;
     baseUrl?: string;
     output?: 'static';
@@ -200,7 +202,10 @@ export async function microBundle({
 
         try {
           const resolved = resolve(id, dep.data.name);
-          if (options.lazy && dep.data.data.asyncType != null) {
+          if (
+            (dep.data.data.asyncType === 'weak' && !options.legacyTraverseWeakDependencies) ||
+            (options.lazy && dep.data.data.asyncType != null)
+          ) {
             // @ts-expect-error
             dep.absolutePath = path.join(projectRoot, resolved);
             continue;

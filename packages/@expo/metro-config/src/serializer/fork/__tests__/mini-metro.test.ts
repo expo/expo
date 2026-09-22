@@ -1,5 +1,19 @@
 import { microBundle } from './mini-metro';
 
+it('resolves weak IDs without traversing weak-only targets', async () => {
+  const [, , graph] = await microBundle({
+    fs: {
+      'index.js': `require.resolveWeak('./weak');`,
+      'weak.js': `import './hidden';`,
+      'hidden.js': '',
+    },
+  });
+  expect([...graph.dependencies.keys()]).toEqual(['/app/index.js']);
+  expect([...graph.dependencies.get('/app/index.js')!.dependencies.values()][0]).toMatchObject({
+    absolutePath: '/app/weak.js',
+  });
+});
+
 it('resolves every edge to a previously visited module, including nested cycles', async () => {
   const [, , graph] = await microBundle({
     fs: {
