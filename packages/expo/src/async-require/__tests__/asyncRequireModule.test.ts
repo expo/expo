@@ -33,8 +33,7 @@ describe('asyncRequireModule', () => {
     // Clear any previous __loadBundleAsync
     delete (globalThis as any).__loadBundleAsync;
 
-    // Evaluate the compiled module in a scope where `require` is our mock.
-    // We use Function constructor to create a scope with our own `require`.
+    // This is a handwritten copy. Keep it in sync with asyncRequireModule.ts.
     const moduleObj = { exports: {} as any };
     // eslint-disable-next-line no-new-func
     const moduleFn = new Function(
@@ -202,6 +201,24 @@ describe('asyncRequireModule', () => {
     expect(result).toEqual({ default: 'module-42' });
   });
 
+  it('forwards array payloads opaquely and waits before importing on native', async () => {
+    process.env.EXPO_OS = 'ios';
+    let finish!: () => void;
+    (globalThis as any).__loadBundleAsync = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        })
+    );
+    const payload = ['/shared.js', '/route.js'];
+    const result = asyncRequire(42, { '42': payload }, 'route');
+    expect((globalThis as any).__loadBundleAsync).toHaveBeenCalledWith(payload);
+    expect(mockImportAll).not.toHaveBeenCalled();
+    finish();
+    await expect(result).resolves.toEqual({ default: 'module-42' });
+    expect(mockImportAll).toHaveBeenCalledTimes(1);
+  });
+
   it('imports synchronously on native when the module is inlined (no split bundle path)', () => {
     process.env.EXPO_OS = 'ios';
     (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
@@ -267,6 +284,13 @@ describe('asyncRequireModule', () => {
   });
 
   describe('prefetch', () => {
+    it('forwards arrays without executing a factory', async () => {
+      (globalThis as any).__loadBundleAsync = jest.fn(async () => {});
+      const payload = ['/shared.js', '/route.js'];
+      asyncRequire.prefetch(42, { '42': payload }, 'route');
+      expect((globalThis as any).__loadBundleAsync).toHaveBeenCalledWith(payload);
+      expect(mockImportAll).not.toHaveBeenCalled();
+    });
     it('does not call importAll (only triggers bundle loading)', () => {
       (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
 

@@ -11,13 +11,13 @@ import { loadBundleAsync } from './loadBundle';
  * Must satisfy the requirements of the Metro bundler.
  * https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0605-lazy-bundling.md#__loadbundleasync-in-metro
  */
-type AsyncRequire = (path: string) => Promise<void>;
+type AsyncRequire = (path: string | readonly string[]) => Promise<void>;
 
 /** Create an `loadBundleAsync` function in the expected shape for Metro bundler. */
 export function buildAsyncRequire(): AsyncRequire {
   const cache = new Map<string, Promise<void>>();
 
-  return async function universal_loadBundleAsync(path: string): Promise<void> {
+  async function loadFileAsync(path: string): Promise<void> {
     if (cache.has(path)) {
       return cache.get(path)!;
     }
@@ -30,5 +30,10 @@ export function buildAsyncRequire(): AsyncRequire {
     cache.set(path, promise);
 
     return promise;
+  }
+
+  return async function universal_loadBundleAsync(path): Promise<void> {
+    if (typeof path === 'string') return loadFileAsync(path);
+    await Promise.all(path.map(loadFileAsync));
   };
 }
