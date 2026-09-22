@@ -57,6 +57,10 @@ jobs:
   ios:
     runs_on: macos-large
     image: latest
+    # Stop the app when the updates state machine drops an event that is not allowed from its
+    # current state, so an invalid transition fails this run instead of passing unnoticed.
+    env:
+      EX_UPDATES_ASSERT_INVALID_STATE: 'true'
     steps:
       - uses: eas/install_maestro
       - uses: eas/checkout
@@ -103,6 +107,8 @@ jobs:
   android:
     runs_on: linux-large-nested-virtualization
     image: latest
+    env:
+      EX_UPDATES_ASSERT_INVALID_STATE: 'true'
     steps:
       - uses: eas/install_maestro
       - uses: eas/checkout

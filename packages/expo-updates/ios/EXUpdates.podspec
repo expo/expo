@@ -78,6 +78,11 @@ Pod::Spec.new do |s|
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
   ex_updates_custom_init = ENV['EX_UPDATES_CUSTOM_INIT'] == '1'
   ex_updates_copy_embedded_assets = ENV['EX_UPDATES_COPY_EMBEDDED_ASSETS'] == '1'
+  # If set, the state machine traps when it drops an event that is not allowed from the current
+  # state, instead of only logging a warning. E2E tests turn this on so an invalid transition fails
+  # the test run rather than passing unnoticed. Both '1' and 'true' are accepted, so the same value
+  # works here and in the Android Gradle build.
+  ex_updates_assert_invalid_state = ['1', 'true'].include?(ENV['EX_UPDATES_ASSERT_INVALID_STATE'].to_s.downcase)
   if ex_updates_native_debug
     other_debug_c_flags << ' -DEX_UPDATES_NATIVE_DEBUG=1'
     other_debug_swift_flags << ' -DEX_UPDATES_NATIVE_DEBUG'
@@ -93,6 +98,12 @@ Pod::Spec.new do |s|
     other_debug_swift_flags << ' -DEX_UPDATES_COPY_EMBEDDED_ASSETS'
     other_release_c_flags << ' -DEX_UPDATES_COPY_EMBEDDED_ASSETS=1'
     other_release_swift_flags << ' -DEX_UPDATES_COPY_EMBEDDED_ASSETS'
+  end
+  if ex_updates_assert_invalid_state
+    other_debug_c_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE=1'
+    other_debug_swift_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE'
+    other_release_c_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE=1'
+    other_release_swift_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE'
   end
   if use_dev_client
     other_debug_c_flags << ' -DUSE_DEV_CLIENT=1'
