@@ -43,6 +43,31 @@ describe('getBaseURL', () => {
     expect(getBaseURL()).toBe('file:///path/to/.expo-internal');
   });
 
+  it('should serve from updates directory when an embedded iOS asset comes first', () => {
+    // On iOS, expo-updates prepopulates `localAssets` with the embedded assets resolved
+    // inside the app binary, then overwrites the keys this update carries. The embedded
+    // entries keep an absolute path inside the `.app` bundle, and the map order is not defined.
+    // @ts-expect-error: mock partial properties
+    globalThis.expo = {
+      modules: {
+        ExpoUpdates: {
+          isEnabled: true,
+          isEmbeddedLaunch: false,
+          localAssets: {
+            '8d4e297c3b3e49a614248143d53e40ca':
+              'file:///private/var/containers/Bundle/Application/AAAA/Example.app/assets/assets/icon.png',
+            '5d41402abc4b2a76b9719d911017c592':
+              'file:///private/var/mobile/Containers/Data/Application/BBBB/Documents/.expo-internal/5d41402abc4b2a76b9719d911017c592.html',
+          },
+        },
+      },
+    };
+
+    expect(getBaseURL()).toBe(
+      'file:///private/var/mobile/Containers/Data/Application/BBBB/Documents/.expo-internal'
+    );
+  });
+
   it('should serve from app builtin directory when using updates with embedded bundle', () => {
     // @ts-expect-error: mock partial properties
     globalThis.expo = {

@@ -16,6 +16,7 @@
 - [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
 - [iOS] Emit JavaScript `url` events for deep links delivered to a running app under the UIKit scene life cycle. ([#50235](https://github.com/expo/expo/pull/50235) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Import `Foundation` in `ResponseSink`, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
+- Resolve the DOM Components base URL from an asset in the updates directory. The first `localAssets` entry can be an embedded asset in the app binary. That made a downloaded update load its DOM HTML from a path that does not exist. ([#50473](https://github.com/expo/expo/pull/50473) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
