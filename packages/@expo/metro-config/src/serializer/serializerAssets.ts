@@ -12,6 +12,9 @@ export type SerialAsset = {
   type: 'css-external' | 'css' | 'js' | 'map' | 'json';
 
   metadata: {
+    chunkingStrategy?: ChunkingStrategy;
+    /** Absolute entry module paths represented by this file. Empty for runtime, shared, and worker chunks. */
+    entryPaths?: string[];
     hmrId?: string;
     /** Media query baked into a `css-external` `<link>` tag (e.g. `screen and (min-width: 900px)`). */
     media?: string;

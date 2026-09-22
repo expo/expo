@@ -1116,12 +1116,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // NOTE(cedric): relative module specifiers / IDs should always be POSIX formatted
       toPosixPath(path.relative(serverRoot, boundary))
     );
-    const moduleIdToSplitBundle = (
-      bundle.artifacts
-        .map((artifact) => artifact?.metadata?.paths && Object.values(artifact.metadata.paths))
-        .filter(Boolean)
-        .flat() as Record<string, string>[]
-    ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
+    const moduleIdToSplitBundle: Record<string, string | undefined> = {};
+    for (const artifact of bundle.artifacts) {
+      for (const paths of Object.values(artifact.metadata.paths ?? {})) {
+        for (const [moduleId, value] of Object.entries(paths)) {
+          assert(
+            value === undefined || typeof value === 'string',
+            'RSC async paths must remain scalar.'
+          );
+          moduleIdToSplitBundle[moduleId] = value;
+        }
+      }
+    }
 
     debugEvent('ssr_manifest', { boundaryCount: clientBoundariesAsOpaqueIds.length });
 
