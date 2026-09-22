@@ -79,6 +79,8 @@ public final class E2ETestModule: Module, UpdatesStateChangeListener {
           let config = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
           try database.openDatabase(inDirectory: directory, logger: UpdatesLogger())
           defer { database.closeDatabase() }
+          // The controller may still be reaping updates on its own connection.
+          _ = try database.execute(sql: "PRAGMA busy_timeout = 1000", withArgs: nil)
           let updates = try database.allUpdates(withConfig: config)
           promise.resolve(updates.map { $0.updateId.uuidString.lowercased() }.sorted())
         } catch {

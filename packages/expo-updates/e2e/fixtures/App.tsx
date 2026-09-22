@@ -96,6 +96,8 @@ function TestButton(props: { testID: string; onPress: () => void }) {
 
 export default function App() {
   const [cachedUpdateIds, setCachedUpdateIds] = React.useState<string[] | null>(null);
+  const [cachedUpdateReadError, setCachedUpdateReadError] = React.useState<string | null>(null);
+  const [isReadingCachedUpdates, setIsReadingCachedUpdates] = React.useState(false);
   const [numAssetFiles, setNumAssetFiles] = React.useState(0);
   const [logs, setLogs] = React.useState<UpdatesLogEntry[]>([]);
   const [numActive, setNumActive] = React.useState(0);
@@ -189,7 +191,17 @@ export default function App() {
   });
 
   const handleReadCachedUpdateIds = runBlockAsync(async () => {
-    setCachedUpdateIds(await ExpoUpdatesE2ETestModule.readCachedUpdateIdsAsync());
+    // Mount the result row even if the first read fails, so polling can retry.
+    setCachedUpdateIds([]);
+    setCachedUpdateReadError(null);
+    setIsReadingCachedUpdates(true);
+    try {
+      setCachedUpdateIds(await ExpoUpdatesE2ETestModule.readCachedUpdateIdsAsync());
+    } catch (error) {
+      setCachedUpdateReadError(String(error));
+    } finally {
+      setIsReadingCachedUpdates(false);
+    }
   });
 
   const handleReadAssetFiles = runBlockAsync(async () => {
@@ -285,6 +297,8 @@ export default function App() {
           {JSON.stringify({
             maxUpdatesToKeep: Constants.expoConfig?.updates?.maxUpdatesToKeep ?? 2,
             updateIds: cachedUpdateIds,
+            pending: isReadingCachedUpdates,
+            error: cachedUpdateReadError,
           })}
         </Text>
       ) : (
