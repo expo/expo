@@ -34,6 +34,7 @@
   },
   "scripts": {
     "precompile-ios": "et prebuild-package-for-publish",
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",

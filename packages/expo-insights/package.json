@@ -22,13 +22,15 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {
     "expo-eas-client": "workspace:~"

@@ -4,6 +4,11 @@
     "modules": ["ImageManipulatorModule"]
   },
   "android": {
-    "modules": ["expo.modules.imagemanipulator.ImageManipulatorModule"]
+    "modules": ["expo.modules.imagemanipulator.ImageManipulatorModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.imagemanipulator",
+      "repository": "local-maven-repo"
+    }
   }
 }
