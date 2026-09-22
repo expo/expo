@@ -173,6 +173,8 @@ export async function microBundle({
     while (queue.length) {
       const id = queue.shift()!;
       const absPath = path.join(projectRoot, id);
+      // Resolve every edge, even if its target was already visited.
+      onResolve?.(absPath);
       if (visited.has(absPath)) {
         const mod = modules.get(absPath);
         if (mod && parent?.path) mod.inverseDependencies.add(parent.path);
@@ -183,7 +185,6 @@ export async function microBundle({
       if (code == null) {
         throw new Error(`File not found: ${id}`);
       }
-      onResolve?.(absPath);
       const module = await parseModule(id, code, transformOptions);
       modules.set(absPath, module);
 
