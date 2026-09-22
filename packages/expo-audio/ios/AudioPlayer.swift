@@ -25,6 +25,14 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+  /// Forward-buffer preference. `AVPlayerItem.preferredForwardBufferDuration` is per item and
+  /// resets to the default when the item is replaced (source swap, reconnect, media-services
+  /// reset), so the value is stored and re-applied to every new item.
+  var preferredForwardBufferDuration: TimeInterval = 0 {
+    didSet {
+      applyPreferredForwardBufferDuration()
+    }
+  }
   var onRelease: (() -> Void)?
 
   var isLooping = false {
@@ -204,6 +212,13 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
+  private func applyPreferredForwardBufferDuration() {
+    guard preferredForwardBufferDuration > 0 else {
+      return
+    }
+    ref.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
+  }
+
   private func setupPublisher() {
     ref.publisher(for: \.currentItem?.status)
       .sink { [weak self] status in
@@ -235,6 +250,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
         guard let self else {
           return
         }
+        self.applyPreferredForwardBufferDuration()
         if self.isLooping {
           self.enqueueNextLoopItem()
           self.addPlaybackEndNotification()
