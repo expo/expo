@@ -48,13 +48,13 @@ test.describe(baseDir, () => {
     });
 
     test('bundle contains live bindings', async () => {
-      const commonChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const indexChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      }).filter((file) => /^__common-.*\.js$/.test(path.basename(file.path)));
-      expect(commonChunkJsFiles).toHaveLength(1);
+      }).filter((file) => /^index-.*\.js$/.test(path.basename(file.path)));
+      expect(indexChunkJsFiles).toHaveLength(1);
 
-      // The fixture's shared hooks are emitted in the common chunk.
-      const bundleContent = fs.readFileSync(commonChunkJsFiles[0].path, 'utf8');
+      // The fixture's hooks are emitted in the index route chunk.
+      const bundleContent = fs.readFileSync(indexChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
       expect(bundleContent).toMatch(
@@ -92,7 +92,8 @@ test.describe(baseDir, () => {
         {
           env: {
             NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
+            // Exercise the broken bindings in the browser instead of failing during prerendering.
+            EXPO_USE_STATIC: 'single',
             E2E_ROUTER_SRC: 'compiler',
             E2E_ROUTER_COMPILER: 'true',
             EXPO_UNSTABLE_LIVE_BINDINGS: 'false',
@@ -112,13 +113,13 @@ test.describe(baseDir, () => {
     });
 
     test('bundle does not have live bindings', async () => {
-      const commonChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const indexChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      }).filter((file) => /^__common-.*\.js$/.test(path.basename(file.path)));
-      expect(commonChunkJsFiles).toHaveLength(1);
+      }).filter((file) => /^index-.*\.js$/.test(path.basename(file.path)));
+      expect(indexChunkJsFiles).toHaveLength(1);
 
-      // The fixture's shared hooks are emitted in the common chunk.
-      const bundleContent = fs.readFileSync(commonChunkJsFiles[0].path, 'utf8');
+      // The fixture's hooks are emitted in the index route chunk.
+      const bundleContent = fs.readFileSync(indexChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which causes the application to crash uses static bindings.
       expect(bundleContent).not.toMatch(
