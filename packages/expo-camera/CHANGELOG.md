@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Import `CoreImage` in `BarcodeUtils`, which relied on another file in the module importing it. ([#50479](https://github.com/expo/expo/pull/50479) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Pin `ZXingObjC` by revision rather than by version, so that Swift Package Manager can resolve it. SwiftPM refuses a version-pinned remote dependency that declares `unsafeFlags`, which `zxingify-objc` does.
 
 ### 💡 Others
 
