@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `<Host matchContents>` centering its content, and so shifting it by half the height change for a frame, whenever the hosted view was not yet the size of its SwiftUI content.
+- [iOS] Fixed `<Host matchContents>` centering its content, and so shifting it by half the height change for a frame, whenever the hosted view was not yet the size of its SwiftUI content. ([#50496](https://github.com/expo/expo/pull/50496) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
