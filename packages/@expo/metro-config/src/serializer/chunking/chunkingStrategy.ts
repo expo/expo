@@ -38,7 +38,9 @@ export type ChunkingImplementation = {
     chunksByPath: Map<string, Chunk>,
     filenamesByChunk: Map<Chunk, string>
   ): ChunkSerializationOptions;
-  getMetadata(chunk: Chunk): Pick<SerialAsset['metadata'], 'modulePaths'>;
+  getMetadata(
+    chunk: Chunk
+  ): Pick<SerialAsset['metadata'], 'chunkingStrategy' | 'entryPaths' | 'modulePaths'>;
 };
 
 type ChunkSettings = {
