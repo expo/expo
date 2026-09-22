@@ -293,15 +293,15 @@ module.exports = function expoSpmPlugin(context) {
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
         // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
-        const e = emitSourceManifestPackage(
+        const e = emitSourceManifestPackage({
           moduleRoot,
           react,
           frameworkSearchPath,
           outDir,
           codegenPkgPath,
-          coreDeploymentTarget,
-          macroFlags()
-        );
+          minimumIosDeploymentTarget: coreDeploymentTarget,
+          macroFlags: macroFlags(),
+        });
         if (e.unsupportedTargetDeps != null) {
           unsupportedTargetDeps.set(moduleRoot, e.unsupportedTargetDeps);
         } else if (e.unsupportedPackageDeps != null) {
@@ -345,17 +345,20 @@ module.exports = function expoSpmPlugin(context) {
         const e =
           podspecs.linkage != null
             ? null
-            : emitPureSwiftSourcePackage(
+            : emitPureSwiftSourcePackage({
                 moduleRoot,
-                pod.podName,
+                product: pod.podName,
                 react,
                 frameworkSearchPath,
                 outDir,
                 codegenPkgPath,
-                raiseFloor(metadata[pod.podName]?.iosDeploymentTarget, coreDeploymentTarget),
-                macroFlags(),
-                spmPackages
-              );
+                iosDeploymentTarget: raiseFloor(
+                  metadata[pod.podName]?.iosDeploymentTarget,
+                  coreDeploymentTarget
+                ),
+                macroFlags: macroFlags(),
+                spmPackages,
+              });
         if (e != null) {
           declaredSpmProducts = spmPackages.map((pkg) => pkg.productName);
           packageDependencies.push(e.packageDep);
