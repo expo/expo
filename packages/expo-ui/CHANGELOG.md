@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Cache Material 3 palettes generated from an explicit `scheme` and `seedColor`, so `getMaterialColors` and `useMaterialColors` stop calling the synchronous native module on every render.
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
