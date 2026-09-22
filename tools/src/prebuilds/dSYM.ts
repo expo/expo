@@ -159,52 +159,87 @@ export const verifyDsymUuidMatch = (
   };
 };
 
+/** Known system/SDK path prefixes that are expected and acceptable */
+const systemPrefixes = [
+  '/Applications/Xcode',
+  '/Library/Developer',
+  '/usr/',
+  '/System/',
+  '/AppleInternal/',
+  '/var/db/xcode_select_link/',
+];
+
 /**
- * Verifies that DWARF debug info uses the canonical /expo-src/ prefix instead of
- * absolute CI/build-machine paths. This ensures the -fdebug-prefix-map flag worked
- * correctly during compilation.
+ * A source path is resolvable only if the consumer's dSYM source map can rewrite it, and that
+ * map has exactly two entries: /expo-src/packages/<pkg> and /expo-src/node_modules/<pkg>.
  *
- * Checks DW_AT_comp_dir (compilation directory) entries in the dSYM's DWARF data.
- * Valid paths should be either:
- * - /expo-src/... (our canonical prefix)
- * - System/SDK paths (Xcode toolchain, SDKs, etc.)
+ * A relative name is not resolvable either: the debugger resolves it against DW_AT_comp_dir,
+ * which is always SwiftPM's staging directory. Only dwarfdump's synthetic bracketed names, such
+ * as `<swift-imported-modules>`, are tolerated — they are not source files.
  */
-export const verifyDsymDebugPrefixMapping = (
-  xcframeworkPath: string,
-  slice: XCFrameworkSlice
-): XCFrameworkVerificationResult => {
-  const dsymPath = findDsymForSlice(xcframeworkPath, slice.sliceId, slice.frameworkName);
-  if (!dsymPath) {
-    return {
-      success: false,
-      message: 'Cannot verify debug prefix mapping — dSYM not found',
-    };
+const isResolvableSourcePath = (sourcePath: string): boolean => {
+  if (sourcePath.startsWith('<') && sourcePath.endsWith('>')) {
+    return true;
   }
-
-  // Extract compilation directories from DWARF debug info.
-  // Use --recurse-depth=0 to only dump compile unit headers (where DW_AT_comp_dir lives)
-  // instead of the entire DWARF tree, which can be hundreds of MB for large frameworks.
-  const result = spawnSync('dwarfdump', ['--debug-info', '--recurse-depth=0', dsymPath], {
-    encoding: 'utf-8',
-    maxBuffer: 50 * 1024 * 1024,
-    timeout: 30000,
-  });
-
-  if (result.status !== 0 && result.status !== null) {
-    return {
-      success: false,
-      message: `Failed to read DWARF debug info: ${result.stderr || 'unknown error'}`,
-    };
+  if (systemPrefixes.some((prefix) => sourcePath.startsWith(prefix))) {
+    return true;
   }
+  if (
+    !sourcePath.startsWith('/expo-src/packages/') &&
+    !sourcePath.startsWith('/expo-src/node_modules/')
+  ) {
+    return false;
+  }
+  // SwiftPM's build directory holds staged copies of the sources, never the sources themselves.
+  return !sourcePath.includes('/.build/');
+};
 
-  const stdout = result.stdout || '';
-
+/**
+ * Classifies the compile unit paths in `dwarfdump --debug-info --recurse-depth=0` output.
+ *
+ * Checks two attributes of every compile unit:
+ * - DW_AT_comp_dir, which must be /expo-src/... (our canonical prefix) or a system/SDK path.
+ * - DW_AT_name, the source file, which must additionally sit where the consumer's source map
+ *   can find it — see isResolvableSourcePath.
+ */
+export const analyzeDwarfPrefixMapping = (stdout: string): XCFrameworkVerificationResult => {
   // Find all DW_AT_comp_dir entries (compilation directories)
   const compDirPattern = /DW_AT_comp_dir\s*\("([^"]+)"\)/g;
   const compDirs = new Set<string>();
-  let match;
+  let match: RegExpExecArray | null;
   while ((match = compDirPattern.exec(stdout)) !== null) {
     compDirs.add(match[1]);
+  }
+
+  // Find all DW_AT_name entries — at recurse depth 0 these are the compile units' source files.
+  // Checked before the comp_dir early return below: a dump without comp_dir entries must not
+  // report success while carrying unresolvable source paths.
+  const sourcePathPattern = /DW_AT_name\s*\("([^"]+)"\)/g;
+  const sourcePaths = new Set<string>();
+  while ((match = sourcePathPattern.exec(stdout)) !== null) {
+    sourcePaths.add(match[1]);
+  }
+
+  const unresolvablePaths = [...sourcePaths].filter((p) => !isResolvableSourcePath(p));
+  if (unresolvablePaths.length > 0) {
+    return {
+      success: false,
+      message: `Found ${unresolvablePaths.length} unresolvable source path(s) in DWARF debug info`,
+      details:
+        `Debuggers resolve source only under /expo-src/packages/ and /expo-src/node_modules/, so these paths break source stepping and symbolication with no error at build time:\n` +
+        unresolvablePaths.slice(0, 10).join('\n') +
+        (unresolvablePaths.length > 10 ? `\n... and ${unresolvablePaths.length - 10} more` : '') +
+        `\nEmit the per-target -debug-prefix-map flags first in the Swift flag list: swiftc honours the first matching map, clang the last.`,
+    };
+  }
+
+  if (compDirs.size > 0 && sourcePaths.size === 0) {
+    return {
+      success: false,
+      message: 'Found compile units with no source file name in DWARF debug info',
+      details:
+        'Every compile unit carries a DW_AT_name, so none being parsed means this check read the dump wrongly and would pass any mapping, broken or not. dwarfdump may be printing indexed string forms; re-check the DW_AT_name pattern against its current output.',
+    };
   }
 
   if (compDirs.size === 0) {
@@ -219,16 +254,6 @@ export const verifyDsymDebugPrefixMapping = (
   const canonicalPaths: string[] = [];
   const systemPaths: string[] = [];
   const absolutePaths: string[] = []; // Bad — these should have been remapped
-
-  // Known system/SDK path prefixes that are expected and acceptable
-  const systemPrefixes = [
-    '/Applications/Xcode',
-    '/Library/Developer',
-    '/usr/',
-    '/System/',
-    '/AppleInternal/',
-    '/var/db/xcode_select_link/',
-  ];
 
   for (const dir of compDirs) {
     if (dir.startsWith('/expo-src/')) {
@@ -247,7 +272,7 @@ export const verifyDsymDebugPrefixMapping = (
       success: false,
       message: `Found ${absolutePaths.length} unmapped absolute path(s) in DWARF debug info`,
       details:
-        `These paths should have been remapped by -fdebug-prefix-map:\n` +
+        `These paths should have been remapped by the debug prefix map flags:\n` +
         absolutePaths.slice(0, 10).join('\n') +
         (absolutePaths.length > 10 ? `\n... and ${absolutePaths.length - 10} more` : ''),
     };
@@ -255,6 +280,51 @@ export const verifyDsymDebugPrefixMapping = (
 
   return {
     success: true,
-    message: `Debug prefix mapping ok (${canonicalPaths.length} /expo-src/ path(s), ${systemPaths.length} system path(s))`,
+    message: `Debug prefix mapping ok (${canonicalPaths.length} /expo-src/ path(s), ${systemPaths.length} system path(s), ${sourcePaths.size} source path(s))`,
   };
+};
+
+/**
+ * Verifies that DWARF debug info uses the canonical /expo-src/ prefix instead of
+ * absolute CI/build-machine paths. This ensures the -debug-prefix-map flags worked
+ * correctly during compilation.
+ */
+export const verifyDsymDebugPrefixMapping = (
+  xcframeworkPath: string,
+  slice: XCFrameworkSlice
+): XCFrameworkVerificationResult => {
+  const dsymPath = findDsymForSlice(xcframeworkPath, slice.sliceId, slice.frameworkName);
+  if (!dsymPath) {
+    return {
+      success: false,
+      message: 'Cannot verify debug prefix mapping — dSYM not found',
+    };
+  }
+
+  // Use --recurse-depth=0 to only dump compile unit headers (where DW_AT_comp_dir and the
+  // compile unit's DW_AT_name live) instead of the entire DWARF tree, which can be hundreds
+  // of MB for large frameworks.
+  const result = spawnSync('dwarfdump', ['--debug-info', '--recurse-depth=0', dsymPath], {
+    encoding: 'utf-8',
+    maxBuffer: 50 * 1024 * 1024,
+    timeout: 30000,
+  });
+
+  // A killed child — the timeout or a maxBuffer overflow — reports status null with stdout
+  // empty or truncated, which would let a partial dump pass the checks below.
+  if (result.error) {
+    return {
+      success: false,
+      message: `Failed to read DWARF debug info: dwarfdump did not finish (${result.error.message})`,
+    };
+  }
+
+  if (result.status !== 0 && result.status !== null) {
+    return {
+      success: false,
+      message: `Failed to read DWARF debug info: ${result.stderr || 'unknown error'}`,
+    };
+  }
+
+  return analyzeDwarfPrefixMapping(result.stdout || '');
 };
