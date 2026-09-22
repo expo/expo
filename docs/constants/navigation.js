@@ -430,7 +430,6 @@ export const general = [
         makePage('guides/controlled-components.mdx'),
       ]),
       makeSection('Expo UI', [
-        makePage('guides/expo-ui-swift-ui/index.mdx'),
         makePage('guides/expo-ui-swift-ui/extending.mdx'),
         makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
       ]),
