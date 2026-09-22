@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Added 2026 iPhone models. ([#49924](https://github.com/expo/expo/pull/49924) by [@fobos531](https://github.com/fobos531))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.2 — 2026-09-22
+
+### 🎉 New features
+
+- [iOS] Added 2026 iPhone models. ([#49924](https://github.com/expo/expo/pull/49924) by [@fobos531](https://github.com/fobos531))
 
 ## 58.0.1 — 2026-09-21
 

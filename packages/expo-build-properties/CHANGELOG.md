@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `android.buildExpoModulesCoreFromSource` to compile the `expo-modules-core` native libraries from source instead of using the prebuilt ones. ([#50452](https://github.com/expo/expo/pull/50452) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.5 — 2026-09-22
+
+### 🎉 New features
+
+- Add `android.buildExpoModulesCoreFromSource` to compile the `expo-modules-core` native libraries from source instead of using the prebuilt ones. ([#50452](https://github.com/expo/expo/pull/50452) by [@lukmccall](https://github.com/lukmccall))
 
 ## 58.0.4 — 2026-09-21
 
