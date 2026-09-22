@@ -71,9 +71,11 @@ pnpm maestro:android:debug:build
 The enabled test app sets `updates.maxUpdatesToKeep` to `3`. The
 `basic_updateRetention.yml` flow launches four successive updates and checks the
 cached update IDs after each launch. It verifies that the three newest downloaded
-updates survive and the oldest downloaded update is removed. The embedded update
-is excluded from the comparison because its database row may be reaped while its
-bundle remains in the binary. Database reads are exposed only by the E2E fixture modules.
+updates survive and the oldest downloaded update is removed. The current embedded ID
+is excluded from the comparison so only downloaded updates count toward the
+expected retained IDs. Database reads are exposed only by the E2E fixture modules.
+The reader waits up to one second for SQLite locks on iOS. Failed reads are displayed in the result row,
+and the bounded poll retries failed or missing results.
 
 After building the app and generating the test bundles above, run this flow alone
 with:
