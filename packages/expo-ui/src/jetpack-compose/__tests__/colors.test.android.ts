@@ -55,4 +55,22 @@ describe('getMaterialColors', () => {
 
     expect(mockGetMaterialColors).toHaveBeenCalledTimes(2);
   });
+
+  it('bounds the cache, dropping the oldest seed color', () => {
+    const { getMaterialColors } = loadColors();
+
+    for (let i = 0; i < 32; i++) {
+      getMaterialColors({ scheme: 'light', seedColor: `#seed${i}` });
+    }
+    expect(mockGetMaterialColors).toHaveBeenCalledTimes(32);
+
+    // The 32 cached seed colors are all still served from the cache.
+    getMaterialColors({ scheme: 'light', seedColor: '#seed0' });
+    expect(mockGetMaterialColors).toHaveBeenCalledTimes(32);
+
+    // A 33rd seed color drops the oldest entry, so that one reaches native again.
+    getMaterialColors({ scheme: 'light', seedColor: '#seed32' });
+    getMaterialColors({ scheme: 'light', seedColor: '#seed0' });
+    expect(mockGetMaterialColors).toHaveBeenCalledTimes(34);
+  });
 });

@@ -183,13 +183,10 @@ export const isDynamicColorAvailable: boolean = ExpoUIModule.isDynamicColorAvail
  */
 export const HostPaletteContext = createContext<MaterialColors | null>(null);
 
-/**
- * Palettes generated from an explicit `scheme` and `seedColor`, keyed by that pair.
- * A seeded palette is a pure function of the pair, so it is computed once and reused.
- * Palettes without a seed color are never cached: they follow the device wallpaper
- * (Material You) and the system appearance, which both change while the app runs.
- */
+// Cache the `scheme` + `seedColor` keyed palette to prevent sync calls to `getMaterialColors`.
+// https://github.com/expo/expo/issues/50477
 const seededPalettes = new Map<string, MaterialColors>();
+const MAX_SEEDED_PALETTES = 32;
 
 /**
  * Get the Material 3 color palette.
@@ -207,6 +204,9 @@ export function getMaterialColors(options?: MaterialColorsOptions): MaterialColo
   let palette = seededPalettes.get(key);
   if (!palette) {
     palette = ExpoUIModule.getMaterialColors(options) as MaterialColors;
+    if (seededPalettes.size >= MAX_SEEDED_PALETTES) {
+      seededPalettes.delete(seededPalettes.keys().next().value!);
+    }
     seededPalettes.set(key, palette);
   }
   return palette;
