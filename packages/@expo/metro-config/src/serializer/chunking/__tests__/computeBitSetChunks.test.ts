@@ -4,6 +4,7 @@ import {
   allBits,
   analyzeBitSetGraph,
   bitIndices,
+  computeBitSetChunkPlan,
   hasBit,
   removeBit,
 } from '../computeBitSetChunks';
@@ -48,8 +49,15 @@ describe('BigInt bitsets', () => {
     [0, 0n],
     [1, 1n],
     [5, 0b11111n],
+    [31, 0x7fffffffn],
+    [32, 0xffffffffn],
+    [33, 0x1ffffffffn],
+    [63, 0x7fffffffffffffffn],
     [64, 0xffffffffffffffffn],
     [65, 0x1ffffffffffffffffn],
+    [127, 0x7fffffffffffffffffffffffffffffffn],
+    [128, 0xffffffffffffffffffffffffffffffffn],
+    [129, 0x1ffffffffffffffffffffffffffffffffn],
   ] as const)('creates a bounded mask for %s bits', (count, expected) => {
     expect(allBits(count)).toBe(expected);
   });
@@ -68,6 +76,275 @@ describe('BigInt bitsets', () => {
 
   it('rejects negative bitsets instead of looping forever', () => {
     expect(() => [...bitIndices(-1n)]).toThrow(/non-negative/);
+    expect(() => addBit(-1n, 0)).toThrow(/non-negative/);
+    expect(() => removeBit(-1n, 0)).toThrow(/non-negative/);
+    expect(() => hasBit(-1n, 0)).toThrow(/non-negative/);
+  });
+});
+
+describe('atoms and already-loaded ownership', () => {
+  function owners(plan: ReturnType<typeof computeBitSetChunkPlan>, path: string) {
+    const module = [...plan.chunkByModule.keys()].find(
+      (module) => module.path === `/app/${path}.js`
+    )!;
+    return [...bitIndices(plan.chunkByModule.get(module)!.dependentEntries)].map(
+      (index) => plan.entryPoints[index]!.module.path
+    );
+  }
+
+  it.each([false, true])(
+    'intersects independent initial entries (reverse roots: %s)',
+    async (reverse) => {
+      // Reduced Rollup improved-dynamic-chunks/multi-entry-different-and-shared-dependencies.
+      const { graph } = await loadGraph({
+        'index.js': `import './left'; import './right';`,
+        'left.js': `import './shared'; import('./dynamic');`,
+        'right.js': `import('./dynamic');`,
+        'dynamic.js': `import './shared';`,
+        'shared.js': '',
+      });
+      const roots = [
+        graph.dependencies.get('/app/left.js')!,
+        graph.dependencies.get('/app/right.js')!,
+      ];
+      const plan = computeBitSetChunkPlan(reverse ? roots.reverse() : roots, graph, {
+        isLazyBundle: false,
+      });
+      expect(plan.entryPoints.map((e) => [e.module.path, e.kind])).toEqual([
+        ['/app/dynamic.js', 'dynamic'],
+        ['/app/left.js', 'initial'],
+        ['/app/right.js', 'initial'],
+      ]);
+      expect(plan.importerEntriesByDynamicEntry).toEqual([0b110n, 0n, 0n]);
+      expect(owners(plan, 'shared')).toEqual(['/app/dynamic.js', '/app/left.js']);
+      expect(plan.chunkByModule.has(graph.dependencies.get('/app/index.js')!)).toBe(false);
+    }
+  );
+
+  it('retains a weak target reached statically without assigning a dynamic entry', async () => {
+    const { entry, graph } = await loadGraph({
+      'index.js': `require.resolveWeak('./shared'); import('./a');`,
+      'a.js': `import './shared';`,
+      'shared.js': '',
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(plan.entryPoints.map((e) => e.module.path)).toEqual(['/app/a.js', '/app/index.js']);
+    expect(owners(plan, 'shared')).toEqual(['/app/a.js']);
+  });
+
+  it('transposes raw atoms, removes a nested owner, and regroups converged atoms', async () => {
+    // Rollup improved-dynamic-chunks/dynamic-import-dynamic; Rolldown dynamic_dominator_chain.
+    const { entry, graph } = await loadGraph({
+      'index.js': `import('./a');`,
+      'a.js': `import './shared'; import('./b');`,
+      'b.js': `import './shared';`,
+      'shared.js': `import './shared-leaf';`,
+      'shared-leaf.js': '',
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(
+      plan.rawAtoms.map((atom) => [atom.dependentEntries, [...atom.modules].map((m) => m.path)])
+    ).toEqual([
+      [0b001n, ['/app/a.js']],
+      [0b010n, ['/app/b.js']],
+      [0b011n, ['/app/shared-leaf.js', '/app/shared.js']],
+      [0b100n, ['/app/index.js']],
+      [0b101n, ['/app/expo-mock/async-require']],
+    ]);
+    expect(plan.staticAtoms).toEqual([0b10101n, 0b00110n, 0b11000n]);
+    expect(plan.alreadyLoadedAtoms).toEqual([0b11000n, 0b11101n, 0n]);
+    expect(
+      plan.chunks.map((chunk) => [chunk.dependentEntries, [...chunk.modules].map((m) => m.path)])
+    ).toEqual([
+      [0b001n, ['/app/a.js', '/app/shared-leaf.js', '/app/shared.js']],
+      [0b010n, ['/app/b.js']],
+      [0b100n, ['/app/expo-mock/async-require', '/app/index.js']],
+    ]);
+    // Canonical requirements use original reachability, not the reduced owner bits.
+    expect(
+      plan.requiredChunksByEntryPath.get('/app/b.js')!.map((chunk) => chunk.dependentEntries)
+    ).toEqual([1n, 2n]);
+  });
+
+  it.each([
+    [false, ['/app/a.js']],
+    [true, ['/app/a.js', '/app/b.js']],
+  ] as const)(
+    'intersects every loading context (independent b: %s)',
+    async (independent, expected) => {
+      const { entry, graph } = await loadGraph({
+        'index.js': `import('./a'); ${independent ? "import('./b');" : ''}`,
+        'a.js': `import './shared'; import('./b');`,
+        'b.js': `import './shared';`,
+        'shared.js': '',
+      });
+      expect(
+        owners(computeBitSetChunkPlan([entry], graph, { isLazyBundle: false }), 'shared')
+      ).toEqual(expected);
+    }
+  );
+
+  it('propagates availability through a non-owner and preserves the first owner', async () => {
+    const { entry, graph } = await loadGraph({
+      'index.js': `import('./a');`,
+      'a.js': `import './shared'; import('./b');`,
+      'b.js': `import('./c');`,
+      'c.js': `import './shared';`,
+      'shared.js': '',
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    const atomIndex = plan.rawAtoms.findIndex((atom) =>
+      [...atom.modules].some((m) => m.path === '/app/shared.js')
+    );
+    expect(plan.rawAtoms[atomIndex]!.dependentEntries).toBe(0b0101n);
+    expect(plan.alreadyLoadedAtoms.map((bits) => hasBit(bits, atomIndex))).toEqual([
+      false,
+      true,
+      true,
+      false,
+    ]);
+    expect(owners(plan, 'shared')).toEqual(['/app/a.js']);
+  });
+
+  it('keeps AB, BC, and ABC sharing separate', async () => {
+    const { entry, graph } = await loadGraph({
+      'index.js': `import('./a'); import('./b'); import('./c');`,
+      'a.js': `import './ab'; import './abc';`,
+      'b.js': `import './ab'; import './bc'; import './abc';`,
+      'c.js': `import './bc'; import './abc';`,
+      'ab.js': '',
+      'bc.js': '',
+      'abc.js': '',
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(owners(plan, 'ab')).toEqual(['/app/a.js', '/app/b.js']);
+    expect(owners(plan, 'bc')).toEqual(['/app/b.js', '/app/c.js']);
+    expect(owners(plan, 'abc')).toEqual(['/app/a.js', '/app/b.js', '/app/c.js']);
+    expect(plan.chunks).toHaveLength(7);
+  });
+
+  it('does not assume a prefetched sibling is already loaded', async () => {
+    const { entry, graph } = await loadGraph({
+      'index.js': `__prefetchImport('./a'); import('./b');`,
+      'a.js': `import './shared'; import('./c');`,
+      'b.js': `import('./c');`,
+      'c.js': `import './shared';`,
+      'shared.js': '',
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(plan.importerEntriesByDynamicEntry).toEqual([8n, 8n, 3n, 0n]);
+    expect(owners(plan, 'shared')).toEqual(['/app/a.js', '/app/c.js']);
+  });
+
+  it.each([false, true])(
+    'converges with a dynamic cycle (reverse graph order: %s)',
+    async (reverse) => {
+      // Rollup improved-dynamic-chunks/circular-dynamic-imports.
+      const { entry, graph } = await loadGraph({
+        'index.js': `import('./c');`,
+        'c.js': `import './shared'; import('./b');`,
+        'b.js': `import('./a');`,
+        'a.js': `import './shared'; import('./c');`,
+        'shared.js': '',
+      });
+      const dependencies = new Map(
+        reverse ? [...graph.dependencies].reverse() : graph.dependencies
+      );
+      const plan = computeBitSetChunkPlan(
+        [entry],
+        { ...graph, dependencies },
+        { isLazyBundle: false }
+      );
+      expect(owners(plan, 'shared')).toEqual(['/app/c.js']);
+      expect(plan.chunks.map((chunk) => chunk.dependentEntries)).toEqual([1n, 2n, 4n, 8n]);
+    }
+  );
+
+  it('excludes a disconnected dynamic cycle even though both nodes have importers', async () => {
+    const { entry, graph } = await loadGraph({
+      'index.js': `require.resolveWeak('./a');`,
+      'a.js': `import('./b');`,
+      'b.js': `import('./a');`,
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(plan.entryPoints.map((e) => e.module.path)).toEqual(['/app/index.js']);
+    expect([...plan.chunkByModule.keys()].map((m) => m.path)).toEqual(['/app/index.js']);
+  });
+
+  it('keeps initial-owned dynamic aliases in the initial physical chunk', async () => {
+    // Rollup improved-dynamic-chunks/dynamic-import-already-contained-1.
+    const { entry, graph } = await loadGraph({
+      'index.js': `import './a'; import('./a');`,
+      'a.js': '',
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(owners(plan, 'a')).toEqual(['/app/index.js']);
+    expect(plan.chunks).toHaveLength(1);
+    expect(plan.requiredChunksByEntryPath.get('/app/a.js')).toEqual([plan.chunks[0]]);
+  });
+
+  it('allows an entry module to be owned by another route while retaining semantic requirements', async () => {
+    const { entry, graph } = await loadGraph({
+      'index.js': `import('./a');`,
+      'a.js': `import './b'; import('./b');`,
+      'b.js': '',
+    });
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(owners(plan, 'b')).toEqual(['/app/a.js']);
+    expect(plan.requiredChunksByEntryPath.get('/app/b.js')!.map((c) => c.dependentEntries)).toEqual(
+      [1n]
+    );
+  });
+
+  it('does not mutate the graph or depend on entry/root/dependency insertion order', async () => {
+    const { entry, graph } = await loadGraph({
+      'index.js': `import('./a'); import('./b');`,
+      'a.js': `import './shared';`,
+      'b.js': `import './shared';`,
+      'shared.js': '',
+    });
+    const originalDependencies = [...graph.dependencies].map(([path, m]) => [
+      path,
+      [...m.dependencies],
+      m.output,
+    ]);
+    const originalPlan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(
+      [...graph.dependencies].map(([path, m]) => [path, [...m.dependencies], m.output])
+    ).toEqual(originalDependencies);
+    const reversedDependencies = new Map(
+      [...graph.dependencies]
+        .reverse()
+        .map(([path, m]) => [path, { ...m, dependencies: new Map([...m.dependencies].reverse()) }])
+    );
+    const reorderedPlan = computeBitSetChunkPlan(
+      [entry],
+      { ...graph, dependencies: reversedDependencies },
+      { isLazyBundle: false }
+    );
+    const getPlanSignature = (plan: typeof originalPlan) =>
+      plan.chunks.map((c) => [c.dependentEntries, [...c.modules].map((m) => m.path)]);
+    expect(getPlanSignature(reorderedPlan)).toEqual(getPlanSignature(originalPlan));
+    expect(owners(reorderedPlan, 'shared')).toEqual(['/app/a.js', '/app/b.js']);
+  });
+
+  it('uses an independent atom domain wider than 128 bits', async () => {
+    const fs: Record<string, string> = { 'index.js': '' };
+    for (let route = 0; route < 8; route++) {
+      fs['index.js'] += `import('./route${route}');`;
+      fs[`route${route}.js`] = '';
+      for (let mask = 1; mask <= 129; mask++) {
+        if (mask & (1 << route)) fs[`route${route}.js`] += `import './dep${mask}';`;
+        fs[`dep${mask}.js`] = '';
+      }
+    }
+    const { entry, graph } = await loadGraph(fs);
+    const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
+    expect(plan.entryPoints).toHaveLength(9);
+    expect(plan.rawAtoms).toHaveLength(130);
+    expect(plan.chunks).toHaveLength(130);
+    expect(owners(plan, 'dep129')).toEqual(['/app/route0.js', '/app/route7.js']);
+    expect(plan.staticAtoms[8]! >> 128n).toBe(0b11n);
   });
 });
 
@@ -222,7 +499,7 @@ describe('raw entrypoint reachability', () => {
     expect(() => analyzeBitSetGraph([], graph, { isLazyBundle: false })).toThrow(/initial entry/);
   });
 
-  it('keeps entry bits beyond 64 distinct', async () => {
+  it('keeps entry bits beyond 64 distinct through normalization', async () => {
     const fs: Record<string, string> = { 'index.js': '', 'shared.js': '' };
     for (let index = 0; index < 65; index++) {
       const name = `route${String(index).padStart(2, '0')}`;
@@ -230,13 +507,17 @@ describe('raw entrypoint reachability', () => {
       fs[`${name}.js`] = `import './shared';`;
     }
     const { entry, graph } = await loadGraph(fs);
-    const analysis = analyzeBitSetGraph([entry], graph, { isLazyBundle: false });
+    const analysis = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
     expect(analysis.entryPoints).toHaveLength(66);
+    expect(analysis.chunks).toHaveLength(67);
     expect(analysis.dependentEntriesByModule.get(graph.dependencies.get('/app/route64.js')!)).toBe(
       0x20000000000000000n
     );
     expect(analysis.dependentEntriesByModule.get(graph.dependencies.get('/app/shared.js')!)).toBe(
       0x3fffffffffffffffen
     );
+    expect(
+      analysis.chunkByModule.get(graph.dependencies.get('/app/shared.js')!)!.dependentEntries
+    ).toBe(0x3fffffffffffffffen);
   });
 });
