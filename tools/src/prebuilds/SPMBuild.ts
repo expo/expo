@@ -322,12 +322,9 @@ export const buildXcodeBuildArgs = (
         throw new Error(
           `Cannot remap debug info for ${product.name}/${target.name}: its source root ` +
             `${checkedInSourceRoot} is outside the manifest root ${checkedInRoot}, so it has no ` +
-            `canonical /expo-src/packages/${pkg.packageName}/… path to be recorded under. The ` +
-            `two always share a prefix in a correct build: the manifest reader resolves every ` +
-            `source root against this same root and rejects a target path that escapes it. So ` +
-            `this is a broken invariant in the prebuild pipeline, not something the package can ` +
-            `fix — find how the root that reached this build and the root the targets were ` +
-            `resolved against came to be different directories.`
+            `canonical /expo-src/packages/${pkg.packageName}/… path to record. A correct build ` +
+            `cannot reach this, because the manifest reader resolves every source root against ` +
+            `that same root. Find how the two roots came to differ; the package itself is fine.`
         );
       }
     } else {

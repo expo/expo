@@ -411,10 +411,8 @@ describe('buildXcodeBuildArgs', () => {
   });
 
   it('rejects a source root outside the manifest root', () => {
-    // Unreachable in a correct build: the manifest reader resolves every source root against
-    // this same root and rejects a target path that escapes it. Reaching it means that
-    // invariant broke, and a map built from such a root would rewrite debug info to a path
-    // that does not exist — a silent skip would leave nothing pinning the invariant.
+    // The thrown message explains why this cannot happen; the test exists so a refactor that
+    // makes it happen fails here rather than silently shipping unmappable debug info.
     assert.throws(
       () =>
         buildXcodeBuildArgs(
