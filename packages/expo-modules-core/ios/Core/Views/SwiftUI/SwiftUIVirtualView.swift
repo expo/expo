@@ -51,6 +51,12 @@ extension ExpoSwiftUI {
       props.shadowNodeProxy.setStyleSize = { [weak self] width, height in
         self?.setStyleSize(width, height: height)
       }
+      props.shadowNodeProxy.setContentOrigin = { [weak self] origin in
+        self?.setContentOrigin(origin)
+      }
+      props.shadowNodeProxy.clearContentOrigin = { [weak self] in
+        self?.clearContentOrigin()
+      }
 
       installEventDispatchers()
     }
@@ -212,6 +218,12 @@ extension ExpoSwiftUI {
       }
       props.shadowNodeProxy.setStyleSize = { [weak self] width, height in
         self?.setStyleSize(width, height: height)
+      }
+      props.shadowNodeProxy.setContentOrigin = { [weak self] origin in
+        self?.setContentOrigin(origin)
+      }
+      props.shadowNodeProxy.clearContentOrigin = { [weak self] in
+        self?.clearContentOrigin()
       }
 
       installEventDispatchers()

@@ -29,6 +29,10 @@ abstract class ExpoModulesGradlePlugin : Plugin<Project> {
       extensions.getByType(AndroidComponentsExtension::class.java).finalizeDsl {
         configurePika(shouldBeEnabled = expoModuleExtension.enableCompileTimeOptimization)
 
+        if (expoModuleExtension.v2) {
+          applyExpoModulesV2Plugin()
+        }
+
         applyPublishing(expoModuleExtension)
       }
     }

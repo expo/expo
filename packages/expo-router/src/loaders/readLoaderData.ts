@@ -1,6 +1,6 @@
 import type { LoaderContextValue } from './LoaderContext';
 
-type LoaderFetcher<T> = (path: string) => Promise<T>;
+type LoaderFetcher<T> = (path: string, requestInit: RequestInit) => Promise<T>;
 
 export function readLoaderData<T>(
   { client, store }: LoaderContextValue,

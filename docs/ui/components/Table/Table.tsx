@@ -20,29 +20,31 @@ export const Table = ({
 }: TableProps) => (
   <div
     className={mergeClasses(
-      'table-wrapper mb-4 overflow-x-auto overflow-y-hidden rounded-md border border-default shadow-xs',
+      'table-wrapper mb-4 overflow-clip rounded-3xl border border-default shadow-xs',
       containerClassName
     )}>
-    <table
-      className={mergeClasses(
-        'w-full rounded-none border-0 text-sm text-default',
-        '[&_p]:text-sm',
-        '[&_li]:text-sm',
-        '[&_span]:text-sm',
-        '[&_code_span]:text-xs',
-        '[&_strong]:text-sm',
-        '[&_blockquote_div]:text-sm',
-        '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',
-        className
-      )}>
-      {headers.length > 0 ? (
-        <>
-          <TableHeaders headers={headers} headersAlign={headersAlign} />
-          <tbody>{children}</tbody>
-        </>
-      ) : (
-        children
-      )}
-    </table>
+    <div className="[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin overflow-x-auto overflow-y-hidden">
+      <table
+        className={mergeClasses(
+          'w-full rounded-none border-0 text-sm text-default',
+          '[&_p]:text-sm',
+          '[&_li]:text-sm',
+          '[&_span]:text-sm',
+          '[&_code_span]:text-xs',
+          '[&_strong]:text-sm',
+          '[&_blockquote_div]:text-sm',
+          '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',
+          className
+        )}>
+        {headers.length > 0 ? (
+          <>
+            <TableHeaders headers={headers} headersAlign={headersAlign} />
+            <tbody>{children}</tbody>
+          </>
+        ) : (
+          children
+        )}
+      </table>
+    </div>
   </div>
 );

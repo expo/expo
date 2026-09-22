@@ -27,12 +27,13 @@ set -euo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
-XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
+BUILD_ROOT="${EXPO_CUSTOM_BUILD_ROOT:-${PACKAGE_DIR}}"
+XCFRAMEWORK_PATH="${BUILD_ROOT}/Products/${PACKAGE_NAME}.xcframework"
 
 CONFIGURATION="Release"
-DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
-SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
-SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
+DERIVED_DATA_PATH="${BUILD_ROOT}/.DerivedData"
+SPM_BUILD_PATH="${BUILD_ROOT}/.build"
+SPM_WORKSPACE_PATH="${BUILD_ROOT}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
@@ -196,6 +197,14 @@ build_slice() {
   # SYMROOT/OBJROOT to the paths this script reads from forces products and the
   # generated module maps back into DERIVED_DATA_PATH. On Xcode versions that
   # honor -derivedDataPath these point at the same locations, so it's a no-op.
+  #
+  # Xcode turns coverage mapping on for auto-generated SwiftPM schemes, and that leaks into a
+  # plain `build` of a Release configuration: swiftc gets `-profile-generate
+  # -profile-coverage-mapping` and clang gets `-fprofile-instr-generate`. The result is a counter
+  # increment in every function and branch region of the shipped framework (visible as
+  # `___profc_*` symbols and `__llvm_prf_*` sections) plus ~40% extra binary size. Setting
+  # CLANG_COVERAGE_MAPPING=NO is what removes the flags; CLANG_ENABLE_CODE_COVERAGE=NO alone
+  # does not, and `-enableCodeCoverage NO` is rejected outside of `test`.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     xcodebuild \
     build \
@@ -216,6 +225,8 @@ build_slice() {
     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
     COMPILER_INDEX_STORE_ENABLE=NO \
     SWIFT_COMPILATION_MODE=wholemodule \
+    CLANG_ENABLE_CODE_COVERAGE=NO \
+    CLANG_COVERAGE_MAPPING=NO \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"

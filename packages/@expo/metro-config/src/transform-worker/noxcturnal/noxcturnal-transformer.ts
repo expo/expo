@@ -12,6 +12,7 @@ import type {
   TransformResult,
 } from 'noxcturnal';
 
+import type { CacheVaryDim } from '../../cache-vary/ambient';
 import type { Dependency } from '../collect-dependencies';
 import { mayContainReactNativeCodegen } from './codegen';
 import { getHermesV0PreflightConfig } from './configs/hermes-v0';
@@ -19,6 +20,7 @@ import { getHermesV1PreflightConfig } from './configs/hermes-v1';
 import type { ProfilePreflightFacts } from './configs/types';
 import { getWebPreflightConfig } from './configs/web';
 import { getWebViewPreflightConfig } from './configs/webview';
+import { createCacheVaryMetadataPlugin } from './plugins/cache-vary';
 import { createCjsDetectionPlugin } from './plugins/cjs-detection';
 import { createClientServerDirectiveBoundaryPlugin } from './plugins/client-server-directive-boundary';
 import { createClientServerReferenceProxyPlugin } from './plugins/client-server-reference-proxy';
@@ -77,6 +79,7 @@ export interface ExpoTransformPluginData {
   input: NoxcturnalTransformInput;
   sourceFacts: NoxcturnalSourceFacts;
   serverBoundary: ServerBoundaryShared;
+  cacheVary: CacheVaryDim[];
 }
 
 export function sortedUniqueCaptureNames(captures: readonly NodeView[]): string[] {
@@ -116,6 +119,7 @@ function createExpoTransformPluginData(
   return {
     input,
     sourceFacts,
+    cacheVary: [],
     serverBoundary: {
       clientProxy: false,
       moduleServerActions: false,
@@ -398,7 +402,6 @@ export interface NoxcturnalMetroTransformInput extends NoxcturnalTransformInput 
     minifierConfig?: { output?: { comments?: boolean } };
     unstable_disableModuleWrapping?: boolean;
     unstable_allowRequireContext?: boolean;
-    unstable_renameRequire?: boolean;
   };
 }
 
@@ -678,8 +681,6 @@ function createProfilePreflight(
   const hasAsyncCandidate = sourceFacts.hasAsync;
   const hasRegexpLiteralCandidate = sourceFacts.hasSlash;
   const hasDecoratorCandidate = /@\w/.test(input.source);
-  const nonHermes = options.customTransformOptions?.engine !== 'hermes';
-  const hasObjectRestSpread = nonHermes && hasSpreadCandidate;
   const profileTransforms = getProfilePreflightConfig(input, {
     hasAsync: hasAsyncCandidate,
     hasAsyncGenerator,
@@ -688,15 +689,12 @@ function createProfilePreflight(
     hasForOf: hasForOfCandidate,
     hasPrivateSyntax: sourceFacts.hasPrivateSyntax,
     hasRegexpLiteral: hasRegexpLiteralCandidate,
+    hasSpread: hasSpreadCandidate,
     hasStaticBlock,
   });
   const hasProfileWork = Object.values(profileTransforms).some(Boolean);
   const hasOtherLanguageWork =
-    isTypeScript ||
-    enableReactRefresh ||
-    hasProfileWork ||
-    hasDecoratorCandidate ||
-    hasObjectRestSpread;
+    isTypeScript || enableReactRefresh || hasProfileWork || hasDecoratorCandidate;
   // Avoid a parse/codegen boundary for the overwhelmingly common file that has
   // none of this recipe's language work. Flow without JSX is already rendered by
   // its focused native erasure and does not need a second print.
@@ -706,7 +704,6 @@ function createProfilePreflight(
     !mayContainJsx &&
     !hasProfileWork &&
     !hasDecoratorCandidate &&
-    !hasObjectRestSpread &&
     !enableReactRefresh
   ) {
     return null;
@@ -715,12 +712,6 @@ function createProfilePreflight(
     transforms: {
       ...profileTransforms,
       legacyDecorators: hasDecoratorCandidate,
-      objectRestSpread: hasObjectRestSpread
-        ? {
-            loose: true,
-            useBuiltIns: true,
-          }
-        : undefined,
     },
     // Expo owns this recipe. These choices mirror its Hermes-v1 and React configs
     // without exposing either config name through Noxcturnal's capability API.
@@ -883,6 +874,9 @@ function createPipeline(
   }
   if (sourceFacts.hasProcess) {
     addPlugin('process-env', () => createProcessEnvPlugin(nox));
+  }
+  if (sourceFacts.hasDefineCandidate || sourceFacts.hasProcess) {
+    addPlugin('cache-vary-metadata', () => createCacheVaryMetadataPlugin(nox));
   }
   if (!options.dev && sourceFacts.hasPlatform && sourceFacts.hasSelect) {
     addPlugin(`platform-select:${options.platform ?? ''}`, () =>

@@ -28,6 +28,7 @@ type Props = MaterialTopTabNavigationConfig & {
   descriptors: MaterialTopTabDescriptorMap;
   emitter: MaterialTopTabEmitter;
   navigateToTab: (routeKey: string) => void;
+  navigateToTabSync: (routeKey: string) => void;
 };
 
 const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBar {...props} />;
@@ -38,6 +39,7 @@ export function MaterialTopTabView({
   descriptors,
   emitter,
   navigateToTab,
+  navigateToTabSync,
   ...rest
 }: Props) {
   const { colors } = useTheme();
@@ -66,7 +68,7 @@ export function MaterialTopTabView({
   return (
     <TabView<Route<string>>
       {...rest}
-      onIndexChange={(index: number) => navigateToTab(state.routes[index]!.key)}
+      onIndexChange={(index: number) => navigateToTabSync(state.routes[index]!.key)}
       renderScene={({ route, position }) => (
         <TabAnimationContext.Provider value={{ position }}>
           {descriptors[route.key]!.render()}

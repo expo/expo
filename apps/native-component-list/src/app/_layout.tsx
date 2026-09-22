@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AppIntentsNavigationHandler } from '../screens/AppIntents/AppIntentsNavigationHandler';
 import { getSearchScreenOptions } from '../screens/SearchScreen';
 import loadAssetsAsync from '../utilities/loadAssetsAsync';
 
@@ -23,6 +24,8 @@ function useSplashScreen(loadingFunction: () => Promise<void>) {
         console.warn(e);
       } finally {
         setLoadingComplete(true);
+        // The splash screen comes down here and nowhere else, so no feature can keep the app
+        // from starting.
         await SplashScreen.hide();
       }
     }
@@ -56,6 +59,7 @@ function RootLayout() {
         <Stack.Screen name="redirect" />
         <Stack.Screen name="search" options={getSearchScreenOptions(theme)} />
       </Stack>
+      <AppIntentsNavigationHandler />
     </GestureHandlerRootView>
   );
 }

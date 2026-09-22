@@ -9,6 +9,10 @@
             "type": "string",
             "description": "JSON Schema reference"
         },
+        "publishPrebuilds": {
+            "type": "boolean",
+            "description": "Whether this package publishes its precompiled XCFrameworks in its npm package"
+        },
         "products": {
             "type": "array",
             "description": "List of SPM products to generate with their targets",
@@ -273,17 +277,17 @@
                 },
                 "path": {
                     "type": "string",
-                    "description": "Path to the xcframework relative to package root"
+                    "description": "Path to the xcframework, relative to the package root or to the root of `package` when that is set"
+                },
+                "package": {
+                    "type": "string",
+                    "description": "npm package shipping the xcframework, when it is not the package being built (resolved from it with Node module resolution)"
                 },
                 "includeDirectories": {
                     "type": "array",
                     "items": { "type": "string" },
                     "description": "Header locations within the framework bundle",
                     "default": [ ]
-                },
-                "vfsOverlayPath": {
-                    "type": "string",
-                    "description": "Path to a VFS overlay file (.yaml) for virtual filesystem mapping"
                 },
                 "linkedFrameworks": {
                     "type": "array",
@@ -332,7 +336,7 @@
                 "exclude": {
                     "type": "array",
                     "items": { "type": "string" },
-                    "description": "Paths to exclude from compilation",
+                    "description": "Paths to exclude from compilation. Any `Tests` directory is always excluded, and generated swiftinterfaces are rejected if they import test-only modules.",
                     "default": [ ]
                 },
                 "includeDirectories": {
@@ -419,7 +423,7 @@
                 "exclude": {
                     "type": "array",
                     "items": { "type": "string" },
-                    "description": "Paths to exclude from compilation",
+                    "description": "Paths to exclude from compilation. Any `Tests` directory is always excluded, and generated swiftinterfaces are rejected if they import test-only modules.",
                     "default": [ ]
                 },
                 "includeDirectories": {
@@ -506,7 +510,7 @@
                 "exclude": {
                     "type": "array",
                     "items": { "type": "string" },
-                    "description": "Paths to exclude from compilation",
+                    "description": "Paths to exclude from compilation. Any `Tests` directory is always excluded, and generated swiftinterfaces are rejected if they import test-only modules.",
                     "default": [ ]
                 },
                 "includeDirectories": {

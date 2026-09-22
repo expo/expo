@@ -361,6 +361,30 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
+            "value": "Enable R8 in release builds to shrink, optimize and obfuscate the Java/Kotlin code.",
+          },
+          {
+            "type": "comment",
+            "value": "The app is optimized using the \`proguard-android-optimize.txt\` preset.",
+          },
+          {
+            "type": "comment",
+            "value": "Add custom keep rules to android/app/proguard-rules.pro.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://developer.android.com/topic/performance/app-optimization/enable-app-optimization",
+          },
+          {
+            "key": "android.enableMinifyInReleaseBuilds",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
             "value": "Use this property to specify which architecture you want to build.",
           },
           {
@@ -445,7 +469,15 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable GIF support in React Native images (~200 B increase)",
+            "value": "Enable GIF support in React Native's <Image> component.",
+          },
+          {
+            "type": "comment",
+            "value": "Disable to reduce app size if you only render GIFs via expo-image.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://docs.expo.dev/distribution/app-size/",
           },
           {
             "key": "expo.gif.enabled",
@@ -454,7 +486,15 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable webp support in React Native images (~85 KB increase)",
+            "value": "Enable WebP support in React Native's <Image> component.",
+          },
+          {
+            "type": "comment",
+            "value": "Disable to reduce app size if you only render WebP via expo-image.",
+          },
+          {
+            "type": "comment",
+            "value": "See https://docs.expo.dev/distribution/app-size/",
           },
           {
             "key": "expo.webp.enabled",
@@ -463,11 +503,11 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Enable animated webp support (~3.4 MB increase)",
+            "value": "Enable animated WebP support in React Native's <Image> component.",
           },
           {
             "type": "comment",
-            "value": "Disabled by default because iOS doesn't support animated webp",
+            "value": "Disabled by default because iOS doesn't support animated WebP.",
           },
           {
             "key": "expo.webp.animated",
@@ -495,6 +535,27 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "key": "expo.useLegacyPackaging",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Opt out of built-in kotlin and new DSL behavior that ships with AGP 9.",
+          },
+          {
+            "type": "comment",
+            "value": "Starting from AGP 10.x these opt outs will be removed.",
+          },
+          {
+            "key": "android.builtInKotlin",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "key": "android.newDsl",
             "type": "property",
             "value": "false",
           },

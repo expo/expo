@@ -7,7 +7,7 @@ import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
-import { SPMProduct, SPMTarget } from './SPMConfig.types';
+import { SourceTarget, SPMProduct, SPMTarget } from './SPMConfig.types';
 import { SPMPackage } from './SPMPackage';
 import { createAsyncSpinner, hasFileContentChanged } from './Utils';
 
@@ -51,6 +51,14 @@ function writeFileIfChanged(filePath: string, content: string): boolean {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, content, 'utf-8');
   return true;
+}
+
+/**
+ * Unit tests are always kept out of prebuilt frameworks: compiling them in leaks
+ * `import Testing` into the shipped `.swiftinterface`, which no consumer app can resolve.
+ */
+export function getTargetExcludePatterns(target: Pick<SourceTarget, 'exclude'>): string[] {
+  return [...(target.exclude ?? []), '**/Tests/**'];
 }
 
 export const SPMGenerator = {
@@ -123,7 +131,7 @@ export const SPMGenerator = {
         : target.path;
       const targetSourcePath = path.resolve(targetRoot, resolvedTargetPath);
 
-      const targetExcludes = target.exclude || [];
+      const targetExcludes = getTargetExcludePatterns(target);
       const pattern =
         target.pattern ??
         (target.type === 'cpp'

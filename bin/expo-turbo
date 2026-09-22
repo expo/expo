@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if [[ -n "${TURBO_HASH:-}" ]]; then
+  exit 0
+fi
+
+exec pnpm exec turbo "$@"

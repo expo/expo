@@ -6,8 +6,7 @@ public final class ScreenCaptureModule: Module {
   private var isBeingObserved = false
   private var isListening = false
   private var blockView: UIView?
-  private var protectionTextField: UITextField?
-  private var originalParent: CALayer?
+  private var secureCanvas: SecureWindowCanvas?
   private var blurEffectView: AnimatedBlurEffectView?
   private var blurIntensity: CGFloat = 0.5
   private var keyWindow: UIWindow? {
@@ -20,7 +19,11 @@ public final class ScreenCaptureModule: Module {
     Events(onScreenshotEventName)
 
     OnDestroy {
-      allowScreenshots()
+      let canvas = self.secureCanvas
+      self.secureCanvas = nil
+      DispatchQueue.main.async {
+        canvas?.restore()
+      }
       disableAppSwitcherProtection()
     }
 
@@ -34,7 +37,7 @@ public final class ScreenCaptureModule: Module {
 
     AsyncFunction("preventScreenCapture") {
       self.preventScreenRecording()
-      self.preventScreenshots()
+      try self.preventScreenshots()
 
       NotificationCenter.default.addObserver(
         self,
@@ -121,41 +124,28 @@ public final class ScreenCaptureModule: Module {
     return blockView
   }
 
-  private func preventScreenshots() {
-    guard let keyWindow = keyWindow else {
+  private func preventScreenshots() throws {
+    if let canvas = secureCanvas, let protected = canvas.window, protected === keyWindow {
       return
     }
 
-    let textField = UITextField()
-    textField.isSecureTextEntry = true
-    textField.isUserInteractionEnabled = false
-    textField.backgroundColor = UIColor.clear
-    textField.frame = UIScreen.main.bounds
-
-    originalParent = keyWindow.layer.superlayer
-
-    keyWindow.layer.superlayer?.addSublayer(textField.layer)
-
-    if let firstTextFieldSublayer = textField.layer.sublayers?.first {
-      keyWindow.layer.removeFromSuperlayer()
-      firstTextFieldSublayer.addSublayer(keyWindow.layer)
+    guard let keyWindow else {
+      throw NoKeyWindowException()
     }
 
-    protectionTextField = textField
+    // The protected window changed or died; move protection to the current key window.
+    // Attach the new canvas before releasing the old one so a failed attach keeps
+    // the existing protection in place.
+    guard let canvas = SecureWindowCanvas(protecting: keyWindow) else {
+      throw SecureCanvasAttachmentException()
+    }
+    secureCanvas?.restore()
+    secureCanvas = canvas
   }
 
   private func allowScreenshots() {
-    guard let textField = protectionTextField,
-      let window = keyWindow,
-      let originalParentLayer = originalParent else {
-      return
-    }
-
-    window.layer.removeFromSuperlayer()
-    originalParentLayer.addSublayer(window.layer)
-    textField.layer.removeFromSuperlayer()
-    protectionTextField = nil
-    originalParent = nil
+    secureCanvas?.restore()
+    secureCanvas = nil
   }
 
   private func enableAppSwitcherProtection() {
@@ -244,5 +234,17 @@ public final class ScreenCaptureModule: Module {
         self.blurEffectView = nil
       }
     )
+  }
+}
+
+internal final class NoKeyWindowException: Exception {
+  override var reason: String {
+    "Screenshots cannot be prevented because the app has no key window yet. Retry after the app's first window is visible, for example after the first render"
+  }
+}
+
+internal final class SecureCanvasAttachmentException: Exception {
+  override var reason: String {
+    "Screenshots cannot be prevented because the window is not attached to the screen yet, so the secure canvas could not be installed. Screenshots remain possible. Retry after the window is fully presented"
   }
 }

@@ -8,7 +8,7 @@ import { Tabs } from '../layouts/Tabs';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import type { TabRouterOptions } from '../react-navigation/native';
 import { TabRouter } from '../react-navigation/native';
-import { createStackNavigator } from '../react-navigation/stack';
+import { createStackNavigator } from '../react-navigation/native/__stubs__/createStackNavigator';
 import { renderRouter } from '../testing-library';
 
 const StackNavigator = createStackNavigator().Navigator;
@@ -142,7 +142,7 @@ it('throws for an invalid configured anchor', () => {
       { initialUrl: '/inner' }
     )
   ).toThrow(
-    'The initial route name "missing" was not found in the layout at "./inner/_layout.js". Available routes are: "index", "two". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+    'The initial route name "missing" was not found in the layout at "./inner/_layout.js". Available routes are: "index", "two". Set `unstable_settings.anchor` to the name of a route in this layout.'
   );
 });
 

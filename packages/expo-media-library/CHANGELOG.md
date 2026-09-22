@@ -4,6 +4,18 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- [iOS] Request a single high-quality delivery for Live Photos. Under the default `.opportunistic` delivery mode `requestLivePhoto` invokes its result handler more than once, and the first, degraded pass could resolve `getAssetInfoAsync` without `pairedVideoAsset`. ([#50295](https://github.com/expo/expo/pull/50295) by [@henriquegpb](https://github.com/henriquegpb))
+
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [iOS] `Asset.getUri()` and `AssetInfo.uri` now resolve a video to the version currently shown in the Photos app instead of the originally captured file. Pass `version: AssetUriVersion.ORIGINAL` to `getUri()` to keep the previous behavior. Note that only `getUri()` accepts the option; `AssetInfo.uri` from `getInfo()` always resolves the current version. ([#48640](https://github.com/expo/expo/pull/48640) by [@barthap](https://github.com/barthap))
 
 ### 🎉 New features
@@ -14,6 +26,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Parallelize per-file EXIF and location reads in `getAssetsAsync` when `resolveWithFullInfo` is true, speeding up large library scans. ([#48637](https://github.com/expo/expo/pull/48637) by [@hsource](https://github.com/hsource) and [@robin-pham](https://github.com/robin-pham))
+- [iOS] Include GPS `location` in `getAssetsAsync` batch results and return numeric latitude/longitude instead of strings for `Asset.location` and `Album.approximateLocation` (matching the documented `Location` type). ([#49188](https://github.com/expo/expo/pull/49188) by [@hsource](https://github.com/hsource) and [@fractalbeauty](https://github.com/fractalbeauty))
 - [Android] Fix transposed `width`/`height` for rotated assets (portrait photos and videos): `Asset.getInfo()`, `getWidth()`/`getHeight()`/`getShape()` and `Query.exeForMetadata()` now honor MediaStore `ORIENTATION`, matching the legacy API. ([#48150](https://github.com/expo/expo/pull/48150) by [@oeddyo](https://github.com/oeddyo))
 
 ### 💡 Others

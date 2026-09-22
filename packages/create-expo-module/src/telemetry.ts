@@ -7,7 +7,13 @@ import path from 'node:path';
 import type { CommandOptions } from './types';
 import { env } from './utils/env';
 
-const packageJson = require('../package.json');
+const getPackageJson = () => {
+  try {
+    return require('create-expo-module/package.json');
+  } catch {
+    return null;
+  }
+};
 
 /** The telemetry client instance to use */
 let client: TelemetryClient | null = null;
@@ -79,7 +85,7 @@ function getTelemetryContext() {
 
   return {
     os: { name: PLATFORM_NAMES[os.platform()] ?? os.platform(), version: os.release() },
-    app: { name: 'create-expo-module', version: packageJson.version ?? undefined },
+    app: { name: 'create-expo-module', version: getPackageJson()?.version ?? undefined },
   };
 }
 
@@ -100,7 +106,7 @@ export async function logEventAsync(event: Event) {
 
   const commonProperties = {
     source: 'create-expo-module',
-    source_version: packageJson.version ?? undefined,
+    source_version: getPackageJson()?.version ?? undefined,
   };
 
   getTelemetryClient().track({

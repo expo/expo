@@ -52,10 +52,10 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
             )}>
             <TitleElement
               className={mergeClasses(
-                'w-full text-secondary! hocus:text-link!',
+                'w-full text-default! hocus:text-link!',
                 isCodeOrFilePath && 'truncate text-xs!',
                 isActive && 'text-link!',
-                isDeprecated && 'line-through opacity-80'
+                isDeprecated && 'line-through opacity-70'
               )}>
               {displayTitle}
               {hasOverloads && (

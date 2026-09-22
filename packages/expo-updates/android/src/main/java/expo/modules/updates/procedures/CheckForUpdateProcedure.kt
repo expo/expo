@@ -4,7 +4,7 @@ import android.content.Context
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.db.DatabaseHolder
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
@@ -20,7 +20,7 @@ import org.json.JSONObject
 class CheckForUpdateProcedure(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val updatesLogger: UpdatesLogger,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
@@ -34,7 +34,7 @@ class CheckForUpdateProcedure(
 
     val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, updatesConfiguration)?.updateEntity
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
-      databaseHolder.database,
+      database,
       updatesConfiguration,
       launchedUpdate,
       embeddedUpdate
@@ -161,7 +161,7 @@ class CheckForUpdateProcedure(
       // only allow the update if it has had no launch failures.
       shouldLaunch = true
       update.updateEntity?.let { updateEntity ->
-        val storedUpdateEntity = databaseHolder.database.updateDao().loadUpdateWithId(
+        val storedUpdateEntity = database.updateDao().loadUpdateWithId(
           updateEntity.id
         )
         storedUpdateEntity?.let {

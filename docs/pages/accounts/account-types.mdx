@@ -133,14 +133,17 @@ Projects can be transferred a limited number of times. A user must be an Owner o
 
 ### Manage access
 
-Access for members is managed through a role-based system. Users can have the _owner_, _admin_, _developer_, or _viewer_ roles within an Organization account.
+Access for members is managed through a role-based system. Users can have the _owner_, _admin_, _release manager_, _developer_, or _viewer_ role within an Organization account. Each role can do everything the roles below it can do.
 
-| Role          | Description                                                                                                                                               |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Owner**     | Can take any action on an account or any projects, including deleting them.                                                                               |
-| **Admin**     | Can control most settings on your account, including signing up for paid services, changing permissions of other users, and managing programmatic access. |
-| **Developer** | Can create new projects, make new builds, release updates, and manage credentials.                                                                        |
-| **Viewer**    | Can only view your projects through Expo Go but cannot modify your projects in any way.                                                                   |
+| Role                | Description                                                                                                                                               |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Owner**           | Can take any action on an account or any projects, including deleting them.                                                                               |
+| **Admin**           | Can control most settings on your account, including signing up for paid services, changing permissions of other users, and managing programmatic access. |
+| **Release Manager** | Can manage protected channels and publish updates to the branches they point to.                                                                          |
+| **Developer**       | Can create new projects, make new builds, release updates, and manage credentials.                                                                        |
+| **Viewer**          | Can only view your projects through Expo Go but cannot modify your projects in any way.                                                                   |
+
+> **info** A protected channel restricts who can publish updates to it. Protected channels are in private beta and will be available on the Enterprise plan. Any account can assign the Release Manager role, but unless protected channels are enabled for an account, a Release Manager has the same access as a Developer.
 
 ### Security activity
 

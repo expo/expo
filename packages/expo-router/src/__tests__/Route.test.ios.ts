@@ -1,6 +1,6 @@
 import type { RouteNode } from '../Route';
 import {
-  findRouteNodeByName,
+  findRouteNodeAndParamsForState,
   getValidInitialRouteName,
   sortRoutes,
   sortRoutesWithInitial,
@@ -130,7 +130,7 @@ describe(getValidInitialRouteName, () => {
     node.children = [asRouteNode('index'), asRouteNode('settings/index')];
 
     expect(() => getValidInitialRouteName(node)).toThrow(
-      'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+      'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 
@@ -139,17 +139,11 @@ describe(getValidInitialRouteName, () => {
   });
 });
 
-describe(findRouteNodeByName, () => {
-  it.each([
-    ['settings', 'settings'],
-    ['settings/index', 'settings'],
-  ])('matches the registered route %s by the name %s', (route, name) => {
-    expect(findRouteNodeByName([asRouteNode('index'), asRouteNode(route)], name)?.route).toBe(
-      route
-    );
-  });
-
-  it('does not match a nested route with the same prefix', () => {
-    expect(findRouteNodeByName([asRouteNode('settings/profile')], 'settings')).toBeUndefined();
+describe(findRouteNodeAndParamsForState, () => {
+  it('returns no route node without nested state', () => {
+    expect(findRouteNodeAndParamsForState(asRouteNode('_layout'), undefined)).toEqual({
+      routeNode: undefined,
+      params: {},
+    });
   });
 });

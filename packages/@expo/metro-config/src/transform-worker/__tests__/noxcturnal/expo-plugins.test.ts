@@ -399,6 +399,65 @@ module.exports = App;`;
   expect(mappedExport.line).toBe(7);
 });
 
+describe('EXPO_ROUTER_IMPORT_MODE', () => {
+  async function transformImportMode(overrides: Partial<JsTransformOptions>) {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/node_modules/expo-router/_ctx.ios.js',
+      projectRoot: '/app',
+      source: `module.exports = process.env.EXPO_ROUTER_IMPORT_MODE;`,
+      options: options(overrides),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') throw new Error('Expected a complete transform');
+    return result.result.code;
+  }
+
+  const asyncRoutes = { engine: 'hermes', asyncRoutes: 'true' } as const;
+
+  it('is synchronous when async routes are not requested', async () => {
+    expect(await transformImportMode({ platform: 'web', dev: false })).toMatch(/["']sync["']/);
+  });
+
+  it('is lazy for web production bundles with async routes', async () => {
+    expect(
+      await transformImportMode({
+        platform: 'web',
+        dev: false,
+        customTransformOptions: asyncRoutes,
+      })
+    ).toMatch(/["']lazy["']/);
+  });
+
+  it.each(['ios', 'android'])(
+    'is lazy for %s development bundles with async routes',
+    async (platform) => {
+      expect(
+        await transformImportMode({
+          platform,
+          dev: true,
+          customTransformOptions: asyncRoutes,
+        })
+      ).toMatch(/["']lazy["']/);
+    }
+  );
+
+  // Matches `getAsyncRoutes` in `babel-preset-expo`: production async routes are web-only.
+  it.each(['ios', 'android'])(
+    'stays synchronous for %s production bundles even with async routes',
+    async (platform) => {
+      expect(
+        await transformImportMode({
+          platform,
+          dev: false,
+          customTransformOptions: asyncRoutes,
+        })
+      ).toMatch(/["']sync["']/);
+    }
+  );
+});
+
 it('completes plain production application JavaScript through the native path', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename: '/app/src/config.js',
@@ -704,19 +763,104 @@ it('uses the Babel WebView preflight for DOM components', async () => {
   expect(result.result.code).toContain('decorate');
 });
 
-it('matches Babel by lowering object spread for a modern non-Hermes target', async () => {
-  const result = await transformFileFullyWithNoxcturnal({
-    filename: '/app/src/web.js',
-    projectRoot: '/app',
-    source: 'module.exports = { ...source, value: 1 };',
-    options: options({ platform: 'web', customTransformOptions: { engine: undefined } }),
-    isDefaultExpoTransformer: true,
-    config: fullConfig(),
+describe('object rest/spread transform profiles', () => {
+  it.each([
+    ['Hermes v0', options({ unstable_transformProfile: 'default' })],
+    [
+      'WebView',
+      options({
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: { engine: 'hermes', dom: 'true' },
+      }),
+    ],
+  ])('lowers object spread for %s', async (_profile, transformOptions) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/src/native.js',
+      projectRoot: '/app',
+      source: 'module.exports = { ...source, value: 1 };',
+      options: transformOptions,
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).not.toContain('...source');
   });
 
-  expect(result.status).toBe('complete');
-  if (result.status !== 'complete') return;
-  expect(result.result.code).not.toContain('...source');
+  it.each([
+    ['Hermes v1', options({ unstable_transformProfile: 'hermes-stable' })],
+    [
+      'web',
+      options({
+        platform: 'web',
+        customTransformOptions: { engine: undefined },
+      }),
+    ],
+    [
+      'server',
+      options({
+        customTransformOptions: { engine: 'hermes', environment: 'node' },
+      }),
+    ],
+  ])('preserves object spread for %s', async (_profile, transformOptions) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/src/modern.js',
+      projectRoot: '/app',
+      source: 'module.exports = { ...source, value: 1 };',
+      options: transformOptions,
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('...source');
+  });
+
+  it.each([
+    ['Hermes v0', options({ unstable_transformProfile: 'default' })],
+    [
+      'WebView',
+      options({
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: { engine: 'hermes', dom: 'true' },
+      }),
+    ],
+  ])('preserves computed-key exclusion semantics for %s', async (_profile, transformOptions) => {
+    const result = await transformFileFullyWithNoxcturnal({
+      filename: '/app/src/native.js',
+      projectRoot: '/app',
+      source: `function omit(obj, spec) {
+        const { [spec.key]: unused, ...rest } = obj;
+        return rest;
+      }
+      module.exports = omit({ a: 1, b: 2 }, { key: 'a' });`,
+      options: transformOptions,
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    });
+
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).not.toContain('...rest');
+
+    let factory: Function | undefined;
+    new Function('__d', result.result.code)((value: Function) => {
+      factory = value;
+    });
+    const module = { exports: {} as unknown };
+    factory?.(
+      globalThis,
+      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      (_id: unknown, name: string) => requireFromBabelPresetExpo(name),
+      module,
+      module.exports,
+      []
+    );
+    expect(module.exports).toEqual({ b: 2 });
+  });
 });
 
 it('matches Babel by preserving async generators on modern web targets', async () => {

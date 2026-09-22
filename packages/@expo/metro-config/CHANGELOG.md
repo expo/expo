@@ -6,6 +6,44 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.4 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- Fix `Worker chunk not found` assertion when serving a web worker from a lazy development bundle with `web.output` set to `static` or `server` ([#50244](https://github.com/expo/expo/pull/50244) by [@tahakocal](https://github.com/tahakocal))
+- Keep the synchronous Expo Router import mode for native production bundles in the Noxcturnal transformer, matching `babel-preset-expo`. ([#50319](https://github.com/expo/expo/pull/50319) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Add support for separate restored and output Metro transform cache directories. ([#50023](https://github.com/expo/expo/pull/50023) by [@sjchmiela](https://github.com/sjchmiela))
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- Use Metro's compact source maps in place of Expo's packed source map format. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Add `experiments.noxcturnalTransformWorker` with native transformer experiment ([#48443](https://github.com/expo/expo/pull/48443) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
@@ -13,14 +51,20 @@
 - Depend on `@react-native/js-polyfills` directly for `getPolyfills` instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.88. ([#48034](https://github.com/expo/expo/pull/48034) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix source line counts after environment serializer plugins modify virtual modules ([#48835](https://github.com/expo/expo/pull/48835) by [@kitten](https://github.com/kitten))
 - Seal web worker chunks to prevent common chunk splitting from applying to them ([#49227](https://github.com/expo/expo/pull/49227) by [@kitten](https://github.com/kitten))
+- Skip the `default` key in the `_interopNamespace` live-bindings helper, so a namespace import of a CommonJS module with an own `default` export no longer throws `Cannot assign to property 'default' which has only a getter` ([#49930](https://github.com/expo/expo/pull/49930) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
+- [Internal] Declare Expo's Metro type extensions explicitly. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
 - Add `woff` and `woff2` to default list of `assetExts` ([#47565](https://github.com/expo/expo/pull/47565) by [@kitten](https://github.com/kitten))
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
 - Expand `skipCache` flag to data and support `prewarm` custom transform option ([#48836](https://github.com/expo/expo/pull/48836) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
+- Point Metro's `assetRegistryPath` at `react-native/asset-registry`, which replaces the `@react-native/assets-registry` package as of React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- Don't rename require in tests/snapshots. ([#50039](https://github.com/expo/expo/pull/50039) by [@robhogan](https://github.com/robhogan))
+- Don't rename require in transform worker tests. ([#50143](https://github.com/expo/expo/pull/50143) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.7 - 2026-07-22
 

@@ -26,7 +26,7 @@ import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
 import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
-import { TabTriggerMapContext } from './TabContext';
+import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
 import { isTabList } from './TabList';
 import type { ExpoTabRouterOptions } from './TabRouter';
 import { ExpoTabRouter } from './TabRouter';
@@ -54,8 +54,9 @@ export type UseTabsOptions = Omit<
     TabNavigationEventMap,
     any
   >,
-  'children' | 'initialRouteName'
+  'activityEnabled' | 'children' | 'initialRouteName'
 > & {
+  activityEnabled?: boolean;
   backBehavior?: TabRouterOptions['backBehavior'];
 };
 
@@ -63,6 +64,11 @@ export type TabsProps = ViewProps & {
   /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
   asChild?: boolean;
   options?: UseTabsOptions;
+  /**
+   * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
+   * @default false
+   */
+  activityEnabled?: boolean;
 };
 
 /**
@@ -80,7 +86,7 @@ export type TabsProps = ViewProps & {
  * ```
  */
 export function Tabs(props: TabsProps) {
-  const { children, asChild, options, ...rest } = props;
+  const { children, asChild, options, activityEnabled, ...rest } = props;
   const Comp = asChild ? ViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
@@ -94,6 +100,7 @@ export function Tabs(props: TabsProps) {
         ? (children.props.children as ReactNode)
         : children,
     ...options,
+    activityEnabled: activityEnabled ?? options?.activityEnabled,
   });
 
   return (
@@ -151,6 +158,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const { triggers, ...rest } = options;
   // Ensure we extend the parent triggers, so we can trigger them as well
   const parentTriggerMap = use(TabTriggerMapContext);
+  const parentNavigatorStates = use(TabNavigatorStatesContext);
   const routeNode = useRouteNode();
   const contextKey = useContextKey();
   const linking = use(LinkingContext).options;
@@ -177,14 +185,18 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     TabActionHelpers<ParamListBase>,
     ExpoTabsScreenOptions,
     TabNavigationEventMap
-  >(ExpoTabRouter, {
-    children,
-    ...rest,
-    triggerMap,
-    id: contextKey,
-    initialRouteName,
-    backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
-  });
+  >(
+    ExpoTabRouter,
+    {
+      children,
+      ...rest,
+      triggerMap,
+      id: contextKey,
+      initialRouteName,
+      backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
+    },
+    { activityDefaultThreshold: 1 }
+  );
 
   const {
     state,
@@ -202,6 +214,10 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
       ) as typeof sparseDescriptors,
     [describe, sparseDescriptors, state]
   );
+  const navigatorStates = useMemo(
+    () => ({ ...parentNavigatorStates, [contextKey]: state }),
+    [contextKey, parentNavigatorStates, state]
+  );
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () => ({
@@ -218,9 +234,11 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
       <TabVisibilityRedirect state={state} descriptors={descriptors} />
       <TabTriggerMapContext.Provider value={triggerMap}>
-        <NavigatorContext.Provider value={navigatorContextValue}>
-          <RNNavigationContent>{children}</RNNavigationContent>
-        </NavigatorContext.Provider>
+        <TabNavigatorStatesContext.Provider value={navigatorStates}>
+          <NavigatorContext.Provider value={navigatorContextValue}>
+            <RNNavigationContent>{children}</RNNavigationContent>
+          </NavigatorContext.Provider>
+        </TabNavigatorStatesContext.Provider>
       </TabTriggerMapContext.Provider>
     </GuardContextProvider>
   )) as TabsContextValue['NavigationContent'];
@@ -288,7 +306,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    const { href, name } = child.props;
+    const { href, name, activityEnabled } = child.props;
 
     if (!href) {
       if (process.env.NODE_ENV === 'development') {
@@ -318,7 +336,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    return screenTriggers.push({ type: 'internal', href: resolvedHref, name });
+    return screenTriggers.push({ type: 'internal', href: resolvedHref, name, activityEnabled });
   });
 
   return screenTriggers;

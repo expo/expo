@@ -6,6 +6,34 @@
 
 ### 🎉 New features
 
+- Add `android.buildExpoModulesCoreFromSource` to compile the `expo-modules-core` native libraries from source instead of using the prebuilt ones. ([#50452](https://github.com/expo/expo/pull/50452) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] Let `ios.enableSceneSupport` adopt the scene lifecycle when another config plugin has inserted lines into the startup block, such as `@react-native-firebase/app`. ([#50221](https://github.com/expo/expo/pull/50221) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Add `ios.enableSceneSupport` to adopt the UIKit scene lifecycle in SDK 57 projects. The property is a no-op on SDK 58 and newer. ([#50205](https://github.com/expo/expo/pull/50205) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
 ### 🐛 Bug fixes
 
 - [Android] Make `buildReactNativeFromSource` idempotent so repeated prebuilds no longer append a duplicate `includeBuild(expoAutolinking.reactNative)` block to `settings.gradle` (and toggling it off removes the block). ([#46713](https://github.com/expo/expo/pull/46713) by [@ahmdshrif](https://github.com/ahmdshrif))

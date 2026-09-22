@@ -1,15 +1,17 @@
+import { vlqMapFromTuples } from '@expo/metro/metro-source-map';
 import { GenMapping, addMapping, toEncodedMap } from '@jridgewell/gen-mapping';
 import { encode } from '@jridgewell/sourcemap-codec';
 import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
 
-import { installPackedMap } from '../packedMap';
 import {
   appendDebugIdToSourceMap,
   composeSourceMaps,
-  patchMetroSourceMapStringForPackedMaps,
+  flattenSourceMap,
   rawMappingsToEncodedMap,
   sourceMapString,
   sourceMapStringNonBlocking,
+  vlqMapFromDecodedMap,
+  vlqMapFromEncodedMap,
   type BabelSourceMapSegment,
   type ComposableSourceMap,
   type MetroSourceMapSegmentTuple,
@@ -213,6 +215,66 @@ describe('composeSourceMaps', () => {
       source: 'src.js',
       line: 1,
       column: 0,
+    });
+  });
+
+  it('flattens an indexed bundler map before composing', () => {
+    // Metro emits bundle maps as indexed maps, one section per module
+    const bundler = {
+      version: 3,
+      sections: [
+        {
+          offset: { line: 0, column: 0 },
+          map: buildMap({
+            segments: [
+              {
+                generated: { line: 1, column: 0 },
+                source: 'a.js',
+                original: { line: 3, column: 0 },
+              },
+            ],
+          }),
+        },
+        {
+          offset: { line: 1, column: 0 },
+          map: buildMap({
+            segments: [
+              {
+                generated: { line: 1, column: 0 },
+                source: 'b.js',
+                original: { line: 7, column: 2 },
+              },
+            ],
+          }),
+        },
+      ],
+    };
+    const hermes = buildMap({
+      file: 'bundle.hbc',
+      segments: [
+        {
+          generated: { line: 1, column: 0 },
+          source: 'bundle.js',
+          original: { line: 1, column: 0 },
+        },
+        {
+          generated: { line: 1, column: 5 },
+          source: 'bundle.js',
+          original: { line: 2, column: 0 },
+        },
+      ],
+    });
+
+    const tracer = new TraceMap(composeSourceMaps([bundler, hermes]) as any);
+    expect(originalPositionFor(tracer, { line: 1, column: 0 })).toMatchObject({
+      source: 'a.js',
+      line: 3,
+      column: 0,
+    });
+    expect(originalPositionFor(tracer, { line: 1, column: 5 })).toMatchObject({
+      source: 'b.js',
+      line: 7,
+      column: 2,
     });
   });
 
@@ -571,18 +633,97 @@ describe('rawMappingsToEncodedMap', () => {
   });
 });
 
-// Minimal `Module<JsOutput>`-shaped fake: only the fields the encoder
-// reads (`output[].data.{code,map,functionMap,lineCount}`, `path`,
+describe('flattenSourceMap', () => {
+  it('returns a flat map unchanged', () => {
+    const flat = buildMap({
+      segments: [
+        { generated: { line: 1, column: 0 }, source: 'a.js', original: { line: 1, column: 0 } },
+      ],
+    });
+    expect(flattenSourceMap(flat)).toBe(flat);
+  });
+
+  it('flattens sections, carrying over ignore lists', () => {
+    const flat = flattenSourceMap({
+      version: 3,
+      sections: [
+        {
+          offset: { line: 0, column: 0 },
+          map: { version: 3, sources: ['user.js'], names: [], mappings: 'AAAA' },
+        },
+        {
+          offset: { line: 1, column: 0 },
+          map: {
+            version: 3,
+            sources: ['node_modules/lib.js'],
+            names: ['x'],
+            mappings: 'AAAAA',
+            x_google_ignoreList: [0],
+          },
+        },
+      ],
+    });
+    expect(flat).toMatchObject({
+      sources: ['user.js', 'node_modules/lib.js'],
+      names: ['x'],
+      mappings: 'AAAA;ACAAA',
+      ignoreList: [1],
+    });
+  });
+});
+
+describe('vlqMapFromDecodedMap', () => {
+  it('terminates an empty map one past the last column of the code', () => {
+    expect(vlqMapFromDecodedMap(null, 'a\nbc')).toEqual({
+      lineCount: 2,
+      map: vlqMapFromTuples([[2, 2]]),
+    });
+  });
+
+  it('does not add a terminating mapping when the last mapping is already there', () => {
+    const { map } = vlqMapFromDecodedMap({ mappings: [[[0, 0, 0, 0]], [[2]]], names: [] }, 'a\nbc');
+    expect(map).toEqual(
+      vlqMapFromTuples([
+        [1, 0, 1, 0],
+        [2, 2],
+      ])
+    );
+  });
+});
+
+describe('vlqMapFromEncodedMap', () => {
+  it('matches Metro encoding the same mappings as tuples', () => {
+    const encoded = {
+      mappings: encode([
+        [
+          [0, 0, 0, 0],
+          [4, 0, 0, 4, 0],
+        ],
+        [[0, 0, 1, 0]],
+      ]),
+      names: ['foo'],
+    };
+    expect(vlqMapFromEncodedMap(encoded, 'abcdefgh\nij')).toEqual({
+      lineCount: 2,
+      map: vlqMapFromTuples([
+        [1, 0, 1, 0],
+        [1, 4, 1, 4, 'foo'],
+        [2, 0, 2, 0],
+        [2, 2],
+      ]),
+    });
+  });
+});
+
+// Minimal `Module<JsOutput>`-shaped fake: only the fields the source map
+// serializer reads (`output[].data.{code,map,functionMap,lineCount}`, `path`,
 // `getSource()`) are populated.
 function fakeJsModule(opts: {
   path: string;
-  code?: string;
-  source?: string;
+  code: string;
   map: MetroSourceMapSegmentTuple[];
-  lineCount?: number;
 }): any {
-  const code = opts.code ?? `// ${opts.path}\n`;
-  const source = opts.source ?? code;
+  const { code } = opts;
   return {
     path: opts.path,
     output: [
@@ -590,15 +731,15 @@ function fakeJsModule(opts: {
         type: 'js/module',
         data: {
           code,
-          lineCount: opts.lineCount ?? code.split(/\r\n?|\n/).length,
-          map: opts.map,
+          lineCount: code.split(/\r\n?|\n/).length,
+          map: vlqMapFromTuples(opts.map),
           functionMap: null,
         },
       },
     ],
     dependencies: new Map(),
     inverseDependencies: new Set(),
-    getSource: () => Buffer.from(source),
+    getSource: () => Buffer.from(code),
   };
 }
 
@@ -611,65 +752,6 @@ function defaultOptions() {
 }
 
 describe('sourceMapString', () => {
-  it('does not fire the lazy `data.map` getter when `__packedMap` is present', () => {
-    // Reading `data.map` would allocate a Proxy per module per encode
-    // pass for nothing — the fast path goes through `__packedMap`.
-    const mod = fakeJsModule({
-      path: '/foo.js',
-      map: [
-        [1, 0, 1, 0],
-        [1, 5, 2, 0, 'foo'],
-      ],
-    });
-    installPackedMap(mod.output[0].data, mod.output[0].data.map);
-
-    let getCount = 0;
-    const descriptor = Object.getOwnPropertyDescriptor(mod.output[0].data, 'map')!;
-    Object.defineProperty(mod.output[0].data, 'map', {
-      get() {
-        getCount++;
-        return descriptor.get!.call(mod.output[0].data);
-      },
-      enumerable: true,
-      configurable: true,
-    });
-
-    sourceMapString([mod], defaultOptions());
-    expect(getCount).toBe(0);
-  });
-
-  it('produces a sourcemap byte-equivalent to Metros for the same input', () => {
-    // We feed Metro's `Generator` the same segments in the same order,
-    // so the serialized output should match byte-for-byte. Tests cover
-    // adjacents on the same line, sourceless mappings, named mappings,
-    // and module-boundary transitions.
-    const metroSourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString =
-      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString;
-
-    const modules = [
-      fakeJsModule({
-        path: '/a.js',
-        code: 'A1\nA2\nA3\n',
-        map: [
-          [1, 0, 1, 0],
-          [1, 4, 1, 0],
-          [2, 0, 2, 0, 'foo'],
-          [3, 0],
-          [3, 4, 3, 4],
-        ],
-      }),
-      fakeJsModule({
-        path: '/b.js',
-        code: 'B1\n',
-        map: [[1, 0, 10, 0, 'bar']],
-      }),
-    ];
-
-    const ours = JSON.parse(sourceMapString(modules, defaultOptions()));
-    const theirs = JSON.parse(metroSourceMapString(modules, defaultOptions()));
-    expect(ours).toEqual(theirs);
-  });
-
   it('sourceMapStringNonBlocking returns the same output as sourceMapString', async () => {
     const modules = [
       fakeJsModule({
@@ -700,17 +782,15 @@ describe('sourceMapString', () => {
         map: [[1, 0, 1, 0]],
       });
 
-    it('emits debugId inline during build (no JSON.parse roundtrip needed)', () => {
-      const json = sourceMapString([fixture()], { ...defaultOptions(), debugId: 'abc-123' });
-      const map = JSON.parse(json);
+    it('emits debugId without a JSON.parse roundtrip', () => {
+      const map = JSON.parse(
+        sourceMapString([fixture()], { ...defaultOptions(), debugId: 'abc-123' })
+      );
       expect(map.debugId).toBe('abc-123');
-      expect(typeof map.mappings).toBe('string');
-      expect(Array.isArray(map.sources)).toBe(true);
     });
 
     it('omits debugId when option is not provided', () => {
-      const json = sourceMapString([fixture()], defaultOptions());
-      const map = JSON.parse(json);
+      const map = JSON.parse(sourceMapString([fixture()], defaultOptions()));
       expect('debugId' in map).toBe(false);
     });
 
@@ -720,73 +800,19 @@ describe('sourceMapString', () => {
       expect(JSON.parse(json).debugId).toBe(id);
     });
 
-    it('produces output identical to a manual JSON.parse + add + JSON.stringify roundtrip', () => {
-      const baseline = sourceMapString([fixture()], defaultOptions());
-      const baselineWithId = JSON.stringify({ ...JSON.parse(baseline), debugId: 'roundtrip' });
-      const ours = sourceMapString([fixture()], { ...defaultOptions(), debugId: 'roundtrip' });
-      expect(JSON.parse(ours)).toEqual(JSON.parse(baselineWithId));
+    it('emits debugId from sourceMapStringNonBlocking', async () => {
+      const json = await sourceMapStringNonBlocking([fixture()], {
+        ...defaultOptions(),
+        debugId: 'async-id',
+      });
+      expect(JSON.parse(json).debugId).toBe('async-id');
     });
 
     it('appendDebugIdToSourceMap injects without parsing', () => {
       const baseline = sourceMapString([fixture()], defaultOptions());
       const injected = appendDebugIdToSourceMap(baseline, 'after-the-fact');
-      const map = JSON.parse(injected);
-      expect(map.debugId).toBe('after-the-fact');
+      expect(JSON.parse(injected).debugId).toBe('after-the-fact');
       expect(JSON.parse(baseline).debugId).toBeUndefined();
-    });
-  });
-
-  describe('CI guard: @expo/metro/metro-source-map/Generator import shape', () => {
-    it('exposes Generator via .default and the prototype methods we use', () => {
-      const Generator: any = require('@expo/metro/metro-source-map/Generator').default;
-      expect(typeof Generator).toBe('function');
-      const proto = Generator.prototype;
-      for (const m of [
-        'addSimpleMapping',
-        'addSourceMapping',
-        'addNamedSourceMapping',
-        'startFile',
-        'endFile',
-        'toString',
-        'toMap',
-      ]) {
-        expect(typeof proto[m]).toBe('function');
-      }
-    });
-  });
-
-  describe('patchMetroSourceMapStringForPackedMaps', () => {
-    const STOCK_PATH = '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
-
-    afterEach(() => {
-      // Repair the live module so other tests asserting against Metro's
-      // stock implementation don't see the patched references.
-      jest.resetModules();
-    });
-
-    it("replaces both stock exports with Expo's encoder", () => {
-      const stock = require(STOCK_PATH);
-      const originalSync = stock.sourceMapString;
-      const originalAsync = stock.sourceMapStringNonBlocking;
-      expect(originalSync).not.toBe(sourceMapString);
-      expect(originalAsync).not.toBe(sourceMapStringNonBlocking);
-
-      patchMetroSourceMapStringForPackedMaps();
-
-      expect(stock.sourceMapString).toBe(sourceMapString);
-      expect(stock.sourceMapStringNonBlocking).toBe(sourceMapStringNonBlocking);
-    });
-
-    it('is idempotent — repeat calls leave the references unchanged', () => {
-      patchMetroSourceMapStringForPackedMaps();
-      const after1 = require(STOCK_PATH);
-      const sync1 = after1.sourceMapString;
-      const async1 = after1.sourceMapStringNonBlocking;
-
-      patchMetroSourceMapStringForPackedMaps();
-
-      expect(after1.sourceMapString).toBe(sync1);
-      expect(after1.sourceMapStringNonBlocking).toBe(async1);
     });
   });
 });

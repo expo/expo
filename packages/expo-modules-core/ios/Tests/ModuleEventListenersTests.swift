@@ -4,6 +4,35 @@ import Testing
 
 @testable import ExpoModulesCore
 
+/// Resumes a continuation at most once.
+///
+/// The app-lifecycle tests below post to `NotificationCenter.default`, and every live `AppContext`
+/// observes those names until it deallocates. A context belonging to another test (still alive
+/// because the runner interleaves tests, or because its deallocation has not happened yet) therefore
+/// also posts the event to its own registry and resumes this test's continuation a second time.
+/// Resuming a `CheckedContinuation` twice traps, and the trap takes the whole test process with it,
+/// which is what turned one stray notification into hundreds of unrelated failures in a bundle.
+private final class ResumeOnce: @unchecked Sendable {
+  private let continuation: CheckedContinuation<Void, Error>
+  private let resumed = Mutex(false)
+
+  init(_ continuation: CheckedContinuation<Void, Error>) {
+    self.continuation = continuation
+  }
+
+  func resume() {
+    let alreadyResumed = resumed.withLock { resumed -> Bool in
+      let previous = resumed
+      resumed = true
+      return previous
+    }
+    if alreadyResumed {
+      return
+    }
+    continuation.resume()
+  }
+}
+
 /**
  This test suite covers module's event listeners which can listen to:
  - module's lifecycle events
@@ -11,8 +40,12 @@ import Testing
  - custom events sent to the module registry
 
  NOTE: Each test registers the module because only registered modules can capture events.
+
+ Serialized so these tests don't overlap each other's notifications. `ResumeOnce` still guards each
+ resume, because serialization orders the test bodies but does not bound the lifetime of an
+ `AppContext` an earlier test left alive.
  */
-@Suite("ModuleEventListeners")
+@Suite("ModuleEventListeners", .serialized)
 struct ModuleEventListenersTests {
   @Test
   func `calls OnCreate once the module instance is created`() async throws {
@@ -82,9 +115,10 @@ struct ModuleEventListenersTests {
     let appContext = AppContext()
 
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      let once = ResumeOnce(continuation)
       let holder = mockModuleHolder(appContext) {
         OnAppEntersForeground {
-          continuation.resume()
+          once.resume()
         }
       }
       appContext.moduleRegistry.register(holder: holder)
@@ -97,9 +131,10 @@ struct ModuleEventListenersTests {
     let appContext = AppContext()
 
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      let once = ResumeOnce(continuation)
       let holder = mockModuleHolder(appContext) {
         OnAppBecomesActive {
-          continuation.resume()
+          once.resume()
         }
       }
       appContext.moduleRegistry.register(holder: holder)
@@ -112,9 +147,10 @@ struct ModuleEventListenersTests {
     let appContext = AppContext()
 
     try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+      let once = ResumeOnce(continuation)
       let holder = mockModuleHolder(appContext) {
         OnAppEntersBackground {
-          continuation.resume()
+          once.resume()
         }
       }
       appContext.moduleRegistry.register(holder: holder)

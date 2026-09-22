@@ -14,8 +14,11 @@ import type {
 import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
 export interface MaterialTopTabNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   routeNames: string[];
   preload: (name: string) => void;
+  navigateToTabSync: (name: string, params: object | undefined) => void;
 }
 
 export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig &
@@ -33,11 +36,14 @@ function MaterialTopTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   routeNames,
   preload,
+  navigateToTabSync,
   ...rest
 }: ContentArgs) {
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
     focusedRouteKey: state.routes[state.index]?.key,
@@ -65,6 +71,10 @@ function MaterialTopTabNavigatorContent({
     lazyByDefault: false,
   });
 
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
+
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;
   }
@@ -80,6 +90,12 @@ function MaterialTopTabNavigatorContent({
       descriptors={topTabDescriptors}
       emitter={emitter}
       navigateToTab={navigateToTab}
+      navigateToTabSync={(routeKey) => {
+        const route = state.routes.find((route) => route.key === routeKey);
+        if (route) {
+          navigateToTabSync(route.name, route.params);
+        }
+      }}
     />
   );
 }

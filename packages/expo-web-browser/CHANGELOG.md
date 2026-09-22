@@ -8,7 +8,22 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Anchored the browser popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50437](https://github.com/expo/expo/pull/50437) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 58.0.1 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Resolve the presenting window from the foregrounded scene instead of the deprecated `UIApplication.keyWindow`, so `openBrowserAsync` and `openAuthSessionAsync` keep working in apps that use the UIScene life cycle. ([#50368](https://github.com/expo/expo/pull/50368) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `toolbarColor` being applied as the secondary toolbar color, and being discarded entirely when `secondaryToolbarColor` was also set. ([#48900](https://github.com/expo/expo/issues/48900) by [@MUSE-CODE-SPACE](https://github.com/MUSE-CODE-SPACE))
+- [iOS] Fixed a failed presentation leaving the module locked, with every later `openBrowserAsync` resolving `{ type: 'locked' }` until `dismissBrowser` was called or the app restarted. The promise of the failed call now resolves instead of hanging. ([#49756](https://github.com/expo/expo/pull/49756) by [@LizunovSergey](https://github.com/LizunovSergey))
 
 ## 57.0.2 - 2026-07-22
 

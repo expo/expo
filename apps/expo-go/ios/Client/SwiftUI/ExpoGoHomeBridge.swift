@@ -35,6 +35,23 @@ import UIKit
       return
     }
 
+    let expiredMessage = consumeExpiredSessionMessage()
+
+    if presentDeviceLoginIfPending(
+      appUrl: appUrl,
+      url: url,
+      snackParams: snackParams,
+      completion: completion
+    ) {
+      return
+    }
+
+    if let expiredMessage {
+      showError(expiredMessage)
+      completion(false, nil)
+      return
+    }
+
     // Determine status text based on what we're opening
     let isLesson = (snackParams?["isLesson"] as? Bool) == true
     let isPlayground = (snackParams?["isPlayground"] as? Bool) == true
@@ -74,9 +91,7 @@ import UIKit
       // Not an embedded snack — require login at minimum
       guard let currentUser = authenticatedUsername() else {
         EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
-        DispatchQueue.main.async { [weak self] in
-          self?.homeViewModel?.showError("Sign in to Expo Go to open your Snack playgrounds.")
-        }
+        showError("Sign in to Expo Go to open your Snack playgrounds.")
         completion(false, nil)
         return
       }
@@ -86,11 +101,7 @@ import UIKit
          let owner = ownerUsername(fromSnackId: snackId),
          owner != currentUser {
         EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
-        DispatchQueue.main.async { [weak self] in
-          self?.homeViewModel?.showError(
-            "This playground belongs to @\(owner). Sign in as @\(owner) to open it, or open one of your own."
-          )
-        }
+        showError("This playground belongs to @\(owner). Sign in as @\(owner) to open it, or open one of your own.")
         completion(false, nil)
         return
       }
@@ -155,6 +166,52 @@ import UIKit
     }
   }
 
+  private func consumeExpiredSessionMessage() -> String? {
+    guard let message = sessionExpiredMessage() else {
+      return nil
+    }
+    AuthenticationService.clearSession()
+    return message
+  }
+
+  /// True when a sign in has taken over the open, so the caller should stop and let it finish.
+  private func presentDeviceLoginIfPending(
+    appUrl: URL,
+    url: String,
+    snackParams: NSDictionary?,
+    completion: @escaping (Bool, String?) -> Void
+  ) -> Bool {
+    let verificationURI = PendingDeviceLogin.shared.verificationURI(forProjectURL: appUrl)
+    let alreadyGranted = verificationURI?.host.map {
+      AuthenticationService.isDeviceLoginAlreadyGranted(forVerificationHost: $0)
+    } ?? false
+
+    guard !alreadyGranted, PendingDeviceLogin.shared.offerOnce(forProjectURL: appUrl) else {
+      return false
+    }
+
+    UserDefaults.standard.set(true, forKey: "ExpoGoOnboardingFinished")
+
+    Task { @MainActor in
+      guard let homeViewModel else {
+        // Home is not up yet, so leave the pending sign in for the next attempt.
+        print("[DeviceLogin] Home is not ready, so the sign in sheet could not be presented yet.")
+        completion(false, nil)
+        return
+      }
+
+      // Declining still opens the project. The mismatch error then explains why it failed.
+      if await homeViewModel.presentDeviceLogin(verificationURI: verificationURI) {
+        if let host = verificationURI?.host, let username = AuthenticationService.currentUsername {
+          AuthenticationService.recordDeviceLoginGrant(username: username, forVerificationHost: host)
+        }
+        PendingDeviceLogin.shared.clear()
+      }
+      self.openApp(url: url, snackParams: snackParams, completion: completion)
+    }
+    return true
+  }
+
   /// Convenience overload for non-snack apps (no session setup needed)
   @objc public func openApp(url: String, completion: @escaping (Bool, String?) -> Void) {
     openApp(url: url, snackParams: nil, completion: completion)
@@ -200,15 +257,40 @@ import UIKit
     return String(snackId[snackId.index(after: snackId.startIndex)..<slashIndex])
   }
 
+  static let expiredSessionMessage =
+    "Your Expo Go session has expired. Reload your project's preview and scan the new QR code to continue."
+
+  /// Non-nil when the stored session has expired, which only device auth sessions record.
+  @objc public func sessionExpiredMessage() -> String? {
+    return AuthenticationService.isSessionExpired() ? Self.expiredSessionMessage : nil
+  }
+
+  @objc public func showError(_ message: String) {
+    DispatchQueue.main.async { [weak self] in
+      self?.homeViewModel?.showError(message)
+    }
+  }
+
+  /// Only signs in. The error screen's Try Again is what reloads the project.
+  @objc(offerDeviceLoginWithVerificationURI:)
+  public func offerDeviceLogin(verificationURI: URL?) {
+    Task { @MainActor in
+      let signedIn = await self.homeViewModel?.presentDeviceLogin(verificationURI: verificationURI) ?? false
+      if signedIn {
+        if let host = verificationURI?.host, let username = AuthenticationService.currentUsername {
+          AuthenticationService.recordDeviceLoginGrant(username: username, forVerificationHost: host)
+        }
+        PendingDeviceLogin.shared.clear()
+      }
+    }
+  }
+
   @objc public func isAuthenticated() -> Bool {
-    return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
+    AuthenticationService.currentUsername != nil
   }
 
   @objc public func authenticatedUsername() -> String? {
-    guard UserDefaults.standard.string(forKey: "expo-session-secret") != nil else {
-      return nil
-    }
-    return UserDefaults.standard.string(forKey: "expo-username")
+    AuthenticationService.currentUsername
   }
 
   @objc public func addHistoryItem(withUrl url: String, name: String, iconUrl: String?) {

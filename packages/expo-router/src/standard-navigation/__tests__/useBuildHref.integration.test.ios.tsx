@@ -13,9 +13,9 @@ import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../appendMissingPlaceholderTabRoutes';
-import { unstable_createStandardRouterNavigator } from '../index';
+import { createStandardRouterNavigator } from '../index';
 
-// Integration: useBuildHref through the real useStateForPath → getCachedRouteInfo pipeline, resolving
+// Integration: useBuildHref through the real useStateForPath → getRouteInfoFromState pipeline, resolving
 // hrefs for a real navigator's routes via renderRouter. Isolated nesting logic is unit-tested in
 // useBuildHref.test.ios.tsx.
 const contentSpy = jest.fn();
@@ -31,7 +31,7 @@ function NavigatorContent(args: NavigatorArgs<Record<string, never>, Record<stri
   );
 }
 
-const StandardTabs = unstable_createStandardRouterNavigator<
+const StandardTabs = createStandardRouterNavigator<
   Record<string, never>,
   TabNavigationState<ParamListBase>,
   Record<string, never>,

@@ -147,6 +147,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'NavigationStack component',
+    route: 'ui/navigationstack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationStackScreen'));
+    },
+  },
+  {
+    name: 'NavigationSplitView component',
+    route: 'ui/navigationsplitview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationSplitViewScreen'));
+    },
+  },
+  {
     name: 'Menu component',
     route: 'ui/menu',
     options: {},
@@ -384,6 +400,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./OverlayScreen'));
+    },
+  },
+  {
+    name: 'Background component',
+    route: 'ui/background',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BackgroundScreen'));
     },
   },
   {

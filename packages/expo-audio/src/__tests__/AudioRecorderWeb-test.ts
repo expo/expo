@@ -87,3 +87,82 @@ describe('AudioRecorderWeb fileSize', () => {
     expect(recorder.getStatus().fileSize).toBe(0);
   });
 });
+
+describe('AudioRecorderWeb duration limit', () => {
+  beforeEach(() => {
+    mockMediaDevices();
+    jest.useFakeTimers();
+    jest.setSystemTime(1000);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.useRealTimers();
+  });
+
+  it('counts recorded time and preserves the limit across a bare resume', async () => {
+    const recorder = new AudioRecorderWeb({});
+    await recorder.prepareToRecordAsync();
+    const stopSpy = jest.spyOn(recorder, 'stop').mockResolvedValue(undefined);
+
+    recorder.record({ forDuration: 10 });
+    jest.advanceTimersByTime(3000);
+    recorder.pause();
+
+    jest.advanceTimersByTime(20000);
+    expect(recorder.getStatus().durationMillis).toBe(3000);
+    expect(stopSpy).not.toHaveBeenCalled();
+
+    recorder.record();
+    jest.advanceTimersByTime(6999);
+    expect(stopSpy).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(1);
+    expect(stopSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('treats a new forDuration value as an absolute recording limit', async () => {
+    const recorder = new AudioRecorderWeb({});
+    await recorder.prepareToRecordAsync();
+    const stopSpy = jest.spyOn(recorder, 'stop').mockResolvedValue(undefined);
+
+    recorder.record({ forDuration: 10 });
+    jest.advanceTimersByTime(3000);
+    recorder.pause();
+    recorder.record({ forDuration: 5 });
+
+    jest.advanceTimersByTime(1999);
+    expect(stopSpy).not.toHaveBeenCalled();
+
+    jest.advanceTimersByTime(1);
+    expect(stopSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears a previous limit when arming without a duration', async () => {
+    const recorder = new AudioRecorderWeb({});
+    await recorder.prepareToRecordAsync();
+    const stopSpy = jest.spyOn(recorder, 'stop').mockResolvedValue(undefined);
+
+    recorder.record({ forDuration: 10 });
+    jest.advanceTimersByTime(3000);
+    recorder.pause();
+    recorder.record({ atTime: 1 });
+    jest.advanceTimersByTime(20000);
+
+    expect(stopSpy).not.toHaveBeenCalled();
+  });
+
+  it('stops instead of resuming when a replacement limit is already spent', async () => {
+    const recorder = new AudioRecorderWeb({});
+    await recorder.prepareToRecordAsync();
+    const stopSpy = jest.spyOn(recorder, 'stop').mockResolvedValue(undefined);
+
+    recorder.record({ forDuration: 10 });
+    jest.advanceTimersByTime(3000);
+    recorder.pause();
+    recorder.record({ forDuration: 2 });
+
+    expect(stopSpy).toHaveBeenCalledTimes(1);
+    expect(recorder.isRecording).toBe(false);
+  });
+});

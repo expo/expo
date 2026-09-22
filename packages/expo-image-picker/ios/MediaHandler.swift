@@ -30,7 +30,10 @@ internal struct MediaHandler {
     return try await asyncMap(selection) { selectedItem in
       let itemProvider = selectedItem.itemProvider
 
-      if itemProvider.canLoadObject(ofClass: PHLivePhoto.self) && options.mediaTypes.contains(.livePhotos) {
+      // Match on the registered identifier rather than `canLoadObject(ofClass: PHLivePhoto.self)`,
+      // which raises NSInvalidArgumentException on iOS 27.1.
+      if options.mediaTypes.contains(.livePhotos)
+        && itemProvider.hasItemConformingToTypeIdentifier(UTType.livePhoto.identifier) {
         return try await handleLivePhoto(from: selectedItem)
       }
       if itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
@@ -420,7 +423,10 @@ internal struct MediaHandler {
     // asset as *adjusted* and will re-render a temporary file for us. Copying the resource bytes
     // ourselves is dramatically faster because it just streams the already-existing file.
 
-    if options.videoExportPreset == .passthrough, let assetId = selectedVideo.assetIdentifier {
+    let photoLibraryReadStatus = PHPhotoLibrary.authorizationStatus(for: .readWrite)
+    let hasPhotoLibraryReadAccess = photoLibraryReadStatus == .authorized || photoLibraryReadStatus == .limited
+
+    if options.videoExportPreset == .passthrough, hasPhotoLibraryReadAccess, let assetId = selectedVideo.assetIdentifier {
       let fetchResult = PHAsset.fetchAssets(withLocalIdentifiers: [assetId], options: nil)
       if let asset = fetchResult.firstObject {
         // Prefer the full-size resource when available, otherwise fall back to the default `.video`.

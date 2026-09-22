@@ -33,9 +33,13 @@ After running the command above, you will see a QR code in your terminal. Scan t
 
 If you're using an Android Emulator or iOS Simulator, you can press <kbd>A</kbd> or <kbd>I</kbd> respectively to open the app.
 
+> **info** **Using Expo Go on a physical iOS device?** Expo Go opens your project only when Expo CLI and Expo Go are signed in to the same Expo account. Run `npx expo login` on your computer, then sign in to Expo Go with the same account. See [Set up your environment](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=expo-go).
+
 <Collapsible summary="Having problems?">
 
 Make sure you are on the same Wi-Fi network on your computer and your device.
+
+If you see an error about accounts on a physical iOS device, sign in to Expo Go from the account icon in the top-right corner, then press **Try Again**.
 
 If it still doesn't work, it may be due to the router configuration — this is common for public networks. You can work around this by choosing the **Tunnel** connection type when starting the development server, then scanning the QR code again.
 

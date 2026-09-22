@@ -47,6 +47,7 @@ class AudioRecorder(
   var isRecording = false
   var isPaused = false
   private var recordingTimerJob: Job? = null
+  private var durationLimitMillis: Long? = null
   var useForegroundService = false
 
   val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
@@ -118,6 +119,11 @@ class AudioRecorder(
       }
     }
 
+    if (isPaused && durationLimitMillis?.let { durationAlreadyRecorded >= it } == true) {
+      stopRecording()
+      return
+    }
+
     if (isPaused) {
       recorder?.resume()
     } else {
@@ -126,26 +132,23 @@ class AudioRecorder(
     startTime = System.currentTimeMillis()
     isRecording = true
     isPaused = false
+    scheduleRecordingStop()
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
     recordingTimerJob?.cancel()
+    recordingTimerJob = null
 
     // Note: atTime is not supported on Android (no native equivalent), so we ignore it entirely
     // Only forDuration is implemented using coroutines
+    if (forDurationSeconds != null) {
+      durationLimitMillis = (forDurationSeconds * 1000).toLong()
+    } else if (!isPaused || atTimeSeconds != null) {
+      // A bare record() resumes the current capture and keeps its limit.
+      durationLimitMillis = null
+    }
 
-    forDurationSeconds?.let {
-      record()
-      recordingTimerJob = appContext?.mainQueue?.launch {
-        delay((it * 1000).toLong())
-        // Stop recording regardless of current state
-        // This matches the iOS behaviour where the timer continues regardless of if
-        // the recording was paused.
-        if (isRecording || isPaused) {
-          stopRecording()
-        }
-      }
-    } ?: record()
+    record()
   }
 
   // Keep backward compatibility methods
@@ -158,10 +161,24 @@ class AudioRecorder(
   }
 
   fun pauseRecording() {
+    recordingTimerJob?.cancel()
+    recordingTimerJob = null
     recorder?.pause()
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
     isRecording = false
     isPaused = true
+  }
+
+  private fun scheduleRecordingStop() {
+    recordingTimerJob?.cancel()
+    recordingTimerJob = durationLimitMillis?.let { limit ->
+      appContext?.mainQueue?.launch {
+        delay((limit - getAudioRecorderDurationMillis()).coerceAtLeast(0))
+        if (isRecording) {
+          stopRecording()
+        }
+      }
+    }
   }
 
   fun stopRecording(): Bundle {
@@ -220,6 +237,7 @@ class AudioRecorder(
     isRecording = false
     isPaused = false
     durationAlreadyRecorded = 0
+    durationLimitMillis = null
     startTime = 0L
     isPrepared = false
   }

@@ -27,6 +27,8 @@ const PADDING = 20;
 const HANDLE_SIZE = 25;
 const HANDLE_SLOP = 10;
 const WINDOW_DIMENSIONS = Dimensions.get('window');
+
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 const MAX_WIDTH = WINDOW_DIMENSIONS.width - 2 * PADDING;
 const MAX_HEIGHT = WINDOW_DIMENSIONS.height - 330;
 
@@ -68,8 +70,6 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
       // Here we use any because the text prop is not available in the type
     } as any;
   });
-  const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
-
   return (
     <View>
       <AnimatedTextInput

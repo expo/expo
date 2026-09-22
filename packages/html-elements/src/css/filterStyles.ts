@@ -16,7 +16,6 @@ const WEB_STYLES = [
   'backgroundAttachment',
   'backgroundBlendMode',
   'backgroundClip',
-  'backgroundImage',
   'backgroundOrigin',
   'backgroundPosition',
   'backgroundRepeat',

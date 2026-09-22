@@ -122,7 +122,8 @@ export type Asset = {
    */
   albumId?: string;
   /**
-   * GPS location if available. On Android, `getAssetsAsync` includes this field for image
+   * GPS location if available. On iOS, `getAssetsAsync` includes this field for all asset types when
+   * the asset has location metadata. On Android, `getAssetsAsync` includes this field for image
    * assets only when you pass `resolveWithFullInfo: true`.
    */
   location?: Location;
@@ -329,6 +330,7 @@ export type AssetsOptions = {
   /**
    * Whether to resolve full EXIF metadata for image assets during the query.
    * When enabled, Android resolves EXIF data (including orientation) and GPS location for image assets.
+   * On iOS, `getAssetsAsync` includes GPS location for all asset types even when this option is disabled.
    *
    * > **Note:** On Android, enabling this option significantly increases request time (~5×),
    * > because the library fetches EXIF and location data per image.
@@ -862,6 +864,7 @@ export async function deleteAlbumsAsync(
  * Fetches a page of assets matching the provided criteria.
  * Returned assets may include a `location` field when GPS metadata is available.
  * On Android, pass `resolveWithFullInfo: true` to resolve location and full EXIF data for image assets only.
+ * On iOS, `getAssetsAsync` includes location for all asset types by default.
  *
  * > **Note:** On Android, `resolveWithFullInfo: true` significantly increases request time (~5×),
  * > because the library fetches EXIF and location data per image.

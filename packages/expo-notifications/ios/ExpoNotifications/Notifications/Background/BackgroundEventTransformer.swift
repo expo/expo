@@ -44,8 +44,13 @@ public class BackgroundEventTransformer {
     if let aps = payload["aps"] as? [String: Any] {
       result["aps"] = aps
       result["notification"] = aps["alert"] ?? NSNull()
-      if let category = aps["category"] as? String, var data = result["data"] as? [String: Any] {
-        data["categoryId"] = category
+      if var data = result["data"] as? [String: Any] {
+        if let category = aps["category"] as? String {
+          data["categoryId"] = category
+        }
+        if let threadId = aps["thread-id"] as? String {
+          data["threadIdentifier"] = threadId
+        }
         result["data"] = data
       }
     }

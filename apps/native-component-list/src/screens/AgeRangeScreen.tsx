@@ -1,6 +1,6 @@
 import * as AgeRange from 'expo-age-range';
 import { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
@@ -207,11 +207,13 @@ export default function AgeRangeScreen() {
         title="Get Required Regulatory Features (iOS 26.4+)"
         style={styles.button}
       />
-      <Button
-        onPress={faultyRequestAgeRange}
-        title="Request Faulty Age Range"
-        style={styles.button}
-      />
+      {Platform.OS === 'ios' && (
+        <Button
+          onPress={faultyRequestAgeRange}
+          title="Request Faulty Age Range"
+          style={styles.button}
+        />
+      )}
 
       <HeadingText style={styles.heading}>Fake age signals (Android)</HeadingText>
 

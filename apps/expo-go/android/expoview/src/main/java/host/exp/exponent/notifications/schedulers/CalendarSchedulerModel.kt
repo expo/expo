@@ -8,30 +8,29 @@ import com.cronutils.parser.CronParser
 import com.cronutils.model.time.ExecutionTime
 import android.content.Intent
 import android.os.SystemClock
-import com.raizlabs.android.dbflow.annotation.Column
-import com.raizlabs.android.dbflow.annotation.PrimaryKey
-import com.raizlabs.android.dbflow.annotation.Table
-import com.raizlabs.android.dbflow.structure.BaseModel
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import org.joda.time.DateTime
 import org.json.JSONException
 import java.util.*
 
-@Table(database = SchedulersDatabase::class)
-class CalendarSchedulerModel : BaseModel(), SchedulerModel {
-  @Column
-  @PrimaryKey(autoincrement = true)
+@Entity(tableName = "CalendarSchedulerModel")
+class CalendarSchedulerModel : SchedulerModel {
+  @ColumnInfo
+  @PrimaryKey(autoGenerate = true)
   var id = 0
 
-  @Column override var notificationId = 0
+  @ColumnInfo override var notificationId = 0
 
-  @Column(name = "experienceId")
+  @ColumnInfo(name = "experienceId")
   var experienceScopeKey: String? = null
 
-  @Column var isRepeat = false
+  @ColumnInfo var isRepeat = false
 
-  @Column var serializedDetails: String? = null
+  @ColumnInfo var serializedDetails: String? = null
 
-  @Column var calendarData: String? = null
+  @ColumnInfo var calendarData: String? = null
 
   override val idAsString: String
     get() = Integer.valueOf(id).toString() + this.javaClass.simpleName
@@ -43,16 +42,16 @@ class CalendarSchedulerModel : BaseModel(), SchedulerModel {
   }
 
   override fun saveAndGetId(): String {
-    save() // get id from database
+    id = SchedulersDatabase.dao.insertCalendar(this).toInt() // get id from database
     val details = getDetailsMap()
     details!![SchedulersManagerProxy.SCHEDULER_ID] = idAsString
     setDetailsFromMap(details)
-    save()
+    SchedulersDatabase.dao.updateCalendar(this)
     return idAsString
   }
 
   override fun remove() {
-    delete()
+    SchedulersDatabase.dao.deleteCalendar(this)
   }
 
   // elapsedTime

@@ -6,10 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.5.0 — 2026-09-10
+
+### 🎉 New features
+
 - Add `setNodeEnv` for Expo commands and tools. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes
 
+- Block dotenv files from setting `__EXPO_CONFIG_MODE` through `EXPO_UNSAFE_DOTENV_KEYS`. ([#49417](https://github.com/expo/expo/pull/49417) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Set `NODE_ENV` when `loadProjectEnv` receives a development or production mode. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others

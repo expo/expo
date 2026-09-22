@@ -5,10 +5,9 @@ sidebar_title: Introduction
 searchRank: 15
 ---
 
-import { DocsLogo } from '@expo/styleguide';
+import { DocsLogo, RouterLogo } from '@expo/styleguide';
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -30,14 +29,12 @@ We recommend creating a new Expo app using `create-expo-app` to create a project
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
-    yarn: ['$ yarn create expo-app --template default@sdk-57'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
-    bun: ['$ bun create expo --template default@sdk-57'],
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
   }}
 />
-
-> **Note:** Without `--template`, `create-expo-app` prompts which Expo SDK version to use. Select **Latest (SDK 57)** for most projects, or **for learning with Expo Go (SDK 54)**, which matches the Google Play Store and Apple App Store versions of Expo Go.
 
 </Step>
 
@@ -154,13 +151,13 @@ Basic static rendering (SSG) is supported in Expo Router. Server-side rendering 
 
 <BoxLink
   title="Manual installation"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
   description="Detailed instructions on how to get started and add Expo Router to your existing app."
   href="/router/installation/"
 />
 <BoxLink
   title="Router 101"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
   description="For information core concepts, notation patterns, navigation layouts, and common navigation patterns, start with Router 101 section."
   href="/router/basics/core-concepts/"
 />

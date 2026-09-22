@@ -6,7 +6,7 @@ name: AI code review (command)
 #   /review all (or /expo-review all, or @expo-bot review all)
 #   /review correctness security (either command, or @expo-bot review …)
 #   @expo-bot check          the review half of "verify + review from one
-#                            comment" (agent-commands.yml owns the verify
+#                            comment" (verify-comment.yml owns the verify
 #                            half). Any tail belongs to verify (--fix), so
 #                            the router always picks agents here.
 # This never changes configuration. CONTINUOUS review is configured in
@@ -51,12 +51,12 @@ jobs:
   command:
     # Manual dispatch (write access required), or PR comments starting with
     # /review, /expo-review, @expo-bot review, or @expo-bot check.
-    # PREFIX matching, deliberately loose (see agent-commands.yml): expression
+    # PREFIX matching, deliberately loose (see verify-comment.yml): expression
     # literals cannot express a newline, so an exact-body or trailing-space
     # match misses `@expo-bot review\n` and the command dies without a trace.
     # This gate only decides "command-shaped, from a maintainer"; the parse
     # step owns exact shapes. The parse step stays silent for prefix-matched
-    # shapes that agent-commands.yml owns (`@expo-bot review-feedback` is a
+    # shapes that verify-comment.yml owns (`@expo-bot review-feedback` is a
     # work task, `@expo-bot reviewed` is prose) and replies to the thread when
     # it rejects a mangled slash form (`/reviewx`) that nothing else owns.
     # @ref LLP 0009#workflow-security-posture [implements] — gate controls who triggers, not what code runs
@@ -122,7 +122,7 @@ jobs:
               review)
                 rest=$(printf '%s' "$line" | awk '{for (i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":"")}')
                 ;;
-              # check = verify + review from one comment; agent-commands.yml
+              # check = verify + review from one comment; verify-comment.yml
               # owns the verify half. Any tail is verify's (--fix), so the
               # review half ignores it and lets the router pick agents.
               check)
@@ -131,7 +131,7 @@ jobs:
               *)
                 # Prefix-matched but not this workflow's verb: a work task
                 # (`review-feedback`, `checkout …`) or prose (`reviewed`).
-                # agent-commands.yml owns those shapes — stay silent.
+                # verify-comment.yml owns those shapes — stay silent.
                 echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
                 ;;
             esac
@@ -166,9 +166,9 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       # A maintainer typed a command and it did not launch — say so where it
-      # was typed (same contract as agent-commands.yml). Only mangled slash
+      # was typed (same contract as verify-comment.yml). Only mangled slash
       # forms set `reject`; rejected @expo-bot shapes stay silent because
-      # agent-commands.yml owns them as work tasks or prose.
+      # verify-comment.yml owns them as work tasks or prose.
       - name: Reply to a rejected command
         if: always() && github.event_name == 'issue_comment' && steps.cmd.outputs.reject != ''
         env:

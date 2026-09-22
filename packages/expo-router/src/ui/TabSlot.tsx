@@ -117,7 +117,7 @@ export function defaultTabsSlotRender(
   descriptor: TabsDescriptor,
   { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions
 ) {
-  const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
+  const { lazy = true, unmountOnBlur } = descriptor.options;
 
   if (unmountOnBlur && !isFocused) {
     return null;
@@ -133,7 +133,7 @@ export function defaultTabsSlotRender(
       key={descriptor.route.key}
       enabled={detachInactiveScreens}
       activityState={isFocused ? 2 : 0}
-      freezeOnBlur={freezeOnBlur}
+      freezeOnBlur={false}
       style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
       {descriptor.render()}
     </Screen>

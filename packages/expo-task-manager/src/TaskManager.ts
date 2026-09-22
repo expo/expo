@@ -111,6 +111,17 @@ function _validate(taskName: unknown) {
   }
 }
 
+// The hasFinishedInitPhase variable tracks whether the initial, synchronous evaluation of the JavaScript bundle has finished:
+// Its value is:
+// - false - when accessing it from the global scope in synchronous functions
+// - true - when accessing it from React components, effects, event handlers, timers.
+// It may be either value, when:
+// - accessing it in an async function called from the global scope.
+let hasFinishedInitPhase = false;
+Promise.resolve().then(() => {
+  hasFinishedInitPhase = true;
+});
+
 // @needsAudit
 /**
  * Defines task function. It must be called in the global scope of your JavaScript bundle,
@@ -132,6 +143,13 @@ export function defineTask<T = unknown>(
   if (!taskExecutor || typeof taskExecutor !== 'function') {
     console.warn(`TaskManager.defineTask: 'task' argument must be a function.`);
     return;
+  }
+  if (!tasks.has(taskName) && hasFinishedInitPhase) {
+    console.warn(
+      `TaskManager.defineTask: the task "${taskName}" was defined after the JavaScript bundle finished loading.
+The call was most likely inside a React component. Components are not mounted when the app is launched in the background. In that case this task will not be defined.
+Call \`TaskManager.defineTask\` synchronously in the global scope of a module imported at startup.`
+    );
   }
   tasks.set(taskName, taskExecutor);
 }

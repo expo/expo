@@ -1,6 +1,6 @@
 {
   "name": "expo-observe",
-  "version": "57.0.9",
+  "version": "58.0.6",
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
   "keywords": [
     "EAS",
@@ -54,13 +54,13 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "expo-app-metrics": "workspace:~56.0.14",
-    "expo-eas-client": "workspace:~56.0.0"
+    "expo-app-metrics": "workspace:~",
+    "expo-eas-client": "workspace:~"
   },
   "devDependencies": {
     "@react-navigation/native": "^7.1.33",
     "@testing-library/react-native": "^13.3.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },

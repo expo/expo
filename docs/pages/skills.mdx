@@ -6,7 +6,7 @@ hasVideoLink: true
 ---
 
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ExpoSkillsTable } from '~/ui/components/ExpoSkillsTable';
@@ -32,7 +32,9 @@ Expo Skills are structured instruction files that teach AI agents how to build, 
 
 Run the following command to install the official Expo plugin from the `claude-plugins-official` marketplace:
 
-<Terminal cmd={['$ /plugin install expo@claude-plugins-official']} />
+<Terminal cmd={['$ claude plugin install expo@claude-plugins-official']} />
+
+You can also run `/plugin install expo@claude-plugins-official` inside a Claude Code session.
 
 </Tab>
 
@@ -92,6 +94,8 @@ Use the [skills CLI](https://skills.sh/docs/cli) to add Expo Skills to any compa
 
 </Tabs>
 
+> **info** For Claude Code and Codex, the plugin also registers the [Expo MCP Server](/mcp/), so you do not add it separately. The skills CLI installs skills only.
+
 ## Available Expo Skills
 
 The following skills are available in the `expo` plugin. Skills name prefixed with`expo-*` skills are used for the Expo open source framework and `eas-*` skills for the EAS services.
@@ -137,5 +141,5 @@ Try the following prompts after installing Expo Skills. Your AI agent will autom
   title="Expo MCP Server"
   description="Companion AI tooling that gives coding agents direct access to Expo and EAS services."
   href="/mcp/"
-  Icon={BookOpen02Icon}
+  Icon={Star06Icon}
 />

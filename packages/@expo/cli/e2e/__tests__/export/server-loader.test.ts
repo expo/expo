@@ -20,16 +20,14 @@ describe.each(
     export: {
       env: {
         EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
     serve: {
       env: {
+        EXPO_USE_STATIC: 'server',
         TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
         TEST_THROW_ERROR: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     },
   })
@@ -49,6 +47,7 @@ describe.each(
     expect(files).not.toContain('request.html');
     expect(files).not.toContain('response.html');
     expect(files).not.toContain('second.html');
+    expect(files).not.toContain('slow.html');
     expect(files).not.toContain('nested/index.html');
     expect(files).not.toContain('nullish/[value].html');
     expect(files).not.toContain('nullish/null.html');
@@ -66,6 +65,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/request.js');
     expect(files).toContain('_expo/loaders/response.js');
     expect(files).toContain('_expo/loaders/second.js');
+    expect(files).toContain('_expo/loaders/slow.js');
     expect(files).toContain('_expo/loaders/nullish/[value].js');
     expect(files).toContain('_expo/loaders/posts/[postId].js');
     expect(files).toContain('_expo/loaders/(group)/index.js');

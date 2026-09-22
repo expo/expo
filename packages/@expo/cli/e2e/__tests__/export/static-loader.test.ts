@@ -19,7 +19,6 @@ describe.each(
     export: {
       env: {
         EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
@@ -50,6 +49,7 @@ describe.each(
     expect(files).toContain('request.html');
     expect(files).toContain('response.html');
     expect(files).toContain('second.html');
+    expect(files).toContain('slow.html');
     expect(files).toContain('nested/index.html');
     expect(files).toContain('nullish/[value].html');
     expect(files).toContain('nullish/null.html');
@@ -67,6 +67,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/request');
     expect(files).toContain('_expo/loaders/response');
     expect(files).toContain('_expo/loaders/second');
+    expect(files).toContain('_expo/loaders/slow');
     expect(files).toContain('_expo/loaders/nested/index');
     expect(files).toContain('_expo/loaders/nullish/[value]');
     expect(files).toContain('_expo/loaders/nullish/null');
@@ -274,6 +275,7 @@ describe.each(
         { namedRegex: '^/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/slow(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/\\(group\\)/index(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/env(?:/)?$', headers: SSG_DEFAULT },
@@ -288,6 +290,7 @@ describe.each(
         { namedRegex: '^/_expo/loaders/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/slow(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
         // Loader-declared headers: appended last so they win, applied to page and loader file.
         {

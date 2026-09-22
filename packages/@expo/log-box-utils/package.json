@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box-utils",
-  "version": "56.0.0",
+  "version": "58.0.0",
   "description": "Pure error parsing utilities for Expo LogBox.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box-utils",
   "license": "MIT",

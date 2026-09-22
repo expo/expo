@@ -150,6 +150,13 @@ export function requireNativeViewManager<P>(
       this.nativeTag = findNodeHandle(this.nativeRef.current);
     }
 
+    /**
+     * The underlying host component
+     */
+    getNativeRef(): (Component & ReactNativeElement) | null {
+      return this.nativeRef.current;
+    }
+
     render() {
       return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
     }

@@ -1,6 +1,7 @@
 import {
   Host,
   Slider,
+  VerticalSlider,
   Shape,
   Row,
   Text as ComposeText,
@@ -26,6 +27,8 @@ export default function SliderScreen() {
   const [rangeValue, setRangeValue] = React.useState(2);
   const [colorsValue, setColorsValue] = React.useState(0.5);
   const [fullCustomValue, setFullCustomValue] = React.useState(0.5);
+  const [verticalValue, setVerticalValue] = React.useState(0.25);
+  const [reversedVerticalValue, setReversedVerticalValue] = React.useState(0.75);
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
@@ -34,6 +37,27 @@ export default function SliderScreen() {
             <ComposeText>Default</ComposeText>
             <ComposeText>Default Material3 slider with no customization.</ComposeText>
             <Slider />
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Vertical</ComposeText>
+            <ComposeText>
+              Default direction on the left and reversed direction on the right.
+            </ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 32 }}>
+              <VerticalSlider
+                value={verticalValue}
+                onValueChange={setVerticalValue}
+                modifiers={[height(200)]}
+              />
+              <VerticalSlider
+                value={reversedVerticalValue}
+                reverseDirection
+                onValueChange={setReversedVerticalValue}
+                modifiers={[height(200)]}
+              />
+            </Row>
           </Column>
         </Card>
         <Card modifiers={[fillMaxWidth()]}>

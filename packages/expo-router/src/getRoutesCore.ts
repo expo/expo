@@ -30,8 +30,6 @@ export type Options = {
   skipStaticParams?: boolean;
   /* Skip the generated not found route  */
   notFound?: boolean;
-  /* Enable experimental server middleware support */
-  unstable_useServerMiddleware?: boolean;
   importMode?: string;
   platformRoutes?: boolean;
   sitemap?: boolean;
@@ -134,25 +132,6 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
  */
 function getMiddleware(contextModule: RequireContext, options: Options): MiddlewareNode | null {
   const allMiddlewareFiles = contextModule.keys().filter((key) => key.includes('+middleware'));
-
-  // Check if middleware is enabled via plugin config
-  if (!options.unstable_useServerMiddleware) {
-    if (allMiddlewareFiles.length > 0) {
-      console.warn(
-        'Server middleware is not enabled. Add unstable_useServerMiddleware: true to your `expo-router` plugin config.\n\n' +
-          JSON.stringify(
-            {
-              expo: {
-                plugins: [['expo-router', { unstable_useServerMiddleware: true }]],
-              },
-            },
-            null,
-            2
-          )
-      );
-    }
-    return null;
-  }
 
   const isValidMiddleware = (key: string) => /^\.\/\+middleware\.[tj]sx?$/.test(key);
 
@@ -881,7 +860,15 @@ function getLayoutNode(node: RouteNode, options: Options) {
   const loaded = node.loadRoute();
   if (loaded?.unstable_settings) {
     try {
-      // Allow unstable_settings={ initialRouteName: '...' } to override the default initial route name.
+      if (
+        process.env.NODE_ENV !== 'production' &&
+        (loaded.unstable_settings.initialRouteName !== undefined ||
+          loaded.unstable_settings[groupName ?? '']?.initialRouteName !== undefined)
+      ) {
+        console.warn(
+          '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
+        );
+      }
       anchor =
         loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
     } catch (error: any) {
@@ -893,7 +880,6 @@ function getLayoutNode(node: RouteNode, options: Options) {
     }
 
     if (groupName) {
-      // Allow unstable_settings={ 'custom': { initialRouteName: '...' } } to override the less specific initial route name.
       const groupSpecificInitialRouteName =
         loaded.unstable_settings?.[groupName]?.anchor ??
         loaded.unstable_settings?.[groupName]?.initialRouteName;

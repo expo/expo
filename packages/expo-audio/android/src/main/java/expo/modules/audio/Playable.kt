@@ -15,6 +15,7 @@ interface Playable {
   var isMuted: Boolean
   var previousVolume: Float
   var onPlaybackStateChange: ((Boolean) -> Unit)?
+  var onRelease: (() -> Unit)?
 
   val player: Player
   val appContext: AppContext?

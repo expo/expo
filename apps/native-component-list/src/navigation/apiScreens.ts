@@ -1,5 +1,7 @@
 import { isRunningInExpoGo } from 'expo';
 
+import { AIScreens } from '../screens/AI/AIScreen';
+import { AppIntentsScreens } from '../screens/AppIntents/AppIntentsScreen';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import { BlobScreens } from '../screens/Blob/BlobScreen';
 import { CalendarNextScreens } from '../screens/Calendar@Next/CalendarNextScreens';
@@ -84,6 +86,17 @@ export const ScreensList: ScreenConfig[] = [
           options: { title: 'Age Range' },
         },
       ]),
+  ...(isRunningInExpoGo()
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/AI/AIScreen'));
+          },
+          name: 'AI',
+          options: { title: 'AI' },
+        },
+      ]),
   {
     getComponent() {
       return optionalRequire(() => require('../screens/AppearanceScreen'));
@@ -110,6 +123,14 @@ export const ScreensList: ScreenConfig[] = [
     },
     name: 'AppMetrics',
     options: { title: 'App Metrics' },
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/AppIntents/AppIntentsScreen'));
+    },
+    name: 'AppIntents',
+    route: 'app-intents',
+    options: { title: 'App Intents' },
   },
   {
     getComponent() {
@@ -411,6 +432,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ScreenCaptureAdvancedScreen'));
+    },
+    name: 'ScreenCaptureAdvanced',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SensorScreen'));
     },
     name: 'Sensor',
@@ -501,6 +528,8 @@ export const ScreensList: ScreenConfig[] = [
 
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
+  ...(isRunningInExpoGo() ? [] : AIScreens),
+  ...AppIntentsScreens,
   ...ModulesCoreScreens,
   ...MediaLibraryScreens,
   ...AudioScreens,
