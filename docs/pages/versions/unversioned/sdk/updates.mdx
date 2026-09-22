@@ -67,7 +67,9 @@ There are build-time configuration options that control the behavior of the libr
 | [`updates.enableBsdiffPatchSupport`](../config/app/#enablebsdiffpatchsupport)       | `true`    | <NoIcon />  | `EXUpdatesEnableBsdiffPatchSupport`    | `expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT`               | `enableBsdiffPatchSupport`    |
 | [`updates.maxUpdatesToKeep`](../config/app/#maxupdatestokeep)                       | `2`       | <NoIcon />  | `EXUpdatesMaxUpdatesToKeep`            | `expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP`          | `maxUpdatesToKeep`            |
 
-`updates.maxUpdatesToKeep` retains the launched update and up to that number minus one older updates, preferring updates that match the manifest filters. Embedded updates, updates with the same or a newer commit time, and updates from other scopes are protected from deletion, so the total cache can exceed this value.
+`updates.maxUpdatesToKeep` controls how many updates to keep, including the one currently running. For example, setting it to `3` keeps the running update and up to two older updates. Updates that match the manifest filters take priority, with the newest updates kept first.
+
+The total number of cached updates can exceed this value. Cleanup also keeps the update bundled with the app, updates with the same or a newer commit time than the running update, and updates from other scopes.
 
 The two core required configuration options are:
 
