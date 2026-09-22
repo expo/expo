@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] [Android] Do not record an `updateDownloadTime` metric when `fetchUpdateAsync` completes with an update that was already downloaded and ready on device. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@douglowder](https://github.com/douglowder)) ([#50471](https://github.com/expo/expo/pull/50471) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-22
