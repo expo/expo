@@ -748,14 +748,18 @@ describe('serializes', () => {
   });
 
   it(`bundle splits a weak import`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `
+    // Real Metro omits weak-only targets; this fixture preserves legacy test behavior.
+    const artifacts = await serializeSplitAsync(
+      {
+        'index.js': `
           require.resolveWeak('./foo')
         `,
-      'foo.js': `
+        'foo.js': `
           export const foo = 'foo';
         `,
-    });
+      },
+      { legacyTraverseWeakDependencies: true }
+    );
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [

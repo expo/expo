@@ -9,10 +9,10 @@ import {
   removeBit,
 } from '../computeBitSetChunks';
 
-async function loadGraph(fs: Record<string, string>) {
+async function loadGraph(fs: Record<string, string>, legacyTraverseWeakDependencies = false) {
   const [entryPath, , graph] = await microBundle({
     fs,
-    options: { platform: 'web', dev: false, splitChunks: true },
+    options: { platform: 'web', dev: false, splitChunks: true, legacyTraverseWeakDependencies },
   });
   return { graph, entry: graph.dependencies.get(entryPath)! };
 }
@@ -261,11 +261,15 @@ describe('atoms and already-loaded ownership', () => {
   );
 
   it('excludes a disconnected dynamic cycle even though both nodes have importers', async () => {
-    const { entry, graph } = await loadGraph({
-      'index.js': `require.resolveWeak('./a');`,
-      'a.js': `import('./b');`,
-      'b.js': `import('./a');`,
-    });
+    // Include the disconnected cycle so discovery has to exclude it.
+    const { entry, graph } = await loadGraph(
+      {
+        'index.js': `require.resolveWeak('./a');`,
+        'a.js': `import('./b');`,
+        'b.js': `import('./a');`,
+      },
+      true
+    );
     const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
     expect(plan.entryPoints.map((e) => e.module.path)).toEqual(['/app/index.js']);
     expect([...plan.chunkByModule.keys()].map((m) => m.path)).toEqual(['/app/index.js']);
@@ -446,13 +450,16 @@ describe('raw entrypoint reachability', () => {
   });
 
   it('excludes weak-only and worker-only modules from the page domain', async () => {
-    const { entry, graph } = await loadGraph({
-      'index.js': `require.resolveWeak('./weak'); require.unstable_resolveWorker('./worker');`,
-      'weak.js': `import('./hidden');`,
-      'worker.js': `import './worker-dep';`,
-      'hidden.js': '',
-      'worker-dep.js': '',
-    });
+    const { entry, graph } = await loadGraph(
+      {
+        'index.js': `require.resolveWeak('./weak'); require.unstable_resolveWorker('./worker');`,
+        'weak.js': `import('./hidden');`,
+        'worker.js': `import './worker-dep';`,
+        'hidden.js': '',
+        'worker-dep.js': '',
+      },
+      true
+    );
     const analysis = analyzeBitSetGraph([entry], graph, { isLazyBundle: false });
     expect(analysis.entryPoints.map((e) => e.module.path)).toEqual(['/app/index.js']);
     for (const name of ['weak', 'hidden', 'worker', 'worker-dep']) {
