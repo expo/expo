@@ -104,6 +104,35 @@ struct UpdatesConfigTests {
     }
   }
 
+  @Test
+  func `validation rejects invalid retention before constructing configuration`() {
+    let invalidValues: [Any] = [1, 2.5, "nope", true]
+    for value in invalidValues {
+      let result = UpdatesConfig.getUpdatesConfigurationValidationResult(
+        fromDictionary: [
+          UpdatesConfig.EXUpdatesConfigEnabledKey: true,
+          UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+          UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+          UpdatesConfig.EXUpdatesConfigMaxUpdatesToKeepKey: value
+        ],
+        configOverride: nil
+      )
+      #expect(result == .InvalidMaxUpdatesToKeep)
+    }
+  }
+
+  @Test
+  func `validation accepts default and valid retention`() {
+    for value in [nil, 2, 3] as [Int?] {
+      var dictionary: [String: Any] = [
+        UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+        UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1"
+      ]
+      dictionary[UpdatesConfig.EXUpdatesConfigMaxUpdatesToKeepKey] = value
+      #expect(UpdatesConfig.getUpdatesConfigurationValidationResult(fromDictionary: dictionary, configOverride: nil) == .Valid)
+    }
+  }
+
   // MARK: - normalizedURLOrigin
 
   @Test

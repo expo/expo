@@ -51,6 +51,7 @@ public enum UpdatesConfigurationValidationResult {
   case InvalidPlistError
   case InvalidMissingURL
   case InvalidMissingRuntimeVersion
+  case InvalidMaxUpdatesToKeep
 }
 
 /**
@@ -209,6 +210,13 @@ public final class UpdatesConfig: NSObject {
       return UpdatesConfigurationValidationResult.InvalidPlistError
     }
 
+    return getUpdatesConfigurationValidationResult(fromDictionary: dictionary, configOverride: configOverride)
+  }
+
+  internal static func getUpdatesConfigurationValidationResult(
+    fromDictionary dictionary: [String: Any],
+    configOverride: UpdatesConfigOverride?
+  ) -> UpdatesConfigurationValidationResult {
     guard dictionary.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? true else {
       return UpdatesConfigurationValidationResult.InvalidNotEnabled
     }
@@ -218,8 +226,12 @@ public final class UpdatesConfig: NSObject {
       return UpdatesConfigurationValidationResult.InvalidMissingURL
     }
 
-    guard getRuntimeVersion(mergingOtherDictionary: mergingOtherDictionary) != nil else {
+    guard getRuntimeVersion(fromDictionary: dictionary) != nil else {
       return UpdatesConfigurationValidationResult.InvalidMissingRuntimeVersion
+    }
+
+    guard (try? getMaxUpdatesToKeep(fromDictionary: dictionary)) != nil else {
+      return .InvalidMaxUpdatesToKeep
     }
 
     return UpdatesConfigurationValidationResult.Valid
