@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Import `CoreImage` in `BarcodeUtils`, which relied on another file in the module importing it.
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-21
