@@ -1239,6 +1239,52 @@ describe('a partially precompiled module', () => {
   });
 });
 
+describe('a partially precompiled module whose precompiled product is not named after its pod', () => {
+  const logs = captureConsole();
+  let thrown;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-plugin-partial-product-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const skia = path.join(tmp, 'react-native-skia');
+    const podspecDir = pureSwiftModule(skia, 'RNSkiaPod', spec());
+    fs.writeFileSync(path.join(podspecDir, 'RNSkiaExtras.podspec'), spec());
+    prebuiltMetadata.mockReturnValue({ RNSkiaPod: metadataEntry(skia, 'RNSkia') });
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', 'RNSkia'].includes(frameworkName)
+        ? { id: frameworkName, frameworkName }
+        : null
+    );
+    resolveExpoModules.mockReturnValue({
+      modules: [
+        {
+          packageName: 'expo-modules-core',
+          pods: [{ podName: 'ExpoModulesCore', podspecDir: core }],
+        },
+        {
+          packageName: 'react-native-skia',
+          pods: [
+            { podName: 'RNSkiaPod', podspecDir },
+            { podName: 'RNSkiaExtras', podspecDir },
+          ],
+        },
+      ],
+      extraDependencies: [],
+    });
+    thrown = thrownBy(() => runPlugin(tmp));
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('names the artifacts pass 1 looked up, under the product name', () => {
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    const report = printed(logs.error);
+    expect(report).toContain('— RNSkia.xcframework or RNSkia.tar.gz, under');
+    expect(report).not.toContain('RNSkiaPod.xcframework');
+    expect(report).toContain('its sibling pod RNSkiaPod does');
+  });
+});
+
 // React Native hands the plugin its own autolinking data (`context.autolinking`,
 // the raw autolinking.json). Its `root` is where Node resolves the package from
 // the app — a resolved answer to the question the filesystem walk guesses at.

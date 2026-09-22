@@ -331,15 +331,14 @@ module.exports = function expoSpmPlugin(context) {
       const pod = pods[0];
       const { entry, moduleRoot } = identities.get(pod);
       const hasManifest = fs.existsSync(path.join(moduleRoot, 'Package.swift'));
-      const precompiledSiblings = pods
-        .map((p) => p.podName)
-        .filter((podName) => precompiledFrameworks.has(podName));
+      const precompiledSiblings = pods.filter((p) => precompiledFrameworks.has(p.podName));
 
       if (precompiledSiblings.length > 0 && (hasManifest || isPureSwift(moduleRoot))) {
         // Both source branches build the whole module, so emitting it would link
         // the precompiled pods a second time, from source.
         partiallyPrecompiled.set(moduleRoot, {
-          precompiledSiblings,
+          precompiledSiblings: precompiledSiblings.map((p) => p.podName),
+          precompiledProducts: precompiledSiblings.map((p) => identities.get(p).productName),
           artifactDirs: artifactBaseDirs(mod.packageName, moduleRoot),
         });
         continue;
@@ -477,6 +476,7 @@ module.exports = function expoSpmPlugin(context) {
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
         precompiledSiblings: partiallyPrecompiled.get(moduleRoot)?.precompiledSiblings ?? null,
+        precompiledProducts: partiallyPrecompiled.get(moduleRoot)?.precompiledProducts ?? null,
         artifactDirs: partiallyPrecompiled.get(moduleRoot)?.artifactDirs ?? null,
         prebuildProduct,
       });

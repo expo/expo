@@ -850,6 +850,7 @@ describe('a module with only some pods precompiled', () => {
     pureSwift: true,
     prebuildProduct: null,
     precompiledSiblings: ['ExpoDual'],
+    precompiledProducts: ['ExpoDual'],
     artifactDirs,
     ...extra,
   });
@@ -864,6 +865,7 @@ describe('a module with only some pods precompiled', () => {
         packageName: 'expo-dual',
         moduleRoot: '/node_modules/expo-dual',
         precompiledSiblings: ['ExpoDual'],
+        precompiledProducts: ['ExpoDual'],
         artifactDirs,
         prebuildProduct: null,
       },
@@ -904,6 +906,15 @@ describe('a module with only some pods precompiled', () => {
     expect(report).toContain('debug/xcframeworks');
     expect(report).toContain('release/xcframeworks');
     expect(report).toContain("add a product for ExpoDualExtras to expo-dual's spm.config.json");
+  });
+
+  it('names the artifacts after the product a sibling ships, not after its pod', () => {
+    const report = renderUnsupportedReport(
+      entries({ precompiledSiblings: ['RNSkiaPod'], precompiledProducts: ['RNSkia'] })
+    );
+    expect(report).toContain('— RNSkia.xcframework or RNSkia.tar.gz, under');
+    expect(report).not.toContain('RNSkiaPod.xcframework');
+    expect(report).toContain('its sibling pod RNSkiaPod does');
   });
 
   it('says so when spm.config.json already declares the pod it asks to build', () => {

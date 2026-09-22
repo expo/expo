@@ -83,6 +83,7 @@ function classifyUnsupported({ pending, coreAvailable }) {
         reason: 'partially-precompiled',
         ...subject,
         precompiledSiblings: p.precompiledSiblings,
+        precompiledProducts: p.precompiledProducts,
         artifactDirs: p.artifactDirs,
         prebuildProduct: p.prebuildProduct ?? null,
       };
@@ -453,13 +454,14 @@ function renderPartiallyPrecompiled({
   packageName,
   moduleRoot,
   precompiledSiblings,
+  precompiledProducts,
   artifactDirs,
   prebuildProduct,
 }) {
   const siblings = precompiledSiblings.join(', ');
   const one = precompiledSiblings.length === 1;
-  const artifacts = precompiledSiblings
-    .map((pod) => `${pod}.xcframework or ${pod}.tar.gz`)
+  const artifacts = precompiledProducts
+    .map((product) => `${product}.xcframework or ${product}.tar.gz`)
     .join(', ');
   const sourceOnly = prebuildProduct?.sourceOnly === true;
   const productStep =
