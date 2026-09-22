@@ -318,18 +318,17 @@ export const buildXcodeBuildArgs = (
       // Relative to the manifest root rather than to pkg.path: only the manifest root is
       // canonicalised, and the two can spell one directory two ways.
       sourceDirectory = path.relative(checkedInRoot, checkedInSourceRoot);
-      // A source root outside the package has no /expo-src/packages/<package>/… spelling; a map
-      // built from it would rewrite debug info to a path that does not exist.
       if (sourceDirectory === '..' || sourceDirectory.startsWith(`..${path.sep}`)) {
-        logger.warn(
-          `⚠️  Not remapping debug info for ${product.name}/${target.name}: its sources at ` +
-            `${checkedInSourceRoot} are outside the package directory ${checkedInRoot}, so they ` +
-            `have no canonical /expo-src/packages/${pkg.packageName}/… path to be recorded ` +
-            `under. Source-level debugging into this target will not work from the published ` +
-            `xcframework. Move the sources under ${checkedInRoot}, or declare the target in the ` +
-            `package that owns them.`
+        throw new Error(
+          `Cannot remap debug info for ${product.name}/${target.name}: its source root ` +
+            `${checkedInSourceRoot} is outside the manifest root ${checkedInRoot}, so it has no ` +
+            `canonical /expo-src/packages/${pkg.packageName}/… path to be recorded under. The ` +
+            `two always share a prefix in a correct build: the manifest reader resolves every ` +
+            `source root against this same root and rejects a target path that escapes it. So ` +
+            `this is a broken invariant in the prebuild pipeline, not something the package can ` +
+            `fix — find how the root that reached this build and the root the targets were ` +
+            `resolved against came to be different directories.`
         );
-        continue;
       }
     } else {
       // A target with no path names no source directory, and one generated under .build/ has no

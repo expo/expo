@@ -410,36 +410,39 @@ describe('buildXcodeBuildArgs', () => {
     );
   });
 
-  it('leaves a source root outside the package to the repository-root map', () => {
-    let args: string[] = [];
-    const warnings = captureWarnings(() => {
-      args = buildXcodeBuildArgs(
-        pkg,
-        productWithTargets([{ type: 'swift', name: 'ExpoHapticsShared' }]),
-        'Debug',
-        'iOS',
-        checkedIn([
-          { name: 'ExpoHapticsShared', sourceRoot: '/repo/packages/expo-haptics-shared/ios' },
-        ])
-      );
-    });
-    // Such a source root has no /expo-src/packages/expo-haptics/… spelling, so mapping it
-    // would rewrite the debug info to a path that does not exist.
-    assert.equal(
-      settingValue(args, 'OTHER_CFLAGS'),
-      '$(inherited) -fdebug-prefix-map=/repo=/expo-src'
+  it('rejects a source root outside the manifest root', () => {
+    // Unreachable in a correct build: the manifest reader resolves every source root against
+    // this same root and rejects a target path that escapes it. Reaching it means that
+    // invariant broke, and a map built from such a root would rewrite debug info to a path
+    // that does not exist — a silent skip would leave nothing pinning the invariant.
+    assert.throws(
+      () =>
+        buildXcodeBuildArgs(
+          pkg,
+          productWithTargets([{ type: 'swift', name: 'ExpoHapticsShared' }]),
+          'Debug',
+          'iOS',
+          checkedIn([
+            { name: 'ExpoHapticsShared', sourceRoot: '/repo/packages/expo-haptics-shared/ios' },
+          ])
+        ),
+      (error: Error) => {
+        assert.ok(
+          error.message.includes('ExpoHaptics/ExpoHapticsShared'),
+          `Name the product and the target: ${error.message}`
+        );
+        assert.ok(
+          error.message.includes('/repo/packages/expo-haptics-shared/ios'),
+          `Name the source root: ${error.message}`
+        );
+        assert.match(
+          error.message,
+          /\/repo\/packages\/expo-haptics(?![\w-])/,
+          `Name the manifest root: ${error.message}`
+        );
+        return true;
+      }
     );
-    assert.equal(warnings.length, 1, `The skip must be reported: ${warnings.join('\n')}`);
-    const warning = warnings[0];
-    assert.ok(
-      warning.includes('ExpoHaptics/ExpoHapticsShared'),
-      `Name the product and the target: ${warning}`
-    );
-    assert.ok(
-      warning.includes('/repo/packages/expo-haptics-shared/ios'),
-      `Name the source root: ${warning}`
-    );
-    assert.match(warning, /\/repo\/packages\/expo-haptics(?![\w-])/, 'Name the package root');
   });
 
   it('skips a config target the checked-in manifest does not declare', () => {
