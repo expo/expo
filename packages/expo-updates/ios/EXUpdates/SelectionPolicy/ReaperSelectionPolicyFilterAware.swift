@@ -16,13 +16,20 @@
 @objcMembers
 public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPolicy {
   private let maxUpdatesToKeep: Int
+  private let embeddedUpdateId: UUID?
 
   public override init() {
     self.maxUpdatesToKeep = 2
+    self.embeddedUpdateId = nil
   }
 
-  public init(maxUpdatesToKeep: Int) {
+  public convenience init(maxUpdatesToKeep: Int) {
+    self.init(maxUpdatesToKeep: maxUpdatesToKeep, embeddedUpdateId: nil)
+  }
+
+  public init(maxUpdatesToKeep: Int, embeddedUpdateId: UUID?) {
     self.maxUpdatesToKeep = maxUpdatesToKeep
+    self.embeddedUpdateId = embeddedUpdateId
 
     if maxUpdatesToKeep < 2 {
       NSException.init(
@@ -52,22 +59,26 @@ public final class ReaperSelectionPolicyFilterAware: NSObject, ReaperSelectionPo
       }
     }
 
+    // Embedded rows from previous binaries cannot be launched and must not occupy fallback slots.
+    let launchableOlderUpdates = olderUpdates.filter {
+      $0.status != .StatusEmbedded || $0.updateId == embeddedUpdateId
+    }
     let maxOlderUpdatesToKeep = maxUpdatesToKeep - 1
-    let matchingUpdatesToKeep = olderUpdates
+    let matchingUpdatesToKeep = launchableOlderUpdates
       .filter { SelectionPolicies.doesUpdate($0, matchFilters: filters) }
       .sorted { $0.commitTime.compare($1.commitTime) == .orderedDescending }
       .prefix(maxOlderUpdatesToKeep)
     var olderUpdatesToKeep = Set(matchingUpdatesToKeep)
 
     if matchingUpdatesToKeep.count < maxOlderUpdatesToKeep {
-      let remainingUpdatesToKeep = olderUpdates
+      let remainingUpdatesToKeep = launchableOlderUpdates
         .filter { !olderUpdatesToKeep.contains($0) }
         .sorted { $0.commitTime.compare($1.commitTime) == .orderedDescending }
         .prefix(maxOlderUpdatesToKeep - matchingUpdatesToKeep.count)
       olderUpdatesToKeep.formUnion(remainingUpdatesToKeep)
     }
 
-    return olderUpdates.filter { !olderUpdatesToKeep.contains($0) && $0.status != .StatusEmbedded }
+    return olderUpdates.filter { !olderUpdatesToKeep.contains($0) && $0.updateId != embeddedUpdateId }
   }
 }
 

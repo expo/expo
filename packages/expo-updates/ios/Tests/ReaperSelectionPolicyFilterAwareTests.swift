@@ -244,7 +244,7 @@ struct ReaperSelectionPolicyFilterAwareTests {
     let embeddedUpdate = createUpdate(commitTime: 1608667851, status: .StatusEmbedded)
     let olderUpdate = createUpdate(commitTime: 1608667852)
     let launchedUpdate = createUpdate(commitTime: 1608667853)
-    let selectionPolicy = ReaperSelectionPolicyFilterAware()
+    let selectionPolicy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 2, embeddedUpdateId: embeddedUpdate.updateId)
 
     let updatesToDelete = selectionPolicy.updatesToDelete(
       withLaunchedUpdate: launchedUpdate,
@@ -292,13 +292,32 @@ struct ReaperSelectionPolicyFilterAwareTests {
   @Test
   func `embedded updates count toward retained slots`() {
     let embeddedUpdate = createUpdate(commitTime: 1608667854, status: .StatusEmbedded)
-    let policy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 3)
+    let policy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 3, embeddedUpdateId: embeddedUpdate.updateId)
     let deleted = policy.updatesToDelete(
       withLaunchedUpdate: update5,
       updates: [update1, update2, update3, embeddedUpdate, update5],
       filters: nil
     )
     #expect(deleted == [update1, update2])
+  }
+
+  @Test
+  func `stale embedded updates do not consume fallback slots`() {
+    let staleEmbedded = createUpdate(commitTime: 1608667854, status: .StatusEmbedded)
+    let policy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 2)
+    let deleted = policy.updatesToDelete(
+      withLaunchedUpdate: update5,
+      updates: [update1, update3, staleEmbedded, update5],
+      filters: nil
+    )
+    #expect(Set(deleted) == Set([update1, staleEmbedded]))
+  }
+
+  @Test
+  func `current embedded id is protected even when its status is ready`() {
+    let policy = ReaperSelectionPolicyFilterAware(maxUpdatesToKeep: 2, embeddedUpdateId: update1.updateId)
+    let deleted = policy.updatesToDelete(withLaunchedUpdate: update5, updates: [update1, update2, update3, update5], filters: nil)
+    #expect(deleted == [update2])
   }
 
   func createUpdate(
