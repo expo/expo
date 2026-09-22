@@ -135,13 +135,13 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:android:release:build
-      - name: Run Maestro tests (debug)
-        id: testdebug
-        working_directory: ../../../updates-e2e
-        run: |
-          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
       - name: Run Maestro tests (release)
         id: testrelease
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android release
+      - name: Run Maestro tests (debug)
+        id: testdebug
+        working_directory: ../../../updates-e2e
+        run: |
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
