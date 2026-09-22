@@ -135,13 +135,47 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:android:release:build
+      # A recording is the only way to see what the app did when a CI failure does not reproduce
+      # locally. Each stop step runs even after its test step failed, which is when the video
+      # matters most.
+      - name: Start screen recording (release)
+        id: recordrelease
+        working_directory: ../../../updates-e2e
+        run: |
+          ./maestro/android-screen-recording.sh start
       - name: Run Maestro tests (release)
         id: testrelease
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android release
+      - name: Stop screen recording (release)
+        id: stoprecordrelease
+        if: ${{ always() }}
+        working_directory: ../../../updates-e2e
+        run: |
+          ./maestro/android-screen-recording.sh stop android-release
+      - name: Start screen recording (debug)
+        id: recorddebug
+        working_directory: ../../../updates-e2e
+        run: |
+          ./maestro/android-screen-recording.sh start
       - name: Run Maestro tests (debug)
         id: testdebug
         working_directory: ../../../updates-e2e
         run: |
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
+      - name: Stop screen recording (debug)
+        id: stoprecorddebug
+        if: ${{ always() }}
+        working_directory: ../../../updates-e2e
+        run: |
+          ./maestro/android-screen-recording.sh stop android-debug
+      - name: Upload screen recordings
+        id: uploadrecordings
+        if: ${{ always() }}
+        uses: eas/upload_artifact
+        with:
+          type: other
+          name: android-screen-recordings
+          path: |
+            ${{ env.HOME }}/screen-recordings/*.mp4
