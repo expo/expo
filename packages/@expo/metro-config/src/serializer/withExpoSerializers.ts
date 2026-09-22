@@ -12,6 +12,7 @@ import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
 import { env } from '../env';
+import { findUnsupportedWorkerAsyncDependency } from './chunking/findUnsupportedWorkerAsyncDependency';
 import { stringToUUID } from './debugId';
 import {
   environmentVariableSerializerPlugin,
@@ -357,7 +358,7 @@ function getDefaultSerializer(
 
     const customTransformOptions = graph.transformOptions.customTransformOptions;
     const isLazyBundle = options.includeAsyncPaths;
-    const useBitSet =
+    const isBitSetEligible =
       customSerializerOptions?.chunkingStrategy === 'bitset' &&
       customSerializerOptions.exporting &&
       serializerOptions.splitChunks &&
@@ -366,7 +367,10 @@ function getDefaultSerializer(
       customTransformOptions?.dom == null &&
       !options.dev &&
       !isLazyBundle;
-    const chunkingStrategy: ChunkingStrategy = useBitSet ? 'bitset' : 'legacy';
+    const chunkingStrategy: ChunkingStrategy =
+      isBitSetEligible && !findUnsupportedWorkerAsyncDependency(entryPoint, graph)
+        ? 'bitset'
+        : 'legacy';
 
     const assets = await graphToSerialAssetsAsync(
       config,
