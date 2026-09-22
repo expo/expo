@@ -126,3 +126,30 @@ it('keeps the page mounted when the browser goes back from a hash entry to the p
   expect(mountCount).toBe(1);
   expect(getFocusedRouteKey()).toBe(initialKey);
 });
+
+it('keeps the page mounted across Back and Forward through browser-created hash entries', async () => {
+  await renderPost();
+
+  const initialKey = getFocusedRouteKey();
+  const pageEntry = window.history.state;
+
+  await browserEvent(() => followAnchor('#a'));
+  // Expo Router stamps the entry the browser created so it can recognise it later.
+  const hashAEntry = window.history.state;
+  await browserEvent(() => followAnchor('#b'));
+  const hashBEntry = window.history.state;
+  expect(screen).toHavePathnameWithParams('/post#b');
+
+  // Back, Back, Forward, Forward.
+  await browserEvent(() => traverseTo(hashAEntry, '/post#a'));
+  expect(screen).toHavePathnameWithParams('/post#a');
+  await browserEvent(() => traverseTo(pageEntry, '/post'));
+  expect(screen).toHavePathnameWithParams('/post');
+  await browserEvent(() => traverseTo(hashAEntry, '/post#a'));
+  expect(screen).toHavePathnameWithParams('/post#a');
+  await browserEvent(() => traverseTo(hashBEntry, '/post#b'));
+  expect(screen).toHavePathnameWithParams('/post#b');
+
+  expect(mountCount).toBe(1);
+  expect(getFocusedRouteKey()).toBe(initialKey);
+});
