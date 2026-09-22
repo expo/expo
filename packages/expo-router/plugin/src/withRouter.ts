@@ -146,6 +146,8 @@ export type Props = {
    * @default true
    */
   partialRouteTypes?: boolean;
+  /** Opt into experimental production web app chunking. Defaults to false (legacy splitting). */
+  unstable_chunking?: boolean;
   /**
    * Static redirects.
    */

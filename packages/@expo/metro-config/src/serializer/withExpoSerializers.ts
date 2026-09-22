@@ -20,6 +20,7 @@ import {
 import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
+import type { ChunkingStrategy } from './serializerAssets';
 import { sourceMapString } from './sourceMap';
 
 export type { SerialAsset } from './serializerAssets';
@@ -354,12 +355,26 @@ function getDefaultSerializer(
       ...serializerOptions,
     };
 
+    const customTransformOptions = graph.transformOptions.customTransformOptions;
+    const isLazyBundle = options.includeAsyncPaths;
+    const useBitSet =
+      customSerializerOptions?.chunkingStrategy === 'bitset' &&
+      customSerializerOptions.exporting &&
+      serializerOptions.splitChunks &&
+      context.platform === 'web' &&
+      context.environment === 'client' &&
+      customTransformOptions?.dom == null &&
+      !options.dev &&
+      !isLazyBundle;
+    const chunkingStrategy: ChunkingStrategy = useBitSet ? 'bitset' : 'legacy';
+
     const assets = await graphToSerialAssetsAsync(
       config,
       {
         includeSourceMaps: !!serializerOptions.includeSourceMaps,
         splitChunks: !!serializerOptions.splitChunks,
         ...configOptions,
+        chunkingStrategy,
       },
       entryPoint,
       preModules,

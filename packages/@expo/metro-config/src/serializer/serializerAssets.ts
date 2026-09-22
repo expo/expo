@@ -1,3 +1,5 @@
+export type ChunkingStrategy = 'bitset' | 'legacy';
+
 export type SerialAsset = {
   // 'styles.css'
   originFilename: string;

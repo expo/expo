@@ -33,6 +33,8 @@ export type ExpoMetroOptions = {
   bytecode?: boolean;
   /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
+  /** The chunking strategy to use when `splitChunks` is enabled. */
+  chunkingStrategy?: 'bitset' | 'legacy';
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot?: string;
   /** Enable React compiler support in Babel. */
@@ -69,6 +71,7 @@ export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
+  chunkingStrategy?: 'bitset' | 'legacy';
   usedExports?: boolean;
   exporting?: boolean;
 };
@@ -150,6 +153,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
     baseUrl: getBaseUrlFromExpoConfig(exp),
     routerRoot: getRouterDirectoryModuleIdWithManifest(projectRoot, exp),
     asyncRoutes: getAsyncRoutesFromExpoConfig(exp, options.mode, options.platform),
+    chunkingStrategy: exp.extra?.router?.unstable_chunking === true ? 'bitset' : 'legacy',
   });
 }
 
@@ -172,6 +176,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     isExporting,
     inlineSourceMap,
     splitChunks,
+    chunkingStrategy,
     usedExports,
     reactCompiler,
     optimize,
@@ -255,6 +260,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     sourceUrl: fakeSourceUrl,
     serializerOptions: {
       splitChunks,
+      chunkingStrategy,
       usedExports: usedExports || undefined,
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,

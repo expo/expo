@@ -20,6 +20,7 @@ import countLines from '@expo/metro/metro/lib/countLines';
 import getAppendScripts from '@expo/metro/metro/lib/getAppendScripts';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
+import type { ChunkingStrategy } from '../serializerAssets';
 import { processModules } from './processModules';
 
 export type ModuleMap = [number, string][];
@@ -42,6 +43,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
     skipWrapping?: boolean;
     usedExports?: boolean;
     splitChunks?: boolean;
+    chunkingStrategy?: ChunkingStrategy;
     output?: string;
     includeSourceMaps?: boolean;
     exporting?: boolean;

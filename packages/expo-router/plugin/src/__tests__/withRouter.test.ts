@@ -1,5 +1,37 @@
 import withRouter from '../withRouter';
 
+describe('unstable_chunking', () => {
+  it.each([true, false, undefined])('preserves %s without changing async routes', (value) => {
+    const config = withRouter({ name: 'test', slug: 'test' }, { unstable_chunking: value });
+    expect(config.extra?.router.unstable_chunking).toBe(value);
+    expect(config.extra?.router.asyncRoutes).toEqual({ web: true });
+  });
+
+  it('allows the plugin option to override an extra.router opt-in', () => {
+    const config = withRouter(
+      {
+        name: 'test',
+        slug: 'test',
+        extra: { router: { unstable_chunking: true } },
+      },
+      { unstable_chunking: false }
+    );
+    expect(config.extra?.router.unstable_chunking).toBe(false);
+  });
+
+  it('rejects a non-boolean option', () => {
+    expect(() =>
+      withRouter(
+        { name: 'test', slug: 'test' },
+        {
+          // @ts-expect-error Verify runtime schema validation for JSON app config.
+          unstable_chunking: 'bitset',
+        }
+      )
+    ).toThrow();
+  });
+});
+
 describe('apiRoutes', () => {
   it.each(['static', 'server'] as const)('accepts API routes with %s output', (output) => {
     const config = withRouter({ name: 'test', slug: 'test', web: { output } }, { apiRoutes: true });
