@@ -440,15 +440,17 @@ open class NotificationsService : BroadcastReceiver() {
       )
     }
 
-    fun createGroupedNotificationDeletedIntent(context: Context): PendingIntent {
+    fun createGroupedNotificationDeletedIntent(context: Context, notification: Notification): PendingIntent {
+      // The identifier in the URI keeps FLAG_UPDATE_CURRENT from replacing one child's extras with another's.
       val intent = Intent(
         NOTIFICATION_EVENT_ACTION,
-        getUriBuilder().appendPath("groupedDeleted").build()
+        getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("groupedDeleted").build()
       ).also { intent ->
         findDesignatedBroadcastReceiver(context, intent)?.let {
           intent.component = ComponentName(it.packageName, it.name)
         }
         intent.putExtra(EVENT_TYPE_KEY, GROUPED_NOTIFICATION_DELETED_TYPE)
+        intent.putExtra(NOTIFICATION_KEY, notification)
       }
       return PendingIntent.getBroadcast(
         context,
@@ -766,9 +768,12 @@ open class NotificationsService : BroadcastReceiver() {
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
     val response = getNotificationResponseFromBroadcastIntent(intent)
     getHandlingDelegate(context).handleNotificationResponse(response)
-    // A tap on an auto-cancel notification removes it without going through
-    // dismissNotifications; clean up the group summary it may have orphaned.
-    getPresentationDelegate(context).removeOrphanedGroupSummaries()
+    // A tap on an auto-cancel notification removes it without firing its delete intent;
+    // clean up the group summary it may have orphaned. Action buttons do not dismiss.
+    val isTap = response.actionIdentifier == NotificationResponse.DEFAULT_ACTION_IDENTIFIER
+    if (isTap && response.notification.notificationRequest.content.isAutoDismiss) {
+      getPresentationDelegate(context).removeOrphanedGroupSummaries(response.notification)
+    }
   }
 
   open fun onNotificationsDropped(context: Context, intent: Intent) =
@@ -776,7 +781,7 @@ open class NotificationsService : BroadcastReceiver() {
 
   /** Fired by the deleteIntent of grouped notifications when the user swipes one away. */
   open fun onGroupedNotificationDeleted(context: Context, intent: Intent) =
-    getPresentationDelegate(context).removeOrphanedGroupSummaries()
+    getPresentationDelegate(context).removeOrphanedGroupSummaries(intent.getParcelableExtra(NOTIFICATION_KEY)!!)
 
   //endregion
 

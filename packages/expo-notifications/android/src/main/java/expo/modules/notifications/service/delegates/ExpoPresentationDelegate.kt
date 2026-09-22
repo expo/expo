@@ -24,7 +24,6 @@ import expo.modules.notifications.notifications.presentation.builders.ExpoNotifi
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -51,8 +50,6 @@ open class ExpoPresentationDelegate(
 
     // Process-wide because delegate instances are short-lived (one per service intent)
     private val presentationMutex = Mutex()
-
-    private const val SYSTEM_DISMISSAL_SETTLE_DELAY_MS = 1000L
 
     protected const val INTERNAL_IDENTIFIER_SCHEME = "expo-notifications"
     protected const val INTERNAL_IDENTIFIER_AUTHORITY = "foreign_notifications"
@@ -143,26 +140,22 @@ open class ExpoPresentationDelegate(
       )
 
       notification.notificationRequest.content.group?.let { group ->
-        runCatching { postGroupSummary(group, androidNotification) }
+        runCatching { postGroupSummary(group, notification.notificationRequest.identifier, androidNotification) }
           .onFailure { Log.e("expo-notifications", "Failed to post a group summary notification.", it) }
       }
     }
   }
 
   /**
-   * Removes summaries orphaned by dismissals that bypass this delegate, such as a swipe or
-   * a tap on an auto-cancel notification. Blocks its (background) thread: the caller's
-   * broadcast lifecycle is what keeps a background-woken process alive until cleanup ran.
+   * Removes the summary orphaned by a dismissal that bypasses this delegate, such as a swipe or
+   * a tap on an auto-cancel notification. The dismissed notification is passed explicitly because
+   * the activeNotifications snapshot may not reflect the system's cancel() yet.
    */
-  override fun removeOrphanedGroupSummaries() {
-    val dismissalMayHaveOrphanedASummary = notificationManager.activeNotifications.any { isGroupSummary(it) }
-    if (!dismissalMayHaveOrphanedASummary) {
-      return
-    }
+  override fun removeOrphanedGroupSummaries(dismissed: Notification) {
+    val request = dismissed.notificationRequest
     runBlocking {
-      delay(SYSTEM_DISMISSAL_SETTLE_DELAY_MS)
       presentationMutex.withLock {
-        runCatching { cleanUpOrphanedGroupSummaries() }
+        runCatching { cleanUpOrphanedGroupSummaries(cancelled = setOf(request.identifier to getNotifyId(request))) }
           .onFailure { Log.e("expo-notifications", "Failed to clean up group summary notifications.", it) }
       }
     }
@@ -183,7 +176,7 @@ open class ExpoPresentationDelegate(
     return ANDROID_NOTIFICATION_ID
   }
 
-  private fun postGroupSummary(group: String, childNotification: android.app.Notification) {
+  private fun postGroupSummary(group: String, childTag: String, childNotification: android.app.Notification) {
     // Accepted trade-off: the summary follows the last child's channel, so disabling
     // that channel stops the summary even if other children's channels stay enabled.
     val channelId = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -205,7 +198,17 @@ open class ExpoPresentationDelegate(
       builder.setSmallIcon(context.applicationInfo.icon)
     }
 
+    // Older Android versions render the summary's own content as the collapsed group row.
+    // The snapshot may lag the notify() of childNotification, so its title is added explicitly.
+    val siblingTitles = notificationManager.activeNotifications
+      .filter { !isGroupSummary(it) && it.notification.group == group && it.tag != childTag }
+      .mapNotNull { NotificationCompat.getContentTitle(it.notification) }
+    val inboxStyle = NotificationCompat.InboxStyle()
+    (siblingTitles + listOfNotNull(NotificationCompat.getContentTitle(childNotification))).forEach { inboxStyle.addLine(it) }
+
     val summaryNotification = builder
+      .setContentTitle(context.applicationInfo.loadLabel(context.packageManager))
+      .setStyle(inboxStyle)
       .setGroup(group)
       .setGroupSummary(true)
       .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)

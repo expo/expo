@@ -117,7 +117,7 @@ open class ExpoNotificationBuilder(
     content.group?.let {
       builder.setGroup(it)
       // Swiping a grouped notification away may orphan its group summary — trigger a cleanup
-      builder.setDeleteIntent(NotificationsService.createGroupedNotificationDeletedIntent(context))
+      builder.setDeleteIntent(NotificationsService.createGroupedNotificationDeletedIntent(context, notification))
     }
 
     if (content.body != null) {

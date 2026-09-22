@@ -9,5 +9,6 @@ interface PresentationDelegate {
   fun dismissNotifications(identifiers: Collection<String>)
   fun dismissAllNotifications()
 
-  fun removeOrphanedGroupSummaries() {}
+  /** Cancels the group summary of [dismissed] once no other member of its group is showing. */
+  fun removeOrphanedGroupSummaries(dismissed: Notification) {}
 }
