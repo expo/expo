@@ -92,7 +92,7 @@ jobs:
         uses: vale-cli/vale-action@85f9f7f2c5f449ac0ae5b66662961bae3f77ca6a # 2.1.2
         with:
           version: ${{ steps.vale-version.outputs.version }}
-          reporter: github-pr-check
+          reporter: github-check
           files: '["docs/pages", "docs/scenes", "docs/README.md"]'
           vale_flags: --config=./docs/.vale.ini --glob=!{docs/pages/versions/latest,docs/pages/versions/latest/**,docs/pages/internal,docs/pages/internal/**}
           fail_on_error: true
