@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Avoid Kotlin reflection when sorting task service providers. ([#50484](https://github.com/expo/expo/pull/50484) by [@matthew-gizmo](https://github.com/matthew-gizmo))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
