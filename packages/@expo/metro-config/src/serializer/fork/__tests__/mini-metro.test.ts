@@ -1,5 +1,27 @@
 import { microBundle } from './mini-metro';
 
+it('resolves every edge to a previously visited module, including nested cycles', async () => {
+  const [, , graph] = await microBundle({
+    fs: {
+      'index.js': `import './nested/a'; import './nested/b';`,
+      'nested/a.js': `import './b';`,
+      'nested/b.js': `import './a';`,
+    },
+  });
+  expect(
+    [...graph.dependencies].map(([modulePath, module]) => [
+      modulePath,
+      [...module.dependencies.values()].map((dependency) =>
+        'absolutePath' in dependency ? dependency.absolutePath : undefined
+      ),
+    ])
+  ).toEqual([
+    ['/app/index.js', ['/app/nested/a.js', '/app/nested/b.js']],
+    ['/app/nested/a.js', ['/app/nested/b.js']],
+    ['/app/nested/b.js', ['/app/nested/a.js']],
+  ]);
+});
+
 const fs = {
   'index.js': `
     import { foo } from './foo';
