@@ -4,14 +4,17 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 
+import { type CheckedInResolvedTarget, isCheckedInResolvedTarget } from './CheckedInManifest';
 import type { ObjcTarget, SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
+  applyCheckedInTarget,
   buildCSettings,
   buildSwiftSettings,
   expandTransitiveExternalDeps,
   findSiblingProductDependencies,
   type ExternalDepResolver,
 } from './SPMPackage';
+import type { ResolvedTarget } from './SPMPackage.types';
 
 /** Builds an ArtifactPaths fixture whose React cache slot we then populate per-format. */
 function makeArtifactPaths(cachePath: string, version: string) {
@@ -388,5 +391,92 @@ describe('buildCSettings include directories', () => {
         return true;
       }
     );
+  });
+});
+
+describe('applyCheckedInTarget', () => {
+  function resolvedTarget(overrides: Partial<ResolvedTarget> = {}): ResolvedTarget {
+    return {
+      type: 'swift',
+      name: 'ExpoHaptics',
+      path: 'ios',
+      dependencies: ['ExpoModulesCore'],
+      linkedFrameworks: ['UIKit'],
+      publicHeadersPath: 'ios/include',
+      cSettings: ['-I/repo/packages/expo-haptics/ios'],
+      cxxSettings: ['-std=c++20'],
+      swiftSettings: ['-DEXPO_CONFIGURATION_DEBUG'],
+      linkerSettings: ['-ObjC'],
+      resources: [{ path: 'ios/Assets', rule: 'copy' }],
+      ...overrides,
+    };
+  }
+
+  function checkedInTarget(
+    overrides: Partial<CheckedInResolvedTarget> = {}
+  ): CheckedInResolvedTarget {
+    return {
+      type: 'objc',
+      name: 'ExpoHaptics',
+      path: 'ExpoHaptics',
+      sourceRoot: '/repo/packages/expo-haptics/ios',
+      productMember: true,
+      sources: ['src'],
+      exclude: ['src/Tests'],
+      dependencies: ['ManifestOnly'],
+      linkedFrameworks: ['CoreHaptics'],
+      resources: [],
+      publicHeadersPath: 'src/include',
+      ...overrides,
+    };
+  }
+
+  it('takes the manifest spelling for every key the manifest owns', () => {
+    const merged = applyCheckedInTarget(resolvedTarget(), checkedInTarget());
+    assert.equal(merged.type, 'objc');
+    assert.equal(merged.path, 'ExpoHaptics');
+    assert.equal(merged.publicHeadersPath, 'src/include');
+    assert.deepEqual(merged.linkedFrameworks, ['CoreHaptics']);
+    assert.deepEqual(merged.resources, []);
+    // Mode B is discriminated on sourceRoot and sources alone, and five call sites gate the
+    // whole checked-in layout on it: dropping either key emits the package with Mode A spelling.
+    assert.ok(isCheckedInResolvedTarget(merged), 'The merged target must still read as Mode B');
+    assert.equal(merged.sourceRoot, '/repo/packages/expo-haptics/ios');
+    assert.deepEqual(merged.sources, ['src']);
+    assert.deepEqual(merged.exclude, ['src/Tests']);
+    assert.equal(merged.productMember, true);
+  });
+
+  it('leaves a key the manifest does not own to the resolved target', () => {
+    const merged = applyCheckedInTarget(
+      resolvedTarget(),
+      checkedInTarget({ includeDirectories: ['src/include'] })
+    );
+    // Whatever the manifest reader grows next must not silently replace what the config
+    // resolved: only the listed keys cross over, everything else stays where it was computed.
+    assert.ok(
+      !('includeDirectories' in merged),
+      `A key outside the merged set must not cross over: ${JSON.stringify(merged)}`
+    );
+  });
+
+  it('keeps the dependencies and compiler settings the config resolved', () => {
+    const merged = applyCheckedInTarget(resolvedTarget(), checkedInTarget());
+    assert.deepEqual(merged.dependencies, ['ExpoModulesCore']);
+    assert.deepEqual(merged.cSettings, ['-I/repo/packages/expo-haptics/ios']);
+    assert.deepEqual(merged.cxxSettings, ['-std=c++20']);
+    assert.deepEqual(merged.swiftSettings, ['-DEXPO_CONFIGURATION_DEBUG']);
+    assert.deepEqual(merged.linkerSettings, ['-ObjC']);
+  });
+
+  it('clears a resolved public headers path the manifest leaves undefined', () => {
+    const merged = applyCheckedInTarget(
+      resolvedTarget({ publicHeadersPath: 'ios/include' }),
+      checkedInTarget({ publicHeadersPath: undefined })
+    );
+    // A Swift target, and any target opting out with publicHeaders: false, carries the key
+    // present and undefined; keeping the config's path there would export headers Mode B does not.
+    assert.ok('publicHeadersPath' in merged, 'The manifest owns the key even when it has no value');
+    assert.equal(merged.publicHeadersPath, undefined);
   });
 });

@@ -13,6 +13,7 @@ import { getPrecompileDir } from '../Directories';
 import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {
+  type CheckedInResolvedTarget,
   isCheckedInResolvedTarget,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
@@ -1360,6 +1361,42 @@ function collectHeaderMapFlags(
 // Context Building
 
 /**
+ * The keys a checked-in `Package.swift` owns: its file set and layout. Everything else on a
+ * resolved target — dependencies and the four compiler settings — is computed from config and
+ * the build flavor, and stays as `resolveSourceTarget` left it.
+ */
+const CHECKED_IN_TARGET_KEYS = [
+  'type',
+  'name',
+  'path',
+  'sourceRoot',
+  'productMember',
+  'sources',
+  'exclude',
+  'linkedFrameworks',
+  'resources',
+  'publicHeadersPath',
+] as const satisfies readonly (keyof CheckedInResolvedTarget)[];
+
+/**
+ * The target a checked-in `Package.swift` describes, merged over the one the config resolved.
+ *
+ * A key present on `checkedIn` wins even when its value is `undefined`: a Swift target, and any
+ * target opting out with `publicHeaders: false`, carries `publicHeadersPath` present and unset,
+ * and that has to clear the path config resolved rather than leave it standing.
+ */
+export function applyCheckedInTarget(
+  resolved: ResolvedTarget,
+  checkedIn: CheckedInResolvedTarget
+): ResolvedTarget {
+  const merged = { ...resolved };
+  for (const key of CHECKED_IN_TARGET_KEYS) {
+    if (key in checkedIn) (merged as Record<string, unknown>)[key] = checkedIn[key];
+  }
+  return merged;
+}
+
+/**
  * Builds the complete context needed for Package.swift generation
  */
 async function buildPackageSwiftContext(
@@ -1692,16 +1729,7 @@ async function buildPackageSwiftContext(
       xcframeworkPaths
     );
     const checkedIn = checkedInTargets?.find((candidate) => candidate.name === target.name);
-    if (checkedIn) {
-      Object.assign(resolved, checkedIn, {
-        dependencies: resolved.dependencies,
-        cSettings: resolved.cSettings,
-        cxxSettings: resolved.cxxSettings,
-        swiftSettings: resolved.swiftSettings,
-        linkerSettings: resolved.linkerSettings,
-      });
-    }
-    resolvedTargets.push(resolved);
+    resolvedTargets.push(checkedIn ? applyCheckedInTarget(resolved, checkedIn) : resolved);
     addedTargets.add(target.name);
   }
 
