@@ -52,16 +52,26 @@ function existingArtifactSource(baseDir, flavor, frameworkName) {
   return null;
 }
 
-function artifactBaseDirs(packageName, moduleRoot) {
+/**
+ * Candidate directories for precompiled output, in lookup order: the path
+ * override, the monorepo prebuild output, then the copy bundled into the npm
+ * package at `moduleRoot`. `buildPath` is relative to a prebuild output root,
+ * `bundledPath` to the package's `prebuilds` directory.
+ */
+function precompiledBaseDirs(buildPath, moduleRoot, bundledPath) {
   const bases = [];
   if (process.env.EXPO_PRECOMPILED_MODULES_PATH) {
-    bases.push(path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, packageName, 'output'));
+    bases.push(path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, ...buildPath));
   }
   bases.push(
-    path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', packageName, 'output'),
-    path.join(moduleRoot, 'prebuilds', 'output')
+    path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
+    path.join(moduleRoot, 'prebuilds', ...bundledPath)
   );
   return Array.from(new Set(bases));
+}
+
+function artifactBaseDirs(packageName, moduleRoot) {
+  return precompiledBaseDirs([packageName, 'output'], moduleRoot, ['output']);
 }
 
 /**
@@ -247,19 +257,11 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
 
 /**
  * Candidate parents (each holding `<flavor>/<Dep>.xcframework`) for a SwiftPM
- * package a precompiled module links: the path override, the monorepo prebuild
- * output, then the copy bundled into the owning npm package.
+ * package a precompiled module links. The bundled copy lives in the npm package
+ * of the module that links it.
  */
 function spmDependencyBaseDirs(depName, ownerModuleRoot) {
-  const bases = [];
-  if (process.env.EXPO_PRECOMPILED_MODULES_PATH) {
-    bases.push(path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, '.spm-deps', depName));
-  }
-  bases.push(
-    path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', '.spm-deps', depName),
-    path.join(ownerModuleRoot, 'prebuilds', 'spm-deps', depName)
-  );
-  return Array.from(new Set(bases));
+  return precompiledBaseDirs(['.spm-deps', depName], ownerModuleRoot, ['spm-deps', depName]);
 }
 
 /**
