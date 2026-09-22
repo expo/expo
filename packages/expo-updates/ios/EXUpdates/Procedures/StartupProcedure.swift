@@ -211,10 +211,21 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if self.procedureContext.getCurrentState() == .checking {
+      switch self.procedureContext.getCurrentState() {
+      case .checking:
         self.procedureContext.processStateEvent(.checkError(errorMessage: error.localizedDescription))
-      } else if self.procedureContext.getCurrentState() == .downloading {
+      case .downloading:
         self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
+      case .idle:
+        // `downloadError` on its own is an illegal transition out of idle and would be dropped,
+        // leaving `useUpdates()` with no record of the failure. Move into the downloading state
+        // first, as the Android implementation does.
+        self.procedureContext.processStateEvent(.download)
+        self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
+      case .restarting:
+        // The machine accepts no events while restarting, so there is nowhere to report this. The
+        // error is already recorded in the log above.
+        logger.warn(message: "Background update failed while restarting: \(error.localizedDescription)")
       }
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
