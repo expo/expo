@@ -120,6 +120,10 @@ export class AudioPlayerWeb
     return getStatusFromMedia(this.media, this.id);
   }
 
+  get isActiveForLockScreen(): boolean {
+    return mediaSessionController.isActive(this);
+  }
+
   play(): void {
     if (!isAudioActive) {
       return;
