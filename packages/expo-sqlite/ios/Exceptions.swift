@@ -68,6 +68,12 @@ internal final class InvalidBindParameterException: Exception {
   }
 }
 
+internal final class DatabaseClosingException: Exception {
+  override var reason: String {
+    "Cannot interrupt while the database is closing. Interrupt pending operations before closing."
+  }
+}
+
 internal final class AccessClosedResourceException: Exception {
   override var reason: String {
     "Access to closed resource"
