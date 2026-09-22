@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Anchored the file picker popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50434](https://github.com/expo/expo/pull/50434) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Include the privacy manifest in prebuilt frameworks.
+- [iOS] Include the privacy manifest in prebuilt frameworks. ([#50503](https://github.com/expo/expo/pull/50503) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
