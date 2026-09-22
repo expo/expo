@@ -205,6 +205,12 @@ build_slice() {
   # `___profc_*` symbols and `__llvm_prf_*` sections) plus ~40% extra binary size. Setting
   # CLANG_COVERAGE_MAPPING=NO is what removes the flags; CLANG_ENABLE_CODE_COVERAGE=NO alone
   # does not, and `-enableCodeCoverage NO` is rejected outside of `test`.
+  #
+  # Under `-quiet`, Xcode 27 prints a bogus `error: the following command failed with exit code 0
+  # but produced no further output` line for a SwiftCompile job that succeeded. The outer build
+  # phase parses it as an error and fails the host app's build even though the slice was produced.
+  # Filter out only that exact line; `pipefail` keeps xcodebuild's exit status, so real failures
+  # still stop the script and their diagnostics stay visible.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     xcodebuild \
     build \
@@ -227,7 +233,7 @@ build_slice() {
     SWIFT_COMPILATION_MODE=wholemodule \
     CLANG_ENABLE_CODE_COVERAGE=NO \
     CLANG_COVERAGE_MAPPING=NO \
-  )
+  ) | sed '/^error: the following command failed with exit code 0 but produced no further output$/d'
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
   local framework_src="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"

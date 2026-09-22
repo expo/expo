@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the xcframework build phase failing archives on Xcode 27 with a false `exit code 0 but produced no further output` error. ([#PR](https://github.com/expo/expo/pull/PR) by [@irekrog](https://github.com/irekrog))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-21
