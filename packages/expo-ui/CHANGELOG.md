@@ -8,9 +8,29 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 58.0.5 — 2026-09-22
+
+### 🎉 New features
+
+- [Android] Added the widget-only `cornerRadius` modifier to `jetpack-compose`. ([#50332](https://github.com/expo/expo/pull/50332) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `<Host matchContents>` centering its content, and so shifting it by half the height change for a frame, whenever the hosted view was not yet the size of its SwiftUI content. ([#50496](https://github.com/expo/expo/pull/50496) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Cache Material 3 palettes generated from an explicit `scheme` and `seedColor`, so `getMaterialColors` and `useMaterialColors` stop calling the synchronous native module on every render, and `Host` stops re-solving the same scheme on every recomposition. ([#50494](https://github.com/expo/expo/pull/50494) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `ToolbarItem` component with `placement` and `visibilityPriority`. ([#50360](https://github.com/expo/expo/pull/50360) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `scrollEdgeEffectStyle` modifier. ([#50367](https://github.com/expo/expo/pull/50367) by [@expo-bot](https://github.com/expo-bot))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
 
 ## 58.0.3 — 2026-09-16
 

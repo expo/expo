@@ -211,6 +211,34 @@ class FileDownloaderTest {
   }
 
   @Test
+  fun testCreateRequestForAsset_RequestsPatchOnlyWhenAssetHasExpectedHash() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0"
+    )
+    val config = UpdatesConfiguration(null, configMap)
+    val fileDownloader = createFileDownloader(config)
+
+    val withoutHash = AssetEntity("test", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      isLaunchAsset = true
+    }
+    Assert.assertNull(
+      fileDownloader.createRequestForAsset(withoutHash, JSONObject("{}"), config, allowPatch = true).header("A-IM")
+    )
+
+    val withHash = AssetEntity("test", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      isLaunchAsset = true
+      expectedHash = "expected-hash"
+    }
+    Assert.assertEquals(
+      "bsdiff",
+      fileDownloader.createRequestForAsset(withHash, JSONObject("{}"), config, allowPatch = true).header("A-IM")
+    )
+  }
+
+  @Test
   fun testCreateRequestForAsset_NonLaunchAssetDefaultAccept() {
     val configMap = mapOf<String, Any>(
       "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),

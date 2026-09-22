@@ -1,0 +1,5 @@
+{
+  "extends": "expo-module-scripts/tsconfig.base",
+  "compilerOptions": { "rootDir": "./src", "noEmit": true },
+  "include": ["./src"]
+}

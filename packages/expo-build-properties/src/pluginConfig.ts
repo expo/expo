@@ -305,6 +305,14 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
    * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
    */
   exclusiveMavenMirror?: string;
+  /**
+   * Compile the `expo-modules-core` native libraries from source instead of using the precompiled
+   * libraries shipped with the package. Turning this on will increase the build times.
+   * Enable it when you modify the C++ sources of `expo-modules-core`.
+   *
+   * @default false
+   */
+  buildExpoModulesCoreFromSource?: boolean;
 }
 
 // @docsMissing
@@ -817,6 +825,7 @@ const schema: JSONSchema<PluginConfigType> = {
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
         exclusiveMavenMirror: { type: 'string', nullable: true },
+        buildExpoModulesCoreFromSource: { type: 'boolean', nullable: true },
         reactNativeReleaseLevel: {
           type: 'string',
           enum: ['stable', 'canary', 'experimental'],

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.4 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `contentPosition` being visually lost when React Native recreates the clipping mask on the image subview (e.g. after an orientation change round-trip). ([#50312](https://github.com/expo/expo/pull/50312) by [@jzhu1224](https://github.com/jzhu1224))
+
+## 58.0.3 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.2 — 2026-09-15
 
 ### 🎉 New features
@@ -40,6 +50,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Fixed `generateBlurhashAsync` and `generateThumbhashAsync` never settling when the image could not be downloaded. ([#PR](https://github.com/expo/expo/pull/PR) ([#48894](https://github.com/expo/expo/pull/48894) by [@vonovak](https://github.com/vonovak))
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] prevent `Canvas: trying to draw too large bitmap` crash by enforcing the hardware bitmap size limit in both `ContentFitDownsampleStrategy` and `loadAsync`. ([#47212](https://github.com/expo/expo/pull/47212) by [@roitium](https://github.com/roitium))
 
 ### 💡 Others
 

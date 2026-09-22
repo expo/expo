@@ -1,5 +1,4 @@
 {
-    "libraryVersion": "58.0.1",
     "reactNativeVersion": "0.88.0",
     "variants": [
         "debug",
@@ -16,5 +15,5 @@
         "libexpo-modules-jsi.so"
     ],
     "stripped": true,
-    "createdAt": "2026-09-15T14:36:32.485597Z"
+    "createdAt": "2026-09-21T15:43:27.840701Z"
 }

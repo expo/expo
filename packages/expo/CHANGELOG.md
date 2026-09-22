@@ -16,6 +16,7 @@
 - [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
 - [iOS] Emit JavaScript `url` events for deep links delivered to a running app under the UIKit scene life cycle. ([#50235](https://github.com/expo/expo/pull/50235) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Import `Foundation` in `ResponseSink`, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
+- [Web] Stub `requestAnimationFrame` in server bundles, where `react-native-worklets` 0.12 calls it unguarded when Reanimated is imported, crashing server rendering and `expo export`. ([#50507](https://github.com/expo/expo/pull/50507) by [@robhogan](https://github.com/robhogan))
 
 ### 💡 Others
 

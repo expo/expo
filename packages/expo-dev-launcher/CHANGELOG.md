@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- [iOS] Answer a fingerprint check on a physical device from a debug build, so a tool can read the fingerprint the build embedded. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.5 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- [iOS] Answer a fingerprint check on a physical device from a debug build, so a tool can read the fingerprint the build embedded. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.3 — 2026-09-16
 

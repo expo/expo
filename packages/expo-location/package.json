@@ -1,6 +1,6 @@
 {
   "name": "expo-location",
-  "version": "58.0.3",
+  "version": "58.0.5",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "keywords": [
     "compass",
@@ -27,7 +27,6 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "precompile-ios": "et prebuild-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -54,8 +53,5 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }
