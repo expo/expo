@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Annotate the mail example templates with macOS availability so `npx expo-app-intents init` output works on macOS.
+
 ### 💡 Others
 
 ## 0.4.2 — 2026-09-21
