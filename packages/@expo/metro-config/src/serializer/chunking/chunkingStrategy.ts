@@ -5,7 +5,7 @@ import assert from 'assert';
 
 import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
-import type { SerialAsset } from '../serializerAssets';
+import type { ChunkingStrategy, SerialAsset } from '../serializerAssets';
 import type { SerializerConfigOptions } from '../withExpoSerializers';
 import { Chunk } from './Chunk';
 import { precomputeChunkFilenames } from './computeChunkFilenames';
@@ -13,6 +13,7 @@ import { precomputeChunkFilenames } from './computeChunkFilenames';
 export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
   splitChunks: boolean;
+  chunkingStrategy: ChunkingStrategy;
 } & SerializerConfigOptions;
 
 export type ChunkingContext = {

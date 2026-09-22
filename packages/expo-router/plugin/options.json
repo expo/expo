@@ -45,6 +45,10 @@
           "description": "Enable or disable automatically generated routes. Defaults to `true`.",
           "type": "boolean"
         },
+        "unstable_chunking": {
+          "description": "Opt into experimental production web app chunking. Defaults to false (legacy splitting). Does not enable or disable async routes.",
+          "type": "boolean"
+        },
         "asyncRoutes": {
           "description": "Enable async routes. Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native.",
           "oneOf": [
