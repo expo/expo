@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { collectIgnoredDirs } = require('./classify');
+const { appleSourceDir, collectIgnoredDirs } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
 const { runDumpPackage } = require('./cli');
 
@@ -950,9 +950,7 @@ function emitPureSwiftSourcePackage({
   macroFlags = [],
   spmPackages = [],
 }) {
-  const srcDir = ['ios', 'apple']
-    .map((s) => path.join(moduleRoot, s))
-    .find((d) => fs.existsSync(d));
+  const srcDir = appleSourceDir(moduleRoot);
   if (srcDir == null) return null;
   const srcRel = path.relative(moduleRoot, srcDir); // e.g. "ios"
   const pkgDir = path.join(outDir, 'expo-source', product);

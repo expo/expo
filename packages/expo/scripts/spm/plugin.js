@@ -39,6 +39,8 @@ const { readPodfileProperties, resolveAppTarget } = require('./app-target');
 const { autolinkConditionLabel, autolinkConditionMet } = require('./autolink-gate');
 const { resolveExpoModules, prebuiltMetadata, generateModulesProvider } = require('./cli');
 const {
+  APPLE_SOURCE_DIRS,
+  appleSourceDir,
   collectWatchPaths,
   documentedPackageRoot,
   findModuleRoot,
@@ -367,8 +369,7 @@ module.exports = function expoSpmPlugin(context) {
           pod.podName,
           [
             pod.podspecDir,
-            path.join(moduleRoot, 'ios'),
-            path.join(moduleRoot, 'apple'),
+            ...APPLE_SOURCE_DIRS.map((dir) => path.join(moduleRoot, dir)),
             moduleRoot,
           ].filter(Boolean)
         );
@@ -441,7 +442,7 @@ module.exports = function expoSpmPlugin(context) {
         packageName: mod.packageName,
         moduleRoot,
         pureSwift: isPureSwift(moduleRoot),
-        hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
+        hasSources: appleSourceDir(moduleRoot) != null,
         unsupportedTargetDeps: unsupportedTargetDeps.get(moduleRoot) ?? null,
         unsupportedPackageDeps: unsupportedPackageDeps.get(moduleRoot) ?? null,
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
