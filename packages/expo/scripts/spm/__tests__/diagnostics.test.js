@@ -17,6 +17,7 @@ const {
   renderRootConflictWarning,
   renderExtraPodsWarning,
 } = require('../diagnostics');
+const { resolvePodIdentities } = require('../plugin');
 
 describe('classifyUnsupported', () => {
   it('reports a missing interface tree once, not per module', () => {
@@ -541,9 +542,11 @@ describe('a module installed twice', () => {
 
     expect(
       collectRootConflicts(
-        modules,
-        { ExpoCamera: { packageRoot } },
-        new Map([['expo-camera', link]])
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot } },
+          new Map([['expo-camera', link]])
+        )
       )
     ).toEqual([]);
   });
@@ -554,9 +557,11 @@ describe('a module installed twice', () => {
 
     expect(
       collectRootConflicts(
-        modules,
-        { ExpoCamera: { packageRoot } },
-        new Map([['expo-camera', autolinkedRoot]])
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot } },
+          new Map([['expo-camera', autolinkedRoot]])
+        )
       )
     ).toEqual([{ packageName: 'expo-camera', moduleRoot: packageRoot, autolinkedRoot }]);
   });
@@ -564,9 +569,11 @@ describe('a module installed twice', () => {
   it('finds no conflict for a documented root that is gone', () => {
     expect(
       collectRootConflicts(
-        modules,
-        { ExpoCamera: { packageRoot: path.join(tmp, 'vanished') } },
-        new Map([['expo-camera', dir('node_modules', 'expo-camera')]])
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot: path.join(tmp, 'vanished') } },
+          new Map([['expo-camera', dir('node_modules', 'expo-camera')]])
+        )
       )
     ).toEqual([]);
   });
@@ -581,9 +588,11 @@ describe('a module installed twice', () => {
 
     expect(
       collectRootConflicts(
-        modules,
-        { ExpoCamera: { packageRoot } },
-        new Map([['expo-camera', path.join(tmp, 'elsewhere')]])
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot } },
+          new Map([['expo-camera', path.join(tmp, 'elsewhere')]])
+        )
       )
     ).toEqual([]);
   });

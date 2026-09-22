@@ -17,7 +17,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { documentedPackageRoot } = require('./classify');
 const { podspecBodyLines } = require('./podspec');
 
 /**
@@ -176,22 +175,20 @@ function resolveToDifferentDirectories(left, right) {
  * real directories: the package is installed twice, and the plugin builds the
  * copy the app's JavaScript does not import. One directory reached by two paths
  * — the routine pnpm and monorepo case — is not a conflict.
+ *
+ * @param identities every pod's identity, from `plugin.js#resolvePodIdentities`.
  */
-function collectRootConflicts(modules, metadata, autolinkedRoots) {
-  const conflicts = [];
-  for (const mod of modules) {
-    const autolinkedRoot = autolinkedRoots.get(mod.packageName);
-    if (autolinkedRoot == null) continue;
-    // `plugin.js#podIdentity` resolves a root per POD, so the module conflicts as soon
-    // as ANY pod documents another copy, not only the first pod that documents one.
-    const moduleRoot = (mod.pods ?? [])
-      .map((pod) => documentedPackageRoot(metadata[pod.podName]))
-      .find((root) => root != null && resolveToDifferentDirectories(root, autolinkedRoot));
-    if (moduleRoot != null) {
-      conflicts.push({ packageName: mod.packageName, moduleRoot, autolinkedRoot });
+function collectRootConflicts(identities) {
+  const conflicts = new Map();
+  // A root is resolved per POD, so the module conflicts as soon as ANY pod
+  // documents another copy, not only the first pod that documents one.
+  for (const { packageName, documentedRoot, autolinkedRoot } of identities.values()) {
+    if (conflicts.has(packageName) || documentedRoot == null || autolinkedRoot == null) continue;
+    if (resolveToDifferentDirectories(documentedRoot, autolinkedRoot)) {
+      conflicts.set(packageName, { packageName, moduleRoot: documentedRoot, autolinkedRoot });
     }
   }
-  return conflicts;
+  return [...conflicts.values()];
 }
 
 function renderMixedNoManifest({ podName, packageName, moduleRoot }) {

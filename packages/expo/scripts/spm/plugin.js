@@ -104,10 +104,14 @@ function collectAutolinkedRoots(autolinking) {
  * The pod name is NOT the product name — react-native-skia ships RNSkia — so
  * the product is what artifacts and prebuild diagnostics are named after.
  */
-function podIdentity(entry, pod, autolinkedRoot) {
+function podIdentity(entry, pod, packageName, autolinkedRoot) {
+  const documentedRoot = documentedPackageRoot(entry);
   return {
     entry,
-    moduleRoot: documentedPackageRoot(entry) ?? autolinkedRoot ?? findModuleRoot(pod.podspecDir),
+    packageName,
+    documentedRoot,
+    autolinkedRoot,
+    moduleRoot: documentedRoot ?? autolinkedRoot ?? findModuleRoot(pod.podspecDir),
     productName: entry?.productName ?? pod.podName,
     prebuildProduct:
       entry != null ? { name: entry.productName, sourceOnly: entry.sourceOnly === true } : null,
@@ -121,7 +125,12 @@ function resolvePodIdentities(modules, metadata, autolinkedRoots) {
     for (const pod of mod.pods ?? []) {
       identities.set(
         pod,
-        podIdentity(metadata[pod.podName], pod, autolinkedRoots.get(mod.packageName))
+        podIdentity(
+          metadata[pod.podName],
+          pod,
+          mod.packageName,
+          autolinkedRoots.get(mod.packageName)
+        )
       );
     }
   }
@@ -477,7 +486,7 @@ module.exports = function expoSpmPlugin(context) {
   if (xcconfigLinkage.length > 0) {
     console.warn(renderXcconfigLinkerWarning(xcconfigLinkage));
   }
-  const rootConflicts = collectRootConflicts(modules, metadata, autolinkedRoots);
+  const rootConflicts = collectRootConflicts(identities);
   if (rootConflicts.length > 0) {
     console.warn(renderRootConflictWarning(rootConflicts));
   }
@@ -575,3 +584,5 @@ module.exports = function expoSpmPlugin(context) {
     scriptPhases,
   };
 };
+
+module.exports.resolvePodIdentities = resolvePodIdentities;
