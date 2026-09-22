@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed strings losing NUL characters when crossing JNI in either direction, and characters outside the BMP being misread on the way to Kotlin. ([#50275](https://github.com/expo/expo/pull/50275) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed worklet callbacks crashing with `NoSuchFieldError` in minified release builds. ([#50502](https://github.com/expo/expo/issues/50502) by [@dhalenok](https://github.com/dhalenok), [#50510](https://github.com/expo/expo/pull/50510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
