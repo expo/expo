@@ -55,6 +55,11 @@ const series = (cb) => {
 };
 exports.series = series;
 const linkingHandlers = [];
+/** Strips the fragment so paths that differ only by hash compare as equal. */
+function getPathWithoutHash(path) {
+    const hashIndex = path.indexOf('#');
+    return hashIndex === -1 ? path : path.slice(0, hashIndex);
+}
 function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.getStateFromPath, getPathFromState = native_1.getPathFromState, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
     const independent = (0, native_1.useNavigationIndependentTree)();
     const store = (0, storeContext_1.useExpoRouterStore)();
@@ -178,24 +183,20 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
                 if (index > previousIndex ||
                     /* START FORK
                      *
-                     * This is a workaround for React Navigation's handling of hashes (it doesn't handle them)
-                     * When you click on <a href="#hash">, the browser will first fire a popstate event
-                     * and this callback will be called.
+                     * React Navigation does not handle hashes. When the browser follows <a href="#hash"> or
+                     * moves Back/Forward between hash entries of the same page, it fires a popstate event
+                     * without changing the memory history index. React Navigation treats that like a
+                     * back/forward press and resets the state. Expo Router stores the hash as the `#` param,
+                     * so it has to dispatch a navigation instead to update the param.
                      *
-                     * From React Navigation's perspective, it's treating the new hash change like a back/forward
-                     * button press, so it thinks it should reset the state. When we should
-                     * be to be pushing the new state
-                     *
-                     * Our fix is to check if the index is the same as the previous index
-                     * and if the incoming path is the same as the old path but with the hash added,
-                     * then treat it as a push instead of a reset
-                     *
-                     * This also works for subsequent hash changes, as internally RN
-                     * doesn't store the hash in the history state.
+                     * The memory history record for the current entry keeps the hash in its path because
+                     * Expo Router's `getPathFromState` appends it. Compare both paths without their hashes so
+                     * every hash-only change is detected, not just the first one on a page.
                      *
                      * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/popstate_event#when_popstate_is_sent
                      */
-                    (index === previousIndex && (!record || `${record?.path}${location.hash}` === path))
+                    (index === previousIndex &&
+                        (!record || getPathWithoutHash(record.path) === getPathWithoutHash(path)))
                 // END FORK
                 ) {
                     const action = getActionFromStateRef.current(state, configRef.current);
