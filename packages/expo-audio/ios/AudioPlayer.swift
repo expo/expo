@@ -20,6 +20,9 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
   let interval: Double
   var wasPlaying = false
+  /// Whether the user requested playback. `playImmediately(atRate:)` is ignored while the
+  /// item is still loading, so the request is remembered and applied once it becomes ready.
+  private var playWanted = false
   var isPaused: Bool {
     ref.rate == 0.0
   }
@@ -106,13 +109,26 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func play(at rate: Float) {
+    playWanted = true
     ref.actionAtItemEnd = isLooping ? .advance : .pause
     if isLooping {
       enqueueNextLoopItem()
     }
     addPlaybackEndNotification()
     registerTimeObserver()
-    ref.playImmediately(atRate: rate)
+
+    if isLoaded {
+      ref.playImmediately(atRate: rate)
+    } else {
+      // `playImmediately(atRate:)` is ignored while the item is still loading. Remember the
+      // request and start as soon as the item becomes ready — unless the user paused first.
+      onReady { [weak self] in
+        guard let self, self.playWanted else {
+          return
+        }
+        self.ref.playImmediately(atRate: rate)
+      }
+    }
 
     if isActiveForLockScreen {
       MediaController.shared.updateNowPlayingInfo(for: self)
@@ -503,10 +519,12 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func pause() {
+    playWanted = false
     ref.pause()
   }
 
   func resumePlayback() {
+    playWanted = true
     ref.play()
   }
 
