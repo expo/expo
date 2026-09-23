@@ -143,6 +143,9 @@ catalogs:
     '@types/express':
       specifier: ^5.0.3
       version: 5.0.6
+    '@types/getenv':
+      specifier: ^1.0.3
+      version: 1.0.3
     '@types/jest':
       specifier: ^29.5.12
       version: 29.5.14
@@ -2117,7 +2120,7 @@ importers:
         specifier: ^1.4.5
         version: 1.4.9
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/invariant':
         specifier: ^2.2.35
@@ -2373,7 +2376,7 @@ importers:
         specifier: 'catalog:'
         version: 5.0.6
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/klaw-sync':
         specifier: ^6.0.0
@@ -2512,7 +2515,7 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/semver':
         specifier: 'catalog:'
@@ -2570,7 +2573,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/semver':
         specifier: 'catalog:'
@@ -2678,7 +2681,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       expo-module-scripts:
         specifier: workspace:*
@@ -2733,7 +2736,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/node':
         specifier: 'catalog:'
@@ -2785,7 +2788,7 @@ importers:
         version: 7.7.4
     devDependencies:
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/semver':
         specifier: 'catalog:'
@@ -3033,7 +3036,7 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/picomatch':
         specifier: ^4.0.2
@@ -3627,7 +3630,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/node':
         specifier: 'catalog:'
@@ -3708,7 +3711,7 @@ importers:
         specifier: ^3.1.5
         version: 3.1.5
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/jest':
         specifier: 'catalog:'
@@ -4805,7 +4808,7 @@ importers:
         specifier: ^4.1.8
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/semver':
         specifier: 'catalog:'
@@ -6545,7 +6548,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/jest':
         specifier: 'catalog:'
@@ -6866,7 +6869,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: 'catalog:'
         version: 1.0.3
       expo:
         specifier: workspace:*
@@ -7113,7 +7116,7 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
       '@types/getenv':
-        specifier: ^1.0.3
+        specifier: 'catalog:'
         version: 1.0.3
       '@types/inquirer':
         specifier: ^8.2.10

@@ -52,7 +52,7 @@
     "@octokit/types": "^15.0.0",
     "@types/cross-spawn": "catalog:",
     "@types/ejs": "^3.1.5",
-    "@types/getenv": "^1.0.0",
+    "@types/getenv": "catalog:",
     "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/prompts": "^2.4.9",
