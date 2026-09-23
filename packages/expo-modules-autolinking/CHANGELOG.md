@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Publish a product's `autolinkWhen` condition in the prebuilt-metadata document, so consumers other than CocoaPods can apply the same gate.
+- Publish a product's `autolinkWhen` condition in the prebuilt-metadata document, so consumers other than CocoaPods can apply the same gate. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
