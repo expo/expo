@@ -7,7 +7,10 @@ packageName: '@expo/ui'
 platforms: ['android', 'expo-go']
 ---
 
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { ComponentExample } from '~/ui/components/ComponentExample';
 import JetpackComposeCards from '~/scenes/versions/v57.0.0/ui/jetpack-compose.mdx';
 
@@ -32,6 +35,13 @@ export function SaveButton() {
   );
 }
 ```
+
+<BoxLink
+  title="Extending with Jetpack Compose"
+  description="Create custom Jetpack Compose components and modifiers that integrate with Expo UI."
+  href="jetpack-compose/extending"
+  Icon={BookOpen02Icon}
+/>
 
 ## Available components
 
