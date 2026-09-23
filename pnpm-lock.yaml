@@ -200,6 +200,9 @@ catalogs:
     getenv:
       specifier: ^2.0.0
       version: 2.0.0
+    glob:
+      specifier: ^13.0.6
+      version: 13.0.6
     json-schema-to-typescript:
       specifier: ^15.0.0
       version: 15.0.4
@@ -2900,7 +2903,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: 'catalog:'
         version: 13.0.6
       npm-run-all2:
         specifier: 'catalog:'
@@ -3663,7 +3666,7 @@ importers:
         specifier: 'catalog:'
         version: 2.0.0
       glob:
-        specifier: ^13.0.0
+        specifier: 'catalog:'
         version: 13.0.6
       memfs:
         specifier: 'catalog:'
@@ -4442,7 +4445,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       glob:
-        specifier: ^13.0.6
+        specifier: 'catalog:'
         version: 13.0.6
 
   packages/expo-build-properties:
@@ -4838,7 +4841,7 @@ importers:
         specifier: 'catalog:'
         version: 2.0.0
       glob:
-        specifier: ^13.0.0
+        specifier: 'catalog:'
         version: 13.0.6
       ignore:
         specifier: ^5.3.2
@@ -6756,7 +6759,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: 'catalog:'
         version: 13.0.6
       prompts:
         specifier: ^2.3.2
@@ -6980,7 +6983,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: 'catalog:'
         version: 13.0.6
       prompts:
         specifier: ^2.3.2

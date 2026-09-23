@@ -55,7 +55,7 @@
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
-    "glob": "^13.0.0",
+    "glob": "catalog:",
     "prompts": "^2.3.2",
     "resolve-from": "catalog:",
     "semver": "7.7.4",

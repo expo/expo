@@ -51,6 +51,7 @@ catalog:
   expect-type: ^1.3.0
   express: ^5.1.0
   getenv: ^2.0.0
+  glob: ^13.0.6
   json-schema-to-typescript: ^15.0.0
   memfs: ^3.6.0
   multitars: ^1.0.2
