@@ -101,6 +101,7 @@ export function useAudioPlayer(
     keepAudioSessionActive = false,
     preferredForwardBufferDuration = 0,
     allowsExternalPlayback = true,
+    automaticallyWaitsToMinimizeStalling = true,
   } = options;
   const serializedSource = JSON.stringify(source);
 
@@ -118,7 +119,8 @@ export function useAudioPlayer(
         updateInterval,
         keepAudioSessionActive,
         preferredForwardBufferDuration,
-        allowsExternalPlayback
+        allowsExternalPlayback,
+        automaticallyWaitsToMinimizeStalling
       ),
     [
       JSON.stringify(initialSource),
@@ -126,6 +128,7 @@ export function useAudioPlayer(
       keepAudioSessionActive,
       preferredForwardBufferDuration,
       allowsExternalPlayback,
+      automaticallyWaitsToMinimizeStalling,
     ]
   );
 
@@ -412,6 +415,7 @@ export function createAudioPlayer(
     keepAudioSessionActive = false,
     preferredForwardBufferDuration = 0,
     allowsExternalPlayback = true,
+    automaticallyWaitsToMinimizeStalling = true,
   } = options;
   const initialSource = downloadFirst ? null : resolveSource(source);
   const player = new AudioModule.AudioPlayer(
@@ -419,7 +423,8 @@ export function createAudioPlayer(
     updateInterval,
     keepAudioSessionActive,
     preferredForwardBufferDuration,
-    allowsExternalPlayback
+    allowsExternalPlayback,
+    automaticallyWaitsToMinimizeStalling
   );
 
   if (downloadFirst && source) {
