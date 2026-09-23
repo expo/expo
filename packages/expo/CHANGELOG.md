@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [web] Add an experimental bundle splitting strategy for production app exports. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+
 - [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
