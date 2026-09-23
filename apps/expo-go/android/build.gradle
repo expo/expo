@@ -11,8 +11,8 @@ buildscript {
     buildToolsVersion = '37.0.0'
     // The Expo Modules v2 compiler plugin only loads on Kotlin 2.2.x (expo/expo#50293).
     // Keep the compose/serialization plugin pins in expoview/build.gradle in sync.
-    kotlinVersion = "2.2.0"
-    kspVersion = "2.2.0-2.0.2"
+    kotlinVersion = "2.2.10"
+    kspVersion = "2.2.10-2.0.2"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
