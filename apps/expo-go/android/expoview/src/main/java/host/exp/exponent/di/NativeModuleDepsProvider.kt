@@ -13,6 +13,7 @@ import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.exponent.services.ExponentHistoryService
+import host.exp.exponent.services.SessionRepository
 import host.exp.exponent.storage.ExponentSharedPreferences
 import kotlinx.coroutines.Dispatchers
 import java.lang.reflect.Field
@@ -34,6 +35,10 @@ class NativeModuleDepsProvider(application: Application) {
   @Inject
   @DoNotStrip
   val mExponentSharedPreferences: ExponentSharedPreferences = ExponentSharedPreferences(mContext)
+
+  @Inject
+  @DoNotStrip
+  val mSessionRepository: SessionRepository = SessionRepository(mContext)
 
   @Inject
   @DoNotStrip
