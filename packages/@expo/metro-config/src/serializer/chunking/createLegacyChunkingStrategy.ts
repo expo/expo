@@ -20,7 +20,7 @@ export function createLegacyChunkingStrategy(context: ChunkingContext): Chunking
     async serializeAsync() {
       // Create chunks for splitting.
       const chunks = new Set<Chunk>();
-      const gatherChunks = createChunkCollector(context, strategy);
+      const gatherChunks = createChunkCollector(context, strategy, () => true);
       const entryChunks = gatherChunks(
         chunks,
         { test: pathToRegex(entryFile) },
