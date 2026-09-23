@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve updated route parameters when an entering screen finishes its transition.
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-22
