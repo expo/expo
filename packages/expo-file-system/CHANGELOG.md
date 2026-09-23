@@ -10,6 +10,7 @@
 
 - [Android] Added missing permission checks to upload tasks and to file watchers. ([#50582](https://github.com/expo/expo/pull/50582) by [@barthap](https://github.com/barthap))
 - [iOS] Added a missing permission check when opening a file handle. ([#50583](https://github.com/expo/expo/pull/50583) by [@barthap](https://github.com/barthap))
+- [Android] Check permissions for `content://` URIs served by the app's own file providers. ([#50584](https://github.com/expo/expo/pull/50584) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
