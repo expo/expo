@@ -5,8 +5,8 @@ import type { BackgroundTaskOptions } from './BackgroundTask.types';
 import { BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 
-// Flag to warn about running on Apple simulator
-let warnAboutRunningOniOSSimulator = false;
+// Flag to warn only once about a restricted environment (an Apple simulator, or a device policy)
+let warnedAboutRestrictedStatus = false;
 
 let warnedAboutExpoGo = false;
 
@@ -27,10 +27,18 @@ function _validate(taskName: unknown) {
 
 // @needsAudit
 /**
- * Returns the status for the Background Task API. On web, it always returns `BackgroundTaskStatus.Restricted`,
- * while on native platforms it returns `BackgroundTaskStatus.Available`.
+ * Returns the status for the Background Task API.
  *
- * @returns A BackgroundTaskStatus enum value or `null` if not available.
+ * On iOS this reflects the system **Background App Refresh** setting: `BackgroundTaskStatus.Available`
+ * when it is on, `BackgroundTaskStatus.Denied` when the user has turned it off for this app or for
+ * the whole system, and `BackgroundTaskStatus.Restricted` when a device policy forbids background
+ * activity or the app is running on a simulator. On Android it always returns
+ * `BackgroundTaskStatus.Available`, and on web `BackgroundTaskStatus.Restricted`.
+ *
+ * Because there is more than one way for background tasks to be unavailable, test for
+ * `BackgroundTaskStatus.Available` rather than comparing against a single unavailable value.
+ *
+ * @returns A BackgroundTaskStatus enum value.
  */
 export const getStatusAsync = async (): Promise<BackgroundTaskStatus> => {
   if (!ExpoBackgroundTaskModule.getStatusAsync) {
@@ -84,14 +92,18 @@ export async function registerTaskAsync(
     );
   }
 
+  // Only `Restricted` skips registration, because nothing the user does can lift it. `Denied`
+  // deliberately falls through and registers the task: the user can turn Background App Refresh
+  // back on at any moment, and a task that was never registered would not start running when
+  // they do.
   if ((await ExpoBackgroundTaskModule.getStatusAsync()) === BackgroundTaskStatus.Restricted) {
-    if (!warnAboutRunningOniOSSimulator) {
+    if (!warnedAboutRestrictedStatus) {
       const message =
         Platform.OS === 'ios'
-          ? `Background tasks are not supported on iOS simulators. Skipped registering task: ${taskName}.`
+          ? `Background tasks are restricted on this device — they are unsupported on iOS simulators, and a device policy such as parental controls or MDM can forbid them. Skipped registering task: ${taskName}.`
           : `Background tasks are not available in the current environment. Skipped registering task: ${taskName}.`;
       console.warn(message);
-      warnAboutRunningOniOSSimulator = true;
+      warnedAboutRestrictedStatus = true;
     }
     return;
   }
