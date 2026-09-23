@@ -11,8 +11,9 @@
 const fs = require('fs');
 const path = require('path');
 
-// No reader below is sensitive to a trailing `\r` today; the normalisation is here so
-// that one anchoring a pattern at line end does not quietly fail on a CRLF checkout.
+const { APPLE_SOURCE_DIRS } = require('./classify');
+
+// CRLF-safe.
 const sourceLines = (text) => text.replace(/\r\n/g, '\n').split('\n');
 
 // ---------------------------------------------------------------------------
@@ -121,9 +122,39 @@ function xcconfigLinkerFlags(text) {
   return null;
 }
 
+/** Pod names a podspec depends on, ignoring `test_spec` blocks. Text-only. */
+function podspecDependencies(text) {
+  const deps = [];
+  for (const { text: line } of podspecBodyLines(text)) {
+    const match = line.match(/\.dependency\s+['"]([^'"]+)['"]/);
+    if (match) deps.push(match[1]);
+  }
+  return deps;
+}
+
 // ---------------------------------------------------------------------------
 // I/O
 // ---------------------------------------------------------------------------
+
+function readText(file) {
+  try {
+    return fs.readFileSync(file, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
+function podspecsIn(dir) {
+  try {
+    return fs
+      .readdirSync(dir)
+      .filter((name) => name.endsWith('.podspec'))
+      .sort()
+      .map((name) => path.join(dir, name));
+  } catch {
+    return [];
+  }
+}
 
 /**
  * The podspecs describing `podName`: its own file when one carries its name, else
@@ -134,17 +165,7 @@ function podspecFiles(podName, dirs) {
     const own = path.join(dir, `${podName}.podspec`);
     if (fs.existsSync(own)) return [own];
   }
-  return dirs.flatMap((dir) => {
-    try {
-      return fs
-        .readdirSync(dir)
-        .filter((name) => name.endsWith('.podspec'))
-        .sort()
-        .map((name) => path.join(dir, name));
-    } catch {
-      return [];
-    }
-  });
+  return dirs.flatMap(podspecsIn);
 }
 
 /**
@@ -156,12 +177,8 @@ function podspecFiles(podName, dirs) {
 function readPodspecs(podName, dirs) {
   const texts = [];
   for (const file of podspecFiles(podName, dirs)) {
-    let text = '';
-    try {
-      text = fs.readFileSync(file, 'utf8');
-    } catch {
-      continue;
-    }
+    const text = readText(file);
+    if (text == null) continue;
     const declaration = linkageDeclaration(text);
     if (declaration != null) {
       return {
@@ -184,9 +201,29 @@ function readPodspecs(podName, dirs) {
   };
 }
 
+/**
+ * Everything the plugin reads from a pod's podspecs, read once per pod. Linkage is
+ * looked for beside the pod and in the module's source directories and root;
+ * dependencies are read from every podspec in the pod's own directory, so a pod
+ * sharing it with siblings reports theirs too.
+ */
+function readPodspecFacts({ podName, podspecDir, moduleRoot }) {
+  const dirs = [
+    podspecDir,
+    ...APPLE_SOURCE_DIRS.map((dir) => path.join(moduleRoot, dir)),
+    moduleRoot,
+  ].filter(Boolean);
+  const dependencies = new Set(
+    podspecsIn(podspecDir).flatMap((file) => podspecDependencies(readText(file) ?? ''))
+  );
+  return { ...readPodspecs(podName, dirs), dependencies: [...dependencies] };
+}
+
 module.exports = {
   podspecBodyLines,
+  podspecDependencies,
   linkageDeclaration,
   xcconfigLinkerFlags,
   readPodspecs,
+  readPodspecFacts,
 };

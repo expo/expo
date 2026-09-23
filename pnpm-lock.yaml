@@ -819,12 +819,18 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-camera:
+        specifier: workspace:*
+        version: link:../../packages/expo-camera
       expo-constants:
         specifier: workspace:*
         version: link:../../packages/expo-constants
       expo-crypto:
         specifier: workspace:*
         version: link:../../packages/expo-crypto
+      expo-image:
+        specifier: workspace:*
+        version: link:../../packages/expo-image
       react:
         specifier: 19.3.0
         version: 19.3.0

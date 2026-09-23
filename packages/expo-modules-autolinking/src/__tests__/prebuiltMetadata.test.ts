@@ -206,6 +206,7 @@ describe('resolvePrebuiltMetadataAsync', () => {
               productName: 'RNWorkletsDep',
               version: { exact: '0.6.0' },
             },
+            { url: 'https://github.com/expo/rn-worklets-unpinned.git', productName: 'Unpinned' },
           ],
         },
         {
@@ -283,26 +284,22 @@ describe('resolvePrebuiltMetadataAsync', () => {
     expect(document.ExpoOddFloor).not.toHaveProperty('iosDeploymentTarget');
   });
 
-  // A precompiled product's SPM package dependencies ship as separate
-  // xcframeworks. Consumers cannot read the config that names them, so the
-  // document has to carry them. Mirrors Ruby's `spm_dependency_frameworks`.
-  it('publishes the SPM dependency products of an internal product', async () => {
-    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+  // A consumer linking a precompiled product's SPM packages as the XCFrameworks
+  // shipped beside it reads their product names from spmPackages. A second list
+  // of names could only disagree with it.
+  it.each([
+    ['an internal', 'ExpoSpmCoordinates', ['SDWebImage', 'libavif', 'Branchy', 'Pinned']],
+    ['an external', 'RNWorklets', ['RNWorkletsDep']],
+  ])(
+    'publishes the SPM packages of %s product as spmPackages alone',
+    async (_, podName, productNames) => {
+      const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
 
-    expect(document.ExpoWithDeps).toMatchObject({ spmDependencies: ['SDWebImage', 'libavif'] });
-  });
+      expect(document[podName]?.spmPackages?.map((pkg) => pkg.productName)).toEqual(productNames);
+      expect(document[podName]).not.toHaveProperty('spmDependencies');
+    }
+  );
 
-  it('publishes the SPM dependency products of an external product too', async () => {
-    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
-
-    expect(document.RNWorklets).toMatchObject({ spmDependencies: ['RNWorkletsDep'] });
-  });
-
-  it('omits the dependencies of a product that declares none', async () => {
-    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
-
-    expect(document.ExpoModulesCore).not.toHaveProperty('spmDependencies');
-  });
   // A source-emitted module declares its SwiftPM dependencies in the generated
   // manifest, which needs the whole coordinate — a product name alone resolves
   // to no package.
@@ -354,6 +351,7 @@ describe('resolvePrebuiltMetadataAsync', () => {
     expect(products).not.toContain('Floating');
     expect(products).not.toContain('Numeric');
     expect(products).not.toContain('Ambiguous');
+    expect(document.ExpoWithDeps).not.toHaveProperty('spmPackages');
   });
 
   // An empty string is a string, so the coordinate reads as present and renders
@@ -378,27 +376,33 @@ describe('resolvePrebuiltMetadataAsync', () => {
     expect(products).not.toContain('Renamed');
   });
 
-  // The framework-side field keeps its own meaning: it names the XCFrameworks
-  // shipped beside a precompiled product, whatever the coordinates say.
-  it('leaves spmDependencies listing the products of entries it skips', async () => {
-    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+  // CocoaPods links every entry that names a product, so an entry skipped here
+  // without a word links under CocoaPods and silently not under SwiftPM.
+  it.each([
+    ['ExpoSpmCoordinates', '"Floating"', 'no version requirement'],
+    ['ExpoSpmCoordinates', '"Numeric"', 'no version requirement'],
+    ['ExpoSpmCoordinates', '"Ambiguous"', 'no version requirement'],
+    ['ExpoSpmCoordinates', '"Renamed"', 'packageName'],
+    ['ExpoSpmCoordinates', '"Urlless"', 'no url'],
+    ['ExpoSpmCoordinates', 'spmPackages[9]', 'no productName'],
+    ['ExpoWithDeps', '"SDWebImage"', 'no url'],
+    ['ExpoWithDeps', 'spmPackages[1]', 'no productName'],
+    ['RNWorklets', '"Unpinned"', 'no version requirement'],
+  ])('warns once, naming %s and %s, about an SPM package it skips', async (podName, pkg, why) => {
+    await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
 
-    expect(document.ExpoWithDeps).toMatchObject({ spmDependencies: ['SDWebImage', 'libavif'] });
-    expect(document.ExpoWithDeps).not.toHaveProperty('spmPackages');
-    expect(document.ExpoSpmCoordinates).toMatchObject({
-      spmDependencies: [
-        'SDWebImage',
-        'libavif',
-        'Branchy',
-        'Pinned',
-        'Floating',
-        'Numeric',
-        'Ambiguous',
-        'Renamed',
-        'Urlless',
-        '',
-      ],
-    });
+    const warnings = warningsAbout(podName).filter((message) => message.includes(pkg));
+    expect(warnings).toEqual([expect.stringContaining(why)]);
+    expect(warnings[0]).toMatch(/^\[prebuilt-metadata\] /);
+    expect(warnings[0]).toContain('spm.config.json');
+  });
+
+  it('warns about the entries it skips and no others', async () => {
+    await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+
+    expect(warningsAbout('ExpoSpmCoordinates')).toHaveLength(6);
+    expect(warningsAbout('ExpoWithDeps')).toHaveLength(3);
+    expect(warningsAbout('RNWorklets')).toHaveLength(1);
   });
 
   it('omits the coordinates of a product that declares none', async () => {

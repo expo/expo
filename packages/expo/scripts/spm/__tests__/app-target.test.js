@@ -4,7 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const { resolveAppTarget } = require('../app-target');
+const { readPodfileProperties, resolveAppTarget } = require('../app-target');
 
 // The real project of apps/minimal-swiftpm: the entitlements derivation reads an
 // Xcode project, so mocking one out would only assert our own fixture back.
@@ -366,5 +366,109 @@ describe('the Podfile properties file', () => {
 
   it('is omitted when the app has none', () => {
     expect(resolveAppTarget(makeApp()).podfilePropertiesPath).toBeNull();
+  });
+});
+
+describe('the Podfile properties', () => {
+  let tmp;
+  beforeAll(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-podfile-properties-'));
+  });
+
+  /** Writes a Podfile.properties.json with `contents` and returns its path. */
+  const propertiesFile = (name, contents) => {
+    const file = path.join(tmp, name, 'Podfile.properties.json');
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    fs.writeFileSync(file, contents);
+    return file;
+  };
+
+  const thrownBy = (file) => {
+    try {
+      readPodfileProperties(file);
+    } catch (error) {
+      return error;
+    }
+    throw new Error(`${file} was read as properties instead of being refused`);
+  };
+
+  it('are the properties the file declares', () => {
+    const file = propertiesFile(
+      'app',
+      JSON.stringify({ 'expo.jsEngine': 'hermes', 'expo.camera.barcode-scanner-enabled': 'false' })
+    );
+    expect(readPodfileProperties(file)).toEqual({
+      'expo.jsEngine': 'hermes',
+      'expo.camera.barcode-scanner-enabled': 'false',
+    });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  // A file that vanished between `resolveAppTarget` finding it and this read is the
+  // same situation as an app that never ran CocoaPods, not a broken file.
+  it('are empty and silent when there is no file to read', () => {
+    const vanished = path.join(tmp, 'vanished', 'Podfile.properties.json');
+    fs.mkdirSync(path.dirname(vanished), { recursive: true });
+    const absent = path.join(tmp, 'absent', 'Podfile.properties.json');
+    for (const input of [undefined, null, '', {}, [], absent, vanished]) {
+      expect(readPodfileProperties(input)).toEqual({});
+    }
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  // The namespace is what makes a failed sync attributable to this plugin, and a
+  // stop is not one of this file's warnings however it is worded.
+  it('fail the sync with a namespaced error rather than a warning', () => {
+    const { message } = thrownBy(propertiesFile('namespaced', 'null'));
+    expect(message.startsWith('[expo-spm-plugin] ')).toBe(true);
+    expect(message).not.toContain('WARNING');
+    expect(message).toContain('leave each gated product to its own default');
+    expect(message).toContain('npx react-native spm update');
+  });
+
+  // An unset property leaves its gate at that gate's own default, so no fallback is
+  // neutral: a clobbered file read as no properties links or drops products against
+  // the app's configuration, silently.
+  it('fail the sync when the file is not valid JSON', () => {
+    const file = propertiesFile('malformed', '{ "expo.jsEngine": ');
+    const error = thrownBy(file);
+    expect(error.message).toContain(`${file} could not be read as Podfile properties`);
+    expect(error.message).toContain(error.cause.message);
+    expect(error.cause).toBeInstanceOf(Error);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('fail the sync when the file cannot be read', () => {
+    const directory = path.join(tmp, 'unreadable', 'Podfile.properties.json');
+    fs.mkdirSync(directory, { recursive: true });
+    const error = thrownBy(directory);
+    expect(error.message).toContain(directory);
+    expect(error.message).toContain(error.cause.message);
+    expect(error.cause.code).toBe('EISDIR');
+  });
+
+  // CocoaPods writes an object; anything else is a file some other tool clobbered.
+  it.each([
+    ['[]', 'an array'],
+    ['"hermes"', 'a string'],
+    ['17', 'a number'],
+    ['null', 'null'],
+    ['true', 'a boolean'],
+  ])('fail the sync when the file holds %s instead of an object', (contents, held) => {
+    const file = propertiesFile(`not-an-object-${encodeURIComponent(contents)}`, contents);
+    const error = thrownBy(file);
+    expect(error.message).toContain(`${file} could not be read as Podfile properties`);
+    expect(error.message).toContain(`it holds ${held}, not an object`);
+    expect(error.cause).toBeUndefined();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  // The error describes the payload's type and never renders the payload: a
+  // structure this deep parses fine and then overflows the stack in
+  // `JSON.stringify`, which would replace the diagnostic with a stack overflow.
+  it('fail the sync for a payload no one can print', () => {
+    const depth = 50_000;
+    const file = propertiesFile('too-deep', '['.repeat(depth) + ']'.repeat(depth));
+    expect(thrownBy(file).message).toContain('it holds an array, not an object');
   });
 });

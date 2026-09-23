@@ -9,9 +9,10 @@
 
 const fs = require('fs');
 const path = require('path');
-const { appleSourceDir, collectIgnoredDirs } = require('./classify');
+const { appleSourceDir, scanAppleSources } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
 const { runDumpPackage } = require('./cli');
+const { pluginError } = require('./diagnostics');
 
 // ---------------------------------------------------------------------------
 // Pure: parse `swift package dump-package` JSON → { name, products, targets }
@@ -19,8 +20,7 @@ const { runDumpPackage } = require('./cli');
 
 /**
  * A same-package target dependency: the bare target name, or `{ name, platforms }`
- * when the manifest conditions it. Cross-package `.product` deps are not sibling
- * deps — the injected React set covers those.
+ * when the manifest conditions it.
  */
 function siblingDependency(dep) {
   const [name, condition] = dep.byName ?? dep.target ?? [];
@@ -32,14 +32,239 @@ function siblingDependency(dep) {
 const siblingName = (dep) => (typeof dep === 'string' ? dep : dep.name);
 
 /**
- * Keep only regular targets and library products; resolve same-package sibling deps by
- * name, and collect the deps that name a target the generated package cannot declare.
+ * The version a dumped source-control dependency is pinned at, or null when it names
+ * no form the generated package can declare. `.package(url:from:)` arrives here as a
+ * range — `dump-package` has already widened it — so there is no `from:` form to read.
  */
-function parseDumpedManifest(json) {
+function packageRequirement(requirement) {
+  const [form, values] = Object.entries(requirement ?? {})[0] ?? [];
+  if (form === 'range') {
+    const { lowerBound, upperBound } = values?.[0] ?? {};
+    return lowerBound != null && upperBound != null
+      ? { kind: 'range', lowerBound, upperBound }
+      : null;
+  }
+  if (form === 'exact' || form === 'branch' || form === 'revision') {
+    return typeof values?.[0] === 'string' ? { kind: form, value: values[0] } : null;
+  }
+  return null;
+}
+
+/**
+ * A prebuilt-metadata `spmPackages` entry in the shape a dumped manifest's packages
+ * take, `{ identity, url, requirement }`, plus the product the module links from it.
+ * The document publishes exactly one string requirement per entry, so its only key
+ * is the requirement's kind.
+ */
+function documentedPackage({ url, productName, version }) {
+  const [[kind, value]] = Object.entries(version);
+  return { identity: spmPackageIdentity({ url }), url, requirement: { kind, value }, productName };
+}
+
+/** Whether a trait set is anything but the default one every dumped dependency carries. */
+function hasNonDefaultTraits(traits) {
+  if (traits == null) return false;
+  return traits.length !== 1 || traits[0]?.name !== 'default';
+}
+
+/**
+ * The packages the generated manifest mirrors, keyed by every name a target dependency
+ * may resolve them by, plus one entry per package it cannot declare. A dropped package
+ * is invisible until the module's first `import` of it, so every form this cannot
+ * render is collected rather than skipped.
+ */
+function parsePackageDependencies(dependencies, injectedNames) {
+  const packageDeps = [];
+  const packagesByName = new Map();
+  const unsupported = [];
+  // SwiftPM resolves a package by identity or `.package(name:)` name, case-insensitively; a
+  // reported package answers to both, so a target dependency on it joins that report.
+  const reportedByName = new Map();
+  const report = (form, identity, ...otherNames) => {
+    const entry = { form, identity: identity ?? null, target: null };
+    unsupported.push(entry);
+    for (const name of [identity, ...otherNames]) {
+      if (typeof name !== 'string' || reportedByName.has(name.toLowerCase())) continue;
+      reportedByName.set(name.toLowerCase(), entry);
+    }
+  };
+  for (const dependency of dependencies ?? []) {
+    const [form, declarations] = Object.entries(dependency ?? {})[0] ?? [];
+    const declared = declarations?.[0] ?? {};
+    const reportDeclared = (fault) =>
+      report(fault, declared.identity, declared.nameForTargetDependencyResolutionOnly);
+    if (form === 'sourceControl') {
+      const url = declared.location?.remote?.[0]?.urlString;
+      const requirement = url != null ? packageRequirement(declared.requirement) : null;
+      if (url == null) {
+        reportDeclared('unsupported-location');
+      } else if (requirement == null) {
+        reportDeclared('unsupported-requirement');
+      } else {
+        // Traits select which of a package's code builds, and this renders none of them,
+        // so a non-default set would build something other than the module declared.
+        if (hasNonDefaultTraits(declared.traits)) report('unsupported-traits', declared.identity);
+        const pkg = { identity: declared.identity ?? null, url, requirement };
+        packageDeps.push(pkg);
+        for (const name of [declared.identity, declared.nameForTargetDependencyResolutionOnly]) {
+          if (typeof name !== 'string') continue;
+          // Two packages answering to one name would resolve to whichever was declared
+          // last — a silent choice between two different dependencies.
+          if ((packagesByName.get(name.toLowerCase()) ?? pkg) !== pkg) {
+            report('ambiguous-package-name', name);
+          }
+          packagesByName.set(name.toLowerCase(), pkg);
+        }
+      }
+    } else if (form === 'fileSystem') {
+      // Mirroring one would mean rewriting its path against the `root` symlink, which
+      // this plugin does not do.
+      reportDeclared('local-path');
+    } else if (form === 'registry') {
+      reportDeclared('registry');
+    } else {
+      reportDeclared('unknown-form');
+    }
+  }
+  // SwiftPM refuses a graph where two packages resolve to one identity, so a mirrored
+  // package may not take a name the injected declarations already occupy.
+  const injected = new Set(injectedNames.map((name) => name.toLowerCase()));
+  for (const { identity } of packageDeps) {
+    if (identity != null && injected.has(identity.toLowerCase())) {
+      report('collides-with-injected', identity);
+    }
+  }
+  return { packageDeps, packagesByName, reportedByName, unsupportedPackageDeps: unsupported };
+}
+
+/**
+ * Identities the injected RN declarations occupy (mirrors react-descriptor.js); a path
+ * package answers to its dir name and its `name:`.
+ */
+function injectedPackageNames(react) {
+  if (react == null) return [];
+  const ref = react.packageRef;
+  return [
+    ref.name,
+    ref.url != null ? spmPackageIdentity(ref) : null,
+    ref.path != null ? path.basename(ref.path) : null,
+    ...react.products.map((p) => p.package),
+  ].filter((name) => typeof name === 'string');
+}
+
+const hasEntries = (value) => value != null && Object.keys(value).length > 0;
+
+/**
+ * Whether a target-dependency condition sets anything this renderer does not carry.
+ * Swift tools 6.1 added traits to it, and a condition rendered without them would
+ * apply the dependency more widely than the module declared.
+ */
+function unrenderableCondition(condition) {
+  return Object.entries(condition ?? {}).some(
+    ([key, value]) =>
+      key !== 'platformNames' && value != null && (!Array.isArray(value) || value.length > 0)
+  );
+}
+
+/** Why a `.product` dependency cannot be mirrored, or null when it can. */
+function productFault(declaredPackage, moduleAliases, condition) {
+  if (declaredPackage == null) return 'undeclared-package';
+  // An alias renames a dependency's modules. Rendering the dependency without it would
+  // leave the module importing a name nothing declares, or reintroduce the duplicate
+  // module name the alias exists to resolve.
+  if (hasEntries(moduleAliases)) return 'module-aliases';
+  if (unrenderableCondition(condition)) return 'unsupported-condition';
+  return null;
+}
+
+/**
+ * The name a mirrored `.product` must give its package. The mirrored declaration carries
+ * no `name:`, so a dependency that named the package by a deprecated `.package(name:)`
+ * has to name the identity instead; a name that differs only in case resolves as written.
+ */
+function resolvablePackageName(written, declaredPackage) {
+  const { identity } = declaredPackage;
+  return identity != null && identity.toLowerCase() !== written.toLowerCase() ? identity : written;
+}
+
+/**
+ * Keep only regular targets and library products; resolve each target's dependencies
+ * against the targets and packages this package declares, in their declared order, and
+ * collect everything the generated package cannot re-declare.
+ */
+function parseDumpedManifest(json, injectedNames = []) {
   const pkg = JSON.parse(json);
-  const regular = (pkg.targets ?? [])
-    .filter((t) => t.type === 'regular')
-    .map((t) => ({
+  const { packageDeps, packagesByName, reportedByName, unsupportedPackageDeps } =
+    parsePackageDependencies(pkg.dependencies, injectedNames);
+  const declaredTargets = pkg.targets ?? [];
+  const declaredKinds = new Map(declaredTargets.map((t) => [t.name, t.type]));
+  const regular = declaredTargets.filter((t) => t.type === 'regular');
+  const regularNames = new Set(regular.map((t) => t.name));
+  const unsupportedTargetDeps = [];
+  // The PRODUCT names the mirrored targets take from those packages. Dependency
+  // diagnostics match a pod name against these — `libavif/libdav1d` is covered by the
+  // `libavif` product, whatever the package it ships in is called.
+  const spmProductNames = [];
+
+  const targets = regular.map((t) => {
+    const dependencies = [];
+    for (const dep of t.dependencies ?? []) {
+      if (dep.product != null) {
+        const [name, packageName, moduleAliases, condition] = dep.product;
+        const declaredPackage =
+          packageName != null ? (packagesByName.get(packageName.toLowerCase()) ?? null) : null;
+        const fault = productFault(declaredPackage, moduleAliases, condition);
+        if (fault != null) {
+          // Already reported under its declaration; attach the target there.
+          const reported = reportedByName.get((packageName ?? '').toLowerCase());
+          if (fault === 'undeclared-package' && reported != null) reported.target ??= t.name;
+          else {
+            unsupportedPackageDeps.push({
+              form: fault,
+              identity: packageName ?? null,
+              target: t.name,
+            });
+          }
+          continue;
+        }
+        dependencies.push({
+          product: name,
+          package: resolvablePackageName(packageName, declaredPackage),
+          platforms: condition?.platformNames ?? [],
+        });
+        spmProductNames.push(name);
+        continue;
+      }
+      const sibling = siblingDependency(dep);
+      if (sibling == null) continue;
+      const name = siblingName(sibling);
+      if (unrenderableCondition((dep.byName ?? dep.target)[1])) {
+        unsupportedPackageDeps.push({
+          form: 'unsupported-target-condition',
+          identity: name,
+          target: t.name,
+        });
+      } else if (regularNames.has(name)) {
+        dependencies.push(sibling);
+      } else if (declaredKinds.has(name)) {
+        // Only regular targets are mirrored, so a dependency on a target of any other
+        // kind names a target the generated package does not declare. Dropping it
+        // silently ends in an undefined symbol at link time, so it is collected.
+        unsupportedTargetDeps.push({
+          target: t.name,
+          dependsOn: name,
+          kind: declaredKinds.get(name),
+        });
+      } else if (dep.byName != null) {
+        // Resolves against the declared packages' PRODUCTS, which a dump does not list;
+        // rendered verbatim, SwiftPM names it if it resolves to nothing.
+        dependencies.push(
+          typeof sibling === 'string' ? name : { byName: name, platforms: sibling.platforms }
+        );
+        spmProductNames.push(name);
+      }
+    }
+    return {
       name: t.name,
       // An omitted `path:` is resolved against the filesystem by the emit layer.
       path: t.path ?? null,
@@ -48,33 +273,26 @@ function parseDumpedManifest(json) {
       sources: t.sources ?? [],
       resources: t.resources ?? [],
       settings: t.settings ?? [],
-      // sibling targets referenced by name within this same package
-      siblingDeps: (t.dependencies ?? []).map(siblingDependency).filter(Boolean),
-    }));
-  const regularNames = new Set(regular.map((t) => t.name));
-  // Only regular targets are mirrored, so a dependency on a target of any other kind
-  // would name a target the generated package does not declare.
-  const targets = regular.map((t) => ({
-    ...t,
-    siblingDeps: t.siblingDeps.filter((d) => regularNames.has(siblingName(d))),
-  }));
-  // Dropping such a dependency silently ends in an undefined symbol at link time, so it
-  // is collected and reported. A name that is NO target of this package is a product of
-  // a dependency package — `.byName` resolves to that too — and is correctly dropped.
-  const declaredKinds = new Map((pkg.targets ?? []).map((t) => [t.name, t.type]));
-  const unsupportedTargetDeps = regular.flatMap((t) =>
-    t.siblingDeps
-      .map(siblingName)
-      .filter((name) => !regularNames.has(name) && declaredKinds.has(name))
-      .map((name) => ({ target: t.name, dependsOn: name, kind: declaredKinds.get(name) }))
-  );
+      dependencies,
+    };
+  });
+
   const products = (pkg.products ?? [])
     .filter((p) => Object.keys(p.type ?? {})[0] === 'library')
     .map((p) => ({ name: p.name, targets: (p.targets ?? []).filter((n) => regularNames.has(n)) }))
     .filter((p) => p.targets.length);
   const iosDeploymentTarget =
     (pkg.platforms ?? []).find((p) => p.platformName === 'ios')?.version ?? null;
-  return { name: pkg.name, iosDeploymentTarget, products, targets, unsupportedTargetDeps };
+  return {
+    name: pkg.name,
+    iosDeploymentTarget,
+    products,
+    targets,
+    packageDeps,
+    spmProductNames: [...new Set(spmProductNames)],
+    unsupportedTargetDeps,
+    unsupportedPackageDeps,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -108,26 +326,36 @@ const SWIFT_PLATFORM_CASES = new Map([
 function swiftPlatformCases(names, context) {
   const declared = (names ?? []).map((p) => SWIFT_PLATFORM_CASES.get(p)).filter((p) => p != null);
   if (declared.length === 0 && (names ?? []).length > 0) {
-    throw new Error(
-      `Cannot generate a consumption Package.swift for ${context}: its platform condition names only ` +
-        `${names.map((n) => `"${n}"`).join(', ')}, which PackageDescription 6.0 does not declare. Dropping ` +
-        'the condition would apply the declaration on every platform, wider than the module declared. Add the ' +
-        'platform to SWIFT_PLATFORM_CASES in expo/scripts/spm/manifests.js, or condition the declaration on a ' +
-        'platform Swift Package Manager supports.'
-    );
+    throw pluginError({
+      what: `Cannot generate a consumption Package.swift for ${context}: its platform condition names only ${names.map((n) => `"${n}"`).join(', ')}, which PackageDescription 6.0 does not declare.`,
+      why: 'Dropping the condition would apply the declaration on every platform, wider than the module declared.',
+      how: 'Add the platform to SWIFT_PLATFORM_CASES in expo/scripts/spm/manifests.js, or condition the declaration on a platform Swift Package Manager supports.',
+    });
   }
   return declared;
 }
 
+/** SwiftPM allows only `platforms:` in a target-dependency condition. */
+function renderPlatformCondition(platforms, context) {
+  const cases = swiftPlatformCases(platforms, context);
+  return cases.length ? `, condition: .when(platforms: [${cases.join(', ')}])` : '';
+}
+
 /**
- * A sibling dependency, conditioned on platforms when the module declared it so.
- * SwiftPM allows only `platforms:` in a target-dependency condition.
+ * One target dependency — a sibling target, a mirrored package's product, or a
+ * `.byName` the module wrote against one of its packages — conditioned on platforms
+ * when the module declared it so.
  */
-function renderSiblingDependency(dep) {
-  if (typeof dep === 'string') return `"${dep}"`;
-  const platforms = swiftPlatformCases(dep.platforms, `the dependency on "${dep.name}"`);
-  if (!platforms.length) return `"${dep.name}"`;
-  return `.target(name: "${dep.name}", condition: .when(platforms: [${platforms.join(', ')}]))`;
+function renderTargetDependency(dep) {
+  if (typeof dep === 'string') return `"${escapeSwiftString(dep)}"`;
+  const kind = dep.product != null ? 'product' : dep.byName != null ? 'byName' : 'target';
+  const dependsOn = dep.product ?? dep.byName ?? dep.name;
+  const condition = renderPlatformCondition(dep.platforms, `the dependency on "${dependsOn}"`);
+  const name = escapeSwiftString(dependsOn);
+  if (kind === 'product') {
+    return `.product(name: "${name}", package: "${escapeSwiftString(dep.package)}"${condition})`;
+  }
+  return condition ? `.${kind}(name: "${name}"${condition})` : `"${name}"`;
 }
 
 const RESOURCE_RULES = new Map([
@@ -151,12 +379,11 @@ function renderResource(resource, targetName) {
   const localization =
     options?.localization != null ? RESOURCE_LOCALIZATIONS.get(options.localization) : null;
   if (call == null || (options?.localization != null && localization == null)) {
-    throw new Error(
-      `Cannot generate a consumption Package.swift for target "${targetName}": resource "${resource.path}" ` +
-        `uses the unsupported rule \`${JSON.stringify(resource.rule)}\`. This plugin renders .process, .copy and ` +
-        '.embedInCode with .default/.base localizations; a newer Swift Package Manager rule needs support added ' +
-        'in expo/scripts/spm/manifests.js. Declare the resource with one of the supported rules meanwhile.'
-    );
+    throw pluginError({
+      what: `Cannot generate a consumption Package.swift for target "${targetName}": resource "${resource.path}" uses the unsupported rule \`${JSON.stringify(resource.rule)}\`.`,
+      why: 'This plugin renders .process, .copy and .embedInCode with .default/.base localizations; a newer Swift Package Manager rule needs support added in expo/scripts/spm/manifests.js.',
+      how: 'Declare the resource with one of the supported rules meanwhile.',
+    });
   }
   return localization != null
     ? `${call}("${resource.path}", localization: ${localization})`
@@ -191,10 +418,9 @@ const INTEROPERABILITY_MODES = new Map([
 ]);
 
 function settingError(targetName, setting, explanation) {
-  return new Error(
-    `Cannot generate a consumption Package.swift for target "${targetName}": build setting ` +
-      `\`${JSON.stringify(setting.kind)}\` ${explanation}`
-  );
+  return pluginError({
+    what: `Cannot generate a consumption Package.swift for target "${targetName}": build setting \`${JSON.stringify(setting.kind)}\` ${explanation}`,
+  });
 }
 
 /**
@@ -303,7 +529,10 @@ function renderFileRules(target) {
   );
 }
 
-/** Source-with-manifest: mirror the parsed targets/products, inject the given deps. */
+/**
+ * Mirror a manifest's targets, products and packages — a checked-in one as
+ * `parseDumpedManifest` read it, or a `pureSwiftManifest` — and inject the given deps.
+ */
 function renderSourceManifest({
   manifest,
   pkgDeps = [],
@@ -314,13 +543,13 @@ function renderSourceManifest({
   const targetsSwift = manifest.targets
     .map((t) => {
       if (t.path == null) {
-        throw new Error(
-          `Cannot generate a consumption Package.swift for "${manifest.name}": target "${t.name}" has no source path. ` +
-            "Its path was neither declared in the module's manifest nor resolved on disk, so the generated target " +
-            'would point at nothing. Resolve target paths with resolveTargetPaths before rendering.'
-        );
+        throw pluginError({
+          what: `Cannot generate a consumption Package.swift for "${manifest.name}": target "${t.name}" has no source path.`,
+          why: "Its path was neither declared in the module's manifest nor resolved on disk, so the generated target would point at nothing.",
+          how: 'Resolve target paths with resolveTargetPaths before rendering.',
+        });
       }
-      const deps = [...t.siblingDeps.map(renderSiblingDependency), ...injectedTargetDeps];
+      const deps = [...t.dependencies.map(renderTargetDependency), ...injectedTargetDeps];
       const depsSwift = deps.length
         ? `\n${deps.map((dep) => `                ${dep},`).join('\n')}\n            `
         : '';
@@ -341,14 +570,19 @@ function renderSourceManifest({
         `        .library(name: "${p.name}", targets: [${p.targets.map((n) => `"${n}"`).join(', ')}])`
     )
     .join(',\n');
-  const packageDepsSwift = pkgDeps.length
-    ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
+  const declarations = [...pkgDeps, ...(manifest.packageDeps ?? []).map(packageDeclaration)];
+  const packageDepsSwift = declarations.length
+    ? `\n${declarations.map((dep) => `        ${dep},`).join('\n')}\n    `
     : '';
+
+  const origin = manifest.pureSwift
+    ? `// Pure-Swift source consumption package for "${manifest.name}".`
+    : `// Source consumption package for "${manifest.name}": mirrors the module's checked-in
+// Package.swift targets and injects invariant React compile dependencies.`;
 
   return `// swift-tools-version: 6.0
 // AUTO-GENERATED by expo/scripts/spm/plugin.js — do not edit.
-// Source consumption package for "${manifest.name}": mirrors the module's checked-in
-// Package.swift targets and injects invariant React compile dependencies.
+${origin}
 import PackageDescription
 
 let package = Package(
@@ -371,58 +605,73 @@ ${targetsSwift}
 const PRIVACY_MANIFEST = 'PrivacyInfo.xcprivacy';
 
 /**
- * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources, on
- * the deployment floor the plugin read from the module's podspec.
+ * The identity SwiftPM resolves a package URL to: its last path component, without
+ * trailing slashes or a `.git` suffix. It is the repository name, which differs
+ * from the product where a repository ships one under another name, as
+ * `libavif-Xcode` ships `libavif`.
  */
-function renderPureSwiftManifest({
+function spmPackageIdentity(pkg) {
+  return pkg.url
+    .replace(/\/+$/, '')
+    .split('/')
+    .pop()
+    .replace(/\.git$/, '');
+}
+
+/**
+ * `.package(url:)` for a package a checked-in manifest declares or one from
+ * `documentedPackage`. Only a dumped package has a range, and only a documented one
+ * has `from`, which `dump-package` widens into a range.
+ */
+function packageDeclaration({ url, requirement }) {
+  const quoted = (value) => `"${escapeSwiftString(value)}"`;
+  const pin =
+    requirement.kind === 'range'
+      ? `${quoted(requirement.lowerBound)}..<${quoted(requirement.upperBound)}`
+      : `${requirement.kind}: ${quoted(requirement.value)}`;
+  return `.package(url: ${quoted(url)}, ${pin})`;
+}
+
+/**
+ * A pure-Swift module as the manifest `renderSourceManifest` mirrors: one Swift target
+ * over its `ios`/`apple` sources, depending on the product of each documented package.
+ *
+ * @param packages `documentedPackage` entries.
+ */
+function pureSwiftManifest({
   product,
   srcRel,
-  pkgDeps = [],
-  targetDeps = [],
-  frameworkSearchPath,
   excludes = [],
   iosDeploymentTarget = null,
   hasPrivacyManifest = false,
-  extraSwiftFlags = [],
+  packages = [],
 }) {
-  const packageDepsSwift = pkgDeps.length
-    ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
-    : '';
-  const targetDepsSwift = targetDeps.length
-    ? `\n${targetDeps.map((dep) => `                ${dep},`).join('\n')}\n            `
-    : '';
-  // SwiftPM resolves exclude paths against the target path, not the package root.
-  const excludeSwift = excludes.length
-    ? `\n            exclude: [${excludes.map((e) => `"${e}"`).join(', ')}],`
-    : '';
-  // `.copy`, not `.process`: Apple reads a privacy manifest by its exact name, and
-  // .process may rename or transform what it puts in the bundle.
-  const resourcesSwift = hasPrivacyManifest
-    ? `\n            resources: [.copy("${PRIVACY_MANIFEST}")],`
-    : '';
-  return `// swift-tools-version: 6.0
-// AUTO-GENERATED by expo/scripts/spm/plugin.js — do not edit.
-// Pure-Swift source consumption package for "${product}".
-import PackageDescription
-
-let package = Package(
-    name: "${product}",
-    platforms: ${renderPlatforms(iosDeploymentTarget)},
-    products: [
-        .library(name: "${product}", targets: ["${product}"]),
-    ],
-    dependencies: [${packageDepsSwift}],
-    targets: [
-        .target(
-            name: "${product}",
-            dependencies: [${targetDepsSwift}],
-            path: "root/${srcRel}",${excludeSwift}${resourcesSwift}${renderTargetSettings(frameworkSearchPath, [], product, extraSwiftFlags)}
-        ),
-    ],
-    swiftLanguageModes: [.v5],
-    cxxLanguageStandard: .cxx20
-)
-`;
+  const target = {
+    name: product,
+    path: srcRel,
+    publicHeadersPath: null,
+    // SwiftPM resolves exclude paths against the target path, not the package root.
+    exclude: excludes,
+    sources: [],
+    // `.copy`, not `.process`: Apple reads a privacy manifest by its exact name, and
+    // .process may rename or transform what it puts in the bundle.
+    resources: hasPrivacyManifest ? [{ path: PRIVACY_MANIFEST, rule: { copy: {} } }] : [],
+    settings: [],
+    dependencies: packages.map((pkg) => ({
+      product: pkg.productName,
+      package: pkg.identity,
+      platforms: [],
+    })),
+  };
+  return {
+    name: product,
+    pureSwift: true,
+    iosDeploymentTarget,
+    products: [{ name: product, targets: [product] }],
+    targets: [target],
+    packageDeps: packages,
+    spmProductNames: packages.map((pkg) => pkg.productName),
+  };
 }
 
 function escapeSwiftString(value) {
@@ -441,12 +690,10 @@ function renderTargetSettings(frameworkSearchPath, settings, targetName, extraSw
   const swiftInterfaceFlags = unsafeFlags(['-F', frameworkSearchPath, ...extraSwiftFlags]);
   for (const setting of settings ?? []) {
     if (!SETTING_TOOLS.has(setting.tool)) {
-      throw new Error(
-        `Cannot generate a consumption Package.swift for target "${targetName}": build setting tool ` +
-          `"${setting.tool}" has no arguments to be rendered into. This plugin renders the c, cxx, swift ` +
-          'and linker tools; a newer Swift Package Manager tool needs a family added in ' +
-          'expo/scripts/spm/manifests.js.'
-      );
+      throw pluginError({
+        what: `Cannot generate a consumption Package.swift for target "${targetName}": build setting tool "${setting.tool}" has no arguments to be rendered into.`,
+        why: 'This plugin renders the c, cxx, swift and linker tools; a newer Swift Package Manager tool needs a family added in expo/scripts/spm/manifests.js.',
+      });
     }
   }
   return SETTING_FAMILIES.map(([tool, label]) => {
@@ -540,13 +787,50 @@ function resolveTargetPaths(targets, moduleRoot) {
   return { targets: resolved, unresolvedTargets };
 }
 
-/** Point a `root` symlink at the real module source so target `path:`s resolve to real files. */
-function linkRoot(pkgDir, moduleRoot) {
+/**
+ * Render `manifest` against Expo's binary-free framework interface tree, with RN's
+ * invariant React products injected and its floor raised to the minimum, and write it
+ * to `<outDir>/expo-source/<name>` beside a `root` symlink to the real module source,
+ * so target `path:`s resolve to real files. Returns what React Native links from it.
+ */
+function emitPackage(
+  manifest,
+  moduleRoot,
+  {
+    react = null,
+    frameworkSearchPath,
+    outDir,
+    codegenPkgPath = null,
+    minimumIosDeploymentTarget = null,
+    macroFlags = [],
+  }
+) {
+  const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
+  const manifestSwift = renderSourceManifest({
+    manifest: {
+      ...manifest,
+      iosDeploymentTarget: raiseFloor(manifest.iosDeploymentTarget, minimumIosDeploymentTarget),
+    },
+    pkgDeps,
+    injectedTargetDeps: targetDeps,
+    frameworkSearchPath,
+    extraSwiftFlags: macroFlags,
+  });
+  const pkgDir = path.join(outDir, 'expo-source', manifest.name);
+  fs.mkdirSync(pkgDir, { recursive: true });
   const rootLink = path.join(pkgDir, 'root');
   try {
     fs.rmSync(rootLink, { recursive: true, force: true });
   } catch {}
   fs.symlinkSync(moduleRoot, rootLink);
+  fs.writeFileSync(path.join(pkgDir, 'Package.swift'), manifestSwift);
+  return {
+    ok: {
+      packageDep: { name: manifest.name, path: pkgDir },
+      productDeps: manifest.products.map((p) => ({ name: p.name, package: manifest.name })),
+      spmProductNames: manifest.spmProductNames,
+    },
+  };
 }
 
 /**
@@ -563,107 +847,74 @@ function sourceDependencies(react, codegenPkgPath) {
 }
 
 /**
- * Emit a CONSUMPTION Package.swift for a source module that ships a
- * checked-in Package.swift. Re-declares its library targets against the real source
- * (via a `root` symlink), injects RN's invariant React product set, and points
- * compilation at Expo's binary-free framework interface tree. RN owns the merge;
- * the checked-in manifest stays for standalone dev/describe.
+ * Emit a CONSUMPTION Package.swift for a source module that ships a checked-in
+ * Package.swift, re-declaring its library targets. RN owns the merge; the checked-in
+ * manifest stays for standalone dev/describe.
  *
- * Returns `{ unsupportedTargetDeps }` when the manifest depends on a target the
- * generated package cannot declare, or `{ unresolvedTargets }` when a target's
- * sources cannot be located — the module is then skipped and diagnosed rather than
- * emitted broken.
+ * Returns `{ ok }` with the emitted package, or `{ refusal }` when the manifest
+ * depends on a target or declares a Swift package the generated package cannot
+ * declare, or a target's sources cannot be located — the module is then skipped and
+ * diagnosed rather than emitted broken.
  */
-function emitSourceManifestPackage({
-  moduleRoot,
-  react = null,
-  frameworkSearchPath,
-  outDir,
-  codegenPkgPath = null,
-  minimumIosDeploymentTarget = null,
-  macroFlags = [],
-}) {
-  const { unsupportedTargetDeps, ...dumped } = parseDumpedManifest(runDumpPackage(moduleRoot));
-  if (unsupportedTargetDeps.length) return { unsupportedTargetDeps };
-  const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
-  if (unresolvedTargets.length) return { unresolvedTargets };
-  const manifest = {
-    ...dumped,
-    targets,
-    iosDeploymentTarget: raiseFloor(dumped.iosDeploymentTarget, minimumIosDeploymentTarget),
-  };
-  const pkgDir = path.join(outDir, 'expo-source', manifest.name);
-  fs.mkdirSync(pkgDir, { recursive: true });
-  linkRoot(pkgDir, moduleRoot);
-
-  const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
-  fs.writeFileSync(
-    path.join(pkgDir, 'Package.swift'),
-    renderSourceManifest({
-      manifest,
-      pkgDeps,
-      injectedTargetDeps: targetDeps,
-      frameworkSearchPath,
-      extraSwiftFlags: macroFlags,
-    })
+function emitSourceManifestPackage(moduleRoot, emitContext) {
+  const { unsupportedTargetDeps, unsupportedPackageDeps, ...dumped } = parseDumpedManifest(
+    runDumpPackage(moduleRoot),
+    injectedPackageNames(emitContext.react)
   );
-
-  return {
-    packageDep: { name: manifest.name, path: pkgDir },
-    productDeps: manifest.products.map((p) => ({ name: p.name, package: manifest.name })),
-  };
+  if (unsupportedTargetDeps.length) {
+    return {
+      refusal: { reason: 'unsupported-target-dependency', dependencies: unsupportedTargetDeps },
+    };
+  }
+  if (unsupportedPackageDeps.length) {
+    return {
+      refusal: { reason: 'unsupported-package-dependency', dependencies: unsupportedPackageDeps },
+    };
+  }
+  const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
+  if (unresolvedTargets.length) {
+    return { refusal: { reason: 'unresolvable-target-path', targetNames: unresolvedTargets } };
+  }
+  return emitPackage({ ...dumped, targets }, moduleRoot, emitContext);
 }
 
 /**
- * Emit a source consumption package for a module WITHOUT a checked-in Package.swift,
- * from its resolved descriptor. Pure-Swift modules only (single Swift target over the
- * module's `ios` or `apple` sources). It compiles against Expo's invariant interface tree,
- * plus RN's invariant React products.
+ * Emit a source consumption package for a pure-Swift module WITHOUT a checked-in
+ * Package.swift: `pureSwiftManifest` over the module's `ios` or `apple` sources.
+ *
+ * Returns `{ ok }` with the emitted package. The module must have Apple sources;
+ * `plugin.js#emitSourceModule` checks that first.
  */
-function emitPureSwiftSourcePackage({
-  moduleRoot,
-  product,
-  react = null,
-  frameworkSearchPath,
-  outDir,
-  codegenPkgPath = null,
-  iosDeploymentTarget = null,
-  macroFlags = [],
-}) {
+function emitPureSwiftSourcePackage(
+  {
+    moduleRoot,
+    product,
+    iosDeploymentTarget = null,
+    spmPackages = [],
+    sources = scanAppleSources(moduleRoot),
+  },
+  emitContext
+) {
   const srcDir = appleSourceDir(moduleRoot);
-  if (srcDir == null) return null;
-  const srcRel = path.relative(moduleRoot, srcDir); // e.g. "ios"
-  const pkgDir = path.join(outDir, 'expo-source', product);
-  fs.mkdirSync(pkgDir, { recursive: true });
-  linkRoot(pkgDir, moduleRoot);
-
-  const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
-  fs.writeFileSync(
-    path.join(pkgDir, 'Package.swift'),
-    renderPureSwiftManifest({
-      product,
-      srcRel,
-      pkgDeps,
-      targetDeps,
-      frameworkSearchPath,
-      excludes: collectIgnoredDirs(srcDir),
-      iosDeploymentTarget,
-      hasPrivacyManifest: fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST)),
-      extraSwiftFlags: macroFlags,
-    })
-  );
-
-  return {
-    packageDep: { name: product, path: pkgDir },
-    productDep: { name: product, package: product },
-  };
+  const manifest = pureSwiftManifest({
+    product,
+    srcRel: path.relative(moduleRoot, srcDir),
+    excludes: sources.ignoredDirs,
+    iosDeploymentTarget,
+    hasPrivacyManifest: fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST)),
+    packages: spmPackages.map(documentedPackage),
+  });
+  return emitPackage(manifest, moduleRoot, emitContext);
 }
 
 module.exports = {
   parseDumpedManifest,
   resolveTargetPaths,
   renderSourceManifest,
-  renderPureSwiftManifest,
+  pureSwiftManifest,
+  spmPackageIdentity,
+  documentedPackage,
+  packageDeclaration,
   raiseFloor,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
