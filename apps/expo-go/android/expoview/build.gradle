@@ -12,15 +12,15 @@ buildscript {
 
   dependencies {
     classpath(expoLibs.apollo.gradle)
-    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${safeExtGet('kspVersion', '2.3.10')}"
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${safeExtGet('kspVersion', '2.2.10-2.0.2')}"
   }
 }
 
 plugins {
   alias libs.plugins.android.library
   alias libs.plugins.download
-  id("org.jetbrains.kotlin.plugin.compose") version "2.3.20"
-  id("org.jetbrains.kotlin.plugin.serialization") version "2.3.20" // Use your Kotlin version
+  id("org.jetbrains.kotlin.plugin.compose") version "2.2.10"
+  id("org.jetbrains.kotlin.plugin.serialization") version "2.2.10" // Use your Kotlin version
   id 'expo-module-gradle-plugin'
 }
 apply plugin: 'com.google.devtools.ksp'
