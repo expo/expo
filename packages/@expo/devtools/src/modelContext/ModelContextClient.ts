@@ -29,6 +29,10 @@ interface ResponseMessage {
   error?: { code: number; message: string };
 }
 
+interface IncomingMessage extends Partial<RequestMessage>, Partial<ResponseMessage> {
+  version?: number;
+}
+
 interface ToolsCallParams {
   name: string;
   arguments?: Record<string, unknown>;
@@ -58,6 +62,9 @@ export class ModelContextClient implements ModelContext {
   private tools = new Map<string, ModelContextTool<any>>();
   private stacks = new Map<string, string | undefined>();
   private ws: ModelContextSocket | null = null;
+  private nextRequestId = 1;
+  /** Register request id → tool name, so a block or rejection can be reported. */
+  private pendingRegistrations = new Map<string, string>();
 
   constructor(private readonly options: ModelContextClientOptions) {}
 
@@ -124,8 +131,9 @@ export class ModelContextClient implements ModelContext {
     this.ws = ws;
 
     // `WebSocketWithReconnect` fires `open` again after every reconnect, so the dev server gets
-    // the full tool list each time.
+    // the full tool list each time. Replies to the previous socket can no longer arrive.
     ws.addEventListener('open', () => {
+      this.pendingRegistrations.clear();
       this.send({
         method: 'modelContext/hello',
         params: {
@@ -147,7 +155,10 @@ export class ModelContextClient implements ModelContext {
     if (!tool) {
       return;
     }
+    const id = `reg-${this.nextRequestId++}`;
+    this.pendingRegistrations.set(id, name);
     this.send({
+      id,
       method: 'modelContext/registerTool',
       params: {
         name: tool.name,
@@ -167,17 +178,42 @@ export class ModelContextClient implements ModelContext {
     if (typeof data !== 'string') {
       return;
     }
-    let message: RequestMessage & { version?: number };
+    let message: IncomingMessage;
     try {
       message = JSON.parse(data);
     } catch {
       return;
     }
-    if (message?.version !== SOCKET_PROTOCOL_VERSION || typeof message.method !== 'string') {
+    if (message?.version !== SOCKET_PROTOCOL_VERSION) {
       return;
     }
     if (message.method === 'tools/call' && message.id != null) {
       this.handleToolCall(message.id, message.params as ToolsCallParams);
+      return;
+    }
+    if (typeof message.method !== 'string' && message.id != null) {
+      this.handleRegistrationResponse(message);
+    }
+  }
+
+  private handleRegistrationResponse(message: IncomingMessage): void {
+    const name = this.pendingRegistrations.get(String(message.id));
+    if (name == null) {
+      return;
+    }
+    this.pendingRegistrations.delete(String(message.id));
+
+    if (message.error) {
+      // logger.warn stays silent unless the app opts in.
+      // A rejected tool should show up anyway.
+      console.warn(`[modelContext] Tool "${name}" was rejected: ${message.error.message}`);
+      return;
+    }
+    const result = message.result as { status?: string; message?: string; reason?: string } | null;
+    if (result?.status === 'blocked') {
+      console.warn(
+        `[modelContext] Tool "${name}" is blocked: ${result.message ?? result.reason ?? 'policy'}.`
+      );
     }
   }
 
