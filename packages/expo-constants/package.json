@@ -63,7 +63,7 @@
     "@expo/require-utils": "workspace:^"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-manifests": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "expo-updates": "workspace:*"

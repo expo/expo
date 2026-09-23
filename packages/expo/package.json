@@ -237,14 +237,14 @@
   },
   "devDependencies": {
     "@expo/metro-runtime": "workspace:*",
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.3.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "expo-updates": "workspace:*",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "catalog:",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.1",
-    "rimraf": "^6.1.2",
+    "react-dom": "catalog:",
+    "react-native": "catalog:",
+    "rimraf": "catalog:",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {

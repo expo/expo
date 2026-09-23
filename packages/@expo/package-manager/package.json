@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@types/micromatch": "^4.0.2",
-    "@types/npm-package-arg": "^6.1.0",
+    "@types/npm-package-arg": "catalog:",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0",
     "strip-ansi": "^6.0.1"

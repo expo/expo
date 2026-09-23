@@ -42,11 +42,11 @@
   },
   "devDependencies": {
     "@expo/package-manager": "workspace:*",
-    "@vercel/ncc": "^0.38.4",
+    "@vercel/ncc": "catalog:",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
-    "terminal-link": "^2.1.1",
-    "update-check": "^1.5.4"
+    "terminal-link": "catalog:",
+    "update-check": "catalog:"
   }
 }

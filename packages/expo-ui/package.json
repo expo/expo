@@ -157,16 +157,16 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@playwright/test": "^1.59.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/babel__core": "^7.20.5",
+    "@playwright/test": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/react-native": "catalog:",
+    "@types/babel__core": "catalog:",
     "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.3.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "react-native-reanimated": "4.6.0",
-    "react-native-worklets": "0.12.2"
+    "react-native-reanimated": "catalog:",
+    "react-native-worklets": "catalog:"
   },
   "peerDependencies": {
     "@babel/core": "*",

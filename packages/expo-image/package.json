@@ -45,10 +45,10 @@
     "sf-symbols-typescript": "^2.2.0"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "catalog:",
     "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.3.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "expo": "workspace:*",
     "expo-app-metrics": "workspace:*",
     "expo-module-scripts": "workspace:*",
