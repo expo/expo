@@ -28,6 +28,24 @@ function expectImports(graph: ReadOnlyGraph, name: string) {
   return expect([...graph.dependencies.get(name)!.dependencies.values()]);
 }
 
+it('plans opted-in async chunks after unused exports and dependencies are removed', async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync(
+    {
+      'index.js': `import('./route');`,
+      'route.js': `import { used } from './values'; console.log(used);`,
+      'values.js': `export const used = 'kept'; export { discarded } from './unused';`,
+      'unused.js': `export const discarded = 'removed';`,
+    },
+    { chunkingStrategy: 'bitset' }
+  );
+  expect(graph.dependencies.has('/app/unused.js')).toBe(false);
+  expect(artifacts[0].metadata.chunkingStrategy).toBe('bitset');
+  expect(artifacts.some((asset: any) => asset.metadata.entryPaths?.includes('/app/route.js'))).toBe(
+    true
+  );
+  expect(artifacts.map((asset: any) => asset.source).join('\n')).not.toContain('removed');
+});
+
 it(`doesn't unlink if a single import chain is removed`, async () => {
   const [[, , graph], artifacts] = await serializeShakingAsync({
     'index.js': `
