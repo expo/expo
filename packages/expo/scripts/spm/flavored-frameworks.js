@@ -310,7 +310,7 @@ function assertEmbeddableFramework(depName, xcframeworkPath) {
         `${found}. React Native links and embeds Expo's precompiled dependencies as dynamic ` +
         'frameworks named after the product, so a static library, a differently named framework ' +
         'and an XCFramework without slices are all unusable. Rebuild the dependency with the ' +
-        'Expo prebuild pipeline, or exclude the Expo module that links it in your app\'s ' +
+        "Expo prebuild pipeline, or exclude the Expo module that links it in your app's " +
         'package.json: "expo": { "autolinking": { "exclude": [...] } }.'
     );
   }

@@ -1140,9 +1140,7 @@ describe('a package whose first pod alone is precompiled', () => {
   // before this change. The warning is what must not double.
   it('fails only on the sibling pod SwiftPM cannot build', () => {
     expect(thrown).toBeInstanceOf(UnsupportedModulesError);
-    expect(thrown.unsupported).toEqual([
-      expect.objectContaining({ podName: 'ExpoMultiHelper' }),
-    ]);
+    expect(thrown.unsupported).toEqual([expect.objectContaining({ podName: 'ExpoMultiHelper' })]);
   });
 
   it('warns about its unmapped dependencies once, not once per pass', () => {
