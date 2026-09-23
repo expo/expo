@@ -1,5 +1,10 @@
 import type { SerializerConfigT } from '@expo/metro/metro-config';
-import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
+import type {
+  MixedOutput,
+  Module,
+  ReadOnlyGraph,
+  ResolvedDependency,
+} from '@expo/metro/metro/DeltaBundler/types';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import assert from 'assert';
 
@@ -80,7 +85,8 @@ function chunkIdForModules(modules: Iterable<Module>) {
 
 export function createChunkCollector(
   { graph, options, preModules: runtimePremodules }: ChunkingContext,
-  strategy: ChunkingImplementation
+  strategy: ChunkingImplementation,
+  shouldTraverseDependency: (dependency: ResolvedDependency) => boolean
 ) {
   return function gatherChunks(
     chunks: Set<Chunk>,
@@ -135,7 +141,7 @@ export function createChunkCollector(
       for (const dependency of entryModule.dependencies.values()) {
         const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
         const isWorker = asyncType === 'worker';
-        if (!isResolvedDependency(dependency)) {
+        if (!isResolvedDependency(dependency) || !shouldTraverseDependency(dependency)) {
           continue;
         } else if (
           asyncType &&
@@ -184,7 +190,8 @@ export function createChunkCollector(
 export function createRuntimeChunk(
   entryChunk: Chunk,
   chunks: Set<Chunk>,
-  strategy: ChunkingImplementation
+  strategy: ChunkingImplementation,
+  requiredBy: Iterable<Chunk> = chunks
 ): void {
   const runtimeChunk = new Chunk(
     '/__expo-metro-runtime.js',
@@ -202,7 +209,7 @@ export function createRuntimeChunk(
   }
   entryChunk.preModules = new Set();
 
-  for (const chunk of chunks) {
+  for (const chunk of requiredBy) {
     chunk.requiredChunks.add(runtimeChunk);
   }
   chunks.add(runtimeChunk);

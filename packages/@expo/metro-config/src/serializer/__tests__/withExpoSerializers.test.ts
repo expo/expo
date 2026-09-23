@@ -1,5 +1,6 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
 
+import { createBitSetChunkingStrategy } from '../chunking/createBitSetChunkingStrategy';
 import * as workerScan from '../chunking/findUnsupportedWorkerAsyncDependency';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
@@ -14,6 +15,170 @@ import {
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
+
+describe('BitSet chunk emission', () => {
+  async function serializeBitSetAsync(fs: Record<string, string>) {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs,
+      preModulesFs: { runtime: '/* runtime */' },
+      options: { platform: 'web', dev: false, output: 'static', splitChunks: true },
+    });
+    return createBitSetChunkingStrategy({
+      serializerConfig: {},
+      serializeChunkOptions: {
+        includeSourceMaps: false,
+        splitChunks: true,
+        chunkingStrategy: 'bitset',
+      },
+      entryFile: entry,
+      preModules: premodules,
+      graph,
+      options,
+    }).serializeAsync();
+  }
+
+  it('emits separate AB and BC shared owners and complete async arrays', async () => {
+    const artifacts = await serializeBitSetAsync({
+      'index.js': `import('./a'); import('./b'); import('./c');`,
+      'a.js': `import './d';`,
+      'b.js': `import './d'; import './e';`,
+      'c.js': `import './e';`,
+      'd.js': `console.log('d');`,
+      'e.js': `console.log('e');`,
+    });
+    const entry = artifacts[0]!;
+    expect(entry.metadata.entryPaths).toEqual(['/app/index.js']);
+    const d = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/d.js'))!;
+    const e = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/e.js'))!;
+    expect(d).not.toBe(e);
+    expect(d.filename).toContain('__shared-');
+    expect(e.filename).toContain('__shared-');
+    expect(d.metadata.entryPaths).toEqual([]);
+    const b = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))!;
+    expect(b.metadata.requires).toEqual(expect.arrayContaining([d.filename, e.filename]));
+    const paths = Object.values(entry.metadata.paths!).flatMap(Object.values);
+    expect(paths).toContainEqual(
+      expect.arrayContaining(['/' + b.filename, '/' + d.filename, '/' + e.filename])
+    );
+    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === 'bitset')).toBe(true);
+    const modulePaths = artifacts.flatMap((asset) => asset.metadata.modulePaths ?? []);
+    expect(new Set(modulePaths).size).toBe(modulePaths.length);
+  });
+
+  it('keeps a semantic facade when its module belongs to an earlier route', async () => {
+    const artifacts = await serializeBitSetAsync({
+      'index.js': `import('./a');`,
+      'a.js': `import './b'; export const load = () => import('./b');`,
+      'b.js': `console.log('b');`,
+    });
+    const a = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/a.js'))!;
+    const b = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))!;
+    expect(artifacts).toHaveLength(4); // initial, runtime, A, empty B facade
+    expect(a.metadata.modulePaths).toContain('/app/b.js');
+    expect(b.metadata.modulePaths).toEqual([]);
+    expect(b.metadata.requires).toContain(a.filename);
+    expect(Object.values(a.metadata.paths!).flatMap(Object.values)).toContainEqual([
+      '/' + b.filename,
+    ]);
+  });
+
+  it('skips fully initial-owned facades and records their aliases', async () => {
+    const artifacts = await serializeBitSetAsync({
+      'index.js': `import './a'; import('./a');`,
+      'a.js': `console.log('a');`,
+    });
+    expect(artifacts).toHaveLength(1);
+    expect(artifacts[0]!.metadata.entryPaths).toEqual(['/app/a.js', '/app/index.js']);
+    expect(artifacts[0]!.metadata.paths).toEqual({});
+  });
+
+  it('keeps worker closures isolated and their URLs scalar', async () => {
+    const artifacts = await serializeBitSetAsync({
+      'index.js': `import './shared'; import('./a'); require.unstable_resolveWorker('./worker');`,
+      'a.js': `console.log('a');`,
+      'worker.js': `import './shared'; require.unstable_resolveWorker('./nested');`,
+      'nested.js': `import './shared';`,
+      'shared.js': `console.log('shared');`,
+    });
+    const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
+    const nested = artifacts.find((asset) => asset.originFilename === 'nested.js')!;
+    expect(worker.metadata.modulePaths).toContain('/app/shared.js');
+    expect(nested.metadata.modulePaths).toContain('/app/shared.js');
+    expect(worker.metadata.entryPaths).toEqual([]);
+    expect(worker.metadata.requires).toEqual([]);
+    expect(worker.source).toContain('"/app/runtime"');
+    expect(Object.values(artifacts[0]!.metadata.paths!).flatMap(Object.values)).toContain(
+      '/' + worker.filename
+    );
+    expect(Object.values(worker.metadata.paths!).flatMap(Object.values)).toEqual([
+      '/' + nested.filename,
+    ]);
+  });
+
+  it.each([true, false])(
+    'preserves weak worker IDs without collecting their targets (page imports target: %s)',
+    async (pageImportsTarget) => {
+      const artifacts = await serializeBitSetAsync({
+        'index.js': `${pageImportsTarget ? "import './target';" : ''} require.unstable_resolveWorker('./worker');`,
+        'worker.js': `self.targetId = require.resolveWeak('./target');`,
+        'target.js': `export const value = 42;`,
+      });
+      const worker = artifacts.find((asset) => asset.originFilename === 'worker.js')!;
+      expect(artifacts).toHaveLength(2);
+      expect(worker.metadata.modulePaths).toEqual(['/app/worker.js']);
+      expect(worker.source).toContain('["/app/target.js"]');
+      expect(worker.metadata.paths).toEqual({});
+      expect(artifacts[0]!.metadata.paths!['/app/index.js']!['/app/worker.js']).toBe(
+        '/' + worker.filename
+      );
+    }
+  );
+
+  it('emits acyclic requirements for circular dynamic imports', async () => {
+    const artifacts = await serializeBitSetAsync({
+      'index.js': `import('./a');`,
+      'a.js': `import './shared'; export const load = () => import('./b');`,
+      'b.js': `import './shared'; export const load = () => import('./a');`,
+      'shared.js': `console.log('shared');`,
+    });
+    function visit(filename: string, ancestors: string[] = []) {
+      expect(ancestors).not.toContain(filename);
+      const asset = artifacts.find((asset) => asset.filename === filename)!;
+      expect(asset).toBeDefined();
+      for (const required of asset.metadata.requires ?? [])
+        visit(required, [...ancestors, filename]);
+    }
+    for (const asset of artifacts) visit(asset.filename);
+    const a = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/a.js'))!;
+    const b = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))!;
+    expect(b.metadata.requires).toContain(a.filename);
+    expect(a.metadata.requires).not.toContain(b.filename);
+  });
+
+  it('changes embedded-path hashes when a shared prerequisite changes', async () => {
+    const fs = {
+      'index.js': `import('./a'); import('./b');`,
+      'a.js': `import './shared';`,
+      'b.js': `import './shared';`,
+      'shared.js': `console.log('before');`,
+    };
+    const artifacts = await serializeBitSetAsync(fs);
+    const artifactsChanged = await serializeBitSetAsync({
+      ...fs,
+      'shared.js': `console.log('after');`,
+    });
+    const originalSharedChunk = artifacts.find((asset) => asset.filename.includes('__shared-'))!;
+    const updatedSharedChunk = artifactsChanged.find((asset) =>
+      asset.filename.includes('__shared-')
+    )!;
+    expect(updatedSharedChunk.originFilename).toBe(originalSharedChunk.originFilename);
+    expect(updatedSharedChunk.filename).not.toBe(originalSharedChunk.filename);
+    expect(artifactsChanged[0]!.filename).not.toBe(artifacts[0]!.filename);
+    expect(artifactsChanged[0]!.source).toContain(updatedSharedChunk.filename);
+    expect(artifactsChanged[0]!.source).not.toContain(originalSharedChunk.filename);
+    expect(await serializeBitSetAsync(fs)).toEqual(artifacts);
+  });
+});
 
 describe('worker compatibility', () => {
   let bundle: Awaited<ReturnType<typeof microBundle>>;
