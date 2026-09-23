@@ -1,6 +1,57 @@
 import { env } from 'node:process';
 
-import { createBundleUrlPath, getMetroDirectBundleOptions } from '../metroOptions';
+import {
+  createBundleUrlPath,
+  getMetroDirectBundleOptions,
+  getMetroDirectBundleOptionsForExpoConfig,
+} from '../metroOptions';
+
+describe('chunking options', () => {
+  it.each([
+    { unstable_chunking: true, experiments: {}, expectedStrategy: 'bitset' },
+    { unstable_chunking: false, experiments: {}, expectedStrategy: 'legacy' },
+    { unstable_chunking: undefined, experiments: {}, expectedStrategy: 'legacy' },
+    {
+      unstable_chunking: true,
+      experiments: { reactServerComponentRoutes: true },
+      expectedStrategy: 'legacy',
+    },
+    {
+      unstable_chunking: true,
+      experiments: { reactServerFunctions: true },
+      expectedStrategy: 'legacy',
+    },
+    {
+      unstable_chunking: true,
+      experiments: { reactServerComponentRoutes: true, reactServerFunctions: true },
+      expectedStrategy: 'legacy',
+    },
+  ])(
+    'selects $expectedStrategy for Router opt-in $unstable_chunking and $experiments',
+    ({ unstable_chunking, experiments, expectedStrategy }) => {
+      const result = getMetroDirectBundleOptionsForExpoConfig(
+        '/app',
+        {
+          name: 'test',
+          slug: 'test',
+          extra: { router: { unstable_chunking } },
+          experiments,
+        },
+        {
+          mainModuleName: '/app/index.js',
+          mode: 'production',
+          platform: 'web',
+          isExporting: true,
+          splitChunks: true,
+        }
+      );
+      expect(result.serializerOptions).toMatchObject({
+        chunkingStrategy: expectedStrategy,
+        splitChunks: true,
+      });
+    }
+  );
+});
 
 describe(getMetroDirectBundleOptions, () => {
   it(`asserts unsupported options: using bytecode on web`, () => {
