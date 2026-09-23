@@ -65,34 +65,8 @@ internal struct FrameModifier: ViewModifier, Record {
   @Field var idealHeight: CGFloat?
   @Field var alignment: AlignmentOptions = .center
 
-  private var hasFixedSize: Bool {
-    width != nil || height != nil
-  }
-
-  private var hasFlexibleSize: Bool {
-    minWidth != nil || idealWidth != nil || maxWidth != nil
-      || minHeight != nil || idealHeight != nil || maxHeight != nil
-  }
-
-  /**
-   SwiftUI keeps the fixed and the flexible frame in two separate modifiers, but the JavaScript
-   `frame()` takes every value in one object. When both kinds are present, apply the flexible
-   frame first and the fixed frame around it, so that no value is dropped.
-   */
   func body(content: Content) -> some View {
-    if hasFixedSize && hasFlexibleSize {
-      content
-        .frame(
-          minWidth: minWidth,
-          idealWidth: idealWidth,
-          maxWidth: maxWidth,
-          minHeight: minHeight,
-          idealHeight: idealHeight,
-          maxHeight: maxHeight,
-          alignment: alignment.toAlignment()
-        )
-        .frame(width: width, height: height, alignment: alignment.toAlignment())
-    } else if hasFixedSize {
+    if width != nil || height != nil {
       content.frame(width: width, height: height, alignment: alignment.toAlignment())
     } else {
       content.frame(

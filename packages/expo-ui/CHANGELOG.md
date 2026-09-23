@@ -4,11 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] `frame()` now matches SwiftUI's two `frame` overloads, so one call accepts either `width`/`height` or `min*`/`ideal*`/`max*`, not both. ([#50537](https://github.com/expo/expo/issues/50537) by [@wwisheess](https://github.com/wwisheess), [#50544](https://github.com/expo/expo/pull/50544) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
-- [iOS] Fixed the `frame` modifier dropping `minWidth`, `idealWidth`, `maxWidth`, `minHeight`, `idealHeight` and `maxHeight` when `width` or `height` was set in the same call, which broke layouts such as `frame({ maxWidth: Infinity, height: 50 })`. ([#50544](https://github.com/expo/expo/pull/50544) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
