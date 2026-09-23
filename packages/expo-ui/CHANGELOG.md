@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Added `data`, `keyExtractor` and `renderItem` props to `List.ForEach`. Rows are recycled from a small pool around the visible range, so large lists only render the rows near the viewport. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] `List.ForEach` recycles rows from a small pool around the visible range, so large lists only render the rows near the viewport. Deprecated element children in favor of this form. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

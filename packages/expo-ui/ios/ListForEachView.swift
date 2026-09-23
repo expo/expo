@@ -18,9 +18,16 @@ struct ListForEachView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    Children()
-      .onDelete(perform: props.deleteEnabled ? handleDelete : nil)
-      .onMove(perform: props.moveEnabled ? handleMove : nil)
+    ForEach(props.children ?? [], id: \.childIdentity) { child in
+      if let item = child.childView as? DataListForEachItemView {
+        item.tag(AnyHashable(item.props.itemKey))
+      } else {
+        let view: any View = child.childView
+        AnyView(view)
+      }
+    }
+    .onDelete(perform: props.deleteEnabled ? handleDelete : nil)
+    .onMove(perform: props.moveEnabled ? handleMove : nil)
   }
 
   func handleDelete(at offsets: IndexSet) {
