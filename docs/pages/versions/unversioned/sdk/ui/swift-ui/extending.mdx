@@ -16,7 +16,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
-This guide explains how to create custom SwiftUI components and modifiers that integrate with Expo UI using the [Expo Modules API](/modules/overview/).
+This guide explains how to use the [Expo Modules API](/modules/overview/) to create custom SwiftUI components and modifiers that integrate with Expo UI.
 
 <Prerequisites>
   <Requirement title={<><CODE>@expo/ui</CODE> installed</>}>
@@ -28,8 +28,8 @@ This guide explains how to create custom SwiftUI components and modifiers that i
   <Requirement title="A development build">
     A custom Expo module contains native code, which Expo Go cannot load. Create a [development build](/develop/development-builds/introduction/) of your app.
   </Requirement>
-  <Requirement title="Familiarity with Expo Modules API and SwiftUI">
-    Basic familiarity with [Expo Modules API](/modules/overview/) and [SwiftUI](https://developer.apple.com/swiftui/) is recommended.
+  <Requirement title="Familiarity with the Expo Modules API and SwiftUI">
+    This guide assumes basic familiarity with the [Expo Modules API](/modules/overview/) and [SwiftUI](https://developer.apple.com/swiftui/).
   </Requirement>
 </Prerequisites>
 
@@ -70,7 +70,7 @@ end
 Create your SwiftUI view with two parts:
 
 1. **Props class**: Extends `UIBaseViewProps` from `ExpoUI` to get automatic support for the [`modifiers`](modifiers) prop
-2. **View struct**: Conforms to `ExpoSwiftUI.View` protocol, which requires an `@ObservedObject` props property and a `body`
+2. **View struct**: Conforms to the `ExpoSwiftUI.View` protocol, which requires an `@ObservedObject` `props` property and a `body`
 
 ```swift modules/my-ui/ios/MyCustomView.swift
 import SwiftUI
@@ -169,7 +169,7 @@ export {
 
 > **info** Adding a native source file to a local module does not add it to the iOS project. Run `npx expo prebuild` before you rebuild. Otherwise, the build fails with `cannot find 'MyCustomView' in scope`.
 
-Your custom component now works with all `ExpoUI` built-in modifiers:
+Your custom component now works with all built-in Expo UI modifiers:
 
 ```tsx src/app/index.tsx
 import { Host, Text } from '@expo/ui/swift-ui';
@@ -235,7 +235,7 @@ struct CustomBorderModifier: ViewModifier, Record {
 
 <Step label="2">
 
-Register your modifier with `ViewModifierRegistry` in your module definition. Use `OnCreate` to register and `OnDestroy` to unregister to avoid race conditions with the SwiftUI render thread:
+Register your modifier with `ViewModifierRegistry` in your module definition. To avoid race conditions with the SwiftUI render thread, call `register` in `OnCreate` and `unregister` in `OnDestroy`:
 
 ```swift modules/my-ui/ios/MyUiModule.swift
 import ExpoModulesCore
@@ -296,7 +296,7 @@ export { customBorder } from './src/modifiers';
 
 ### Using custom modifiers
 
-Your custom modifier works with any `ExpoUI` component:
+Your custom modifier works with any Expo UI component:
 
 ```tsx src/app/index.tsx
 import { Host, Text, VStack } from '@expo/ui/swift-ui';
