@@ -469,6 +469,22 @@ export class DownloadResumable extends FileSystemCancellableNetworkTask<Download
     return this._fileUri;
   }
 
+  /**
+   * Allow iOS to finish a background URLSession event after processing this download.
+   * Call this in a `finally` block when `deferBackgroundSessionCompletion` is enabled.
+   * This method has no effect on Android or foreground sessions.
+   * @platform ios
+   */
+  async completeBackgroundSessionAsync(): Promise<void> {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    if (!ExponentFileSystem.completeBackgroundSessionAsync) {
+      throw new UnavailabilityError('expo-file-system', 'completeBackgroundSessionAsync');
+    }
+    await ExponentFileSystem.completeBackgroundSessionAsync(this.uuid);
+  }
+
   protected getEventName(): string {
     return 'expo-file-system.downloadProgress';
   }
