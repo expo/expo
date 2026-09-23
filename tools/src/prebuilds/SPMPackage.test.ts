@@ -9,12 +9,14 @@ import type { BuildFlavor } from './Prebuilder.types';
 import type { ObjcTarget, SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
   applyCheckedInTarget,
+  assertUniqueTargetNames,
   buildCSettings,
   buildLinkerSettings,
   buildSwiftSettings,
   expandTransitiveExternalDeps,
   findSiblingProductDependencies,
   resolveCompilerFlags,
+  SPMPackage,
   type ExternalDepResolver,
 } from './SPMPackage';
 import type { ResolvedTarget } from './SPMPackage.types';
@@ -481,6 +483,100 @@ describe('applyCheckedInTarget', () => {
     // present and undefined; keeping the config's path there would export headers Mode B does not.
     assert.ok('publicHeadersPath' in merged, 'The manifest owns the key even when it has no value');
     assert.equal(merged.publicHeadersPath, undefined);
+  });
+});
+
+describe('assertUniqueTargetNames', () => {
+  type TargetNames = Parameters<typeof assertUniqueTargetNames>[1];
+  const noNames: TargetNames = { frameworkTargets: [], siblingProducts: [], sourceTargets: [] };
+
+  function expectCollision(
+    names: Partial<TargetNames>,
+    collidingName: string,
+    roles: [string, string]
+  ) {
+    assert.throws(
+      () => assertUniqueTargetNames('FixtureProduct', { ...noNames, ...names }),
+      (error: Error) => {
+        assert.match(error.message, new RegExp(`"${collidingName}"`));
+        assert.match(error.message, /"FixtureProduct"/);
+        assert.match(error.message, new RegExp(`both a ${roles[0]} and a ${roles[1]}`));
+        assert.match(error.message, /SwiftPM requires/);
+        assert.match(error.message, /spm\.config\.json/);
+        return true;
+      }
+    );
+  }
+
+  it('rejects a source target named like a vendored framework target', () => {
+    expectCollision({ frameworkTargets: ['Shared'], sourceTargets: ['Shared'] }, 'Shared', [
+      'vendored framework target',
+      'source target',
+    ]);
+  });
+
+  it('rejects a source target named like a sibling product', () => {
+    expectCollision({ siblingProducts: ['Shared'], sourceTargets: ['Shared'] }, 'Shared', [
+      'sibling product',
+      'source target',
+    ]);
+  });
+
+  it('rejects two source targets with the same name', () => {
+    expectCollision({ sourceTargets: ['Core', 'Shared', 'Shared'] }, 'Shared', [
+      'source target',
+      'source target',
+    ]);
+  });
+
+  it('rejects a sibling product named like a vendored framework target', () => {
+    expectCollision({ frameworkTargets: ['Shared'], siblingProducts: ['Shared'] }, 'Shared', [
+      'vendored framework target',
+      'sibling product',
+    ]);
+  });
+
+  it('accepts distinct names across every role', () => {
+    assert.doesNotThrow(() =>
+      assertUniqueTargetNames('FixtureProduct', {
+        frameworkTargets: ['Vendored'],
+        siblingProducts: ['Sibling'],
+        sourceTargets: ['Core', 'Extras'],
+      })
+    );
+  });
+
+  it('stops Package.swift generation instead of dropping the colliding source target', async () => {
+    const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-target-names-'));
+    try {
+      const product: SPMProduct = {
+        name: 'FixtureProduct',
+        podName: 'FixtureProduct',
+        platforms: ['iOS(.v15)'],
+        targets: [
+          { type: 'framework', name: 'Shared', path: 'Shared.xcframework' },
+          { type: 'swift', name: 'Shared', path: 'ios' },
+        ],
+      };
+      await assert.rejects(
+        SPMPackage.writePackageSwiftAsync(
+          {
+            path: packageRoot,
+            buildPath: path.join(packageRoot, '.build'),
+            packageName: 'fixture-package',
+            packageVersion: '1.0.0',
+            getSwiftPMConfiguration: () => ({ products: [product] }),
+          },
+          product,
+          'Debug',
+          path.join(packageRoot, '.build', 'Package.swift'),
+          packageRoot
+        ),
+        /"Shared" as both a vendored framework target and a source target/
+      );
+    } finally {
+      fs.rmSync(packageRoot, { recursive: true, force: true });
+    }
   });
 });
 

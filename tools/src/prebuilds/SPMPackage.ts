@@ -1509,6 +1509,35 @@ export function applyCheckedInTarget(
 }
 
 /**
+ * Throws on the first name shared by two targets of the generated package, since SwiftPM
+ * rejects a package that declares the same target name twice.
+ */
+export function assertUniqueTargetNames(
+  productName: string,
+  names: { frameworkTargets: string[]; siblingProducts: string[]; sourceTargets: string[] }
+): void {
+  const roleByName = new Map<string, string>();
+  const entries: [string[], string][] = [
+    [names.frameworkTargets, 'vendored framework target'],
+    [names.siblingProducts, 'sibling product'],
+    [names.sourceTargets, 'source target'],
+  ];
+  for (const [targetNames, role] of entries) {
+    for (const name of targetNames) {
+      const existingRole = roleByName.get(name);
+      if (existingRole) {
+        throw new Error(
+          `Product "${productName}" declares "${name}" as both a ${existingRole} and a ${role}. ` +
+            `SwiftPM requires every target name in a package to be unique and rejects a package that repeats one. ` +
+            `Rename one of them in spm.config.json, or in the checked-in Package.swift if the product has one.`
+        );
+      }
+      roleByName.set(name, role);
+    }
+  }
+}
+
+/**
  * Builds the complete context needed for Package.swift generation
  */
 async function buildPackageSwiftContext(
@@ -1530,7 +1559,6 @@ async function buildPackageSwiftContext(
 
   // Collect all resolved targets
   const resolvedTargets: ResolvedTarget[] = [];
-  const addedTargets = new Set<string>();
 
   // Map of dependency name -> build info for xcframework binary deps.
   // Used to auto-resolve header include paths with .when(configuration:) modifiers
@@ -1547,6 +1575,17 @@ async function buildPackageSwiftContext(
   // needs sibling's transitive deps to resolve imports in their .swiftinterface.
   const spmConfig = pkg.getSwiftPMConfiguration();
   const siblingDeps = findSiblingProductDependencies(product, spmConfig.products);
+  assertUniqueTargetNames(product.name, {
+    frameworkTargets: product.targets
+      .filter((target) => target.type === 'framework')
+      .map((target) => target.name),
+    siblingProducts: siblingDeps,
+    sourceTargets: checkedInTargets
+      ? checkedInTargets.map((target) => target.name)
+      : product.targets
+          .filter((target) => target.type !== 'framework')
+          .map((target) => target.name),
+  });
   const transitiveExternalDeps = siblingDeps.flatMap((dep) => {
     const sibling = spmConfig.products.find((p) => p.name === dep);
     return sibling?.externalDependencies || [];
@@ -1739,14 +1778,12 @@ async function buildPackageSwiftContext(
         dependencies: [],
         linkedFrameworks: parseLinkedFrameworks(target.linkedFrameworks, target.name),
       });
-      addedTargets.add(target.name);
     }
   }
 
   // Add sibling products (other products in the same spm.config.json) as binary targets.
   // Products are built in definition order, so the dependency's xcframework must already exist.
   for (const dep of siblingDeps) {
-    if (addedTargets.has(dep)) continue;
     const xcframeworkPath = Frameworks.getFrameworkPath(pkg.buildPath, dep, buildType);
     if (!(await fs.pathExists(xcframeworkPath))) {
       throw new SpinnerError(
@@ -1764,7 +1801,6 @@ async function buildPackageSwiftContext(
       dependencies: [],
       linkedFrameworks: [],
     });
-    addedTargets.add(dep);
     xcframeworkPaths.set(dep, { buildPath: pkg.buildPath, productName: dep });
   }
 
@@ -1822,10 +1858,6 @@ async function buildPackageSwiftContext(
         (target): target is ObjcTarget | SwiftTarget | CppTarget => target.type !== 'framework'
       );
   for (const target of sourceTargets) {
-    if (addedTargets.has(target.name)) {
-      continue;
-    }
-
     spinner.info(`Resolving target: ${target.name}`);
 
     const resolved = await resolveSourceTarget(
@@ -1842,7 +1874,6 @@ async function buildPackageSwiftContext(
     );
     const checkedIn = checkedInTargets?.find((candidate) => candidate.name === target.name);
     resolvedTargets.push(checkedIn ? applyCheckedInTarget(resolved, checkedIn) : resolved);
-    addedTargets.add(target.name);
   }
 
   spinner.succeed(`Resolved targets`);
