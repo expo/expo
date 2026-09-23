@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a data race on `EXTaskService`'s collections that could crash the app when one app context registered its task manager while another tore down, such as on a dev-client reload or `Updates.reloadAsync()`. ([#49558](https://github.com/expo/expo/pull/49558) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-22
