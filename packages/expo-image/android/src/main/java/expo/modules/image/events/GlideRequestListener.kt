@@ -38,10 +38,16 @@ class GlideRequestListener(
       ?.removeSuffix("\n call GlideException#logRootCauses(String) for more detail")
       ?: "Unknown error"
 
-    expoImageViewWrapper
-      .get()
-      ?.onError
-      ?.invoke(ImageErrorEvent(errorMessage))
+    // Glide is still inside its failure callback here, so it forbids starting or clearing loads.
+    // Dispatching the event synchronously lets event listeners (e.g. Reanimated) mount a layout
+    // change that resizes this view and restarts or clears the failed request, so Glide throws.
+    // Post the event, like `onLoad` in `onResourceReady`.
+    val imageWrapper = expoImageViewWrapper.get()
+    if (imageWrapper != null) {
+      imageWrapper.appContext.mainQueue.launch {
+        imageWrapper.onError.invoke(ImageErrorEvent(errorMessage))
+      }
+    }
 
     Log.e("ExpoImage", errorMessage)
     e?.logRootCauses("ExpoImage")
