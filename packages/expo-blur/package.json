@@ -34,7 +34,7 @@
   "dependencies": {},
   "devDependencies": {
     "@testing-library/dom": "catalog:",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
     "@testing-library/react-native": "catalog:",
     "@types/react": "catalog:",
