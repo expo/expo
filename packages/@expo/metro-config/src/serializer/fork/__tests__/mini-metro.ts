@@ -294,7 +294,7 @@ export async function microBundle({
       getRunModuleStatement(moduleId: number | string) {
         return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
       },
-      includeAsyncPaths: dev,
+      includeAsyncPaths: options.lazy ?? dev,
       shouldAddToIgnoreList(_module: Module) {
         return false;
       },
