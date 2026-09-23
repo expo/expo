@@ -30,6 +30,14 @@
 /develop/development-builds/installation /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 /develop/development-builds/installation/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 
+# Expo UI guides merged into the versioned reference
+/guides/expo-ui-swift-ui /versions/latest/sdk/ui/swift-ui 301
+/guides/expo-ui-swift-ui/ /versions/latest/sdk/ui/swift-ui 301
+/guides/expo-ui-swift-ui/extending /versions/latest/sdk/ui/swift-ui/extending 301
+/guides/expo-ui-swift-ui/extending/ /versions/latest/sdk/ui/swift-ui/extending 301
+/guides/expo-ui-jetpack-compose/extending /versions/latest/sdk/ui/jetpack-compose/extending 301
+/guides/expo-ui-jetpack-compose/extending/ /versions/latest/sdk/ui/jetpack-compose/extending 301
+
 # Guides that have been deleted
 /guides/web-performance /guides/analyzing-bundles 301
 /guides/web-performance/ /guides/analyzing-bundles 301
