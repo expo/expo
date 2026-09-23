@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed images in recycled lists going permanently blank: the transition's cleanup ran through `withEndAction`, which `ViewPropertyAnimator` drops when the animation is cancelled, so the Glide target was never returned to the pool. ([#49283](https://github.com/expo/expo/pull/49283) by [@oscnord](https://github.com/oscnord))
+- [Android] Fixed a `You can't start or clear loads in RequestListener or Target callbacks` crash when an image fails to load while layout updates are pending, for example from `react-native-reanimated`. The `onError` event is now dispatched after Glide's failure callback returns, as `onLoad` already was.
 
 ### 💡 Others
 
