@@ -29,16 +29,6 @@ minimumReleaseAgeExclude:
   - multitars
   - noxcturnal
 
-overrides:
-  '@types/babel__code-frame': ^7.27.0
-  '@types/babel__core': ^7.20.5
-  '@types/babel__generator': ^7.27.0
-  '@types/babel__template': ^7.4.4
-  '@types/babel__traverse': ^7.20.7
-  react-native: 0.88.0-rc.0
-  react-native-reanimated: 4.6.0
-  react-native-worklets: 0.12.2
-
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   react-native-reanimated: patches/react-native-reanimated.patch
@@ -61,3 +51,12 @@ allowBuilds:
   sharp: true
   unrs-resolver: false
   workerd: true
+overrides:
+  '@types/babel__code-frame': ^7.27.0
+  '@types/babel__core': ^7.20.5
+  '@types/babel__generator': ^7.27.0
+  '@types/babel__template': ^7.4.4
+  '@types/babel__traverse': ^7.20.7
+  react-native: 0.88.0-rc.1
+  react-native-reanimated: 4.6.0
+  react-native-worklets: 0.12.2

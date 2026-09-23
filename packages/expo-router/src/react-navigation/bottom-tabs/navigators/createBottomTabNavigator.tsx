@@ -43,7 +43,7 @@ function BottomTabNavigatorContent({
   preload,
   ...rest
 }: ContentArgs) {
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
     focusedRouteKey: state.routes[state.index]?.key,
@@ -70,6 +70,10 @@ function BottomTabNavigatorContent({
     preload,
     lazyByDefault: true,
   });
+
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;

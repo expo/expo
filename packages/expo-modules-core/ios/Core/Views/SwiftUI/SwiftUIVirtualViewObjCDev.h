@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface SwiftUIVirtualViewObjCDev : UIView
 
-// `tag` is inherited from UIView
+// `tag` is inherited from UIView. macOS uses `reactTag` instead because `NSView.tag` is read-only
 @property (nonatomic, copy, nullable) NSString *componentName;
 
 /**

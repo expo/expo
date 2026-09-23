@@ -3,8 +3,7 @@ import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
-  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { NavigationAction } from '../react-navigation/native';
@@ -33,7 +32,7 @@ export function getNavigateAction(
   type: string | undefined,
   withAnchor: boolean | undefined,
   singular: SingularOptions | undefined,
-  isPreviewNavigation: boolean | undefined,
+  previewKey: string | undefined,
   navigationState: NavigationState
 ): NavigationResolution {
   if (!config.linking || !config.routeNode) {
@@ -51,18 +50,22 @@ export function getNavigateAction(
     return { status: 'invalid', href };
   }
 
-  const internalParams: InternalExpoRouterParams = isPreviewNavigation
-    ? {
-        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
-        [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
-      }
-    : {};
+  const internalParams: InternalExpoRouterParams = {
+    ...(options.__internal__previewId !== undefined
+      ? {
+          [INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME]: options.__internal__previewId,
+        }
+      : {}),
+  };
   const action = resolveNavigationDestination({
     targetState: state,
     navigationState,
     routeNode: config.routeNode,
     registry: config.registry,
-    action: { type: type ?? 'NAVIGATE', payload: { singular } },
+    action: {
+      type: type ?? 'NAVIGATE',
+      payload: { singular, __internal__PreviewKey: previewKey },
+    },
     withAnchor,
     internalParams,
   });

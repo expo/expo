@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a data race on `DevMenuManager`'s registered callbacks and app context that could crash the app when one app context registered its dev menu callbacks while another tore down, such as on a dev-client reload. ([#49559](https://github.com/expo/expo/pull/49559) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 58.0.5 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Kept the floating dev menu button clear of system bars, the front camera and the home indicator by clamping the drawn button, rather than its touch frame, to the safe area on every edge. ([#50445](https://github.com/expo/expo/pull/50445) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.3 — 2026-09-16
 

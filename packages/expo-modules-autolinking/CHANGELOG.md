@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-21
+
+### 💡 Others
+
+- [Android] Enforce `ndkVersion` for Android library projects. ([#50240](https://github.com/expo/expo/pull/50240) by [@kudo](https://github.com/kudo))
+
 ## 58.0.2 — 2026-09-15
 
 ### 🛠 Breaking changes

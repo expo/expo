@@ -8,3 +8,10 @@ Object.defineProperty(globalThis, '__ExpoImportMetaRegistry', {
   enumerable: false,
   writable: true,
 });
+
+// Server rendering has no animation frames, but we need to stub these *temporarily* to work around
+// react-native-worklets, see: https://github.com/software-mansion/react-native-reanimated/pull/10667
+if (process.env.EXPO_SERVER && typeof globalThis.requestAnimationFrame !== 'function') {
+  globalThis.requestAnimationFrame = () => 0;
+  globalThis.cancelAnimationFrame = () => {};
+}

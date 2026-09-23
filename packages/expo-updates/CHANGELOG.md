@@ -8,7 +8,22 @@
 
 ### 🐛 Bug fixes
 
+- Log a warning naming the event and its error message when the updates state machine drops an event that is not allowed from the current state. Previously such an event was discarded silently in release builds, so an error could disappear without a trace. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))
+- Add an `EX_UPDATES_ASSERT_INVALID_STATE` build flag that makes the updates state machine stop the app when it drops an event, so an invalid transition fails an E2E run instead of passing unnoticed. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+## 58.0.7 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- Only request or apply a bundle diff when the manifest provides a hash for the launch asset, so a patched bundle is never written without being verified. ([#50321](https://github.com/expo/expo/pull/50321), [#50322](https://github.com/expo/expo/pull/50322) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Honor the `enableBsdiffPatchSupport` setting, which was parsed but never applied, so setting it to `false` now disables bundle diff requests as it already does on Android. ([#50318](https://github.com/expo/expo/pull/50318) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix a `ConcurrentModificationException` in the Reaper when a failed asset deletion succeeds or throws on retry. ([#50324](https://github.com/expo/expo/pull/50324) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 58.0.5 — 2026-09-16
 
@@ -32,6 +47,8 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50018](https://github.com/expo/expo/pull/50018) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50019](https://github.com/expo/expo/pull/50019) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix issues with error propagation when `checkForUpdateAsync`, `fetchUpdateAsync`, `readLogEntriesAsync` and `clearLogEntriesAsync` reject with an error, so that error causes/reasons are preserved. ([#50098](https://github.com/expo/expo/pull/50098) by [@douglowder](https://github.com/douglowder))
+- [iOS] Report a startup update failure through `downloadError` when the updates state machine is idle, instead of dropping it, so that `useUpdates()` reflects background update failures as it already did on Android. ([#50098](https://github.com/expo/expo/pull/50098) by [@douglowder](https://github.com/douglowder))
 
 ## 58.0.0 — 2026-09-10
 

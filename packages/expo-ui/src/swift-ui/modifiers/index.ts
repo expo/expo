@@ -106,31 +106,67 @@ export const matchedGeometryEffect = (
  */
 export const geometryGroup = () => createModifier('geometryGroup', {});
 
+type FrameAlignment =
+  | 'center'
+  | 'leading'
+  | 'trailing'
+  | 'top'
+  | 'bottom'
+  | 'topLeading'
+  | 'topTrailing'
+  | 'bottomLeading'
+  | 'bottomTrailing';
+
 /**
- * Sets the frame properties of a view.
- * @param params - The frame parameters. Width, height, minWidth, maxWidth, minHeight, maxHeight, idealWidth, idealHeight and alignment.
+ * Positions this view within an invisible frame with the specified size.
+ * @param params - The fixed frame parameters: `width`, `height` and `alignment`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/frame(width:height:alignment:)).
  */
-export const frame = (params: {
+export function frame(params: {
+  width?: number;
+  height?: number;
+  alignment?: FrameAlignment;
+}): ModifierConfig;
+/**
+ * Positions this view within an invisible frame having the specified size constraints.
+ * @param params - The flexible frame parameters: `minWidth`, `idealWidth`, `maxWidth`, `minHeight`, `idealHeight`, `maxHeight` and `alignment`.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/frame(minwidth:idealwidth:maxwidth:minheight:idealheight:maxheight:alignment:)).
+ */
+export function frame(params: {
+  minWidth?: number;
+  idealWidth?: number;
+  maxWidth?: number;
+  minHeight?: number;
+  idealHeight?: number;
+  maxHeight?: number;
+  alignment?: FrameAlignment;
+}): ModifierConfig;
+export function frame(params: {
   width?: number;
   height?: number;
   minWidth?: number;
+  idealWidth?: number;
   maxWidth?: number;
   minHeight?: number;
-  maxHeight?: number;
-  idealWidth?: number;
   idealHeight?: number;
-  alignment?:
-    | 'center'
-    | 'leading'
-    | 'trailing'
-    | 'top'
-    | 'bottom'
-    | 'topLeading'
-    | 'topTrailing'
-    | 'bottomLeading'
-    | 'bottomTrailing';
-}) => createModifier('frame', params);
+  maxHeight?: number;
+  alignment?: FrameAlignment;
+}): ModifierConfig {
+  if (__DEV__) {
+    const { width, height, alignment: _alignment, ...flexible } = params;
+    const ignored = Object.keys(flexible).filter(
+      (key) => flexible[key as keyof typeof flexible] !== undefined
+    );
+    if ((width !== undefined || height !== undefined) && ignored.length > 0) {
+      console.warn(
+        `frame() ignores ${ignored.join(', ')} because width or height is also set. ` +
+          'SwiftUI applies fixed and flexible frames as separate modifiers. ' +
+          'Split the values into two calls, for example [frame({ height: 50 }), frame({ maxWidth: Infinity })].'
+      );
+    }
+  }
+  return createModifier('frame', params);
+}
 
 /**
  * Positions this view within an invisible frame with a size relative to the nearest container.
@@ -815,6 +851,24 @@ export const scrollIndicators = (
   visibility: 'automatic' | 'visible' | 'hidden' | 'never',
   axes: 'vertical' | 'horizontal' | 'both' = 'both'
 ) => createModifier('scrollIndicators', { visibility, axes });
+
+/**
+ * Sets the style of the scroll edge effect that a scrollable view shows where its content meets
+ * a bar, such as a navigation bar or a toolbar.
+ * Mirrors SwiftUI's `scrollEdgeEffectStyle(_:for:)` modifier. On versions before iOS 26 it does
+ * nothing.
+ * @param style - The style of the effect:
+ * - `'automatic'`: the system picks the style.
+ * - `'hard'`: a bar with a defined edge separates the content.
+ * - `'soft'`: the content fades out gradually, without a defined edge.
+ * @param edges - The edges where the style applies. Defaults to `'all'`.
+ * @platform ios 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrolledgeeffectstyle(_:for:)).
+ */
+export const scrollEdgeEffectStyle = (
+  style: 'automatic' | 'hard' | 'soft',
+  edges: 'all' | 'top' | 'bottom' | 'leading' | 'trailing' | 'horizontal' | 'vertical' = 'all'
+) => createModifier('scrollEdgeEffectStyle', { style, edges });
 
 export type UnitPointValue =
   | 'zero'
@@ -1783,6 +1837,7 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollDisabled>
   | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof scrollIndicators>
+  | ReturnType<typeof scrollEdgeEffectStyle>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof scrollTargetBehavior>

@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `OnDestroy` removing the app-switcher privacy overlay off the main thread on reload. ([#49562](https://github.com/expo/expo/pull/49562) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

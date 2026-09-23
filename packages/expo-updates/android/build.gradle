@@ -42,7 +42,7 @@ expoModule {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.5'
+version = '58.0.7'
 
 // Utility method to derive boolean values from the environment or from Java properties,
 // and return them as strings to be used in BuildConfig fields
@@ -78,6 +78,11 @@ def exUpdatesAndroidDelayLoadApp = getBoolStringFromPropOrEnv("EX_UPDATES_ANDROI
 // If true, updates will copy embedded assets to file system when startup. (default false)
 def exUpdatesCopyEmbeddedAssets = getBoolStringFromPropOrEnv("EX_UPDATES_COPY_EMBEDDED_ASSETS", false)
 
+// If true, the state machine throws when it drops an event that is not allowed from the current
+// state, instead of only logging a warning. E2E tests turn this on so an invalid transition fails
+// the test run rather than passing unnoticed. (default false)
+def exUpdatesAssertInvalidState = getBoolStringFromPropOrEnv("EX_UPDATES_ASSERT_INVALID_STATE", false)
+
 def useDevClient = findProject(":expo-dev-client") != null
 
 def reactNativeArchitectures() {
@@ -98,7 +103,7 @@ android {
   namespace "expo.modules.updates"
   defaultConfig {
     versionCode 31
-    versionName '58.0.5'
+    versionName '58.0.7'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -106,6 +111,7 @@ android {
     buildConfigField("boolean", "EX_UPDATES_CUSTOM_INIT", exUpdatesCustomInit)
     buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", exUpdatesAndroidDelayLoadApp)
     buildConfigField("boolean", "EX_UPDATES_COPY_EMBEDDED_ASSETS", exUpdatesCopyEmbeddedAssets)
+    buildConfigField("boolean", "EX_UPDATES_ASSERT_INVALID_STATE", exUpdatesAssertInvalidState)
     buildConfigField("boolean", "USE_DEV_CLIENT", useDevClient.toString())
 
     externalNativeBuild {

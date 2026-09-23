@@ -76,7 +76,7 @@ public class ExpoPrintWithPrinter {
     let printerUrl = options.printerUrl ?? ""
     let candidateUrl = URL(string: printerUrl) ?? URL(fileURLWithPath: printerUrl)
 
-    guard let rootController = UIApplication.shared.keyWindow?.rootViewController else {
+    guard let rootController = SceneGeometry.keyWindow()?.rootViewController else {
       promise.reject(ViewControllerNotFoundException())
       return
     }
@@ -113,7 +113,7 @@ public class ExpoPrintWithPrinter {
           promise.reject(PrintingJobFailedException("Provided printer is not available."))
         }
       }
-    } else if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+    } else if rootController.traitCollection.horizontalSizeClass == .regular {
       printInteractionController.present(from: rootController.view.frame, in: rootController.view, animated: true, completionHandler: completionHandler)
     } else {
       printInteractionController.present(animated: true, completionHandler: completionHandler)

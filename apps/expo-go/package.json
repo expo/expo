@@ -85,22 +85,22 @@
     "expo-video-thumbnails": "workspace:*",
     "expo-web-browser": "workspace:*",
     "lottie-react-native": "^7.5.0",
-    "react": "19.2.3",
-    "react-native": "0.88.0-rc.0",
+    "react": "19.3.0",
+    "react-native": "0.88.0-rc.1",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-keyboard-controller": "^1.22.4",
     "react-native-maps": "1.29.0",
     "react-native-pager-view": "9.0.4",
     "react-native-reanimated": "4.6.0",
     "react-native-safe-area-context": "~5.9.1",
-    "react-native-screens": "4.27.0",
+    "react-native-screens": "4.28.0",
     "react-native-svg": "15.15.5",
     "react-native-view-shot": "5.1.1",
     "react-native-webview": "14.0.1",
     "react-native-worklets": "0.12.2"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0"
+    "@types/react": "~19.3.0"
   },
   "expo": {
     "autolinking": {

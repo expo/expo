@@ -106,6 +106,8 @@ public final class ImageView: ExpoView {
    */
   var imageLayoutSize: CGSize = .zero
 
+  private var maskObservation: NSKeyValueObservation?
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -142,20 +144,20 @@ public final class ImageView: ExpoView {
     sdImageView.layer.minificationFilter = .trilinear
 
     addSubview(sdImageView)
+
+    maskObservation = sdImageView.layer.observe(\.mask) { [weak self] _, _ in
+      MainActor.assumeIsolated {
+        guard let self, self.imageLayoutSize != .zero else {
+          return
+        }
+        self.applyContentPosition(contentSize: self.imageLayoutSize, containerSize: self.frame.size)
+      }
+    }
   }
 
   deinit {
     // Cancel pending requests when the view is deallocated.
     cancelPendingOperation()
-  }
-
-  public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    super.traitCollectionDidChange(previousTraitCollection)
-    if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-      // The mask layer we adjusted would be invalidated from `RCTViewComponentView.traitCollectionDidChange`.
-      // After that we have to recalculate the mask layer in `applyContentPosition`.
-      applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-    }
   }
 
   // MARK: - Implementation

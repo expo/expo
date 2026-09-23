@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 58.0.5 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Exclude the CoreMotion features from the build when `motionUsagePermission: false` is set in `app.json`. ([#49409](https://github.com/expo/expo/pull/49409) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Stop requiring the `location` background mode for geofencing. Region monitoring does not need it, and declaring it without a feature that uses persistent location gets apps rejected under App Store guideline 2.5.4. ([#50197](https://github.com/expo/expo/pull/50197) by [@abappi19](https://github.com/abappi19))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.3 — 2026-09-16
 
 _This version does not introduce any user-facing changes._

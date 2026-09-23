@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.8 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Anchored the share sheet on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50437](https://github.com/expo/expo/pull/50437) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.7 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.6 — 2026-09-16
 
 _This version does not introduce any user-facing changes._
