@@ -4,13 +4,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const {
-  linkageDeclaration,
-  xcconfigLinkerFlags,
-  readIosFloor,
-  readPodspecs,
-  PodspecSyntaxError,
-} = require('../podspec');
+const { linkageDeclaration, xcconfigLinkerFlags, readPodspecs } = require('../podspec');
 
 const { spec } = require('./helpers');
 
@@ -53,85 +47,6 @@ describe('linkageDeclaration', () => {
   });
 });
 
-describe('readIosFloor', () => {
-  const FILE = '/m/ios/ExpoThing.podspec';
-  const read = (...body) => readIosFloor(spec(...body), FILE);
-  const rejected = (...body) => {
-    let error = null;
-    try {
-      read(...body);
-    } catch (thrown) {
-      error = thrown;
-    }
-    expect(error).toBeInstanceOf(PodspecSyntaxError);
-    expect(error.file).toBe(FILE);
-    return error;
-  };
-
-  it('reads the platforms hash, on one line or several', () => {
-    expect(read("  s.platforms = { :ios => '16.4', :osx => '13.4' }")).toBe('16.4');
-    expect(read('  s.platforms      = {', "    :ios => '16.4',", "    :osx => '13.4'", '  }')).toBe(
-      '16.4'
-    );
-    expect(read('  s.platforms = { :ios => "16.4" } # the floor')).toBe('16.4');
-  });
-
-  it('reads a single-line ios deployment target', () => {
-    expect(read("  s.ios.deployment_target = '16.4'")).toBe('16.4');
-  });
-
-  it('takes the higher of the two forms, whichever comes first', () => {
-    expect(read("  s.platforms = { :ios => '15.1' }", "  s.ios.deployment_target = '16.4'")).toBe(
-      '16.4'
-    );
-    expect(read("  s.ios.deployment_target = '15.1'", "  s.platforms = { :ios => '16.4' }")).toBe(
-      '16.4'
-    );
-  });
-
-  it('reads a CRLF podspec exactly like an LF one', () => {
-    const text = spec('  s.platforms = {', "    :ios => '16.4'", '  }');
-    expect(readIosFloor(text.replace(/\n/g, '\r\n'), FILE)).toBe(readIosFloor(text, FILE));
-    expect(readIosFloor(text.replace(/\n/g, '\r\n'), FILE)).toBe('16.4');
-  });
-
-  it('returns no floor when the podspec declares none, or names other platforms only', () => {
-    expect(read("  s.source_files = 'ios/**/*.swift'")).toBeNull();
-    expect(read("  s.platforms = { :osx => '13.4' }")).toBeNull();
-    expect(read("  s.osx.deployment_target = '13.4'")).toBeNull();
-  });
-
-  it.each([
-    ['a merged hash', "  s.platforms = { :ios => '16.4' }.merge(EXTRA)"],
-    ['a frozen hash', "  s.platforms = { :ios => '16.4' }.freeze"],
-    ['a hash built from a variable', '  s.platforms = PLATFORMS'],
-    ['an interpolated version', '  s.platforms = { :ios => "#{MIN_IOS}" }'],
-    ['a version held in a variable', '  s.platforms = { :ios => min_ios }'],
-    ['a non-version value', "  s.platforms = { :ios => 'sixteen' }"],
-    ['a hash that never closes', '  s.platforms = { :ios =>'],
-    ['an interpolated deployment target', '  s.ios.deployment_target = "#{MIN_IOS}"'],
-    ['a computed deployment target', '  s.ios.deployment_target = min_ios'],
-  ])('refuses %s', (_name, line) => {
-    expect(rejected(line).line).toBe(2);
-  });
-
-  it('refuses two `:ios` keys in one hash', () => {
-    expect(rejected("  s.platforms = { :ios => '15.1', :ios => '16.4' }").line).toBe(2);
-  });
-
-  it('refuses a second platforms statement, whose winner depends on evaluation order', () => {
-    expect(
-      rejected("  s.platforms = { :ios => '15.1' }", "  s.platforms = { :ios => '16.4' }").line
-    ).toBe(3);
-  });
-
-  it('names the offending line in the error', () => {
-    const error = rejected("  s.platforms = { :ios => '16.4' }.freeze");
-    expect(error.snippet).toBe("s.platforms = { :ios => '16.4' }.freeze");
-    expect(error.message).toContain(`${FILE}:2`);
-  });
-});
-
 describe('readPodspecs', () => {
   const write = (dir, files) => {
     fs.mkdirSync(dir, { recursive: true });
@@ -149,20 +64,20 @@ describe('readPodspecs', () => {
       'ExpoCamera.podspec': spec("  s.platforms = { :ios => '16.4' }"),
     });
 
-    expect(readPodspecs('ExpoCamera', [dir])).toEqual({
-      linkage: null,
-      linkerFlags: null,
-      iosDeploymentTarget: '16.4',
-    });
+    expect(readPodspecs('ExpoCamera', [dir])).toEqual({ linkage: null, linkerFlags: null });
   });
 
   it('falls back to every podspec in the directories when none carries the pod name', () => {
     const dir = write(path.join(tmp(), 'ios'), {
-      'Legacy.podspec': spec("  s.platforms = { :ios => '16.4' }"),
-      'Other.podspec': spec("  s.ios.deployment_target = '17.0'"),
+      'Legacy.podspec': spec("  s.summary = 'Carries nothing the reader looks for'"),
+      'Other.podspec': spec("  s.frameworks = 'Photos'"),
     });
 
-    expect(readPodspecs('ExpoCamera', [dir]).iosDeploymentTarget).toBe('17.0');
+    expect(readPodspecs('ExpoCamera', [dir]).linkage).toEqual({
+      file: path.join(dir, 'Other.podspec'),
+      line: 2,
+      snippet: "s.frameworks = 'Photos'",
+    });
   });
 
   it('reports the linkage declaration with the file it came from', () => {
@@ -180,19 +95,27 @@ describe('readPodspecs', () => {
     });
   });
 
-  it('reports linkage without reading the floor, so one fix at a time is enough', () => {
-    const dir = write(path.join(tmp(), 'ios'), {
-      'ExpoThing.podspec': spec('  s.platforms = PLATFORMS', "  s.frameworks = 'Photos'"),
-    });
-
-    expect(readPodspecs('ExpoThing', [dir]).linkage).not.toBeNull();
-  });
-
   it('declares nothing for a module with no podspec at all', () => {
     expect(readPodspecs('ExpoThing', ['/nonexistent'])).toEqual({
       linkage: null,
       linkerFlags: null,
-      iosDeploymentTarget: null,
+    });
+  });
+
+  it('reports linker flags from the second podspec when the first carries none', () => {
+    const dir = write(path.join(tmp(), 'ios'), {
+      'Legacy.podspec': spec("  s.summary = 'Carries nothing the reader looks for'"),
+      'Other.podspec': spec(
+        '  s.pod_target_xcconfig = {',
+        "    'OTHER_LDFLAGS' => '$(inherited) -lc++'",
+        '  }'
+      ),
+    });
+
+    expect(readPodspecs('ExpoCamera', [dir]).linkerFlags).toEqual({
+      file: path.join(dir, 'Other.podspec'),
+      line: 3,
+      snippet: "'OTHER_LDFLAGS' => '$(inherited) -lc++'",
     });
   });
 
@@ -286,24 +209,6 @@ describe('test_spec blocks', () => {
     ).toBeNull();
   });
 
-  // The shape of packages/expo-dev-menu: a literal floor, and a test_spec that sets
-  // its own platforms. The second `platforms` is the test spec's, not a competitor.
-  it("reads the module's floor past a test_spec that sets its own platforms", () => {
-    expect(
-      readIosFloor(
-        spec(
-          "  s.platforms = { :ios => '16.4', :tvos => '16.4' }",
-          "  s.test_spec 'Tests' do |test_spec|",
-          '    test_spec.platforms = {',
-          "      :ios => '16.4'",
-          '    }',
-          '  end'
-        ),
-        '/m/ios/ExpoDevMenu.podspec'
-      )
-    ).toBe('16.4');
-  });
-
   it.each([
     ['a linker flag', '    ts.pod_target_xcconfig = { "OTHER_LDFLAGS" => "-Wl,--end-group" }'],
     ['prose', '    ts.summary = "start to end here"'],
@@ -331,22 +236,6 @@ describe('test_spec blocks', () => {
 });
 
 describe('a `#` inside a quoted string', () => {
-  const FILE = '/m/ios/ExpoThing.podspec';
-
-  it('refuses an interpolated floor as interpolation, quoting the line intact', () => {
-    const line = '  s.platforms = { :ios => "#{MIN_IOS}" }';
-    let error = null;
-    try {
-      readIosFloor(spec(line), FILE);
-    } catch (thrown) {
-      error = thrown;
-    }
-    expect(error).toBeInstanceOf(PodspecSyntaxError);
-    expect(error.snippet).toBe(line.trim());
-    expect(error.reason).toMatch(/interpolation/);
-    expect(error.reason).not.toMatch(/never closed/);
-  });
-
   it('quotes an interpolated linkage declaration intact', () => {
     expect(linkageDeclaration(spec('  s.frameworks = "#{prefix}Kit"'))).toEqual({
       number: 2,

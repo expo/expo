@@ -7,6 +7,7 @@ const path = require('path');
 
 const {
   FLAVORS,
+  byteOrder,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   stableFrameworkId,
@@ -53,6 +54,14 @@ function declaration(frameworkName, debug, release, overrides = {}) {
     ...overrides,
   };
 }
+
+describe('byteOrder', () => {
+  // The compile-interface merge and the declaration order both run through it,
+  // and a locale-aware comparison would order these the other way around.
+  it('orders every uppercase letter before every lowercase one, as CocoaPods does', () => {
+    expect(['expo-a', 'expo-B'].sort(byteOrder)).toEqual(['expo-B', 'expo-a']);
+  });
+});
 
 describe('validateFlavoredFramework', () => {
   let root;
