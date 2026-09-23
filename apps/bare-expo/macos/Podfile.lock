@@ -3,11 +3,11 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (58.0.0):
     - ExpoModulesCore
-  - EXConstants (58.0.3):
+  - EXConstants (58.0.4):
     - ExpoModulesCore
   - EXManifests (58.0.0):
     - ExpoModulesCore
-  - Expo (58.0.0-preview.3):
+  - Expo (58.0.0-preview.4):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -39,13 +39,13 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-client (58.0.3):
+  - expo-dev-client (58.0.4):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (58.0.3):
+  - expo-dev-launcher (58.0.4):
     - boost
     - DoubleConversion
     - EXManifests
@@ -81,10 +81,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu (58.0.3):
+  - expo-dev-menu (58.0.4):
     - boost
     - DoubleConversion
-    - expo-dev-menu/Main (= 58.0.3)
+    - expo-dev-menu/Main (= 58.0.4)
     - fast_float
     - fmt
     - glog
@@ -111,7 +111,7 @@ PODS:
     - SocketRocket
     - Yoga
   - expo-dev-menu-interface (58.0.0)
-  - expo-dev-menu/Main (58.0.3):
+  - expo-dev-menu/Main (58.0.4):
     - boost
     - DoubleConversion
     - EXManifests
@@ -143,29 +143,31 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoAsset (58.0.3):
+  - ExpoAI (0.1.0):
     - ExpoModulesCore
-  - ExpoClipboard (58.0.0):
+  - ExpoAsset (58.0.4):
     - ExpoModulesCore
-  - ExpoCrypto (58.0.1):
+  - ExpoClipboard (58.0.1):
+    - ExpoModulesCore
+  - ExpoCrypto (58.0.2):
     - ExpoModulesCore
   - ExpoFileSystem (58.0.0):
     - ExpoModulesCore
-  - ExpoFont (58.0.1):
+  - ExpoFont (58.0.2):
     - ExpoModulesCore
-  - ExpoKeepAwake (58.0.0):
+  - ExpoKeepAwake (58.0.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (58.0.0):
+  - ExpoLinearGradient (58.0.1):
     - ExpoModulesCore
-  - ExpoLinking (58.0.3):
+  - ExpoLinking (58.0.4):
     - ExpoModulesCore
   - ExpoLocalAuthentication (58.0.0):
     - ExpoModulesCore
-  - ExpoLogBox (58.0.3):
+  - ExpoLogBox (58.0.4):
     - React-Core
-  - ExpoMeshGradient (58.0.0):
+  - ExpoMeshGradient (58.0.1):
     - ExpoModulesCore
-  - ExpoModulesCore (58.0.3):
+  - ExpoModulesCore (58.0.4):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -195,31 +197,31 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (58.0.2):
+  - ExpoModulesJSI (58.0.3):
     - React-Core
     - ReactCommon
-  - ExpoModulesWorklets (58.0.3):
+  - ExpoModulesWorklets (58.0.4):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorkletsAdapter (58.0.3):
+  - ExpoModulesWorkletsAdapter (58.0.4):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
     - RNWorklets
-  - ExpoNetwork (58.0.0):
+  - ExpoNetwork (58.0.1):
     - ExpoModulesCore
-  - ExpoSQLite (58.0.3):
+  - ExpoSQLite (58.0.4):
     - ExpoModulesCore
-  - ExpoSymbols (58.0.1):
+  - ExpoSymbols (58.0.2):
     - ExpoModulesCore
-  - ExpoUI (58.0.3):
+  - ExpoUI (58.0.4):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
-  - ExpoWebBrowser (58.0.0):
+  - ExpoWebBrowser (58.0.1):
     - ExpoModulesCore
   - EXStructuredHeaders (58.0.0)
-  - EXUpdates (58.0.5):
+  - EXUpdates (58.0.6):
     - boost
     - DoubleConversion
     - EASClient
@@ -2751,6 +2753,63 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
+  - RNSVG (15.15.5):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNSVG/common (= 15.15.5)
+    - SocketRocket
+    - Yoga
+  - RNSVG/common (15.15.5):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNWorklets (0.12.2):
     - boost
     - DoubleConversion
@@ -2857,6 +2916,7 @@ DEPENDENCIES:
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
+  - ExpoAI (from `../../../packages/expo-ai/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
@@ -2955,6 +3015,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../../../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.88.0-rc.1_@babel+core@7._05ee69ab678d41fa83dfe1e35b4f6ad4/node_modules/@react-native-async-storage/async-storage`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.2.1_react-native@0.88.0-rc.1_@babel+core@7.29.7_@react-n_309931e03595449dca65e66dfa59342f/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.6.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_27bef0954768c8719c190d96f8a2f598/node_modules/react-native-reanimated`)"
+  - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.5_patch_hash=1832c80b60f0d705251ec0f49c81d6776039686738791ddc7a8_421830b8f87132b2aced840fe9e6b368/node_modules/react-native-svg`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_7169c7b7cadea4cb3d384e5c4ec5620f/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../node_modules/react-native-macos/ReactCommon/yoga`)
@@ -2993,6 +3054,9 @@ EXTERNAL SOURCES:
   expo-dev-menu-interface:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-menu-interface/ios"
+  ExpoAI:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-ai/ios"
   ExpoAsset:
     inhibit_warnings: false
     :path: "../../../packages/expo-asset/ios"
@@ -3210,6 +3274,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.2.1_react-native@0.88.0-rc.1_@babel+core@7.29.7_@react-n_309931e03595449dca65e66dfa59342f/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.6.0_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_27bef0954768c8719c190d96f8a2f598/node_modules/react-native-reanimated"
+  RNSVG:
+    :path: "../../../node_modules/.pnpm/react-native-svg@15.15.5_patch_hash=1832c80b60f0d705251ec0f49c81d6776039686738791ddc7a8_421830b8f87132b2aced840fe9e6b368/node_modules/react-native-svg"
   RNWorklets:
     :path: "../../../node_modules/.pnpm/react-native-worklets@0.12.2_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_7169c7b7cadea4cb3d384e5c4ec5620f/node_modules/react-native-worklets"
   Yoga:
@@ -3219,35 +3285,36 @@ SPEC CHECKSUMS:
   boost: cea1d4f90a3a59537f3deb03ff5656489d7133dd
   DoubleConversion: d31b1eb37f6d6f456530c4fd9124b857d6889cab
   EASClient: bc4dd37e41331d1dbaf1ad1e318b52aecf6558f8
-  EXConstants: afdfc2c67136f5f0aa5344b9b4e971a7f105e312
+  EXConstants: 0cb6904a09efa4198f09b1ecb714e8703f6217ab
   EXManifests: a6478083657b29dc16daf451118c5219afb52082
-  Expo: b4ccefdcc52419eb4359ae5277b45bcd38971a44
-  expo-dev-client: b690d317daba369c20c6242d2dd8e90f00fdaaff
-  expo-dev-launcher: 445c05593dfc764607ac50290f043a11d57fcf02
-  expo-dev-menu: 1dfc6097398f9e18c4c88c134a1bbfffb235a7c1
+  Expo: 37b9e6ef2f451a46dde6fa1369f85e3efb60781c
+  expo-dev-client: bd3dacd7012025f51ad72f709d5abc13eb756133
+  expo-dev-launcher: a2306be821e4480a02d41d7836c0d4ac76c69360
+  expo-dev-menu: 00a117003fd691b6df8f4df54a4780324d8a8698
   expo-dev-menu-interface: a20b16f64708f60dd367bc043d60660e71154bb1
-  ExpoAsset: 7aae92b33294d01c9c0a864be22971442e69ef72
-  ExpoClipboard: 99c3bb582dab0413691ea9f0459b491e9a3b1fd2
-  ExpoCrypto: 5c6742517751af8683970d2efcf3c60456f33a78
+  ExpoAI: 140b9877c5ae5d45d75c21a52713aa9fbb4d7d94
+  ExpoAsset: c95f945189bc5104946153d3c67c2f526654313d
+  ExpoClipboard: 023a2feb330190bffc38e3c537ea2acf3f6ada6d
+  ExpoCrypto: 985714101640b8324d7514a86b069743c9c17c89
   ExpoFileSystem: b3b692bad1445276dcc7cdf322b71453cd75ff7d
-  ExpoFont: 20de360d734e0798dccd359aa6346b4247162136
-  ExpoKeepAwake: 87abe093878722bb06cae6d3a1eee4217cb3cd65
-  ExpoLinearGradient: 35c845e412517a948cf93b728d33d56671095850
-  ExpoLinking: 370b84a772e67cf92c56ae7c881e5fc401975cc2
+  ExpoFont: cba6bf70cdd93e870045d9cb934026efd5a1d709
+  ExpoKeepAwake: 0801399831e0e381072a70c81bd3fb6b56db42ff
+  ExpoLinearGradient: c6d560c55eaee5175cdde3c8f87b3cb078135965
+  ExpoLinking: f8fcc612a288267e1512f99b5197c29ef00d84b3
   ExpoLocalAuthentication: 9c197176348896cbbf44b4e90cbea2e10b4c432e
-  ExpoLogBox: 4b6c8013f36ae1ea7c80e8e2af3230d4dd96b321
-  ExpoMeshGradient: 7c5bf9b61a993ee8aed45d42ecfa5796fd082ed9
-  ExpoModulesCore: bc8fe342be7f30ff59500156abfd00aac5113095
-  ExpoModulesJSI: cfe8d76b876f05ecc7ac59d50b6facacc9de058c
-  ExpoModulesWorklets: 9686fddd3a4ac5c48a913c0dd252a5db58e7a294
-  ExpoModulesWorkletsAdapter: ea9c7f2f55cc16804c8f40eb1cc98e9cfb8ff2b4
-  ExpoNetwork: 48f8a1742e936ca9acf2138e7e9c82ecee44c6c1
-  ExpoSQLite: e2a4c9f57931c3727e68d7b1fc9b2441a89124a2
-  ExpoSymbols: 54e717ad0bbc01c1760c7e89aeef691477e9eb0c
-  ExpoUI: 57a1ada9dbcefe27e394d97097e06fc9061ff594
-  ExpoWebBrowser: 68251c42a3cc5ca41d7299b3de477ed19c526e01
+  ExpoLogBox: abbcc2aeaa177218ebf36205c8b96665642376e1
+  ExpoMeshGradient: 8a059ec99cb9595c8722008aa5f3dfa498ae7d74
+  ExpoModulesCore: 0e6df7b67951fefa406811c1618dc81f1b49ddc1
+  ExpoModulesJSI: dde0e7a9a01d2456c3a61b503d4bea5769d97895
+  ExpoModulesWorklets: 02178d61511df4fc21565ab88707509c114fc1e5
+  ExpoModulesWorkletsAdapter: b724a4219fa03027adffdadfaa602c401617d85b
+  ExpoNetwork: 7d8b3b0bee2cdedc36bd681af85ad982a2dac4ba
+  ExpoSQLite: 168f4dd42bcc7c61d64eb3714e2bfbece055dc6f
+  ExpoSymbols: c1af8406f1305eb7ad3964d1d9f3e1551df7dffe
+  ExpoUI: 80e89eb5585141cee7fbe48e4fc53cbb57a098c2
+  ExpoWebBrowser: 854ce3372496bcfe8361e42ac8db5990dcaee3e2
   EXStructuredHeaders: 6953b31d4ff803903fc3bf178f07a6ee7286157b
-  EXUpdates: e28d3676d6e302ea003ae21dabccc50f629e0e1c
+  EXUpdates: a8c7a76145db582dc524ba06cffa7e712d1c4100
   EXUpdatesInterface: e3e64a7854cc0fc05b3053ba447ea12871acfe19
   fast_float: 20817c22759af6ac8d4d67e6e059b8b499953656
   FBLazyVector: 3cde5aa3abeda29fd70560e5a3e3199e6add163f
@@ -3324,6 +3391,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
   RNGestureHandler: 4f390299ec38adeecf358e27c5ac5b684d264f63
   RNReanimated: 4c3a430da86a9f5c6c88fccf7e718535da9ddd54
+  RNSVG: 4dd2d79b3cb224bcb3ae666a2adda2ede9d3772f
   RNWorklets: dc3b8b14af78a164fe9ccec5cf4bacb73986d46f
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: a88f30ac6f89fded00f9840e7d043315e5ab4fe0

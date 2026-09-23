@@ -1,7 +1,15 @@
 import { ThemeProvider } from 'ThemeProvider';
+import {
+  ImperativeRoutingQueueBridge,
+  RoutingQueueApiContext,
+} from 'expo-router/build/global-state/routingQueueContext';
 import { NavigationContext, NavigationRouteContext } from 'expo-router/react-navigation';
 import { Screens as apiScreens } from 'native-component-list/src/navigation/apiScreens';
 import { Screens as componentScreens } from 'native-component-list/src/navigation/componentScreens';
+import {
+  findApiScreen,
+  findComponentScreen,
+} from 'native-component-list/src/navigation/screenRegistry';
 import React, { useMemo, useState } from 'react';
 import {
   AppRegistry,
@@ -20,10 +28,22 @@ const sections = [
   { title: 'Components', screens: componentScreens },
 ];
 
-const INITIAL_SCREEN = sections[0].screens[0].name;
 const allScreens = sections.flatMap((section) => section.screens);
 
 const NO_INSETS = { top: 0, right: 0, bottom: 0, left: 0 };
+
+/**
+ * Maps an Expo Router href from a native-component-list `Link`, such as `/apis/haptics` or
+ * `/components/image/comparison`, back to the registry screen it points at.
+ */
+function screenForHref(href) {
+  const path = String(href).split(/[?#]/)[0].replace(/^\/+/, '');
+  const [tab, ...rest] = path.split('/');
+  const id = rest.join('/');
+  if (tab === 'apis') return findApiScreen(id);
+  if (tab === 'components') return findComponentScreen(id);
+  return undefined;
+}
 
 function titleOf(screen) {
   return screen.options?.title ?? screen.name;
@@ -109,47 +129,77 @@ function MountedScreen({ screen, select }) {
 }
 
 function App() {
-  const [selectedName, setSelectedName] = useState(INITIAL_SCREEN);
+  const [selectedName, setSelectedName] = useState('ModulesCore');
   const { width, height } = useWindowDimensions();
   const frame = useMemo(() => ({ x: 0, y: 0, width, height }), [width, height]);
   const selected = allScreens.find((screen) => screen.name === selectedName) ?? allScreens[0];
 
+  // Expo Router's `Link` and `router.push` enqueue routing intents instead of calling React
+  // Navigation. Without `ExpoRoot` there is no queue, so serve one that turns the href into a
+  // selection. Everything that is not a plain href navigation is dropped with a warning.
+  const routingQueue = useMemo(
+    () => ({
+      enqueue: (intent) => {
+        const href = intent.type === 'NAVIGATE_TO_HREF' ? intent.payload.href : null;
+        const screen = href != null ? screenForHref(href) : undefined;
+        if (screen) {
+          setSelectedName(screen.name);
+        } else {
+          console.warn(
+            `Ignoring ${intent.type} routing intent${href != null ? ` for ${href}` : ''}: there is no navigator in the macOS entry.`
+          );
+        }
+      },
+      dequeue: () => {},
+      startTransition: (callback) => callback(),
+      transitionMode: 'never',
+      setTransitionMode: () => {},
+    }),
+    []
+  );
+
   return (
     <ThemeProvider>
-      <SafeAreaInsetsContext.Provider value={NO_INSETS}>
-        <SafeAreaFrameContext.Provider value={frame}>
-          <View style={styles.root}>
-            <View style={styles.sidebar}>
-              <ScrollView style={styles.fill} contentContainerStyle={styles.sidebarContent}>
-                {sections.map((section) => (
-                  <View key={section.title}>
-                    <RNText style={styles.sectionTitle}>{section.title}</RNText>
-                    {section.screens.map((screen) => {
-                      const isSelected = screen.name === selected.name;
-                      return (
-                        <Pressable
-                          key={screen.name}
-                          onPress={() => setSelectedName(screen.name)}
-                          style={[styles.rowItem, isSelected && styles.rowItemSelected]}>
-                          <RNText style={[styles.rowText, isSelected && styles.rowTextSelected]}>
-                            {titleOf(screen)}
-                          </RNText>
-                        </Pressable>
-                      );
-                    })}
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-            <View style={styles.content}>
-              <RNText style={styles.title}>{titleOf(selected)}</RNText>
-              <View style={styles.fill}>
-                <MountedScreen key={selected.name} screen={selected} select={setSelectedName} />
+      <RoutingQueueApiContext.Provider value={routingQueue}>
+        <ImperativeRoutingQueueBridge
+          enqueue={routingQueue.enqueue}
+          setTransitionMode={routingQueue.setTransitionMode}
+        />
+        <SafeAreaInsetsContext.Provider value={NO_INSETS}>
+          <SafeAreaFrameContext.Provider value={frame}>
+            <View style={styles.root}>
+              <View style={styles.sidebar}>
+                <ScrollView style={styles.fill} contentContainerStyle={styles.sidebarContent}>
+                  {sections.map((section) => (
+                    <View key={section.title}>
+                      <RNText style={styles.sectionTitle}>{section.title}</RNText>
+                      {section.screens.map((screen) => {
+                        const isSelected = screen.name === selected.name;
+                        return (
+                          <Pressable
+                            key={screen.name}
+                            onPress={() => setSelectedName(screen.name)}
+                            style={[styles.rowItem, isSelected && styles.rowItemSelected]}>
+                            <RNText style={[styles.rowText, isSelected && styles.rowTextSelected]}>
+                              {titleOf(screen)}
+                            </RNText>
+                          </Pressable>
+                        );
+                      })}
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+              <View style={styles.content}>
+                <RNText style={styles.title}>{titleOf(selected)}</RNText>
+                <View style={styles.fill}>
+                  <MountedScreen key={selected.name} screen={selected} select={setSelectedName} />
+                </View>
               </View>
             </View>
-          </View>
-        </SafeAreaFrameContext.Provider>
-      </SafeAreaInsetsContext.Provider>
+          </SafeAreaFrameContext.Provider>
+        </SafeAreaInsetsContext.Provider>
+      </RoutingQueueApiContext.Provider>
     </ThemeProvider>
   );
 }
