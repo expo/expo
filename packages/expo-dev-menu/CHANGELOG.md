@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix a data race on `DevMenuManager`'s registered callbacks and app context that could crash the app when one app context registered its dev menu callbacks while another tore down, such as on a dev-client reload. ([#49559](https://github.com/expo/expo/pull/49559) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 58.0.6 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a data race on `DevMenuManager`'s registered callbacks and app context that could crash the app when one app context registered its dev menu callbacks while another tore down, such as on a dev-client reload. ([#49559](https://github.com/expo/expo/pull/49559) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.5 — 2026-09-22
 

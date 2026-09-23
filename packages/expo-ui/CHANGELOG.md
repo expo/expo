@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.6 — 2026-09-23
+
+### 🛠 Breaking changes
+
 - [iOS] `frame()` now matches SwiftUI's two `frame` overloads, so one call accepts either `width`/`height` or `min*`/`ideal*`/`max*`, not both. ([#50537](https://github.com/expo/expo/issues/50537) by [@wwisheess](https://github.com/wwisheess), [#50544](https://github.com/expo/expo/pull/50544) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 
 - [iOS] `List.ForEach` recycles rows from a small pool around the visible range, so large lists only render the rows near the viewport. Deprecated element children in favor of this form. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 58.0.5 — 2026-09-22
 

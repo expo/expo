@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Wait for pending source replacements before releasing players created by `useVideoPlayer`. ([#49981](https://github.com/expo/expo/pull/49981) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 58.0.3 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- Wait for pending source replacements before releasing players created by `useVideoPlayer`. ([#49981](https://github.com/expo/expo/pull/49981) by [@behenate](https://github.com/behenate))
 
 ## 58.0.2 — 2026-09-21
 

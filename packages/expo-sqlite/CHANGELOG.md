@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android][iOS][macOS][tvOS] Add `interruptSync()` to cancel running operations on a database connection. ([#50123](https://github.com/expo/expo/pull/50123) by [@savv](https://github.com/savv))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.5 — 2026-09-23
+
+### 🎉 New features
+
+- [Android][iOS][macOS][tvOS] Add `interruptSync()` to cancel running operations on a database connection. ([#50123](https://github.com/expo/expo/pull/50123) by [@savv](https://github.com/savv))
 
 ## 58.0.4 — 2026-09-21
 

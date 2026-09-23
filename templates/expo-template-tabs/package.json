@@ -1,6 +1,6 @@
 {
   "name": "expo-template-tabs",
-  "version": "58.0.5",
+  "version": "58.0.6",
   "description": "The Tab Navigation project template includes several example screens.",
   "license": "0BSD",
   "repository": {
@@ -16,11 +16,11 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~58.0.0-preview.5",
-    "expo-constants": "~58.0.5",
+    "expo": "~58.0.0-preview.6",
+    "expo-constants": "~58.0.6",
     "expo-font": "~58.0.2",
-    "expo-linking": "~58.0.5",
-    "expo-router": "~58.0.6",
+    "expo-linking": "~58.0.6",
+    "expo-router": "~58.0.7",
     "expo-splash-screen": "~58.0.1",
     "expo-status-bar": "~58.0.1",
     "expo-symbols": "~58.0.2",
