@@ -12,14 +12,19 @@ it('keeps legacy registrations and callbacks working', async () => {
   await registerDevMenuItems([{ name: 'Legacy action', callback, shouldCollapse: false }]);
 
   expect(ExpoDevMenu.addDevMenuCallbacks).toHaveBeenCalledWith([
-    { name: 'Legacy action', shouldCollapse: false, icon: undefined, group: undefined },
+    {
+      name: 'Legacy action',
+      shouldCollapse: false,
+      icon: undefined,
+      group: undefined,
+    },
   ]);
   DeviceEventEmitter.emit('registeredCallbackFired', 'Legacy action');
   expect(callback).toHaveBeenCalledTimes(1);
 });
 
 it('sends the icon for the current platform and a normalized group', async () => {
-  const icon = { ios: 'person.crop.circle', android: 'account' };
+  const icon = { ios: 'person.crop.circle', android: 'account' } as const;
   await registerDevMenuItems([
     {
       name: 'Account',
@@ -41,7 +46,8 @@ it('sends the icon for the current platform and a normalized group', async () =>
 });
 
 it('does not use the other platform icon as a fallback', async () => {
-  const icon = Platform.OS === 'ios' ? { android: 'account' } : { ios: 'person.crop.circle' };
+  const icon =
+    Platform.OS === 'ios' ? { android: 'account' } : { ios: 'person.crop.circle' as const };
   await registerDevMenuItems([{ name: 'Account', icon, callback: jest.fn() }]);
 
   expect(ExpoDevMenu.addDevMenuCallbacks.mock.calls[0][0][0].icon).toBeUndefined();
@@ -49,7 +55,13 @@ it('does not use the other platform icon as a fallback', async () => {
 
 it('treats blank groups and icons as absent', async () => {
   await registerDevMenuItems([
-    { name: 'Action', group: ' \n ', icon: { ios: ' ', android: ' ' }, callback: jest.fn() },
+    // JavaScript callers can still pass whitespace despite the SF Symbol type.
+    {
+      name: 'Action',
+      group: ' \n ',
+      icon: { ios: ' ' as never, android: ' ' },
+      callback: jest.fn(),
+    },
   ]);
 
   expect(ExpoDevMenu.addDevMenuCallbacks.mock.calls[0][0][0]).toEqual({
@@ -93,7 +105,7 @@ it('replaces previous registrations instead of retaining their handlers', async 
   ]);
 });
 
-it('clears all groups and callbacks with an empty registration', async () => {
+it('sends an empty registration and stops dispatching previous callbacks', async () => {
   const callback = jest.fn();
   await registerDevMenuItems([{ name: 'Action', group: 'Tools', callback }]);
   await registerDevMenuItems([]);

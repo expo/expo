@@ -1,8 +1,8 @@
-import * as DevMenu from 'expo-dev-client';
+import * as DevMenu from 'expo-dev-menu';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Text, View, useColorScheme } from 'react-native';
 
-export default function DevMenuExample() {
+export default function DevMenuScreen() {
   const color = useColorScheme() === 'dark' ? '#fff' : '#000';
   const [lastAction, setLastAction] = useState('None');
 
@@ -58,8 +58,27 @@ export default function DevMenuExample() {
       <Text style={{ color }}>Custom dev menu items</Text>
       <Text style={{ color }}>Last action: {lastAction}</Text>
       <Button title="Open dev menu" onPress={() => DevMenu.openMenu()} />
+      <Button
+        title="Register legacy items"
+        onPress={() =>
+          DevMenu.registerDevMenuItems([
+            {
+              name: 'Legacy one',
+              callback: () => setLastAction('Legacy one'),
+              shouldCollapse: true,
+            },
+            {
+              name: 'Legacy two',
+              callback: () => setLastAction('Legacy two'),
+              shouldCollapse: true,
+            },
+          ])
+        }
+      />
       <Button title="Register grouped items" onPress={registerItems} />
       <Button title="Clear custom items" onPress={() => DevMenu.registerDevMenuItems([])} />
     </View>
   );
 }
+
+DevMenuScreen.navigationOptions = { title: 'Dev Menu' };

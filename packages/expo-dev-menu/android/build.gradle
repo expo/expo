@@ -59,6 +59,10 @@ android {
     }
   }
 
+  testOptions {
+    unitTests.includeAndroidResources = true
+  }
+
   buildFeatures {
     compose true
     buildConfig true
@@ -140,4 +144,9 @@ dependencies {
   debugOnlyApi 'io.github.lukmccall:radix-ui-colors:1.0.1'
 
   debugOnlyApi "androidx.browser:browser:1.9.0"
+
+  testDebugImplementation 'junit:junit:4.13.2'
+  testDebugImplementation 'org.robolectric:robolectric:4.16'
+  testDebugImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
+  testDebugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 }

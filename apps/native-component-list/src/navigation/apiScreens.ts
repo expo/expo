@@ -1,4 +1,5 @@
 import { isRunningInExpoGo } from 'expo';
+import { Platform } from 'react-native';
 
 import { AIScreens } from '../screens/AI/AIScreen';
 import { AppIntentsScreens } from '../screens/AppIntents/AppIntentsScreen';
@@ -17,6 +18,17 @@ import { type ScreenConfig } from '../types/ScreenConfig';
 import { optionalRequire } from './routeBuilder';
 
 export const ScreensList: ScreenConfig[] = [
+  ...(isRunningInExpoGo() || (Platform.OS !== 'ios' && Platform.OS !== 'android')
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/DevMenuScreen'));
+          },
+          name: 'DevMenu',
+          options: { title: 'Dev Menu' },
+        } satisfies ScreenConfig,
+      ]),
   {
     getComponent() {
       return optionalRequire(() => require('../screens/CameraPermissions/CameraPermissionsScreen'));

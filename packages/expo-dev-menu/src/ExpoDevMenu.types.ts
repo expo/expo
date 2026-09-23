@@ -1,3 +1,5 @@
+import type { SFSymbol } from 'sf-symbols-typescript';
+
 /**
  * An object representing the custom development client menu entry.
  */
@@ -20,8 +22,11 @@ export type ExpoDevMenuItem = {
    */
   icon?: {
     /** SF Symbol name, for example `'person.crop.circle'`. */
-    ios?: string;
-    /** Drawable resource name bundled with the Android app, for example `'dev_menu_account'`. */
+    ios?: SFSymbol;
+    /**
+     * Drawable resource name bundled with the Android app, for example `'dev_menu_account'`.
+     * Adding a drawable requires rebuilding the development client. Missing resources show no icon.
+     */
     android?: string;
   };
   /**

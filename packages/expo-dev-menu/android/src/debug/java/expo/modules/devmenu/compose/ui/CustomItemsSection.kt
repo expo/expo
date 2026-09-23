@@ -1,5 +1,6 @@
 package expo.modules.devmenu.compose.ui
 
+import android.content.res.Resources
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -7,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -55,12 +57,15 @@ fun CustomItemsSection(
 @Composable
 private fun customItemIcon(name: String?): NewMenuButtonComposable? {
   val context = LocalContext.current
+  val configuration = LocalConfiguration.current
   val size = with(LocalDensity.current) { 20.dp.roundToPx() }
-  val painter = remember(context, name, size) {
-    runCatching {
+  val painter = remember(context, configuration, name, size) {
+    try {
       name?.let { ResourceDrawableIdHelper.getResourceDrawable(context, it) }
         ?.let { BitmapPainter(it.toBitmap(size, size).asImageBitmap()) }
-    }.getOrNull()
+    } catch (_: Resources.NotFoundException) {
+      null
+    }
   } ?: return null
 
   return {

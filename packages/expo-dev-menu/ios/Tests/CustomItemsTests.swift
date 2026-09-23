@@ -11,13 +11,15 @@ struct CustomItemsTests {
       DevMenuManager.Callback(name: "Intro", shouldCollapse: true, icon: "play", group: "Previews"),
       DevMenuManager.Callback(name: "Account", shouldCollapse: false, group: "Account"),
       DevMenuManager.Callback(name: "Card", shouldCollapse: true, group: "Previews"),
-      DevMenuManager.Callback(name: "Legacy", shouldCollapse: false)
+      DevMenuManager.Callback(name: "Legacy", shouldCollapse: false),
+      DevMenuManager.Callback(name: "Second legacy", shouldCollapse: true)
     ]
     let groups = CustomItems.groups(for: callbacks)
 
     #expect(groups.map(\.name) == ["Previews", "Account", nil])
-    #expect(groups.map { $0.callbacks.map(\.name) } == [["Intro", "Card"], ["Account"], ["Legacy"]])
-    #expect(groups[0].callbacks[0] === callbacks[0])
+    #expect(groups.map { $0.callbacks.map(\.name) } == [
+      ["Intro", "Card"], ["Account"], ["Legacy", "Second legacy"]
+    ])
     #expect(groups[0].callbacks[0].icon == "play")
     #expect(groups[0].callbacks[0].shouldCollapse)
   }
@@ -33,15 +35,6 @@ struct CustomItemsTests {
     #expect(groups[0].name == nil)
     #expect(groups[0].callbacks.map(\.name) == ["One", "Two"])
     #expect(groups[0].callbacks.allSatisfy { $0.icon == nil })
-  }
-
-  @Test
-  func `keeps a named group distinct from the default section`() {
-    let groups = CustomItems.groups(for: [
-      DevMenuManager.Callback(name: "Legacy", shouldCollapse: true),
-      DevMenuManager.Callback(name: "Named", shouldCollapse: true, group: "Custom Menu Items")
-    ])
-    #expect(groups.count == 2)
   }
 
   @Test

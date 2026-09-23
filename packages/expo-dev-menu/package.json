@@ -36,7 +36,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "expo-dev-menu-interface": "workspace:~"
+    "expo-dev-menu-interface": "workspace:~",
+    "sf-symbols-typescript": "^2.1.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",

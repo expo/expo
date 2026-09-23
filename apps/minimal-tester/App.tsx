@@ -22,8 +22,6 @@ import {
   Image as RNImage,
 } from 'react-native';
 
-import DevMenuExample from './DevMenuExample';
-
 function randomColor() {
   return '#' + ((Math.random() * 0xffffff) << 0).toString(16).padStart(6, '0');
 }
@@ -52,7 +50,6 @@ export default function App() {
           isFabricEnabled: {isFabricEnabled + ''}
         </Text>
 
-        <DevMenuExample />
         <ImageExample />
         <LinearGradientExample />
         {Platform.OS === 'ios' && <BlurExample />}

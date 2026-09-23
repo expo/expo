@@ -29,17 +29,18 @@ struct CustomItems: View {
             .font(.caption)
             .foregroundColor(.primary.opacity(0.6))
 
-          VStack(spacing: 0) {
+          VStack(spacing: group.name == nil ? 6 : 0) {
             ForEach(Array(group.callbacks.enumerated()), id: \.offset) { index, callback in
-              if index > 0 {
+              if group.name != nil && index > 0 {
                 Divider()
               }
               DevMenuActionButton(title: callback.name, icon: callback.icon) {
                 onFireCallback(callback.name)
               }
+              .clipShape(RoundedRectangle(cornerRadius: group.name == nil ? 12 : 0))
             }
           }
-          .clipShape(RoundedRectangle(cornerRadius: 18))
+          .clipShape(RoundedRectangle(cornerRadius: group.name == nil ? 0 : 18))
         }
       }
     }
