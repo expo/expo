@@ -1,7 +1,7 @@
 /**
- * Module discovery & classification for the Expo SwiftPM plugin: locate built
- * xcframeworks, find module roots, and decide whether a module needs React wired
- * in / is pure-Swift. Filesystem reads only; the React-detection predicate is
+ * Module discovery & classification for the Expo SwiftPM plugin: find module
+ * roots and Apple source directories, and decide whether a module needs React
+ * wired in / is pure-Swift. Filesystem reads only; the React-detection predicate is
  * split out as a pure function (`textImportsReact`) for unit testing.
  */
 
@@ -15,6 +15,17 @@ const CORE_REACT_PRODUCTS = new Set(['ExpoModulesCore', 'ExpoModulesJSI', 'ExpoM
 
 // Directories classification never looks into: tests, vendored deps, build output.
 const IGNORED_DIR_RX = /^(Tests?|__tests__|node_modules|build|\.build)$/;
+
+// Where a module keeps its Apple sources, in the order they are looked for.
+const APPLE_SOURCE_DIRS = ['ios', 'apple'];
+
+/** The first of the module's Apple source directories that exists, or null. */
+function appleSourceDir(moduleRoot) {
+  return (
+    APPLE_SOURCE_DIRS.map((dir) => path.join(moduleRoot, dir)).find((dir) => fs.existsSync(dir)) ??
+    null
+  );
+}
 
 function isIgnoredDir(name) {
   return IGNORED_DIR_RX.test(name);
@@ -115,7 +126,7 @@ function collectIgnoredDirs(dir, prefix = '') {
  */
 function moduleNeedsReact(podName, moduleRoot) {
   if (CORE_REACT_PRODUCTS.has(podName)) return true;
-  for (const sub of ['ios', 'apple', 'common']) {
+  for (const sub of [...APPLE_SOURCE_DIRS, 'common']) {
     const dir = path.join(moduleRoot, sub);
     if (sourceTreeImportsReact(dir)) return true;
   }
@@ -142,15 +153,16 @@ function isPureSwift(moduleRoot) {
     }
     return false;
   };
-  return ['ios', 'apple']
-    .map((s) => path.join(moduleRoot, s))
+  return APPLE_SOURCE_DIRS.map((s) => path.join(moduleRoot, s))
     .filter((d) => fs.existsSync(d))
     .every((d) => !hasNonSwift(d));
 }
 
 module.exports = {
+  APPLE_SOURCE_DIRS,
   CORE_REACT_PRODUCTS,
   REACT_IMPORT_RX,
+  appleSourceDir,
   textImportsReact,
   sourceTreeImportsReact,
   collectIgnoredDirs,

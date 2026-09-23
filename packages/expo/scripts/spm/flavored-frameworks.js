@@ -127,10 +127,7 @@ function extractTarball(sourcePath, frameworkName, cacheDir, flavor) {
   } catch {}
 
   validateTarEntries(sourcePath, frameworkName);
-  const temp = `${destination}.tmp-${process.pid}`;
-  fs.rmSync(temp, { recursive: true, force: true });
-  fs.mkdirSync(temp, { recursive: true });
-  try {
+  replaceDirectory(destination, (temp) => {
     execFileSync('tar', ['-xzf', sourcePath, '-C', temp], { stdio: 'pipe' });
     const extracted = path.join(temp, `${frameworkName}.xcframework`);
     if (!fs.existsSync(path.join(extracted, 'Info.plist'))) {
@@ -139,13 +136,26 @@ function extractTarball(sourcePath, frameworkName, cacheDir, flavor) {
       );
     }
     fs.writeFileSync(path.join(temp, '.source.json'), stamp, 'utf8');
+  });
+  return xcframeworkPath;
+}
+
+/**
+ * Fills a sibling temp directory with `fill(temp)` and only then swaps it in for
+ * `destination`, so a fill that throws leaves the previous contents untouched.
+ */
+function replaceDirectory(destination, fill) {
+  const temp = `${destination}.tmp-${process.pid}`;
+  fs.rmSync(temp, { recursive: true, force: true });
+  fs.mkdirSync(temp, { recursive: true });
+  try {
+    fill(temp);
     fs.rmSync(destination, { recursive: true, force: true });
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.renameSync(temp, destination);
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
-  return xcframeworkPath;
 }
 
 function prepareArtifactSource(source, frameworkName, cacheDir, flavor) {
@@ -271,10 +281,7 @@ function mergeDirectory(source, destination) {
  * RN owns all runtime linking and embedding of the flavored binaries.
  */
 function prepareCompileInterfaces(frameworks, destination) {
-  const temp = `${destination}.tmp-${process.pid}`;
-  fs.rmSync(temp, { recursive: true, force: true });
-  fs.mkdirSync(temp, { recursive: true });
-  try {
+  replaceDirectory(destination, (temp) => {
     for (const framework of [...frameworks].sort((a, b) => a.id.localeCompare(b.id))) {
       const source = framework.flavors.debug;
       const sliceFrameworks = fs
@@ -297,12 +304,7 @@ function prepareCompileInterfaces(frameworks, destination) {
         }
       }
     }
-    fs.rmSync(destination, { recursive: true, force: true });
-    fs.mkdirSync(path.dirname(destination), { recursive: true });
-    fs.renameSync(temp, destination);
-  } finally {
-    fs.rmSync(temp, { recursive: true, force: true });
-  }
+  });
   return destination;
 }
 
