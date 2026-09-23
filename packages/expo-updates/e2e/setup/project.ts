@@ -162,30 +162,6 @@ async function copyCommonFixturesToProject(
   // remove project files archive
   await fs.rm(projectFilesTarballPath);
 
-  if (isTV) {
-    // Copy react-native-tvos patch
-    await fs.mkdir(path.join(projectRoot, 'patches'));
-    const patchFile = await glob('react-native-tvos+*.patch', {
-      cwd: path.join(repoRoot, 'patches'),
-      absolute: true,
-    });
-    const reactNativeJsonString = await fs.readFile(
-      path.join(projectRoot, 'node_modules', 'react-native-tvos', 'package.json'),
-      'utf-8'
-    );
-    const reactNativeJson = JSON.parse(reactNativeJsonString);
-    const reactNativeVersion = reactNativeJson.version;
-    const patchFileName = `react-native-tvos+${reactNativeVersion}.patch`;
-    if (patchFile[0] != null) {
-      await fs.copyFile(patchFile[0], path.join(projectRoot, 'patches', patchFileName));
-      // Install node modules with links
-      await spawnAsync('pnpm', ['install'], {
-        cwd: projectRoot,
-        stdio: 'inherit',
-      });
-    }
-  }
-
   // react-native 0.87's precompiled React-Core (RCT_USE_PREBUILT_RNCORE=1) ships
   // framework headers that include non-modular headers (yoga, RCTDeprecation,
   // react/runtime), which fails module precompilation with
@@ -329,7 +305,6 @@ async function preparePackageJson(
         'tvos:pod-install': '(cd tvos; pod install; cd -)',
         'tvos:build':
           'set -o pipefail && xcodebuild -workspace tvos/updatese2e.xcworkspace -scheme updatese2e -configuration Debug -sdk appletvsimulator -arch arm64 -derivedDataPath tvos/build | pnpm excpretty',
-        postinstall: 'patch-package',
         'start:dev-client':
           'CI=false pnpm expo start --private-key-path ./keys/private-key.pem > /dev/null 2>&1 &',
         ...extraScriptsGenerateTestUpdateBundlesPart,
