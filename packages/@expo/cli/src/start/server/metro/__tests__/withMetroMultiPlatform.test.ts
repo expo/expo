@@ -754,26 +754,36 @@ describe(withExtendedResolver, () => {
     }
   });
 
-  it("aliases react-native's internal asset registry imports to the virtual shim", async () => {
-    vol.fromJSON({ mock: '' }, '/');
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      getMetroBundler: getMetroBundlerGetter(),
-    });
-
-    const result = modified.resolver.resolveRequest!(
-      getResolverContext({
-        originModulePath: '/root/node_modules/react-native/Libraries/Image/resolveAssetSource.js',
-      }),
+  it.each([
+    [
+      '/root/node_modules/react-native/Libraries/Image/resolveAssetSource.js',
       '../../src/private/assets/AssetRegistry',
-      'ios'
-    );
+    ],
+    ['/root/node_modules/react-native/index.js', './src/private/assets/AssetRegistry'],
+    ['/root/node_modules/react-native/src/asset-registry.js', './private/assets/AssetRegistry'],
+  ])(
+    "aliases react-native's asset registry import from %s to the virtual shim",
+    async (originModulePath, moduleName) => {
+      vol.fromJSON({ mock: '' }, '/');
 
-    expect(result).toEqual({
-      filePath: '\0polyfill:assets-registry',
-      type: 'sourceFile',
-    });
-  });
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      const result = modified.resolver.resolveRequest!(
+        getResolverContext({
+          originModulePath,
+        }),
+        moduleName,
+        'ios'
+      );
+
+      expect(result).toEqual({
+        filePath: '\0polyfill:assets-registry',
+        type: 'sourceFile',
+      });
+    }
+  );
 
   it('aliases async require module to resolved path', async () => {
     // Mock path we're expecting `asyncRequireModulePath` requests to have been replaced with

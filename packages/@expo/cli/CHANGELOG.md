@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Route React Native's public `AssetRegistry` through the same registry as bundled assets.
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-22

@@ -681,7 +681,7 @@ export function withExtendedResolver(
       if (
         moduleName.startsWith('.') &&
         /[\\/]private[\\/]assets[\\/]AssetRegistry(\.js)?$/.test(moduleName) &&
-        /[\\/]react-native[\\/](src|Libraries)[\\/]/.test(context.originModulePath)
+        /[\\/]react-native[\\/](?:(src|Libraries)[\\/]|index\.js$)/.test(context.originModulePath)
       ) {
         return getAssetRegistryModule();
       }
