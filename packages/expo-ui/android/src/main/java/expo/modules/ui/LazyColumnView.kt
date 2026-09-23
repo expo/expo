@@ -69,7 +69,8 @@ class LazyColumnView(context: Context, appContext: AppContext) :
     val padding = props.contentPadding.value
 
     LazyColumn(
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
+        .lazyRecycledItemsCrossAxis(this@LazyColumnView, isVertical = true),
       verticalArrangement = verticalArrangement,
       horizontalAlignment = horizontalAlignment,
       contentPadding = PaddingValues(

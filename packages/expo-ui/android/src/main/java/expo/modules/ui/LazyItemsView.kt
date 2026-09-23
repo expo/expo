@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -172,17 +174,11 @@ internal fun LazyListScope.lazyRecycledItems(
       window.size(itemKey, estimatedItemSize.dp.roundToPx()).toDp()
     }
     Box(
-      modifier = (if (isVertical) Modifier.fillMaxWidth() else Modifier)
-        .onSizeChanged { size ->
-          // Only the vertical layout stretches an item across the list, so only it can read the
-          // list size from one.
-          if (isVertical) {
-            window.updateCrossAxisSize(size.width)
-          }
-          if (content != null) {
-            window.measure(itemKey, if (isVertical) size.height else size.width, revision)
-          }
+      modifier = Modifier.onSizeChanged { size ->
+        if (content != null) {
+          window.measure(itemKey, if (isVertical) size.height else size.width, revision)
         }
+      }
     ) {
       if (content != null) {
         with(scope) {
@@ -202,6 +198,22 @@ internal fun LazyListScope.lazyRecycledItems(
     }
   }
 }
+
+/**
+ * Clears the cached item sizes of every [LazyItemsView] child when the list's cross-axis
+ * constraint changes. It runs before the items measure, so it never discards fresh sizes.
+ */
+internal fun Modifier.lazyRecycledItemsCrossAxis(list: ViewGroup, isVertical: Boolean): Modifier =
+  layout { measurable, constraints ->
+    val crossAxisSize = if (isVertical) constraints.maxWidth else constraints.maxHeight
+    for (index in 0..<list.childCount) {
+      (list.getChildAt(index) as? LazyItemsView)?.window?.updateCrossAxisSize(crossAxisSize)
+    }
+    val placeable = measurable.measure(constraints)
+    layout(placeable.width, placeable.height) {
+      placeable.place(0, 0)
+    }
+  }
 
 /**
  * Tracks the live items without triggering recomposition, and batches window requests to JS.

@@ -58,7 +58,8 @@ class LazyRowView(context: Context, appContext: AppContext) :
     val padding = props.contentPadding.value
 
     LazyRow(
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
+        .lazyRecycledItemsCrossAxis(this@LazyRowView, isVertical = false),
       horizontalArrangement = horizontalArrangement,
       verticalAlignment = verticalAlignment,
       contentPadding = PaddingValues(
