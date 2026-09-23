@@ -528,6 +528,65 @@ it('D-F1 keeps config settings and platforms while replacing structure and membe
   assert.match(manifest, /\.package\(url: "https:\/\/example.com\/remote.git", exact: "1.2.3"\)/);
 });
 
+function rejectsLinkedFrameworks(target: string, offender: string) {
+  return (error: Error) => {
+    assert.ok(!(error instanceof TypeError), `Expected a diagnostic, got ${error.stack}`);
+    assert.ok(
+      error.message.startsWith(
+        `Cannot read "linkedFrameworks" for target "${target}": ${offender} is not`
+      ),
+      `Unexpected message: ${error.message}`
+    );
+    return true;
+  };
+}
+
+const generationStages = {
+  manifest: (input: ReturnType<typeof fixture>) =>
+    SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug'),
+  sources: (input: ReturnType<typeof fixture>) =>
+    SPMGenerator.generateIsolatedSourcesForTargetsAsync(input.pkg, input.product),
+};
+
+// Keep `null`: in Mode B it is the only value that fails if the checked-in-manifest read loses its
+// validation, because `?? []` would turn it into an empty list, while `["Foo.Bar"]` would still be
+// caught later by resolveSourceTarget.
+for (const linkedFrameworks of [null, ['Foo.Bar']]) {
+  const label = JSON.stringify(linkedFrameworks);
+  const offender = JSON.stringify(linkedFrameworks?.[0] ?? linkedFrameworks);
+
+  for (const mode of ['A', 'B'] as const) {
+    for (const [stage, generate] of Object.entries(generationStages)) {
+      it(`rejects linkedFrameworks ${label} on a source target in Mode ${mode} during ${stage} generation`, async () => {
+        const input = fixture();
+        if (mode === 'A') fs.rmSync(path.join(input.root, 'Package.swift'));
+        (input.product.targets[0] as SourceTarget).linkedFrameworks =
+          linkedFrameworks as unknown as string[];
+        await assert.rejects(generate(input), rejectsLinkedFrameworks('Main', offender));
+      });
+    }
+
+    it(`rejects linkedFrameworks ${label} on a framework target in Mode ${mode}`, async () => {
+      const input = fixture();
+      if (mode === 'A') fs.rmSync(path.join(input.root, 'Package.swift'));
+      fs.mkdirSync(path.join(input.root, 'Vendor.xcframework'));
+      input.product.targets = [
+        { type: 'swift', name: 'Main', path: 'ios', dependencies: ['Vendor'] },
+        {
+          type: 'framework',
+          name: 'Vendor',
+          path: 'Vendor.xcframework',
+          linkedFrameworks: linkedFrameworks as unknown as string[],
+        },
+      ];
+      await assert.rejects(
+        generationStages.manifest(input),
+        rejectsLinkedFrameworks('Vendor', offender)
+      );
+    });
+  }
+}
+
 it('D-B checks only the package-root manifest', async () => {
   const input = fixture();
   fs.mkdirSync(path.join(input.root, 'apple'));

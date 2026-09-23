@@ -13,6 +13,7 @@ import {
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { SourceTarget, SPMProduct, SPMTarget } from './SPMConfig.types';
+import { parseLinkedFrameworks } from './SPMIdentifier';
 import { SPMPackage } from './SPMPackage';
 import { createAsyncSpinner, hasFileContentChanged } from './Utils';
 
@@ -64,7 +65,7 @@ function generateExportsFile(
   target: Pick<SourceTarget, 'name' | 'linkedFrameworks' | 'dependencies'>,
   internalTargetNames = new Set(product.targets.map((candidate) => candidate.name))
 ): boolean {
-  const frameworkImports = (target.linkedFrameworks ?? []).map(
+  const frameworkImports = parseLinkedFrameworks(target.linkedFrameworks, target.name).map(
     (framework) => `@_exported import ${framework}`
   );
   const internalDependencyImports = (target.dependencies ?? [])

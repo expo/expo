@@ -24,6 +24,7 @@ import { Frameworks } from './Frameworks';
 import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
+import { parseLinkedFrameworks } from './SPMIdentifier';
 import {
   ExternalDependencyConfig,
   PackageSwiftContext,
@@ -970,7 +971,7 @@ async function resolveSourceTarget(
     name: target.name,
     path: path.relative(packageSwiftDir, path.join(packageSwiftDir, target.name)),
     dependencies: resolvedDependencies,
-    linkedFrameworks: target.linkedFrameworks || [],
+    linkedFrameworks: parseLinkedFrameworks(target.linkedFrameworks, target.name),
   };
 
   // Build settings based on target type
@@ -1736,7 +1737,7 @@ async function buildPackageSwiftContext(
         name: target.name,
         path: relativePath,
         dependencies: [],
-        linkedFrameworks: target.linkedFrameworks || [],
+        linkedFrameworks: parseLinkedFrameworks(target.linkedFrameworks, target.name),
       });
       addedTargets.add(target.name);
     }

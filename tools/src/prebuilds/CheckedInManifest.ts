@@ -7,6 +7,7 @@ import { getPackagesDir } from '../Directories';
 import logger from '../Logger';
 import { isExternalPackage, type SPMPackageSource } from './ExternalPackage';
 import type { SPMProduct, SourceTarget } from './SPMConfig.types';
+import { parseLinkedFrameworks } from './SPMIdentifier';
 import type { ResolvedTarget } from './SPMPackage.types';
 
 export interface CheckedInResolvedTarget extends ResolvedTarget {
@@ -525,7 +526,8 @@ export async function resolveCheckedInManifestAsync(
     });
     const language = inferLanguage(product.name, target.name, files);
     const sources = prefixedSources ?? ['src'];
-    if (language === 'swift' && (config?.linkedFrameworks?.length || siblingDependencies.length)) {
+    const linkedFrameworks = parseLinkedFrameworks(config?.linkedFrameworks, target.name);
+    if (language === 'swift' && (linkedFrameworks.length || siblingDependencies.length)) {
       sources.push(`${product.name}+Exports.swift`);
     }
     result.push({
@@ -537,7 +539,7 @@ export async function resolveCheckedInManifestAsync(
       sources,
       exclude: prefixedExcludes,
       dependencies,
-      linkedFrameworks: config?.linkedFrameworks ?? [],
+      linkedFrameworks,
       resources,
       publicHeadersPath:
         (language === 'objc' || language === 'cpp') && config?.publicHeaders !== false
