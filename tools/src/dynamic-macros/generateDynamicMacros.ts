@@ -3,9 +3,9 @@ import chalk from 'chalk';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { Directories } from '../expotools';
 import AndroidMacrosGenerator from './AndroidMacrosGenerator';
 import macros from './macros';
-import { Directories } from '../expotools';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 
@@ -34,7 +34,9 @@ async function getTemplateSubstitutionsAsync() {
 
   try {
     // Keys from secrets/template-files can be overwritten by private-keys.json file.
-    const privateKeys = await new JsonFile(path.join(EXPO_DIR, 'private-keys.json')).readAsync();
+    const privateKeys = await new JsonFile<TemplateSubstitutions>(
+      path.join(EXPO_DIR, 'private-keys.json')
+    ).readAsync();
     return { ...defaultKeys, ...privateKeys };
   } catch {
     return defaultKeys;
@@ -85,6 +87,9 @@ async function generateDynamicMacrosAsync(args) {
     await macrosGenerator.generateAsync({ ...args, macros, templateSubstitutions });
     // Copy template files - it is platform-agnostic.
     await copyTemplateFilesAsync(platform, args, templateSubstitutions);
+    if (platform === 'android') {
+      await writeQuestGoogleServicesAsync(templateSubstitutions.FIREBASE_GOOGLE_QUEST_APP_ID);
+    }
   } catch (error) {
     console.error(
       `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`
@@ -181,4 +186,24 @@ async function copyTemplateFilesAsync(platform: string, args: any, templateSubst
   await Promise.all(promises);
 }
 
-export { generateDynamicMacrosAsync, getTemplateSubstitutionsAsync };
+function getQuestGoogleServices(googleServicesJson: string, questAppId: string): string {
+  const googleServices = JSON.parse(googleServicesJson);
+  for (const client of googleServices.client) {
+    client.client_info.mobilesdk_app_id = questAppId;
+  }
+  return JSON.stringify(googleServices, null, 2) + '\n';
+}
+
+// The Quest flavor shares the mobile package name, so it needs its own file for a separate Firebase app ID.
+async function writeQuestGoogleServicesAsync(questAppId: string | undefined) {
+  if (!questAppId) {
+    return;
+  }
+  const appDir = path.join(Directories.getExpoGoAndroidDir(), 'app');
+  const googleServicesJson = await fs.readFile(path.join(appDir, 'google-services.json'), 'utf8');
+  const dest = path.join(appDir, 'src', 'quest', 'google-services.json');
+  console.log('Rendering %s...', chalk.cyan(dest));
+  await fs.outputFile(dest, getQuestGoogleServices(googleServicesJson, questAppId));
+}
+
+export { generateDynamicMacrosAsync, getQuestGoogleServices, getTemplateSubstitutionsAsync };
