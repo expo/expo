@@ -38,7 +38,4 @@
   "devDependencies": {
     "expo-module-scripts": "workspace:*"
   },
-  "engines": {
-    "node": ">=20.12.0"
-  }
 }

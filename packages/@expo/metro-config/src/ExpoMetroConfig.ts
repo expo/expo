@@ -64,9 +64,6 @@ export interface DefaultConfigOptions {
 let hasWarnedAboutReactNative = false;
 
 function getReactNativeHostPackage(platform?: string | null): string {
-  // Only out-of-tree platforms resolve to a react-native fork here; everything else — including
-  // platforms that expo-modules-autolinking's `getSupportPackageForPlatform` treats specially —
-  // falls back to react-native.
   return isOutOfTreePlatform(platform) ? getHostPackageForPlatform(platform)! : 'react-native';
 }
 
