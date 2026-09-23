@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `isRunningOnQuest()` to detect Meta Quest devices from JavaScript. ([#50283](https://github.com/expo/expo/pull/50283) by [@behenate](https://github.com/behenate))
+- Added `Platform.isQuest` to detect Meta Quest devices from JavaScript. ([#50283](https://github.com/expo/expo/pull/50283) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

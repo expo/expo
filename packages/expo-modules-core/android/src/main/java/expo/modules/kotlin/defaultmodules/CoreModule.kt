@@ -49,8 +49,8 @@ class CoreModule : Module() {
       return@Property Uri.fromFile(context.filesDir).toString() + "/"
     }
 
-    Function("isRunningOnQuest") {
-      return@Function VRUtilities.isQuest()
+    Property("isRunningOnQuest") {
+      return@Property VRUtilities.isQuest()
     }
 
     // Expose some common classes and maybe even the `modules` host object in the future.

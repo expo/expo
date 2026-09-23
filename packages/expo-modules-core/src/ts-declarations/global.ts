@@ -78,12 +78,12 @@ declare namespace ExpoGlobal {
    */
   export const documentsDir: undefined | string;
 
-  // Utils
-
   /**
-   * Returns whether the app is running on a Meta Quest device.
+   * Whether the app is running on a Meta Quest device. Always `false` on iOS and web.
    */
-  export function isRunningOnQuest(): boolean;
+  export const isRunningOnQuest: boolean;
+
+  // Utils
 
   /**
    * Generates a random UUID v4 string.

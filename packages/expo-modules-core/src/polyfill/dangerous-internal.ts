@@ -14,7 +14,6 @@ export function installExpoGlobalPolyfill() {
     SharedObject,
     SharedRef,
     modules: globalThis.ExpoDomWebView?.expoModulesProxy ?? {},
-    isRunningOnQuest: () => false,
     uuidv4: uuid.v4,
     uuidv5: uuid.v5,
     getViewConfig: () => {
@@ -27,6 +26,7 @@ export function installExpoGlobalPolyfill() {
     expoModulesCoreVersion: undefined,
     cacheDir: undefined,
     documentsDir: undefined,
+    isRunningOnQuest: false,
 
     installOnUIRuntime: (_uiRuntimeHolder: object) => {
       throw new Error('Method not implemented.');

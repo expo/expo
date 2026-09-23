@@ -27,7 +27,7 @@ internal final class CoreModule: Module {
       FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
     }
 
-    Function("isRunningOnQuest") {
+    Constant("isRunningOnQuest") {
       false
     }
 
