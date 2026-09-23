@@ -464,6 +464,29 @@ function renderNeedsManifestForLinkage({ podName, packageName, moduleRoot, file,
   ].join('\n');
 }
 
+/**
+ * Refused whether or not the condition is met: a link that never consults the
+ * condition is only right by coincidence, and the coincidence changes with the
+ * app's configuration.
+ */
+function renderUncheckedAutolinkCondition({
+  podName,
+  packageName,
+  moduleRoot,
+  productName,
+  precompiled,
+}) {
+  const linkedAs = precompiled
+    ? 'as a precompiled XCFramework'
+    : 'from source without a checked-in Package.swift';
+  return [
+    `error: Expo module "${packageName}" declares an autolinkWhen condition for its product "${productName}" (pod ${podName}), but the product would be linked ${linkedAs}.`,
+    `  The Swift Package Manager plugin checks autolinkWhen only for packages that ship a checked-in Package.swift. Linking "${productName}" any other way would ignore its condition, so the sync stops instead.`,
+    `  Ship a checked-in Package.swift for ${packageName}, so the condition decides whether "${productName}" is linked. Or remove the ${podName} podspec from \`apple.podspecPath\` in ${packageName}'s expo-module.config.json, so the product is never linked this way. If "${productName}" should always be linked, drop its autolinkWhen from spm.config.json instead.`,
+    `  Module path: ${moduleRoot}`,
+  ].join('\n');
+}
+
 function renderCoreUnavailable({ pods }) {
   return [
     `error: ExpoModulesCore has no prebuilt Debug and Release xcframework, so all ${pods.length} source-built Expo ${pods.length === 1 ? 'module' : 'modules'} were skipped.`,
@@ -483,6 +506,7 @@ const RENDERERS = {
   'unsupported-target-dependency': renderUnsupportedTargetDependency,
   'unsupported-package-dependency': renderUnsupportedPackageDependency,
   'needs-manifest-for-linkage': renderNeedsManifestForLinkage,
+  'unchecked-autolink-condition': renderUncheckedAutolinkCondition,
   'core-unavailable': renderCoreUnavailable,
 };
 

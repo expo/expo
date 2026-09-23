@@ -2321,3 +2321,210 @@ describe('a product gated by an autolinkWhen condition', () => {
     expect(resolveAppTarget).toHaveBeenCalledTimes(1);
   });
 });
+
+// The condition is checked only where a module ships a checked-in Package.swift.
+// A gated pod reaching the plugin any other way would be linked with its
+// condition ignored, so the sync refuses it whichever way the condition falls.
+describe('a gated pod linked where its autolinkWhen condition is not checked', () => {
+  const barcodeGate = {
+    podfileProperty: 'expo.camera.barcode-scanner-enabled',
+    disabledValue: 'false',
+  };
+  let logs;
+  let tmp;
+  let modules;
+
+  beforeEach(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-unchecked-gate-'));
+    const podspecDirs = {
+      ExpoModulesCore: pureSwiftModule(
+        path.join(tmp, 'expo-modules-core'),
+        'ExpoModulesCore',
+        spec()
+      ),
+      ExpoCameraBarcodeScanning: pureSwiftModule(
+        path.join(tmp, 'expo-camera'),
+        'ExpoCameraBarcodeScanning',
+        spec()
+      ),
+      ExpoScanner: pureSwiftModule(path.join(tmp, 'expo-scanner'), 'ExpoScanner', spec()),
+      ExpoImage: pureSwiftModule(path.join(tmp, 'expo-image'), 'ExpoImage', spec()),
+    };
+    modules = Object.fromEntries(
+      [
+        ['expo-modules-core', 'ExpoModulesCore'],
+        ['expo-camera', 'ExpoCameraBarcodeScanning'],
+        ['expo-scanner', 'ExpoScanner'],
+        ['expo-image', 'ExpoImage'],
+      ].map(([packageName, podName]) => [
+        packageName,
+        { packageName, pods: [{ podName, podspecDir: podspecDirs[podName] }] },
+      ])
+    );
+    logs = {
+      error: jest.spyOn(console, 'error').mockImplementation(() => {}),
+      warn: jest.spyOn(console, 'warn').mockImplementation(() => {}),
+      log: jest.spyOn(console, 'log').mockImplementation(() => {}),
+    };
+  });
+
+  afterEach(() => {
+    Object.values(logs).forEach((spy) => spy.mockRestore());
+  });
+
+  afterAll(() => {
+    restoreModuleMocks();
+  });
+
+  const documented = (packageName, productName, autolinkWhen = null) => ({
+    packageRoot: path.join(tmp, packageName),
+    productName,
+    ...(autolinkWhen != null && { autolinkWhen }),
+  });
+
+  const run = ({ packages, metadata, precompiled = [], properties = null }) => {
+    const outDir = path.join(tmp, 'out');
+    const appIosDir = path.join(tmp, 'app', 'ios');
+    fs.mkdirSync(appIosDir, { recursive: true });
+    let podfilePropertiesPath = null;
+    if (properties != null) {
+      podfilePropertiesPath = path.join(appIosDir, 'Podfile.properties.json');
+      fs.writeFileSync(podfilePropertiesPath, JSON.stringify(properties));
+    }
+    resolveAppTarget.mockReset();
+    resolveAppTarget.mockReturnValue({
+      targetName: null,
+      entitlementPath: null,
+      podfilePropertiesPath,
+    });
+    resolveExpoModules.mockReturnValue({
+      modules: ['expo-modules-core', ...packages].map((name) => modules[name]),
+      extraDependencies: [],
+    });
+    prebuiltMetadata.mockReturnValue(metadata);
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' || precompiled.includes(frameworkName)
+        ? { id: frameworkName.toLowerCase(), frameworkName }
+        : null
+    );
+    providerWrittenTo(outDir);
+    let result = null;
+    let thrown = null;
+    try {
+      result = expoSpmPlugin({
+        react: null,
+        outputDir: outDir,
+        appRoot: appIosDir,
+        projectRoot: path.join(tmp, 'app'),
+      });
+    } catch (error) {
+      thrown = error;
+    }
+    return { result, thrown, report: logs.error.mock.calls.map(([text]) => text).join('\n') };
+  };
+
+  const precompiledGated = () => ({
+    packages: ['expo-camera'],
+    metadata: {
+      ExpoCameraBarcodeScanning: documented(
+        'expo-camera',
+        'ExpoCameraBarcodeScanning',
+        barcodeGate
+      ),
+    },
+    precompiled: ['ExpoCameraBarcodeScanning'],
+  });
+
+  const sourceGated = () => ({
+    packages: ['expo-scanner'],
+    metadata: { ExpoScanner: documented('expo-scanner', 'ExpoScanner', barcodeGate) },
+  });
+
+  describe.each([
+    ['met', { 'expo.camera.barcode-scanner-enabled': 'true' }],
+    ['not met', { 'expo.camera.barcode-scanner-enabled': 'false' }],
+  ])('when the condition is %s', (_, properties) => {
+    it('refuses a gated pod resolved as a precompiled framework', () => {
+      const { result, thrown, report } = run({ ...precompiledGated(), properties });
+
+      expect(result).toBeNull();
+      expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+      expect(thrown.unsupported).toEqual([
+        expect.objectContaining({
+          reason: 'unchecked-autolink-condition',
+          podName: 'ExpoCameraBarcodeScanning',
+          packageName: 'expo-camera',
+          productName: 'ExpoCameraBarcodeScanning',
+          precompiled: true,
+        }),
+      ]);
+      expect(report).toContain('"ExpoCameraBarcodeScanning"');
+      expect(report).toContain('"expo-camera"');
+      expect(report).toContain('precompiled');
+    });
+
+    it('refuses a gated pod built from source without a checked-in Package.swift', () => {
+      const { result, thrown, report } = run({ ...sourceGated(), properties });
+
+      expect(result).toBeNull();
+      expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+      expect(thrown.unsupported).toEqual([
+        expect.objectContaining({
+          reason: 'unchecked-autolink-condition',
+          podName: 'ExpoScanner',
+          packageName: 'expo-scanner',
+          productName: 'ExpoScanner',
+          precompiled: false,
+        }),
+      ]);
+      expect(report).toContain('"ExpoScanner"');
+      expect(report).toContain('"expo-scanner"');
+      expect(report).toContain('without a checked-in Package.swift');
+    });
+  });
+
+  it('links an ungated precompiled pod', () => {
+    const { result, thrown } = run({
+      packages: ['expo-image'],
+      metadata: { ExpoImage: documented('expo-image', 'ExpoImage') },
+      precompiled: ['ExpoImage'],
+    });
+
+    expect(thrown).toBeNull();
+    expect(result.flavoredFrameworks.map((f) => f.frameworkName)).toContain('ExpoImage');
+  });
+
+  // Pass 2 re-emits a package's first pod when a sibling is not precompiled.
+  it('reports a precompiled gated pod once when pass 2 reaches its package again', () => {
+    const [scanner] = modules['expo-camera'].pods;
+    modules['expo-camera'].pods.push({
+      podName: 'ExpoCameraExtra',
+      podspecDir: scanner.podspecDir,
+    });
+
+    const { thrown } = run({ ...precompiledGated() });
+
+    expect(
+      thrown.unsupported.filter((entry) => entry.reason === 'unchecked-autolink-condition')
+    ).toEqual([
+      expect.objectContaining({ podName: 'ExpoCameraBarcodeScanning', precompiled: true }),
+    ]);
+  });
+
+  it('names every refused pod in one error', () => {
+    const { thrown, report } = run({
+      packages: ['expo-camera', 'expo-scanner'],
+      metadata: { ...precompiledGated().metadata, ...sourceGated().metadata },
+      precompiled: ['ExpoCameraBarcodeScanning'],
+    });
+
+    expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+    expect(thrown.unsupported.map((entry) => entry.podName)).toEqual([
+      'ExpoCameraBarcodeScanning',
+      'ExpoScanner',
+    ]);
+    expect(logs.error).toHaveBeenCalledTimes(1);
+    expect(report).toContain('"ExpoCameraBarcodeScanning"');
+    expect(report).toContain('"ExpoScanner"');
+  });
+});

@@ -124,6 +124,22 @@ function productAutolinkCondition(metadata, moduleRoot, productName) {
   return null;
 }
 
+/**
+ * The diagnostic entry for a pod that declares an `autolinkWhen` condition but is
+ * about to be linked where no condition is checked, or null when it declares none.
+ */
+function uncheckedAutolinkCondition(metadata, packageName, pod, identity, precompiled) {
+  if (metadata[pod.podName]?.autolinkWhen == null) return null;
+  return {
+    reason: 'unchecked-autolink-condition',
+    podName: pod.podName,
+    packageName,
+    moduleRoot: identity.moduleRoot,
+    productName: identity.productName,
+    precompiled,
+  };
+}
+
 // Expo modules use Swift macros (@Field, @Record, @OptimizedFunction). A macro expands
 // only when the compiler is handed the macro plugin executable, which ships prebuilt and
 // declares no SwiftPM products — so it travels as a compiler flag, not a dependency.
@@ -198,6 +214,9 @@ module.exports = function expoSpmPlugin(context) {
   const reactWired = []; // pods that got React wired (for logging)
   const sourceManifest = []; // packages emitted from a checked-in manifest
   const gatedOff = []; // products an unmet autolinkWhen condition withholds
+  // Only a checked-in manifest's products have their autolinkWhen checked (pass 2,
+  // branch A); a gated pod linked any other way fails the sync instead.
+  const uncheckedConditions = [];
   const pureSwiftSource = []; // packages emitted from a pure-Swift descriptor
   const unmappedDeps = []; // emitted pods depending on pods with no SwiftPM counterpart
   const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
@@ -216,11 +235,8 @@ module.exports = function expoSpmPlugin(context) {
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
-      const { moduleRoot, productName } = podIdentity(
-        metadata,
-        pod,
-        autolinkedRoots.get(mod.packageName)
-      );
+      const identity = podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName));
+      const { moduleRoot, productName } = identity;
       if (pod.podName === 'ExpoModulesCore') coreModuleRoot = moduleRoot;
       const needsReact = moduleNeedsReact(pod.podName, moduleRoot);
       const framework = resolveFlavoredFramework({
@@ -241,6 +257,14 @@ module.exports = function expoSpmPlugin(context) {
         });
         emitted.add(pod.podName);
         if (needsReact) reactWired.push(pod.podName);
+        const unchecked = uncheckedAutolinkCondition(
+          metadata,
+          mod.packageName,
+          pod,
+          identity,
+          true
+        );
+        if (unchecked != null) uncheckedConditions.push(unchecked);
       }
     }
   }
@@ -285,7 +309,8 @@ module.exports = function expoSpmPlugin(context) {
       const pods = mod.pods ?? [];
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
-      const { moduleRoot } = podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName));
+      const identity = podIdentity(metadata, pod, autolinkedRoots.get(mod.packageName));
+      const { moduleRoot } = identity;
       // Third-party products the emitted manifest depends on, and so are counterparts
       // of the pods its podspec names: read from the module's checked-in manifest, or
       // from its spm.config.json when it ships none.
@@ -366,6 +391,17 @@ module.exports = function expoSpmPlugin(context) {
           emitted.add(pod.podName);
           pureSwiftSource.push(pod.podName);
           if (react != null) reactWired.push(pod.podName);
+          // A first pod that pass 1 precompiled was reported there already.
+          if (!precompiledFrameworks.has(pod.podName)) {
+            const unchecked = uncheckedAutolinkCondition(
+              metadata,
+              mod.packageName,
+              pod,
+              identity,
+              false
+            );
+            if (unchecked != null) uncheckedConditions.push(unchecked);
+          }
           if (podspecs.linkerFlags != null) {
             xcconfigLinkage.push({
               packageName: mod.packageName,
@@ -458,7 +494,10 @@ module.exports = function expoSpmPlugin(context) {
     );
   }
 
-  const unsupported = reportUnsupported(classifyUnsupported({ pending, coreAvailable }));
+  const unsupported = reportUnsupported([
+    ...classifyUnsupported({ pending, coreAvailable }),
+    ...uncheckedConditions,
+  ]);
   if (unsupported != null) {
     throw unsupported;
   }
