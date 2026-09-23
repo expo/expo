@@ -19,6 +19,7 @@
 ### 🎉 New features
 
 - [iOS] `List.ForEach` recycles rows from a small pool around the visible range, so large lists only render the rows near the viewport. Deprecated element children in favor of this form. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `LazyColumn.Items` and `LazyRow.Items`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large lists only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50258](https://github.com/expo/expo/pull/50258) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 58.0.5 — 2026-09-22
 

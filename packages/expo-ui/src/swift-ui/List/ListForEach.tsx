@@ -1,8 +1,9 @@
 import { requireNativeView } from 'expo';
 
+import { useItemKeys } from '../../recycling/useRecycledRows';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
-import { DataListForEach, NativeSlot, useItemKeys, type ListForEachProps } from './DataListForEach';
+import { DataListForEach, NativeSlot, type ListForEachProps } from './DataListForEach';
 
 export { type ListForEachProps };
 
@@ -94,7 +95,7 @@ function StaticListForEach<ItemT>({
   estimatedItemSize: _estimatedItemSize,
   ...props
 }: Omit<ListForEachProps<ItemT>, 'recycling'>) {
-  const itemKeys = useItemKeys(data, keyExtractor);
+  const itemKeys = useItemKeys('List.ForEach', data, keyExtractor);
   return (
     <ChildrenListForEach {...props}>
       {data.map((item, index) => (
