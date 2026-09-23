@@ -385,12 +385,41 @@ describe('sealed worker chunks', () => {
     expect(commonChunk?.metadata.modulePaths).toEqual(['/app/shared.js']);
   });
 
-  it('executes the emitted worker with an isolated module registry', async () => {
-    const [, artifacts] = await serializeShakingAsync(workerAsyncOverlapFiles, {
-      splitChunks: true,
-    });
-    const workerChunk = getChunkContaining(artifacts as SerialAsset[], '/app/worker.js');
+  it.each(['legacy', 'bitset'] as const)(
+    'executes the emitted %s worker with an isolated module registry',
+    async (chunkingStrategy) => {
+      const [, artifacts] = await serializeShakingAsync(
+        {
+          ...workerAsyncOverlapFiles,
+          'index.js': `
+            import('./lib');
+            import('./other');
+            import('./third');
+          `,
+          'third.js': `
+            import { shared } from './shared';
+            console.log(shared);
+          `,
+        },
+        { splitChunks: true, chunkingStrategy }
+      );
+      const serialAssets = artifacts as SerialAsset[];
+      const workerChunk = getChunkContaining(serialAssets, '/app/worker.js');
+      const sharedChunk = serialAssets.find(
+        (artifact) =>
+          artifact !== workerChunk && artifact.metadata.modulePaths?.includes('/app/shared.js')
+      );
 
-    expect(runWorkerChunkInIsolatedContext(workerChunk)).toBe('shared-module-value');
-  });
+      expect(sharedChunk).toBeDefined();
+      expect(sharedChunk!.filename).toContain(
+        chunkingStrategy === 'bitset' ? '__shared-' : '__common-'
+      );
+      expect(workerChunk.source).not.toContain('__expo_chunk_completion__');
+      if (chunkingStrategy === 'bitset') {
+        expect(workerChunk.metadata.entryPaths).toEqual([]);
+        expect(workerChunk.metadata.requires).toEqual([]);
+      }
+      expect(runWorkerChunkInIsolatedContext(workerChunk)).toBe('shared-module-value');
+    }
+  );
 });

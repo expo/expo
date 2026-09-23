@@ -17,6 +17,77 @@ import {
 } from '../withExpoSerializers';
 
 describe('BitSet chunk emission', () => {
+  const publicGraph = {
+    'index.js': `import('./a'); import('./b');`,
+    'a.js': `import './shared';`,
+    'b.js': `import './shared';`,
+    'shared.js': `console.log('shared');`,
+  };
+
+  it('activates the complete opt-in path through the public serializer', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(publicGraph, {
+      chunkingStrategy: 'bitset',
+    });
+    expect(artifacts[0]!.metadata.chunkingStrategy).toBe('bitset');
+    expect(artifacts.some((asset) => asset.filename.includes('__shared-'))).toBe(true);
+    expect(artifacts.some((asset) => asset.filename.includes('__common'))).toBe(false);
+    const paths = Object.values(artifacts[0]!.metadata.paths!).flatMap(Object.values);
+    expect(paths.every(Array.isArray)).toBe(true);
+    for (const asset of artifacts.filter((asset) => asset.metadata.isAsync)) {
+      expect(asset.source).toContain('__expo_chunk_completion__');
+    }
+  });
+
+  it.each([
+    { chunkingStrategy: 'legacy' as const },
+    { platform: 'ios' },
+    { dev: true },
+    { lazy: true },
+    { splitChunks: false },
+    { isServer: true },
+    { isReactServer: true },
+  ])('retains legacy output for %j', async (options) => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(publicGraph, {
+      chunkingStrategy: 'bitset',
+      ...options,
+    });
+    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === undefined)).toBe(true);
+    expect(artifacts.every((asset) => !asset.source.includes('__expo_chunk_completion__'))).toBe(
+      true
+    );
+    expect(
+      artifacts
+        .flatMap((asset) => Object.values(asset.metadata.paths ?? {}).flatMap(Object.values))
+        .every((value) => typeof value === 'string')
+    ).toBe(true);
+  });
+
+  it('keeps DOM exports on the legacy pipeline even when requested', async () => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: publicGraph,
+      options: {
+        platform: 'web',
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        chunkingStrategy: 'bitset',
+      },
+    });
+    const domGraph = {
+      ...graph,
+      transformOptions: {
+        ...graph.transformOptions,
+        customTransformOptions: { ...graph.transformOptions.customTransformOptions, dom: 'true' },
+      },
+    };
+    const serializer = createSerializerFromSerialProcessors({ projectRoot }, [], null);
+    const { artifacts } = (await serializer(entry, premodules, domGraph, options)) as any;
+    expect(artifacts.some((asset: SerialAsset) => asset.filename.includes('__common'))).toBe(true);
+    expect(
+      artifacts.every((asset: SerialAsset) => asset.metadata.chunkingStrategy === undefined)
+    ).toBe(true);
+  });
+
   async function serializeBitSetAsync(fs: Record<string, string>) {
     const [entry, premodules, graph, options] = await microBundle({
       fs,
@@ -63,6 +134,37 @@ describe('BitSet chunk emission', () => {
     expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === 'bitset')).toBe(true);
     const modulePaths = artifacts.flatMap((asset) => asset.metadata.modulePaths ?? []);
     expect(new Set(modulePaths).size).toBe(modulePaths.length);
+  });
+
+  it('covers canonical requirements from an importer shared by multiple entries', async () => {
+    const artifacts = await serializeBitSetAsync({
+      'index.js': `import('./a'); import('./b');`,
+      'a.js': `import './importer'; import './d';`,
+      'b.js': `import './importer';`,
+      'importer.js': `export const load = () => import('./c');`,
+      'c.js': `import './d';`,
+      'd.js': `console.log('d');`,
+    });
+    const importer = artifacts.find((asset) =>
+      asset.metadata.modulePaths?.includes('/app/importer.js')
+    )!;
+    const c = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/c.js'))!;
+    const d = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/d.js'))!;
+    const paths = importer.metadata.paths!['/app/importer.js']!['/app/c.js']!;
+    expect(paths).toEqual(expect.arrayContaining(['/' + c.filename, '/' + d.filename]));
+    const availableFilenames = new Set([
+      artifacts[0]!.filename,
+      importer.filename,
+      ...artifacts
+        .filter((asset) => !asset.metadata.isAsync && !asset.metadata.entryPaths?.length)
+        .map((asset) => asset.filename),
+    ]);
+    const coveredFilenames = new Set([
+      ...availableFilenames,
+      ...(paths as string[]).map((url) => url.slice(1)),
+    ]);
+    for (const required of [c.filename, ...c.metadata.requires!])
+      expect(coveredFilenames.has(required)).toBe(true);
   });
 
   it('keeps a semantic facade when its module belongs to an earlier route', async () => {
