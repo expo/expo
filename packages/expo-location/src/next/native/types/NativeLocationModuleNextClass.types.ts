@@ -18,7 +18,9 @@ export declare class NativeLocationModuleNextClass extends NativeModule {
     options?: RequestPermissionsOptions
   ): Promise<LocationPermissionResponse>;
   getForegroundPermissions(): Promise<LocationPermissionResponse>;
-  requestBackgroundPermissions(): Promise<LocationPermissionResponse>;
+  requestBackgroundPermissions(
+    options?: RequestPermissionsOptions
+  ): Promise<LocationPermissionResponse>;
   getBackgroundPermissions(): Promise<LocationPermissionResponse>;
   setLocationProvider(provider: SharedRef<LocationProviderRefType>): void;
   getSelectedLocationProviderName(): string;
