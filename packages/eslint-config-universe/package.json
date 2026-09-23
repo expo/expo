@@ -66,6 +66,6 @@
     "eslint8": "catalog:",
     "jest": "^29.7.0",
     "prettier": "catalog:",
-    "react": "19.3.0"
+    "react": "catalog:"
   }
 }

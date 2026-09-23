@@ -59,6 +59,7 @@ catalog:
   node-html-parser: ^6.1.5
   npm-run-all2: ^8.0.4
   prettier: ^3.8.3
+  react: 19.3.0
   react-dom: 19.3.0
   react-native: 0.88.0-rc.1
   react-native-reanimated: 4.6.0

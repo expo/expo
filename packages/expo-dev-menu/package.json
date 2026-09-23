@@ -44,7 +44,7 @@
     "@types/node": "catalog:",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react": "19.3.0",
+    "react": "catalog:",
     "react-native": "catalog:"
   },
   "peerDependencies": {

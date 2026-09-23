@@ -241,7 +241,7 @@
     "@types/react": "catalog:",
     "expo-updates": "workspace:*",
     "npm-run-all2": "catalog:",
-    "react": "19.3.0",
+    "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "catalog:",
     "rimraf": "catalog:",

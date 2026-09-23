@@ -86,7 +86,7 @@
     "expo-module-scripts": "workspace:*",
     "glob": "catalog:",
     "npm-run-all2": "catalog:",
-    "react": "19.3.0",
+    "react": "catalog:",
     "react-dom": "catalog:",
     "react-native": "catalog:",
     "react-native-web": "^0.21.0",

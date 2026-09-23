@@ -52,7 +52,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint8": "catalog:",
     "prettier": "catalog:",
-    "react": "19.3.0",
+    "react": "catalog:",
     "react-native": "catalog:"
   },
   "peerDependencies": {
