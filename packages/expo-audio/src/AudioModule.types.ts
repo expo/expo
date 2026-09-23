@@ -50,7 +50,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
     keepAudioSessionActive: boolean,
     preferredForwardBufferDuration: number,
     allowsExternalPlayback: boolean,
-    automaticallyWaitsToMinimizeStalling: boolean
+    automaticallyWaitsToMinimizeStalling?: boolean
   );
 
   /**
