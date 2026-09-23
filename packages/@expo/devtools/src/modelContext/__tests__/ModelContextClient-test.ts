@@ -224,4 +224,58 @@ describe(ModelContextClient, () => {
     expect(() => client.registerTool({ ...TOOL, execute: undefined as any })).toThrow(/execute/);
     expect(FakeWebSocket.instances).toHaveLength(0);
   });
+
+  it('should warn when the dev server blocks a tool', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const client = createClient();
+      client.registerTool(TOOL);
+      const ws = FakeWebSocket.instances[0]!;
+      ws.open();
+      const registration = ws.sent.find(
+        (message) => message.method === 'modelContext/registerTool'
+      );
+
+      ws.receive({
+        version: 2,
+        id: registration.id,
+        result: {
+          status: 'blocked',
+          reason: 'package-not-allowed',
+          message: 'registered by package "expo-sqlite"',
+        },
+      });
+
+      expect(warn).toHaveBeenCalledWith(
+        '[modelContext] Tool "add-todo" is blocked: registered by package "expo-sqlite".'
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('should warn when the dev server rejects a tool', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const client = createClient();
+      client.registerTool(TOOL);
+      const ws = FakeWebSocket.instances[0]!;
+      ws.open();
+      const registration = ws.sent.find(
+        (message) => message.method === 'modelContext/registerTool'
+      );
+
+      ws.receive({
+        version: 2,
+        id: registration.id,
+        error: { code: -32602, message: 'Invalid params' },
+      });
+
+      expect(warn).toHaveBeenCalledWith(
+        '[modelContext] Tool "add-todo" was rejected: Invalid params'
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
 });
