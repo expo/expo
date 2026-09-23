@@ -486,11 +486,48 @@ describe(resolveReactNativeModule, () => {
         depth: 0,
       };
       await resolveReactNativeModule(resolution, null, 'macos', new Set());
-      expect(mockPlatformResolverIos).toHaveBeenLastCalledWith(expect.anything(), null, undefined);
+      expect(mockPlatformResolverIos).toHaveBeenLastCalledWith(
+        expect.anything(),
+        null,
+        undefined,
+        undefined
+      );
+      // Falling back to the ios config hands the platform to the resolver, so it can check the
+      // podspec for it.
       await resolveReactNativeModule(resolution, null, 'tvos', new Set());
       expect(mockPlatformResolverIos).toHaveBeenLastCalledWith(
         expect.anything(),
         { configurations: ['Debug'], scriptPhases: [] },
+        undefined,
+        { platform: 'tvos' }
+      );
+    }
+  );
+
+  itWithMemoize(
+    'should not check the podspec platforms when the platform config is explicit',
+    async () => {
+      mockLoadReactNativeConfigAsync.mockResolvedValue({
+        dependency: {
+          platforms: {
+            macos: { configurations: [], scriptPhases: [] },
+          },
+        },
+      });
+      const resolution = {
+        name: 'react-native-test',
+        version: '',
+        path: '/app/node_modules/react-native-test',
+        originPath: '/app/node_modules/react-native-test',
+        source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+        duplicates: null,
+        depth: 0,
+      };
+      await resolveReactNativeModule(resolution, null, 'macos', new Set());
+      expect(mockPlatformResolverIos).toHaveBeenLastCalledWith(
+        expect.anything(),
+        { configurations: [], scriptPhases: [] },
+        undefined,
         undefined
       );
     }
