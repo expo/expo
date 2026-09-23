@@ -25,6 +25,7 @@ export declare class NativeDatabase {
   public initSync(): void;
   public isInTransactionSync(): boolean;
   public closeSync(): void;
+  public interruptSync(): void;
   public execSync(source: string): void;
   public serializeSync(databaseName: string): Uint8Array;
   public prepareSync(nativeStatement: NativeStatement, source: string): NativeStatement;

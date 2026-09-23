@@ -159,6 +159,16 @@ public final class SQLiteModule: Module, @unchecked Sendable {
           try closeDatabase(db)
         }
       }.runOnQueue(moduleQueue)
+      // Interrupt must reach SQLite immediately, without waiting for the running query's queue.
+      Function("interruptSync") { (database: NativeDatabase) in
+        // Do not block the JS thread or touch a connection being closed on another thread.
+        guard database.closeLock.try() else {
+          throw DatabaseClosingException()
+        }
+        defer { database.closeLock.unlock() }
+        try maybeThrowForClosedDatabase(database)
+        exsqlite3_interrupt(database.pointer)
+      }
       Function("closeSync") { (database: NativeDatabase) in
         try maybeThrowForClosedDatabase(database)
         if let db = removeCachedDatabase(of: database) {
@@ -334,6 +344,9 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
+    db.closeLock.lock()
+    defer { db.closeLock.unlock() }
+    try maybeThrowForClosedDatabase(db)
     try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)

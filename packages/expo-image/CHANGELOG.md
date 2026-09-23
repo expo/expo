@@ -8,10 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `contentPosition` being visually lost when React Native recreates the clipping mask on the image subview (e.g. after an orientation change round-trip). ([#50312](https://github.com/expo/expo/pull/50312) by [@jzhu1224](https://github.com/jzhu1224))
 - [Android] Fixed images in recycled lists going permanently blank: the transition's cleanup ran through `withEndAction`, which `ViewPropertyAnimator` drops when the animation is cancelled, so the Glide target was never returned to the pool. ([#49283](https://github.com/expo/expo/pull/49283) by [@oscnord](https://github.com/oscnord))
 
 ### 💡 Others
+
+## 58.0.4 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `contentPosition` being visually lost when React Native recreates the clipping mask on the image subview (e.g. after an orientation change round-trip). ([#50312](https://github.com/expo/expo/pull/50312) by [@jzhu1224](https://github.com/jzhu1224))
 
 ## 58.0.3 — 2026-09-21
 

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 58.0.5 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Kept the floating dev menu button clear of system bars, the front camera and the home indicator by clamping the drawn button, rather than its touch frame, to the safe area on every edge. ([#50445](https://github.com/expo/expo/pull/50445) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.4 — 2026-09-21
 
 _This version does not introduce any user-facing changes._

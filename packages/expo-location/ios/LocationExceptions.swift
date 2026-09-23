@@ -77,6 +77,13 @@ extension Exceptions {
     }
   }
 
+  internal final class MotionActivityDisabled: Exception {
+    override var reason: String {
+      "Motion activity was disabled by setting 'motionUsagePermission' to false in the config plugin. " +
+      "Remove the option and run 'npx expo prebuild' again to enable it"
+    }
+  }
+
   internal final class MotionActivityUnauthorized: Exception {
     override var reason: String {
       "Motion activity access has been denied. Add NSMotionUsageDescription to Info.plist, " +

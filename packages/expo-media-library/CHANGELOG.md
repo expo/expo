@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Request a single high-quality delivery for Live Photos. Under the default `.opportunistic` delivery mode `requestLivePhoto` invokes its result handler more than once, and the first, degraded pass could resolve `getAssetInfoAsync` without `pairedVideoAsset`. ([#50295](https://github.com/expo/expo/pull/50295) by [@henriquegpb](https://github.com/henriquegpb))
-
 ### 💡 Others
+
+## 58.0.1 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Request a single high-quality delivery for Live Photos. Under the default `.opportunistic` delivery mode `requestLivePhoto` invokes its result handler more than once, and the first, degraded pass could resolve `getAssetInfoAsync` without `pairedVideoAsset`. ([#50295](https://github.com/expo/expo/pull/50295) by [@henriquegpb](https://github.com/henriquegpb))
 
 ## 58.0.0 — 2026-09-10
 

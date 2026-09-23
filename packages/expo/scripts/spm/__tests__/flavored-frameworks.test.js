@@ -12,6 +12,9 @@ const {
   validateFlavoredFramework,
 } = require('../flavored-frameworks');
 
+// GNU tar reads the `C:` in a Windows path as a remote hostname and fails to connect.
+const itNotWindows = process.platform === 'win32' ? it.skip : it;
+
 function makeXcframework(root, frameworkName, flavor, contents = flavor) {
   const xcframework = path.join(root, flavor, `${frameworkName}.xcframework`);
   const framework = path.join(xcframework, 'ios-arm64', `${frameworkName}.framework`);
@@ -131,7 +134,7 @@ describe('artifact preparation', () => {
     ).toThrow('missing release');
   });
 
-  it('expands both bundled tarballs before returning absolute flavor paths', () => {
+  itNotWindows('expands both bundled tarballs before returning absolute flavor paths', () => {
     const output = path.join(root, 'test-package', 'output');
     for (const flavor of ['debug', 'release']) {
       const source = path.join(root, `source-${flavor}`);

@@ -32,6 +32,9 @@ internal class UnsupportedOperationException(message: String) :
 internal class AccessClosedResourceException :
   CodedException("Access to closed resource")
 
+internal class DatabaseClosingException :
+  CodedException("Cannot interrupt while the database is closing. Interrupt pending operations before closing.")
+
 internal class InvalidBindParameterException :
   CodedException("Invalid bind parameter")
 
