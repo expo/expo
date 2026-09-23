@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed the `frame` modifier dropping `minWidth`, `idealWidth`, `maxWidth`, `minHeight`, `idealHeight` and `maxHeight` when `width` or `height` was set in the same call, which broke layouts such as `frame({ maxWidth: Infinity, height: 50 })`.
+- [iOS] Fixed the `frame` modifier dropping `minWidth`, `idealWidth`, `maxWidth`, `minHeight`, `idealHeight` and `maxHeight` when `width` or `height` was set in the same call, which broke layouts such as `frame({ maxWidth: Infinity, height: 50 })`. ([#50544](https://github.com/expo/expo/pull/50544) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
