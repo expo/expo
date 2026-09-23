@@ -41,7 +41,7 @@
     "semver": "^7.7.4"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/semver": "^7.7.0",
     "expo-module-scripts": "workspace:*"
   }

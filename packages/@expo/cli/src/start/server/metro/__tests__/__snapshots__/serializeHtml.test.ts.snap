@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`injects hydration flag 1`] = `
 "<!DOCTYPE html><html><head><script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script></head><body><div id="root"></div><script src="/dist/entry.js" defer></script>

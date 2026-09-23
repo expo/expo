@@ -5,11 +5,15 @@ const { withWatchPlugins } = require('./withWatchPlugins');
 const expoPreset = require('../jest-preset');
 const { resolveBabelOptions } = require('../src/resolveBabelOptions');
 
+const babelJestPath = require.resolve('babel-jest');
+
+function isBabelJest(transformer) {
+  return transformer === 'babel-jest' || transformer === babelJestPath;
+}
+
 function getUpstreamBabelJest(transform) {
   const upstreamBabelJest = Object.keys(transform).find((key) =>
-    Array.isArray(transform[key])
-      ? transform[key][0] === 'babel-jest'
-      : transform[key] === 'babel-jest'
+    Array.isArray(transform[key]) ? isBabelJest(transform[key][0]) : isBabelJest(transform[key])
   );
   return upstreamBabelJest;
 }
@@ -51,7 +55,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     transform: {
       ...expoPreset.transform,
       [upstreamBabelJest]: [
-        'babel-jest',
+        babelJestPath,
         {
           ...babelJestOptions,
           caller: {
@@ -103,7 +107,8 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     // Source exports can contain TypeScript files that use explicit `.js`
     // extensions for runtime ESM compatibility.
     '^(\\.{1,2}/.*)\\.js$': '$1',
-    '^react-native/asset-registry$': 'react-native/src/asset-registry',
+    // See the note in `../jest-preset.js`: mapped targets must be absolute paths on Jest 30.
+    '^react-native/asset-registry$': expoPreset.moduleNameMapper['^react-native/asset-registry$'],
     ...preset.moduleNameMapper,
   };
 

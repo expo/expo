@@ -32,13 +32,13 @@
     "jsc-android": "^250231.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "@vercel/ncc": "^0.38.4",
     "expo-module-scripts": "workspace:*",
     "expotools": "workspace:*",
-    "jest": "^29.7.0",
+    "jest": "^30.0.0",
     "lint-staged": "^17.0.8",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.79.0",

@@ -85,7 +85,7 @@
     "@types/react": "~19.3.0",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "jest": "^29.3.1"
+    "jest": "^30.0.0"
   },
   "codegenConfig": {
     "name": "LocalModules",
