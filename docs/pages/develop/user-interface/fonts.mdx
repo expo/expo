@@ -306,7 +306,7 @@ If the file you mapped is a [variable font](#variable-fonts), select a face with
 
 > **info** Loading several font files under one family name is available in SDK 58 and later.
 
-The map syntax above treats each key as a separate font family. To load several font files (for example regular, bold, and italic cuts) under one `fontFamily` name, pass `useFonts` an array of [`FontFamilyDefinition`](/versions/latest/sdk/font/#fontfamilydefinition)s instead of a map:
+The map syntax above treats each key as a separate font family. To load several font files (for example regular, bold, and italic cuts) under one `fontFamily` name, pass `useFonts` an array of [`FontFamilyDefinition`](/versions/unversioned/sdk/font/#fontfamilydefinition)s instead of a map:
 
 ```tsx src/app/_layout.tsx
 const [loaded, error] = useFonts([
@@ -328,15 +328,15 @@ Then select a face with the `fontWeight` and `fontStyle` style props:
 <Text style={{ fontFamily: 'Inter', fontWeight: '400', fontStyle: 'italic' }}>Inter Italic</Text>
 ```
 
-Declare every face of a family in one call. A `fontFamily` loads once, so a later `loadAsync` or `useFonts` call for a name that is already loaded adds no faces to it. This also applies across the two call styles: after `useFonts({ Inter: regular })`, passing an array for `Inter` loads nothing more.
+Declare every face of a family in one call. A `fontFamily` loads once, so a later `loadAsync` or `useFonts` call for a name that is already loaded adds no faces to it. This also applies across the two call styles: after `useFonts({ Inter: require('./assets/fonts/Inter-Regular.otf') })`, passing an array for `Inter` loads nothing more.
 
 Declare `weight` and `style` on every face of a multi-face family. Web needs both values, and explicit values keep the three platforms in agreement. A single variable font file is the exception: leave its `style` unset, and leave its `weight` unset or declare a weight range such as `'100 900'`. Android then instances the font's `wght` axis for every `fontWeight` instead of pinning it to one weight.
 
 Platform notes:
 
 - **Android** uses the declared `weight` and `style` values, and falls back to the values in the font file when not declared. A declared `weight` pins a variable font face to that one weight, and Android synthesizes the others. Below API 29 (Android 10), only the default face loads, chosen by the declared values (closest to weight 400, upright). Fonts embedded with the [config plugin](#with-expo-font-config-plugin) use Android's XML font resources and do not have this limit.
-- **iOS** matches faces by the weight and style metadata embedded in the font files. It does not use the declared `weight` and `style` values for matching. It uses them only to pick the family's default face when a file carries no readable metadata.
-- **Web** generates one CSS `@font-face` rule per face, with the declared `weight` and `style` values. CSS cannot read the metadata inside a font file, so a face that declares no `style` renders as upright. Two faces of one family that leave the same values undeclared produce the same CSS rule, and the browser then chooses between them.
+- **iOS** matches faces by the weight and style metadata embedded in the font files. It uses the declared `weight` and `style` values only to pick the family's default face when a file carries no readable metadata.
+- **Web** generates one CSS `@font-face` rule per face, with the declared `weight` and `style` values. CSS cannot read the metadata inside a font file, so a face that declares no `style` renders as upright. Two faces of one family that leave the same values undeclared produce the same CSS rule, and the browser renders the last one.
 
 ## Use Google Fonts
 
