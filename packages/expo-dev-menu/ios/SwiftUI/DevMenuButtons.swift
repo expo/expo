@@ -2,11 +2,11 @@ import SwiftUI
 
 struct DevMenuActionButton: View {
   let title: String
-  let icon: String
+  let icon: String?
   let action: () -> Void
   let disabled: Bool
 
-  init(title: String, icon: String, action: @escaping () -> Void, disabled: Bool = false) {
+  init(title: String, icon: String?, action: @escaping () -> Void, disabled: Bool = false) {
     self.title = title
     self.icon = icon
     self.action = action
@@ -17,10 +17,13 @@ struct DevMenuActionButton: View {
     Button { action() }
     label: {
       HStack {
-        Image(systemName: icon)
-          .frame(width: 24, height: 24)
-          .foregroundColor(disabled ? .secondary : .primary)
-          .opacity(0.6)
+        if let icon {
+          Image(systemName: icon)
+            .frame(width: 24, height: 24)
+            .foregroundColor(disabled ? .secondary : .primary)
+            .opacity(0.6)
+            .accessibilityHidden(true)
+        }
 
         Text(title)
           .foregroundColor(disabled ? .secondary : .primary)

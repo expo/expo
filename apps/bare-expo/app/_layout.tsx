@@ -21,6 +21,8 @@ if (process.env.EXPO_OS !== 'web') {
   DevMenu.registerDevMenuItems([
     {
       name: 'Action 1',
+      group: 'Examples',
+      icon: { ios: 'play.circle', android: 'home' },
       callback: () => {
         console.log('Action 1 executed');
       },
@@ -28,6 +30,8 @@ if (process.env.EXPO_OS !== 'web') {
     },
     {
       name: 'Action 2',
+      group: 'Examples',
+      icon: { ios: 'gearshape', android: 'gear_fill' },
       callback: () => {
         console.log('Action 2 executed');
       },

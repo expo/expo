@@ -32,7 +32,8 @@
     "format": "expo-module format",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "test": "jest"
   },
   "dependencies": {
     "expo-dev-menu-interface": "workspace:~"

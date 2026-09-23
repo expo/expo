@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add optional native icons and named groups to custom dev menu items.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
