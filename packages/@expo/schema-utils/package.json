@@ -32,7 +32,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
     "json-schema-to-typescript": "catalog:"

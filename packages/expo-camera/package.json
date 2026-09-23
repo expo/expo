@@ -39,7 +39,7 @@
     "barcode-detector": "^3.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "expo": "workspace:*",

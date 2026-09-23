@@ -68,7 +68,7 @@
   "devDependencies": {
     "@bacons/xcode": "1.0.0-alpha.29",
     "@types/diff": "^5.2.0",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/prompts": "^2.0.6",
     "@types/react": "catalog:",

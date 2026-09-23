@@ -50,7 +50,7 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   }

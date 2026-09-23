@@ -53,7 +53,7 @@
     "@types/cross-spawn": "catalog:",
     "@types/ejs": "^3.1.5",
     "@types/getenv": "^1.0.0",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/prompts": "^2.4.9",
     "@types/validate-npm-package-name": "^4.0.2",

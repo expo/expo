@@ -317,7 +317,7 @@
     "@testing-library/react": "catalog:",
     "@testing-library/react-native": "catalog:",
     "@testing-library/user-event": "catalog:",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

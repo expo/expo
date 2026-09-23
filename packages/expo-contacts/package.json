@@ -66,7 +66,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "catalog:",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "expo": "workspace:*",
