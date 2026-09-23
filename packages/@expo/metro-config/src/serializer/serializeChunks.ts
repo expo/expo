@@ -922,36 +922,35 @@ async function serializeChunksAsync(
  * already-compiled bytecode is unsound: hermesc overlap-packs strings that
  * share suffix/prefix bytes, so a same-length in-place replacement can
  * overwrite bytes belonging to a neighbouring string.
+ *
+ * `filename` only feeds hermesc error reporting. It defaults to the chunk's
+ * absolute entry path, matching the `Chunk.name` the serializer passes when it
+ * compiles inline (`originFilename` is that path relative to `projectRoot`).
  */
 export async function transformJsAssetToHermesBytecodeAsync({
   projectRoot,
   jsAsset,
   mapAsset,
-  filename,
+  filename = path.resolve(projectRoot, jsAsset.originFilename),
 }: {
   projectRoot: string;
   jsAsset: SerialAsset;
   mapAsset?: SerialAsset | null;
   filename?: string;
 }): Promise<void> {
-  const debugId = stringToUUID(
-    path.basename(jsAsset.filename, path.extname(jsAsset.filename))
-  );
-  const adjustedSource = jsAsset.source.replace(
-    /^\/\/# (sourceMappingURL)=(.*)$/gm,
-    (...props) => {
-      if (props[1] === 'sourceMappingURL') {
-        const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
-        return `//# ${props[1]}=` + mapName;
-      }
-      return '';
+  const debugId = stringToUUID(path.basename(jsAsset.filename, path.extname(jsAsset.filename)));
+  const adjustedSource = jsAsset.source.replace(/^\/\/# (sourceMappingURL)=(.*)$/gm, (...props) => {
+    if (props[1] === 'sourceMappingURL') {
+      const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
+      return `//# ${props[1]}=` + mapName;
     }
-  );
+    return '';
+  });
 
   // TODO: Generate hbc for each chunk
   const hermesBundleOutput = await getBuildHermesBundleAsync()({
     projectRoot,
-    filename: filename ?? jsAsset.originFilename,
+    filename,
     code: adjustedSource,
     map: mapAsset ? mapAsset.source : null,
     // TODO: Maybe allow prod + no minify.

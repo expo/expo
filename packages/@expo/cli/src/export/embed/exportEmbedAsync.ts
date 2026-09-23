@@ -32,9 +32,9 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { compileDeferredHermesArtifactsAsync } from '../compileDeferredHermesArtifacts';
 import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
-import { transformJsAssetToHermesBytecodeAsync } from '@expo/metro-config/build/serializer/serializeChunks';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
@@ -283,36 +283,14 @@ export async function exportEmbedBundleAndAssetsAsync(
       );
     }
 
-    // Compile any bytecode the serializer deferred (chunks containing DOM
-    // component references). `export:embed` does not rename the DOM html
-    // assets, so this runs immediately after the DOM component exports.
-    for (const artifact of bundles.artifacts) {
-      if (artifact.type !== 'js' || !artifact.metadata.deferredHermesBytecode) {
-        continue;
-      }
-      delete artifact.metadata.deferredHermesBytecode;
-      const prevJsFilename = artifact.filename;
-      const mapArtifact =
-        bundles.artifacts.find(
-          (asset) => asset.type === 'map' && asset.filename === `${prevJsFilename}.map`
-        ) ?? null;
-      const prevMapFilename = mapArtifact?.filename;
-      const jsEntry = files.get(prevJsFilename);
-      const mapEntry = prevMapFilename ? files.get(prevMapFilename) : null;
-      await transformJsAssetToHermesBytecodeAsync({
-        projectRoot,
-        jsAsset: artifact,
-        mapAsset: mapArtifact,
-      });
-      if (jsEntry) {
-        files.delete(prevJsFilename);
-        files.set(artifact.filename, { ...jsEntry, contents: artifact.source });
-      }
-      if (mapArtifact && mapEntry && prevMapFilename) {
-        files.delete(prevMapFilename);
-        files.set(mapArtifact.filename, { ...mapEntry, contents: mapArtifact.source });
-      }
-    }
+    // Compile the bytecode the serializer deferred for chunks that reference DOM
+    // components. `export:embed` does not rename the DOM html assets, so this can
+    // run right after the DOM component exports.
+    await compileDeferredHermesArtifactsAsync({
+      projectRoot,
+      artifacts: bundles.artifacts,
+      files,
+    });
 
     return {
       files,

@@ -177,22 +177,23 @@ export function transformNativeBundleForMd5Filename({
     const assetEntity = files.get(artifact.filename);
     assert(assetEntity);
     if (Buffer.isBuffer(assetEntity.contents)) {
-      // Renaming inside compiled Hermes bytecode is unsound: hermesc
-      // overlap-packs strings that share suffix/prefix bytes, so a same-length
-      // in-place replacement can overwrite bytes owned by a neighbouring
-      // string (this silently corrupted unrelated string literals such as API
-      // keys in exported bundles). Bytecode compilation is deferred until
-      // after this rename (see exportApp), so this should never be reached.
-      throw new Error(
-        `Cannot rename DOM component asset "${htmlOutputName}" inside the compiled Hermes bytecode of "${artifact.filename}". ` +
-          'DOM component html renames must be applied to the serialized JS before bytecode compilation.'
-      );
-    } else {
-      const search = `${hash}.html`;
-      const replace = `${htmlMd5}.html`;
-      assert(search.length === replace.length);
-      assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
+      // Already compiled Hermes bytecode. Sibling chunks without DOM component
+      // references (e.g. workers) never contain the html placeholder, so leave
+      // them untouched: rewriting bytecode in place is unsound because hermesc
+      // overlap-packs strings sharing suffix/prefix bytes, so a same-length
+      // replacement can clobber a neighbouring string.
+      if (artifact.metadata.expoDomComponentReferences?.length) {
+        throw new Error(
+          `Cannot rename DOM component asset "${htmlOutputName}" inside the compiled Hermes bytecode of "${artifact.filename}". ` +
+            'This is a bug in Expo CLI: bytecode compilation for chunks that reference DOM components must be deferred until after the rename (see `compileDeferredHermesArtifactsAsync`).'
+        );
+      }
+      continue;
     }
+    const search = `${hash}.html`;
+    const replace = `${htmlMd5}.html`;
+    assert(search.length === replace.length);
+    assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
   }
 }
 

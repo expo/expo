@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
-import { transformJsAssetToHermesBytecodeAsync } from '@expo/metro-config/build/serializer/serializeChunks';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { createFaviconAsString } from '@expo/router-server/build/utils/html';
 import chalk from 'chalk';
@@ -22,6 +21,7 @@ import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOption
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { compileDeferredHermesArtifactsAsync } from './compileDeferredHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
@@ -278,48 +278,13 @@ export async function exportAppAsync(
             })
           );
 
-          // Compile any bytecode the serializer deferred (chunks containing DOM
-          // component references) now that the DOM html renames have been
-          // applied to the serialized JS.
-          {
-            for (const artifact of bundle.artifacts) {
-              if (artifact.type !== 'js' || !artifact.metadata.deferredHermesBytecode) {
-                continue;
-              }
-              delete artifact.metadata.deferredHermesBytecode;
-              const prevJsFilename = artifact.filename;
-              const jsEntry = files.get(prevJsFilename);
-              // DOM component renames mutate the `files` entry; sync it back to
-              // the artifact before compiling.
-              if (jsEntry && typeof jsEntry.contents === 'string') {
-                artifact.source = jsEntry.contents;
-              }
-              const mapArtifact =
-                bundle.artifacts.find(
-                  (asset) => asset.type === 'map' && asset.filename === `${prevJsFilename}.map`
-                ) ?? null;
-              const prevMapFilename = mapArtifact?.filename;
-              const mapEntry = prevMapFilename ? files.get(prevMapFilename) : null;
-              if (mapArtifact && mapEntry) {
-                mapArtifact.source = mapEntry.contents.toString();
-              }
-
-              await transformJsAssetToHermesBytecodeAsync({
-                projectRoot,
-                jsAsset: artifact,
-                mapAsset: mapArtifact,
-              });
-
-              if (jsEntry) {
-                files.delete(prevJsFilename);
-                files.set(artifact.filename, { ...jsEntry, contents: artifact.source });
-              }
-              if (mapArtifact && mapEntry && prevMapFilename) {
-                files.delete(prevMapFilename);
-                files.set(mapArtifact.filename, { ...mapEntry, contents: mapArtifact.source });
-              }
-            }
-          }
+          // Compile the bytecode the serializer deferred for chunks that reference DOM
+          // components, now that the html renames are applied to their serialized JS.
+          await compileDeferredHermesArtifactsAsync({
+            projectRoot,
+            artifacts: bundle.artifacts,
+            files,
+          });
 
           if (platform === 'web') {
             const faviconAsset = await generateFaviconAssetAsync(projectRoot, {

@@ -220,14 +220,28 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
     expect(nativeJsContents).toContain('MOCK_CONTENTS_MD5_HASH');
   });
 
-  it('should throw when the native bundle is already compiled Hermes bytecode', () => {
+  it('should rename in the deferred JS chunk and leave compiled sibling chunks untouched', () => {
     const domComponentReference = 'file:///app/components/DomView.tsx';
     const htmlOutputName = 'www.bundle/dom1.html';
+    const domChunk = `var filePath = "${mockFilenameMd5()}.html";`;
+    const workerBytecode = Buffer.from([0xc6, 0x1f, 0xbc, 0x03]);
     const nativeBundle: BundleOutput = {
       artifacts: [
         {
-          filename: '_expo/static/js/ios/entry-native1.hbc',
-          originFilename: 'node_modules/expo-router/entry.js',
+          filename: '_expo/static/js/ios/index-native1.js',
+          originFilename: 'index.js',
+          type: 'js',
+          metadata: {
+            deferredHermesBytecode: true,
+            expoDomComponentReferences: [domComponentReference],
+          },
+          source: domChunk,
+        },
+        {
+          // Workers always get their own chunk; without DOM component references
+          // the serializer compiles them inline, before this rename runs.
+          filename: '_expo/static/js/ios/worker-native1.hbc',
+          originFilename: 'worker.js',
           type: 'js',
           metadata: {},
           source: '',
@@ -236,18 +250,45 @@ __d((function(g,r,i,a,m,e,d){m.exports={uri:"assets/assets/images/react-logo.d88
       assets: [],
     };
     const files: ExportAssetMap = new Map([
-      [
-        '_expo/static/js/ios/entry-native1.hbc',
+      ['_expo/static/js/ios/index-native1.js', { contents: domChunk }],
+      ['_expo/static/js/ios/worker-native1.hbc', { contents: Buffer.from(workerBytecode) }],
+      [htmlOutputName, { contents: '<html></html>' }],
+    ]);
+
+    transformNativeBundleForMd5Filename({
+      domComponentReference,
+      nativeBundle,
+      files,
+      htmlOutputName,
+    });
+
+    expect(files.get('_expo/static/js/ios/index-native1.js')?.contents).toBe(
+      'var filePath = "MOCK_CONTENTS_MD5_HASH.html";'
+    );
+    expect(files.get('_expo/static/js/ios/worker-native1.hbc')?.contents).toEqual(workerBytecode);
+  });
+
+  it('should throw when a chunk referencing DOM components was compiled before the rename', () => {
+    const domComponentReference = 'file:///app/components/DomView.tsx';
+    const htmlOutputName = 'www.bundle/dom1.html';
+    const nativeBundle: BundleOutput = {
+      artifacts: [
         {
-          contents: Buffer.from([0xc6, 0x1f, 0xbc, 0x03]),
+          filename: '_expo/static/js/ios/index-native1.hbc',
+          originFilename: 'index.js',
+          type: 'js',
+          metadata: { expoDomComponentReferences: [domComponentReference] },
+          source: '',
         },
       ],
+      assets: [],
+    };
+    const files: ExportAssetMap = new Map([
       [
-        htmlOutputName,
-        {
-          contents: '<html></html>',
-        },
+        '_expo/static/js/ios/index-native1.hbc',
+        { contents: Buffer.from([0xc6, 0x1f, 0xbc, 0x03]) },
       ],
+      [htmlOutputName, { contents: '<html></html>' }],
     ]);
 
     expect(() =>
