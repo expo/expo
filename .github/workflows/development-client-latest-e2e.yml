@@ -27,19 +27,19 @@ jobs:
           brew install applesimutils
           brew install watchman
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1.324.0
         with:
           bundler-cache: true
           ruby-version: 3.2.2
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
       - name: 🔨 Use JDK 11
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: 'temurin'
           java-version: '11'
       - name: 🔨 Install pnpm
-        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
         with:
           install: false
       - name: 🔨 Setup Node
