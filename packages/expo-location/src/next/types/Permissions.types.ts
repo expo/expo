@@ -24,5 +24,4 @@ export type LocationPermissionResponse = PermissionResponse & {
 
 export type RequestPermissionsOptions = {
   accuracy?: RequestPermissionsAccuracyOption;
-  fullAccuracyPurposeKey?: string;
 };
