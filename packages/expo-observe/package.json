@@ -69,13 +69,21 @@
     "expo": "*",
     "expo-router": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "react-native-reanimated": "*",
+    "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
     "expo-router": {
       "optional": true
     },
     "@react-navigation/native": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-worklets": {
       "optional": true
     }
   },

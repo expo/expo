@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a `react-native-reanimated` integration that reports Reanimated errors and warnings to EAS Observe. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
