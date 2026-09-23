@@ -5,7 +5,7 @@ import Foundation
 /// Opens a draft the system already knows about, for example a Spotlight result. `.mail.openDraft`
 /// is the mail domain's own open schema; it requires the iOS 27 SDK.
 #if compiler(>=6.4)
-@available(iOS 27.0, *)
+@available(iOS 27.0, macOS 27.0, *)
 @AppIntent(schema: .mail.openDraft)
 struct OpenMailDraftIntent {
   static var openAppWhenRun: Bool = true
