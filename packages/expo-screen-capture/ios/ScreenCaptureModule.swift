@@ -23,8 +23,8 @@ public final class ScreenCaptureModule: Module {
       self.secureCanvas = nil
       DispatchQueue.main.async {
         canvas?.restore()
+        self.disableAppSwitcherProtection()
       }
-      disableAppSwitcherProtection()
     }
 
     OnStartObserving {
