@@ -8,10 +8,28 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.2 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] Allow `getDefaultCalendarSync`, `getCalendars` and `ExpoCalendar.get` to work with write-only calendar access. ([#48186](https://github.com/expo/expo/pull/48186) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.1 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- The `params` argument of `openInCalendar()` and `editInCalendar()` no longer accepts `null`. Call the methods with no arguments instead. ([#50158](https://github.com/expo/expo/pull/50158) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [android] Fix `createEventAsync` and `updateEventAsync` failing with "Event could not be saved" in minified release builds. `EventInputBase` now implements `Record`, so the `expo-modules-core` ProGuard rule keeps its `@Field` property names and `startDate`/`endDate` reach the calendar provider. ([#49837](https://github.com/expo/expo/pull/49837) by [@expo-bot](https://github.com/expo-bot))
+- [android] Fix `openInCalendar()` throwing when called without params, which the type declares as optional. ([#50146](https://github.com/expo/expo/pull/50146) by [@hknakn](https://github.com/hknakn))
 - [ios] Fix a crash when reading `calendarId` on an event or reminder whose `EKCalendarItem.calendar` is nil. The property is `null_unspecified` in the EventKit headers, so the bare access was an implicit force-unwrap that trapped the JS thread. ([#48445](https://github.com/expo/expo/pull/48445) by [@cvburgess](https://github.com/cvburgess))
 - [ios] Fix typo in the internal permissions exception name (`MissionPermissionsException` -> `MissingPermissionsException`), which corrects the error code surfaced to JS from `ERR_MISSION_PERMISSIONS` to `ERR_MISSING_PERMISSIONS`. ([#47804](https://github.com/expo/expo/pull/47804) by [@conanm](https://github.com/conanm))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

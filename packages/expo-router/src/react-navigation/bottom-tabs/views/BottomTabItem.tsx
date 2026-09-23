@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-import { Color } from '../../../utils/color';
+import { alpha, darken, isDark } from '../../../utils/color';
 import { getLabel, Label, PlatformPressable } from '../../elements';
 import { type Route, useTheme } from '../../native';
 import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
@@ -175,23 +175,21 @@ export function BottomTabItem({
   const activeTintColor: ColorValue =
     customActiveTintColor ??
     (variant === 'uikit' && sidebar && horizontal
-      ? Color(colors.primary)?.isDark()
+      ? isDark(colors.primary)
         ? 'white'
-        : Color(colors.primary)?.darken(0.71).string()
+        : darken(colors.primary, 0.71)
       : undefined) ??
     colors.primary;
 
   const inactiveTintColor: ColorValue =
     customInactiveTintColor ??
-    (variant === 'material'
-      ? Color(colors.text)?.alpha(0.68).string()
-      : Color(colors.text)?.alpha(0.5).string()) ??
+    (variant === 'material' ? alpha(colors.text, 0.68) : alpha(colors.text, 0.5)) ??
     colors.text;
 
   const activeBackgroundColor: ColorValue =
     customActiveBackgroundColor ??
     (variant === 'material'
-      ? Color(activeTintColor)?.alpha(0.12).string()
+      ? alpha(activeTintColor, 0.12)
       : sidebar && horizontal
         ? colors.primary
         : 'transparent') ??

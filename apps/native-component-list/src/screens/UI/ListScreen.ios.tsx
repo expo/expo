@@ -103,17 +103,13 @@ export default function ListScreen() {
 
         <Section title="Items" footer={<Text>Swipe to delete, drag to reorder</Text>}>
           <List.ForEach
+            data={items}
+            keyExtractor={(item) => item.id}
+            recycling={false}
             onDelete={handleDelete}
             onMove={handleMove}
             modifiers={[animation(Animation.default, editMode)]}>
-            {items.map((item) => (
-              <Label
-                key={item.id}
-                title={item.title}
-                systemImage={item.icon}
-                modifiers={[tag(item.id)]}
-              />
-            ))}
+            {({ item }) => <Label title={item.title} systemImage={item.icon} />}
           </List.ForEach>
         </Section>
       </List>

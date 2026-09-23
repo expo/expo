@@ -1,9 +1,9 @@
 package expo.modules.updates.procedures
 
 import android.content.Context
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader
@@ -21,7 +21,7 @@ class FetchUpdateProcedure(
   private val context: Context,
   private val updatesConfiguration: UpdatesConfiguration,
   private val logger: UpdatesLogger,
-  private val databaseHolder: DatabaseHolder,
+  private val database: UpdatesDatabase,
   private val updatesDirectory: File,
   private val fileDownloader: FileDownloader,
   private val selectionPolicy: SelectionPolicy,
@@ -34,7 +34,6 @@ class FetchUpdateProcedure(
   override suspend fun run(procedureContext: ProcedureContext) {
     procedureContext.processStateEvent(UpdatesStateEvent.Download())
 
-    val database = databaseHolder.database
     try {
       val loaderResult = startRemoteLoader(database, procedureContext)
       processSuccessLoaderResult(loaderResult, procedureContext)
@@ -43,7 +42,7 @@ class FetchUpdateProcedure(
     } catch (e: Exception) {
       logger.error("Failed to download new update", e)
       procedureContext.processStateEvent(
-        UpdatesStateEvent.DownloadError("Failed to download new update: ${e.message}")
+        UpdatesStateEvent.DownloadError("Failed to download new update: ${e.localizedMessageWithCauseLocalizedMessage()}")
       )
       callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
     } finally {
@@ -103,7 +102,7 @@ class FetchUpdateProcedure(
       context,
       updatesConfiguration,
       logger,
-      databaseHolder.database,
+      database,
       selectionPolicy,
       updatesDirectory,
       launchedUpdate,

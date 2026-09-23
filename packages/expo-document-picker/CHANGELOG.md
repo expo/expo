@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.1 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Anchored the picker popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50434](https://github.com/expo/expo/pull/50434) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

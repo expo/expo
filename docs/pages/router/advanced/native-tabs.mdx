@@ -4,14 +4,14 @@ description: Learn how to use the native tabs layout in Expo Router.
 hasVideoLink: true
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { RouterLogo } from '@expo/styleguide';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
-import { TabsGroup, Tabs, Tab } from '~/ui/components/Tabs';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <VideoBoxLink
@@ -21,9 +21,9 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   className="mb-6"
 />
 
-> **important** Native tabs is in [alpha](/more/release-statuses/#alpha) and is available in SDK 54 and later. Its API is subject to change.
-
 Tabs are a common way to navigate between different sections of an app. In Expo Router, you can use different tab layouts, depending on your needs. This guide covers the native tabs. Unlike the [other tabs layout](/router/advanced/tabs/#multiple-tab-layouts), native tabs use the native system tab bar.
+
+The examples use `expo-router/native-tabs`, available in SDK 58 and later. In SDK 54 through 57, use `expo-router/unstable-native-tabs` instead.
 
 For other tab layouts see:
 
@@ -31,14 +31,14 @@ For other tab layouts see:
   title="Custom tabs"
   href="/router/advanced/custom-tabs/"
   description="See custom tabs if your app requires a fully custom design that is not possible using system tabs."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 <BoxLink
   title="JavaScript tabs"
   href="/router/advanced/tabs/"
   description="See JavaScript tabs if you already use React Navigation's tabs."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Get started
@@ -57,11 +57,32 @@ The above file structure produces a layout with a tab bar at the bottom of the s
 
 You can use the **src/app/\_layout.tsx** file to define your app's root layout using tabs. This file is the main layout file for the tab bar and each tab. Inside it, you can control how the tab bar and each tab item look and behave.
 
-<TabsGroup>
-
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="house.fill" md="home" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon sf="gear" md="settings" />
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -155,7 +176,31 @@ Alternatively, you can pass `{default: ..., selected: ...}` to the `sf`, `xcasse
 
 <Tabs>
 
-<Tab label="SDK 56 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'house', selected: 'house.fill' }}
+          md={{ default: 'home', selected: 'home_filled' }}
+        />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 56–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -227,7 +272,46 @@ Liquid glass on iOS automatically changes colors based on if the background colo
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { DynamicColorIOS } from 'react-native';
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs
+      labelStyle={{
+        // For the text color
+        color: DynamicColorIOS({
+          dark: 'white',
+          light: 'black',
+        }),
+      }}
+      // For the selected icon color
+      tintColor={DynamicColorIOS({
+        dark: 'white',
+        light: 'black',
+      })}>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon
+          src={{
+            default: require('../assets/setting_icon.png'),
+            selected: require('../assets/selected_setting_icon.png'),
+          }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { DynamicColorIOS } from 'react-native';
@@ -318,7 +402,36 @@ When using the `src` or `xcasset` prop for custom images on iOS, you can control
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      {/* Icon with original colors preserved (e.g., for gradient or multi-color icons) */}
+      <NativeTabs.Trigger name="colorful">
+        <NativeTabs.Trigger.Icon
+          src={require('../../../assets/colorful_icon.png')}
+          renderingMode="original"
+        />
+      </NativeTabs.Trigger>
+      {/* Icon rendered as a template (default behavior) */}
+      <NativeTabs.Trigger name="simple">
+        <NativeTabs.Trigger.Icon
+          src={require('../../../assets/simple_icon.png')}
+          renderingMode="template"
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -383,7 +496,7 @@ On iOS, you can use images from the Xcode asset catalog as tab icons with the `x
 Pass a string with the asset name to use the same icon for both default and selected states:
 
 ```tsx app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
@@ -399,7 +512,7 @@ export default function TabLayout() {
 To use different icons for default and selected states, pass an object:
 
 ```tsx app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
@@ -450,7 +563,7 @@ To start, install the icon set you want to use along with `@react-native-vector-
 
 ```tsx src/app/_layout.tsx
 import MaterialDesignIcons from '@react-native-vector-icons/material-design-icons';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 const homeIcon = MaterialDesignIcons.getImageSourceSync('home', 24, 'black');
 const starOutlineIcon = MaterialDesignIcons.getImageSourceSync('star-outline', 24, 'black');
@@ -485,7 +598,28 @@ If you don't want to display a label, you can use the `hidden` prop to hide the 
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Label hidden />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -535,7 +669,28 @@ You can use the `Badge` component to customize the badge displayed for the tab b
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="messages">
+        <NativeTabs.Trigger.Badge>9+</NativeTabs.Trigger.Badge>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Badge />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -608,7 +763,7 @@ export const TabBarContext = createContext<{
 ```
 
 ```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useState } from 'react';
 
 import { TabBarContext } from '@/context/TabBarContext';
@@ -657,7 +812,7 @@ export default function HomeScreen() {
 If you want to hide a tab based on a condition, you can either remove the trigger or pass the `hidden` prop to the `NativeTabs.Trigger` component.
 
 ```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   const shouldHideMessagesTab = true; // Replace with your condition
@@ -679,7 +834,28 @@ By default, tapping a tab that is already active closes all screens in that tab'
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" disablePopToTop>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -731,7 +907,28 @@ By default, tapping a tab that is already active and showing its root screen scr
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" disableScrollToTop>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -784,7 +981,7 @@ You can prevent native selection of a tab by setting the `disabled` prop on the 
 > **Note:** `disabled` only suppresses the native tap interaction. It is not a "protected" or authorization gate - JavaScript navigation such as `router.push('/settings')` or `<Link href="/settings" />` still navigates to the tab.
 
 ```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
@@ -803,7 +1000,7 @@ export default function TabLayout() {
 You can also toggle `disabled` dynamically from inside a screen.
 
 ```tsx src/app/checkout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { View } from 'react-native';
 
 export default function CheckoutScreen() {
@@ -833,7 +1030,28 @@ To add a separate search tab, assign the `role` with its value set to `search` t
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="search" role="search">
+        <NativeTabs.Trigger.Label>Search</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -897,7 +1115,7 @@ To add a search field to the tab bar, wrap the screen in a Stack navigator and c
 />
 
 ```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
@@ -949,7 +1167,28 @@ To implement the minimized behavior on the tab bar, you can use
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="tab-1">
+        <NativeTabs.Trigger.Label>Tab 1</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -1010,7 +1249,7 @@ The bottom accessory can appear in two placements: `'regular'` (standard positio
 The following example demonstrates a mini player with state lifted to the parent component:
 
 ```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useState } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 
@@ -1076,7 +1315,7 @@ const styles = StyleSheet.create({
 By default on Android, the keyboard overlays the native tab bar. To have the tab bar lift above the keyboard instead, pass the `tabBarRespectsIMEInsets` prop on `NativeTabs`:
 
 ```tsx app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
@@ -1105,7 +1344,25 @@ If you need full control over safe area handling, you can disable automatic cont
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" disableAutomaticContentInsets>
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -1296,7 +1553,7 @@ export default function Layout() {
 ```
 
 ```tsx components/app-tabs.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function AppTabs() {
   return (
@@ -1351,14 +1608,14 @@ const styles = StyleSheet.create({
   title="Custom tabs"
   href="/router/advanced/custom-tabs/"
   description="Learn more about customizing headless tabs from expo-router/ui."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 <BoxLink
   title="Platform-specific extensions"
   href="/router/advanced/platform-specific-modules/"
   description="Learn how platform-specific file extensions like .web.tsx work in Expo Router."
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Migrating native tabs from SDK 54 to 55
@@ -1394,7 +1651,7 @@ On iOS 18 and earlier, the native tab bar becomes transparent when scrolling to 
 You can use the [`disableTransparentOnScrollEdge`](/versions/latest/sdk/router/native-tabs/#disabletransparentonscrolledge) prop to disable this behavior.
 
 ```tsx src/app/_layout.tsx
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 function TabLayout() {
   return (
@@ -1433,7 +1690,7 @@ This happens because the default theme uses a white background color. To fix thi
 
 ```tsx src/app/_layout.tsx
 import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
@@ -1458,7 +1715,7 @@ export default function TabLayout() {
 
 ```tsx src/app/_layout.tsx
 import { ThemeProvider, DarkTheme } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
@@ -1521,7 +1778,7 @@ The fix is the same as for the white background flash issue: wrap your layout wi
 
 ```tsx app/_layout.tsx
 import { ThemeProvider, DarkTheme, DefaultTheme } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 import { useColorScheme } from 'react-native';
 
 export default function TabLayout() {
@@ -1546,7 +1803,7 @@ export default function TabLayout() {
 
 ```tsx app/_layout.tsx
 import { ThemeProvider, DarkTheme } from 'expo-router';
-import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { NativeTabs } from 'expo-router/native-tabs';
 
 export default function TabLayout() {
   return (
@@ -1560,6 +1817,38 @@ export default function TabLayout() {
 </Collapsible>
 
 ## Known limitations
+
+<Collapsible summary="The default and selected icons share one rendering mode on iOS">
+
+On iOS, a tab's default and selected image icons must use the same [rendering mode](#icon-rendering-mode). When they resolve to different modes, both icons use the default icon's mode and Expo Router logs a warning in development.
+
+The modes disagree when an icon color applies to only one of the states. This happens when you set `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop without also setting a color for the default state. A color implies `'template'` rendering, while an uncolored icon defaults to `'original'`. Setting `renderingMode` for only one state has the same effect.
+
+To render both icons the same way, set a color for both states, or set `renderingMode` on the `Icon`:
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    // `iconColor` applies to both states, so both icons render as templates
+    <NativeTabs iconColor={{ default: 'gray', selected: 'black' }}>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon
+          src={{
+            default: require('../assets/setting_icon.png'),
+            selected: require('../assets/selected_setting_icon.png'),
+          }}
+        />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+This limitation doesn't apply to SF Symbols, which the system always tints.
+
+</Collapsible>
 
 <Collapsible summary="A limit of 5 tabs on Android">
 
@@ -1585,7 +1874,25 @@ Native tabs cannot be nested inside other native tabs. You can still nest [JavaS
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 58 and later">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs disableTransparentOnScrollEdge>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55–57">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -1630,5 +1937,3 @@ export default function TabLayout() {
 Dynamically adding or removing tabs at runtime is not supported. Tabs should be defined statically in your layout file and remain consistent throughout the app's lifecycle. This aligns with platform guidelines from [Apple's Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/tab-bars#Best-practices) which recommend keeping tab bar content stable to help users build a mental model of your app's navigation structure. If you dynamically add or remove tabs, the content will be remounted and the state will be lost.
 
 </Collapsible>
-
-</TabsGroup>

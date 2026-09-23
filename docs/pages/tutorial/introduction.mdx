@@ -4,10 +4,9 @@ sidebar_title: Introduction
 description: An introduction to a React Native tutorial on how to build a universal app that runs on Android, iOS and the web using Expo.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
-
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 
 We're about to embark on a journey of building universal apps. In this tutorial, we'll create an Expo app that runs on Android, iOS, and web; all with a single codebase. Let's get started!
 
@@ -50,7 +49,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say: "Edit app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
+      /* @tutinfo This used to say: "Edit src/app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
     </View>
   );
 }
@@ -71,7 +70,7 @@ We're ready to start building our app.
 
 <BoxLink
   title="Start"
-  Icon={BookOpen02Icon}
+  Icon={HandWaveIcon}
   description="Let's start by creating a new Expo app."
   href="/tutorial/create-your-first-app"
 />

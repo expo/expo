@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export PNPM_CONFIG_FROZEN_LOCKFILE=false
+
 remove_dependencies() {
   local packages=("$@")
   local filter=""
@@ -109,17 +111,20 @@ else
     fi
 fi
 
-EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json)
+EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json | sed -E 's/^[~^]//')
 CURRENT_REACT_VERSION=$(jq -r '.dependencies.react' package.json)
 if [[ "$EXPECTED_REACT_VERSION" == "null" || -z "$EXPECTED_REACT_VERSION" ]]; then
     echo " ⚠️  Could not determine react peer dependency from react-native-macos, skipping react install"
 elif [[ "$CURRENT_REACT_VERSION" == "$EXPECTED_REACT_VERSION" ]]; then
     echo " ✅ react@$CURRENT_REACT_VERSION already matches react-native-macos peer dependency"
 else
-    echo " ⚠️  Installing react@$EXPECTED_REACT_VERSION to match react-native-macos peer dependency (was $CURRENT_REACT_VERSION)..."
-    pnpm add "react@$EXPECTED_REACT_VERSION" --silent
+    echo " ⚠️  Pinning react@$EXPECTED_REACT_VERSION to match the react-native-macos renderer (was $CURRENT_REACT_VERSION)..."
+    # Write the exact version instead of `pnpm add`: pnpm treats an existing range that already
+    # covers the version (e.g. "^19.1.4") as satisfied and keeps it. The root `pnpm install` below
+    # resolves the pin.
+    tmp_file=$(mktemp) && jq --arg v "$EXPECTED_REACT_VERSION" '.dependencies.react = $v' package.json > "$tmp_file" && mv "$tmp_file" package.json
 fi
 
 echo " Running pnpm from root..."
 cd ../../
-pnpm install --ignore-scripts --frozen-lockfile=false
+pnpm install --ignore-scripts

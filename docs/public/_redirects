@@ -30,6 +30,14 @@
 /develop/development-builds/installation /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 /develop/development-builds/installation/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 
+# Expo UI guides merged into the versioned reference
+/guides/expo-ui-swift-ui /versions/latest/sdk/ui/swift-ui 301
+/guides/expo-ui-swift-ui/ /versions/latest/sdk/ui/swift-ui 301
+/guides/expo-ui-swift-ui/extending /versions/latest/sdk/ui/swift-ui/extending 301
+/guides/expo-ui-swift-ui/extending/ /versions/latest/sdk/ui/swift-ui/extending 301
+/guides/expo-ui-jetpack-compose/extending /versions/latest/sdk/ui/jetpack-compose/extending 301
+/guides/expo-ui-jetpack-compose/extending/ /versions/latest/sdk/ui/jetpack-compose/extending 301
+
 # Guides that have been deleted
 /guides/web-performance /guides/analyzing-bundles 301
 /guides/web-performance/ /guides/analyzing-bundles 301
@@ -273,12 +281,10 @@
 /workflow/build/building-on-ci/ /build/building-on-ci 301
 /task-manager /versions/latest/sdk/task-manager 301
 /task-manager/ /versions/latest/sdk/task-manager 301
-/versions/latest/sdk/filesystem.md /versions/latest/sdk/filesystem 301
 /guides/how-expo-works /faq 301
 /guides/how-expo-works/ /faq 301
 /config/app /workflow/configuration 301
 /config/app/ /workflow/configuration 301
-/guides/authentication.md /guides/authentication 301
 /versions/latest/workflow/linking /guides/linking 301
 /versions/latest/workflow/linking/ /guides/linking 301
 /versions/latest/sdk/overview /versions/latest 301
@@ -582,6 +588,156 @@
 /versions/v55.0.0/sdk/ui/jetpack-compose/textinput /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/textinput/ /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
 
+# AI agents guess /<section>/introduction as a section's first page; redirect the HTML and .md forms to the real one.
+# Keep this block above the first splat rule, or the parser's 100 dynamic-rule cap silently drops the rest of the file.
+/agents/introduction /agents 301
+/agents/introduction/ /agents 301
+/agents/introduction.md /agents.md 301
+/develop/introduction /develop/tools 301
+/develop/introduction/ /develop/tools 301
+/develop/introduction.md /develop/tools.md 301
+/review/introduction /review/overview 301
+/review/introduction/ /review/overview 301
+/review/introduction.md /review/overview.md 301
+/deploy/introduction /deploy/build-project 301
+/deploy/introduction/ /deploy/build-project 301
+/deploy/introduction.md /deploy/build-project.md 301
+/monitoring/introduction /monitoring/services 301
+/monitoring/introduction/ /monitoring/services 301
+/monitoring/introduction.md /monitoring/services.md 301
+/debugging/introduction /debugging/errors-and-warnings 301
+/debugging/introduction/ /debugging/errors-and-warnings 301
+/debugging/introduction.md /debugging/errors-and-warnings.md 301
+/guides/introduction /guides/overview 301
+/guides/introduction/ /guides/overview 301
+/guides/introduction.md /guides/overview.md 301
+/workflow/introduction /workflow/overview 301
+/workflow/introduction/ /workflow/overview 301
+/workflow/introduction.md /workflow/overview.md 301
+/modules/introduction /modules/overview 301
+/modules/introduction/ /modules/overview 301
+/modules/introduction.md /modules/overview.md 301
+/push-notifications/introduction /push-notifications/overview 301
+/push-notifications/introduction/ /push-notifications/overview 301
+/push-notifications/introduction.md /push-notifications/overview.md 301
+/regulatory-compliance/introduction /regulatory-compliance/data-and-privacy-protection 301
+/regulatory-compliance/introduction/ /regulatory-compliance/data-and-privacy-protection 301
+/regulatory-compliance/introduction.md /regulatory-compliance/data-and-privacy-protection.md 301
+/linking/introduction /linking/overview 301
+/linking/introduction/ /linking/overview 301
+/linking/introduction.md /linking/overview.md 301
+/bare/introduction /bare/overview 301
+/bare/introduction/ /bare/overview 301
+/bare/introduction.md /bare/overview.md 301
+/brownfield/introduction /brownfield/overview 301
+/brownfield/introduction/ /brownfield/overview 301
+/brownfield/introduction.md /brownfield/overview.md 301
+/troubleshooting/introduction /troubleshooting/overview 301
+/troubleshooting/introduction/ /troubleshooting/overview 301
+/troubleshooting/introduction.md /troubleshooting/overview.md 301
+/eas/introduction /eas 301
+/eas/introduction/ /eas 301
+/eas/introduction.md /eas.md 301
+/eas/metadata/introduction /eas/metadata 301
+/eas/metadata/introduction/ /eas/metadata 301
+/eas/metadata/introduction.md /eas/metadata.md 301
+/accounts/introduction /accounts/account-types 301
+/accounts/introduction/ /accounts/account-types 301
+/accounts/introduction.md /accounts/account-types.md 301
+/billing/introduction /billing/overview 301
+/billing/introduction/ /billing/overview 301
+/billing/introduction.md /billing/overview.md 301
+/app-signing/introduction /app-signing/app-credentials 301
+/app-signing/introduction/ /app-signing/app-credentials 301
+/app-signing/introduction.md /app-signing/app-credentials.md 301
+/custom-builds/introduction /custom-builds/get-started 301
+/custom-builds/introduction/ /custom-builds/get-started 301
+/custom-builds/introduction.md /custom-builds/get-started.md 301
+/additional-resources/introduction /additional-resources 301
+/additional-resources/introduction/ /additional-resources 301
+/additional-resources/introduction.md /additional-resources.md 301
+/versions/introduction /versions/latest 301
+/versions/introduction/ /versions/latest 301
+/versions/introduction.md /versions/latest.md 301
+/technical-specs/introduction /technical-specs/expo-updates-1 301
+/technical-specs/introduction/ /technical-specs/expo-updates-1 301
+/technical-specs/introduction.md /technical-specs/expo-updates-1.md 301
+/more/introduction /more/expo-cli 301
+/more/introduction/ /more/expo-cli 301
+/more/introduction.md /more/expo-cli.md 301
+/archive/introduction /archive 301
+/archive/introduction/ /archive 301
+/archive/introduction.md /archive.md 301
+
+# .md siblings of introduction redirects declared elsewhere in this file
+/get-started/introduction.md /get-started/create-a-project.md 301
+/submit/introduction.md /deploy/submit-to-app-stores.md 301
+
+# Bare roots of removed SDK version trees. The splat rules near the end of this
+# file cover their subpaths, but a splat does not match the version root itself.
+/versions/v50.0.0 /versions/latest 301
+/versions/v51.0.0 /versions/latest 301
+/versions/v52.0.0 /versions/latest 301
+/versions/v53.0.0 /versions/latest 301
+
+# The -next and -av SDK pages were promoted to the stable slug. The -av pages
+# kept their name only through v54, the -next pages only through v55.
+/versions/latest/sdk/media-library-next /versions/latest/sdk/media-library 301
+/versions/latest/sdk/media-library-next/ /versions/latest/sdk/media-library 301
+/versions/latest/sdk/media-library-next.md /versions/latest/sdk/media-library.md 301
+/versions/latest/sdk/calendar-next /versions/latest/sdk/calendar 301
+/versions/latest/sdk/calendar-next/ /versions/latest/sdk/calendar 301
+/versions/latest/sdk/calendar-next.md /versions/latest/sdk/calendar.md 301
+/versions/latest/sdk/contacts-next /versions/latest/sdk/contacts 301
+/versions/latest/sdk/contacts-next/ /versions/latest/sdk/contacts 301
+/versions/latest/sdk/contacts-next.md /versions/latest/sdk/contacts.md 301
+/versions/v56.0.0/sdk/media-library-next /versions/v56.0.0/sdk/media-library 301
+/versions/v56.0.0/sdk/media-library-next/ /versions/v56.0.0/sdk/media-library 301
+/versions/v56.0.0/sdk/media-library-next.md /versions/v56.0.0/sdk/media-library.md 301
+/versions/v56.0.0/sdk/calendar-next /versions/v56.0.0/sdk/calendar 301
+/versions/v56.0.0/sdk/calendar-next/ /versions/v56.0.0/sdk/calendar 301
+/versions/v56.0.0/sdk/calendar-next.md /versions/v56.0.0/sdk/calendar.md 301
+/versions/v56.0.0/sdk/contacts-next /versions/v56.0.0/sdk/contacts 301
+/versions/v56.0.0/sdk/contacts-next/ /versions/v56.0.0/sdk/contacts 301
+/versions/v56.0.0/sdk/contacts-next.md /versions/v56.0.0/sdk/contacts.md 301
+/versions/latest/sdk/filesystem-next /versions/latest/sdk/filesystem 301
+/versions/latest/sdk/filesystem-next/ /versions/latest/sdk/filesystem 301
+/versions/latest/sdk/filesystem-next.md /versions/latest/sdk/filesystem.md 301
+/versions/latest/sdk/video-av /versions/latest/sdk/video 301
+/versions/latest/sdk/video-av/ /versions/latest/sdk/video 301
+/versions/latest/sdk/video-av.md /versions/latest/sdk/video.md 301
+/versions/latest/sdk/audio-av /versions/latest/sdk/audio 301
+/versions/latest/sdk/audio-av/ /versions/latest/sdk/audio 301
+/versions/latest/sdk/audio-av.md /versions/latest/sdk/audio.md 301
+/versions/unversioned/sdk/sqlite-next /versions/unversioned/sdk/sqlite 301
+/versions/unversioned/sdk/sqlite-next/ /versions/unversioned/sdk/sqlite 301
+/versions/unversioned/sdk/sqlite-next.md /versions/unversioned/sdk/sqlite.md 301
+
+# The URL reference moved into the expo package reference.
+/versions/latest/sdk/url /versions/latest/sdk/expo/#url-api 301
+/versions/latest/sdk/url/ /versions/latest/sdk/expo/#url-api 301
+/versions/latest/sdk/url.md /versions/latest/sdk/expo.md 301
+/versions/unversioned/sdk/url /versions/unversioned/sdk/expo/#url-api 301
+/versions/unversioned/sdk/url/ /versions/unversioned/sdk/expo/#url-api 301
+/versions/unversioned/sdk/url.md /versions/unversioned/sdk/expo.md 301
+
+# Section root for Expo Router, which has no index page.
+/router /router/introduction 301
+/router/ /router/introduction 301
+/router.md /router/introduction.md 301
+
+# Pages removed or merged. These already had client-side entries in
+# common/client-redirects.ts, which only run after a 404 has been served.
+/guides/using-vexo /guides/using-analytics 301
+/guides/using-vexo/ /guides/using-analytics 301
+/guides/using-vexo.md /guides/using-analytics.md 301
+/eas-update/updating-your-app /eas-update/getting-started 301
+/eas-update/updating-your-app/ /eas-update/getting-started 301
+/eas-update/updating-your-app.md /eas-update/getting-started.md 301
+/eas-update/continuous-deployment /eas/workflows/examples/introduction 301
+/eas-update/continuous-deployment/ /eas/workflows/examples/introduction 301
+/eas-update/continuous-deployment.md /eas/workflows/examples/introduction.md 301
+
 # EAS Build, Submit, Update, and Insights predate the /eas/* URL convention;
 /eas/build/* /build/:splat 301
 /eas/build /build/introduction 301
@@ -626,6 +782,8 @@
 /eas/hosting/environment-variables/ /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
 /versions/v50.0.0/* /versions/latest/:splat 301
 /versions/v52.0.0/* /versions/latest/:splat 301
+/versions/v51.0.0/* /versions/latest/:splat 301
+/versions/v53.0.0/* /versions/latest/:splat 301
 
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.

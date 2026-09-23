@@ -190,7 +190,8 @@ function CardContainerInner({
   let href: string | undefined;
 
   if (previousScene) {
-    const { options, route } = previousScene.descriptor;
+    const { options } = previousScene.descriptor;
+    const { route } = previousScene;
 
     backTitle = getHeaderTitle(options, route.name);
     href = buildHref(route.name, route.params);

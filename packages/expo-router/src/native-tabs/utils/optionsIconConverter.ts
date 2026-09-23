@@ -7,7 +7,7 @@ import type { ColorValue } from 'react-native';
 import type { PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 
 import type { NativeTabsTriggerIconProps } from '../common/elements';
-import type { NativeTabOptions } from '../types';
+import type { IconRenderingMode, NativeTabOptions } from '../types';
 import type { AwaitedIcon } from './icon';
 import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
 
@@ -20,7 +20,14 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
 
 export function convertOptionsIconToScreensPropsIcon(
   _icon: AwaitedIcon | undefined,
-  _iconColor?: ColorValue
+  _renderingMode?: IconRenderingMode
 ): PlatformIconIOS | PlatformIconAndroid | undefined {
+  return undefined;
+}
+
+export function resolveIconRenderingMode(
+  _icon: AwaitedIcon | undefined,
+  _iconColor?: ColorValue
+): IconRenderingMode | undefined {
   return undefined;
 }

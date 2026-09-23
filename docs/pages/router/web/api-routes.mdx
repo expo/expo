@@ -53,6 +53,23 @@ Ensure your project is using server output, this will configure the export and p
 }
 ```
 
+In SDK 58 and later, API routes are enabled by default with `web.output: "server"`. To combine API routes with HTML generated at build time, use `web.output: "static"` and enable `apiRoutes` in the `expo-router` config plugin:
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "output": "static"
+    },
+    "plugins": [["expo-router", { "apiRoutes": true }]]
+  }
+}
+```
+
+This exports prerendered HTML and API routes to **dist/server**, and client assets to **dist/client**. It requires a [deployed server](#deployment).
+
+Set `apiRoutes` to `false` to disable API routes while keeping your selected rendering mode. Enabling API routes requires `static` or `server` output. An explicit `apiRoutes: false` is accepted in any output mode.
+
 </Step>
 
 <Step label="2">

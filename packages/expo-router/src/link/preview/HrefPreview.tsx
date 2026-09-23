@@ -113,6 +113,9 @@ function PreviewForRootHrefState({
       <CompositionContext value={{ set: () => {}, unset: () => {} }}>
         {/* Using NavigationContext to override useNavigation */}
         <NavigationContext value={navigationPropWithWarnings}>
+          {/* `getQualifiedRouteComponent` returns a cached component per route node,
+              so the identity is stable across renders. */}
+          {/* oxlint-disable-next-line react/static-components */}
           <Component navigation={navigation} />
         </NavigationContext>
       </CompositionContext>

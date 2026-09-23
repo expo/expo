@@ -6,8 +6,43 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- [iOS] Answer a fingerprint check on a physical device from a debug build, so a tool can read the fingerprint the build embedded. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Resolve asset URLs and `bundleUrl` from base request URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
 - [iOS] Filter discovered development servers by bundle identifier, Expo account, or slug. ([#48697](https://github.com/expo/expo/pull/48697) by [@alanjhughes](https://github.com/alanjhughes))
+- Add `disableFab=1` and `disableAutoLaunch=1` URL params that update the dev menu preferences to hide the floating action button and prevent the dev menu from opening at launch. ([#49651](https://github.com/expo/expo/pull/49651) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 🐛 Bug fixes
 
@@ -25,6 +60,7 @@
 - Exclude the manifest parser requests from app metrics, so the bundler reachability check no longer skews the observed network summary. ([#48616](https://github.com/expo/expo/pull/48616) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Remove an unused `RCTRootContentView.h` import. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed a crash when a key event arrived after the launcher had invalidated the current activity, e.g. while switching to another app. ([#49565](https://github.com/expo/expo/pull/49565) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

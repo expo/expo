@@ -32,17 +32,8 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       documentPickerVC.presentationController?.delegate = pickerDelegate
       documentPickerVC.allowsMultipleSelection = options.multiple
 
-      if UIDevice.current.userInterfaceIdiom == .pad {
-        let viewFrame = currentVc.view.frame
-        documentPickerVC.popoverPresentationController?.sourceRect = CGRect(
-          x: viewFrame.midX,
-          y: viewFrame.maxY,
-          width: 0,
-          height: 0
-        )
-        documentPickerVC.popoverPresentationController?.sourceView = currentVc.view
-        documentPickerVC.modalPresentationStyle = .pageSheet
-      }
+      SceneGeometry.anchorPopover(of: documentPickerVC, to: currentVc.view)
+      documentPickerVC.modalPresentationStyle = .pageSheet
       currentVc.present(documentPickerVC, animated: true)
     }.runOnQueue(.main)
   }

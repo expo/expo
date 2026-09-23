@@ -3,6 +3,10 @@ title: Using Google authentication
 description: A guide on using react-native-nitro-google-signin or @react-native-google-signin/google-signin to integrate Google authentication in your Expo project.
 ---
 
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import { Rocket01Icon } from '@expo/styleguide-icons/outline/Rocket01Icon';
+
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
@@ -53,11 +57,19 @@ Below are instructions on how to configure your Google project for Android and i
 
 We recommend uploading the app to the Google Play Store if your app intends to run in production. You can submit your app to the stores for testing even if your project is still in development. This allows you to test Google Sign In when your app is signed by EAS for testing, and when it is signed by [Google Play App Signing](https://support.google.com/googleplay/android-developer/answer/9842756?hl=en) for store deployment. To learn more about the app submission process, see the guides below in the order they are specified:
 
-<BoxLink title="Create your first EAS Build" href="/build/setup/" />
+<BoxLink title="Create your first EAS Build" href="/build/setup/" Icon={Cube01Icon} />
 
-<BoxLink title="Build your project for app stores" href="/deploy/build-project/" />
+<BoxLink
+  title="Build your project for app stores"
+  href="/deploy/build-project/"
+  Icon={Rocket01Icon}
+/>
 
-<BoxLink title="Submit to the Google Play Store with EAS Submit" href="/submit/android/" />
+<BoxLink
+  title="Submit to the Google Play Store with EAS Submit"
+  href="/submit/android/"
+  Icon={EasSubmitIcon}
+/>
 
 ### Configure your Firebase or Google Cloud Console project
 

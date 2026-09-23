@@ -4,6 +4,82 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.6 — 2026-09-23
+
+### 🎉 New features
+
+- Added `Platform.isQuest` to detect Meta Quest devices from JavaScript. ([#50283](https://github.com/expo/expo/pull/50283) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Preserve shared objects when React Activity becomes hidden, handle Strict Mode replay, and wait for all pending updates before releasing objects. ([#49979](https://github.com/expo/expo/pull/49979) by [@behenate](https://github.com/behenate))
+- [Android] Fixed async functions rejecting with `Cannot use shared object that was already released`, and `sharedObjectDidRelease` being called in the middle of a pending call, when the garbage collector took the JS object of a shared object receiver or argument before the call finished. ([#50513](https://github.com/expo/expo/pull/50513) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.5 — 2026-09-22
+
+### 🎉 New features
+
+- [iOS] Added `SceneGeometry.anchorPopover(of:to:rect:)` so modules anchor popovers by presentation style instead of the iPad idiom, which regular-width phones such as iPhone Duo need. ([#50433](https://github.com/expo/expo/pull/50433) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fixed a crash while laying out an `RNHostView` with `matchContents` whose content is laid out more than once, for example a nested host or a Reanimated node. The hosted shadow node could be released before `replaceChild` finished reading it. ([#50456](https://github.com/expo/expo/pull/50456) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- [iOS] Added `EmbeddedFingerprint`, which reads the fingerprint a debug build embedded, with `EmbeddedFingerprint.CheckProtocol` carrying the literals of the fingerprint-check exchange. ([#49494](https://github.com/expo/expo/pull/49494) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed worklet callbacks crashing with `NoSuchFieldError` in minified release builds. ([#50502](https://github.com/expo/expo/issues/50502) by [@dhalenok](https://github.com/dhalenok), [#50510](https://github.com/expo/expo/pull/50510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Replaced the hosting `ComposeView`'s view id with a tag for its `rememberSaveable` namespace, fixing a crash on `react-native-screens` tab switch and touches inside a `Host` reaching the wrong React Native view. ([#49964](https://github.com/expo/expo/issues/49964) by [@b2x-software](https://github.com/b2x-software), [#50299](https://github.com/expo/expo/pull/50299) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [macOS] Fixed a crash when mounting a SwiftUI view in a release build. react-native-macos assigns component view tags through `reactTag`, which the virtual view did not declare. ([#50342](https://github.com/expo/expo/pull/50342) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed strings losing NUL characters when crossing JNI in either direction, and characters outside the BMP being misread on the way to Kotlin. ([#50275](https://github.com/expo/expo/pull/50275) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed the tap that closes a SwiftUI menu still reaching the React Native view underneath it in apps with no accessibility client attached. The menu gate no longer requires `accessibilityViewIsModal`, which UIKit only implements for the menu container while its accessibility bundle is loaded. ([#48765](https://github.com/expo/expo/issues/48765) by [@ayyoub-coder](https://github.com/ayyoub-coder), [#49916](https://github.com/expo/expo/pull/49916) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+- [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.12.0`. ([#50286](https://github.com/expo/expo/pull/50286) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Use the prebuilt native libraries in every build, including the package's own instrumentation tests, drop the `libraryVersion` check so the archive stays valid across patch releases, and add the `expo.core.buildFromSource` Gradle property to opt out. ([#50452](https://github.com/expo/expo/pull/50452) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- [Android] Compile `expo-module-gradle-plugin` against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed native-backed `ArrayBuffer`s and `NativeArrayBuffer`s being copied instead of shared when passed back from JS on Hermes V1. ([#50132](https://github.com/expo/expo/pull/50132) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.1 — 2026-09-14
+
+### 🎉 New features
+
+- [iOS] Added the `@Union` macro that turns an enum whose cases each carry one associated value into a typed union (`A | B` in TypeScript), usable as a `@JS` argument or return value. ([#50037](https://github.com/expo/expo/pull/50037) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added the `.concurrent` option to `@JS` (`@JS(.concurrent)`), which runs the body of an async function off the JavaScript thread. ([#50037](https://github.com/expo/expo/pull/50037) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.10.0`. ([#50037](https://github.com/expo/expo/pull/50037) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Made `Either`, `EitherOfThree` and `EitherOfFour` conform to `JavaScriptDecodable` and `JavaScriptEncodable`, so they can be used with the new module API. ([#50053](https://github.com/expo/expo/pull/50053) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [Android] Removed the deprecated `AppContext.hostingRuntimeContext` property. Use `AppContext.runtime` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
 - [Android] Removed the deprecated `AppContext.errorManager` property. Use `AppContext.jsLogger` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
 - [Android] Replaced the old `ArrayBuffer` interface with a concrete class, so `NativeArrayBuffer` and `JavaScriptArrayBuffer` no longer share a common `ArrayBuffer` supertype. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
@@ -12,6 +88,8 @@
 
 ### 🎉 New features
 
+- [macOS] Added `UIColor`, `UIGestureRecognizer` and `UITextContentType` to the AppKit compatibility aliases in `Platform.swift`. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Added `ExpoSwiftUI.HostingViewAware`, an opt-in protocol for view props that receive the view hosting their SwiftUI view, so a view can resolve its own window instead of a process-global one. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
@@ -22,6 +100,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed SwiftUI view mounting blocking the main thread: `ViewProps` and `ShadowNodeProxy` now store their `objectWillChange` publisher instead of resolving it through Combine's global observable-object table on every access. ([#49528](https://github.com/expo/expo/pull/49528) by [@wielski](https://github.com/wielski))
+- [iOS] Fixed the tap that closes a SwiftUI menu still sending `touchStart`, `onPressIn` and `onPressOut` to the React Native view underneath it. React Native's touch handler is now told to skip that tap before UIKit delivers it, instead of being cancelled afterwards. ([#48419](https://github.com/expo/expo/issues/48419) by [@nahooni0511](https://github.com/nahooni0511), [#49775](https://github.com/expo/expo/pull/49775) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Web] Type `registerWebModule` as returning an instance of the module class rather than the class itself, matching what it returns at runtime. ([#49197](https://github.com/expo/expo/pull/49197) by [@dennytosp](https://github.com/dennytosp))
+- [Android] Fix Expo module views not receiving props with React Native 0.87.
+- [Android] Fixed `BadParcelableException` at startup when an activity-result launch was interrupted. `DataPersistor` read the persisted `Bundle` with no `ClassLoader`, so the boot `ClassLoader` could not resolve `androidx.activity.result.ActivityResult`. ([#49836](https://github.com/expo/expo/pull/49836) by [@expo-bot](https://github.com/expo-bot))
+- [iOS][Android] Fixed a `matchContents` `RNHostView` and the `matchContents` host around it feeding each other's size back and forth, which grew the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed SwiftUI view props re-decoding every field on every props update. Fabric sends the whole props map rather than a delta, so an unrelated prop change replaced each decoded value with an equal but distinct one, which cost a decode per field and stopped SwiftUI from pruning the view tree that reads it. A field whose raw value is unchanged now keeps the value decoded before, the same way `ExpoFabricView.updateProps` already worked for UIKit views. ([#48426](https://github.com/expo/expo/pull/48426) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed `matchContents` hosts sometimes being laid out at a stale size. Regression from [#48059](https://github.com/expo/expo/pull/48059). ([#49211](https://github.com/expo/expo/pull/49211) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed an infinite main-thread layout loop (frozen UI, watchdog kill on backgrounding) when a SwiftUI host with `matchContents` and Yoga persistently disagree on the content size, e.g. with the Button Shapes accessibility setting enabled. Synchronous size commits are now budgeted per run-loop turn; over-budget updates are coalesced on the view and committed asynchronously on the next turn, and no-op size updates no longer dirty the layout. ([#48058](https://github.com/expo/expo/issues/48058), [#48059](https://github.com/expo/expo/pull/48059) by [@focux](https://github.com/focux))
 - [iOS] Fixed the `ExpoModulesProvider` lookup missing the generated class when the app `name` starts with a digit, which registered no native modules and left release builds on a blank screen. ([#48793](https://github.com/expo/expo/pull/48793) by [@expo-bot](https://github.com/expo-bot))
@@ -51,6 +136,8 @@
 - [iOS] Added `SceneGeometry.foregroundScene()`, which returns nil when no scene is on screen so callers can avoid presenting UI into a background scene. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
 - Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
+- Added internal `ExpoModulesProviderModuleName` lookup key for `ExpoModulesProvider` class. ([#49539](https://github.com/expo/expo/pull/49539) by [@kudo](https://github.com/kudo))
+- [iOS] Allow ExpoSwiftUI child collections to reconcile children using a string-based identity. ([#49701](https://github.com/expo/expo/pull/49701) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.8 - 2026-07-29
 

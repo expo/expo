@@ -54,7 +54,7 @@ export function AppJSBanner() {
       <div className="min-h-0 overflow-hidden">
         <div
           className={mergeClasses(
-            'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg px-6 py-4',
+            'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-3xl px-6 py-4',
             'bg-[#eef0ff] dark:bg-[#494CFC22]',
             'border border-[#494CFC] dark:border-[#3133b0]',
             'max-md:flex-wrap'

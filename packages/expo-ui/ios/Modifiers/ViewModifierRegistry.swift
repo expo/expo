@@ -16,7 +16,7 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-#if os(tvOS)
+#if os(tvOS) || os(macOS)
     content
 #else
     if #available(iOS 17.0, *) {
@@ -231,11 +231,11 @@ internal struct MonospacedDigitModifier: ViewModifier, Record {
 }
 
 internal struct TintModifier: ViewModifier, Record {
-  @Field var color: Color?
+  @Field var tint: ShapeStyleValue?
 
   func body(content: Content) -> some View {
-    if let color = color {
-      content.tint(color)
+    if let shapeStyle = tint?.toAnyShapeStyle() {
+      content.tint(shapeStyle)
     } else {
       content
     }
@@ -384,11 +384,16 @@ internal struct GrayscaleModifier: ViewModifier, Record {
 }
 
 internal struct BorderModifier: ViewModifier, Record {
-  @Field var color: Color = .white
+  // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
+  @Field("content") var shapeStyle: ShapeStyleValue?
   @Field var width: CGFloat = 1.0
 
   func body(content: Content) -> some View {
-    content.border(color, width: width)
+    if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
+      content.border(resolvedStyle, width: width)
+    } else {
+      content
+    }
   }
 }
 
@@ -418,7 +423,8 @@ internal struct ClipShapeModifier: ViewModifier, Record {
 }
 
 internal struct StrokeBorderModifier: ViewModifier, Record {
-  @Field var color: Color?
+  // Declared as `shapeStyle` because `content` is taken by the parameter of `body(content:)`.
+  @Field("content") var shapeStyle: ShapeStyleValue?
   @Field var style: StrokeStyleConfig?
   @Field var antialiased: Bool = true
   @Field var shape: ShapeType = .rectangle
@@ -451,8 +457,8 @@ internal struct StrokeBorderModifier: ViewModifier, Record {
 
   @ViewBuilder
   private func applyStrokeBorder<S: InsettableShape>(_ shape: S, _ strokeStyle: StrokeStyle) -> some View {
-    if let color {
-      shape.strokeBorder(color, style: strokeStyle, antialiased: antialiased)
+    if let resolvedStyle = shapeStyle?.toAnyShapeStyle() {
+      shape.strokeBorder(resolvedStyle, style: strokeStyle, antialiased: antialiased)
     } else {
       shape.strokeBorder(style: strokeStyle, antialiased: antialiased)
     }
@@ -581,7 +587,11 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
       case .automatic:
         content.menuActionDismissBehavior(.automatic)
       case .disabled:
+#if os(macOS)
+        content.menuActionDismissBehavior(.automatic)
+#else
         content.menuActionDismissBehavior(.disabled)
+#endif
       case .enabled:
         content.menuActionDismissBehavior(.enabled)
       }
@@ -907,6 +917,26 @@ internal struct AnyViewModifier: ViewModifier {
 
   func body(content: Content) -> some View {
     _body(content)
+  }
+}
+
+/**
+ * Prunability-stable wrapper for `AnyViewModifier`
+ */
+internal struct StableViewModifier: ViewModifier {
+  let params: [String: Any]
+  weak var appContext: AppContext?
+  let dispatcher: EventDispatcher
+
+  func body(content: Content) -> some View {
+    if let type = params["$type"] as? String,
+      let appContext,
+      let factory = ViewModifierRegistry.shared.modifierFactories[type],
+      let modifier = try? factory(params, appContext, dispatcher) {
+      content.modifier(AnyViewModifier(modifier))
+    } else {
+      content
+    }
   }
 }
 
@@ -1365,7 +1395,7 @@ internal struct ListSectionMargins: ViewModifier, Record {
   @Field var edges: EdgeOptions?
 
   func body(content: Content) -> some View {
-#if compiler(>=6.2) && !os(tvOS) // Xcode 26
+#if compiler(>=6.2) && !os(tvOS) && !os(macOS) // Xcode 26
     if #available(iOS 26.0, *) {
       if let edges {
         content.listSectionMargins(edges.toEdge(), length ?? 0)
@@ -1562,10 +1592,14 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard let viewModifier = try? modifierFactories[type]?(params, appContext, globalEventDispatcher) else {
+    guard modifierFactories[type] != nil else {
       return view
     }
-    return AnyView(view.modifier(AnyViewModifier(viewModifier)))
+    return AnyView(view.modifier(StableViewModifier(
+      params: params,
+      appContext: appContext,
+      dispatcher: globalEventDispatcher
+    )))
   }
 
   /**
@@ -1595,9 +1629,9 @@ public class ViewModifierRegistry {
       guard let modifier = try? ForegroundStyleModifier(from: params, appContext: appContext) else { return text }
       if #available(iOS 17.0, tvOS 17.0, *) {
         return applyForegroundStyle(modifier, to: text)
-      } else if modifier.styleType == .color, let color = modifier.color {
-          return text.foregroundColor(color)
-      } 
+      } else if modifier.style?.type == .color, let color = modifier.style?.color {
+        return text.foregroundColor(color)
+      }
       return text
     default:
       #if DEBUG
@@ -1766,6 +1800,19 @@ internal struct TextFieldStyleModifier: ViewModifier, Record {
 #endif
     default:
       content.textFieldStyle(.automatic)
+    }
+  }
+}
+
+internal struct NavigationTitleModifier: ViewModifier, Record {
+  @Field var title: String?
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if let title {
+      content.navigationTitle(title)
+    } else {
+      content
     }
   }
 }
@@ -1940,6 +1987,18 @@ extension ViewModifierRegistry {
 
     register("hueRotation") { params, appContext, _ in
       return try HueRotationModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationTitle") { params, appContext, _ in
+      return try NavigationTitleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewStyle") { params, appContext, _ in
+      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewColumnWidth") { params, appContext, _ in
+      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
     }
 
     register("accessibilityLabel") { params, appContext, _ in
@@ -2250,8 +2309,16 @@ extension ViewModifierRegistry {
       return try ScrollDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("scrollClipDisabled") { params, appContext, _ in
+      return try ScrollClipDisabledModifier(from: params, appContext: appContext)
+    }
+
     register("scrollIndicators") { params, appContext, _ in
       return try ScrollIndicatorsModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollEdgeEffectStyle") { params, appContext, _ in
+      return try ScrollEdgeEffectStyleModifier(from: params, appContext: appContext)
     }
 
     register("tabViewStyle") { params, appContext, _ in
@@ -2293,7 +2360,7 @@ extension ViewModifierRegistry {
     register("interactiveDismissDisabled") { params, appContext, _ in
       return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
-    
+
     register("presentationBackground") { params, appContext, _ in
       return try PresentationBackgroundModifier(from: params, appContext: appContext)
     }

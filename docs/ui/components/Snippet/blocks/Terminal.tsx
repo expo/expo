@@ -102,7 +102,7 @@ export const Terminal = ({
   return (
     <Snippet
       data-md="terminal"
-      data-md-commands={packageManagers ? JSON.stringify(packageManagers) : undefined}
+      data-md-commands={JSON.stringify(cmd)}
       className={mergeClasses('terminal-snippet [li_&]:mt-4', className)}>
       <SnippetHeader
         alwaysDark

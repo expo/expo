@@ -6,10 +6,10 @@
     "@expo/styleguide-base": "^1.0.1",
     "@expo/vector-icons": "^15.0.2",
     "expo-router": "workspace:*",
-    "react-native": "0.87.0",
-    "react": "19.2.3"
+    "react-native": "0.88.0-rc.1",
+    "react": "19.3.0"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0"
+    "@types/react": "~19.3.0"
   }
 }

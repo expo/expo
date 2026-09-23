@@ -44,4 +44,20 @@ internal class DevLauncherURLHelperTest {
       )
     ).isFalse()
   }
+
+  @Test
+  fun `tests hasEnabledFlag`() {
+    val devLauncherUrl = "exp://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&disableFab=1"
+
+    Truth.assertThat(hasEnabledFlag(Uri.parse(devLauncherUrl), "disableFab")).isTrue()
+    Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableAutoLaunch=1"), "disableAutoLaunch")).isTrue()
+
+    Truth.assertThat(hasEnabledFlag(Uri.parse(devLauncherUrl), "disableAutoLaunch")).isFalse()
+    Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableFab=0"), "disableFab")).isFalse()
+    Truth.assertThat(hasEnabledFlag(Uri.parse("http://localhost:8081?disableFab"), "disableFab")).isFalse()
+
+    val urlWithFlagInAppUrl = "exp://expo-development-client/?url=" +
+      Uri.encode("http://localhost:8081?disableFab=1")
+    Truth.assertThat(hasEnabledFlag(Uri.parse(urlWithFlagInAppUrl), "disableFab")).isFalse()
+  }
 }

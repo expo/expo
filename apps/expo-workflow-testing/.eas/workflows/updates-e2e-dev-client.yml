@@ -2,7 +2,7 @@ name: Updates E2E (dev client)
 
 defaults:
   tools:
-    pnpm: '10.34.5'
+    pnpm: '12.2.1'
 
 on:
   push:

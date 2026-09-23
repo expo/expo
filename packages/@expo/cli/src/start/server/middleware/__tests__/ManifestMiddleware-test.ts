@@ -70,6 +70,33 @@ describe('checkBrowserRequestAsync', () => {
   const createConstructUrl = () =>
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
 
+  it.each(['static', 'server'] as const)(
+    'serves the browser template for non-Router apps with %s output',
+    async (output) => {
+      jest.mocked(getConfig).mockReturnValueOnce({
+        pkg: {},
+        exp: {
+          name: 'test',
+          slug: 'test',
+          platforms: ['web'],
+          web: { bundler: 'metro', output },
+        },
+      } as ReturnType<typeof getConfig>);
+      const middleware = new MockManifestMiddleware('/', {
+        constructUrl: createConstructUrl(),
+        mode: 'development',
+      });
+      const res = new MockServerResponse();
+      const body = new Response(res.toWeb());
+      const next = jest.fn();
+
+      await middleware.checkBrowserRequestAsync(asReq({ url: '/', headers: {} }), asRes(res), next);
+
+      expect(next).not.toHaveBeenCalled();
+      expect(await body.text()).toBe('<html />');
+    }
+  );
+
   it('handles browser requests when the web bundler is "metro" and no platform is specified', async () => {
     jest.mocked(getPlatformBundlers).mockReturnValueOnce({
       web: 'metro',

@@ -11,10 +11,6 @@ const key = 'random_value';
 function PersistExample() {
   const [storedNumber, setStoredNumber] = React.useState('0');
 
-  React.useEffect(() => {
-    getItem();
-  }, []);
-
   const getItem = React.useCallback(async () => {
     const value = await AsyncStorage.getItem(key);
     if (value) {
@@ -23,6 +19,10 @@ function PersistExample() {
       setStoredNumber('0');
     }
   }, [setStoredNumber]);
+
+  React.useEffect(() => {
+    getItem();
+  }, []);
 
   const increment = React.useCallback(async () => {
     const newNumber = +storedNumber > 0 ? +storedNumber + 10 : 10;

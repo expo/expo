@@ -9,7 +9,7 @@ import {
   type TextStyle,
 } from 'react-native';
 
-import { Color } from '../../utils/color';
+import { isLight } from '../../utils/color';
 import { useTheme } from '../native';
 
 type Props = TextProps & {
@@ -67,7 +67,7 @@ export function Badge({ children, style, visible = true, size = 18, ...rest }: P
 
   // @ts-expect-error: backgroundColor definitely exists
   const { backgroundColor = colors.notification, ...restStyle } = StyleSheet.flatten(style) || {};
-  const textColor = Color(backgroundColor)?.isLight() ? 'black' : 'white';
+  const textColor = isLight(backgroundColor) ? 'black' : 'white';
 
   const borderRadius = size / 2;
   const fontSize = Math.floor((size * 3) / 4);

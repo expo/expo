@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed a main-thread deadlock when notifying screen orientation listeners. ([#49367](https://github.com/expo/expo/pull/49367) by [@ryan-saffer](https://github.com/ryan-saffer))
 - [iOS] Added a development warning when the system refuses an orientation lock request, and switched to reading interface orientation from the scene's effective geometry. ([#48173](https://github.com/expo/expo/pull/48173) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

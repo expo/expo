@@ -4,9 +4,44 @@
 
 ### 🛠 Breaking changes
 
-- [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Exclude the CoreMotion features from the build when `motionUsagePermission: false` is set in `app.json`. ([#49409](https://github.com/expo/expo/pull/49409) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Stop requiring the `location` background mode for geofencing. Region monitoring does not need it, and declaring it without a feature that uses persistent location gets apps rejected under App Store guideline 2.5.4. ([#50197](https://github.com/expo/expo/pull/50197) by [@abappi19](https://github.com/abappi19))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
 
@@ -14,10 +49,12 @@
 - [Android] Fix `timeInterval` and `distanceInterval` being ignored for background location updates. ([#46788](https://github.com/expo/expo/issues/46788) by [@doshisunny](https://github.com/doshisunny))
 - [iOS] Fix incorrect default value for `pausesUpdatesAutomatically` to match docs. ([#47008](https://github.com/expo/expo/pull/47008) by [@Ignigena](https://github.com/Ignigena))
 - [Android] Fix leaking watches ([#48294](https://github.com/expo/expo/pull/48294) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Fix `startLocationUpdatesAsync` requiring `FOREGROUND_SERVICE_LOCATION` (Android 14+) even when no `foregroundService` option is passed. ([#49641](https://github.com/expo/expo/issues/49641) by [@aamagda](https://github.com/aamagda))
 
 ### 💡 Others
 
 - Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
+- Add missing `react` and `react-native` peer dependencies ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
 
 ## 57.0.7 - 2026-07-29
 

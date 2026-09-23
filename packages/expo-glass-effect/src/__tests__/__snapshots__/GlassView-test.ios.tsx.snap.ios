@@ -7,6 +7,42 @@ exports[`renders a clear liquid glass view 1`] = `
 />
 `;
 
+exports[`renders a liquid glass view tinted with a DynamicColorIOS 1`] = `
+<ViewManagerAdapter_ExpoGlassEffect
+  testID="glass-view"
+  tintColor={
+    {
+      "dynamic": {
+        "dark": "black",
+        "highContrastDark": undefined,
+        "highContrastLight": undefined,
+        "light": "white",
+      },
+    }
+  }
+/>
+`;
+
+exports[`renders a liquid glass view tinted with a PlatformColor 1`] = `
+<ViewManagerAdapter_ExpoGlassEffect
+  testID="glass-view"
+  tintColor={
+    {
+      "semantic": [
+        "systemBlue",
+      ],
+    }
+  }
+/>
+`;
+
+exports[`renders a liquid glass view tinted with a string 1`] = `
+<ViewManagerAdapter_ExpoGlassEffect
+  testID="glass-view"
+  tintColor="rgba(255, 59, 48, 0.7)"
+/>
+`;
+
 exports[`renders a regular liquid glass view 1`] = `
 <ViewManagerAdapter_ExpoGlassEffect
   glassEffectStyle="regular"

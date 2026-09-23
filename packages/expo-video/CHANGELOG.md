@@ -6,6 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.3 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- Wait for pending source replacements before releasing players created by `useVideoPlayer`. ([#49981](https://github.com/expo/expo/pull/49981) by [@behenate](https://github.com/behenate))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - [Android] Added the `controllerAutoShow` prop to `VideoView` to control whether the native controls auto-show on play. ([#46665](https://github.com/expo/expo/pull/46665) by [@stevesouth](https://github.com/stevesouth))
 - [Android][iOS] Add `maxResolution` player option to cap adaptive video track selection. ([#46992](https://github.com/expo/expo/pull/46992) by [@vargajacint](https://github.com/vargajacint))
 - [Android] Added the `videoChangeFrameRateStrategy` player builder option to control whether ExoPlayer may change the display refresh rate to match the video frame rate. On adaptive refresh rate displays (Pixel 9/10) the default matching can cap the entire app UI at 30Hz while a 30 fps video is visible. ([#47873](https://github.com/expo/expo/pull/47873) by [@invivek26](https://github.com/invivek26))
@@ -16,6 +38,7 @@
 - [iOS] Fixed a data race on the video cache's open-file registry, which could crash the app while the cache was being trimmed. ([#49286](https://github.com/expo/expo/pull/49286) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fixed a crash when the device runs out of storage while writing to the video cache. `FileHandle.writeData:` raises an uncatchable Objective-C `NSFileHandleOperationException` on `ENOSPC`; the throwing Swift APIs are now used so the error is caught and logged instead. ([#49284](https://github.com/expo/expo/pull/49284) by [@huextrat](https://github.com/huextrat))
 - [Android] Guard `PictureInPictureParams.Builder.setAutoEnterEnabled` against `NoSuchMethodError` on stock OEM firmwares that report API 31+ without shipping the method, which crashed the app from `VideoView.onLayout` even when Picture in Picture was disabled. ([#48957](https://github.com/expo/expo/pull/48957) by [@onlyshyun](https://github.com/onlyshyun))
+- Fix `TypeError: Cannot read properties of undefined (reading 'prototype')` when a Jest test imports `expo-video` under the `jest-expo` preset, by adding a hand-written mock for the `ExpoVideo` native module. ([#48880](https://github.com/expo/expo/pull/48880) by [@giaBaoJS](https://github.com/giaBaoJS))
 - [iOS] Fix races between overlapping source loads and player release. ([#47967](https://github.com/expo/expo/pull/47967) by [@behenate](https://github.com/behenate))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))

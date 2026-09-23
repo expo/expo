@@ -3,9 +3,16 @@
 /// Structured crash report extracted from MetricKit's `MXCrashDiagnostic`.
 ///
 /// This is the native-crash shape: a Mach exception, signal, and native call-stack tree over a
-/// payload time window. Unhandled JavaScript errors are recorded separately as `exception` log
+/// payload time window. Unhandled JavaScript errors are recorded separately as `js.exception` log
 /// events (see `ErrorReport`).
 public struct CrashReport: Codable, Sendable {
+  /// Frames rendered into `exception.stacktrace`.
+  ///
+  /// A crash that started in JS spends most of its stack inside the Hermes interpreter before it
+  /// reaches our code, so a smaller limit cuts off the part you want.
+  private static let maxLogStackFrames = 50
+  private static let maxLogStacktraceLength = 65_536
+
   /// Mach exception type (e.g. EXC_BAD_ACCESS, EXC_CRASH).
   public let exceptionType: Int?
 
@@ -85,6 +92,173 @@ public struct CrashReport: Codable, Sendable {
       return session
     }
     return candidates.max(by: { $0.startTimestamp < $1.startTimestamp })
+  }
+
+  func toLogRecord() -> LogRecord {
+    let selected = selectedFrames
+    var attributes: [String: Any] = [
+      "exception.type": exceptionReason?.exceptionName
+        ?? exceptionType.map { exceptionName(for: $0) }
+        ?? signal.map { signalName(for: $0) }
+        ?? "NativeCrash",
+      "exception.message": exceptionMessage,
+      "exception.stacktrace": selected.flatMap(renderStacktrace) as Any,
+      "expo.error.source": "nativeCrash",
+      "expo.error.is_fatal": true,
+    ]
+    if let exceptionType {
+      attributes["expo.crash.exception_type"] = exceptionName(for: exceptionType)
+      attributes["expo.crash.exception_type_code"] = exceptionType
+    }
+    if let exceptionCode {
+      attributes["expo.crash.exception_code"] = exceptionCode
+    }
+    if let signal {
+      attributes["expo.crash.signal"] = signalName(for: signal)
+      attributes["expo.crash.signal_number"] = signal
+    }
+    if let terminationReason {
+      attributes["expo.crash.termination_reason"] = terminationReason
+    }
+    // A stack overflow and a bad pointer both come through as EXC_BAD_ACCESS / SIGSEGV. Only the
+    // overflow lands on a stack guard page, and this is where that shows up.
+    if let virtualMemoryRegionInfo {
+      attributes["expo.crash.virtual_memory_region"] = virtualMemoryRegionInfo
+    }
+    if let exceptionReason {
+      attributes["expo.crash.objc_exception_type"] = exceptionReason.exceptionType
+      attributes["expo.crash.objc_exception_message"] = exceptionReason.composedMessage
+    }
+    if let callStacks = callStackTree?.callStacks {
+      attributes["expo.crash.thread_count"] = callStacks.count
+      attributes["expo.crash.thread_attributed"] = callStacks.contains { $0.threadAttributed == true }
+    }
+    if let selected, !selected.frames.isEmpty {
+      attributes["expo.crash.rendered_frame_count"] = selected.frames.count
+      attributes["expo.crash.total_frame_count"] = selected.total
+      if let binaryUUIDs = renderedBinaryUUIDs(in: selected.frames) {
+        attributes["expo.crash.binary_uuids"] = binaryUUIDs
+      }
+    }
+    return LogRecord(
+      name: "native.exception",
+      attributes: attributes,
+      severity: .fatal,
+      // MetricKit gives a time window; its end is the tightest crash-time bound and matches Android.
+      timestamp: timestampEnd.ISO8601Format()
+    )
+  }
+
+  private var exceptionMessage: String {
+    let parts = [terminationReason, exceptionReason?.composedMessage].compactMap { value -> String? in
+      guard let value, !value.isEmpty else {
+        return nil
+      }
+      return value
+    }
+    if !parts.isEmpty {
+      return parts.joined(separator: "\n")
+    }
+    if let signal {
+      return signalName(for: signal)
+    }
+    if let exceptionType {
+      return exceptionName(for: exceptionType)
+    }
+    return "Native crash"
+  }
+
+  /// Frames picked for the stack trace, plus how many the payload actually had.
+  ///
+  /// We stop collecting at `maxLogStackFrames`, so anything past that shows up as the gap between
+  /// `frames.count` and `total`.
+  private var selectedFrames: (frames: [CallStackTree.Frame], total: Int)? {
+    guard let callStacks = callStackTree?.callStacks else {
+      return nil
+    }
+    let attributedStacks = callStacks.filter { $0.threadAttributed == true }
+    let selectedStacks = attributedStacks.isEmpty ? callStacks : attributedStacks
+    var frames: [CallStackTree.Frame] = []
+    var totalFrames = 0
+    for callStack in selectedStacks {
+      collectFrames(callStack.callStackRootFrames ?? [], into: &frames, total: &totalFrames)
+    }
+    return (frames, totalFrames)
+  }
+
+  /// Renders the selected frames, appending a count of the ones that didn't fit.
+  private func renderStacktrace(_ selected: (frames: [CallStackTree.Frame], total: Int)) -> String? {
+    var lines = selected.frames.map(renderFrame)
+    if selected.total > selected.frames.count {
+      lines.append("… +\(selected.total - selected.frames.count) more frames")
+    }
+    guard !lines.isEmpty else {
+      return nil
+    }
+    return truncateToMaxLength(
+      lines.joined(separator: "\n"),
+      maxLength: Self.maxLogStacktraceLength,
+      warningMessage: "[AppMetrics] Native crash stack trace exceeded the maximum length and was truncated."
+    )
+  }
+
+  private func collectFrames(
+    _ source: [CallStackTree.Frame],
+    into frames: inout [CallStackTree.Frame],
+    total: inout Int
+  ) {
+    for frame in source {
+      total += 1
+      if frames.count < Self.maxLogStackFrames {
+        frames.append(frame)
+      }
+      collectFrames(frame.subFrames ?? [], into: &frames, total: &total)
+    }
+  }
+
+  /// The binaries named in the trace and their UUIDs, as `<binary>:<uuid>` entries.
+  ///
+  /// An offset only means something against the build it came from, so these say which dSYM to
+  /// reach for.
+  private func renderedBinaryUUIDs(in frames: [CallStackTree.Frame]) -> [String]? {
+    var uuidsByBinary: [String: String] = [:]
+    for frame in frames {
+      guard let binaryName = frame.binaryName, let binaryUUID = frame.binaryUUID else {
+        continue
+      }
+      uuidsByBinary[binaryName] = binaryUUID
+    }
+    guard !uuidsByBinary.isEmpty else {
+      return nil
+    }
+    return uuidsByBinary.sorted { $0.key < $1.key }.map { "\($0.key):\($0.value)" }
+  }
+
+  /// Renders one frame as `<symbol> (<binary> + <offset>)`.
+  ///
+  /// We keep the address even when a symbol resolved, because on a stripped binary it can be the
+  /// wrong one, and it's what lets you re-symbolicate from the archive. Without an offset or an
+  /// address there's nothing to look up, so the binary name alone is left off.
+  private func renderFrame(_ frame: CallStackTree.Frame) -> String {
+    let location: String? = {
+      if let binaryName = frame.binaryName, let offset = frame.offsetIntoBinaryTextSegment {
+        return "\(binaryName) + \(offset)"
+      }
+      if let address = frame.address {
+        return "0x\(String(address, radix: 16))"
+      }
+      return nil
+    }()
+    switch (frame.symbol, location) {
+    case (let symbol?, let location?):
+      return "\(symbol) (\(location))"
+    case (let symbol?, nil):
+      return symbol
+    case (nil, let location?):
+      return location
+    case (nil, nil):
+      return frame.binaryName ?? "<unknown>"
+    }
   }
 
   /// Mirrors the shape of `MXCallStackTree.JSONRepresentation()`. Every field is optional so that

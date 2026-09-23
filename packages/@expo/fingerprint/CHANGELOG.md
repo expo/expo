@@ -4,6 +4,27 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.21.1 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- Hash autolinked packages that live in a virtual store, such as pnpm's `node_modules/.pnpm`. Nested `node_modules` folders inside a package are still skipped. Fingerprints change once on upgrade for isolated installs. ([#48704](https://github.com/expo/expo/pull/48704) by [@kudo](https://github.com/kudo))
+- Normalized the resolved autolinking config before hashing (dependency maps become sorted arrays). Fingerprints change once on upgrade for every preset, including `strict`. `balanced` and `relaxed` also strip path fields, including `scriptPhases[].path`. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Added `SourceSkips.AutolinkingConfigPaths` to omit filesystem path fields from the resolved `expo-modules-autolinking` and `react-native-config` configs. Linked module names and `scriptPhases` names still hash. `scriptPhases[].path` and path overrides from the project's **react-native.config.js**, such as `sourceDir`, are omitted. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
+
+## 0.21.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Extended `SourceSkips.ExpoConfigVersions` to also strip the platform-specific version overrides `ios.version` and `android.version` (which take precedence over the top-level `version`). Projects already setting this flag will see their fingerprint hash change after upgrading.
 - Hashed the built-in `react-native` source by its `package.json` name+version instead of the whole `package.json`, so fingerprints change once on upgrade. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
 - Changed the default preset to `balanced`, which changes the default fingerprint once on upgrade. Use `preset: 'strict'` to keep the previous behavior. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))
@@ -18,6 +39,7 @@
 
 ### 🐛 Bug fixes
 
+- Resolve the git root from the project root instead of the process working directory during project workflow detection, so fingerprinting a project (for example a git worktree) while the working directory is inside another repository no longer flips the workflow from `managed` to `generic` and silently changes the hash. ([#49435](https://github.com/expo/expo/pull/49435) by [@janicduplessis](https://github.com/janicduplessis))
 - Set development mode before loading Expo config and `.env` files. ([#48839](https://github.com/expo/expo/pull/48839) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fixed ignore patterns (built-in and `.fingerprintignore`) not matching on Windows, which made fingerprints differ between Windows machines and EAS builds ("Runtime version mismatch"). ([#46816](https://github.com/expo/expo/pull/46816) by [@blurbyte](https://github.com/blurbyte))
 

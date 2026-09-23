@@ -1,5 +1,6 @@
 import { isRunningInExpoGo } from 'expo';
 
+import { AIScreens } from '../screens/AI/AIScreen';
 import { AppIntentsScreens } from '../screens/AppIntents/AppIntentsScreen';
 import { AudioScreens } from '../screens/Audio/AudioScreen';
 import { BlobScreens } from '../screens/Blob/BlobScreen';
@@ -83,6 +84,17 @@ export const ScreensList: ScreenConfig[] = [
           },
           name: 'AgeRange',
           options: { title: 'Age Range' },
+        },
+      ]),
+  ...(isRunningInExpoGo()
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/AI/AIScreen'));
+          },
+          name: 'AI',
+          options: { title: 'AI' },
         },
       ]),
   {
@@ -420,6 +432,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ScreenCaptureAdvancedScreen'));
+    },
+    name: 'ScreenCaptureAdvanced',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SensorScreen'));
     },
     name: 'Sensor',
@@ -510,6 +528,7 @@ export const ScreensList: ScreenConfig[] = [
 
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
+  ...(isRunningInExpoGo() ? [] : AIScreens),
   ...AppIntentsScreens,
   ...ModulesCoreScreens,
   ...MediaLibraryScreens,

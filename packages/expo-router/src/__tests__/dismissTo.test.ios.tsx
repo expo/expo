@@ -414,3 +414,45 @@ it('will replace the route if the provided href is not in the history', () => {
     type: 'stack',
   });
 });
+
+it('collapses a nested history down to a sibling when the target was never visited', () => {
+  renderRouter({
+    index: () => null,
+    'b/_layout': () => <Stack />,
+    'b/c': () => null,
+    d: () => null,
+  });
+
+  act(() => router.push('/b/c'));
+  expect(screen).toHavePathname('/b/c');
+
+  act(() => router.dismissTo('/d'));
+
+  expect(screen).toHavePathname('/d');
+  expect(screen).toHaveRouterState({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 1,
+          key: expect.any(String),
+          routeNames: ['index', 'd', 'b'],
+          routes: [
+            { key: expect.any(String), name: 'index', path: '/' },
+            { key: expect.any(String), name: 'd', params: {} },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+          type: 'stack',
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+    type: 'stack',
+  });
+});

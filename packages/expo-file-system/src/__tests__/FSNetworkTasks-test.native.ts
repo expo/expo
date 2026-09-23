@@ -412,6 +412,22 @@ describe('DownloadTask', () => {
 });
 
 describe('AbortSignal integration', () => {
+  it('File.downloadFileAsync uses a stable message for the default reason', async () => {
+    const controller = new AbortController();
+    controller.abort(new DOMException('signal is aborted without reason', 'AbortError'));
+
+    const promise = File.downloadFileAsync(
+      'https://example.com/foo.bin',
+      new File(Paths.cache, 'aborted.bin'),
+      { signal: controller.signal }
+    );
+
+    await expect(promise).rejects.toMatchObject({
+      name: 'AbortError',
+      message: 'The operation was aborted.',
+    });
+  });
+
   beforeEach(() => {
     jest
       .spyOn(ExpoFileSystem.FileSystemUploadTask.prototype, 'start')

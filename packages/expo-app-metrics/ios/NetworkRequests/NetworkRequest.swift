@@ -35,13 +35,32 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// Number of bytes received on the wire for the response (headers + body).
   public let responseBytesReceived: Int64?
 
-  /// Whether the response came off the network rather than out of a cache.
+  /// How the OS satisfied the request, or `nil` when it did not classify the fetch (an
+  /// `NSURLProtocol` subclass intercepted the task, or no transaction was reported).
   ///
-  /// `true` only for a fetch the OS identified as a network load. `URLSession` timestamps a cache
-  /// hit like any other response, so this is the only way to tell a disk read from a download, and
-  /// an unclassified fetch is treated as unusable rather than assumed. Android needs no equivalent,
-  /// since OkHttp skips the response-body callbacks for a cached response.
-  public let cameFromNetwork: Bool?
+  /// `URLSession` timestamps and byte-counts a cache hit like any other response, so this is the
+  /// only way to tell a disk read from a download: without it a large cached response looks like
+  /// an impossible transfer rate.
+  public let fetchType: FetchType?
+
+  /// How a response was produced, mapped from `URLSessionTaskTransactionMetrics.resourceFetchType`.
+  /// Mirrors the Android `NetworkRequest.FetchType`, which additionally reports a conditional-GET
+  /// revalidation that `URLSession` folds into `cache`.
+  public enum FetchType: String, Sendable {
+    /// Fetched over the network.
+    case network
+    /// Served from the local URL cache without a network load.
+    case cache
+    /// Delivered by an HTTP/2 server push.
+    case serverPush = "server_push"
+  }
+
+  /// Whether the response came off the network rather than out of a cache or a server push.
+  /// `nil` when the OS did not classify the fetch, which callers must treat as unusable rather
+  /// than assume either way.
+  public var cameFromNetwork: Bool? {
+    return fetchType.map { $0 == .network }
+  }
 
   /// Phase-by-phase timings pulled from the most recent (post-redirect) transaction.
   public let timings: Timings
@@ -50,11 +69,18 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// string rather than carrying `NSError` so the type stays `Sendable` and serializable.
   public let errorDescription: String?
 
+  /// Stable `domain:code` pair of the completion error (e.g. `NSURLErrorDomain:-1009`), or `nil`
+  /// when the task completed without one. Unlike `errorDescription`, which is localized free text,
+  /// this stays constant across locales and OS releases, so telemetry can group failures by it.
+  /// It feeds the low-cardinality `error.type` attribute of OpenTelemetry's semantic conventions.
+  public let errorType: String?
+
   /// Ordered list of redirect hops that preceded the final response. Empty when the task returned
   /// directly. Each entry describes one hop: `fromUrl` is the URL that returned the redirect,
-  /// `statusCode` is the 3xx code it returned, and `toUrl` is where the redirect pointed. For a
-  /// complete chain the first entry's `fromUrl` equals the parent event's `url`, and the last
-  /// entry's `toUrl` is where the request actually landed.
+  /// `statusCode` is the 3xx code it returned, `toUrl` is where the redirect pointed, and
+  /// `respondedAt` is when that 3xx response arrived. For a complete chain the first entry's
+  /// `fromUrl` equals the parent event's `url`, and the last entry's `toUrl` is where the request
+  /// actually landed.
   public let redirects: [Redirect]
 
   public struct Redirect: Sendable, Equatable {
@@ -64,6 +90,16 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
     public let toUrl: URL
     /// The 3xx status code returned by `fromUrl` that caused this hop.
     public let statusCode: Int
+    /// When the 3xx response arrived (the hop transaction's `responseEndDate`), or `nil` when the
+    /// OS did not report it.
+    public let respondedAt: Date?
+
+    init(fromUrl: URL, toUrl: URL, statusCode: Int, respondedAt: Date? = nil) {
+      self.fromUrl = fromUrl
+      self.toUrl = toUrl
+      self.statusCode = statusCode
+      self.respondedAt = respondedAt
+    }
   }
 
   public struct Timings: Sendable, Equatable {
@@ -167,19 +203,34 @@ extension NetworkRequest {
     let url = request.url ?? URL(string: "about:blank")!
     let method = request.httpMethod ?? "GET"
 
-    // We use the last transaction so that redirects don't drop us back to the first hop. If a
-    // future need arises to surface per-hop timing, expose `metrics.transactionMetrics` here.
+    // Per-phase fields describe the transaction that produced the final response, so they come
+    // from the last transaction: redirects must not drop us back to the first hop's connection
+    // and byte counts. `fetchStart` is the exception. It anchors the whole request, including
+    // every redirect hop the span records as an event, so it comes from the first transaction.
+    // Taking it from the last one would start the window after hops that already happened.
     let transaction = metrics?.transactionMetrics.last
+    let firstTransaction = metrics?.transactionMetrics.first
 
-    // Only a fetch the OS positively identified as a network load counts. `.unknown` is excluded
-    // too: a cache hit reports byte counts and timestamps like any other response, so an
-    // unclassified fetch that was really a disk read would otherwise divide megabytes by the
-    // milliseconds it took to read them. Costs the rate for tasks an `NSURLProtocol` subclass
-    // intercepted, which also report `.unknown`, and a missing rate beats an impossible one.
-    let cameFromNetwork = transaction.map { $0.resourceFetchType == .networkLoad }
+    // `.unknown` maps to nil rather than a guess: a cache hit reports byte counts and timestamps
+    // like any other response, so an unclassified fetch that was really a disk read would
+    // otherwise divide megabytes by the milliseconds it took to read them. Costs the throughput
+    // rate for tasks an `NSURLProtocol` subclass intercepted, which also report `.unknown`, and a
+    // missing rate beats an impossible one.
+    let fetchType: FetchType? = transaction.flatMap { transaction in
+      switch transaction.resourceFetchType {
+      case .networkLoad:
+        return .network
+      case .localCache:
+        return .cache
+      case .serverPush:
+        return .serverPush
+      default:
+        return nil
+      }
+    }
 
     let timings = NetworkRequest.Timings(
-      fetchStart: transaction?.fetchStartDate ?? fallbackStart,
+      fetchStart: firstTransaction?.fetchStartDate ?? fallbackStart,
       domainLookupStart: transaction?.domainLookupStartDate,
       domainLookupEnd: transaction?.domainLookupEndDate,
       connectStart: transaction?.connectStartDate,
@@ -247,7 +298,14 @@ extension NetworkRequest {
         else {
           continue
         }
-        result.append(Redirect(fromUrl: fromUrl, toUrl: toUrl, statusCode: response.statusCode))
+        result.append(
+          Redirect(
+            fromUrl: fromUrl,
+            toUrl: toUrl,
+            statusCode: response.statusCode,
+            respondedAt: current.responseEndDate
+          )
+        )
       }
       return result
     }()
@@ -260,9 +318,13 @@ extension NetworkRequest {
       networkProtocol: transaction?.networkProtocolName,
       requestBytesSent: requestBytesSent,
       responseBytesReceived: responseBytesReceived,
-      cameFromNetwork: cameFromNetwork,
+      fetchType: fetchType,
       timings: timings,
       errorDescription: error.map { ($0 as NSError).localizedDescription },
+      errorType: error.map {
+        let nsError = $0 as NSError
+        return "\(nsError.domain):\(nsError.code)"
+      },
       redirects: redirects
     )
   }

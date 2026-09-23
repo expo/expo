@@ -1,7 +1,6 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import { CommonActions, type ParamListBase, StackActions, StackRouter } from '../../routers';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
@@ -18,7 +17,7 @@ beforeEach(() => {
   require('nanoid/non-secure').__key = 0;
 });
 
-test('blocks removal with the hook and emits removePrevented', () => {
+test('blocks removal and emits removed with deferred effect cleanup', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
     return (
@@ -102,8 +101,7 @@ test.skip('blocks synchronous redispatch from removePrevented without re-emittin
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
       </TestNavigator>
-    </BaseNavigationContainer>,
-    { wrapper: RouterRegistryProvider }
+    </BaseNavigationContainer>
   );
 
   act(() => ref.current?.navigate('bar'));

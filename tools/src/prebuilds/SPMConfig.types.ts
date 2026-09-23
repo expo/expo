@@ -11,12 +11,12 @@ export interface FrameworkTarget {
   type: 'framework';
   /** The name of the target */
   name: string;
-  /** Path to the xcframework relative to package root */
+  /** Path to the xcframework relative to package root, or to `package`'s root when it is set */
   path: string;
+  /** npm package shipping the xcframework, when it is not the package being built (resolved from it) */
+  package?: string;
   /** Header locations within the framework bundle */
   includeDirectories?: string[];
-  /** Path to a VFS overlay file (.yaml) for virtual filesystem mapping */
-  vfsOverlayPath?: string;
   /** System frameworks to link */
   linkedFrameworks?: string[];
 }
@@ -93,7 +93,9 @@ export interface SourceTarget {
   headerPattern?: string;
   /** Names of other targets this target depends on */
   dependencies?: string[];
-  /** Paths to exclude from compilation */
+  /** Paths to exclude from compilation. Any `Tests` directory is always excluded (glob
+   * `**\/Tests\/**`), and the generated `.swiftinterface` files are checked for test-only
+   * imports such as `Testing`. */
   exclude?: string[];
   /** Header search paths relative to the target path */
   includeDirectories?: string[];
@@ -264,6 +266,8 @@ export interface SPMProduct {
 export interface SPMConfig {
   /** JSON Schema reference */
   $schema?: string;
+  /** Whether this package publishes its precompiled XCFrameworks in its npm package. */
+  publishPrebuilds?: boolean;
   /** List of SPM products to generate with their targets */
   products: SPMProduct[];
 }

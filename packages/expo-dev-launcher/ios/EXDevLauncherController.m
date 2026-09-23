@@ -314,6 +314,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
 {
+  if ([EXDevLauncherFingerprintCheck handle:url]) {
+    return YES;
+  }
+
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
@@ -420,8 +424,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     projectUrl = expoUrl;
   }
 
-  // Disable onboarding popup if "&disableOnboarding=1" is a param
+  [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:url];
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
+
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {

@@ -58,6 +58,10 @@ code {
   outline: none !important;
 }
 
+[cmdk-input]:focus-visible {
+  @apply rounded-3xl;
+}
+
 /* Collapsible */
 
 details::details-content {
@@ -76,7 +80,6 @@ details::details-content {
 }
 
 *:focus-visible:not(div) {
-  @apply rounded-sm;
   outline: 3px solid var(--expo-theme-icon-info);
   outline-offset: 1px;
 }
@@ -105,12 +108,8 @@ div:not(#root) > ::-webkit-scrollbar-thumb:hover {
   @apply bg-palette-gray6;
 }
 
-div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb {
-  @apply bg-palette-gray11;
-}
-
-div[class*='terminal-snippet'] > ::-webkit-scrollbar-thumb:hover {
-  @apply bg-palette-gray12;
+div[class*='terminal-snippet'] > * {
+  scrollbar-color: var(--slate-11) transparent;
 }
 
 details > summary::-webkit-details-marker {

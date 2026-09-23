@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import type { ReactElement, ComponentType } from 'react';
+import type { LayoutChangeEvent } from 'react-native';
 
 import { PresentedContentContext, useIsPresentedInOwnWindow } from '../../PresentedContentContext';
 import type { ModifierConfig } from '../../types';
@@ -15,6 +16,11 @@ export interface RNHostProps extends PrimitiveBaseProps {
    */
   matchContents?: boolean;
   /**
+   * Called on mount and whenever this view's layout in the React Native view tree changes.
+   * With `matchContents`, the reported size is the one measured from the hosted view.
+   */
+  onLayout?: (event: LayoutChangeEvent) => void;
+  /**
    * The RN View to be hosted.
    */
   children: ReactElement;
@@ -26,6 +32,11 @@ export interface RNHostProps extends PrimitiveBaseProps {
 
 type NativeRNHostProps = RNHostProps & {
   layoutRoot: boolean;
+  /**
+   * Internal. Drives the shadow node's content measurement, see
+   * `ExpoViewShadowNode::sizesToContent`.
+   */
+  expoInternalSizeFromChildren?: boolean;
 };
 const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
   'ExpoUI',
@@ -39,6 +50,7 @@ function transformProps(props: RNHostProps, layoutRoot: boolean): NativeRNHostPr
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     layoutRoot,
+    expoInternalSizeFromChildren: props.matchContents,
   };
 }
 

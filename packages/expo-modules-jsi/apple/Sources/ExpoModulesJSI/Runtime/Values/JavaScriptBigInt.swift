@@ -231,8 +231,7 @@ public struct JavaScriptBigInt: JavaScriptType, Sendable, ~Copyable {
     guard radix >= 2 && radix <= 36 else {
       throw BigIntConversionError.invalidRadix(radix)
     }
-    let jsiString = pointee.toString(runtime.pointee, Int32(radix))
-    return String(jsiString.utf16(runtime.pointee))
+    return String(jsiString: pointee.toString(runtime.pointee, Int32(radix)), in: runtime.pointee)
   }
 
   // MARK: - JavaScriptType
