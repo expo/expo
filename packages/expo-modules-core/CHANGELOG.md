@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed `Exception` reporting `undefined reason` to JavaScript instead of the description it was created with, which also affected every `promise.reject(code, description)` call. ([#50215](https://github.com/expo/expo/pull/50215) by [@Maher-Reven](https://github.com/Maher-Reven))
+- [Android] Fixed async functions rejecting with `Cannot use shared object that was already released`, and `sharedObjectDidRelease` being called in the middle of a pending call, when the garbage collector took the JS object of a shared object receiver or argument before the call finished. ([#50513](https://github.com/expo/expo/pull/50513) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

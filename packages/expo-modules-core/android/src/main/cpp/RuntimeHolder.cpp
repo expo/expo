@@ -9,6 +9,7 @@
 #if USE_HERMES
 
 #include <hermes/hermes.h>
+#include <jsi/instrumentation.h>
 
 #include <utility>
 
@@ -68,6 +69,25 @@ jlong RuntimeHolder::createRuntime() {
 #else
   runtime = facebook::jsc::makeJSCRuntime();
 #endif
+
+  // Exposes a `gc()` function, so tests can force a full garbage collection.
+  auto gcPropName = jsi::PropNameID::forUtf8(*runtime, "gc");
+  runtime->global().setProperty(
+    *runtime,
+    gcPropName,
+    jsi::Function::createFromHostFunction(
+      *runtime,
+      gcPropName,
+      0,
+      [](jsi::Runtime &rt,
+         const jsi::Value &thisVal,
+         const jsi::Value *args,
+         size_t count) {
+        rt.instrumentation().collectGarbage("test");
+        return jsi::Value::undefined();
+      }
+    )
+  );
 
   // By default "global" property isn't set.
   runtime->global().setProperty(

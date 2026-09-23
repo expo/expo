@@ -12,16 +12,19 @@ JavaCallback::CallbackContext::CallbackContext(
   jsi::Runtime &rt,
   std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
   std::optional<jsi::Function> resolveHolder,
-  std::optional<jsi::Function> rejectHolder
+  std::optional<jsi::Function> rejectHolder,
+  std::vector<jsi::Value> retainedValues
 ) : react::LongLivedObject(rt),
     rt(rt),
     jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
     resolveHolder(std::move(resolveHolder)),
-    rejectHolder(std::move(rejectHolder)) {}
+    rejectHolder(std::move(rejectHolder)),
+    retainedValues(std::move(retainedValues)) {}
 
 void JavaCallback::CallbackContext::invalidate() {
   resolveHolder.reset();
   rejectHolder.reset();
+  retainedValues.clear();
   allowRelease();
 }
 
