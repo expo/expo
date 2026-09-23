@@ -74,6 +74,7 @@ android {
     quest {
       dimension "device"
       applicationIdSuffix ".quest"
+      minSdkVersion 29
     }
     mobile { dimension "device" }
   }
