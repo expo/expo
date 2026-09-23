@@ -429,11 +429,6 @@ export const general = [
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/controlled-components.mdx'),
       ]),
-      makeSection('Expo UI', [
-        makePage('guides/expo-ui-swift-ui/index.mdx'),
-        makePage('guides/expo-ui-swift-ui/extending.mdx'),
-        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
-      ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
         makePage('troubleshooting/application-has-not-been-registered.mdx'),
@@ -924,6 +919,7 @@ function makePage(file) {
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,
+    sidebarOrder: data.sidebar_order ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {
@@ -953,18 +949,7 @@ function pagesFromDir(dir) {
     .filter(entity => entity.isDirectory())
     .map(folder => {
       const folderPages = pagesFromDir(path.join(dir, folder.name));
-      const sortedFolderPages = folderPages.sort((a, b) => {
-        // prioritize index files first
-        if (a.isIndex && !b.isIndex) {
-          return -1;
-        }
-        if (!a.isIndex && b.isIndex) {
-          return 1;
-        }
-
-        // otherwise sort by name (title)
-        return a.name.localeCompare(b.name);
-      });
+      const sortedFolderPages = folderPages.sort(compareSidebarEntries);
 
       if (folderPages.length === 0) {
         return null;
@@ -998,25 +983,29 @@ function pagesFromDir(dir) {
     })
     .filter(Boolean);
 
-  return [...files, ...folders].sort((a, b) => {
-    // prioritize index files first
-    if (a.isIndex && !b.isIndex) {
-      return -1;
-    }
-    if (!a.isIndex && b.isIndex) {
-      return 1;
-    }
+  return [...files, ...folders].sort(compareSidebarEntries);
+}
 
-    // an explicit `order` in metadata.json wins; anything without one stays alphabetical
-    if (a.sidebarOrder !== undefined || b.sidebarOrder !== undefined) {
-      return (
-        (a.sidebarOrder ?? Number.MAX_SAFE_INTEGER) - (b.sidebarOrder ?? Number.MAX_SAFE_INTEGER)
-      );
-    }
+/**
+ * Orders one level of the sidebar: the index page first, then by explicit order, then
+ * alphabetically by sidebar title.
+ *
+ * The order is a weight, from a folder's `metadata.json` or a page's `sidebar_order`
+ * frontmatter, and defaults to 0. A negative weight sorts above the alphabetical run and
+ * a positive one below it, so a page can be pinned to either end of its group.
+ */
+function compareSidebarEntries(a, b) {
+  if (a.isIndex !== b.isIndex) {
+    return a.isIndex ? -1 : 1;
+  }
 
-    // otherwise sort by name (title)
-    return a.name.localeCompare(b.name);
-  });
+  const aOrder = a.sidebarOrder ?? 0;
+  const bOrder = b.sidebarOrder ?? 0;
+  if (aOrder !== bOrder) {
+    return aOrder - bOrder;
+  }
+
+  return a.name.localeCompare(b.name);
 }
 
 /**

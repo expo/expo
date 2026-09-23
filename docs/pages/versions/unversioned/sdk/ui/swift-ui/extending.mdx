@@ -1,29 +1,35 @@
 ---
 title: Extending with SwiftUI
-sidebar_title: Extending with SwiftUI
+sidebar_title: Custom SwiftUI components
+sidebar_order: 1
 description: Learn how to create custom SwiftUI components and modifiers that integrate with Expo UI.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
 platforms: ['ios', 'tvos']
 ---
 
-import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import {
+  Prerequisites,
+  Requirement,
+} from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 
-This guide explains how to create custom SwiftUI components and modifiers that integrate seamlessly with Expo UI.
+This guide explains how to use the [Expo Modules API](/modules/overview/) to create custom SwiftUI components and modifiers that integrate with Expo UI.
 
 <Prerequisites>
   <Requirement title={<><CODE>@expo/ui</CODE> installed</>}>
-    Install `@expo/ui` in your project. See [Building SwiftUI apps with Expo UI](/guides/expo-ui-swift-ui/) for more information.
+    Install `@expo/ui` in your project. See [SwiftUI components in Expo UI](../swift-ui) for more information.
 
     <Terminal cmd={['$ npx expo install @expo/ui']} />
 
   </Requirement>
   <Requirement title="A development build">
-    Expo UI is not available in Expo Go. Create a [development build](/develop/development-builds/introduction/) of your app.
+    A custom Expo module contains native code, which Expo Go cannot load. Create a [development build](/develop/development-builds/introduction/) of your app.
   </Requirement>
-  <Requirement title="Familiarity with Expo Modules API and SwiftUI">
-    Basic familiarity with [Expo Modules API](/modules/overview/) and [SwiftUI](https://developer.apple.com/swiftui/) is recommended.
+  <Requirement title="Familiarity with the Expo Modules API and SwiftUI">
+    This guide assumes basic familiarity with the [Expo Modules API](/modules/overview/) and [SwiftUI](https://developer.apple.com/swiftui/).
   </Requirement>
 </Prerequisites>
 
@@ -43,7 +49,7 @@ Create a local Expo module in your project:
 
 Add `ExpoUI` as a dependency in your module's podspec file:
 
-```ruby my-ui/ios/MyUi.podspec
+```ruby modules/my-ui/ios/MyUi.podspec
 Pod::Spec.new do |s|
   s.name           = 'MyUi'
   s.version        = '1.0.0'
@@ -63,10 +69,10 @@ end
 
 Create your SwiftUI view with two parts:
 
-1. **Props class**: Extends `UIBaseViewProps` from `ExpoUI` to get automatic support for the [`modifiers`](/versions/latest/sdk/ui/swift-ui/modifiers/) prop
-2. **View struct**: Conforms to `ExpoSwiftUI.View` protocol, which requires an `@ObservedObject` props property and a `body`
+1. **Props class**: Extends `UIBaseViewProps` from `ExpoUI` to get automatic support for the [`modifiers`](modifiers) prop
+2. **View struct**: Conforms to the `ExpoSwiftUI.View` protocol, which requires an `@ObservedObject` `props` property and a `body`
 
-```swift my-ui/ios/MyCustomView.swift
+```swift modules/my-ui/ios/MyCustomView.swift
 import SwiftUI
 import ExpoModulesCore
 import ExpoUI
@@ -94,7 +100,7 @@ struct MyCustomView: ExpoSwiftUI.View {
 
 Register the view in your module using `ExpoUIView`. This wraps your SwiftUI view with modifier support and makes it available to JavaScript:
 
-```swift my-ui/ios/MyUiModule.swift
+```swift modules/my-ui/ios/MyUiModule.swift
 import ExpoModulesCore
 import ExpoUI
 
@@ -113,7 +119,7 @@ public class MyUiModule: Module {
 
 Create a wrapper component that connects modifiers with event handling. The `createViewModifierEventListener` utility enables event-based modifiers like `onTapGesture` and `onAppear` to work with your custom view:
 
-```tsx my-ui/src/MyCustomView.tsx
+```tsx modules/my-ui/src/MyCustomView.tsx
 import { requireNativeView } from 'expo';
 import { type CommonViewModifierProps } from '@expo/ui/swift-ui';
 import { createViewModifierEventListener } from '@expo/ui/swift-ui/modifiers';
@@ -123,13 +129,21 @@ export interface MyCustomViewProps extends CommonViewModifierProps {
   children?: React.ReactNode;
 }
 
-const NativeMyCustomView = requireNativeView<MyCustomViewProps>('MyUi', 'MyCustomView');
+const NativeMyCustomView = requireNativeView<MyCustomViewProps>(
+  'MyUi',
+  'MyCustomView'
+);
 
-export function MyCustomView({ modifiers, ...restProps }: MyCustomViewProps) {
+export function MyCustomView({
+  modifiers,
+  ...restProps
+}: MyCustomViewProps) {
   return (
     <NativeMyCustomView
       modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...(modifiers
+        ? createViewModifierEventListener(modifiers)
+        : undefined)}
       {...restProps}
     />
   );
@@ -138,21 +152,44 @@ export function MyCustomView({ modifiers, ...restProps }: MyCustomViewProps) {
 
 </Step>
 
+<Step label="6">
+
+Export the component from your module's entry point:
+
+```ts modules/my-ui/index.ts
+export {
+  MyCustomView,
+  type MyCustomViewProps,
+} from './src/MyCustomView';
+```
+
+</Step>
+
 ### Using your custom component
 
-Your custom component now works with all `ExpoUI` built-in modifiers:
+> **info** Adding a native source file to a local module does not add it to the iOS project. Run `npx expo prebuild` before you rebuild. Otherwise, the build fails with `cannot find 'MyCustomView' in scope`.
 
-```tsx app/index.tsx
+Your custom component now works with all built-in Expo UI modifiers:
+
+```tsx src/app/index.tsx
 import { Host, Text } from '@expo/ui/swift-ui';
-import { padding, cornerRadius, background } from '@expo/ui/swift-ui/modifiers';
-import { MyCustomView } from './modules/my-ui';
+import {
+  padding,
+  cornerRadius,
+  background,
+} from '@expo/ui/swift-ui/modifiers';
+import { MyCustomView } from '../../modules/my-ui';
 
-export default function App() {
+export default function Index() {
   return (
     <Host style={{ flex: 1 }}>
       <MyCustomView
         title="Hello World"
-        modifiers={[padding({ all: 16 }), cornerRadius(12), background('#f0f0f0')]}>
+        modifiers={[
+          padding({ all: 16 }),
+          background('#f0f0f0'),
+          cornerRadius(12),
+        ]}>
         <Text>Child content</Text>
       </MyCustomView>
     </Host>
@@ -172,7 +209,7 @@ You can also create custom modifiers that work with any Expo UI component.
 
 Create a modifier struct that conforms to `ViewModifier` and `Record`:
 
-```swift my-ui/ios/CustomBorderModifier.swift
+```swift modules/my-ui/ios/CustomBorderModifier.swift
 import SwiftUI
 import ExpoModulesCore
 import ExpoUI
@@ -192,13 +229,15 @@ struct CustomBorderModifier: ViewModifier, Record {
 }
 ```
 
+> **info** This adds a second native source file, so run `npx expo prebuild` again before you rebuild.
+
 </Step>
 
 <Step label="2">
 
-Register your modifier with `ViewModifierRegistry` in your module definition. Use `OnCreate` to register and `OnDestroy` to unregister to avoid race conditions with the SwiftUI render thread:
+Register your modifier with `ViewModifierRegistry` in your module definition. To avoid race conditions with the SwiftUI render thread, call `register` in `OnCreate` and `unregister` in `OnDestroy`:
 
-```swift my-ui/ios/MyUiModule.swift
+```swift modules/my-ui/ios/MyUiModule.swift
 import ExpoModulesCore
 import ExpoUI
 
@@ -229,11 +268,14 @@ public class MyUiModule: Module {
 
 Create a TypeScript function that generates the modifier config:
 
-```ts my-ui/src/modifiers.ts
+```ts modules/my-ui/src/modifiers.ts
 import { createModifier } from '@expo/ui/swift-ui/modifiers';
 
-export const customBorder = (params: { color?: string; width?: number; cornerRadius?: number }) =>
-  createModifier('customBorder', params);
+export const customBorder = (params: {
+  color?: string;
+  width?: number;
+  cornerRadius?: number;
+}) => createModifier('customBorder', params);
 ```
 
 </Step>
@@ -242,8 +284,11 @@ export const customBorder = (params: { color?: string; width?: number; cornerRad
 
 Export the modifier from your module:
 
-```ts my-ui/index.ts
-export { MyCustomView, type MyCustomViewProps } from './src/MyCustomView';
+```ts modules/my-ui/index.ts
+export {
+  MyCustomView,
+  type MyCustomViewProps,
+} from './src/MyCustomView';
 export { customBorder } from './src/modifiers';
 ```
 
@@ -251,20 +296,24 @@ export { customBorder } from './src/modifiers';
 
 ### Using custom modifiers
 
-Your custom modifier works with any `ExpoUI` component:
+Your custom modifier works with any Expo UI component:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Host, Text, VStack } from '@expo/ui/swift-ui';
 import { padding } from '@expo/ui/swift-ui/modifiers';
-import { customBorder } from './modules/my-ui';
+import { customBorder } from '../../modules/my-ui';
 
-export default function App() {
+export default function Index() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack
         modifiers={[
           padding({ all: 20 }),
-          customBorder({ color: '#FF6B35', width: 3, cornerRadius: 8 }),
+          customBorder({
+            color: '#FF6B35',
+            width: 3,
+            cornerRadius: 8,
+          }),
         ]}>
         <Text>This has a custom border!</Text>
       </VStack>
@@ -275,11 +324,9 @@ export default function App() {
 
 ## Next steps
 
-Congratulations! You've learned how to extend Expo UI with custom SwiftUI components and modifiers. Your custom components now integrate seamlessly with the built-in modifier system.
+Your custom components now work with the built-in modifier system. From here you can:
 
-Here are some ideas for what to build next:
-
-- Use the [built-in SwiftUI components](/versions/latest/sdk/ui/swift-ui/) that come with Expo UI
+- Use the [built-in SwiftUI components](../swift-ui) that come with Expo UI
 - Build custom modifiers for app-specific styling patterns
 - Wrap third-party SwiftUI libraries for use in React Native
 - Share your components as an npm package for others to use
