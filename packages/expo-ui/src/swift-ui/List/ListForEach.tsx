@@ -51,9 +51,9 @@ export interface ListForEachElementsProps extends CommonViewModifierProps {
 let warnedElements = false;
 
 /**
- * A group of rows inside List, with optional deletion and reordering.
+ * A group of rows inside `List`, with optional deletion and reordering.
  * Pass `data` with `keyExtractor`, and render each row from a `children` function.
- * Rows are recycled unless `recycling` is `false`.
+ * Recycles rows unless `recycling` is `false`.
  */
 export function ListForEach<ItemT>(props: ListForEachProps<ItemT> | ListForEachElementsProps) {
   if (props.data === undefined) {

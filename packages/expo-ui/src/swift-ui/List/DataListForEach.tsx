@@ -7,16 +7,20 @@ import { type CommonViewModifierProps } from '../types';
 import { getSlotIndices, getWindow } from './window';
 
 export interface ListForEachProps<ItemT> extends CommonViewModifierProps {
-  /** Called with deleted indices from this group’s data array. */
+  /** Called with deleted indices from this group's `data` array. */
   onDelete?: (indices: number[]) => void;
-  /** Called with source indices and a destination before removal (up to data.length). */
+  /**
+   * Called with the source indices and the destination index. The destination index counts
+   * positions before the moved items are removed, so it can equal `data.length`.
+   */
   onMove?: (sourceIndices: number[], destination: number) => void;
   /** Items to display. Replace the array when updating data. */
   data: readonly ItemT[];
-  /** Returns a stable, unique string key, also used for List selection. */
+  /** Returns a stable, unique string key, also used for `List` selection. */
   keyExtractor: (item: ItemT, index: number) => string;
   /**
-   * Renders a row. Wrap it in `useCallback`, or every row re-renders on each parent render.
+   * Renders a row. When `recycling` is `true`, wrap it in `useCallback`, or every row
+   * re-renders on each parent render.
    * Recycled rows are reused for other items, so their local state (`useState`) carries over.
    * Reset it when the item changes, or keep the state outside the row.
    */
@@ -34,8 +38,8 @@ export interface ListForEachProps<ItemT> extends CommonViewModifierProps {
    */
   overscanCount?: number;
   /**
-   * Placeholder height in points, excluding List insets, until a row is measured.
-   * Must be positive. Measurements reset when data or width changes.
+   * Placeholder height in points, excluding `List` insets, until a row is measured.
+   * Must be positive. Measurements reset when `data` or width changes.
    * Ignored when `recycling` is `false`.
    * @default 64
    */
