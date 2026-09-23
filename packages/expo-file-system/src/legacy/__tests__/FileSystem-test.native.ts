@@ -1,4 +1,5 @@
 import { mockProperty, unmockProperty } from 'jest-expo';
+import { Platform } from 'react-native';
 
 import ExponentFileSystem from '../ExponentFileSystem';
 import * as FileSystem from '../FileSystem';
@@ -37,6 +38,37 @@ describe('FileSystem', () => {
         options,
         resumeData
       );
+    });
+
+    it('passes the deferred background completion option to native code', async () => {
+      const deferredOptions = { deferBackgroundSessionCompletion: true };
+      const deferredDownload = FileSystem.createDownloadResumable(
+        remoteUri,
+        localUri,
+        deferredOptions
+      );
+
+      await deferredDownload.downloadAsync();
+
+      expect(ExponentFileSystem.downloadResumableStartAsync).toHaveBeenCalledWith(
+        remoteUri,
+        localUri,
+        (deferredDownload as any)._uuid,
+        deferredOptions,
+        undefined
+      );
+    });
+
+    it('acknowledges background session completion for the matching download', async () => {
+      await downloadResumable.completeBackgroundSessionAsync();
+
+      if (Platform.OS === 'ios') {
+        expect(ExponentFileSystem.completeBackgroundSessionAsync).toHaveBeenCalledWith(
+          (downloadResumable as any)._uuid
+        );
+      } else {
+        expect(ExponentFileSystem.completeBackgroundSessionAsync).not.toHaveBeenCalled();
+      }
     });
 
     it(`pauses correctly`, async () => {

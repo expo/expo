@@ -293,7 +293,16 @@ public final class FileSystemLegacyModule: Module {
 
       sessionTaskDispatcher.register(taskDelegate, for: task)
       taskHandlersManager.register(task, uuid: uuid)
+      if options.deferBackgroundSessionCompletion, let identifier = session.configuration.identifier {
+        ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
+          .registerDownload(uuid, forSessionIdentifier: identifier)
+      }
       task.resume()
+    }
+
+    AsyncFunction("completeBackgroundSessionAsync") { (uuid: String) in
+      ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
+        .completeDownload(uuid)
     }
 
     AsyncFunction("downloadResumablePauseAsync") { (id: String) -> [String: String?] in

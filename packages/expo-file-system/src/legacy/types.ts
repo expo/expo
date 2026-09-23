@@ -27,6 +27,7 @@ export declare class ExponentFileSystemModule extends NativeModule<FileSystemEve
   readonly downloadAsync?: PlatformMethod;
   readonly uploadAsync?: PlatformMethod;
   readonly downloadResumableStartAsync?: PlatformMethod;
+  readonly completeBackgroundSessionAsync?: PlatformMethod;
   readonly downloadResumablePauseAsync?: PlatformMethod;
   readonly getContentUriAsync?: PlatformMethod;
   readonly getFreeDiskStorageAsync?: PlatformMethod;
