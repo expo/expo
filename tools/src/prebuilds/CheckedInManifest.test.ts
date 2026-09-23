@@ -12,7 +12,12 @@ import {
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
-import type { SPMConfig, SPMProduct, SourceTarget } from './SPMConfig.types';
+import type {
+  SPMConfig,
+  SPMPackageDependencyConfig,
+  SPMProduct,
+  SourceTarget,
+} from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { SPMPackage } from './SPMPackage';
 
@@ -189,23 +194,420 @@ for (const [kind, declaration, imports] of [
   });
 }
 
-it('D-G URL dependency: rejects manifest-owned external packages', async () => {
-  await rejectsManifest(
-    fixture(undefined, undefined, {
-      dependencies: '.package(url: "https://example.com/remote.git", from: "1.0.0")',
-    }),
-    /: the manifest declares external package dependencies, but the generated build manifest owns external dependencies\./
+const REMOTE_URL = 'https://example.com/remote.git';
+const REMOTE_PACKAGE = `.package(url: "${REMOTE_URL}", exact: "1.2.3")`;
+
+function remote(
+  version: SPMPackageDependencyConfig['version'] = { exact: '1.2.3' },
+  url = REMOTE_URL,
+  productName = 'Remote'
+): SPMPackageDependencyConfig {
+  return { url, productName, version };
+}
+
+function withPackages(
+  dependencies: string,
+  spmPackages: SPMPackageDependencyConfig[],
+  targets?: string
+) {
+  const input = fixture(targets, undefined, { dependencies });
+  input.product.spmPackages = spmPackages;
+  return input;
+}
+
+const PACKAGES_DIFFER =
+  /: its package dependencies do not match spmPackages in spm\.config\.json: /;
+
+async function rejectsPackageDifferences(input: ReturnType<typeof fixture>, differences: string[]) {
+  await assert.rejects(resolve(input.root, input.product), (error: Error) => {
+    assertManifestDiagnostic(error, PACKAGES_DIFFER, 'Main');
+    assert.match(error.message, /Package\.swift is the authority for third-party packages/);
+    assert.match(
+      error.message,
+      /Update spmPackages in spm\.config\.json to match Package\.swift\.$/
+    );
+    for (const difference of differences) {
+      assert.ok(error.message.includes(difference), `Missing "${difference}" in: ${error.message}`);
+    }
+    return true;
+  });
+}
+
+it('packages: accepts a manifest whose packages match spmPackages by normalized URL', async () => {
+  const input = withPackages(
+    `.package(url: "https://example.com/Remote.git", exact: "1.2.3"),
+     .package(url: "https://example.com/branchy", branch: "main"),
+     .package(url: "https://example.com/pinned.git", revision: "abc123")`,
+    [
+      remote(),
+      remote({ exact: '1.2.3' }, REMOTE_URL, 'RemoteExtras'),
+      remote({ branch: 'main' }, 'https://example.com/branchy.git', 'Branchy'),
+      remote({ revision: 'abc123' }, 'https://EXAMPLE.com/pinned', 'Pinned'),
+    ]
+  );
+  assert.equal((await resolve(input.root, input.product))[0].name, 'Main');
+});
+
+it('packages: rejects a version that differs from spmPackages and shows both', async () => {
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, [remote({ exact: '1.2.4' })]), [
+    `${REMOTE_URL} requires exact: "1.2.3" in Package.swift but exact: "1.2.4" in spmPackages (product "Remote")`,
+  ]);
+});
+
+it('packages: rejects a requirement kind that differs from spmPackages', async () => {
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, [remote({ revision: '1.2.3' })]), [
+    `${REMOTE_URL} requires exact: "1.2.3" in Package.swift but revision: "1.2.3" in spmPackages (product "Remote")`,
+  ]);
+});
+
+it('packages: rejects a URL that differs from spmPackages as a package on each side', async () => {
+  const fork = 'https://example.com/remote-fork.git';
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, [remote(undefined, fork)]), [
+    `${REMOTE_URL} (exact: "1.2.3") is declared in Package.swift but missing from spmPackages`,
+    `${fork} (exact: "1.2.3", product "Remote") is in spmPackages but not declared in Package.swift`,
+  ]);
+});
+
+it('packages: rejects a package declared only in the manifest', async () => {
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, []), [
+    `${REMOTE_URL} (exact: "1.2.3") is declared in Package.swift but missing from spmPackages`,
+  ]);
+});
+
+it('packages: rejects a package declared only in spmPackages', async () => {
+  await rejectsPackageDifferences(withPackages('', [remote()]), [
+    `${REMOTE_URL} (exact: "1.2.3", product "Remote") is in spmPackages but not declared in Package.swift`,
+  ]);
+});
+
+it('packages: reports every difference in one error', async () => {
+  await rejectsPackageDifferences(
+    withPackages(
+      `${REMOTE_PACKAGE}, .package(url: "https://example.com/extra.git", branch: "main")`,
+      [remote({ exact: '2.0.0' }), remote(undefined, 'https://example.com/absent.git', 'Absent')]
+    ),
+    [
+      `${REMOTE_URL} requires exact: "1.2.3" in Package.swift but exact: "2.0.0" in spmPackages (product "Remote")`,
+      'https://example.com/absent.git (exact: "1.2.3", product "Absent") is in spmPackages but not declared in Package.swift',
+      'https://example.com/extra.git (branch: "main") is declared in Package.swift but missing from spmPackages',
+    ]
   );
 });
 
-it('D-G product dependency: rejects .product instead of silently dropping it', async () => {
+it('packages: rejects a manifest version range, which the dump cannot report exactly', async () => {
   await rejectsManifest(
-    fixture(
-      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")',
-      undefined,
-      { dependencies: '.package(url: "https://example.com/remote.git", from: "1.0.0")' }
+    withPackages(`.package(url: "${REMOTE_URL}", from: "1.0.0")`, [remote({ from: '1.0.0' })]),
+    new RegExp(
+      `: the manifest declares ${REMOTE_URL} with a version range, .*\\. Use exact: in Package\\.swift`
+    )
+  );
+});
+
+it('packages: rejects from: in spmPackages, which a checked-in manifest can never match', async () => {
+  await rejectsManifest(
+    withPackages(REMOTE_PACKAGE, [remote({ from: '1.2.3' })]),
+    new RegExp(
+      `: spm\\.config\\.json declares ${REMOTE_URL} \\(product "Remote"\\) with from: "1\\.2\\.3", .*\\. Use exact: in spm\\.config\\.json`
+    )
+  );
+});
+
+for (const [label, version, url] of [
+  ['an empty version', {}, REMOTE_URL],
+  ['an empty exact value', { exact: '' }, REMOTE_URL],
+  ['a non-string exact value', { exact: 1 }, REMOTE_URL],
+  ['two requirement kinds', { exact: '1.2.3', branch: 'main' }, REMOTE_URL],
+  ['an unknown requirement kind', { tag: '1.2.3' }, REMOTE_URL],
+  ['a null version', null, REMOTE_URL],
+  ['an empty URL', { exact: '1.2.3' }, ''],
+] as const) {
+  it(`packages: rejects an spmPackages entry with ${label}`, async () => {
+    const entry = { url, productName: 'Remote', version } as unknown as SPMPackageDependencyConfig;
+    await rejectsManifest(
+      withPackages(REMOTE_PACKAGE, [entry]),
+      /: spm\.config\.json declares an spmPackages entry that Mode B cannot read: /
+    );
+  });
+}
+
+it('packages: rejects a local .package(path:) dependency', async () => {
+  const input = withPackages('.package(path: "local")', []);
+  fs.mkdirSync(path.join(input.root, 'local'));
+  fs.writeFileSync(
+    path.join(input.root, 'local/Package.swift'),
+    '// swift-tools-version: 5.9\nimport PackageDescription\nlet package = Package(name: "Local")\n'
+  );
+  await rejectsManifest(input, /: the manifest declares local package dependency "[^"]*local"/);
+});
+
+it('packages: rejects a registry .package(id:) dependency', async () => {
+  await rejectsManifest(
+    withPackages('.package(id: "example.remote", exact: "1.2.3")', []),
+    /: the manifest declares registry package dependency "example\.remote"/
+  );
+});
+
+it('packages: rejects an empty branch the dump reports verbatim', async () => {
+  await rejectsManifest(
+    withPackages(`.package(url: "${REMOTE_URL}", branch: "")`, [remote({ branch: 'main' })]),
+    /: the dumped manifest declares a package dependency that Mode B cannot read: /
+  );
+});
+
+it('packages: rejects a local Git repository, which has no remote URL', async () => {
+  await rejectsManifest(
+    withPackages('.package(url: "/abs/remote", exact: "1.2.3")', []),
+    /: the dumped manifest declares a package dependency that Mode B cannot read: /
+  );
+});
+
+it('packages: rejects two declarations of one package that differ only in spelling', async () => {
+  await rejectsManifest(
+    withPackages(`${REMOTE_PACKAGE}, .package(url: "https://example.com/Remote", exact: "1.2.3")`, [
+      remote(),
+    ]),
+    /: the manifest declares https:\/\/example\.com\/remote\.git and https:\/\/example\.com\/Remote, which name the same package/
+  );
+});
+
+const pinned = {
+  identity: 'remote',
+  location: { remote: [{ urlString: REMOTE_URL }] },
+  productFilter: null,
+  requirement: { exact: ['1.2.3'] },
+};
+for (const [label, dependency] of [
+  ['a null entry', null],
+  ['an empty entry', {}],
+  ['an empty sourceControl list', { sourceControl: [] }],
+  ['two sourceControl entries', { sourceControl: [pinned, pinned] }],
+  ['an unknown dependency kind', { git: [pinned] }],
+  ['a missing location', { sourceControl: [{ ...pinned, location: undefined }] }],
+  ['an empty remote list', { sourceControl: [{ ...pinned, location: { remote: [] } }] }],
+  ['an empty URL', { sourceControl: [{ ...pinned, location: { remote: [{ urlString: '' }] } }] }],
+  [
+    'a non-string URL',
+    { sourceControl: [{ ...pinned, location: { remote: [{ urlString: 1 }] } }] },
+  ],
+  ['a missing requirement', { sourceControl: [{ ...pinned, requirement: undefined }] }],
+  ['an empty requirement', { sourceControl: [{ ...pinned, requirement: {} }] }],
+  ['an empty exact list', { sourceControl: [{ ...pinned, requirement: { exact: [] } }] }],
+  ['an empty exact value', { sourceControl: [{ ...pinned, requirement: { exact: [''] } }] }],
+  ['a bare exact string', { sourceControl: [{ ...pinned, requirement: { exact: '1.2.3' } }] }],
+  ['an unknown requirement', { sourceControl: [{ ...pinned, requirement: { tag: ['1.2.3'] } }] }],
+] as const) {
+  it(`packages: rejects a dumped package dependency with ${label}`, async () => {
+    const input = fixture();
+    input.product.spmPackages = [remote()];
+    await withSwiftOnPath(stubSwiftDump(input, {}, { dependencies: [dependency] }), () =>
+      rejectsManifest(
+        input,
+        /: the dumped manifest declares a package dependency that Mode B cannot read: /
+      )
+    );
+  });
+}
+
+it('packages: rejects a dumped dependency list that is not a list', async () => {
+  const input = fixture();
+  await withSwiftOnPath(stubSwiftDump(input, {}, { dependencies: {} }), () =>
+    rejectsManifest(
+      input,
+      /: the dumped manifest declares a package dependency that Mode B cannot read: /
+    )
+  );
+});
+
+it('packages: rejects package traits the generated manifest cannot carry', async () => {
+  const input = fixture();
+  input.product.spmPackages = [remote()];
+  const traits = [{ name: 'Extras' }];
+  await withSwiftOnPath(
+    stubSwiftDump(input, {}, { dependencies: [{ sourceControl: [{ ...pinned, traits }] }] }),
+    () =>
+      rejectsManifest(
+        input,
+        /: the manifest enables traits \["Extras"\] on https:\/\/example\.com\/remote\.git/
+      )
+  );
+});
+
+it('packages: rejects an empty traits list, which disables the default traits', async () => {
+  const input = fixture();
+  input.product.spmPackages = [remote()];
+  await withSwiftOnPath(
+    stubSwiftDump(input, {}, { dependencies: [{ sourceControl: [{ ...pinned, traits: [] }] }] }),
+    () =>
+      rejectsManifest(
+        input,
+        /: the manifest disables the default traits of https:\/\/example\.com\/remote\.git, which the generated build manifest would silently re-enable\./
+      )
+  );
+});
+
+it('packages: accepts the default trait the dump reports for every package', async () => {
+  const input = fixture();
+  input.product.spmPackages = [remote()];
+  const traits = [{ name: 'default' }];
+  await withSwiftOnPath(
+    stubSwiftDump(input, {}, { dependencies: [{ sourceControl: [{ ...pinned, traits }] }] }),
+    async () => {
+      assert.equal((await resolve(input.root, input.product))[0].name, 'Main');
+    }
+  );
+});
+
+it('product dependency: resolves .product(name:package:) as its spmPackages product', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote()],
+    '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+  );
+  (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
+  const [target] = await resolve(input.root, input.product);
+  assert.deepEqual(target.dependencies, ['Remote']);
+  await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug');
+  assert.match(
+    fs.readFileSync(SPMGenerator.getSwiftPackagePath(input.pkg, input.product), 'utf8'),
+    /dependencies: \[\.product\(name: "Remote", package: "remote"\)\]/
+  );
+});
+
+it('product dependency: resolves a .product whose name is also a local target to the product', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote(undefined, undefined, 'Helper')],
+    '.target(name: "Main", dependencies: [.product(name: "Helper", package: "remote")], path: "ios"), .binaryTarget(name: "Helper", path: "Helper.xcframework")'
+  );
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Helper']);
+});
+
+it('product dependency: rejects a .product platform condition like any other dependency', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [remote()],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote", condition: .when(platforms: [.iOS]))], path: "ios")'
     ),
-    /: it depends on \.product\(name: "Remote", package: "remote"\)/
+    /: dependency "Remote" has a platform condition, but the generated dependency format cannot preserve it\./
+  );
+});
+
+it('product dependency: rejects .product moduleAliases instead of silently dropping them', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [remote()],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote", moduleAliases: ["Remote": "RemoteAlias"])], path: "ios")'
+    ),
+    /: dependency "Remote" declares moduleAliases, which the generated dependency format cannot preserve\./
+  );
+});
+
+it('product dependency: rejects a .product naming a product absent from spm.config.json', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [remote()],
+      '.target(name: "Main", dependencies: [.product(name: "Ghost", package: "remote")], path: "ios")'
+    ),
+    /: it depends on \.product\(name: "Ghost", package: "remote"\), but no spmPackages entry in spm\.config\.json has productName "Ghost"\./
+  );
+});
+
+const PACKAGE_NAME_DIFFERS = (configured: string) =>
+  new RegExp(
+    `: it depends on \\.product\\(name: "Remote", package: "[^"]+"\\), but spm\\.config\\.json resolves product "Remote" to package "${configured}", .*\\. Set packageName in spm\\.config\\.json or package: in Package\\.swift`
+  );
+
+it('product dependency: accepts a .product package that matches the URL-derived name exactly', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote()],
+    '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+  );
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Remote']);
+});
+
+it('product dependency: accepts a .product package that differs from the derived name only in case', async () => {
+  const url = 'https://example.com/Remote.git';
+  const input = withPackages(
+    `.package(url: "${url}", exact: "1.2.3")`,
+    [remote(undefined, url)],
+    '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+  );
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Remote']);
+});
+
+it('product dependency: rejects a .product package that differs from the URL-derived name', async () => {
+  await rejectsManifest(
+    withPackages(
+      `${REMOTE_PACKAGE}, .package(url: "https://example.com/other.git", exact: "1.0.0")`,
+      [remote(), remote({ exact: '1.0.0' }, 'https://example.com/other.git', 'Other')],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "other")], path: "ios")'
+    ),
+    PACKAGE_NAME_DIFFERS('remote')
+  );
+});
+
+it('product dependency: rejects a .product package that differs from an explicit packageName', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [{ ...remote(), packageName: 'RemoteKit' }],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+    ),
+    PACKAGE_NAME_DIFFERS('RemoteKit')
+  );
+});
+
+// SwiftPM only accepts a `package:` that names a declared package identity, so a real manifest
+// cannot spell a packageName that differs from the URL; the stubbed dump isolates the override.
+for (const [label, packageName, accepted] of [
+  ['honours an explicit packageName over the URL-derived name', 'RemoteKit', true],
+  ['does not fall back to the URL-derived name without packageName', undefined, false],
+] as const) {
+  it(`product dependency: ${label}`, async () => {
+    const input = fixture();
+    input.product.spmPackages = [{ ...remote(), packageName }];
+    const bin = stubSwiftDump(
+      input,
+      { dependencies: [{ product: ['Remote', 'remotekit', null, null] }] },
+      { dependencies: [{ sourceControl: [pinned] }] }
+    );
+    await withSwiftOnPath(bin, async () => {
+      if (accepted) {
+        assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Remote']);
+      } else {
+        await rejectsManifest(input, PACKAGE_NAME_DIFFERS('remote'));
+      }
+    });
+  });
+}
+
+it('product dependency: rejects a .product naming only an externalDependencies entry', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote()],
+    '.target(name: "Main", dependencies: [.product(name: "React", package: "remote")], path: "ios")'
+  );
+  input.product.externalDependencies = ['React'];
+  await rejectsManifest(
+    input,
+    /: it depends on \.product\(name: "React", package: "remote"\), but no spmPackages entry in spm\.config\.json has productName "React"\./
+  );
+});
+
+it('product dependency: rejects a .product named like a regular target in the product graph', async () => {
+  const input = fixture(
+    '.target(name: "Main", dependencies: [.product(name: "Helper", package: "remote")], path: "ios"), .target(name: "Helper", path: "helper")',
+    { 'ios/Main.swift': 'public let value = 1', 'helper/Helper.swift': 'public let helper = 1' },
+    { dependencies: REMOTE_PACKAGE, members: '"Main", "Helper"' }
+  );
+  input.product.spmPackages = [remote(undefined, undefined, 'Helper')];
+  await rejectsManifest(
+    input,
+    /: dependency \.product\(name: "Helper", package: "remote"\) has the same name as regular target "Helper", /
   );
 });
 
@@ -508,7 +910,8 @@ it('A6 stages real directories and compiles a source relying on generated export
 it('D-F1 keeps config settings and platforms while replacing structure and membership', async () => {
   const input = fixture(
     '.target(name: "Main", path: "ios", linkerSettings: [.linkedFramework("AppKit")]), .target(name: "Unused", path: "unused")',
-    { 'ios/Main.swift': 'public let value = 1', 'unused/Unused.swift': 'public let unused = 1' }
+    { 'ios/Main.swift': 'public let value = 1', 'unused/Unused.swift': 'public let unused = 1' },
+    { dependencies: REMOTE_PACKAGE }
   );
   const target = input.product.targets[0] as SourceTarget;
   target.compilerFlags = ['-DCONFIG_FLAG=1'];
@@ -604,7 +1007,7 @@ it('D-B checks only the package-root manifest', async () => {
 });
 
 it('preserves resolved SPM product references and sibling transitive dependencies', async () => {
-  const input = fixture();
+  const input = fixture(undefined, undefined, { dependencies: REMOTE_PACKAGE });
   const target = input.product.targets[0] as SourceTarget;
   target.dependencies = ['Remote', 'Sibling'];
   input.product.spmPackages = [
@@ -899,7 +1302,11 @@ it('R2 S7 dumps a package only once while resolving fresh product settings', asy
 });
 
 it('R2 A1 retains by-name dependencies owned by externalDependencies and spmPackages', async () => {
-  const input = fixture('.target(name: "Main", dependencies: ["React", "Remote"], path: "ios")');
+  const input = fixture(
+    '.target(name: "Main", dependencies: ["React", "Remote"], path: "ios")',
+    undefined,
+    { dependencies: REMOTE_PACKAGE }
+  );
   (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
   input.product.externalDependencies = ['React'];
   input.product.spmPackages = [
@@ -1268,12 +1675,17 @@ exec '${swift}' "$@"
   return { bin, counter };
 }
 
-function stubSwiftDump(input: ReturnType<typeof fixture>, target: Record<string, unknown>) {
+function stubSwiftDump(
+  input: ReturnType<typeof fixture>,
+  target: Record<string, unknown>,
+  manifest: Record<string, unknown> = {}
+) {
   const bin = path.join(input.root, 'bin');
   const dumped = {
     name: 'Fixture',
     products: [{ name: 'Fixture', type: { library: ['automatic'] }, targets: ['Main'] }],
     targets: [{ name: 'Main', type: 'regular', path: 'ios', ...target }],
+    ...manifest,
   };
   fs.mkdirSync(bin, { recursive: true });
   const script = `#!/bin/sh\ncat <<'JSON'\n${JSON.stringify(dumped)}\nJSON\n`;

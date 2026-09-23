@@ -6,7 +6,7 @@ import path from 'node:path';
 import { getPackagesDir } from '../Directories';
 import logger from '../Logger';
 import { isExternalPackage, type SPMPackageSource } from './ExternalPackage';
-import type { SPMProduct, SourceTarget } from './SPMConfig.types';
+import type { SPMPackageDependencyConfig, SPMProduct, SourceTarget } from './SPMConfig.types';
 import { parseLinkedFrameworks } from './SPMIdentifier';
 import type { ResolvedTarget } from './SPMPackage.types';
 
@@ -26,7 +26,7 @@ export function isCheckedInResolvedTarget(
 type DumpedDependency = {
   byName?: [string, unknown?];
   target?: [string, unknown?];
-  product?: [string, string, unknown?];
+  product?: [name: string, packageName: string, moduleAliases: unknown, condition: unknown];
 };
 
 type DumpedResource = { path: string; rule: Record<string, unknown> };
@@ -156,7 +156,199 @@ function manifestError(product: string, target: string, what: string, how: strin
 }
 
 function dependencyName(dependency: DumpedDependency): string | null {
-  return dependency.byName?.[0] ?? dependency.target?.[0] ?? null;
+  return dependency.byName?.[0] ?? dependency.target?.[0] ?? dependency.product?.[0] ?? null;
+}
+
+type ManifestError = (what: string, how: string) => Error;
+
+const PINNED_KINDS = ['exact', 'branch', 'revision'] as const;
+type PinnedRequirement = { kind: (typeof PINNED_KINDS)[number]; value: string };
+type DeclaredPackage = { url: string; requirement: PinnedRequirement };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value !== '';
+}
+
+function soleKey(record: Record<string, unknown>): string | null {
+  const keys = Object.keys(record);
+  return keys.length === 1 ? keys[0] : null;
+}
+
+function isPinnedKind(kind: string | null): kind is PinnedRequirement['kind'] {
+  return PINNED_KINDS.some((pinned) => pinned === kind);
+}
+
+/** A copy of normalizeGitUrl in SPMBuild.ts, which imports this module; keep the two in step. */
+function normalizeGitUrl(url: string): string {
+  return url.replace(/\.git$/, '').toLowerCase();
+}
+
+/** A copy of derivePackageNameFromUrl in SPMPackage.ts, which imports this module; keep the two
+ * in step. */
+function derivePackageNameFromUrl(url: string): string {
+  const name = url.substring(url.lastIndexOf('/') + 1);
+  return name.endsWith('.git') ? name.slice(0, -4) : name;
+}
+
+function describeRequirement({ kind, value }: PinnedRequirement): string {
+  return `${kind}: ${JSON.stringify(value)}`;
+}
+
+/** The element of a dumped `[value]` payload, the form SwiftPM gives every enum case. */
+function sole(payload: unknown): unknown {
+  return Array.isArray(payload) && payload.length === 1 ? payload[0] : undefined;
+}
+
+/** The trait names a dumped dependency enables, or null when the list has another shape, such as
+ * a trait with a condition. */
+function traitNames(traits: unknown): string[] | null {
+  if (!Array.isArray(traits)) return null;
+  const names = traits.flatMap((trait) =>
+    isRecord(trait) && soleKey(trait) === 'name' && isNonEmptyString(trait.name) ? [trait.name] : []
+  );
+  return names.length === traits.length ? names : null;
+}
+
+/** The remote packages a dumped manifest declares, keyed by normalized URL. Every other
+ * dependency form, and any shape this does not recognize, is rejected rather than skipped. */
+function readDeclaredPackages(
+  dependencies: unknown,
+  fail: ManifestError
+): Map<string, DeclaredPackage> {
+  const unreadable = (dependency: unknown) =>
+    fail(
+      `the dumped manifest declares a package dependency that Mode B cannot read: ${JSON.stringify(dependency)}.`,
+      'Declare each package as .package(url:exact:), .package(url:branch:), or .package(url:revision:) with a remote URL and a non-empty value.'
+    );
+  const packages = new Map<string, DeclaredPackage>();
+  if (dependencies === undefined) return packages;
+  if (!Array.isArray(dependencies)) throw unreadable(dependencies);
+  for (const dependency of dependencies) {
+    const kind = isRecord(dependency) ? soleKey(dependency) : null;
+    const entry = isRecord(dependency) && kind != null ? sole(dependency[kind]) : undefined;
+    if (!isRecord(entry)) throw unreadable(dependency);
+    if (kind === 'fileSystem') {
+      throw fail(
+        `the manifest declares local package dependency ${JSON.stringify(entry.path)}, which spmPackages in spm.config.json cannot mirror.`,
+        'Remove the .package(path:) declaration, or depend on the package through a remote URL listed in spmPackages.'
+      );
+    }
+    if (kind === 'registry') {
+      throw fail(
+        `the manifest declares registry package dependency ${JSON.stringify(entry.identity)}, which spmPackages in spm.config.json cannot mirror.`,
+        "Use .package(url:exact:) with the package's Git URL instead, and list it in spmPackages."
+      );
+    }
+    const remote = isRecord(entry.location) ? sole(entry.location.remote) : undefined;
+    const url = isRecord(remote) ? remote.urlString : undefined;
+    if (kind !== 'sourceControl' || !isNonEmptyString(url) || !isRecord(entry.requirement)) {
+      throw unreadable(dependency);
+    }
+    const requirementKind = soleKey(entry.requirement);
+    if (requirementKind === 'range') {
+      throw fail(
+        `the manifest declares ${url} with a version range, which spm.config.json cannot mirror exactly, because SwiftPM reports from: and upToNextMinor: only as the range they expand to.`,
+        'Use exact: in Package.swift and the same exact version in spmPackages in spm.config.json.'
+      );
+    }
+    if (!isPinnedKind(requirementKind)) throw unreadable(dependency);
+    const value = sole(entry.requirement[requirementKind]);
+    if (!isNonEmptyString(value)) throw unreadable(dependency);
+    // SwiftPM releases that predate traits omit the list. An empty list disables the default
+    // traits, which the generated manifest would silently re-enable.
+    const traits = entry.traits === undefined ? ['default'] : traitNames(entry.traits);
+    if (traits == null) throw unreadable(dependency);
+    if (traits.length === 0) {
+      throw fail(
+        `the manifest disables the default traits of ${url}, which the generated build manifest would silently re-enable.`,
+        'Remove the traits argument, or keep this product in Mode A.'
+      );
+    }
+    if (traits.length !== 1 || traits[0] !== 'default') {
+      throw fail(
+        `the manifest enables traits ${JSON.stringify(traits)} on ${url} instead of the default traits, which the generated build manifest cannot carry.`,
+        'Remove the traits argument, or keep this product in Mode A.'
+      );
+    }
+    const key = normalizeGitUrl(url);
+    const existing = packages.get(key);
+    if (existing) {
+      throw fail(
+        `the manifest declares ${existing.url} and ${url}, which name the same package once a trailing .git and letter case are ignored.`,
+        'Keep a single .package declaration for it.'
+      );
+    }
+    packages.set(key, { url, requirement: { kind: requirementKind, value } });
+  }
+  return packages;
+}
+
+function readConfiguredRequirement(
+  entry: SPMPackageDependencyConfig,
+  fail: ManifestError
+): PinnedRequirement {
+  const version: unknown = entry.version;
+  const kind = isRecord(version) ? soleKey(version) : null;
+  const value = isRecord(version) && kind != null ? version[kind] : undefined;
+  if (kind === 'from' && isNonEmptyString(entry.url) && isNonEmptyString(value)) {
+    throw fail(
+      `spm.config.json declares ${entry.url} (product "${entry.productName}") with from: ${JSON.stringify(value)}, which a checked-in Package.swift can never match, because Mode B accepts only exact:, branch:, and revision: requirements there.`,
+      'Use exact: in spm.config.json and in Package.swift, so both pin the same version.'
+    );
+  }
+  if (!isNonEmptyString(entry.url) || !isPinnedKind(kind) || !isNonEmptyString(value)) {
+    throw fail(
+      `spm.config.json declares an spmPackages entry that Mode B cannot read: ${JSON.stringify(entry)}.`,
+      "Set url to the package's Git URL, and version to exactly one of exact, branch, or revision with a non-empty value."
+    );
+  }
+  return { kind, value };
+}
+
+/** The checked-in manifest is the authority for third-party packages, but pod install and other
+ * tools still read spmPackages from spm.config.json, so the two must declare the same set. */
+function reconcilePackages(
+  declared: Map<string, DeclaredPackage>,
+  configured: SPMPackageDependencyConfig[],
+  fail: ManifestError
+): void {
+  const differences: string[] = [];
+  const configuredKeys = new Set<string>();
+  for (const entry of configured) {
+    const requirement = readConfiguredRequirement(entry, fail);
+    const key = normalizeGitUrl(entry.url);
+    configuredKeys.add(key);
+    const match = declared.get(key);
+    if (!match) {
+      differences.push(
+        `${entry.url} (${describeRequirement(requirement)}, product "${entry.productName}") is in spmPackages but not declared in Package.swift`
+      );
+    } else if (
+      match.requirement.kind !== requirement.kind ||
+      match.requirement.value !== requirement.value
+    ) {
+      differences.push(
+        `${match.url} requires ${describeRequirement(match.requirement)} in Package.swift but ${describeRequirement(requirement)} in spmPackages (product "${entry.productName}")`
+      );
+    }
+  }
+  for (const [key, { url, requirement }] of declared) {
+    if (!configuredKeys.has(key)) {
+      differences.push(
+        `${url} (${describeRequirement(requirement)}) is declared in Package.swift but missing from spmPackages`
+      );
+    }
+  }
+  if (differences.length > 0) {
+    throw fail(
+      `its package dependencies do not match spmPackages in spm.config.json: ${differences.join('; ')}. Package.swift is the authority for third-party packages, and spm.config.json keeps a copy because pod install and other tools read spmPackages directly.`,
+      'Update spmPackages in spm.config.json to match Package.swift.'
+    );
+  }
 }
 
 function containsSources(directory: string): boolean {
@@ -345,6 +537,18 @@ export async function resolveCheckedInManifestAsync(
     );
   }
 
+  const packagesTargetName =
+    libraryProduct.targets?.[0] ??
+    product.targets.find((target) => target.type !== 'framework')?.name ??
+    product.name;
+  const packageError: ManifestError = (what, how) =>
+    manifestError(product.name, packagesTargetName, what, how);
+  reconcilePackages(
+    readDeclaredPackages(manifest.dependencies, packageError),
+    product.spmPackages ?? [],
+    packageError
+  );
+
   const externalNames = new Set([
     ...(product.externalDependencies ?? []),
     ...(product.spmPackages ?? []).map((dependency) => dependency.productName),
@@ -375,16 +579,12 @@ export async function resolveCheckedInManifestAsync(
       );
     }
     for (const dependency of target.dependencies ?? []) {
-      if (dependency.product) {
-        throw manifestError(
-          product.name,
-          target.name,
-          `it depends on .product(name: "${dependency.product[0]}", package: "${dependency.product[1]}"), which Mode B cannot inject safely.`,
-          'Remove the .product dependency and declare the external package through spm.config.json.'
-        );
-      }
       const dependencyTargetName = dependencyName(dependency);
-      if (dependency.byName?.[1] != null || dependency.target?.[1] != null) {
+      if (
+        dependency.byName?.[1] != null ||
+        dependency.target?.[1] != null ||
+        dependency.product?.[3] != null
+      ) {
         throw manifestError(
           product.name,
           target.name,
@@ -392,7 +592,43 @@ export async function resolveCheckedInManifestAsync(
           'Remove the condition only if the dependency applies to every platform, or keep this product in Mode A.'
         );
       }
-      if (dependencyTargetName && declaredByName.has(dependencyTargetName)) {
+      if (dependency.product?.[2] != null) {
+        throw manifestError(
+          product.name,
+          target.name,
+          `dependency "${dependencyTargetName}" declares moduleAliases, which the generated dependency format cannot preserve.`,
+          'Remove moduleAliases, or keep this product in Mode A.'
+        );
+      }
+      if (dependency.product) {
+        const [productName, packageName] = dependency.product;
+        const dependencyLabel = `.product(name: "${productName}", package: "${packageName}")`;
+        // The generated manifest names the package the way SPMPackage.ts does, and SwiftPM matches
+        // it against the package identity regardless of letter case.
+        const configuredPackageNames = (product.spmPackages ?? [])
+          .filter((entry) => entry.productName === productName)
+          .map((entry) => entry.packageName || derivePackageNameFromUrl(entry.url));
+        if (configuredPackageNames.length === 0) {
+          throw manifestError(
+            product.name,
+            target.name,
+            `it depends on ${dependencyLabel}, but no spmPackages entry in spm.config.json has productName "${productName}".`,
+            `Add an spmPackages entry with productName "${productName}", or fix the product name in Package.swift.`
+          );
+        }
+        if (
+          !configuredPackageNames.some(
+            (configured) => configured.toLowerCase() === packageName.toLowerCase()
+          )
+        ) {
+          throw manifestError(
+            product.name,
+            target.name,
+            `it depends on ${dependencyLabel}, but spm.config.json resolves product "${productName}" to package ${configuredPackageNames.map((name) => JSON.stringify(name)).join(' or ')}, so the generated manifest would take it from a different package.`,
+            'Set packageName in spm.config.json or package: in Package.swift so both name the same package; letter case does not matter.'
+          );
+        }
+      } else if (dependencyTargetName && declaredByName.has(dependencyTargetName)) {
         const declared = declaredByName.get(dependencyTargetName)!;
         if (declared.type !== 'regular') {
           throw manifestError(
@@ -414,17 +650,19 @@ export async function resolveCheckedInManifestAsync(
     }
   }
 
-  if ((manifest.dependencies ?? []).length > 0) {
-    const targetName =
-      libraryProduct.targets?.[0] ??
-      product.targets.find((target) => target.type !== 'framework')?.name ??
-      product.name;
-    throw manifestError(
-      product.name,
-      targetName,
-      'the manifest declares external package dependencies, but the generated build manifest owns external dependencies.',
-      'Remove the .package declaration and declare the dependency in spm.config.json.'
-    );
+  for (const target of regular.filter((candidate) => reachable.has(candidate.name))) {
+    for (const [productName, packageName] of (target.dependencies ?? []).flatMap((dependency) =>
+      dependency.product ? [dependency.product] : []
+    )) {
+      if (reachable.has(productName)) {
+        throw manifestError(
+          product.name,
+          target.name,
+          `dependency .product(name: "${productName}", package: "${packageName}") has the same name as regular target "${productName}", and the generated manifest refers to both by that one name, so it cannot tell them apart.`,
+          'Use a target name that differs from every product in spmPackages, or keep this product in Mode A.'
+        );
+      }
+    }
   }
 
   for (const target of allTargets) {
