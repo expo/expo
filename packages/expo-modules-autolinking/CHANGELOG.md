@@ -17,7 +17,7 @@
 - [iOS] Mark source-only products with `sourceOnly` in the `prebuilt-metadata` document, so consumers can tell a product that never produces an XCFramework from one the prebuild pipeline can build. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Publish each product's iOS deployment floor as `iosDeploymentTarget` in the `prebuilt-metadata` document, so consumers outside CocoaPods can read it from the product's own config instead of its podspec.
 - [iOS] Publish each product's SPM package dependencies as `spmDependencies` in the `prebuilt-metadata` document, so consumers can find the XCFrameworks that ship beside a precompiled product without reading its config. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Publish the full SwiftPM coordinates of each product's package dependencies as `spmPackages` in the `prebuilt-metadata` document, so a consumer that declares them itself has the URL, product name and version requirement.
+- [iOS] Publish the full SwiftPM coordinates of each product's package dependencies as `spmPackages` in the `prebuilt-metadata` document, so a consumer that declares them itself has the URL, product name and version requirement. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.3 — 2026-09-21
 
