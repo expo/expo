@@ -822,6 +822,9 @@ importers:
       expo-constants:
         specifier: workspace:*
         version: link:../../packages/expo-constants
+      expo-crypto:
+        specifier: workspace:*
+        version: link:../../packages/expo-crypto
       react:
         specifier: 19.3.0
         version: 19.3.0

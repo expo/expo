@@ -13,20 +13,11 @@ const {
   renderUnsupportedReport,
   reportUnsupported,
   renderUnmappedDependencyWarning,
-  spmConfigProduct,
+  collectRootConflicts,
+  renderRootConflictWarning,
+  renderExtraPodsWarning,
 } = require('../diagnostics');
-
-function withModuleDir(files, run) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-diag-'));
-  try {
-    for (const [name, contents] of Object.entries(files)) {
-      fs.writeFileSync(path.join(dir, name), contents);
-    }
-    return run(dir);
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-}
+const { resolvePodIdentities } = require('../plugin');
 
 describe('classifyUnsupported', () => {
   it('reports a missing interface tree once, not per module', () => {
@@ -107,113 +98,6 @@ describe('classifyUnsupported', () => {
   });
 });
 
-describe('spmConfigProduct', () => {
-  const config = JSON.stringify({
-    products: [
-      { name: 'ExpoModulesCore', podName: 'ExpoModulesCore' },
-      { name: 'ExpoModulesWorklets', podName: 'ExpoModulesWorklets' },
-      {
-        name: 'ExpoModulesWorkletsAdapter',
-        podName: 'ExpoModulesWorkletsAdapter',
-        sourceOnly: true,
-      },
-    ],
-  });
-
-  it('finds the product declaring a pod', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoModulesWorklets')).toEqual({
-        name: 'ExpoModulesWorklets',
-        sourceOnly: false,
-      });
-    });
-  });
-
-  it('reports a source-only product as such', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoModulesWorkletsAdapter')).toEqual({
-        name: 'ExpoModulesWorkletsAdapter',
-        sourceOnly: true,
-      });
-    });
-  });
-
-  it('falls back to the product name when podName is absent', () => {
-    withModuleDir(
-      { 'spm.config.json': JSON.stringify({ products: [{ name: 'ExpoFoo' }] }) },
-      (dir) => {
-        expect(spmConfigProduct(dir, 'ExpoFoo')).toEqual({ name: 'ExpoFoo', sourceOnly: false });
-      }
-    );
-  });
-
-  it('returns null for an undeclared pod, a missing file, and malformed JSON', () => {
-    withModuleDir({ 'spm.config.json': config }, (dir) => {
-      expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull();
-    });
-    withModuleDir({}, (dir) => expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull());
-    withModuleDir({ 'spm.config.json': '{ not json' }, (dir) =>
-      expect(spmConfigProduct(dir, 'ExpoAudio')).toBeNull()
-    );
-  });
-});
-
-describe('unsupported podspec syntax', () => {
-  const podspecError = {
-    file: '/m/expo-bad/ios/ExpoBad.podspec',
-    line: 12,
-    snippet: 's.platforms = { :ios => MIN_IOS }',
-    reason: "`MIN_IOS` where a version literal like '16.4' belongs",
-  };
-
-  it('classifies a module whose podspec the reader refused', () => {
-    expect(
-      classifyUnsupported({
-        pending: [
-          {
-            podName: 'ExpoBad',
-            packageName: 'expo-bad',
-            moduleRoot: '/m/expo-bad',
-            podspecError,
-          },
-        ],
-        coreAvailable: true,
-      })
-    ).toEqual([
-      {
-        reason: 'unsupported-podspec-syntax',
-        podName: 'ExpoBad',
-        packageName: 'expo-bad',
-        moduleRoot: '/m/expo-bad',
-        file: podspecError.file,
-        line: podspecError.line,
-        snippet: podspecError.snippet,
-        problem: podspecError.reason,
-      },
-    ]);
-  });
-
-  it('reports the file, line and snippet, and how to fix it', () => {
-    const report = renderUnsupportedReport(
-      classifyUnsupported({
-        pending: [
-          { podName: 'ExpoBad', packageName: 'expo-bad', moduleRoot: '/m/expo-bad', podspecError },
-        ],
-        coreAvailable: true,
-      })
-    );
-    expect(report).toContain('error: Expo module "expo-bad" (pod ExpoBad)');
-    expect(report).toContain('iOS deployment floor');
-    expect(report).toContain('/m/expo-bad/ios/ExpoBad.podspec:12');
-    expect(report).toContain('s.platforms = { :ios => MIN_IOS }');
-    expect(report).toContain("{ :ios => '16.4' }");
-    expect(report).toContain("s.ios.deployment_target = '16.4'");
-    expect(report).toContain('platforms: [.iOS("16.4")]');
-    expect(report).toContain('patch-package expo-bad');
-    expect(report).not.toContain('linkage');
-  });
-});
-
 describe('diagnostic priority', () => {
   it('asks for the prebuild first, even when the podspec also needs attention', () => {
     expect(
@@ -230,7 +114,6 @@ describe('diagnostic priority', () => {
               line: 19,
               snippet: "s.frameworks = 'Photos'",
             },
-            podspecError: null,
           },
         ],
         coreAvailable: true,
@@ -257,21 +140,11 @@ describe('diagnostic priority order', () => {
   });
   const reasonFor = (extra) =>
     classifyUnsupported({ pending: [pending(extra)], coreAvailable: true })[0].reason;
-  const podspecError = {
-    file: '/m/expo-bad/ios/ExpoBad.podspec',
-    line: 12,
-    snippet: 's.platforms = { :ios => MIN_IOS }',
-    reason: 'a computed floor',
-  };
   const podspecLinkage = {
     file: '/m/expo-bad/ios/ExpoBad.podspec',
     line: 19,
     snippet: "s.frameworks = 'Photos'",
   };
-
-  it('reports the unreadable floor before the linkage the same podspec declares', () => {
-    expect(reasonFor({ podspecError, podspecLinkage })).toBe('unsupported-podspec-syntax');
-  });
 
   it('reports the linkage before targets whose sources it could not find', () => {
     expect(reasonFor({ podspecLinkage, unresolvedTargets: ['Main'] })).toBe(
@@ -376,6 +249,15 @@ describe('unmappedPodDependencies', () => {
   it('drops pods that are already known to resolve without a podspec', () => {
     expect(UNMAPPED_POD_ALLOWLIST.has('sqlite3')).toBe(true);
     expect(unmappedPodDependencies(['sqlite3', 'SDWebImage'])).toEqual(['SDWebImage']);
+  });
+
+  it('drops a dependency whose full name or root name is a resolved SwiftPM dependency', () => {
+    expect(
+      unmappedPodDependencies(
+        ['SDWebImage', 'libavif', 'libavif/libdav1d', 'ZXingObjC/OneD'],
+        new Set(['SDWebImage', 'libavif'])
+      )
+    ).toEqual(['ZXingObjC/OneD']);
   });
 });
 
@@ -635,5 +517,173 @@ describe('dependencies on targets the generated package cannot declare', () => {
     expect(report).toContain('"FooKit"');
     expect(report).toContain('"FooMacros"');
     expect(report).toContain('macro target');
+  });
+});
+
+describe('a module installed twice', () => {
+  let tmp;
+  const dir = (...segments) => {
+    const created = path.join(tmp, ...segments);
+    fs.mkdirSync(created, { recursive: true });
+    return created;
+  };
+  const modules = [{ packageName: 'expo-camera', pods: [{ podName: 'ExpoCamera' }] }];
+
+  beforeAll(() => {
+    tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-roots-')));
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  it('finds no conflict when both roots are the same directory through a symlink', () => {
+    const packageRoot = dir('node_modules', 'expo-camera');
+    const link = path.join(dir('links'), 'expo-camera');
+    fs.symlinkSync(packageRoot, link, 'dir');
+
+    expect(
+      collectRootConflicts(
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot } },
+          new Map([['expo-camera', link]])
+        )
+      )
+    ).toEqual([]);
+  });
+
+  it('finds a conflict when the two roots are different directories', () => {
+    const packageRoot = dir('node_modules', 'expo-camera');
+    const autolinkedRoot = dir('node_modules', 'some-lib', 'node_modules', 'expo-camera');
+
+    expect(
+      collectRootConflicts(
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot } },
+          new Map([['expo-camera', autolinkedRoot]])
+        )
+      )
+    ).toEqual([{ packageName: 'expo-camera', moduleRoot: packageRoot, autolinkedRoot }]);
+  });
+
+  it('finds no conflict for a documented root that is gone', () => {
+    expect(
+      collectRootConflicts(
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot: path.join(tmp, 'vanished') } },
+          new Map([['expo-camera', dir('node_modules', 'expo-camera')]])
+        )
+      )
+    ).toEqual([]);
+  });
+
+  // A path that cannot be resolved cannot be compared, and a diagnostic is never
+  // worth failing a sync over.
+  it('reports nothing, and does not throw, when a root cannot be resolved', () => {
+    const packageRoot = dir('node_modules', 'expo-camera');
+    jest.spyOn(fs, 'realpathSync').mockImplementation(() => {
+      throw Object.assign(new Error('ENOENT'), { code: 'ENOENT' });
+    });
+
+    expect(
+      collectRootConflicts(
+        resolvePodIdentities(
+          modules,
+          { ExpoCamera: { packageRoot } },
+          new Map([['expo-camera', path.join(tmp, 'elsewhere')]])
+        )
+      )
+    ).toEqual([]);
+  });
+
+  it('names both directories, what uses each, and how to deduplicate', () => {
+    const report = renderRootConflictWarning([
+      {
+        packageName: 'expo-camera',
+        moduleRoot: '/app/node_modules/expo-camera',
+        autolinkedRoot: '/app/node_modules/some-lib/node_modules/expo-camera',
+      },
+    ]);
+    expect(report).toMatch(/^warning: Expo module "expo-camera"/);
+    expect(report).toContain('/app/node_modules/expo-camera');
+    expect(report).toContain('/app/node_modules/some-lib/node_modules/expo-camera');
+    expect(report).toContain('npm ls expo-camera');
+    expect(report).toContain('dedupe');
+  });
+
+  // The copies can be different versions, so the mismatch is not confined to runtime.
+  it('names both failure modes, without pseudo-code for the import', () => {
+    const report = renderRootConflictWarning([
+      {
+        packageName: 'expo-camera',
+        moduleRoot: '/app/node_modules/expo-camera',
+        autolinkedRoot: '/app/node_modules/some-lib/node_modules/expo-camera',
+      },
+    ]);
+    expect(report).toContain("your app's JavaScript imports the second");
+    expect(report).toContain('usually surfaces at runtime');
+    expect(report).toContain('can fail the build');
+  });
+
+  it('renders nothing when no module is installed twice', () => {
+    expect(renderRootConflictWarning([])).toBe('');
+  });
+});
+
+describe('extra CocoaPods dependencies', () => {
+  const pods = [
+    { name: 'MyLocalPod', path: '../vendor/MyLocalPod' },
+    { name: 'Firebase', git: 'https://github.com/firebase/firebase-ios-sdk.git' },
+    { name: 'AppCenter' },
+  ];
+
+  it('names every pod and where it comes from', () => {
+    const report = renderExtraPodsWarning(pods);
+    expect(report).toContain('MyLocalPod (local path: ../vendor/MyLocalPod)');
+    expect(report).toContain('Firebase (git: https://github.com/firebase/firebase-ios-sdk.git)');
+    expect(report).toContain('AppCenter (published pod)');
+  });
+
+  it('names a custom spec repo as its own origin, and gives the version', () => {
+    const report = renderExtraPodsWarning([
+      { name: 'InternalSDK', source: 'https://specs.example.com/private.git', version: '2.1.0' },
+      { name: 'AppCenter', version: '5.0.0' },
+    ]);
+    expect(report).toContain(
+      'InternalSDK (spec repo: https://specs.example.com/private.git, version 2.1.0)'
+    );
+    expect(report).toContain('AppCenter (published pod, version 5.0.0)');
+  });
+
+  it('names the git ref, the only thing that says which code a git pod means', () => {
+    const report = renderExtraPodsWarning([
+      { name: 'Firebase', git: 'https://github.com/firebase/firebase-ios-sdk.git', tag: '10.0.0' },
+      { name: 'Sentry', git: 'https://github.com/getsentry/sentry-cocoa.git', branch: 'main' },
+      { name: 'Lottie', git: 'https://github.com/airbnb/lottie-ios.git', commit: 'a1b2c3d' },
+    ]);
+    expect(report).toContain(
+      'Firebase (git: https://github.com/firebase/firebase-ios-sdk.git, tag 10.0.0)'
+    );
+    expect(report).toContain(
+      'Sentry (git: https://github.com/getsentry/sentry-cocoa.git, branch main)'
+    );
+    expect(report).toContain(
+      'Lottie (git: https://github.com/airbnb/lottie-ios.git, commit a1b2c3d)'
+    );
+  });
+
+  it('says what declared them, how they fail, and what to do instead', () => {
+    const report = renderExtraPodsWarning(pods);
+    expect(report).toMatch(/^warning: /);
+    expect(report).toContain('extraPods');
+    expect(report).toContain('Podfile.properties.json');
+    expect(report).toContain('fails to compile or link');
+    expect(report).toContain('at runtime');
+    expect(report).toContain('keep this app on CocoaPods');
+  });
+
+  it('renders nothing when the app declares none', () => {
+    expect(renderExtraPodsWarning([])).toBe('');
   });
 });

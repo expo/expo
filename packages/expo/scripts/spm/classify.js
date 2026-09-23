@@ -51,6 +51,15 @@ function findModuleRoot(startDir) {
 }
 
 /**
+ * The package root a prebuilt-metadata entry documents, or null when it documents
+ * none or the directory is gone: a stale entry is not identity.
+ */
+function documentedPackageRoot(entry) {
+  const root = entry?.packageRoot;
+  return root != null && fs.existsSync(root) ? root : null;
+}
+
+/**
  * Absolute paths RN should watch for autolinking staleness (the `watchPaths`
  * plugin contract): each module's checked-in Package.swift and its
  * expo-module.config.json. Editing either must trip the in-build re-sync —
@@ -167,6 +176,7 @@ module.exports = {
   sourceTreeImportsReact,
   collectIgnoredDirs,
   collectWatchPaths,
+  documentedPackageRoot,
   findModuleRoot,
   moduleNeedsReact,
   isPureSwift,

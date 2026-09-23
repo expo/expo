@@ -7,6 +7,13 @@ const path = require('path');
 /** A podspec with the given body lines. */
 const spec = (...body) => ['Pod::Spec.new do |s|', ...body, 'end', ''].join('\n');
 
+/** A prebuilt-metadata entry: the package root and product name, plus any optional fields. */
+const metadataEntry = (packageRoot, productName, fields = {}) => ({
+  packageRoot,
+  productName,
+  ...fields,
+});
+
 const tempDirs = [];
 
 /** A new directory under the OS temp dir, removed by `removeTempDirs`. */
@@ -72,6 +79,7 @@ function thrownBy(fn) {
 module.exports = {
   captureConsole,
   makeTempDir,
+  metadataEntry,
   printed,
   removeTempDirs,
   runPlugin,

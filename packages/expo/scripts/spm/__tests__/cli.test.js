@@ -7,7 +7,7 @@ const path = require('path');
 jest.mock('child_process', () => ({ execFileSync: jest.fn(() => '') }));
 
 const { execFileSync } = require('child_process');
-const { generateModulesProvider } = require('../cli');
+const { generateModulesProvider, prebuiltMetadata, resolveExpoModules } = require('../cli');
 
 function argvFor(options) {
   execFileSync.mockClear();
@@ -76,5 +76,61 @@ describe('generateModulesProvider', () => {
 
     expect(generateModulesProvider({ appRoot, outDir, moduleNames: [] })).toBeNull();
     expect(execFileSync).not.toHaveBeenCalled();
+  });
+});
+
+describe('prebuiltMetadata', () => {
+  const document = {
+    ExpoModulesCore: {
+      type: 'internal',
+      npmPackage: 'expo-modules-core',
+      packageRoot: '/app/node_modules/expo-modules-core',
+      podspecDir: '/app/node_modules/expo-modules-core/ios',
+      productName: 'ExpoModulesCore',
+    },
+  };
+
+  it('asks the autolinking CLI for the metadata document, from the app root', () => {
+    execFileSync.mockClear();
+    execFileSync.mockReturnValue(JSON.stringify(document));
+
+    expect(prebuiltMetadata('/app')).toEqual(document);
+    const [, argv, options] = execFileSync.mock.calls[0];
+    expect(argv.slice(1)).toEqual(['prebuilt-metadata', '--json']);
+    expect(options).toMatchObject({ cwd: '/app', encoding: 'utf8' });
+  });
+});
+
+describe('resolveExpoModules', () => {
+  const resolve = (payload) => {
+    execFileSync.mockClear();
+    execFileSync.mockReturnValue(JSON.stringify(payload));
+    return resolveExpoModules('/app');
+  };
+
+  it('returns the resolved modules and the extra pods declared beside them', () => {
+    const modules = [{ packageName: 'expo-camera', pods: [] }];
+    const extraDependencies = [{ name: 'MyLocalPod', path: '../vendor/MyLocalPod' }];
+
+    expect(resolve({ modules, extraDependencies, coreFeatures: [] })).toEqual({
+      modules,
+      extraDependencies,
+    });
+  });
+
+  // Every caller reads `extraDependencies.length`, so it is an array in every shape
+  // the CLI answers with.
+  it('reports no extra pods when the app declares none', () => {
+    expect(resolve({ modules: [] })).toEqual({ modules: [], extraDependencies: [] });
+    expect(resolve({ modules: [], extraDependencies: null })).toEqual({
+      modules: [],
+      extraDependencies: [],
+    });
+  });
+
+  it('reads the legacy top-level array as modules alone', () => {
+    const modules = [{ packageName: 'expo-camera', pods: [] }];
+
+    expect(resolve(modules)).toEqual({ modules, extraDependencies: [] });
   });
 });
