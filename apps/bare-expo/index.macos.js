@@ -10,7 +10,7 @@ import {
   findApiScreen,
   findComponentScreen,
 } from 'native-component-list/src/navigation/screenRegistry';
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   AppRegistry,
   PlatformColor,
@@ -51,14 +51,15 @@ function titleOf(screen) {
 
 /**
  * Enough of a React Navigation `navigation` object for the screens to render outside a navigator.
- * `navigate` and `push` select another screen from the list, everything else is a no-op.
+ * `navigate` and `push` push another screen from the list onto the history, `goBack` pops it, and
+ * everything else is a no-op.
  */
-function createNavigationStub(select) {
+function createNavigationStub({ push, goBack, canGoBack }) {
   const noop = () => {};
   const go = (target) => {
     const name = typeof target === 'string' ? target : target?.name;
     if (name && allScreens.some((screen) => screen.name === name)) {
-      select(name);
+      push(name);
     } else {
       console.warn(`No screen named ${JSON.stringify(name)} in the macOS list.`);
     }
@@ -71,8 +72,8 @@ function createNavigationStub(select) {
     setParams: noop,
     dispatch: noop,
     reset: noop,
-    goBack: noop,
-    canGoBack: () => false,
+    goBack,
+    canGoBack,
     navigate: go,
     push: go,
     replace: go,
@@ -111,8 +112,11 @@ class ScreenErrorBoundary extends React.Component {
   }
 }
 
-function MountedScreen({ screen, select }) {
-  const navigation = useMemo(() => createNavigationStub(select), [select]);
+function MountedScreen({ screen, push, goBack, canGoBack }) {
+  const navigation = useMemo(
+    () => createNavigationStub({ push, goBack, canGoBack }),
+    [push, goBack, canGoBack]
+  );
   const route = useMemo(() => ({ key: screen.name, name: screen.name, params: {} }), [screen]);
   // Screen configs return either a component or a function that renders an element, and both work
   // as a JSX element type.
@@ -129,10 +133,22 @@ function MountedScreen({ screen, select }) {
 }
 
 function App() {
-  const [selectedName, setSelectedName] = useState('ModulesCore');
+  // Screen names, oldest first. Picking a sidebar row starts a new history, a link or
+  // `navigation.push` from a screen pushes onto it, and Back pops it.
+  const [history, setHistory] = useState(['ModulesCore']);
   const { width, height } = useWindowDimensions();
   const frame = useMemo(() => ({ x: 0, y: 0, width, height }), [width, height]);
+  const selectedName = history[history.length - 1];
   const selected = allScreens.find((screen) => screen.name === selectedName) ?? allScreens[0];
+  const canGoBack = history.length > 1;
+
+  const select = useCallback((name) => setHistory([name]), []);
+  const push = useCallback((name) => setHistory((previous) => [...previous, name]), []);
+  const goBack = useCallback(
+    () => setHistory((previous) => (previous.length > 1 ? previous.slice(0, -1) : previous)),
+    []
+  );
+  const canGoBackFn = useCallback(() => canGoBack, [canGoBack]);
 
   // Expo Router's `Link` and `router.push` enqueue routing intents instead of calling React
   // Navigation. Without `ExpoRoot` there is no queue, so serve one that turns the href into a
@@ -140,10 +156,14 @@ function App() {
   const routingQueue = useMemo(
     () => ({
       enqueue: (intent) => {
+        if (intent.type === 'ACTION' && intent.payload.action?.type === 'GO_BACK') {
+          goBack();
+          return;
+        }
         const href = intent.type === 'NAVIGATE_TO_HREF' ? intent.payload.href : null;
         const screen = href != null ? screenForHref(href) : undefined;
         if (screen) {
-          setSelectedName(screen.name);
+          push(screen.name);
         } else {
           console.warn(
             `Ignoring ${intent.type} routing intent${href != null ? ` for ${href}` : ''}: there is no navigator in the macOS entry.`
@@ -155,7 +175,7 @@ function App() {
       transitionMode: 'never',
       setTransitionMode: () => {},
     }),
-    []
+    [push, goBack]
   );
 
   return (
@@ -178,7 +198,7 @@ function App() {
                         return (
                           <Pressable
                             key={screen.name}
-                            onPress={() => setSelectedName(screen.name)}
+                            onPress={() => select(screen.name)}
                             style={[styles.rowItem, isSelected && styles.rowItemSelected]}>
                             <RNText style={[styles.rowText, isSelected && styles.rowTextSelected]}>
                               {titleOf(screen)}
@@ -191,9 +211,22 @@ function App() {
                 </ScrollView>
               </View>
               <View style={styles.content}>
-                <RNText style={styles.title}>{titleOf(selected)}</RNText>
+                <View style={styles.header}>
+                  {canGoBack ? (
+                    <Pressable onPress={goBack} style={styles.backButton}>
+                      <RNText style={styles.backText}>‹ Back</RNText>
+                    </Pressable>
+                  ) : null}
+                  <RNText style={styles.title}>{titleOf(selected)}</RNText>
+                </View>
                 <View style={styles.fill}>
-                  <MountedScreen key={selected.name} screen={selected} select={setSelectedName} />
+                  <MountedScreen
+                    key={`${history.length}:${selected.name}`}
+                    screen={selected}
+                    push={push}
+                    goBack={goBack}
+                    canGoBack={canGoBackFn}
+                  />
                 </View>
               </View>
             </View>
@@ -228,14 +261,17 @@ const styles = StyleSheet.create({
   rowTextSelected: { color: PlatformColor('alternateSelectedControlTextColor') },
   content: { flex: 1 },
   panelContent: { padding: 24, gap: 8 },
-  title: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: PlatformColor('labelColor'),
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
     paddingHorizontal: 24,
     paddingTop: 40,
     paddingBottom: 8,
   },
+  backButton: { paddingVertical: 2, paddingHorizontal: 8, borderRadius: 6 },
+  backText: { fontSize: 15, color: PlatformColor('controlAccentColor') },
+  title: { fontSize: 17, fontWeight: '600', color: PlatformColor('labelColor') },
   subtitle: { fontSize: 15, fontWeight: '600', marginTop: 12, color: PlatformColor('labelColor') },
   text: { color: PlatformColor('secondaryLabelColor') },
   counter: { fontSize: 44, fontWeight: '700', color: PlatformColor('labelColor') },
