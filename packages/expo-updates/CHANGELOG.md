@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add configurable update cache retention with `EXUpdatesMaxUpdatesToKeep`. ([#50459](https://github.com/expo/expo/pull/50459) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - Log a warning naming the event and its error message when the updates state machine drops an event that is not allowed from the current state. Previously such an event was discarded silently in release builds, so an error could disappear without a trace. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))

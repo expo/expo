@@ -29,6 +29,7 @@ public enum UpdatesConfigError: Error, Sendable, LocalizedError {
   case ExpoUpdatesConfigPlistError
   case ExpoUpdatesConfigMissingURLError
   case ExpoUpdatesMissingRuntimeVersionError
+  case ExpoUpdatesInvalidMaxUpdatesToKeepError
 
   public var errorDescription: String? {
     switch self {
@@ -38,6 +39,8 @@ public enum UpdatesConfigError: Error, Sendable, LocalizedError {
       return "Config for expo-updates missing URL"
     case .ExpoUpdatesMissingRuntimeVersionError:
       return "Config for expo-updates missing runtime version"
+    case .ExpoUpdatesInvalidMaxUpdatesToKeepError:
+      return "Config for expo-updates max updates to keep must be an integer of at least 2"
     }
   }
 }
@@ -48,6 +51,7 @@ public enum UpdatesConfigurationValidationResult {
   case InvalidPlistError
   case InvalidMissingURL
   case InvalidMissingRuntimeVersion
+  case InvalidMaxUpdatesToKeep
 }
 
 /**
@@ -82,6 +86,7 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigDisableAntiBrickingMeasures = "EXUpdatesDisableAntiBrickingMeasures"
   public static let EXUpdatesConfigEnableBsdiffPatchSupportKey = "EXUpdatesEnableBsdiffPatchSupport"
   public static let EXUpdatesConfigExcludeFromBackupKey = "EXUpdatesExcludeFromBackup"
+  public static let EXUpdatesConfigMaxUpdatesToKeepKey = "EXUpdatesMaxUpdatesToKeep"
 
   public static let EXUpdatesConfigCheckOnLaunchValueAlways = "ALWAYS"
   public static let EXUpdatesConfigCheckOnLaunchValueWifiOnly = "WIFI_ONLY"
@@ -106,6 +111,7 @@ public final class UpdatesConfig: NSObject {
   public let originalHasEmbeddedUpdate: Bool
   public let disableAntiBrickingMeasures: Bool
   public let excludeFromBackup: Bool
+  public let maxUpdatesToKeep: Int
   public let hasUpdatesOverride: Bool
 
   private let cachedConfigDictionary: [String: Any]
@@ -127,6 +133,7 @@ public final class UpdatesConfig: NSObject {
     enableBsdiffPatchSupport: Bool,
     disableAntiBrickingMeasures: Bool,
     excludeFromBackup: Bool,
+    maxUpdatesToKeep: Int,
     hasUpdatesOverride: Bool
   ) {
     self.cachedConfigDictionary = cachedConfigDictionary
@@ -145,6 +152,7 @@ public final class UpdatesConfig: NSObject {
     self.enableBsdiffPatchSupport = enableBsdiffPatchSupport
     self.disableAntiBrickingMeasures = disableAntiBrickingMeasures
     self.excludeFromBackup = excludeFromBackup
+    self.maxUpdatesToKeep = maxUpdatesToKeep
     self.hasUpdatesOverride = hasUpdatesOverride
   }
 
@@ -202,6 +210,13 @@ public final class UpdatesConfig: NSObject {
       return UpdatesConfigurationValidationResult.InvalidPlistError
     }
 
+    return getUpdatesConfigurationValidationResult(fromDictionary: dictionary, configOverride: configOverride)
+  }
+
+  internal static func getUpdatesConfigurationValidationResult(
+    fromDictionary dictionary: [String: Any],
+    configOverride: UpdatesConfigOverride?
+  ) -> UpdatesConfigurationValidationResult {
     guard dictionary.optionalValue(forKey: EXUpdatesConfigEnabledKey) ?? true else {
       return UpdatesConfigurationValidationResult.InvalidNotEnabled
     }
@@ -211,8 +226,12 @@ public final class UpdatesConfig: NSObject {
       return UpdatesConfigurationValidationResult.InvalidMissingURL
     }
 
-    guard getRuntimeVersion(mergingOtherDictionary: mergingOtherDictionary) != nil else {
+    guard getRuntimeVersion(fromDictionary: dictionary) != nil else {
       return UpdatesConfigurationValidationResult.InvalidMissingRuntimeVersion
+    }
+
+    guard (try? getMaxUpdatesToKeep(fromDictionary: dictionary)) != nil else {
+      return .InvalidMaxUpdatesToKeep
     }
 
     return UpdatesConfigurationValidationResult.Valid
@@ -295,6 +314,7 @@ public final class UpdatesConfig: NSObject {
 
     let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
     let enableBsdiffPatchSupport = config.optionalValue(forKey: EXUpdatesConfigEnableBsdiffPatchSupportKey) ?? true
+    let maxUpdatesToKeep = try getMaxUpdatesToKeep(fromDictionary: config)
 
     return UpdatesConfig(
       cachedConfigDictionary: config,
@@ -313,6 +333,7 @@ public final class UpdatesConfig: NSObject {
       enableBsdiffPatchSupport: enableBsdiffPatchSupport,
       disableAntiBrickingMeasures: getDisableAntiBrickingMeasures(fromDictionary: config),
       excludeFromBackup: config.optionalValue(forKey: EXUpdatesConfigExcludeFromBackupKey) ?? false,
+      maxUpdatesToKeep: maxUpdatesToKeep,
       hasUpdatesOverride: configOverride != nil
     )
   }
@@ -375,6 +396,29 @@ public final class UpdatesConfig: NSObject {
 
   private static func getDisableAntiBrickingMeasures(fromDictionary config: [String: Any]) -> Bool {
     return config.optionalValue(forKey: EXUpdatesConfigDisableAntiBrickingMeasures) ?? false
+  }
+
+  private static func getMaxUpdatesToKeep(fromDictionary config: [String: Any]) throws -> Int {
+    guard let value = config[EXUpdatesConfigMaxUpdatesToKeepKey] else {
+      return 2
+    }
+
+    let maxUpdatesToKeep: Int?
+    // An exact cast rejects fractional, non-finite and out-of-range numbers instead of truncating them.
+    // swiftlint:disable:next legacy_objc_type
+    if let number = value as? NSNumber {
+      maxUpdatesToKeep = number as? Int
+    } else if let string = value as? String {
+      maxUpdatesToKeep = Int(string)
+    } else {
+      maxUpdatesToKeep = nil
+    }
+
+    guard let maxUpdatesToKeep, maxUpdatesToKeep >= 2 else {
+      throw UpdatesConfigError.ExpoUpdatesInvalidMaxUpdatesToKeepError
+    }
+
+    return maxUpdatesToKeep
   }
 
   private static func getHasEmbeddedUpdate(

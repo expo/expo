@@ -14,6 +14,7 @@ enum DevLauncherAppControllerError: Int, Error, LocalizedError {
   case invalidRuntimeVersion
   case updateLaunchFailed
   case configFailed
+  case invalidMaxUpdatesToKeep
 
   var errorDescription: String? {
     switch self {
@@ -27,6 +28,8 @@ enum DevLauncherAppControllerError: Int, Error, LocalizedError {
       return "Failed to read stored updates: configuration object must include a valid runtime version"
     case .updateLaunchFailed:
       return "Failed to launch update with an unknown error"
+    case .invalidMaxUpdatesToKeep:
+      return "Failed to read stored updates: EXUpdatesMaxUpdatesToKeep must be an integer of at least 2"
     case .configFailed:
       return "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
     }
@@ -251,6 +254,8 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
       throw DevLauncherAppControllerError.invalidPlist
     case .InvalidMissingURL:
       throw DevLauncherAppControllerError.invalidUpdateURL
+    case .InvalidMaxUpdatesToKeep:
+      throw DevLauncherAppControllerError.invalidMaxUpdatesToKeep
     case .InvalidMissingRuntimeVersion:
       throw DevLauncherAppControllerError.invalidRuntimeVersion
     }
