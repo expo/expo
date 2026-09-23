@@ -5,8 +5,10 @@ import android.os.Build
 import android.os.FileObserver
 import androidx.core.net.toUri
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
@@ -80,6 +82,14 @@ internal class FileSystemWatcher(
       throw WatcherPathNotFoundException(path)
     }
     if (!watchedFile.canRead()) {
+      throw WatcherPermissionException(path)
+    }
+    // Watching a directory reports the names of the files inside it and every change to them, so it
+    // needs the same read permission as reading those files. canRead() only reflects the process
+    // UID, which in Expo Go is shared by every experience.
+    val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+    val permissions = appContext.filePermission?.getPathPermissions(context, watchedFile.path)
+    if (permissions?.contains(FilePermissionService.Permission.READ) != true) {
       throw WatcherPermissionException(path)
     }
 

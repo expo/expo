@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Added missing permission checks to upload tasks and to file watchers. ([#50582](https://github.com/expo/expo/pull/50582) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-22
