@@ -59,9 +59,9 @@ export function SaveButton() {
 
 ### Modifiers
 
-[SwiftUI modifier](<https://developer.apple.com/documentation/swiftui/view/modifier(_:)>) customizes the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In the following example, the [`expo-mesh-gradient`](../../mesh-gradient) and `glassEffect` modifier are combined to create Liquid Glass text.
+[SwiftUI modifiers](<https://developer.apple.com/documentation/swiftui/view/modifier(_:)>) customize the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In the following example, the [`expo-mesh-gradient`](../../mesh-gradient) and the `glassEffect` modifier are combined to create Liquid Glass text.
 
-> **info** `glassEffect` modifier requires Xcode 26+ and iOS 26+.
+> **info** The `glassEffect` modifier requires Xcode 26+ and iOS 26+.
 
 <ComponentExample
   title="GlassEffectExample.tsx"
@@ -399,7 +399,7 @@ export default function SliderWithIconsExample() {
 
 ### Multi-line list items
 
-Use `VStack` with `alignment="leading"` for list items with title and subtitle.
+Use `VStack` with `alignment="leading"` for list items with a title and subtitle.
 
 <ComponentExample
   title="MultiLineListItemExample.tsx"
