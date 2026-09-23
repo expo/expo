@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Preserve active font registrations when a reloaded font asset has a duplicate name.
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-21
