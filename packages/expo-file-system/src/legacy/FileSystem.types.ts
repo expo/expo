@@ -50,7 +50,7 @@ export type DownloadOptions = {
    * Delay iOS's background URLSession completion handler until
    * `DownloadResumable.completeBackgroundSessionAsync()` is called after processing the file.
    * The handler is released automatically after 25 seconds if it is not acknowledged.
-   * This option has no effect on Android or foreground sessions.
+   * Android and foreground sessions do not receive this iOS AppDelegate completion handler.
    * @default false
    * @platform ios
    */
