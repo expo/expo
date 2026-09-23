@@ -289,7 +289,11 @@ describe(createModelContextWebsocketEndpoint, () => {
     ]) {
       await client.call('modelContext/hello', { protocolVersion: 1 });
       expect(await client.call('modelContext/registerTool', TODO_TOOL)).toMatchObject({
-        result: { status: 'blocked', reason: 'untrusted-connection' },
+        result: {
+          status: 'blocked',
+          reason: 'untrusted-connection',
+          message: expect.stringContaining('allowRemoteDevices'),
+        },
       });
       client.close();
     }

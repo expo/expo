@@ -12,6 +12,7 @@ import {
   UnregisterToolParamsSchema,
   formatIssues,
 } from './ModelContext.schema';
+import { describeBlockReason } from './ModelContextPolicy';
 import { ModelContextRegistry, ToolRegistrationError } from './ModelContextRegistry';
 
 export const MODEL_CONTEXT_ENDPOINT = '/_expo/model-context';
@@ -72,7 +73,16 @@ export function createModelContextWebsocketEndpoint({
               RegisterToolParamsSchema.parse(params)
             );
             reply(id, {
-              result: { name: tool.name, status: tool.status, reason: tool.blockedReason },
+              result: {
+                name: tool.name,
+                status: tool.status,
+                ...(tool.blockedReason
+                  ? {
+                      reason: tool.blockedReason,
+                      message: describeBlockReason(tool.blockedReason, tool.owner),
+                    }
+                  : {}),
+              },
             });
             break;
           }

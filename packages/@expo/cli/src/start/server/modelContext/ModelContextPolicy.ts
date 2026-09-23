@@ -8,8 +8,8 @@ import { parseErrorStack, symbolicate } from '../metro/log-box/LogBoxSymbolicati
 import { ToolNameSchema, formatIssues } from './ModelContext.schema';
 
 /**
- * Who registered a tool. Computed by the dev server from the symbolicated registration stack.
- * The analog of a WebMCP origin: `project` is same-origin, `package` is cross-origin.
+ * Who registered a tool, taken from the stack the app sent.
+ * A caller can forge that stack, so the allowlist only stops accidental package tools.
  */
 export type ToolOwner =
   | { kind: 'project'; file?: string }

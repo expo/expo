@@ -1,5 +1,3 @@
-import { EventEmitter } from 'node:events';
-
 import { Log } from '../../../log';
 import {
   type RegisterToolParams,
@@ -73,7 +71,7 @@ export class ToolRegistrationError extends Error {
  *
  * Everything that arrives from an app is treated as data. The registry never loads code.
  */
-export class ModelContextRegistry extends EventEmitter {
+export class ModelContextRegistry {
   private connections = new Map<string, ConnectionState>();
   private tools = new Map<string, RegisteredTool>();
   private pendingCalls = new Map<string, PendingCall>();
@@ -81,9 +79,7 @@ export class ModelContextRegistry extends EventEmitter {
   private policy: ModelContextPolicy = EMPTY_POLICY;
   private resolveOwner = resolveToolOwnerAsync;
 
-  constructor(public readonly projectRoot: string) {
-    super();
-  }
+  constructor(public readonly projectRoot: string) {}
 
   /** Set once the dev server has loaded the app config. */
   configure(options: {
@@ -124,7 +120,6 @@ export class ModelContextRegistry extends EventEmitter {
         pending.reject(new Error('The app disconnected before the tool returned.'));
       }
     }
-    this.emit('change');
   }
 
   getConnectionCount(): number {
@@ -177,7 +172,6 @@ export class ModelContextRegistry extends EventEmitter {
           describeBlockReason(tool.blockedReason!, owner)
       );
     }
-    this.emit('change');
     return tool;
   }
 
@@ -188,7 +182,6 @@ export class ModelContextRegistry extends EventEmitter {
     }
     this.tools.delete(name);
     this.connections.get(connectionId)?.toolNames.delete(name);
-    this.emit('change');
     return true;
   }
 
