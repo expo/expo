@@ -20,17 +20,46 @@ import expo.modules.image.records.ContentPosition
 class ExpoImageView(
   context: Context
 ) : AppCompatImageView(context) {
+  internal var targetBindingId = 0L
+    private set
+
   var currentTarget: ImageViewWrapperTarget? = null
+    set(value) {
+      field = value
+      targetBindingId += 1
+    }
+
   var isPlaceholder: Boolean = false
 
-  fun recycleView(): ImageViewWrapperTarget? {
-    setImageDrawable(null)
+  internal fun recycleViewIfBindingMatches(
+    target: ImageViewWrapperTarget?,
+    bindingId: Long
+  ): ImageViewWrapperTarget? {
+    if (currentTarget !== target || targetBindingId != bindingId) {
+      return null
+    }
+    return recycleView()
+  }
 
+  fun recycleView(): ImageViewWrapperTarget? {
     val target = currentTarget?.apply {
       isUsed = false
     }
-
+    // Cleared before the animation is cancelled, so the cancellation callback of a transition
+    // still running on this view sees that the view no longer holds that target and skips its
+    // cleanup instead of re-entering this method.
     currentTarget = null
+
+    // A view can be recycled midway through a fade. Without this the view keeps animating towards
+    // an alpha it no longer wants, and can be left partially or fully transparent once it is bound
+    // to its next image.
+    animate().cancel()
+    // ViewPropertyAnimator keeps its listener across animations, so leaving it attached can run
+    // cleanup from the previous image after this view has been rebound to a new one.
+    animate().setListener(null)
+    alpha = 1f
+    setImageDrawable(null)
+
     isVisible = false
     isPlaceholder = false
 
