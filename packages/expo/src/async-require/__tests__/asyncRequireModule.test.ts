@@ -67,6 +67,17 @@ describe('asyncRequireModule', () => {
 
         // On web, importing synchronously first prevents double-loading preloaded scripts
         if (process.env.EXPO_OS === 'web') {
+          var bundlePath = paths && paths[String(moduleID)];
+          if (Array.isArray(bundlePath)) {
+            var loadBundle = globalThis[(__METRO_GLOBAL_PREFIX__ || '') + '__loadBundleAsync'];
+            if (loadBundle && loadBundle.isReady && loadBundle.isReady(bundlePath)) return importAll();
+            var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+            if (maybeLoadBundlePromise != null) return maybeLoadBundlePromise.then(importAll);
+            throw new Error(
+              'Cannot import module ' + (moduleName == null ? moduleID : moduleName) + ': the async bundle loader is unavailable. ' +
+              'Load the initial Expo bundle before importing these chunks: ' + bundlePath.join(', ')
+            );
+          }
           try {
             return importAll();
           } catch (error) {
@@ -121,6 +132,49 @@ describe('asyncRequireModule', () => {
 
     expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
     expect(result).toEqual({ default: 'module-42' });
+  });
+
+  it.each([false, true])(
+    'waits before running a partially registered array (maybeSync: %s)',
+    async (maybeSync) => {
+      process.env.EXPO_OS = 'web';
+      let finish!: () => void;
+      const loader = Object.assign(
+        jest.fn(
+          () =>
+            new Promise<void>((resolve) => {
+              finish = resolve;
+            })
+        ),
+        { isReady: () => false }
+      );
+      (globalThis as any).__loadBundleAsync = loader;
+      const result = maybeSync
+        ? asyncRequire.unstable_importMaybeSync(42, { 42: ['/shared.js'] })
+        : asyncRequire(42, { 42: ['/shared.js'] });
+      expect(mockImportAll).not.toHaveBeenCalled();
+      finish();
+      await expect(result).resolves.toEqual({ default: 'module-42' });
+      expect(mockImportAll).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('preserves synchronous hydration for confirmed-ready arrays', () => {
+    process.env.EXPO_OS = 'web';
+    const loader = Object.assign(jest.fn(), { isReady: () => true });
+    (globalThis as any).__loadBundleAsync = loader;
+    const result = asyncRequire(42, { 42: ['/shared.js', '/route.js'] });
+    expect(result._result).toEqual({ default: 'module-42' });
+    expect(asyncRequire.unstable_importMaybeSync(42, { 42: ['/route.js'] })).toEqual({
+      default: 'module-42',
+    });
+    expect(loader).not.toHaveBeenCalled();
+  });
+
+  it('does not attempt factory execution for an array without a loader', () => {
+    process.env.EXPO_OS = 'web';
+    expect(() => asyncRequire(42, { 42: ['/shared.js'] })).toThrow('loader');
+    expect(mockImportAll).not.toHaveBeenCalled();
   });
 
   it('calls importAll without moduleName when not provided', async () => {

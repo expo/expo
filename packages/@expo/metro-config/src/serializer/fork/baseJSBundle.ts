@@ -38,6 +38,8 @@ export type Bundle = {
 };
 
 export type ExpoSerializerOptions = SerializerOptions & {
+  /** Append a footer that records this chunk's completed module registration. */
+  includeChunkCompletion?: boolean;
   serializerOptions?: {
     baseUrl?: string;
     skipWrapping?: boolean;
@@ -176,6 +178,19 @@ export function baseJSBundleWithDependencies(
     sourceUrl:
       options.platform === 'web' ? undefined : !options.dev ? undefined : options.sourceUrl,
   }) as Module[];
+
+  if (options.includeChunkCompletion && options.platform === 'web' && !options.dev) {
+    // Use currentScript to avoid embedding the filename that this code helps hash.
+    const key = JSON.stringify(`${options.globalPrefix ?? ''}__expo_chunk_completion__`);
+    const code = `(function(){var s=typeof document!=="undefined"&&document.currentScript;if(s&&s.namespaceURI==="http://www.w3.org/1999/xhtml"&&s.tagName==="SCRIPT"&&typeof s.src==="string"&&s.src){var k=${key};(globalThis[k]||(globalThis[k]=new Set())).add(s.src);}})();`;
+    modulesWithAnnotations.unshift({
+      path: 'expo-chunk-completion',
+      dependencies: new Map(),
+      inverseDependencies: new CountingSet(),
+      getSource: () => Buffer.from(code),
+      output: [{ type: 'js/script/virtual', data: { code, lineCount: countLines(code), map: [] } }],
+    });
+  }
 
   // If the `debugId` annotation is available and we aren't inlining the source map, add it to the bundle.
   // NOTE: We may want to move this assertion up further.

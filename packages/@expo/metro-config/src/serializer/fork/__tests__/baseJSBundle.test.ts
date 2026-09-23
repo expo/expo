@@ -1,5 +1,44 @@
+import { runInNewContext } from 'vm';
+
 import { baseJSBundle, getBaseUrlOption } from '../baseJSBundle';
 import { microBundle } from './mini-metro';
+
+it('records completion before append scripts without embedding a filename', async () => {
+  const [entry, preModules, graph, options] = await microBundle({
+    fs: { 'index.js': '' },
+    options: { dev: false, platform: 'web' },
+  });
+  const result = baseJSBundle(entry, preModules, graph, {
+    ...options,
+    includeChunkCompletion: true,
+    globalPrefix: 'test"prefix',
+    runModule: false,
+  });
+  expect(result.post).toContain('__expo_chunk_completion__');
+  expect(result.post).not.toContain('_expo/static');
+  const context = {
+    document: {
+      currentScript: {
+        tagName: 'SCRIPT',
+        namespaceURI: 'http://www.w3.org/1999/xhtml',
+        src: 'https://example.com/route.js',
+      },
+    },
+  };
+  runInNewContext(result.post, context);
+  expect([...(context as any)['test"prefix__expo_chunk_completion__']]).toEqual([
+    'https://example.com/route.js',
+  ]);
+  for (const document of [
+    undefined,
+    { currentScript: null },
+    { currentScript: { tagName: 'script', src: {} } },
+  ]) {
+    const empty = { document };
+    runInNewContext(result.post, empty);
+    expect((empty as any)['test"prefix__expo_chunk_completion__']).toBeUndefined();
+  }
+});
 
 it('propagates the selected callback through bundle and module processing', async () => {
   const [entry, preModules, graph, options] = await microBundle({
