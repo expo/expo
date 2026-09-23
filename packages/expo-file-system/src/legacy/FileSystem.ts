@@ -472,7 +472,7 @@ export class DownloadResumable extends FileSystemCancellableNetworkTask<Download
   /**
    * Allow iOS to finish a background URLSession event after processing this download.
    * Call this in a `finally` block when `deferBackgroundSessionCompletion` is enabled.
-   * This method has no effect on Android or foreground sessions.
+   * Android and foreground sessions do not receive this iOS AppDelegate completion handler.
    * @platform ios
    */
   async completeBackgroundSessionAsync(): Promise<void> {
