@@ -496,7 +496,7 @@ function resolveTargetPaths(targets, moduleRoot) {
       continue;
     }
     const inferred =
-      PREDEFINED_SOURCE_DIRS.map((dir) => path.join(dir, target.name)).find((rel) =>
+      PREDEFINED_SOURCE_DIRS.map((dir) => path.posix.join(dir, target.name)).find((rel) =>
         fs.existsSync(path.join(moduleRoot, rel))
       ) ??
       (singleTarget
