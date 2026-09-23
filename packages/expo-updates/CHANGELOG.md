@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Cover configurable update cache retention in E2E tests. ([#50463](https://github.com/expo/expo/pull/50463) by [@kudo](https://github.com/kudo))
+
 ## 58.0.7 — 2026-09-22
 
 _This version does not introduce any user-facing changes._
