@@ -114,10 +114,10 @@ export default function LazyItemsScreen() {
             <LazyRow.Items
               data={CONTACTS}
               keyExtractor={contactKey}
-              renderItem={renderContact}
               overscanCount={6}
-              estimatedItemSize={88}
-            />
+              estimatedItemSize={88}>
+              {renderContact}
+            </LazyRow.Items>
           </LazyRow>
           <Column modifiers={[paddingAll(16)]} verticalArrangement={{ spacedBy: 8 }}>
             <Text style={{ typography: 'titleLarge' }}>
@@ -145,10 +145,10 @@ export default function LazyItemsScreen() {
             <LazyColumn.Items
               data={items}
               keyExtractor={keyExtractor}
-              renderItem={renderItem}
               overscanCount={largeBuffer ? 20 : 10}
-              estimatedItemSize={110}
-            />
+              estimatedItemSize={110}>
+              {renderItem}
+            </LazyColumn.Items>
             <Text style={{ typography: 'bodySmall' }} modifiers={[paddingAll(16)]}>
               You’re all caught up.
             </Text>

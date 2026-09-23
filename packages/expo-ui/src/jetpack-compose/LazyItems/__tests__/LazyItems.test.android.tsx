@@ -35,7 +35,9 @@ it('mounts a bounded pool for 10,000 items and recenters after a distant request
   const renderItem = jest.fn(({ index }) => <Text>{index}</Text>);
   render(
     <LazyColumn>
-      <LazyColumn.Items data={data} keyExtractor={keyExtractor} renderItem={renderItem} />
+      <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
+        {renderItem}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   expect(renderItem).toHaveBeenCalledTimes(11);
@@ -58,12 +60,9 @@ it('reuses overlapping slots without rerendering them and preserves parent conte
   const screen = render(
     <Context.Provider value="parent">
       <LazyColumn>
-        <LazyColumn.Items
-          data={data}
-          keyExtractor={keyExtractor}
-          renderItem={renderItem}
-          overscanCount={3}
-        />
+        <LazyColumn.Items data={data} keyExtractor={keyExtractor} overscanCount={3}>
+          {renderItem}
+        </LazyColumn.Items>
       </LazyColumn>
     </Context.Provider>
   );
@@ -80,7 +79,9 @@ it('reuses overlapping slots without rerendering them and preserves parent conte
 it('grows once with headroom and keeps slot assignments stable as rows enter and leave', () => {
   render(
     <LazyColumn>
-      <LazyColumn.Items data={data} keyExtractor={keyExtractor} renderItem={() => <View />} />
+      <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
+        {() => <View />}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   requestWindow(500, 509);
@@ -99,7 +100,9 @@ it('grows once with headroom and keeps slot assignments stable as rows enter and
 it('grows to cover 100 visible rows plus overscan and keeps its capacity at the list edges', () => {
   render(
     <LazyColumn>
-      <LazyColumn.Items data={data} keyExtractor={keyExtractor} renderItem={() => <View />} />
+      <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
+        {() => <View />}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   const revision = nativeProps().revision;
@@ -123,14 +126,18 @@ it('bumps the revision on a data change, ignores stale requests, and clamps afte
   );
   const screen = render(
     <LazyColumn>
-      <LazyColumn.Items data={data} keyExtractor={keyExtractor} renderItem={renderItem} />
+      <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
+        {renderItem}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   const revision = nativeProps().revision;
   const updated = [{ id: 'item-0', title: 'Updated' }, ...data.slice(1)];
   screen.rerender(
     <LazyColumn>
-      <LazyColumn.Items data={updated} keyExtractor={keyExtractor} renderItem={renderItem} />
+      <LazyColumn.Items data={updated} keyExtractor={keyExtractor}>
+        {renderItem}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   expect(screen.getByText('Updated')).toBeTruthy();
@@ -141,17 +148,17 @@ it('bumps the revision on a data change, ignores stale requests, and clamps afte
   expect(indicesOf()).toContain(9900);
   screen.rerender(
     <LazyColumn>
-      <LazyColumn.Items
-        data={data.slice(0, 3)}
-        keyExtractor={keyExtractor}
-        renderItem={renderItem}
-      />
+      <LazyColumn.Items data={data.slice(0, 3)} keyExtractor={keyExtractor}>
+        {renderItem}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   expect(indicesOf()).toEqual([0, 1, 2]);
   screen.rerender(
     <LazyColumn>
-      <LazyColumn.Items data={[]} keyExtractor={keyExtractor} renderItem={renderItem} />
+      <LazyColumn.Items data={[]} keyExtractor={keyExtractor}>
+        {renderItem}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   expect(slotsOf(nativeProps())).toHaveLength(0);
@@ -161,7 +168,9 @@ it('bumps the revision on a data change, ignores stale requests, and clamps afte
 it('drops malformed window events', () => {
   render(
     <LazyColumn>
-      <LazyColumn.Items data={data} keyExtractor={keyExtractor} renderItem={() => <View />} />
+      <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
+        {() => <View />}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   const before = indicesOf();
@@ -176,10 +185,10 @@ it('publishes the item keys and the pooled slot props to the native views', () =
       <LazyColumn.Items
         data={data.slice(0, 5)}
         keyExtractor={keyExtractor}
-        renderItem={() => <View />}
         estimatedItemSize={96}
-        overscanCount={1}
-      />
+        overscanCount={1}>
+        {() => <View />}
+      </LazyColumn.Items>
     </LazyColumn>
   );
   expect(nativeProps().itemKeys).toEqual(['item-0', 'item-1', 'item-2', 'item-3', 'item-4']);
@@ -194,12 +203,9 @@ it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', (overscanCount)
   expect(() =>
     render(
       <LazyColumn>
-        <LazyColumn.Items
-          data={data}
-          keyExtractor={keyExtractor}
-          renderItem={() => <View />}
-          overscanCount={overscanCount}
-        />
+        <LazyColumn.Items data={data} keyExtractor={keyExtractor} overscanCount={overscanCount}>
+          {() => <View />}
+        </LazyColumn.Items>
       </LazyColumn>
     )
   ).toThrow('LazyColumn.Items overscanCount must be a non-negative integer');
@@ -209,12 +215,9 @@ it('names LazyRow.Items in its own errors', () => {
   expect(() =>
     render(
       <LazyRow>
-        <LazyRow.Items
-          data={data}
-          keyExtractor={keyExtractor}
-          renderItem={() => <View />}
-          overscanCount={-1}
-        />
+        <LazyRow.Items data={data} keyExtractor={keyExtractor} overscanCount={-1}>
+          {() => <View />}
+        </LazyRow.Items>
       </LazyRow>
     )
   ).toThrow('LazyRow.Items overscanCount must be a non-negative integer');
@@ -224,20 +227,14 @@ it('maintains independent windows for a LazyColumn and a LazyRow block', () => {
   render(
     <>
       <LazyColumn>
-        <LazyColumn.Items
-          data={data}
-          keyExtractor={keyExtractor}
-          renderItem={() => <View />}
-          overscanCount={3}
-        />
+        <LazyColumn.Items data={data} keyExtractor={keyExtractor} overscanCount={3}>
+          {() => <View />}
+        </LazyColumn.Items>
       </LazyColumn>
       <LazyRow>
-        <LazyRow.Items
-          data={data.slice(0, 20)}
-          keyExtractor={keyExtractor}
-          renderItem={() => <View />}
-          overscanCount={1}
-        />
+        <LazyRow.Items data={data.slice(0, 20)} keyExtractor={keyExtractor} overscanCount={1}>
+          {() => <View />}
+        </LazyRow.Items>
       </LazyRow>
     </>
   );
