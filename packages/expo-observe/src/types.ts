@@ -150,6 +150,17 @@ export interface ObserveIntegrationsConfig {
    * @default false
    */
   'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
+  /**
+   * Enables the `react-native-reanimated` integration, which reports Reanimated errors as
+   * `reanimated.error` errors and Reanimated warnings as `reanimated.warning` events. Logs are
+   * still printed to the console. Each distinct message is reported once per app launch.
+   *
+   * Requires `react-native-reanimated` 4.6 or 4.7 and `react-native-worklets` to be installed.
+   * Reanimated's `level` and `strict` logger settings still decide which logs are reported.
+   *
+   * @default false
+   */
+  'react-native-reanimated'?: boolean;
 }
 
 /**
