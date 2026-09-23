@@ -111,6 +111,7 @@ class ExponentSharedPreferences(val context: Context) {
         getBoolean(ExponentSharedPreferencesKey.NUX_HAS_FINISHED_FIRST_RUN_KEY)
       )
     }
+    delete(ExponentSharedPreferencesKey.LEGACY_AUTH_SESSION)
   }
 
   enum class ExponentSharedPreferencesKey(val preferenceKey: String) {
@@ -125,6 +126,7 @@ class ExponentSharedPreferences(val context: Context) {
     LAST_FATAL_ERROR_DATE_KEY("last_fatal_error_date_key"),
     SHOULD_NOT_USE_KERNEL_CACHE("should_not_use_kernel_cache"),
     KERNEL_REVISION_ID("kernel_revision_id"),
+    LEGACY_AUTH_SESSION("expo_auth_session"),
     OKHTTP_CACHE_VERSION_KEY("okhttp_cache_version"),
     HISTORY("history")
   }
