@@ -5,8 +5,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 import { ListForEach } from './ListForEach';
 
-export { ListForEach, type ListForEachProps } from './ListForEach';
-export { type DataListForEachProps } from './DataListForEach';
+export { ListForEach, type ListForEachProps, type ListForEachElementsProps } from './ListForEach';
 
 const ListNativeView: React.ComponentType<NativeListProps> = requireNativeView<NativeListProps>(
   'ExpoUI',

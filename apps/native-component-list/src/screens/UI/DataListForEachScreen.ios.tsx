@@ -1,10 +1,10 @@
 import {
   Button,
-  type DataListForEachProps,
   Host,
   HStack,
   Label,
   List,
+  type ListForEachProps,
   Section,
   Spacer,
   Text,
@@ -50,14 +50,13 @@ function MessageGroup({
 }: {
   data: Message[];
   onChange: Dispatch<SetStateAction<Message[]>>;
-  renderItem: DataListForEachProps<Message>['renderItem'];
+  renderItem: ListForEachProps<Message>['children'];
   overscanCount: number;
 }) {
   return (
     <List.ForEach
       data={data}
       keyExtractor={keyExtractor}
-      renderItem={renderItem}
       overscanCount={overscanCount}
       estimatedItemSize={110}
       onDelete={(indices) =>
@@ -70,8 +69,9 @@ function MessageGroup({
           const adjusted = destination - sources.filter((index) => index < destination).length;
           return [...remaining.slice(0, adjusted), ...moved, ...remaining.slice(adjusted)];
         })
-      }
-    />
+      }>
+      {renderItem}
+    </List.ForEach>
   );
 }
 
@@ -84,7 +84,7 @@ export default function DataListForEachScreen() {
   const [selection, setSelection] = useState<(string | number)[]>([]);
   const [editing, setEditing] = useState(false);
   const renderItem = useCallback(
-    ({ item }: { item: (typeof MESSAGES)[number] }) => (
+    ({ item }: { item: Message }) => (
       <VStack alignment="leading" spacing={10} modifiers={[padding({ vertical: 6 })]}>
         <HStack spacing={8}>
           <Label

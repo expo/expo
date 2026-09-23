@@ -6,8 +6,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 import { getSlotIndices, getWindow } from './window';
 
-export interface DataListForEachProps<ItemT> extends CommonViewModifierProps {
-  children?: never;
+export interface ListForEachProps<ItemT> extends CommonViewModifierProps {
   /** Called with deleted indices from this group’s data array. */
   onDelete?: (indices: number[]) => void;
   /** Called with source indices and a destination before removal (up to data.length). */
@@ -17,20 +16,27 @@ export interface DataListForEachProps<ItemT> extends CommonViewModifierProps {
   /** Returns a stable, unique string key, also used for List selection. */
   keyExtractor: (item: ItemT, index: number) => string;
   /**
-   * Renders a SwiftUI row. Rows are reused, so local state (useState) can carry over to another item.
-   * Reset it when the item key changes. Keep persistent state outside the row, stored by item key.
-   * Pass a stable function, for example from `useCallback`: a new function re-renders every pooled
-   * row, because rows must pick up state the function closes over.
+   * Renders a row. Wrap it in `useCallback`, or every row re-renders on each parent render.
+   * Recycled rows are reused for other items, so their local state (`useState`) carries over.
+   * Reset it when the item changes, or keep the state outside the row.
    */
-  renderItem: (info: { item: ItemT; index: number }) => ReactElement;
+  children: (info: { item: ItemT; index: number }) => ReactElement;
+  /**
+   * Renders only the rows near the visible range and reuses them while scrolling. Set to `false` to
+   * render every row at once. Set it once; changing it remounts the rows.
+   * @default true
+   */
+  recycling?: boolean;
   /**
    * Extra rows to prepare on each side of the visible rows. Must be a non-negative integer.
+   * Ignored when `recycling` is `false`.
    * @default 10
    */
   overscanCount?: number;
   /**
    * Placeholder height in points, excluding List insets, until a row is measured.
    * Must be positive. Measurements reset when data or width changes.
+   * Ignored when `recycling` is `false`.
    * @default 64
    */
   estimatedItemSize?: number;
@@ -56,7 +62,7 @@ type SlotProps = {
 };
 
 const NativeList = requireNativeView<NativeProps>('ExpoUI', 'DataListForEachView');
-const NativeSlot = requireNativeView<SlotProps>('ExpoUI', 'DataListForEachItemView');
+export const NativeSlot = requireNativeView<SlotProps>('ExpoUI', 'DataListForEachItemView');
 const NativePool = requireNativeView<{ children: ReactElement[] }>(
   'ExpoUI',
   'DataListForEachPoolView'
@@ -71,7 +77,7 @@ const RecycledRow = memo(function RecycledRow<ItemT>({
   renderItem,
 }: SlotPropsWithoutChildren & {
   item: ItemT;
-  renderItem: DataListForEachProps<ItemT>['renderItem'];
+  renderItem: ListForEachProps<ItemT>['children'];
 }) {
   return (
     <NativeSlot itemKey={itemKey} index={index} revision={revision}>
@@ -81,10 +87,25 @@ const RecycledRow = memo(function RecycledRow<ItemT>({
 }) as <ItemT>(
   props: SlotPropsWithoutChildren & {
     item: ItemT;
-    renderItem: DataListForEachProps<ItemT>['renderItem'];
+    renderItem: ListForEachProps<ItemT>['children'];
   }
 ) => ReactElement;
 type SlotPropsWithoutChildren = Omit<SlotProps, 'children'>;
+
+export function useItemKeys<ItemT>(
+  data: readonly ItemT[],
+  keyExtractor: ListForEachProps<ItemT>['keyExtractor']
+): string[] {
+  const keyExtractorRef = useRef(keyExtractor);
+  keyExtractorRef.current = keyExtractor;
+  return useMemo(() => {
+    const keys = data.map((item, index) => keyExtractorRef.current(item, index));
+    if (keys.some((key) => typeof key !== 'string') || new Set(keys).size !== keys.length) {
+      throw new Error('List.ForEach keyExtractor must return a unique string for every item.');
+    }
+    return keys;
+  }, [data]);
+}
 
 /**
  * Renders a window of recycled rows inside List or Section.
@@ -94,31 +115,21 @@ type SlotPropsWithoutChildren = Omit<SlotProps, 'children'>;
 export function DataListForEach<ItemT>({
   data,
   keyExtractor,
-  renderItem,
+  children: renderItem,
   overscanCount = 10,
   estimatedItemSize = 64,
   modifiers,
   onDelete,
   onMove,
   ...props
-}: DataListForEachProps<ItemT>) {
+}: ListForEachProps<ItemT>) {
   if (!Number.isSafeInteger(overscanCount) || overscanCount < 0) {
     throw new Error('List.ForEach overscanCount must be a non-negative integer.');
   }
   if (!Number.isFinite(estimatedItemSize) || estimatedItemSize <= 0) {
     throw new Error('List.ForEach estimatedItemSize must be a positive finite number.');
   }
-  // Keys follow `data` only. An inline `keyExtractor` changes identity on every parent render, and
-  // recomputing keys for it would bump the revision and re-render every pooled row.
-  const keyExtractorRef = useRef(keyExtractor);
-  keyExtractorRef.current = keyExtractor;
-  const itemKeys = useMemo(() => {
-    const keys = data.map((item, index) => keyExtractorRef.current(item, index));
-    if (keys.some((key) => typeof key !== 'string') || new Set(keys).size !== keys.length) {
-      throw new Error('List.ForEach keyExtractor must return a unique string for every item.');
-    }
-    return keys;
-  }, [data]);
+  const itemKeys = useItemKeys(data, keyExtractor);
   const [state, setState] = useState({
     keys: itemKeys,
     first: 0,
