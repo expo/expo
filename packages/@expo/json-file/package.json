@@ -54,6 +54,6 @@
     "@types/json5": "^2.2.0",
     "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "catalog:"
   }
 }

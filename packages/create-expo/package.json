@@ -59,7 +59,7 @@
     "expo-module-scripts": "workspace:*",
     "getenv": "catalog:",
     "glob": "^13.0.0",
-    "memfs": "^3.2.0",
+    "memfs": "catalog:",
     "multitars": "catalog:",
     "nock": "catalog:",
     "ora": "3.4.0",

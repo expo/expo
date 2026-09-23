@@ -51,6 +51,6 @@
     "@types/micromatch": "^4.0.10",
     "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.6.0"
+    "memfs": "catalog:"
   }
 }

@@ -59,7 +59,7 @@
     "getenv": "catalog:",
     "glob": "^13.0.0",
     "ignore": "^5.3.2",
-    "memfs": "^3.2.0",
+    "memfs": "catalog:",
     "ora": "3.4.0",
     "resolve-from": "catalog:",
     "resolve-workspace-root": "catalog:",

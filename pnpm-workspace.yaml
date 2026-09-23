@@ -50,6 +50,7 @@ catalog:
   express: ^5.1.0
   getenv: ^2.0.0
   json-schema-to-typescript: ^15.0.0
+  memfs: ^3.6.0
   multitars: ^1.0.2
   nock: ^14.0.10
   node-html-parser: ^6.1.5

@@ -50,7 +50,7 @@
     "@types/react": "catalog:",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "catalog:"
   },
   "peerDependencies": {
     "expo": "*",
