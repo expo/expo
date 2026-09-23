@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the `frame` modifier dropping `minWidth`, `idealWidth`, `maxWidth`, `minHeight`, `idealHeight` and `maxHeight` when `width` or `height` was set in the same call, which broke layouts such as `frame({ maxWidth: Infinity, height: 50 })`.
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-22
