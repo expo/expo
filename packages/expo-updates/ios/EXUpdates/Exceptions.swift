@@ -99,4 +99,62 @@ internal final class InvalidRequestHeadersOverrideException: Exception {
   }
 }
 
+/**
+ * Base class for exceptions that wrap an underlying error and need its description to reach
+ * JavaScript.
+ *
+ * `Promise.reject(code:description:)` and `Exception(name:description:code:)` cannot be used for
+ * this: they set `description` but leave `reason` at its default, and the JS-facing message is
+ * derived from `reason`, so the description is dropped before it reaches the caller. Overriding
+ * `reason` is the supported way to control that message.
+ */
+internal class UpdatesUnderlyingErrorException: Exception, @unchecked Sendable {
+  internal let underlyingError: Error
+
+  internal init(_ underlyingError: Error, file: String = #fileID, line: UInt = #line, function: String = #function) {
+    self.underlyingError = underlyingError
+    super.init(file: file, line: line, function: function)
+  }
+}
+
+internal final class CheckForUpdateException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_CHECK"
+  }
+
+  override var reason: String {
+    "Failed to check for update: \(underlyingError.localizedDescription)"
+  }
+}
+
+internal final class FetchUpdateException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_FETCH"
+  }
+
+  override var reason: String {
+    "Failed to download new update: \(underlyingError.localizedDescription)"
+  }
+}
+
+internal final class ReadLogEntriesException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_READ_LOGS"
+  }
+
+  override var reason: String {
+    "Failed to read log entries: \(underlyingError.localizedDescription)"
+  }
+}
+
+internal final class ClearLogEntriesException: UpdatesUnderlyingErrorException, @unchecked Sendable {
+  override var code: String {
+    "ERR_UPDATES_READ_LOGS"
+  }
+
+  override var reason: String {
+    "Failed to clear log entries: \(underlyingError.localizedDescription)"
+  }
+}
+
 // swiftlint:enable line_length

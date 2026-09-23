@@ -34,7 +34,4 @@ config.server.enhanceMiddleware = (middleware) => {
   };
 };
 
-// Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
-config.transformer.enableBabelRCLookup = false;
-
 module.exports = config;

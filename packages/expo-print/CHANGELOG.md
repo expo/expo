@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Presented the print and printer-picker sheets as popovers on every regular-width display, not only iPad, so they present correctly on iPhone Duo. ([#50437](https://github.com/expo/expo/pull/50437) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 58.0.2 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Presented the print and printer-picker sheets as popovers on every regular-width display, not only iPad, so they present correctly on iPhone Duo. ([#50437](https://github.com/expo/expo/pull/50437) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 58.0.1 — 2026-09-21
 

@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'expo.modules.audio'
-version = '58.0.1'
+version = '58.0.2'
 
 android {
   namespace "expo.modules.audio"
   defaultConfig {
     versionCode 1
-    versionName "58.0.1"
+    versionName "58.0.2"
   }
 
   compileOptions {
@@ -35,4 +35,6 @@ dependencies {
   implementation "androidx.media3:media3-datasource-okhttp:$androidxMedia3Version"
   implementation "androidx.media3:media3-exoplayer-hls:$androidxMedia3Version"
   implementation "androidx.media3:media3-exoplayer-smoothstreaming:$androidxMedia3Version"
+
+  testImplementation 'junit:junit:4.13.2'
 }

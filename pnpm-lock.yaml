@@ -966,6 +966,9 @@ importers:
       expo-age-range:
         specifier: workspace:*
         version: link:../../packages/expo-age-range
+      expo-ai:
+        specifier: workspace:*
+        version: link:../../packages/expo-ai
       expo-app-intents:
         specifier: workspace:*
         version: link:../../packages/expo-app-intents
@@ -3918,7 +3921,7 @@ importers:
   packages/expo-app-intents:
     dependencies:
       '@expo/ui':
-        specifier: workspace:^58.0.4
+        specifier: workspace:^58.0.5
         version: link:../expo-ui
       commander:
         specifier: ^12.1.0

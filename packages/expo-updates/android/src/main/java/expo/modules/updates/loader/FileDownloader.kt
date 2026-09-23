@@ -2,6 +2,7 @@ package expo.modules.updates.loader
 
 import androidx.annotation.VisibleForTesting
 import com.facebook.react.modules.network.OkHttpClientProvider
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.OuterList
@@ -699,6 +700,30 @@ class FileDownloader(
     )
   }
 
+  /**
+   * Summarizes an unsuccessful response for use as an error message. The status code is included
+   * because the body alone is often an opaque HTML page, and the body is truncated because it ends
+   * up in the error that `checkForUpdateAsync` and `fetchUpdateAsync` reject with.
+   */
+  private fun describeUnsuccessfulResponse(response: Response): String {
+    val body = try {
+      response.body?.string()
+    } catch (e: IOException) {
+      logger.warn("Could not read body of unsuccessful remote update response: ${e.localizedMessageWithCauseLocalizedMessage()}", UpdatesErrorCode.UpdateFailedToLoad)
+      null
+    }
+    val summary = body?.takeIf { it.isNotBlank() }?.let { truncateForErrorMessage(it) } ?: "Unknown error"
+    return "HTTP ${response.code}: $summary"
+  }
+
+  private fun truncateForErrorMessage(body: String): String {
+    return if (body.length <= MAX_ERROR_BODY_LENGTH) {
+      body
+    } else {
+      "${body.take(MAX_ERROR_BODY_LENGTH)}… (truncated, ${body.length} characters total)"
+    }
+  }
+
   suspend fun downloadRemoteUpdate(
     extraHeaders: JSONObject?
   ): UpdateResponse {
@@ -709,7 +734,7 @@ class FileDownloader(
 
       if (!response.isSuccessful) {
         val message = "Remote update request not successful"
-        val underlyingError = IOException(response.body?.string() ?: "Unknown error")
+        val underlyingError = IOException(describeUnsuccessfulResponse(response))
         logger.error(message, underlyingError, UpdatesErrorCode.UpdateFailedToLoad)
         throw IOException(message, underlyingError)
       }
@@ -983,6 +1008,8 @@ class FileDownloader(
   }
 
   companion object {
+    private const val MAX_ERROR_BODY_LENGTH = 512
+
     fun getExtraHeadersForRemoteUpdateRequest(
       database: UpdatesDatabase,
       configuration: UpdatesConfiguration,
