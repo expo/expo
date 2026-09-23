@@ -180,8 +180,9 @@ export function createBitSetChunkingStrategy(context: ChunkingContext): Chunking
       }
       return targets;
     },
-    getStableSerializationOptions() {
+    getStableSerializationOptions(chunk) {
       return {
+        includeChunkCompletion: chunk.isAsync && !chunk.sealed,
         includeAsyncPaths: false,
         unstable_getAsyncDependencyPath: undefined,
       };
