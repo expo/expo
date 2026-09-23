@@ -3,6 +3,7 @@ import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
+import { initReanimatedIntegration } from './integrations/react-native-reanimated/init';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
@@ -79,6 +80,10 @@ const Observe: ObserveModule = new Proxy(native, {
           initRouterIntegration(config.integrations?.['expo-router']);
         } else if (shouldInitReactNavigationIntegration) {
           initReactNavigationIntegration(config.integrations?.['react-navigation']);
+        }
+        const reanimatedConfig = config.integrations?.['react-native-reanimated'];
+        if (reanimatedConfig) {
+          initReanimatedIntegration(reanimatedConfig);
         }
         return target.configure(config);
       };
