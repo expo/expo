@@ -101,6 +101,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix hosted React Native content sliding off the top of a `BottomSheet` when the keyboard opens. ([#49399](https://github.com/expo/expo/issues/49399) by [@starsky-nev](https://github.com/starsky-nev)) ([#49427](https://github.com/expo/expo/pull/49427) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fix `DatePickerDialog` preselecting today when `initialDate` is omitted, and keep its confirm button disabled while no date is selected so `onDateSelected` never receives an invalid date. ([#49898](https://github.com/expo/expo/pull/49898) by [@pataar](https://github.com/pataar))
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme. ([#49697](https://github.com/expo/expo/pull/49697) by [@expo-bot](https://github.com/expo-bot))
