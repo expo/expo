@@ -317,16 +317,27 @@ function compilerFlagsError(targetName: string, problem: string): Error {
   );
 }
 
-function parseFlagList(value: unknown, label: string, targetName: string): string[] {
+function linkerFlagsError(targetName: string, problem: string): Error {
+  return new Error(
+    `Cannot read "linkerFlags" for target "${targetName}": ${problem}. The flags are passed to ` +
+      `the linker through .unsafeFlags() in the generated Package.swift, which takes only a list ` +
+      `of strings. Write them in the package's spm.config.json as, for example\n` +
+      `  "linkerFlags": ["-lz", "-all_load"]`
+  );
+}
+
+function parseFlagList(
+  value: unknown,
+  label: string,
+  targetName: string,
+  flagsError: (targetName: string, problem: string) => Error = compilerFlagsError
+): string[] {
   if (!isUnknownArray(value)) {
-    throw compilerFlagsError(
-      targetName,
-      `${label} is ${describeJsonValue(value)}, not a list of flags`
-    );
+    throw flagsError(targetName, `${label} is ${describeJsonValue(value)}, not a list of flags`);
   }
   return value.map((flag) => {
     if (typeof flag !== 'string') {
-      throw compilerFlagsError(
+      throw flagsError(
         targetName,
         `${label} contains ${describeJsonValue(flag)}, which is not a flag string`
       );
@@ -894,6 +905,23 @@ function generateTargetDeclaration(target: ResolvedTarget, comma: string): strin
   return lines.join('\n');
 }
 
+export function buildLinkerSettings(
+  linkedFrameworks: string[],
+  linkerFlags: unknown,
+  targetName: string
+): string[] | undefined {
+  const settings = linkedFrameworks.map((fw) => `.linkedFramework("${fw}")`);
+  const flags =
+    linkerFlags === undefined
+      ? []
+      : parseFlagList(linkerFlags, '"linkerFlags"', targetName, linkerFlagsError);
+  if (flags.length > 0) {
+    const quotedFlags = flags.map((f) => `"${escapeSwiftString(f)}"`).join(', ');
+    settings.push(`.unsafeFlags([${quotedFlags}])`);
+  }
+  return settings.length > 0 ? settings : undefined;
+}
+
 // Target Resolution
 
 /**
@@ -979,19 +1007,11 @@ async function resolveSourceTarget(
     }
   }
 
-  // Linker settings for linked frameworks and libraries
-  if (resolved.linkedFrameworks.length > 0) {
-    resolved.linkerSettings = resolved.linkedFrameworks.map((fw) => `.linkedFramework("${fw}")`);
-  }
-
-  // Linker flags (unsafe flags)
-  if (target.linkerFlags && target.linkerFlags.length > 0) {
-    if (!resolved.linkerSettings) {
-      resolved.linkerSettings = [];
-    }
-    const quotedFlags = target.linkerFlags.map((f) => `"${f}"`).join(', ');
-    resolved.linkerSettings.push(`.unsafeFlags([${quotedFlags}])`);
-  }
+  resolved.linkerSettings = buildLinkerSettings(
+    resolved.linkedFrameworks,
+    target.linkerFlags,
+    target.name
+  );
 
   // Resolve resources: expand globs against package root and remap paths
   // to the copied location in the generated target folder (resources/ subdirectory)

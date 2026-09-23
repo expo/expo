@@ -10,6 +10,7 @@ import type { ObjcTarget, SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
   applyCheckedInTarget,
   buildCSettings,
+  buildLinkerSettings,
   buildSwiftSettings,
   expandTransitiveExternalDeps,
   findSiblingProductDependencies,
@@ -644,6 +645,50 @@ describe('malformed compilerFlags reaching the resolver from its call sites', ()
             'Debug'
           ),
         /Cannot read "compilerFlags" for target "FixtureObjC"/
+      );
+    });
+  }
+});
+
+describe('buildLinkerSettings', () => {
+  it('returns undefined when there are no frameworks and no flags', () => {
+    assert.equal(buildLinkerSettings([], undefined, 'FixtureLinker'), undefined);
+    assert.equal(buildLinkerSettings([], [], 'FixtureLinker'), undefined);
+  });
+
+  it('emits linked frameworks before the unsafe linker flags', () => {
+    assert.deepEqual(buildLinkerSettings(['Foundation'], ['-lz', '-all_load'], 'FixtureLinker'), [
+      '.linkedFramework("Foundation")',
+      '.unsafeFlags(["-lz", "-all_load"])',
+    ]);
+  });
+
+  it('escapes quotes and backslashes in a linker flag', () => {
+    assert.deepEqual(buildLinkerSettings([], ['-Wl,-foo="a\\b"'], 'FixtureLinker'), [
+      '.unsafeFlags(["-Wl,-foo=\\"a\\\\b\\""])',
+    ]);
+  });
+
+  const malformed: [string, unknown, RegExp][] = [
+    ['an object', { common: ['-lz'] }, /\{"common":\["-lz"\]\}/],
+    ['a bare string', '-lz', /"-lz"/],
+    ['a non-string entry', [1], /contains 1/],
+    ['null', null, /is null/],
+    ['an empty string', '', /is ""/],
+    ['zero', 0, /is 0/],
+    ['false', false, /is false/],
+  ];
+
+  for (const [description, value, offender] of malformed) {
+    it(`rejects ${description} with a diagnostic naming the target`, () => {
+      assert.throws(
+        () => buildLinkerSettings([], value, 'FixtureLinker'),
+        (error: Error) => {
+          assert.ok(!(error instanceof TypeError), `Expected a diagnostic, got ${error.stack}`);
+          assert.match(error.message, /Cannot read "linkerFlags" for target "FixtureLinker"/);
+          assert.match(error.message, offender);
+          return true;
+        }
       );
     });
   }
