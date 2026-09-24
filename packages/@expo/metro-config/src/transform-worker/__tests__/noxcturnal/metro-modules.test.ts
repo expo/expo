@@ -1603,6 +1603,26 @@ it('mirrors Expo define and import-meta transforms for eligible dependencies', a
   });
 });
 
+it.each([
+  { environment: 'node', nodeEnv: '"development"' },
+  { environment: 'client', nodeEnv: 'process.env.NODE_ENV' },
+])('inlines NODE_ENV for $environment development bundles', async ({ environment, nodeEnv }) => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `module.exports = process.env.NODE_ENV;`,
+    options: options({
+      dev: true,
+      customTransformOptions: { engine: 'hermes', environment },
+    }),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain(`module.exports = ${nodeEnv}`);
+});
+
 it('uses the last duplicate Platform.select entry while preserving fallback precedence', async () => {
   const result = await transformNodeModuleWithNoxcturnal({
     filename,
