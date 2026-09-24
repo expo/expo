@@ -348,10 +348,9 @@ export const buildXcodeBuildArgs = (
   const debugPrefixMap = `-fdebug-prefix-map=${repoRoot}=/expo-src`;
   const swiftDebugPrefixMap = `-debug-prefix-map ${repoRoot}=/expo-src`;
 
-  // The specific per-target maps must beat the general repo root catch-all, and the two compilers
-  // want opposite orders for that: clang applies the LAST matching -fdebug-prefix-map, swiftc the
-  // FIRST matching -debug-prefix-map. So the catch-all leads the clang lists and trails the Swift
-  // one; putting it first in both is what left every Swift file recorded under its staging path.
+  // The per-target map must beat the general catch-all: clang applies the last matching flag,
+  // while swiftc applies the first. The catch-all therefore leads the two clang-facing lists
+  // but trails the Swift list.
   const allCPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].join(' ');
   const allSwiftPrefixMaps = [...swiftTargetPrefixMaps, swiftDebugPrefixMap].join(' ');
   const allXccPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].map((m) => `-Xcc ${m}`).join(' ');

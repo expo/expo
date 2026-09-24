@@ -75,7 +75,7 @@ class ExpoImageModule : Module() {
       val context = appContext.reactContext ?: return@AsyncFunction false
 
       var imagesLoaded = 0
-      var failed = false
+      var settled = false
 
       val headers = headersMap?.let {
         LazyHeaders.Builder().apply {
@@ -102,8 +102,8 @@ class ExpoImageModule : Module() {
               target: Target<Drawable>,
               isFirstResource: Boolean
             ): Boolean {
-              if (!failed) {
-                failed = true
+              if (!settled) {
+                settled = true
                 promise.resolve(false)
               }
               return true
@@ -118,7 +118,8 @@ class ExpoImageModule : Module() {
             ): Boolean {
               imagesLoaded++
 
-              if (imagesLoaded == urls.size) {
+              if (!settled && imagesLoaded == urls.size) {
+                settled = true
                 promise.resolve(true)
               }
               return true
