@@ -51,6 +51,8 @@ export type DownloadOptions = {
    * `DownloadResumable.completeBackgroundSessionAsync()` is called after processing the file.
    * The handler is released automatically after 25 seconds if it is not acknowledged.
    * Android and foreground sessions do not receive this iOS AppDelegate completion handler.
+   * This only defers completion while the process that started the download remains alive.
+   * Legacy resumable downloads are not restored after iOS terminates and relaunches the app.
    * @default false
    * @platform ios
    */
