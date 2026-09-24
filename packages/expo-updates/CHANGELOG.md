@@ -10,6 +10,7 @@
 
 - Log a warning naming the event and its error message when the updates state machine drops an event that is not allowed from the current state. Previously such an event was discarded silently in release builds, so an error could disappear without a trace. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))
 - Add an `EX_UPDATES_ASSERT_INVALID_STATE` build flag that makes the updates state machine stop the app when it drops an event, so an invalid transition fails an E2E run instead of passing unnoticed. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods.
 
 ### 💡 Others
 

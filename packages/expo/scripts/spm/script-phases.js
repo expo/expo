@@ -45,6 +45,7 @@ if [ -z "$NODE_BINARY" ]; then
   echo "error: expo-constants could not find node while generating the embedded app config. Set NODE_BINARY in $SRCROOT/.xcode.env — run: echo \\"export NODE_BINARY=\\$(command -v node)\\" >> \\"$SRCROOT/.xcode.env\\"" >&2
   exit 1
 fi
+export NODE_BINARY
 
 export PROJECT_ROOT="\${PROJECT_ROOT:-$SRCROOT/..}"
 

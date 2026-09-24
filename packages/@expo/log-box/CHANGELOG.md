@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods.
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
