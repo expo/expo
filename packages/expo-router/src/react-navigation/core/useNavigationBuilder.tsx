@@ -443,6 +443,8 @@ export function useNavigationBuilder<
       shouldActionChangeFocus: router.shouldActionChangeFocus,
       getStateForRouteFocus: (registryState, routeKey) =>
         router.getStateForRouteFocus(registryState as State, routeKey),
+      getBrowserHistoryForRouteFocus: (previous, next, childAction) =>
+        router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
     }),
     [reduce, routeNode, router]

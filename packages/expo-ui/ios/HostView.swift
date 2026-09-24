@@ -57,6 +57,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
     let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
     let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
+    let pinHorizontal = !props.useViewportSizeMeasurement && props.matchContentsHorizontal
+    let pinVertical = !props.useViewportSizeMeasurement && props.matchContentsVertical
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
@@ -76,7 +78,13 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
-      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
+      .modifier(FillAlignmentModifier(
+        alignment: alignment,
+        fillHorizontal: fillHorizontal,
+        fillVertical: fillVertical,
+        pinHorizontal: pinHorizontal,
+        pinVertical: pinVertical
+      ))
       .coordinateSpace(name: expoHostCoordinateSpace)
     } else {
       ZStack(alignment: alignment) {
@@ -92,7 +100,13 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
-      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
+      .modifier(FillAlignmentModifier(
+        alignment: alignment,
+        fillHorizontal: fillHorizontal,
+        fillVertical: fillVertical,
+        pinHorizontal: pinHorizontal,
+        pinVertical: pinVertical
+      ))
       .coordinateSpace(name: expoHostCoordinateSpace)
     }
   }
@@ -197,17 +211,25 @@ private struct FillAlignmentModifier: ViewModifier {
   let alignment: Alignment
   let fillHorizontal: Bool
   let fillVertical: Bool
+  let pinHorizontal: Bool
+  let pinVertical: Bool
 
   func body(content: Content) -> some View {
-    if fillHorizontal || fillVertical {
+    if fillHorizontal || fillVertical || pinHorizontal || pinVertical {
+      // A `matchContents` axis needs a `0` minimum as well. Without it the frame keeps the
+      // content's own size whenever that size is larger than the proposal, and the hosting
+      // controller centers the overflow instead of keeping it at `alignment`. The proposal is
+      // smaller on every frame where the hosting view still has the previous content size.
       content.frame(
-        maxWidth: fillHorizontal ? .infinity : nil,
-        maxHeight: fillVertical ? .infinity : nil,
+        minWidth: pinHorizontal ? 0 : nil,
+        maxWidth: fillHorizontal || pinHorizontal ? .infinity : nil,
+        minHeight: pinVertical ? 0 : nil,
+        maxHeight: fillVertical || pinVertical ? .infinity : nil,
         alignment: alignment
       )
     } else {
-      // Leave the view untouched (e.g. useViewportSizeMeasurement / full matchContents) so the
-      // layout proposal reaches the content's own layout unmodified.
+      // Leave the view untouched (useViewportSizeMeasurement) so the layout proposal reaches the
+      // content's own layout unmodified.
       content
     }
   }

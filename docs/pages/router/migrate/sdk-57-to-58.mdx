@@ -11,7 +11,7 @@ SDK 58 changes how Expo Router builds navigation state and integrates with navig
 Use the following checklist to find the sections that apply to your app:
 
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
-- For web apps using `web.output: "server"`, review the [server rendering changes](#review-server-rendering-behavior).
+- For web apps, review the [async route defaults](#review-async-route-defaults) and, if using `web.output: "server"`, the [server rendering changes](#review-server-rendering-behavior).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
 
@@ -37,6 +37,24 @@ To keep the behavior of `web.output: "server"` from SDK 57 and earlier, set `web
 ```
 
 This combines prerendered HTML with API routes and still requires a [deployed server](/router/web/api-routes/#deployment). To render HTML on each request, keep `web.output: "server"` and follow the [server rendering guide](/router/web/server-rendering/).
+
+### Review async route defaults
+
+In SDK 58, async routes are enabled by default on web in development and production. Native defaults are unchanged, and native production builds continue to load routes synchronously.
+
+Async routes use the default loading fallback instead of custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports from layouts. If your web app relies on a custom fallback, disable async routes on web in the `expo-router` config plugin in your [app config](/workflow/configuration/):
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-router", { "asyncRoutes": { "web": false } }]]
+  }
+}
+```
+
+This restores synchronous route loading and support for custom loading fallbacks on web. Existing explicit `asyncRoutes` settings continue to take precedence over the defaults. See [Async routes](/router/web/async-routes/) for configuration options and limitations.
+
+After upgrading or changing `asyncRoutes`, clear the Metro cache with `expo start --clear` or `expo export --clear`.
 
 ### Prefer `useRouter` in components
 

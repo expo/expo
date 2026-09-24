@@ -169,6 +169,16 @@ export function extendRouter<
         }
 
         const finishedState = finish(result.state, typedState.type);
+        if (router.getBrowserHistoryForAction) {
+          const browserHistory = router.getBrowserHistoryForAction(
+            typedState,
+            finishedState,
+            action
+          );
+          if (browserHistory !== result.browserHistory) {
+            return { ...result, state: finishedState, browserHistory };
+          }
+        }
         return finishedState === result.state ? result : { ...result, state: finishedState };
       },
     };

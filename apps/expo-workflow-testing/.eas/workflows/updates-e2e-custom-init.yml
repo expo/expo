@@ -102,7 +102,7 @@ jobs:
           pnpm run generate-test-update-bundles android
       - uses: eas/start_android_emulator
         with:
-          device_name: pixel_4
+          device_name: pixel_9
       - name: Build E2E test app (debug)
         id: builddebug
         working_directory: ../../../updates-e2e
@@ -113,15 +113,15 @@ jobs:
         working_directory: ../../../updates-e2e
         run: |
           pnpm run maestro:android:release:build
-      - name: Run Maestro tests (debug)
-        id: testdebug
-        working_directory: ../../../updates-e2e
-        run: |
-          # run same tests as the updates E2E enabled tests
-          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
       - name: Run Maestro tests (release)
         id: testrelease
         working_directory: ../../../updates-e2e
         run: |
           # run same tests as the updates E2E enabled tests
           ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android release
+      - name: Run Maestro tests (debug)
+        id: testdebug
+        working_directory: ../../../updates-e2e
+        run: |
+          # run same tests as the updates E2E enabled tests
+          ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug

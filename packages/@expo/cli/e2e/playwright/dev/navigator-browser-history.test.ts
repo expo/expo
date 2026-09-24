@@ -49,6 +49,13 @@ test.describe(inputDir, () => {
     // behavior changes
     await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
 
+    // Reloading the same React tree must not reuse an ID stored by the previous page session.
+    await expect.poll(() => page.evaluate(() => history.state?.id)).toEqual(expect.any(String));
+    const previousEntryId = await page.evaluate(() => history.state.id);
+    await page.reload();
+    await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
+    await expect.poll(() => page.evaluate(() => history.state?.id)).not.toBe(previousEntryId);
+
     await page.locator('[data-testid="go-explore"]').click();
 
     await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
@@ -98,6 +105,174 @@ test.describe(inputDir, () => {
     await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
     await page.goForward();
     await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('creates one browser entry per push in a batch', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-explore"]').click();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+
+    await page.locator('[data-testid="push-details-and-final"]').click();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await expect(page).toHaveURL(/\/explore\/details$/);
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+    await expect(page).toHaveURL(/\/explore$/);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('keeps router.back aligned with browser back after batched nested pushes', async ({
+    page,
+  }) => {
+    const pageErrors = pageCollectErrors(page);
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-explore"]').click();
+    await expect(page).toHaveURL(/\/explore$/);
+    const initialLength = await page.evaluate(() => history.length);
+    await page.locator('[data-testid="push-details-and-final"]').click();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await expect.poll(() => page.evaluate(() => history.length)).toBe(initialLength + 2);
+
+    await page.locator('[data-testid="final-back"]').click();
+    await expect(page).toHaveURL(/\/explore\/details$/);
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.goForward();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await page.goBack();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.locator('[data-testid="details-back"]').click();
+    await expect(page).toHaveURL(/\/explore$/);
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+    await page.goForward();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.goBack();
+    await expect(page.locator('[data-testid="explore-content"]')).toHaveText('/explore');
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('creates two visits when batched pushes open a previously unmounted tab stack', async ({
+    page,
+  }) => {
+    // The first push creates nested state, but the navigator registers its router only after
+    // mounting. Before that commit, the second push replaces the nested state instead of
+    // appending to its stack, losing the first destination and its browser history entry.
+    // https://linear.app/expo/issue/ENG-26883/fix-state-synchronization-for-unmounted-navigators
+    test.fail(
+      true,
+      'Batched pushes replace nested state until the destination navigator registers its router.'
+    );
+    const pageErrors = pageCollectErrors(page);
+    await page.goto(`${expoStart.url}`);
+    await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
+    const initialLength = await page.evaluate(() => history.length);
+    await page.locator('[data-testid="push-unmounted-details-and-final"]').click();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await expect.poll(() => page.evaluate(() => history.length)).toBe(initialLength + 2);
+    await page.goBack();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    await page.goForward();
+    await expect(page.locator('[data-testid="final-content"]')).toHaveText('/explore/final');
+    await page.locator('[data-testid="final-back"]').click();
+    await expect(page.locator('[data-testid="details-content"]')).toHaveText('/explore/details');
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('keeps the browser tab title in sync after router and browser back', async ({
+    page,
+    context,
+  }) => {
+    const pageErrors = pageCollectErrors(page);
+    const session = await context.newCDPSession(page);
+    const expectTitle = async (title: string) => {
+      await expect(page).toHaveTitle(title);
+      // Check Chrome's browser-side target title too: the old workaround addressed a stale
+      // tab title even when document.title already contained the correct value.
+      await expect
+        .poll(async () => (await session.send('Target.getTargetInfo')).targetInfo.title)
+        .toBe(title);
+    };
+
+    await page.goto(`${expoStart.url}`);
+    await page.getByTestId('go-explore').click();
+    await expectTitle('/explore');
+    await page.getByTestId('go-details').click();
+    await expectTitle('/explore/details');
+    await page.getByTestId('go-final').click();
+    await expectTitle('/explore/final');
+
+    await page.getByTestId('final-back').click();
+    await expect(page).toHaveURL(/\/explore\/details$/);
+    await expectTitle('/explore/details');
+    await page.goForward();
+    await expectTitle('/explore/final');
+    await page.goBack();
+    await expectTitle('/explore/details');
+    await page.getByTestId('details-back').click();
+    await expect(page).toHaveURL(/\/explore$/);
+    await expectTitle('/explore');
+    await session.detach();
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('deep links into an anchored stack and goes back to the anchor', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(new URL('/anchored/details', expoStart.url).href);
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    // The anchor sits below the deep-linked screen, so in-app back reaches it.
+    await page.locator('[data-testid="anchored-back"]').click();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    await page.locator('[data-testid="go-anchored-details"]').click();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    await page.goBack();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+
+  test('keeps the anchor below the screen after a reload', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-anchored-details"]').click();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    await page.reload();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    await page.locator('[data-testid="anchored-back"]').click();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    // The entry from before the reload is still the previous browser entry.
+    await page.goBack();
+    await expect(page.locator('[data-testid="home-content"]')).toHaveText('/');
+
+    await page.goForward();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
 
     expect(pageErrors.all).toEqual([]);
   });

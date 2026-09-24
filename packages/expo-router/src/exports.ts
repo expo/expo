@@ -138,6 +138,7 @@ export type {
   PageBlurredEvent,
   PageRemoved,
   ActionDispatchedEvent,
+  RoutePreloadedEvent,
   AnalyticsEvent,
 } from './navigationEvents';
 

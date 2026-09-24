@@ -1,5 +1,5 @@
 ---
-model: anthropic/claude-opus-5
+model: anthropic/claude-opus-5-5
 alwaysRun: true
 description: Correctness defects that only appear ACROSS files, languages, or platforms — iOS and Android drifting apart, a fix landing in one copy and not its sibling, the TypeScript contract disagreeing with the native code that implements it, and a changed default that silently alters callers the diff never touches.
 ---

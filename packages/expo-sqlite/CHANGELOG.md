@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 58.0.5 — 2026-09-23
+
+### 🎉 New features
+
+- [Android][iOS][macOS][tvOS] Add `interruptSync()` to cancel running operations on a database connection. ([#50123](https://github.com/expo/expo/pull/50123) by [@savv](https://github.com/savv))
+
+## 58.0.4 — 2026-09-21
+
+### 💡 Others
+
+- [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.3 — 2026-09-15
 
 ### 🎉 New features
