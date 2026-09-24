@@ -3,11 +3,11 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (58.0.0):
     - ExpoModulesCore
-  - EXConstants (58.0.4):
+  - EXConstants (58.0.6):
     - ExpoModulesCore
   - EXManifests (58.0.0):
     - ExpoModulesCore
-  - Expo (58.0.0-preview.4):
+  - Expo (58.0.0-preview.6):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -39,13 +39,13 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-client (58.0.4):
+  - expo-dev-client (58.0.6):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (58.0.4):
+  - expo-dev-launcher (58.0.6):
     - boost
     - DoubleConversion
     - EXManifests
@@ -81,10 +81,10 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - expo-dev-menu (58.0.4):
+  - expo-dev-menu (58.0.6):
     - boost
     - DoubleConversion
-    - expo-dev-menu/Main (= 58.0.4)
+    - expo-dev-menu/Main (= 58.0.6)
     - fast_float
     - fmt
     - glog
@@ -111,7 +111,7 @@ PODS:
     - SocketRocket
     - Yoga
   - expo-dev-menu-interface (58.0.0)
-  - expo-dev-menu/Main (58.0.4):
+  - expo-dev-menu/Main (58.0.6):
     - boost
     - DoubleConversion
     - EXManifests
@@ -145,13 +145,16 @@ PODS:
     - Yoga
   - ExpoAI (0.1.0):
     - ExpoModulesCore
-  - ExpoAsset (58.0.4):
+  - ExpoAppIntents (0.4.4):
+    - ExpoModulesCore
+    - ExpoUI
+  - ExpoAsset (58.0.6):
     - ExpoModulesCore
   - ExpoClipboard (58.0.1):
     - ExpoModulesCore
   - ExpoCrypto (58.0.2):
     - ExpoModulesCore
-  - ExpoFileSystem (58.0.0):
+  - ExpoFileSystem (58.0.1):
     - ExpoModulesCore
   - ExpoFont (58.0.2):
     - ExpoModulesCore
@@ -159,7 +162,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (58.0.1):
     - ExpoModulesCore
-  - ExpoLinking (58.0.4):
+  - ExpoLinking (58.0.6):
     - ExpoModulesCore
   - ExpoLocalAuthentication (58.0.0):
     - ExpoModulesCore
@@ -167,7 +170,7 @@ PODS:
     - React-Core
   - ExpoMeshGradient (58.0.1):
     - ExpoModulesCore
-  - ExpoModulesCore (58.0.4):
+  - ExpoModulesCore (58.0.6):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -200,28 +203,28 @@ PODS:
   - ExpoModulesJSI (58.0.3):
     - React-Core
     - ReactCommon
-  - ExpoModulesWorklets (58.0.4):
+  - ExpoModulesWorklets (58.0.6):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorkletsAdapter (58.0.4):
+  - ExpoModulesWorkletsAdapter (58.0.6):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
     - RNWorklets
   - ExpoNetwork (58.0.1):
     - ExpoModulesCore
-  - ExpoSQLite (58.0.4):
+  - ExpoSQLite (58.0.5):
     - ExpoModulesCore
   - ExpoSymbols (58.0.2):
     - ExpoModulesCore
-  - ExpoUI (58.0.4):
+  - ExpoUI (58.0.6):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
-  - ExpoWebBrowser (58.0.1):
+  - ExpoWebBrowser (58.0.2):
     - ExpoModulesCore
   - EXStructuredHeaders (58.0.0)
-  - EXUpdates (58.0.6):
+  - EXUpdates (58.0.8):
     - boost
     - DoubleConversion
     - EASClient
@@ -2917,6 +2920,7 @@ DEPENDENCIES:
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - ExpoAI (from `../../../packages/expo-ai/ios`)
+  - ExpoAppIntents (from `../../../packages/expo-app-intents/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
@@ -3057,6 +3061,9 @@ EXTERNAL SOURCES:
   ExpoAI:
     inhibit_warnings: false
     :path: "../../../packages/expo-ai/ios"
+  ExpoAppIntents:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-app-intents/ios"
   ExpoAsset:
     inhibit_warnings: false
     :path: "../../../packages/expo-asset/ios"
@@ -3285,36 +3292,37 @@ SPEC CHECKSUMS:
   boost: cea1d4f90a3a59537f3deb03ff5656489d7133dd
   DoubleConversion: d31b1eb37f6d6f456530c4fd9124b857d6889cab
   EASClient: bc4dd37e41331d1dbaf1ad1e318b52aecf6558f8
-  EXConstants: 0cb6904a09efa4198f09b1ecb714e8703f6217ab
+  EXConstants: 29b1c0525a3a8e00f24414e2a7a24a09b602169e
   EXManifests: a6478083657b29dc16daf451118c5219afb52082
-  Expo: 37b9e6ef2f451a46dde6fa1369f85e3efb60781c
-  expo-dev-client: bd3dacd7012025f51ad72f709d5abc13eb756133
-  expo-dev-launcher: a2306be821e4480a02d41d7836c0d4ac76c69360
-  expo-dev-menu: 00a117003fd691b6df8f4df54a4780324d8a8698
+  Expo: 24d17cdf838b2b977809fd21c999f98b9c5a63b0
+  expo-dev-client: 9aa3bf940338dbe53c3d5f4c4c2e120eab78f304
+  expo-dev-launcher: 21d37c0c9ba0c2042d899a7f240e9a60c6750c3e
+  expo-dev-menu: a9b121b39fec434fe5f8299e9218977a09f42bba
   expo-dev-menu-interface: a20b16f64708f60dd367bc043d60660e71154bb1
   ExpoAI: 140b9877c5ae5d45d75c21a52713aa9fbb4d7d94
-  ExpoAsset: c95f945189bc5104946153d3c67c2f526654313d
+  ExpoAppIntents: 90718bfbfb67d32a8b88e09c001d18d8e48c8956
+  ExpoAsset: a8308a4bd115550e11197957d2a96b7be336a822
   ExpoClipboard: 023a2feb330190bffc38e3c537ea2acf3f6ada6d
   ExpoCrypto: 985714101640b8324d7514a86b069743c9c17c89
-  ExpoFileSystem: b3b692bad1445276dcc7cdf322b71453cd75ff7d
+  ExpoFileSystem: 456c9c1d19b3f39ba3d67c4fc9337626a35199bb
   ExpoFont: cba6bf70cdd93e870045d9cb934026efd5a1d709
   ExpoKeepAwake: 0801399831e0e381072a70c81bd3fb6b56db42ff
   ExpoLinearGradient: c6d560c55eaee5175cdde3c8f87b3cb078135965
-  ExpoLinking: f8fcc612a288267e1512f99b5197c29ef00d84b3
+  ExpoLinking: 20668353d50fafdba953b03ed06e676a0077301d
   ExpoLocalAuthentication: 9c197176348896cbbf44b4e90cbea2e10b4c432e
   ExpoLogBox: abbcc2aeaa177218ebf36205c8b96665642376e1
   ExpoMeshGradient: 8a059ec99cb9595c8722008aa5f3dfa498ae7d74
-  ExpoModulesCore: 0e6df7b67951fefa406811c1618dc81f1b49ddc1
+  ExpoModulesCore: dfbf1753c41a2fcf7d6f9743e6c99ea6618edb4a
   ExpoModulesJSI: dde0e7a9a01d2456c3a61b503d4bea5769d97895
-  ExpoModulesWorklets: 02178d61511df4fc21565ab88707509c114fc1e5
-  ExpoModulesWorkletsAdapter: b724a4219fa03027adffdadfaa602c401617d85b
+  ExpoModulesWorklets: f2510074d55ebc43abd030f80c2fd0549c909d3f
+  ExpoModulesWorkletsAdapter: 88157a6e370556cd51b3621784df80d3a5cfbbd0
   ExpoNetwork: 7d8b3b0bee2cdedc36bd681af85ad982a2dac4ba
-  ExpoSQLite: 168f4dd42bcc7c61d64eb3714e2bfbece055dc6f
+  ExpoSQLite: b7adcb05a9c1b36dc245b8d58ff1ece022830f53
   ExpoSymbols: c1af8406f1305eb7ad3964d1d9f3e1551df7dffe
-  ExpoUI: 80e89eb5585141cee7fbe48e4fc53cbb57a098c2
-  ExpoWebBrowser: 854ce3372496bcfe8361e42ac8db5990dcaee3e2
+  ExpoUI: d9a27e000cf85af85b49b043865da2d839c3f84f
+  ExpoWebBrowser: cabd0ae603ba8b7f9a08dfcebf3473a8786d9901
   EXStructuredHeaders: 6953b31d4ff803903fc3bf178f07a6ee7286157b
-  EXUpdates: a8c7a76145db582dc524ba06cffa7e712d1c4100
+  EXUpdates: f62f47972c08dafc9b526df0312591650af238fa
   EXUpdatesInterface: e3e64a7854cc0fc05b3053ba447ea12871acfe19
   fast_float: 20817c22759af6ac8d4d67e6e059b8b499953656
   FBLazyVector: 3cde5aa3abeda29fd70560e5a3e3199e6add163f

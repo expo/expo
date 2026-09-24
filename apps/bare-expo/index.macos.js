@@ -1,4 +1,6 @@
 import { ThemeProvider } from 'ThemeProvider';
+// Intentionally reaches into expo-router internals. This is an internal bare-expo harness, and
+// this import is expected to break when the router's routing queue is refactored.
 import {
   ImperativeRoutingQueueBridge,
   RoutingQueueApiContext,
@@ -51,15 +53,15 @@ function titleOf(screen) {
 
 /**
  * Enough of a React Navigation `navigation` object for the screens to render outside a navigator.
- * `navigate` and `push` push another screen from the list onto the history, `goBack` pops it, and
- * everything else is a no-op.
+ * `navigate` and `push` push another screen from the list onto the history, `replace` swaps the
+ * current one, `goBack` pops it, and everything else is a no-op.
  */
-function createNavigationStub({ push, goBack, canGoBack }) {
+function createNavigationStub({ push, replace, goBack, canGoBack }) {
   const noop = () => {};
-  const go = (target) => {
+  const go = (apply) => (target) => {
     const name = typeof target === 'string' ? target : target?.name;
     if (name && allScreens.some((screen) => screen.name === name)) {
-      push(name);
+      apply(name);
     } else {
       console.warn(`No screen named ${JSON.stringify(name)} in the macOS list.`);
     }
@@ -74,9 +76,9 @@ function createNavigationStub({ push, goBack, canGoBack }) {
     reset: noop,
     goBack,
     canGoBack,
-    navigate: go,
-    push: go,
-    replace: go,
+    navigate: go(push),
+    push: go(push),
+    replace: go(replace),
     getId: () => undefined,
     getParent: () => undefined,
     getState: () => ({
@@ -112,10 +114,10 @@ class ScreenErrorBoundary extends React.Component {
   }
 }
 
-function MountedScreen({ screen, push, goBack, canGoBack }) {
+function MountedScreen({ screen, push, replace, goBack, canGoBack }) {
   const navigation = useMemo(
-    () => createNavigationStub({ push, goBack, canGoBack }),
-    [push, goBack, canGoBack]
+    () => createNavigationStub({ push, replace, goBack, canGoBack }),
+    [push, replace, goBack, canGoBack]
   );
   const route = useMemo(() => ({ key: screen.name, name: screen.name, params: {} }), [screen]);
   // Screen configs return either a component or a function that renders an element, and both work
@@ -144,6 +146,10 @@ function App() {
 
   const select = useCallback((name) => setHistory([name]), []);
   const push = useCallback((name) => setHistory((previous) => [...previous, name]), []);
+  const replace = useCallback(
+    (name) => setHistory((previous) => [...previous.slice(0, -1), name]),
+    []
+  );
   const goBack = useCallback(
     () => setHistory((previous) => (previous.length > 1 ? previous.slice(0, -1) : previous)),
     []
@@ -161,9 +167,14 @@ function App() {
           return;
         }
         const href = intent.type === 'NAVIGATE_TO_HREF' ? intent.payload.href : null;
+        const event = href != null ? intent.payload.options?.event : undefined;
+        if (event === 'PRELOAD') {
+          // Screens mount when selected; there is nothing to preload.
+          return;
+        }
         const screen = href != null ? screenForHref(href) : undefined;
         if (screen) {
-          push(screen.name);
+          (event === 'REPLACE' ? replace : push)(screen.name);
         } else {
           console.warn(
             `Ignoring ${intent.type} routing intent${href != null ? ` for ${href}` : ''}: there is no navigator in the macOS entry.`
@@ -175,7 +186,7 @@ function App() {
       transitionMode: 'never',
       setTransitionMode: () => {},
     }),
-    [push, goBack]
+    [push, replace, goBack]
   );
 
   return (
@@ -224,6 +235,7 @@ function App() {
                     key={`${history.length}:${selected.name}`}
                     screen={selected}
                     push={push}
+                    replace={replace}
                     goBack={goBack}
                     canGoBack={canGoBackFn}
                   />
