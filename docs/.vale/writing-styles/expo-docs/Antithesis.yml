@@ -1,6 +1,6 @@
 extends: existence
 message: "State the point directly instead of the contrast '%s'."
-level: warning
+level: error
 ignorecase: true
 nonword: true
 tokens:
