@@ -14,16 +14,17 @@ private let sqliteTransient = unsafeBitCast(OpaquePointer(bitPattern: -1), to: s
 /// adds (string bridging, the statement semaphore, error checks) from the cost of SQLite itself.
 extension Benchmarks {
   /// Opens a seeded in-memory database through the C API and wraps it the way the module does.
+  /// Setup failures stop the case, so a broken handle is never timed.
   private func openDatabase() throws -> NativeDatabase {
     var pointer: OpaquePointer?
-    #expect(exsqlite3_open(":memory:", &pointer) == SQLITE_OK)
-    #expect(exsqlite3_exec(pointer, BenchmarkSchema.setup(), nil, nil, nil) == SQLITE_OK)
+    try #require(exsqlite3_open(":memory:", &pointer) == SQLITE_OK)
+    try #require(exsqlite3_exec(pointer, BenchmarkSchema.setup(), nil, nil, nil) == SQLITE_OK)
     return NativeDatabase(pointer, databasePath: ":memory:", openOptions: OpenDatabaseOptions())
   }
 
-  private func prepare(_ source: String, in database: NativeDatabase) -> OpaquePointer? {
+  private func prepare(_ source: String, in database: NativeDatabase) throws -> OpaquePointer? {
     var statement: OpaquePointer?
-    #expect(exsqlite3_prepare_v2(database.pointer, source, -1, &statement, nil) == SQLITE_OK)
+    try #require(exsqlite3_prepare_v2(database.pointer, source, -1, &statement, nil) == SQLITE_OK)
     return statement
   }
 
@@ -51,7 +52,7 @@ extension Benchmarks {
     try await sqliteBenchmarkCase { appContext in
       let database = try openDatabase()
       let runtime = try appContext.runtime
-      let statement = prepare("SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id = ?", in: database)
+      let statement = try prepare("SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id = ?", in: database)
       benchmark("raw C: select 1 row by id", runtime: runtime) { iterations in
         for i in 0..<iterations {
           exsqlite3_bind_int64(statement, 1, Int64(i % BenchmarkSchema.rowCount) + 1)
@@ -70,7 +71,7 @@ extension Benchmarks {
     try await sqliteBenchmarkCase { appContext in
       let database = try openDatabase()
       let runtime = try appContext.runtime
-      let statement = prepare("SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id <= 100", in: database)
+      let statement = try prepare("SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id <= 100", in: database)
       benchmark("raw C: select 100 rows, read every cell", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           while exsqlite3_step(statement) == SQLITE_ROW {
@@ -89,7 +90,7 @@ extension Benchmarks {
     try await sqliteBenchmarkCase { appContext in
       let database = try openDatabase()
       let runtime = try appContext.runtime
-      let statement = prepare(
+      let statement = try prepare(
         "INSERT INTO t (int_value, real_value, text_value, null_value) VALUES (?, ?, ?, ?)",
         in: database
       )

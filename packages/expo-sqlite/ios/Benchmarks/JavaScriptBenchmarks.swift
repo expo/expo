@@ -19,17 +19,17 @@ extension Benchmarks {
   @JavaScriptActor
   private func prepareRuntime(_ appContext: AppContext) throws -> JavaScriptRuntime {
     let runtime = try appContext.runtime
-    let schema = BenchmarkSchema.setup()
-      .replacingOccurrences(of: "\\", with: "\\\\")
-      .replacingOccurrences(of: "`", with: "\\`")
     _ = try runtime.eval(
       """
       var NativeStatement = expo.modules.ExpoSQLite.NativeStatement;
       var db = new expo.modules.ExpoSQLite.NativeDatabase(':memory:', { useNewConnection: true });
       db.initSync();
-      db.execSync(`\(schema)`);
       """
     )
+    // The schema goes in as a call argument instead of a template literal, so it needs no escaping.
+    _ = try runtime.eval("(function (schema) { db.execSync(schema); })")
+      .asFunction()
+      .call(arguments: BenchmarkSchema.setup())
     return runtime
   }
 

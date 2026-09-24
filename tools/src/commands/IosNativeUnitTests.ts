@@ -234,6 +234,10 @@ async function runTestsAsync(
   ];
   if (benchmarks) {
     args.push(
+      // Benchmarks measure wall time, so their bundles must not share the Mac. The merged scheme
+      // marks every testable parallelizable, which xcodebuild would otherwise honor.
+      '-parallel-testing-enabled',
+      'NO',
       // Coverage instrumentation puts profile counters inside the measured code.
       '-enableCodeCoverage',
       'NO',
