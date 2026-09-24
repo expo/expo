@@ -96,8 +96,8 @@ public final class ScreenCaptureModule: Module {
       let visibleView = keyWindow.subviews.first else { return }
     let blockView = getOrCreateBlockView()
 
-    let isCaptured = UIScreen.main.isCaptured
-    if isCaptured {
+    if keyWindow.screen.isCaptured {
+      blockView.frame = visibleView.bounds
       visibleView.addSubview(blockView)
     } else {
       blockView.removeFromSuperview()
@@ -114,9 +114,9 @@ public final class ScreenCaptureModule: Module {
   private func getOrCreateBlockView() -> UIView {
     guard let blockView else {
       let view = UIView()
-      let boundLength = max(UIScreen.main.bounds.size.width, UIScreen.main.bounds.size.height)
-      view.frame = CGRect(x: 0, y: 0, width: boundLength, height: boundLength)
       view.backgroundColor = .black
+      // The view is cached, so let it track its superview instead of a fixed size.
+      view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 
       self.blockView = view
       return view
