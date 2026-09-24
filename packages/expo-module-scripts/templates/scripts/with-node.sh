@@ -9,20 +9,38 @@
 
 CURR_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-# Start with a default
-NODE_BINARY=$(command -v node)
+# CocoaPods sets PODS_ROOT, and its env files override any inherited NODE_BINARY.
+# Without CocoaPods (SwiftPM) the calling build phase may already have resolved
+# NODE_BINARY, so keep it and read the app's env files from SRCROOT only if unset.
+# The mode is fixed here because the env files may change PODS_ROOT.
+if [[ -n "$PODS_ROOT" ]]; then
+  USES_COCOAPODS=1
+  # Start with a default
+  NODE_BINARY=$(command -v node)
+  ENV_PATH="$PODS_ROOT/../.xcode.env"
+else
+  USES_COCOAPODS=
+  ENV_PATH="$SRCROOT/.xcode.env"
+fi
 export NODE_BINARY
 
-# Override the default with the global environment
-ENV_PATH="$PODS_ROOT/../.xcode.env"
-if [[ -f "$ENV_PATH" ]]; then
-  source "$ENV_PATH"
+if [[ -n "$USES_COCOAPODS" || -z "$NODE_BINARY" ]]; then
+  # Override the default with the global environment
+  if [[ -f "$ENV_PATH" ]]; then
+    source "$ENV_PATH"
+  fi
+
+  # Override the global with the local environment
+  LOCAL_ENV_PATH="${ENV_PATH}.local"
+  if [[ -f "$LOCAL_ENV_PATH" ]]; then
+    source "$LOCAL_ENV_PATH"
+  fi
 fi
 
-# Override the global with the local environment
-LOCAL_ENV_PATH="${ENV_PATH}.local"
-if [[ -f "$LOCAL_ENV_PATH" ]]; then
-  source "$LOCAL_ENV_PATH"
+if [[ -z "$USES_COCOAPODS" ]]; then
+  NODE_BINARY="${NODE_BINARY:-$(command -v node)}"
+  # An env file that unsets NODE_BINARY also drops its export.
+  export NODE_BINARY
 fi
 
 if [[ -n "$NODE_BINARY" && -x "$NODE_BINARY" ]]; then
