@@ -115,6 +115,8 @@ function writePackages(root: string, packages: Packages): void {
 type FixtureOptions = {
   base?: Packages;
   editHead?: (packages: Packages) => void;
+  /** Edits the head commit's copy of `tools/src`, given its path. */
+  editHeadTools?: (toolsSrc: string) => void;
   /** Packages given a root `Package.swift` in the head commit, which opts them in. */
   optInAtHead?: string[];
 };
@@ -127,6 +129,7 @@ type FixtureOptions = {
 function fixtureRepo({
   base = basePackages(),
   editHead = () => {},
+  editHeadTools = () => {},
   optInAtHead = [],
 }: FixtureOptions = {}): { root: string; baseCommit: string } {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-fixture-')));
@@ -140,6 +143,7 @@ function fixtureRepo({
   git(root, 'commit', '--quiet', '--message', 'base');
   const baseCommit = git(root, 'rev-parse', 'HEAD');
 
+  editHeadTools(path.join(root, 'tools/src'));
   const head = structuredClone(base);
   editHead(head);
   fs.rmSync(path.join(root, 'packages'), { recursive: true, force: true });
@@ -224,6 +228,49 @@ describe('check-spm-manifest-collateral', () => {
     assert.match(result.stderr, /DIFF: fixture-consumer\/FixtureConsumer\/Debug/);
     assert.match(result.stderr, /Collateral manifest changes/);
     assert.doesNotMatch(result.stderr, /DIFF: fixture-core\//);
+  });
+
+  it('fails on every product whose manifest a head-side generator change altered', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHeadTools: (toolsSrc) => {
+        const generator = path.join(toolsSrc, 'prebuilds/SPMPackage.ts');
+        const source = fs.readFileSync(generator, 'utf8');
+        const edited = source.replace(
+          "lines.push('import PackageDescription');",
+          "lines.push('import PackageDescription // edited at head');"
+        );
+        assert.notEqual(edited, source, 'the fixture edit must reach the generator');
+        fs.writeFileSync(generator, edited);
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
+    for (const id of [
+      'fixture-consumer/FixtureConsumer',
+      'fixture-core/FixtureCore',
+      'fixture-leaf/FixtureLeaf',
+    ]) {
+      for (const flavor of ['Debug', 'Release']) {
+        assert.match(result.stderr, new RegExp(`DIFF: ${id}/${flavor}\n`));
+      }
+    }
+    assert.match(result.stderr, /Collateral manifest changes/);
+  });
+
+  it('fails loudly when two config entries claim the same product', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        packages['fixture-leaf'].push(product('FixtureLeaf', { podName: 'Duplicate' }));
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
+    assert.match(result.stderr, /fixture-leaf\/FixtureLeaf/);
+    assert.match(result.stderr, /packages\/fixture-leaf\/spm\.config\.json/);
+    assert.match(result.stderr, /Why:/);
+    assert.match(result.stderr, /How to fix:/);
   });
 
   it('skips a package with a root Package.swift without also reporting its config change', () => {

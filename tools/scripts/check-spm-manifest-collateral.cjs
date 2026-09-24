@@ -64,20 +64,27 @@ function configPaths(root = repo) {
 }
 
 /** Maps each `<npm-package>/<product>` id to its products[] entry. */
-function inventory(configs, read) {
-  return new Map(
-    configs
-      .flatMap((relative) => {
-        const packageName = relative.includes('/external-configs/ios/')
-          ? path.dirname(relative.split('/external-configs/ios/')[1])
-          : JSON.parse(read(path.join(path.dirname(relative), 'package.json'))).name;
-        return JSON.parse(read(relative)).products.map((product) => [
-          `${packageName}/${product.name}`,
-          product,
-        ]);
-      })
-      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-  );
+function inventory(configs, read, side) {
+  const entries = new Map();
+  const sources = new Map();
+  for (const relative of configs) {
+    const packageName = relative.includes('/external-configs/ios/')
+      ? path.dirname(relative.split('/external-configs/ios/')[1])
+      : JSON.parse(read(path.join(path.dirname(relative), 'package.json'))).name;
+    for (const product of JSON.parse(read(relative)).products) {
+      const id = `${packageName}/${product.name}`;
+      if (sources.has(id)) {
+        throw new Error(
+          `Unable to check SwiftPM manifest collateral: ${id} is declared twice in the ${side}, by ${sources.get(id)} and ${relative}.\n` +
+            'Why: the gate identifies each product by <npm-package>/<product>, so one declaration would silently replace the other and go uncompared.\n' +
+            'How to fix: give each product a unique name within its package, or remove the duplicate spm.config.json entry.'
+        );
+      }
+      sources.set(id, relative);
+      entries.set(id, product);
+    }
+  }
+  return new Map([...entries].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)));
 }
 
 /**
@@ -121,11 +128,17 @@ function checkInventory() {
     .trim()
     .split('\n')
     .filter((file) => file.endsWith('/spm.config.json'));
-  const before = inventory(baselinePaths, (file) =>
-    git('show', `${values.base}:${file}`).toString()
+  const before = inventory(
+    baselinePaths,
+    (file) => git('show', `${values.base}:${file}`).toString(),
+    `baseline ${values.base}`
   );
   const currentPaths = configPaths();
-  const after = inventory(currentPaths, (file) => fs.readFileSync(path.join(repo, file), 'utf8'));
+  const after = inventory(
+    currentPaths,
+    (file) => fs.readFileSync(path.join(repo, file), 'utf8'),
+    'current tree'
+  );
   const optedIn = new Set();
   for (const relative of new Set([...baselinePaths, ...currentPaths])) {
     if (relative.includes('/external-configs/ios/')) continue;
@@ -367,7 +380,17 @@ async function main() {
     }
 
     function runWorker(label) {
-      const args = [__filename, '--worker', label, '--scratch', scratch, '--base', values.base];
+      const args = [
+        __filename,
+        '--worker',
+        label,
+        '--scratch',
+        scratch,
+        '--base',
+        values.base,
+        '--repo',
+        repo,
+      ];
       args.push('--only-comparable');
       for (const id of values.exclude) args.push('--exclude', id);
       for (const id of comparable) args.push('--include', id);
