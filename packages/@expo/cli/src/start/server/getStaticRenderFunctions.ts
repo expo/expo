@@ -132,6 +132,8 @@ export function evalMetroNoHandling(
 
   return profile(evalModule, 'eval-metro-bundle')(src, filename, {
     cache: false,
+    // Linked render modules must share the app's React and other external dependencies.
+    paths: [path.join(projectRoot, 'node_modules')],
     sourceMap,
   });
 }

@@ -16,7 +16,7 @@ export interface ResolvedMetadata {
 
 export interface ResolveMetadataOptions {
   route: MatchedRouteMetadata;
-  request: ImmutableRequest;
+  request?: ImmutableRequest;
   params: Record<string, string | string[]>;
 }
 
@@ -37,10 +37,14 @@ export interface LegacyServerRenderModule {
  */
 export interface ServerRenderModule {
   resolveMetadata?(options: ResolveMetadataOptions): Promise<ResolvedMetadata | null>;
-  /** {@type import('@expo/router-server/src/static/renderStreamingContent').getStreamingContent} */
+  /** {@type import('@expo/router-server/src/server/renderStreamingContent').getStreamingContent} */
   getStreamingContent(
     location: URL,
-    options?: GetStreamingContentOptions
+    options: GetStreamingContentOptions & { output: 'static' }
+  ): Promise<string>;
+  getStreamingContent(
+    location: URL,
+    options?: GetStreamingContentOptions & { output?: 'server' }
   ): Promise<ReadableStream<Uint8Array>>;
 }
 
