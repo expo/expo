@@ -124,7 +124,8 @@ type FixtureOptions = {
 /**
  * A git repository whose base commit holds `base` and whose head commit (and working tree) holds
  * `base` changed by `editHead`. Both commits carry this checkout's `tools/src`, so the gate drives
- * the real generator on both sides and any difference comes from the packages alone.
+ * the real generator on both sides. Any difference comes from the packages alone, unless
+ * `editHeadTools` also changes the head commit's generator.
  */
 function fixtureRepo({
   base = basePackages(),
