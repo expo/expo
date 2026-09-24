@@ -210,7 +210,7 @@ class AssetModernDelegate(
     val displayName = if (forceUniqueName) {
       buildUniqueDisplayName(getUri())
     } else {
-      getUri().toString()
+      getFilename()
     }
     val newAssetUri = contentResolver.insertPendingAsset(
       displayName,
