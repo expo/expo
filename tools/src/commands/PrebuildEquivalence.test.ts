@@ -174,6 +174,33 @@ describe('runPrebuildEquivalence — agreement is a precondition of the whole ru
     assert.deepEqual(calls, []);
   });
 
+  it('refuses the same artifact passed twice before comparing anything', () => {
+    const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage' }]);
+    const { runtime, calls } = runtimeSpy(roots);
+    const a = artifactAt(IMAGE_DEBUG, 'ExpoImage');
+
+    assert.throws(() => runPrebuildEquivalence(a, a, options(), runtime), {
+      message: /same artifact[\s\S]*xcframeworks[\s\S]*[Cc]opy/,
+    });
+    assert.deepEqual(calls, []);
+  });
+
+  it('refuses the same artifact reached through a symlink', () => {
+    const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage' }]);
+    const { runtime, calls } = runtimeSpy(roots);
+    const a = artifactAt(IMAGE_DEBUG, 'ExpoImage');
+    const b = path.join(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'prebuild-equivalence-')),
+      IMAGE_DEBUG
+    );
+    fs.ensureSymlinkSync(a, b);
+
+    assert.throws(() => runPrebuildEquivalence(a, b, options(), runtime), {
+      message: /same artifact/,
+    });
+    assert.deepEqual(calls, []);
+  });
+
   it('refuses a mismatched pair before printing a verdict', () => {
     const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage', spmPackages: SPM_PACKAGES }]);
     const { runtime, calls } = runtimeSpy(roots);

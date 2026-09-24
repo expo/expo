@@ -116,6 +116,7 @@ function decideEquivalence(
   options: EquivalenceOptions,
   runtime: Omit<EquivalenceRuntime, 'log'>
 ): EquivalenceOutcome {
+  assertDistinctArtifacts(pathA, pathB);
   const plan = resolveSpmPackagesCheck(options, pathA, pathB, runtime.configRoots());
   const report = runtime.compare(pathA, pathB, {
     labelA: options.labelA,
@@ -289,6 +290,23 @@ function explainUncheckedProduct(
 
 function listNames(products: ProductConfig[]): string {
   return products.map((product) => product.name).join(', ');
+}
+
+/** An artifact compared with itself is always equivalent, so a pass would say nothing. */
+function assertDistinctArtifacts(pathA: string, pathB: string): void {
+  const resolve = (artifact: string) =>
+    fs.existsSync(artifact) ? fs.realpathSync(artifact) : artifact;
+  if (resolve(pathA) !== resolve(pathB)) {
+    return;
+  }
+
+  throw new Error(
+    `${pathA} and ${pathB} are the same artifact, so comparing them would pass without comparing ` +
+      `two builds. Both build modes write to the same .build/<package>/output/<flavor>/xcframeworks/ ` +
+      `path, so the second build overwrites the first. Copy the first build's xcframework aside, ` +
+      `keeping the whole .build/… tail of its path, then build again and pass the copy as one of ` +
+      `the two paths.`
+  );
 }
 
 /**
