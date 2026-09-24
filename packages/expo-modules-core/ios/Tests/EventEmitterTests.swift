@@ -221,6 +221,53 @@ struct EventEmitterTests {
   }
 
   @Test
+  func `releases the listener after the subscription is removed`() throws {
+    var isReleased = false
+    try installTrackedFunction(runtime: runtime, name: "payload") { isReleased = true }
+
+    // Mirrors `useEventListener`: the listener shares its scope with the cleanup closure,
+    // so the listener keeps the subscription alive.
+    try runtime.eval("""
+      function subscribe() {
+        const tracked = payload;
+        const subscription = emitter.addListener('test', () => tracked());
+        return () => subscription.remove();
+      }
+      emitter = new expo.EventEmitter();
+      cleanup = subscribe();
+      payload = undefined;
+      cleanup();
+      cleanup = undefined;
+      """)
+    try runtime.collectGarbage { isReleased }
+
+    #expect(isReleased == true)
+  }
+
+  @Test
+  func `releases the listener after removeListener`() throws {
+    var isReleased = false
+    try installTrackedFunction(runtime: runtime, name: "payload") { isReleased = true }
+
+    try runtime.eval("""
+      function subscribe() {
+        const tracked = payload;
+        const listener = () => tracked();
+        emitter.addListener('test', listener);
+        return () => emitter.removeListener('test', listener);
+      }
+      emitter = new expo.EventEmitter();
+      cleanup = subscribe();
+      payload = undefined;
+      cleanup();
+      cleanup = undefined;
+      """)
+    try runtime.collectGarbage { isReleased }
+
+    #expect(isReleased == true)
+  }
+
+  @Test
   func `removes only related listener`() throws {
     let counter = try runtime.eval([
       "counter = 0",
@@ -278,6 +325,29 @@ struct EventEmitterTests {
 }
 
 // MARK: - Helpers
+
+private final class DeinitTracker {
+  let onDeinit: () -> Void
+
+  init(_ onDeinit: @escaping () -> Void) {
+    self.onDeinit = onDeinit
+  }
+
+  deinit {
+    onDeinit()
+  }
+}
+
+/// Installs a global function that calls `onRelease` when the JS engine frees it.
+@JavaScriptActor
+private func installTrackedFunction(runtime: ExpoRuntime, name: String, onRelease: @escaping () -> Void) {
+  let tracker = DeinitTracker(onRelease)
+  let function = runtime.createFunction(name) { [tracker] _, _ in
+    _ = tracker
+    return .undefined
+  }
+  runtime.global().setProperty(name, value: function)
+}
 
 private struct EventObserver: ~Copyable {
   let emitter: JavaScriptObject

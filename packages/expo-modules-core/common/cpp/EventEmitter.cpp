@@ -188,10 +188,17 @@ jsi::Value createEventSubscription(jsi::Runtime &runtime, const std::string &eve
   std::shared_ptr<jsi::Value> listenerValue = std::make_shared<jsi::Value>(runtime, listener);
 
   jsi::HostFunctionType removeSubscription = [eventName, emitterValue, listenerValue](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    if (listenerValue->isUndefined()) {
+      return jsi::Value::undefined();
+    }
     jsi::Object emitter = emitterValue->getObject(runtime);
     jsi::Function listener = listenerValue->getObject(runtime).getFunction(runtime);
 
     removeListener(runtime, emitter, eventName, listener);
+
+    // Free up the references to the emitter and listener to avoid memory leak.
+    *emitterValue = jsi::Value::undefined();
+    *listenerValue = jsi::Value::undefined();
     return jsi::Value::undefined();
   };
 

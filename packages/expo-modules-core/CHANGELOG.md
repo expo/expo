@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed a memory leak where listeners removed with `subscription.remove()` were never garbage-collected. ([#50597](https://github.com/expo/expo/issues/50597) by [@gkueny](https://github.com/gkueny)) ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23
