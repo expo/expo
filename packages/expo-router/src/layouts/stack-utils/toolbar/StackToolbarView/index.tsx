@@ -38,7 +38,7 @@ export type { StackToolbarViewProps, NativeToolbarViewProps } from './types';
  * @platform android
  * @platform ios
  */
-export const StackToolbarView: React.FC<StackToolbarViewProps> = (props) => {
+export const StackToolbarView = (props: StackToolbarViewProps) => {
   const placement = useToolbarPlacement();
 
   if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
