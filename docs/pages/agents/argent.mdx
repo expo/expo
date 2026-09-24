@@ -158,4 +158,5 @@ Argent connects through MCP, so it works alongside Expo's own agent tooling. Pai
 - Let Argent launch or relaunch the app on the device when it can. If you boot the device yourself, Argent may not be able to see system dialogs or native modals.
 - In Expo Go, Argent can control the app, read the React component tree, and run the React profiler. Native profiling needs a development build, because in Expo Go it profiles the Expo Go host app instead of your code.
 - The React component tree and the React profiler rely on the JavaScript debugging connection, so keep your development server running.
+- On a machine without a display, such as CI or a Linux server, set `ARGENT_EMULATOR_NO_WINDOW=1` before you start Argent, so it boots Android Emulators headless.
 - For the complete and current list of capabilities, see the [Argent documentation](https://argent.swmansion.com).
