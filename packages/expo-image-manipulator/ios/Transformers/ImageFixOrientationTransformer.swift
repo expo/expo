@@ -2,22 +2,21 @@
 
 /**
  Transformer that makes sure the image is oriented up and not mirrored.
- Guarantees that the original pixel data matches the displayed orientation.
+ Guarantees that the original pixel data matches the displayed orientation and that image size is in pixels.
  */
 internal struct ImageFixOrientationTransformer: ImageTransformer {
   func transform(image: UIImage) async throws -> UIImage {
-    guard image.cgImage != nil else {
+    guard let cgImage = image.cgImage else {
       throw ImageNotFoundException()
     }
-    // The pixel data already matches the displayed orientation, so there is nothing to fix.
+    // Upright pixels need no redraw. Normalize the scale to pixel coordinates.
     guard image.imageOrientation != .up else {
-      return image
+      return image.scale == 1 ? image : UIImage(cgImage: cgImage)
     }
-    // `UIImage.draw(in:)` applies the orientation on its own.
-    // Unlike a raw bitmap context, the renderer accepts any source pixel format,
-    // including the 10-bit HDR images that `CGBitmapContextCreate` rejects.
-    return drawInNewContext(size: image.size) { _ in
-      image.draw(in: CGRect(origin: .zero, size: image.size))
+    // `draw(in:)` applies the orientation. The renderer accepts 10-bit HDR sources that `CGContext` rejects.
+    let size = CGSize(width: image.size.width * image.scale, height: image.size.height * image.scale)
+    return drawInNewContext(size: size) { _ in
+      image.draw(in: CGRect(origin: .zero, size: size))
     }
   }
 }
