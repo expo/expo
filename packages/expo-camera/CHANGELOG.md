@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Remove a dead `compilerFlags` block from the SwiftPM build configuration. It had no effect on either build path.
+- [iOS] Remove a dead `compilerFlags` block from the SwiftPM build configuration. It had no effect on either build path. ([#50417](https://github.com/expo/expo/pull/50417) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.1 — 2026-09-11
 
