@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `Album.create` naming copied assets (with `moveAssets` set to `false`) after the full `file://` path of the original, e.g. `file____storage_emulated_0_DCIM_Camera_IMG_1234.jpg`, instead of its file name. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@devonik](https://github.com/devonik))
+- [Android] Fix `Album.create` naming copied assets (with `moveAssets` set to `false`) after the full `file://` path of the original, e.g. `file____storage_emulated_0_DCIM_Camera_IMG_1234.jpg`, instead of its file name. ([#50621](https://github.com/expo/expo/pull/50621) by [@devonik](https://github.com/devonik))
 
 ### 💡 Others
 
