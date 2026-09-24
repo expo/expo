@@ -2,6 +2,7 @@
 
 // Run: node tools/scripts/check-spm-manifest-collateral.cjs --base "$(git merge-base origin/main HEAD)"
 // Additional exclusions: --exclude <npm-package>/<product> (repeatable).
+// Another checkout: --repo <dir> (default: the checkout holding this script).
 // Artifacts contain metadata only; this gate compares manifests, not compiled binaries.
 const { globSync } = require('glob');
 const assert = require('node:assert/strict');
@@ -9,12 +10,12 @@ const { execFileSync } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { parseArgs } = require('node:util');
+const { isDeepStrictEqual, parseArgs } = require('node:util');
 const ts = require('typescript');
 
-const repo = path.resolve(__dirname, '../..');
 const { values } = parseArgs({
   options: {
+    repo: { type: 'string' },
     base: { type: 'string' },
     exclude: { type: 'string', multiple: true, default: [] },
     include: { type: 'string', multiple: true, default: [] },
@@ -23,6 +24,7 @@ const { values } = parseArgs({
     scratch: { type: 'string' },
   },
 });
+const repo = path.resolve(values.repo ?? path.join(__dirname, '../..'));
 
 function write(file, content = '') {
   fs.mkdirSync(path.dirname(file), { recursive: true });
@@ -61,15 +63,37 @@ function configPaths(root = repo) {
   }).sort();
 }
 
+/** Maps each `<npm-package>/<product>` id to its products[] entry. */
 function inventory(configs, read) {
-  return configs
-    .flatMap((relative) => {
-      const packageName = relative.includes('/external-configs/ios/')
-        ? path.dirname(relative.split('/external-configs/ios/')[1])
-        : JSON.parse(read(path.join(path.dirname(relative), 'package.json'))).name;
-      return JSON.parse(read(relative)).products.map((product) => `${packageName}/${product.name}`);
-    })
+  return new Map(
+    configs
+      .flatMap((relative) => {
+        const packageName = relative.includes('/external-configs/ios/')
+          ? path.dirname(relative.split('/external-configs/ios/')[1])
+          : JSON.parse(read(path.join(path.dirname(relative), 'package.json'))).name;
+        return JSON.parse(read(relative)).products.map((product) => [
+          `${packageName}/${product.name}`,
+          product,
+        ]);
+      })
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+  );
+}
+
+/**
+ * Products present on both sides whose own products[] entry differs. Editing a product's config is
+ * expected to change its manifest, so these are not compared; the products depending on them are.
+ */
+function changedProducts(before, after) {
+  return [...before]
+    .filter(([id, product]) => after.has(id) && !isDeepStrictEqual(product, after.get(id)))
+    .map(([id]) => id)
     .sort();
+}
+
+function formatChangedProducts(changed) {
+  if (changed.length === 0) return undefined;
+  return `INFO: SwiftPM products with a changed spm.config.json entry (not compared; products depending on them still are): ${changed.join(', ')}`;
 }
 
 function classifyInventory(before, after, excluded = new Set()) {
@@ -113,12 +137,16 @@ function checkInventory() {
   console.log(
     `INFO: Skipped ${optedIn.size} opted-in SwiftPM packages (not compared): ${[...optedIn].sort().join(', ') || '(none)'}`
   );
+  const ids = { before: [...before.keys()], after: [...after.keys()] };
   // Use the current tree's opt-ins for both snapshots, including removed/renamed products.
   const excluded = new Set([
     ...values.exclude,
-    ...[...before, ...after].filter((id) => optedIn.has(id.slice(0, id.lastIndexOf('/')))),
+    ...[...ids.before, ...ids.after].filter((id) => optedIn.has(id.slice(0, id.lastIndexOf('/')))),
   ]);
-  const comparison = classifyInventory(before, after, excluded);
+  const changed = changedProducts(before, after).filter((id) => !excluded.has(id));
+  const changedMessage = formatChangedProducts(changed);
+  if (changedMessage) console.log(changedMessage);
+  const comparison = classifyInventory(ids.before, ids.after, new Set([...excluded, ...changed]));
   const additionMessage = formatInventoryAdditions(comparison.additions);
   if (additionMessage) console.log(additionMessage);
   return comparison.comparable;
@@ -194,12 +222,6 @@ async function generate() {
       if (values['only-comparable'] && !included.has(id)) {
         continue;
       }
-      const baselineConfig = JSON.parse(git('show', `${values.base}:${pkg.relative}`).toString());
-      assert.deepEqual(
-        product,
-        baselineConfig.products.find((candidate) => candidate.name === product.name),
-        `${id} config changed; exclude migrated products explicitly`
-      );
       selected.push({ pkg, product, id });
     }
   }
@@ -391,7 +413,13 @@ async function main() {
   }
 }
 
-module.exports = { classifyInventory, ensureBaselineReachable, formatInventoryAdditions };
+module.exports = {
+  changedProducts,
+  classifyInventory,
+  ensureBaselineReachable,
+  formatChangedProducts,
+  formatInventoryAdditions,
+};
 
 if (require.main === module) {
   main().catch((error) => {

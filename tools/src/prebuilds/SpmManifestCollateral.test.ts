@@ -1,23 +1,13 @@
 import assert from 'node:assert/strict';
-import { spawnSync, type SpawnSyncReturns } from 'node:child_process';
+import { execFileSync, spawnSync, type SpawnSyncReturns } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { before, describe, it } from 'node:test';
+import { after, describe, it } from 'node:test';
 
-/**
- * Compiled to `build/prebuilds/`, so the checkout is three levels up. Deliberately not
- * `EXPO_ROOT_DIR`: the gate regenerates every manifest of the working tree it ships in, and
- * pointing it at another checkout would have it pass having compared nothing of this one.
- */
+/** Compiled to `build/prebuilds/`, so `tools/` is two levels up. */
 const toolsDir = path.resolve(__dirname, '../..');
-const repo = path.resolve(toolsDir, '..');
 const gate = path.join(toolsDir, 'scripts', 'check-spm-manifest-collateral.cjs');
-const baseline = '466da8e06a1b99c8db500356f214159cd3f532c9';
-const baselineProductCount = 77;
-const instrumentedOptedInPackages = ['expo-camera', 'expo-modules-core'];
-
-type GateMode = 'production-depth' | 'marker-collision' | 'collateral-drift';
 
 type InventoryComparison = {
   additions: string[];
@@ -31,184 +21,158 @@ const gateModule = require(gate) as {
     current: string[],
     excluded?: ReadonlySet<string>
   ) => InventoryComparison;
+  changedProducts: (
+    baseline: ReadonlyMap<string, unknown>,
+    current: ReadonlyMap<string, unknown>
+  ) => string[];
   formatInventoryAdditions: (additions: string[]) => string | undefined;
+  formatChangedProducts: (changed: string[]) => string | undefined;
 };
 
-let sharedGateResult: SpawnSyncReturns<string>;
+type Product = { name: string; [field: string]: unknown };
+
+/** Package directory under `packages/` → the products of its `spm.config.json`. */
+type Packages = Record<string, Product[]>;
+
+function product(
+  name: string,
+  overrides: Partial<Product> = {},
+  targetOverrides: Record<string, unknown> = {}
+): Product {
+  return {
+    name,
+    podName: name,
+    platforms: ['iOS("16.4")'],
+    externalDependencies: [],
+    targets: [
+      {
+        type: 'objc',
+        name,
+        path: 'ios',
+        pattern: '**/*.m',
+        headerPattern: '**/*.h',
+        dependencies: [],
+        linkedFrameworks: ['Foundation'],
+        includeDirectories: ['.'],
+        ...targetOverrides,
+      },
+    ],
+    ...overrides,
+  };
+}
+
+/** `fixture-consumer` depends on `fixture-core`, so the core's config is an input of both. */
+function basePackages(): Packages {
+  return {
+    'fixture-core': [product('FixtureCore')],
+    'fixture-consumer': [
+      product('FixtureConsumer', { externalDependencies: ['fixture-core/FixtureCore'] }),
+    ],
+    'fixture-leaf': [product('FixtureLeaf')],
+  };
+}
+
+const fixtureRoots: string[] = [];
+after(() => {
+  for (const root of fixtureRoots) fs.rmSync(root, { recursive: true, force: true });
+});
+
+function git(root: string, ...args: string[]): string {
+  return execFileSync(
+    'git',
+    [
+      '-c',
+      'core.fsmonitor=false',
+      '-c',
+      'commit.gpgsign=false',
+      '-c',
+      'user.name=Fixture',
+      '-c',
+      'user.email=fixture@example.com',
+      ...args,
+    ],
+    { cwd: root, encoding: 'utf8' }
+  ).trim();
+}
+
+function writePackages(root: string, packages: Packages): void {
+  for (const [directory, products] of Object.entries(packages)) {
+    const packageRoot = path.join(root, 'packages', directory);
+    fs.mkdirSync(path.join(packageRoot, 'ios'), { recursive: true });
+    fs.writeFileSync(
+      path.join(packageRoot, 'package.json'),
+      JSON.stringify({ name: directory, version: '1.0.0' })
+    );
+    fs.writeFileSync(
+      path.join(packageRoot, 'spm.config.json'),
+      JSON.stringify({ products }, null, 2)
+    );
+    fs.writeFileSync(path.join(packageRoot, 'ios', 'Fixture.h'), '');
+    fs.writeFileSync(path.join(packageRoot, 'ios', 'Fixture.m'), '');
+  }
+}
+
+type FixtureOptions = {
+  base?: Packages;
+  editHead?: (packages: Packages) => void;
+  /** Packages given a root `Package.swift` in the head commit, which opts them in. */
+  optInAtHead?: string[];
+};
 
 /**
- * Instruments the generator from inside the gate's worker process: every mode reads or rewrites
- * the manifests as they are generated, which is the only way to perturb an input the gate derives
- * for itself.
+ * A git repository whose base commit holds `base` and whose head commit (and working tree) holds
+ * `base` changed by `editHead`. Both commits carry this checkout's `tools/src`, so the gate drives
+ * the real generator on both sides and any difference comes from the packages alone.
  */
-const INSTRUMENT_READS = String.raw`
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
+function fixtureRepo({
+  base = basePackages(),
+  editHead = () => {},
+  optInAtHead = [],
+}: FixtureOptions = {}): { root: string; baseCommit: string } {
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-fixture-')));
+  fixtureRoots.push(root);
+  fs.cpSync(path.join(toolsDir, 'src'), path.join(root, 'tools/src'), { recursive: true });
+  fs.symlinkSync(path.join(toolsDir, 'node_modules'), path.join(root, 'tools/node_modules'));
+  fs.writeFileSync(path.join(root, '.gitignore'), 'node_modules\n');
+  writePackages(root, base);
+  git(root, 'init', '--quiet');
+  git(root, 'add', '--all');
+  git(root, 'commit', '--quiet', '--message', 'base');
+  const baseCommit = git(root, 'rev-parse', 'HEAD');
 
-const writeFileSync = fs.writeFileSync;
-const readFileSync = fs.readFileSync;
-const existsSync = fs.existsSync;
-
-const instrumentedOptedInPackages = new Set(['expo-camera', 'expo-modules-core']);
-
-fs.existsSync = function (file) {
-  const normalized = String(file).split(path.sep).join('/');
-  const match = normalized.match(/\/packages\/([^/]+)\/Package\.swift$/);
-  if (match && instrumentedOptedInPackages.has(match[1])) return true;
-  return existsSync.call(this, file);
-};
-
-function inspect(file, content) {
-  const normalized = String(file).split(path.sep).join('/');
-  if (
-    normalized.endsWith('/packages/expo-asset/spm.config.json') &&
-    !normalized.includes('/before/repo/')
-  ) {
-    const config = JSON.parse(Buffer.isBuffer(content) ? content.toString() : String(content));
-    if (process.env.SPM_COLLATERAL_INVENTORY_MODE === 'add-product') {
-      config.products.push({ ...config.products[0], name: 'Round6cAddedProduct' });
-      return JSON.stringify(config);
-    }
-    if (process.env.SPM_COLLATERAL_INVENTORY_MODE === 'remove-product') {
-      config.products = config.products.filter((product) => product.name !== 'ExpoAsset');
-      return JSON.stringify(config);
-    }
-    if (process.env.SPM_COLLATERAL_INVENTORY_MODE === 'unrelated-config-drift') {
-      config.products[0].podName = 'DriftedExpoAsset';
-      return JSON.stringify(config);
-    }
-  }
-  if (
-    normalized.endsWith('/packages/expo-camera/spm.config.json') &&
-    !normalized.includes('/before/repo/') &&
-    process.env.SPM_COLLATERAL_INVENTORY_MODE === 'opted-in-config-changes'
-  ) {
-    const config = JSON.parse(Buffer.isBuffer(content) ? content.toString() : String(content));
-    config.products[0].podName = 'DriftedExpoCamera';
-    config.products = config.products.slice(0, 1);
-    return JSON.stringify(config);
-  }
-  if (
-    normalized.endsWith('/packages/expo-modules-core/spm.config.json') &&
-    !normalized.includes('/before/repo/') &&
-    process.env.SPM_COLLATERAL_INVENTORY_MODE === 'opted-in-config-changes'
-  ) {
-    const config = JSON.parse(Buffer.isBuffer(content) ? content.toString() : String(content));
-    config.products[0].podName = 'DriftedExpoModulesCore';
-    return JSON.stringify(config);
-  }
-  if (path.basename(String(file)) !== 'Package.swift' || !String(file).includes('/after/')) {
-    return content;
-  }
-  const match = normalized.match(/^(.*\/after\/repo)\/packages\//);
-  if (!match) return content;
-  const fixtureRoot = match[1].split('/').join(path.sep);
-  if (process.env.SPM_COLLATERAL_TEST_MODE === 'production-depth') {
-    assert.match(
-      normalized,
-      /\/generated\/[^/]+\/Package\.swift$/,
-      'generated manifest must use the production generated/<product>/Package.swift path'
+  const head = structuredClone(base);
+  editHead(head);
+  fs.rmSync(path.join(root, 'packages'), { recursive: true, force: true });
+  writePackages(root, head);
+  for (const directory of optInAtHead) {
+    fs.writeFileSync(
+      path.join(root, 'packages', directory, 'Package.swift'),
+      '// swift-tools-version: 5.9\n'
     );
   }
-  if (process.env.SPM_COLLATERAL_TEST_MODE === 'marker-collision') {
-    const text = Buffer.isBuffer(content) ? content.toString() : String(content);
-    const mutated = text.split(fixtureRoot).join('<EXPO_ROOT_DIR>');
-    writeFileSync(file, mutated);
-    return mutated;
-  }
-  if (process.env.SPM_COLLATERAL_TEST_MODE === 'collateral-drift') {
-    const text = Buffer.isBuffer(content) ? content.toString() : String(content);
-    return text + '\n// drifted\n';
-  }
-  return content;
+  git(root, 'add', '--all');
+  git(root, 'commit', '--quiet', '--allow-empty', '--message', 'head');
+  return { root, baseCommit };
 }
 
-fs.readFileSync = function (file, ...args) {
-  const content = readFileSync.call(this, file, ...args);
-  return inspect(file, content);
-};
-`;
-
-function runGate(
-  mode: GateMode,
-  inventoryMode:
-    | 'add-product'
-    | 'remove-product'
-    | 'opted-in-config-changes'
-    | 'unrelated-config-drift',
-  excluded: string[] = []
-): SpawnSyncReturns<string> {
-  const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-manifest-collateral-test-'));
-  const preload = path.join(scratch, 'instrument-reads.cjs');
-  fs.writeFileSync(preload, INSTRUMENT_READS);
-  try {
-    const args = [gate, '--base', baseline];
-    for (const id of excluded) args.push('--exclude', id);
-    return spawnSync(process.execPath, args, {
-      cwd: repo,
-      encoding: 'utf8',
-      env: {
-        ...process.env,
-        NODE_OPTIONS: [process.env.NODE_OPTIONS, `--require=${preload}`].filter(Boolean).join(' '),
-        SPM_COLLATERAL_INVENTORY_MODE: inventoryMode,
-        SPM_COLLATERAL_TEST_MODE: mode,
-      },
-      maxBuffer: 32 * 1024 * 1024,
-    });
-  } finally {
-    fs.rmSync(scratch, { recursive: true, force: true });
-  }
-}
-
-function optedInPackageNames(): string[] {
-  const packages = packageDirectories()
-    .filter(({ directory }) =>
-      fs.existsSync(path.join(repo, 'packages', directory, 'Package.swift'))
-    )
-    .map(({ packageName }) => packageName);
-  return [...new Set([...packages, ...instrumentedOptedInPackages])].sort();
-}
-
-function packageDirectories(): { directory: string; packageName: string }[] {
-  const topLevelDirectories = fs
-    .readdirSync(path.join(repo, 'packages'), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name);
-  const directories = topLevelDirectories.flatMap((directory) => {
-    if (!directory.startsWith('@')) return [directory];
-    return fs
-      .readdirSync(path.join(repo, 'packages', directory), { withFileTypes: true })
-      .filter((entry) => entry.isDirectory())
-      .map((entry) => path.join(directory, entry.name));
+function runGate(root: string, base: string, ...args: string[]): SpawnSyncReturns<string> {
+  return spawnSync(process.execPath, [gate, '--repo', root, '--base', base, ...args], {
+    cwd: root,
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
   });
-  return directories
-    .filter((directory) => fs.existsSync(path.join(repo, 'packages', directory, 'spm.config.json')))
-    .map((directory) => {
-      const packageJson = fs.readFileSync(
-        path.join(repo, 'packages', directory, 'package.json'),
-        'utf8'
-      );
-      return { directory, packageName: JSON.parse(packageJson).name as string };
-    });
 }
 
-function baselineOptedInProductCount(packageNames: string[]): number {
-  const directoryByPackageName = new Map(
-    packageDirectories().map(({ directory, packageName }) => [packageName, directory])
-  );
-  return packageNames.reduce((total, packageName) => {
-    const directory = directoryByPackageName.get(packageName);
-    assert.ok(directory, `must resolve package directory for ${packageName}`);
-    const result = spawnSync(
-      'git',
-      ['-c', 'core.fsmonitor=false', 'show', `${baseline}:packages/${directory}/spm.config.json`],
-      { cwd: repo, encoding: 'utf8' }
-    );
-    if (result.status !== 0) return total;
-    const config = JSON.parse(result.stdout) as { products: unknown[] };
-    return total + config.products.length;
-  }, 0);
+function output(result: SpawnSyncReturns<string>): string {
+  return `${result.stdout}\n${result.stderr}`;
+}
+
+/** The manifest count on the PASS line, so a gate that compared nothing cannot pass. */
+function comparedManifests(result: SpawnSyncReturns<string>): number {
+  const match = result.stdout.match(/PASS: (\d+) byte-identical manifests across (\d+) products/);
+  assert.ok(match, `expected a PASS line:\n${output(result)}`);
+  assert.equal(Number(match[1]), Number(match[2]) * 2, 'every product has a Debug and a Release');
+  return Number(match[2]);
 }
 
 /**
@@ -218,55 +182,115 @@ function baselineOptedInProductCount(packageNames: string[]): number {
  * emit exactly what they emitted before.
  */
 describe('check-spm-manifest-collateral', () => {
-  before(() => {
-    sharedGateResult = runGate('production-depth', 'opted-in-config-changes', [
-      'expo-asset/ExpoAsset',
-    ]);
+  it('passes when nothing changed, having compared every product', () => {
+    const { root, baseCommit } = fixtureRepo();
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.equal(comparedManifests(result), 3);
   });
 
-  it('passes at the production generated/<product>/Package.swift depth', () => {
-    assert.equal(
-      sharedGateResult.status,
-      0,
-      `${sharedGateResult.stdout}\n${sharedGateResult.stderr}`
-    );
-    const optedInPackages = optedInPackageNames();
-    const comparedManifestCount =
-      (baselineProductCount - baselineOptedInProductCount(optedInPackages) - 1) * 2;
-    assert.ok(comparedManifestCount > 0, 'the gate must retain a nonempty comparison');
+  it('excludes a product whose own config entry changed, and says so', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        packages['fixture-leaf'] = [product('FixtureLeaf', { podName: 'RenamedFixtureLeaf' })];
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
     assert.match(
-      sharedGateResult.stdout,
-      new RegExp(`PASS: ${comparedManifestCount} byte-identical manifests`)
+      result.stdout,
+      /INFO: .*changed spm\.config\.json entry.*: fixture-leaf\/FixtureLeaf\n/
     );
+    assert.equal(comparedManifests(result), 2);
+  });
+
+  it('fails on a product whose manifest changed because a dependency config changed', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        packages['fixture-core'] = [
+          product('FixtureCore', { externalDependencies: ['fixture-leaf/FixtureLeaf'] }),
+        ];
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
     assert.match(
-      sharedGateResult.stdout,
-      new RegExp(
-        `INFO: Skipped ${optedInPackages.length} opted-in SwiftPM packages \\(not compared\\): ${optedInPackages.join(', ')}`
-      )
+      result.stdout,
+      /INFO: .*changed spm\.config\.json entry.*: fixture-core\/FixtureCore\n/
     );
-    assert.match(sharedGateResult.stdout, /1 explicit exclusions/);
-  });
-
-  it('still fails config equality for a package without a root Package.swift', () => {
-    const result = runGate('production-depth', 'unrelated-config-drift');
-
-    assert.equal(result.error, undefined);
-    assert.equal(result.status, 1, `${result.stdout}\n${result.stderr}`);
-    assert.match(result.stderr, /expo-asset\/ExpoAsset config changed/);
-  });
-
-  it('fails when a generated manifest drifts from the baseline', () => {
-    const result = runGate('collateral-drift', 'add-product');
-    assert.equal(result.error, undefined);
-    assert.equal(result.status, 1, `${result.stdout}\n${result.stderr}`);
-    assert.match(result.stderr, /DIFF: /);
+    assert.match(result.stderr, /DIFF: fixture-consumer\/FixtureConsumer\/Debug/);
     assert.match(result.stderr, /Collateral manifest changes/);
+    assert.doesNotMatch(result.stderr, /DIFF: fixture-core\//);
+  });
+
+  it('skips a package with a root Package.swift without also reporting its config change', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        packages['fixture-leaf'] = [product('FixtureLeaf', { podName: 'RenamedFixtureLeaf' })];
+      },
+      optInAtHead: ['fixture-leaf'],
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(
+      result.stdout,
+      /INFO: Skipped 1 opted-in SwiftPM packages \(not compared\): fixture-leaf\n/
+    );
+    assert.doesNotMatch(result.stdout, /changed spm\.config\.json entry/);
+    assert.equal(comparedManifests(result), 2);
+  });
+
+  it('honors an explicit --exclude', () => {
+    const { root, baseCommit } = fixtureRepo();
+    const result = runGate(root, baseCommit, '--exclude', 'fixture-leaf/FixtureLeaf');
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(result.stdout, /1 explicit exclusions/);
+    assert.equal(comparedManifests(result), 2);
+  });
+
+  it('reports a product present only in the head, and compares the rest', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        packages['fixture-leaf'].push(product('FixtureAddition'));
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(
+      result.stdout,
+      /INFO: Current-only SwiftPM products \(not compared\): fixture-leaf\/FixtureAddition/
+    );
+    assert.equal(comparedManifests(result), 3);
+  });
+
+  it('fails when a baseline product disappears', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHead: (packages) => {
+        delete packages['fixture-leaf'];
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.notEqual(result.status, 0);
+    assert.match(
+      output(result),
+      /Baseline SwiftPM products disappeared: fixture-leaf\/FixtureLeaf/
+    );
   });
 
   it('fails when a generated manifest contains the reserved normalization marker', () => {
-    const result = runGate('marker-collision', 'add-product');
-    assert.equal(result.error, undefined);
-    assert.equal(result.status, 1, `${result.stdout}\n${result.stderr}`);
+    const marked = basePackages();
+    marked['fixture-leaf'] = [product('FixtureLeaf', {}, { linkerFlags: ['<EXPO_ROOT_DIR>'] })];
+    const { root, baseCommit } = fixtureRepo({ base: marked });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
     assert.match(result.stderr, /reserved normalization marker <EXPO_ROOT_DIR>/i);
   });
 });
@@ -296,49 +320,73 @@ describe('collateral product inventory', () => {
     );
   });
 
-  it('carries a current-only product through the full gate without a baseline lookup', () => {
-    const result = runGate('production-depth', 'add-product');
-    const optedInPackages = optedInPackageNames();
-    const comparedManifestCount =
-      (baselineProductCount - baselineOptedInProductCount(optedInPackages)) * 2;
-
-    assert.equal(result.status, 0, `${result.stdout}\n${result.stderr}`);
-    assert.match(
-      result.stdout,
-      /INFO: Current-only SwiftPM products \(not compared\): expo-asset\/Round6cAddedProduct/
+  it('leaves excluded products out of both additions and comparisons', () => {
+    assert.deepEqual(
+      gateModule.classifyInventory(
+        ['expo-a/A', 'expo-b/B'],
+        ['expo-a/A', 'expo-b/B', 'expo-c/C'],
+        new Set(['expo-b/B', 'expo-c/C'])
+      ),
+      { additions: [], comparable: ['expo-a/A'] }
     );
-    assert.ok(comparedManifestCount > 0, 'the gate must retain a nonempty comparison');
-    assert.match(
-      result.stdout,
-      new RegExp(`PASS: ${comparedManifestCount} byte-identical manifests`)
+  });
+});
+
+describe('changedProducts', () => {
+  it('names each product whose own config entry differs, sorted', () => {
+    const baseline = new Map<string, unknown>([
+      ['expo-b/B', { name: 'B', podName: 'B' }],
+      ['expo-a/A', { name: 'A', linkedFrameworks: ['Foundation'] }],
+      ['expo-c/C', { name: 'C' }],
+    ]);
+    const current = new Map<string, unknown>([
+      ['expo-b/B', { name: 'B', podName: 'Renamed' }],
+      ['expo-a/A', { name: 'A', linkedFrameworks: ['Foundation', 'UIKit'] }],
+      ['expo-c/C', { name: 'C' }],
+    ]);
+
+    assert.deepEqual(gateModule.changedProducts(baseline, current), ['expo-a/A', 'expo-b/B']);
+  });
+
+  it('treats a reordering of keys as no change', () => {
+    assert.deepEqual(
+      gateModule.changedProducts(
+        new Map([['expo-a/A', { name: 'A', podName: 'A' }]]),
+        new Map([['expo-a/A', { podName: 'A', name: 'A' }]])
+      ),
+      []
     );
   });
 
-  it('fails the full gate when a baseline product disappears', () => {
-    const result = runGate('production-depth', 'remove-product');
+  it('ignores products on one side only, which the inventory accounts for', () => {
+    assert.deepEqual(
+      gateModule.changedProducts(
+        new Map([['expo-gone/Gone', { name: 'Gone' }]]),
+        new Map([['expo-new/New', { name: 'New' }]])
+      ),
+      []
+    );
+  });
 
-    assert.notEqual(result.status, 0);
+  it('formats the exclusion with the reason, and nothing when none changed', () => {
+    assert.equal(gateModule.formatChangedProducts([]), undefined);
     assert.match(
-      `${result.stdout}\n${result.stderr}`,
-      /Baseline SwiftPM products disappeared: expo-asset\/ExpoAsset/
+      gateModule.formatChangedProducts(['expo-a/A', 'expo-b/B']) ?? '',
+      /^INFO: .*changed spm\.config\.json entry.*: expo-a\/A, expo-b\/B$/
     );
   });
 });
 
 describe('collateral gate diagnostics and harness', () => {
   it('requires callers to choose an explicit baseline', () => {
-    const result = spawnSync(process.execPath, [gate], {
-      cwd: repo,
-      encoding: 'utf8',
-    });
-    const output = `${result.stdout}\n${result.stderr}`;
+    const result = spawnSync(process.execPath, [gate], { encoding: 'utf8' });
 
     assert.notEqual(result.status, 0);
-    assert.match(output, /--base/);
-    assert.match(output, /explicit baseline commit/i);
-    assert.match(output, /Why:/);
-    assert.match(output, /git merge-base origin\/main HEAD/);
-    assert.doesNotMatch(output, /\n\s+at /, 'diagnostic must not include a stack trace');
+    assert.match(output(result), /--base/);
+    assert.match(output(result), /explicit baseline commit/i);
+    assert.match(output(result), /Why:/);
+    assert.match(output(result), /git merge-base origin\/main HEAD/);
+    assert.doesNotMatch(output(result), /\n\s+at /, 'diagnostic must not include a stack trace');
   });
 
   it('formats the unreachable-baseline error at the reachability check itself', () => {
@@ -359,34 +407,26 @@ describe('collateral gate diagnostics and harness', () => {
   });
 
   it('preserves stack traces for unexpected gate errors', () => {
-    const result = spawnSync(
-      process.execPath,
-      [gate, '--base', baseline, '--exclude', 'round6d-missing/Product'],
-      {
-        cwd: repo,
-        encoding: 'utf8',
-      }
-    );
+    const { root, baseCommit } = fixtureRepo();
+    const result = runGate(root, baseCommit, '--exclude', 'missing/Product');
+
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /Exclusion does not name a real product: round6d-missing\/Product/);
+    assert.match(result.stderr, /Exclusion does not name a real product: missing\/Product/);
     assert.match(result.stderr, /\n\s+at classifyInventory /);
   });
 
   it('fails legibly when the baseline commit is unreachable', () => {
+    const { root } = fixtureRepo();
     const missing = 'definitely-not-a-reachable-commit';
-    const result = spawnSync(process.execPath, [gate, '--base', missing], {
-      cwd: repo,
-      encoding: 'utf8',
-    });
-    const output = `${result.stdout}\n${result.stderr}`;
+    const result = runGate(root, missing);
 
     assert.notEqual(result.status, 0);
     assert.match(
-      output,
+      output(result),
       new RegExp(`Unable to read SwiftPM manifest collateral baseline ${missing}`)
     );
-    assert.match(output, /shallow clone/i);
-    assert.match(output, /fetch-depth: 0/);
-    assert.doesNotMatch(output, /\n\s+at /, 'diagnostic must not include a stack trace');
+    assert.match(output(result), /shallow clone/i);
+    assert.match(output(result), /fetch-depth: 0/);
+    assert.doesNotMatch(output(result), /\n\s+at /, 'diagnostic must not include a stack trace');
   });
 });
