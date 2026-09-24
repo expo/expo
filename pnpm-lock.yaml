@@ -1032,6 +1032,9 @@ importers:
       expo-crypto:
         specifier: workspace:*
         version: link:../../packages/expo-crypto
+      expo-dev-menu:
+        specifier: workspace:*
+        version: link:../../packages/expo-dev-menu
       expo-device:
         specifier: workspace:*
         version: link:../../packages/expo-device
@@ -4593,6 +4596,9 @@ importers:
       expo-dev-menu-interface:
         specifier: workspace:~
         version: link:../expo-dev-menu-interface
+      sf-symbols-typescript:
+        specifier: ^2.1.0
+        version: 2.2.0
     devDependencies:
       '@babel/preset-typescript':
         specifier: ^7.7.4

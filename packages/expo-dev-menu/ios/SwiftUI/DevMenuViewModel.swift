@@ -9,7 +9,7 @@ import ExpoModulesCore
 class DevMenuViewModel: ObservableObject {
   @Published var appInfo: AppInfo?
   @Published var devSettings: DevSettings?
-  @Published var registeredCallbacks: [String] = []
+  @Published var registeredCallbacks: [DevMenuManager.Callback] = []
   @Published var availableAppKeys: [String] = []
   @Published var currentAppKey: String?
   @Published var clipboardMessage: String?
@@ -85,7 +85,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   private func loadRegisteredCallbacks() {
-    self.registeredCallbacks = devMenuManager.registeredCallbacks.map { $0.name }
+    self.registeredCallbacks = devMenuManager.registeredCallbacks
   }
 
   func hideMenu() {
@@ -229,7 +229,6 @@ class DevMenuViewModel: ObservableObject {
 
   private func observeRegisteredCallbacks() {
     devMenuManager.callbacksPublisher
-      .map { $0.map { $0.name } }
       .receive(on: DispatchQueue.main)
       .assign(to: &$registeredCallbacks)
   }

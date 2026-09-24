@@ -44,7 +44,12 @@ open class DevMenuModule: Module {
 
         let shouldCollapse = callback["shouldCollapse"] as? Bool ?? true
         DevMenuManager.shared.registeredCallbacks.append(
-          DevMenuManager.Callback(name: name, shouldCollapse: shouldCollapse)
+          DevMenuManager.Callback(
+            name: name,
+            shouldCollapse: shouldCollapse,
+            icon: callback["icon"] as? String,
+            group: callback["group"] as? String
+          )
         )
       }
     }
