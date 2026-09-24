@@ -284,7 +284,8 @@ build_slice() {
 
   # Strip declarations from public .swiftinterface that external consumers can't resolve:
   # - C++ type extensions (__ObjC) — entire blocks including their closing braces
-  #   e.g. "extension __ObjC.expo.CppError : Swift.Error { ... }"
+  #   e.g. "extension __ObjC.expo.CppError : Swift.Error { ... }", or with the module
+  #   selectors Swift 6.4 prints: "extension __ObjC::expo.__ObjC::CppError : Swift::Error { ... }"
   # - Package-internal conformances (_ConstraintThatIsNotPartOfTheAPIOfThisLibrary)
   #   e.g. "extension Swift.Optional : where Wrapped : _Constraint... {}"
   # - @usableFromInline attributes preceding the _Constraint protocol definition
@@ -297,7 +298,7 @@ build_slice() {
   # filename, failing with "can't read …: No such file or directory".
   while IFS= read -r swiftinterface; do
     local stripped_swiftinterface="${swiftinterface}.stripped"
-    sed '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
+    sed -E '/^extension __ObjC(\.|::)/,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
     mv "$stripped_swiftinterface" "$swiftinterface"
   done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 
