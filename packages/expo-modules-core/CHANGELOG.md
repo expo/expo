@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed a crash (`The app context has been lost`) when Fabric creates a cached Expo view between a reload's teardown of the previous app context and the deferred view registration of the new one. ([#48575](https://github.com/expo/expo/issues/48575) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
+- [iOS] Fixed a crash (`The app context has been lost`) when Fabric creates a cached Expo view between a reload's teardown of the previous app context and the deferred view registration of the new one. ([#50578](https://github.com/expo/expo/pull/50578) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 
 ### 💡 Others
 
