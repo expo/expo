@@ -1540,18 +1540,26 @@ for (const [reason, candidate] of [
   });
 }
 
-function captureDebugLines(run: () => void): string[] {
+function captureConsoleLines(level: 'debug' | 'warn', run: () => void): string[] {
   const lines: string[] = [];
-  const original = console.debug;
-  console.debug = (...args: unknown[]) => {
+  const original = console[level];
+  console[level] = (...args: unknown[]) => {
     lines.push(args.map((argument) => String(argument)).join(' '));
   };
   try {
     run();
   } finally {
-    console.debug = original;
+    console[level] = original;
   }
   return lines;
+}
+
+function captureDebugLines(run: () => void): string[] {
+  return captureConsoleLines('debug', run);
+}
+
+function captureWarnLines(run: () => void): string[] {
+  return captureConsoleLines('warn', run);
 }
 
 /** A second repository root beside the fixture's own, standing in for an EXPO_ROOT_DIR that points
@@ -1584,7 +1592,7 @@ it('review 10 names both canonical paths when containment rejects', () => {
   const input = fixture();
   const other = otherRepositoryRoot();
   process.env.EXPO_ROOT_DIR = other;
-  const lines = captureDebugLines(() => {
+  const lines = captureWarnLines(() => {
     assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
   });
   const logged = lines.join('\n');
@@ -1594,7 +1602,27 @@ it('review 10 names both canonical paths when containment rejects', () => {
   ]) {
     assert.ok(
       logged.includes(canonical),
-      `Expected a debug line naming ${canonical}, got ${JSON.stringify(lines)}`
+      `Expected a warning naming ${canonical}, got ${JSON.stringify(lines)}`
+    );
+  }
+});
+
+it('warns once per package when containment falls back to a generated manifest', () => {
+  const input = fixture();
+  const other = otherRepositoryRoot();
+  process.env.EXPO_ROOT_DIR = other;
+  const lines = captureWarnLines(() => {
+    assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
+    assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
+  });
+  assert.equal(lines.length, 1, `Expected exactly one warning, got ${JSON.stringify(lines)}`);
+  for (const canonical of [
+    fs.realpathSync.native(path.join(other, 'packages')),
+    fs.realpathSync.native(input.root),
+  ]) {
+    assert.ok(
+      lines[0].includes(canonical),
+      `Expected the warning to name ${canonical}: ${lines[0]}`
     );
   }
 });
@@ -1721,7 +1749,7 @@ it('review 11 says what to do when the package directory does not resolve', () =
 it('review 11 says what to do when the package is outside the packages directory', () => {
   const input = fixture();
   process.env.EXPO_ROOT_DIR = otherRepositoryRoot();
-  const lines = captureDebugLines(() => {
+  const lines = captureWarnLines(() => {
     assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
   });
   assertLoggedNextStep(lines, /is not a package directory under/);

@@ -83,6 +83,8 @@ function canonicalize(directory: string, role: string): string | null {
   }
 }
 
+const warnedContainmentFallbacks = new Set<string>();
+
 /**
  * The canonical directory of `pkg` when it is a first-party package carrying a checked-in
  * `Package.swift`, and null when it is not. Callers must read the manifest from the returned path:
@@ -107,9 +109,13 @@ export function resolveCheckedInManifestRoot(pkg: SPMPackageSource): string | nu
   const packagesRoot = canonicalize(getPackagesDir(), 'the repository packages directory');
   if (packagesRoot == null) return null;
   if (!isFirstPartyPackagePath(packagesRoot, packagePath)) {
-    logger.debug(
-      `Not using the checked-in Package.swift in ${packagePath}: it is not a package directory under ${packagesRoot}. Check that EXPO_ROOT_DIR names this checkout, and that the package is one directory under ${packagesRoot}, or two under an @scope directory.`
-    );
+    // Every stage of a build resolves the root again, and one warning per package is enough.
+    if (!warnedContainmentFallbacks.has(packagePath)) {
+      warnedContainmentFallbacks.add(packagePath);
+      logger.warn(
+        `Not using the checked-in Package.swift in ${packagePath}: it is not a package directory under ${packagesRoot}, so the package is built from a manifest generated from spm.config.json instead. Check that EXPO_ROOT_DIR names this checkout, and that the package is one directory under ${packagesRoot}, or two under an @scope directory.`
+      );
+    }
     return null;
   }
   return packagePath;
