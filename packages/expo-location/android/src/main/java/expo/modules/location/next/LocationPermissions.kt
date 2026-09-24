@@ -25,11 +25,13 @@ private val FOREGROUND_PERMISSIONS = arrayOf(
   Manifest.permission.ACCESS_COARSE_LOCATION,
   Manifest.permission.ACCESS_FINE_LOCATION
 )
+
 private val LOCATION_PERMISSIONS = arrayOf(
   Manifest.permission.ACCESS_COARSE_LOCATION,
   Manifest.permission.ACCESS_FINE_LOCATION,
   Manifest.permission.ACCESS_BACKGROUND_LOCATION
 )
+
 private val COARSE_PERMISSIONS = arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION)
 
 // Before Q there is no separate background permission -- foreground access covers it.
@@ -41,6 +43,7 @@ internal suspend fun Permissions.requestBackgroundPermissions() {
   if (!supportsBackgroundPermission()) {
     return
   }
+
   if (!isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
     throw NoPermissionInManifestException("ACCESS_BACKGROUND_LOCATION")
   }
@@ -49,6 +52,7 @@ internal suspend fun Permissions.requestBackgroundPermissions() {
   if (foregroundPermission.status != PermissionsStatus.GRANTED) {
     throw RequestingBackgroundPermissionsWithoutForegroundGrantException()
   }
+
   requestPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
 }
 
@@ -61,14 +65,26 @@ internal suspend fun Permissions.requestForegroundPermissions(options: RequestFo
 }
 
 internal suspend fun Permissions.getLocationPermissions(background: Boolean): LocationPermissionResponse {
-  val permissions = if (supportsBackgroundPermission()) LOCATION_PERMISSIONS else FOREGROUND_PERMISSIONS
+  val permissions = if (supportsBackgroundPermission()) {
+    LOCATION_PERMISSIONS
+  } else {
+    FOREGROUND_PERMISSIONS
+  }
   val queried = queryPermissions(*permissions)
 
   val foregroundPermission = queried.foregroundPermission()
-  val backgroundPermission = if (supportsBackgroundPermission()) queried.backgroundPermission() else foregroundPermission
+  val backgroundPermission = if (supportsBackgroundPermission()) {
+    queried.backgroundPermission()
+  } else {
+    foregroundPermission
+  }
   val foregroundGranted = foregroundPermission.status == PermissionsStatus.GRANTED
   val backgroundGranted = backgroundPermission.status == PermissionsStatus.GRANTED
-  val wantedPermission = if (background) backgroundPermission else foregroundPermission
+  val wantedPermission = if (background) {
+    backgroundPermission
+  } else {
+    foregroundPermission
+  }
 
   return LocationPermissionResponse(
     status = LocationPermissionStatus.fromString(wantedPermission.status.status),

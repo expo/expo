@@ -3,14 +3,13 @@ package expo.modules.location.next.locationProviders
 import android.app.Activity
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.next.Position
-import kotlinx.coroutines.CompletableDeferred
 import kotlin.time.Duration
 
 enum class LocationPriority {
   HIGH_ACCURACY,
   BALANCED_POWER_ACCURACY,
   LOW_POWER,
-  PASSIVE,
+  PASSIVE
 }
 
 data class GetCurrentPositionOptions(
@@ -24,32 +23,37 @@ sealed interface ProviderResult<out T> {
   object Unavailable : ProviderResult<Nothing>
   object Unsupported : ProviderResult<Nothing>
 
-  fun getOrThrow(): T = when (this) {
+  fun getOrThrow(operationName: String): T = when (this) {
     is Success -> value
-    Unavailable -> throw LocationUnavailableException()
-    Unsupported -> throw LocationOperationNotSupportedException()
+    Unavailable -> throw OperationUnavailableException(operationName)
+    Unsupported -> throw LocationOperationUnsupportedException(operationName)
   }
 
-  fun getOrNull(): T? = when (this) {
+  fun getOrNull(operationName: String): T? = when (this) {
     is Success -> value
     Unavailable -> null
-    Unsupported -> throw LocationOperationNotSupportedException()
+    Unsupported -> throw LocationOperationUnsupportedException(operationName)
   }
+}
+
+sealed interface EnableLocationServicesResult {
+  object Enabled : EnableLocationServicesResult
+  object Disabled : EnableLocationServicesResult
+  object ResolutionPending : EnableLocationServicesResult
 }
 
 interface LocationProvider {
   suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position>
-  fun name(): String
+  val name: String
 
   // Prompt user to enable location services.
   // The caller guarantees the location services are turned off, so there is no reason to check the
   // master toggle again. An implementation may still check whether the settings satisfy its own request.
-  // The user's answer is reported through [promptResult], not the return value. An implementation must
-  // complete it on every path returning Success where no activity result will follow -- when the settings
-  // already satisfy the request, or when launching the prompt failed. Otherwise the module completes it
-  // once the activity result arrives.
-  suspend fun enableLocationServices(activity: Activity, promptResult: CompletableDeferred<Boolean>): ProviderResult<Unit> = ProviderResult.Unsupported
+  //
+  // When returning EnableLocationServicesResult.ResolutionPending this call has to result in OnActivityResult
+  // being called with payload.requestCode == SETTINGS_REQUEST_CODE
+  suspend fun enableLocationServices(activity: Activity): ProviderResult<EnableLocationServicesResult> = ProviderResult.Unsupported
 }
 
-class LocationUnavailableException : CodedException("Location fix is currently unavailable")
-class LocationOperationNotSupportedException : CodedException("This location operation is not supported")
+class OperationUnavailableException(functionName: String) : CodedException("$functionName is currently unavailable")
+class LocationOperationUnsupportedException(functionName: String) : CodedException("$functionName operation is unsupported")
