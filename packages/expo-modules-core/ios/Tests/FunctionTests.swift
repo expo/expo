@@ -133,6 +133,10 @@ struct FunctionTests {
           return "\(f?.property ?? "no value")"
         }
 
+        Function("returnsOptionalRecordWithNilField") { () -> SynthesizedMixedRecord? in
+          return SynthesizedMixedRecord(name: "present", count: 7, note: nil)
+        }
+
         Function("withNullableValueOrUndefinded") { (record: NullableValueOfUndefinedRecord) in
           // Expectations captured via side effects are not ideal, but works for migration
         }
@@ -339,6 +343,15 @@ struct FunctionTests {
     @Test
     func `accepts optional record`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString() == "123")
+    }
+
+    @Test
+    func `keeps a nil field as null when returning an optional record`() throws {
+      let object = try runtime.eval("expo.modules.TestModule.returnsOptionalRecordWithNilField()").asObject()
+
+      #expect(try object.getProperty("name").asString() == "present")
+      #expect(object.hasProperty("note") == true)
+      #expect(object.getProperty("note").isNull() == true)
     }
 
     @Test

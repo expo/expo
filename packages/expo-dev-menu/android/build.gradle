@@ -145,8 +145,12 @@ dependencies {
 
   debugOnlyApi "androidx.browser:browser:1.9.0"
 
+  testImplementation 'androidx.test:core:1.7.0'
+  testImplementation "com.google.truth:truth:1.4.5"
+  testImplementation 'io.mockk:mockk:1.12.3'
+  testImplementation "org.robolectric:robolectric:4.16"
+
   testDebugImplementation 'junit:junit:4.13.2'
-  testDebugImplementation 'org.robolectric:robolectric:4.16'
   testDebugImplementation "androidx.compose.ui:ui-test-junit4:$composeVersion"
   testDebugImplementation "androidx.compose.ui:ui-test-manifest:$composeVersion"
 }
