@@ -20,9 +20,6 @@ import type { ChangeEventMetadata } from '../types';
 import { AbstractWatcher, type WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
 import * as common from './common';
 
-// NOTE(@kitten): No typings
-const walker = require('walker');
-
 const platform = os.platform();
 
 const fsPromises = fs.promises;
@@ -37,6 +34,12 @@ const DELETE_EVENT = common.DELETE_EVENT;
  */
 const DEBOUNCE_MS = 100;
 
+/**
+ * Maximum concurrent `lstat`/`readdir` visits during a crawl. `fs` calls queue on
+ * libuv's thread pool, so a higher limit only adds in-flight request memory.
+ */
+const CRAWL_CONCURRENCY = 32;
+
 export default class FallbackWatcher extends AbstractWatcher {
   readonly #changeTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
   readonly #dirRegistry: {
@@ -47,25 +50,23 @@ export default class FallbackWatcher extends AbstractWatcher {
   async startWatching(): Promise<void> {
     this.#watchdir(this.root);
 
-    await new Promise<void>((resolve) => {
-      recReaddir(
-        this.root,
-        (dir) => {
-          this.#watchdir(dir);
-        },
-        (filename) => {
-          this.#register(filename, 'f');
-        },
-        (symlink) => {
-          this.#register(symlink, 'l');
-        },
-        () => {
-          resolve();
-        },
-        this.#checkedEmitError,
-        this.ignored
-      );
-    });
+    await recReaddir(
+      this.root,
+      (dir) => {
+        this.#watchdir(dir);
+      },
+      (filename) => {
+        this.#register(filename, 'f');
+      },
+      (symlink) => {
+        this.#register(symlink, 'l');
+      },
+      this.#checkedEmitError,
+      this.ignored
+    );
+    if (platform === 'win32') {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   }
 
   /**
@@ -171,7 +172,7 @@ export default class FallbackWatcher extends AbstractWatcher {
         this.#normalizeChange(dir, event, filename as string)
       );
     } catch (error: any) {
-      // Directory can vanish before watch; filterDir must not throw.
+      // Directory can vanish before watch; the crawl must not throw.
       this.#checkedEmitError(error);
       return false;
     }
@@ -304,7 +305,7 @@ export default class FallbackWatcher extends AbstractWatcher {
         ) {
           return;
         }
-        recReaddir(
+        await recReaddir(
           path.resolve(this.root, relativePath),
           (dir, stats) => {
             if (this.#watchdir(dir)) {
@@ -345,7 +346,6 @@ export default class FallbackWatcher extends AbstractWatcher {
               });
             }
           },
-          function endCallback() {},
           this.#checkedEmitError,
           this.ignored
         );
@@ -436,43 +436,60 @@ function isIgnorableFileError(error: Error & { code?: string }) {
 /**
  * Traverse a directory recursively calling `callback` on every directory.
  */
-function recReaddir(
-  dir: string,
+async function recReaddir(
+  root: string,
   dirCallback: (dir: string, stats: Stats) => void,
   fileCallback: (file: string, stats: Stats) => void,
   symlinkCallback: (symlink: string, stats: Stats) => void,
-  endCallback: () => void,
   errorCallback: (error: Error) => void,
   ignored: RegExp | undefined | null
-) {
-  const walk = walker(dir);
-  // Watch before readdir so a file written in between is not missed.
-  walk.filterDir((currentDir: string, stats: Stats) => {
-    if (ignored && common.posixPathMatchesPattern(ignored, currentDir)) {
-      return false;
-    }
-    normalizeProxy(dirCallback)(currentDir, stats);
-    return true;
-  });
-  walk
-    .on('file', normalizeProxy(fileCallback))
-    .on('symlink', normalizeProxy(symlinkCallback))
-    .on('error', errorCallback)
-    .on('end', () => {
-      if (platform === 'win32') {
-        setTimeout(endCallback, 1000);
-      } else {
-        endCallback();
+): Promise<void> {
+  const pending = [root];
+  const visit = async (entry: string) => {
+    let stats: Stats;
+    let names: string[];
+    try {
+      stats = await fsPromises.lstat(entry);
+      if (!stats.isDirectory()) {
+        if (stats.isSymbolicLink()) {
+          symlinkCallback(entry, stats);
+        } else if (stats.isFile()) {
+          fileCallback(entry, stats);
+        }
+        return;
       }
-    });
-}
-
-/**
- * Returns a callback that when called will normalize a path and call the
- * original callback
- */
-function normalizeProxy<T>(
-  callback: (filepath: string, stats: Stats) => T
-): (filepath: string, stats: Stats) => T {
-  return (filepath: string, stats: Stats) => callback(path.normalize(filepath), stats);
+      if (ignored != null && common.posixPathMatchesPattern(ignored, entry)) {
+        return;
+      }
+      // Watch before readdir so a file written in between is not missed.
+      dirCallback(entry, stats);
+      names = await fsPromises.readdir(entry);
+    } catch (error) {
+      errorCallback(error as Error);
+      return;
+    }
+    for (const name of names) {
+      pending.push(path.join(entry, name));
+    }
+  };
+  await new Promise<void>((resolve, reject) => {
+    let active = 0;
+    const pump = () => {
+      while (active < CRAWL_CONCURRENCY) {
+        const entry = pending.pop();
+        if (entry == null) {
+          break;
+        }
+        active++;
+        visit(entry).then(() => {
+          active--;
+          pump();
+        }, reject);
+      }
+      if (active === 0) {
+        resolve();
+      }
+    };
+    pump();
+  });
 }

@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [Internal] Remove the unused `forceNodeFilesystemAPI` option. ([#50193](https://github.com/expo/expo/pull/50193) by [@robhogan](https://github.com/robhogan))
+- Drop the `walker` dependency, reducing memory use while `FallbackWatcher` crawls. ([#50195](https://github.com/expo/expo/pull/50195) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.1 — 2026-09-15
 
