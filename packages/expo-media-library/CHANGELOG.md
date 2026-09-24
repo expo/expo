@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix assets copied by `Album.create` (with `moveAssets` set to `false`) being named after the full `file://` path of the original asset instead of its file name.
+- [Android] Fix assets copied by `Album.create` (with `moveAssets` set to `false`) being named after the full `file://` path of the original asset instead of its file name. ([#50617](https://github.com/expo/expo/pull/50617) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
