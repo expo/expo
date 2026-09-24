@@ -146,6 +146,50 @@ describe('extendRouter', () => {
     expect(result.routes[0]?.name).toBe('index');
   });
 
+  test('computes browser history from the action and normalized result', () => {
+    const router = extendRouter(TestRouter, () => ({
+      normalizeState: (state) => ({ ...state, index: 0 }),
+      getBrowserHistoryForAction(previous, next, action) {
+        expect(previous.index).toBe(1);
+        expect(next.index).toBe(0);
+        expect(action.type).toBe('GO_BACK');
+        return { type: 'pop', count: 1 } as const;
+      },
+    }))({});
+
+    expect(router.getStateForAction(state, { type: 'GO_BACK' }, config)?.browserHistory).toEqual({
+      type: 'pop',
+      count: 1,
+    });
+  });
+
+  test('lets an extension clear the base router browser instruction', () => {
+    const WithHistory = extendRouter(TestRouter, () => ({
+      getBrowserHistoryForAction: () => ({ type: 'push' as const }),
+    }));
+    const router = extendRouter(WithHistory, () => ({
+      getBrowserHistoryForAction: () => undefined,
+    }))({});
+
+    expect(
+      WithHistory({}).getStateForAction(state, { type: 'GO_BACK' }, config)?.browserHistory
+    ).toEqual({ type: 'push' });
+    expect(
+      router.getStateForAction(state, { type: 'GO_BACK' }, config)?.browserHistory
+    ).toBeUndefined();
+  });
+
+  test('does not compute browser history for an unhandled action', () => {
+    const router = extendRouter(TestRouter, () => ({
+      getStateForAction: () => null,
+      getBrowserHistoryForAction: () => {
+        throw new Error('An unhandled action must not change browser history.');
+      },
+    }))({});
+
+    expect(router.getStateForAction(state, { type: 'GO_BACK' }, config)).toBeNull();
+  });
+
   test('merges added action creators with the base router ones', () => {
     const first = () => ({ type: 'GO_BACK' }) as const;
     const second = () => ({ type: 'GO_BACK' }) as const;

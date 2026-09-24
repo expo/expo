@@ -23,6 +23,7 @@ void NativeDatabaseBinding::registerNatives() {
       makeNativeMethod("sqlite3_finalize_all_statement",
                        NativeDatabaseBinding::sqlite3_finalize_all_statement),
       makeNativeMethod("sqlite3_close", NativeDatabaseBinding::sqlite3_close),
+      makeNativeMethod("sqlite3_interrupt", NativeDatabaseBinding::sqlite3_interrupt),
       makeNativeMethod("sqlite3_db_filename",
                        NativeDatabaseBinding::sqlite3_db_filename),
       makeNativeMethod("sqlite3_enable_load_extension",
@@ -64,6 +65,8 @@ void NativeDatabaseBinding::sqlite3_finalize_all_statement() {
     stmt = nextStmt;
   }
 }
+
+void NativeDatabaseBinding::sqlite3_interrupt() { ::exsqlite3_interrupt(db); }
 
 int NativeDatabaseBinding::sqlite3_close() {
   // Not setting `db = nullptr` here because we may need the db pointer to get

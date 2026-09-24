@@ -175,6 +175,41 @@ describe('Database', () => {
     expect(results.length).toBe(0);
   });
 
+  it.each(['async', 'exclusive', 'sync'] as const)(
+    '%s transactions preserve the original error after SQLite rolls back automatically',
+    async (mode) => {
+      // Exclusive transactions open a separate connection, so use a file database.
+      const database = await openDatabaseAsync('test.db');
+      db = database;
+      await database.execAsync(`
+        DROP TABLE IF EXISTS rollback_test;
+        CREATE TABLE rollback_test (value INTEGER UNIQUE ON CONFLICT ROLLBACK);
+        INSERT INTO rollback_test VALUES (1);
+      `);
+      const write = 'INSERT INTO rollback_test VALUES (2); INSERT INTO rollback_test VALUES (1)';
+
+      if (mode === 'sync') {
+        expect(() => database.withTransactionSync(() => database.execSync(write))).toThrow(
+          /UNIQUE constraint failed/
+        );
+      } else {
+        const result =
+          mode === 'exclusive'
+            ? database.withExclusiveTransactionAsync((txn) => txn.execAsync(write))
+            : database.withTransactionAsync(() => database.execAsync(write));
+        await expect(result).rejects.toThrow(/UNIQUE constraint failed/);
+      }
+
+      expect(await database.isInTransactionAsync()).toBe(false);
+      expect(await database.getAllAsync('SELECT value FROM rollback_test')).toEqual([{ value: 1 }]);
+      await database.execAsync('INSERT INTO rollback_test VALUES (3)');
+      expect(await database.getAllAsync('SELECT value FROM rollback_test ORDER BY value')).toEqual([
+        { value: 1 },
+        { value: 3 },
+      ]);
+    }
+  );
+
   it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`

@@ -24,7 +24,6 @@ import {
   findFirstExisting,
   findXCFrameworkInDir,
   getBuildPlatformsFromProductPlatform,
-  warnUnreconciledConfigTargets,
 } from './SPMBuild';
 import type { SPMProduct, SPMTarget } from './SPMConfig.types';
 
@@ -175,7 +174,7 @@ describe('findXCFrameworkInDir', () => {
 });
 
 // ---------------------------------------------------------------------------
-// buildXcodeBuildArgs / warnUnreconciledConfigTargets
+// buildXcodeBuildArgs
 // ---------------------------------------------------------------------------
 
 function productWithTargets(targets: SPMTarget[]): SPMProduct {
@@ -209,67 +208,6 @@ function checkedIn(
 ): CheckedInLayout {
   return { root, targets };
 }
-
-describe('warnUnreconciledConfigTargets', () => {
-  it('reports a config target the checked-in manifest does not declare', () => {
-    const warnings = captureWarnings(() => {
-      warnUnreconciledConfigTargets(
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC' },
-        ]),
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    // Nothing else reconciles the two name sets, so an unmatched name would otherwise be a
-    // silently inert entry: either a typo hiding sources, or dead configuration.
-    assert.equal(warnings.length, 1, `The unmatched target must be reported: ${warnings.join()}`);
-    const warning = warnings[0];
-    assert.ok(
-      warning.includes('ExpoHaptics/ExpoHapticsObjC'),
-      `Name the product and the target: ${warning}`
-    );
-    assert.ok(
-      warning.includes('Package.swift'),
-      `Name the manifest that decides the targets: ${warning}`
-    );
-    assert.ok(
-      warning.includes('/repo/packages/expo-haptics'),
-      `Name the manifest root: ${warning}`
-    );
-  });
-
-  it('reports an unmatched config target that still declares a path', () => {
-    const warnings = captureWarnings(() => {
-      warnUnreconciledConfigTargets(
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC', path: 'ios/objc' },
-        ]),
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    assert.equal(
-      warnings.length,
-      1,
-      `A leftover path does not reconcile a name: ${warnings.join()}`
-    );
-  });
-
-  it('stays silent when every config target is declared', () => {
-    const warnings = captureWarnings(() => {
-      warnUnreconciledConfigTargets(
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'framework', name: 'Prebuilt', path: 'ios/Prebuilt.xcframework' },
-        ]),
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    // A framework target is a prebuilt binary, not a manifest target: it is never declared there.
-    assert.deepEqual(warnings, []);
-  });
-});
 
 describe('buildXcodeBuildArgs', () => {
   const originalRepoRoot = process.env.EXPO_ROOT_DIR;
@@ -333,13 +271,128 @@ describe('buildXcodeBuildArgs', () => {
     );
   });
 
+  describe('a target generated under .build/', () => {
+    const screensPkg: SPMPackageSource = {
+      path: '/repo/node_modules/react-native-screens',
+      buildPath: '/repo/packages/precompile/.build/react-native-screens',
+      packageName: 'react-native-screens',
+      packageVersion: '4.0.0',
+      getSwiftPMConfiguration: () => ({ products: [] }),
+    };
+    const screensProduct: SPMProduct = {
+      name: 'RNScreens',
+      podName: 'RNScreens',
+      platforms: ['iOS("16.4")'],
+      targets: [
+        {
+          type: 'cpp',
+          name: 'RNScreens_codegen_components',
+          path: '.build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rnscreens',
+        },
+        { type: 'swift', name: 'RNScreensSwift', path: 'ios/swift' },
+      ],
+    };
+    const stagingDirectory =
+      '/repo/packages/precompile/.build/react-native-screens/generated/RNScreens/RNScreens_codegen_components/';
+    const generatedMapping = `${stagingDirectory}=/expo-src/generated/react-native-screens/RNScreens/RNScreens_codegen_components/`;
+
+    it('maps its staging directory to a canonical generated path', () => {
+      const args = buildXcodeBuildArgs(screensPkg, screensProduct, 'Debug', 'iOS');
+      assert.ok(
+        settingValue(args, 'OTHER_CFLAGS').includes(`-fdebug-prefix-map=${generatedMapping}`),
+        `clang needs the generated map: ${settingValue(args, 'OTHER_CFLAGS')}`
+      );
+      assert.ok(
+        settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${generatedMapping}`),
+        `swiftc needs the generated map: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+      );
+    });
+
+    it('orders the generated map so it beats the repository-root catch-all', () => {
+      const args = buildXcodeBuildArgs(screensPkg, screensProduct, 'Debug', 'iOS');
+      const swiftFlags = settingValue(args, 'OTHER_SWIFT_FLAGS');
+      const swiftGenerated = swiftFlags.indexOf(`-debug-prefix-map ${generatedMapping}`);
+      assert.ok(
+        swiftGenerated >= 0 && swiftGenerated < swiftFlags.indexOf('-debug-prefix-map /repo='),
+        `The generated map must lead for swiftc: ${swiftFlags}`
+      );
+      const cFlags = settingValue(args, 'OTHER_CFLAGS');
+      assert.ok(
+        cFlags.indexOf('-fdebug-prefix-map=/repo=') <
+          cFlags.indexOf(`-fdebug-prefix-map=${generatedMapping}`),
+        `The generated map must trail for clang: ${cFlags}`
+      );
+    });
+  });
+
+  describe('a checked-in target directory', () => {
+    const layout = checkedIn([
+      { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+    ]);
+    const targetDirectory =
+      '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/';
+    // Holds <Product>+Exports.swift, which is written beside the `src` link rather than under it.
+    const generatedMapping = `${targetDirectory}=/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/`;
+    const sourceMapping = `${targetDirectory}src/=/expo-src/packages/expo-haptics/ios/`;
+
+    it('maps the files generated beside the source link', () => {
+      const args = buildXcodeBuildArgs(
+        pkg,
+        productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
+        'Debug',
+        'iOS',
+        layout
+      );
+      assert.ok(
+        settingValue(args, 'OTHER_CFLAGS').includes(`-fdebug-prefix-map=${generatedMapping}`),
+        `clang needs the target directory map: ${settingValue(args, 'OTHER_CFLAGS')}`
+      );
+      assert.ok(
+        settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${generatedMapping}`),
+        `swiftc needs the target directory map: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+      );
+    });
+
+    it('lets the source link map beat the target directory map for every compiler', () => {
+      const args = buildXcodeBuildArgs(
+        pkg,
+        productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
+        'Debug',
+        'iOS',
+        layout
+      );
+      const swiftFlags = settingValue(args, 'OTHER_SWIFT_FLAGS');
+      const swiftSource = swiftFlags.indexOf(`-debug-prefix-map ${sourceMapping}`);
+      const swiftGenerated = swiftFlags.indexOf(`-debug-prefix-map ${generatedMapping}`);
+      assert.ok(
+        swiftSource >= 0 && swiftGenerated >= 0 && swiftSource < swiftGenerated,
+        `swiftc applies the first match, so src/ must lead: ${swiftFlags}`
+      );
+      const xccSource = swiftFlags.indexOf(`-Xcc -fdebug-prefix-map=${sourceMapping}`);
+      const xccGenerated = swiftFlags.indexOf(`-Xcc -fdebug-prefix-map=${generatedMapping}`);
+      assert.ok(
+        xccSource >= 0 && xccGenerated >= 0 && xccGenerated < xccSource,
+        `clang applies the last match, so src/ must trail in the -Xcc list: ${swiftFlags}`
+      );
+      const cFlags = settingValue(args, 'OTHER_CFLAGS');
+      const cSource = cFlags.indexOf(`-fdebug-prefix-map=${sourceMapping}`);
+      const cGenerated = cFlags.indexOf(`-fdebug-prefix-map=${generatedMapping}`);
+      assert.ok(
+        cSource >= 0 && cGenerated >= 0 && cGenerated < cSource,
+        `clang applies the last match, so src/ must trail: ${cFlags}`
+      );
+    });
+  });
+
   it('maps a target whose layout comes from a checked-in Package.swift', () => {
     const args = buildXcodeBuildArgs(
       pkg,
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+      ])
     );
     // The compiler records the staging source link, not the directory it points at, so the
     // mapped side carries the extra `src` segment while the canonical side stays the one a
@@ -349,11 +402,65 @@ describe('buildXcodeBuildArgs', () => {
       '/expo-src/packages/expo-haptics/ios/';
     assert.equal(
       settingValue(args, 'OTHER_CFLAGS'),
-      `$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=${mapping}`
+      '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
+        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
+        `/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=${mapping}`
     );
     assert.ok(
       settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${mapping}`),
       `Swift sources need the map too: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+    );
+  });
+
+  it('maps a manifest target that spm.config.json does not list', () => {
+    const args = buildXcodeBuildArgs(
+      pkg,
+      productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
+      'Debug',
+      'iOS',
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+        { name: 'ObjC', sourceRoot: '/repo/packages/expo-haptics/objc', type: 'objc' },
+      ])
+    );
+    const mapping =
+      '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ObjC/src/=' +
+      '/expo-src/packages/expo-haptics/objc/';
+    assert.ok(
+      settingValue(args, 'OTHER_CFLAGS').includes(`-fdebug-prefix-map=${mapping}`),
+      `The manifest decides the targets, so every one it builds is mapped: ${settingValue(args, 'OTHER_CFLAGS')}`
+    );
+    assert.ok(
+      settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${mapping}`),
+      `Swift flags need the map too: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+    );
+  });
+
+  it('passes Swift flags when only the manifest says a target is Swift', () => {
+    const manifestTargets = [
+      {
+        name: 'ExpoHaptics',
+        sourceRoot: '/repo/packages/expo-haptics/ios',
+        type: 'swift' as const,
+      },
+    ];
+    const args = buildXcodeBuildArgs(
+      pkg,
+      productWithTargets([{ type: 'objc', name: 'ExpoHaptics' }]),
+      'Debug',
+      'iOS',
+      checkedIn(manifestTargets)
+    );
+    assert.ok(
+      args.includes('BUILD_LIBRARY_FOR_DISTRIBUTION=YES'),
+      `The manifest decides the language: ${args.join(' ')}`
+    );
+    assert.ok(
+      settingValue(args, 'OTHER_SWIFT_FLAGS').includes(
+        '-debug-prefix-map /repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +
+          '/expo-src/packages/expo-haptics/ios/'
+      ),
+      `The Swift target needs its map: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
     );
   });
 
@@ -370,7 +477,9 @@ describe('buildXcodeBuildArgs', () => {
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+      ])
     );
     assert.ok(
       settingValue(args, 'OTHER_CFLAGS').includes('=/expo-src/packages/expo-haptics/ios/'),
@@ -384,13 +493,15 @@ describe('buildXcodeBuildArgs', () => {
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics' }])
+      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics', type: 'swift' }])
     );
     // An empty source directory must not leave a doubled separator behind: no recorded path
     // ever spells `…/expo-haptics//`, so such a map matches nothing.
     assert.equal(
       settingValue(args, 'OTHER_CFLAGS'),
       '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
+        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
+        '/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=' +
         '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +
         '/expo-src/packages/expo-haptics/'
     );
@@ -402,7 +513,9 @@ describe('buildXcodeBuildArgs', () => {
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/..shared' }])
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/..shared', type: 'swift' },
+      ])
     );
     assert.ok(
       settingValue(args, 'OTHER_CFLAGS').includes('=/expo-src/packages/expo-haptics/..shared/'),
@@ -410,86 +523,40 @@ describe('buildXcodeBuildArgs', () => {
     );
   });
 
-  it('leaves a source root outside the package to the repository-root map', () => {
-    let args: string[] = [];
-    const warnings = captureWarnings(() => {
-      args = buildXcodeBuildArgs(
-        pkg,
-        productWithTargets([{ type: 'swift', name: 'ExpoHapticsShared' }]),
-        'Debug',
-        'iOS',
-        checkedIn([
-          { name: 'ExpoHapticsShared', sourceRoot: '/repo/packages/expo-haptics-shared/ios' },
-        ])
-      );
-    });
-    // Such a source root has no /expo-src/packages/expo-haptics/… spelling, so mapping it
-    // would rewrite the debug info to a path that does not exist.
-    assert.equal(
-      settingValue(args, 'OTHER_CFLAGS'),
-      '$(inherited) -fdebug-prefix-map=/repo=/expo-src'
-    );
-    assert.equal(warnings.length, 1, `The skip must be reported: ${warnings.join('\n')}`);
-    const warning = warnings[0];
-    assert.ok(
-      warning.includes('ExpoHaptics/ExpoHapticsShared'),
-      `Name the product and the target: ${warning}`
-    );
-    assert.ok(
-      warning.includes('/repo/packages/expo-haptics-shared/ios'),
-      `Name the source root: ${warning}`
-    );
-    assert.match(warning, /\/repo\/packages\/expo-haptics(?![\w-])/, 'Name the package root');
-  });
-
-  it('skips a config target the checked-in manifest does not declare', () => {
-    let args: string[] = [];
-    const warnings = captureWarnings(() => {
-      args = buildXcodeBuildArgs(
-        pkg,
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC' },
-        ]),
-        'Debug',
-        'iOS',
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    // warnUnreconciledConfigTargets reports the mismatch once for the whole product; repeating
-    // it here would print the same paragraph again for every platform and flavor.
-    assert.deepEqual(warnings, [], 'The mismatch is reported once per product, not per platform');
-    assert.equal(
-      settingValue(args, 'OTHER_CFLAGS'),
-      '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
-        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +
-        '/expo-src/packages/expo-haptics/ios/'
-    );
-  });
-
-  it('skips an unmatched config target that still declares a path', () => {
-    let args: string[] = [];
-    const warnings = captureWarnings(() => {
-      args = buildXcodeBuildArgs(
-        pkg,
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC', path: 'ios/objc' },
-        ]),
-        'Debug',
-        'iOS',
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    assert.deepEqual(warnings, [], 'The mismatch is reported once per product, not per platform');
-    // The manifest alone decides the targets, so no staging directory is ever generated for
-    // this one: a map built from its config path would rewrite nothing.
-    assert.ok(
-      !settingValue(args, 'OTHER_CFLAGS').includes('ExpoHapticsObjC'),
-      `A target the manifest does not declare must not be mapped: ${settingValue(
-        args,
-        'OTHER_CFLAGS'
-      )}`
+  it('rejects a source root outside the manifest root', () => {
+    // The thrown message explains why this cannot happen; the test exists so a refactor that
+    // makes it happen fails here rather than silently shipping unmappable debug info.
+    assert.throws(
+      () =>
+        buildXcodeBuildArgs(
+          pkg,
+          productWithTargets([{ type: 'swift', name: 'ExpoHapticsShared' }]),
+          'Debug',
+          'iOS',
+          checkedIn([
+            {
+              name: 'ExpoHapticsShared',
+              sourceRoot: '/repo/packages/expo-haptics-shared/ios',
+              type: 'swift',
+            },
+          ])
+        ),
+      (error: Error) => {
+        assert.ok(
+          error.message.includes('ExpoHaptics/ExpoHapticsShared'),
+          `Name the product and the target: ${error.message}`
+        );
+        assert.ok(
+          error.message.includes('/repo/packages/expo-haptics-shared/ios'),
+          `Name the source root: ${error.message}`
+        );
+        assert.match(
+          error.message,
+          /\/repo\/packages\/expo-haptics(?![\w-])/,
+          `Name the manifest root: ${error.message}`
+        );
+        return true;
+      }
     );
   });
 

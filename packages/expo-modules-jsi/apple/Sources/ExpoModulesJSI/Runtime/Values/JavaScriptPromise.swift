@@ -242,7 +242,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // thread, the same hop `resolve` and `reject` make. `@JavaScriptActor` does not get there on
     // its own: its executor runs jobs inline on the calling thread. `execute` runs the closure
     // inline when the caller is already on the JavaScript thread.
-    try await runtime.execute { [longLivedState] in
+    try await runtime.execute { [longLivedState, deferredPromise] in
       let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined }
         let value = arguments[0]

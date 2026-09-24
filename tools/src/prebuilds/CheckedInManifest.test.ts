@@ -12,7 +12,12 @@ import {
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
-import type { SPMConfig, SPMProduct, SourceTarget } from './SPMConfig.types';
+import type {
+  SPMConfig,
+  SPMPackageDependencyConfig,
+  SPMProduct,
+  SourceTarget,
+} from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { SPMPackage } from './SPMPackage';
 
@@ -30,7 +35,13 @@ afterEach(() => {
 function fixture(
   targets = '.target(name: "Main", path: "ios")',
   files: Record<string, string> = { 'ios/Main.swift': 'public let value = 1' },
-  options: { dependencies?: string; members?: string; imports?: string } = {}
+  options: {
+    dependencies?: string;
+    members?: string;
+    imports?: string;
+    packageName?: string;
+    packageJson?: Record<string, unknown>;
+  } = {}
 ) {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'checked-in-manifest-'));
   temporaryDirectories.push(repoRoot);
@@ -40,14 +51,19 @@ function fixture(
 import PackageDescription
 ${options.imports ?? ''}
 let package = Package(
-  name: "Fixture",
+  name: "${options.packageName ?? 'fixture'}",
   platforms: [.macOS(.v13)],
   products: [.library(name: "Fixture", targets: [${options.members ?? '"Main"'}])],
   dependencies: [${options.dependencies ?? ''}],
   targets: [${targets}]
 )
 `;
-  for (const [relative, content] of Object.entries({ 'Package.swift': manifest, ...files })) {
+  const packageJson = JSON.stringify(options.packageJson ?? { name: 'fixture', version: '1.0.0' });
+  for (const [relative, content] of Object.entries({
+    'package.json': packageJson,
+    'Package.swift': manifest,
+    ...files,
+  })) {
     const destination = path.join(root, relative);
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.writeFileSync(destination, content);
@@ -100,7 +116,7 @@ async function rejectsManifest(input: ReturnType<typeof fixture>, detail: RegExp
   });
 }
 
-it('A1 transforms manifest layout and drops test targets', async () => {
+it('transforms manifest layout and drops test targets', async () => {
   const input = fixture(
     `.target(name: "Main", path: "ios", exclude: ["Tests"], resources: [.copy("PrivacyInfo.xcprivacy")]),
      .target(name: "ObjC", path: "objc", publicHeadersPath: "headers"),
@@ -128,6 +144,52 @@ it('A1 transforms manifest layout and drops test targets', async () => {
   assert.deepEqual(targets[1].sources, ['src']);
 });
 
+for (const [npmName, packageName] of [
+  ['fixture', 'fixture'],
+  ['@expo/log-box', 'expo-log-box'],
+]) {
+  it(`package name: accepts Package(name: "${packageName}") for npm package ${npmName}`, async () => {
+    const input = fixture(undefined, undefined, { packageName, packageJson: { name: npmName } });
+    const targets = await resolve(input.root, input.product);
+    assert.deepEqual(
+      targets.map((target) => target.name),
+      ['Main']
+    );
+  });
+}
+
+for (const [npmName, packageName, expected] of [
+  ['fixture', 'Fixture', 'fixture'],
+  ['@expo/log-box', 'log-box', 'expo-log-box'],
+  ['@expo/log-box', '@expo/log-box', 'expo-log-box'],
+]) {
+  it(`package name: rejects Package(name: "${packageName}") for npm package ${npmName}`, async () => {
+    const input = fixture(undefined, undefined, { packageName, packageJson: { name: npmName } });
+    await rejectsManifest(
+      input,
+      new RegExp(
+        `declares Package\\(name: "${packageName}"\\), but .*"${expected}".*Set name: "${expected}"`
+      )
+    );
+  });
+}
+
+for (const [label, packageJson] of [
+  ['no name', { version: '1.0.0' }],
+  ['a non-string name', { name: 42 }],
+] as const) {
+  it(`package name: rejects a package.json with ${label}`, async () => {
+    const input = fixture(undefined, undefined, { packageJson });
+    await rejectsManifest(input, /package\.json does not declare a non-empty string "name"/);
+  });
+}
+
+it('package name: rejects a package directory without package.json', async () => {
+  const input = fixture();
+  fs.rmSync(path.join(input.root, 'package.json'));
+  await rejectsManifest(input, /could not read .*package\.json/);
+});
+
 for (const [extension, expected] of [
   ['swift', 'swift'],
   ['m', 'objc'],
@@ -137,13 +199,13 @@ for (const [extension, expected] of [
   ['cxx', 'cpp'],
   ['mm', 'cpp'],
 ] as const) {
-  it(`A2 infers ${expected} from .${extension} sources rather than config`, async () => {
+  it(`infers ${expected} from .${extension} sources rather than config`, async () => {
     const input = fixture(undefined, { [`ios/Main.${extension}`]: '// source' });
     assert.equal((await resolve(input.root, input.product))[0].type, expected);
   });
 }
 
-it('A2 applies explicit sources and excludes before inferring language', async () => {
+it('applies explicit sources and excludes before inferring language', async () => {
   const input = fixture(
     '.target(name: "Main", path: "ios", exclude: ["Skipped"], sources: ["Chosen"])',
     {
@@ -157,14 +219,14 @@ it('A2 applies explicit sources and excludes before inferring language', async (
   assert.deepEqual(target.sources, ['src/Chosen', 'Fixture+Exports.swift']);
 });
 
-it('A1 resolves SwiftPM default target paths', async () => {
+it('resolves SwiftPM default target paths', async () => {
   const input = fixture('.target(name: "Main")', {
     'Sources/Main/Main.swift': 'public let value = 1',
   });
   assert.equal((await resolve(input.root, input.product))[0].path, 'Main');
 });
 
-it('D-G path: rejects a target without a real source directory', async () => {
+it('rejects a target without a real source directory', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "missing")'),
     /: its source path "missing" does not resolve to a real directory\./
@@ -177,7 +239,7 @@ for (const [kind, declaration, imports] of [
   ['macro', '.macro(name: "Helper", path: "macro")', 'import CompilerPluginSupport'],
   ['plugin', '.plugin(name: "Helper", capability: .buildTool(), path: "plugin")', ''],
 ] as const) {
-  it(`D-G non-regular dependency: rejects a dependency on a ${kind} target`, async () => {
+  it(`rejects a dependency on a ${kind} target`, async () => {
     await rejectsManifest(
       fixture(
         `.target(name: "Main", dependencies: ["Helper"], path: "ios"), ${declaration}`,
@@ -189,23 +251,420 @@ for (const [kind, declaration, imports] of [
   });
 }
 
-it('D-G URL dependency: rejects manifest-owned external packages', async () => {
-  await rejectsManifest(
-    fixture(undefined, undefined, {
-      dependencies: '.package(url: "https://example.com/remote.git", from: "1.0.0")',
-    }),
-    /: the manifest declares external package dependencies, but the generated build manifest owns external dependencies\./
+const REMOTE_URL = 'https://example.com/remote.git';
+const REMOTE_PACKAGE = `.package(url: "${REMOTE_URL}", exact: "1.2.3")`;
+
+function remote(
+  version: SPMPackageDependencyConfig['version'] = { exact: '1.2.3' },
+  url = REMOTE_URL,
+  productName = 'Remote'
+): SPMPackageDependencyConfig {
+  return { url, productName, version };
+}
+
+function withPackages(
+  dependencies: string,
+  spmPackages: SPMPackageDependencyConfig[],
+  targets?: string
+) {
+  const input = fixture(targets, undefined, { dependencies });
+  input.product.spmPackages = spmPackages;
+  return input;
+}
+
+const PACKAGES_DIFFER =
+  /: its package dependencies do not match spmPackages in spm\.config\.json: /;
+
+async function rejectsPackageDifferences(input: ReturnType<typeof fixture>, differences: string[]) {
+  await assert.rejects(resolve(input.root, input.product), (error: Error) => {
+    assertManifestDiagnostic(error, PACKAGES_DIFFER, 'Main');
+    assert.match(error.message, /Package\.swift is the authority for third-party packages/);
+    assert.match(
+      error.message,
+      /Update spmPackages in spm\.config\.json to match Package\.swift\.$/
+    );
+    for (const difference of differences) {
+      assert.ok(error.message.includes(difference), `Missing "${difference}" in: ${error.message}`);
+    }
+    return true;
+  });
+}
+
+it('packages: accepts a manifest whose packages match spmPackages by normalized URL', async () => {
+  const input = withPackages(
+    `.package(url: "https://example.com/Remote.git", exact: "1.2.3"),
+     .package(url: "https://example.com/branchy", branch: "main"),
+     .package(url: "https://example.com/pinned.git", revision: "abc123")`,
+    [
+      remote(),
+      remote({ exact: '1.2.3' }, REMOTE_URL, 'RemoteExtras'),
+      remote({ branch: 'main' }, 'https://example.com/branchy.git', 'Branchy'),
+      remote({ revision: 'abc123' }, 'https://EXAMPLE.com/pinned', 'Pinned'),
+    ]
+  );
+  assert.equal((await resolve(input.root, input.product))[0].name, 'Main');
+});
+
+it('packages: rejects a version that differs from spmPackages and shows both', async () => {
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, [remote({ exact: '1.2.4' })]), [
+    `${REMOTE_URL} requires exact: "1.2.3" in Package.swift but exact: "1.2.4" in spmPackages (product "Remote")`,
+  ]);
+});
+
+it('packages: rejects a requirement kind that differs from spmPackages', async () => {
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, [remote({ revision: '1.2.3' })]), [
+    `${REMOTE_URL} requires exact: "1.2.3" in Package.swift but revision: "1.2.3" in spmPackages (product "Remote")`,
+  ]);
+});
+
+it('packages: rejects a URL that differs from spmPackages as a package on each side', async () => {
+  const fork = 'https://example.com/remote-fork.git';
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, [remote(undefined, fork)]), [
+    `${REMOTE_URL} (exact: "1.2.3") is declared in Package.swift but missing from spmPackages`,
+    `${fork} (exact: "1.2.3", product "Remote") is in spmPackages but not declared in Package.swift`,
+  ]);
+});
+
+it('packages: rejects a package declared only in the manifest', async () => {
+  await rejectsPackageDifferences(withPackages(REMOTE_PACKAGE, []), [
+    `${REMOTE_URL} (exact: "1.2.3") is declared in Package.swift but missing from spmPackages`,
+  ]);
+});
+
+it('packages: rejects a package declared only in spmPackages', async () => {
+  await rejectsPackageDifferences(withPackages('', [remote()]), [
+    `${REMOTE_URL} (exact: "1.2.3", product "Remote") is in spmPackages but not declared in Package.swift`,
+  ]);
+});
+
+it('packages: reports every difference in one error', async () => {
+  await rejectsPackageDifferences(
+    withPackages(
+      `${REMOTE_PACKAGE}, .package(url: "https://example.com/extra.git", branch: "main")`,
+      [remote({ exact: '2.0.0' }), remote(undefined, 'https://example.com/absent.git', 'Absent')]
+    ),
+    [
+      `${REMOTE_URL} requires exact: "1.2.3" in Package.swift but exact: "2.0.0" in spmPackages (product "Remote")`,
+      'https://example.com/absent.git (exact: "1.2.3", product "Absent") is in spmPackages but not declared in Package.swift',
+      'https://example.com/extra.git (branch: "main") is declared in Package.swift but missing from spmPackages',
+    ]
   );
 });
 
-it('D-G product dependency: rejects .product instead of silently dropping it', async () => {
+it('packages: rejects a manifest version range, which the dump cannot report exactly', async () => {
   await rejectsManifest(
-    fixture(
-      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")',
-      undefined,
-      { dependencies: '.package(url: "https://example.com/remote.git", from: "1.0.0")' }
+    withPackages(`.package(url: "${REMOTE_URL}", from: "1.0.0")`, [remote({ from: '1.0.0' })]),
+    new RegExp(
+      `: the manifest declares ${REMOTE_URL} with a version range, .*\\. Use exact: in Package\\.swift`
+    )
+  );
+});
+
+it('packages: rejects from: in spmPackages, which a checked-in manifest can never match', async () => {
+  await rejectsManifest(
+    withPackages(REMOTE_PACKAGE, [remote({ from: '1.2.3' })]),
+    new RegExp(
+      `: spm\\.config\\.json declares ${REMOTE_URL} \\(product "Remote"\\) with from: "1\\.2\\.3", .*\\. Use exact: in spm\\.config\\.json`
+    )
+  );
+});
+
+for (const [label, version, url] of [
+  ['an empty version', {}, REMOTE_URL],
+  ['an empty exact value', { exact: '' }, REMOTE_URL],
+  ['a non-string exact value', { exact: 1 }, REMOTE_URL],
+  ['two requirement kinds', { exact: '1.2.3', branch: 'main' }, REMOTE_URL],
+  ['an unknown requirement kind', { tag: '1.2.3' }, REMOTE_URL],
+  ['a null version', null, REMOTE_URL],
+  ['an empty URL', { exact: '1.2.3' }, ''],
+] as const) {
+  it(`packages: rejects an spmPackages entry with ${label}`, async () => {
+    const entry = { url, productName: 'Remote', version } as unknown as SPMPackageDependencyConfig;
+    await rejectsManifest(
+      withPackages(REMOTE_PACKAGE, [entry]),
+      /: spm\.config\.json declares an spmPackages entry that Mode B cannot read: /
+    );
+  });
+}
+
+it('packages: rejects a local .package(path:) dependency', async () => {
+  const input = withPackages('.package(path: "local")', []);
+  fs.mkdirSync(path.join(input.root, 'local'));
+  fs.writeFileSync(
+    path.join(input.root, 'local/Package.swift'),
+    '// swift-tools-version: 5.9\nimport PackageDescription\nlet package = Package(name: "Local")\n'
+  );
+  await rejectsManifest(input, /: the manifest declares local package dependency "[^"]*local"/);
+});
+
+it('packages: rejects a registry .package(id:) dependency', async () => {
+  await rejectsManifest(
+    withPackages('.package(id: "example.remote", exact: "1.2.3")', []),
+    /: the manifest declares registry package dependency "example\.remote"/
+  );
+});
+
+it('packages: rejects an empty branch the dump reports verbatim', async () => {
+  await rejectsManifest(
+    withPackages(`.package(url: "${REMOTE_URL}", branch: "")`, [remote({ branch: 'main' })]),
+    /: the dumped manifest declares a package dependency that Mode B cannot read: /
+  );
+});
+
+it('packages: rejects a local Git repository, which has no remote URL', async () => {
+  await rejectsManifest(
+    withPackages('.package(url: "/abs/remote", exact: "1.2.3")', []),
+    /: the dumped manifest declares a package dependency that Mode B cannot read: /
+  );
+});
+
+it('packages: rejects two declarations of one package that differ only in spelling', async () => {
+  await rejectsManifest(
+    withPackages(`${REMOTE_PACKAGE}, .package(url: "https://example.com/Remote", exact: "1.2.3")`, [
+      remote(),
+    ]),
+    /: the manifest declares https:\/\/example\.com\/remote\.git and https:\/\/example\.com\/Remote, which name the same package/
+  );
+});
+
+const pinned = {
+  identity: 'remote',
+  location: { remote: [{ urlString: REMOTE_URL }] },
+  productFilter: null,
+  requirement: { exact: ['1.2.3'] },
+};
+for (const [label, dependency] of [
+  ['a null entry', null],
+  ['an empty entry', {}],
+  ['an empty sourceControl list', { sourceControl: [] }],
+  ['two sourceControl entries', { sourceControl: [pinned, pinned] }],
+  ['an unknown dependency kind', { git: [pinned] }],
+  ['a missing location', { sourceControl: [{ ...pinned, location: undefined }] }],
+  ['an empty remote list', { sourceControl: [{ ...pinned, location: { remote: [] } }] }],
+  ['an empty URL', { sourceControl: [{ ...pinned, location: { remote: [{ urlString: '' }] } }] }],
+  [
+    'a non-string URL',
+    { sourceControl: [{ ...pinned, location: { remote: [{ urlString: 1 }] } }] },
+  ],
+  ['a missing requirement', { sourceControl: [{ ...pinned, requirement: undefined }] }],
+  ['an empty requirement', { sourceControl: [{ ...pinned, requirement: {} }] }],
+  ['an empty exact list', { sourceControl: [{ ...pinned, requirement: { exact: [] } }] }],
+  ['an empty exact value', { sourceControl: [{ ...pinned, requirement: { exact: [''] } }] }],
+  ['a bare exact string', { sourceControl: [{ ...pinned, requirement: { exact: '1.2.3' } }] }],
+  ['an unknown requirement', { sourceControl: [{ ...pinned, requirement: { tag: ['1.2.3'] } }] }],
+] as const) {
+  it(`packages: rejects a dumped package dependency with ${label}`, async () => {
+    const input = fixture();
+    input.product.spmPackages = [remote()];
+    await withSwiftOnPath(stubSwiftDump(input, {}, { dependencies: [dependency] }), () =>
+      rejectsManifest(
+        input,
+        /: the dumped manifest declares a package dependency that Mode B cannot read: /
+      )
+    );
+  });
+}
+
+it('packages: rejects a dumped dependency list that is not a list', async () => {
+  const input = fixture();
+  await withSwiftOnPath(stubSwiftDump(input, {}, { dependencies: {} }), () =>
+    rejectsManifest(
+      input,
+      /: the dumped manifest declares a package dependency that Mode B cannot read: /
+    )
+  );
+});
+
+it('packages: rejects package traits the generated manifest cannot carry', async () => {
+  const input = fixture();
+  input.product.spmPackages = [remote()];
+  const traits = [{ name: 'Extras' }];
+  await withSwiftOnPath(
+    stubSwiftDump(input, {}, { dependencies: [{ sourceControl: [{ ...pinned, traits }] }] }),
+    () =>
+      rejectsManifest(
+        input,
+        /: the manifest enables traits \["Extras"\] on https:\/\/example\.com\/remote\.git/
+      )
+  );
+});
+
+it('packages: rejects an empty traits list, which disables the default traits', async () => {
+  const input = fixture();
+  input.product.spmPackages = [remote()];
+  await withSwiftOnPath(
+    stubSwiftDump(input, {}, { dependencies: [{ sourceControl: [{ ...pinned, traits: [] }] }] }),
+    () =>
+      rejectsManifest(
+        input,
+        /: the manifest disables the default traits of https:\/\/example\.com\/remote\.git, which the generated build manifest would silently re-enable\./
+      )
+  );
+});
+
+it('packages: accepts the default trait the dump reports for every package', async () => {
+  const input = fixture();
+  input.product.spmPackages = [remote()];
+  const traits = [{ name: 'default' }];
+  await withSwiftOnPath(
+    stubSwiftDump(input, {}, { dependencies: [{ sourceControl: [{ ...pinned, traits }] }] }),
+    async () => {
+      assert.equal((await resolve(input.root, input.product))[0].name, 'Main');
+    }
+  );
+});
+
+it('product dependency: resolves .product(name:package:) as its spmPackages product', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote()],
+    '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+  );
+  (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
+  const [target] = await resolve(input.root, input.product);
+  assert.deepEqual(target.dependencies, ['Remote']);
+  await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug');
+  assert.match(
+    fs.readFileSync(SPMGenerator.getSwiftPackagePath(input.pkg, input.product), 'utf8'),
+    /dependencies: \[\.product\(name: "Remote", package: "remote"\)\]/
+  );
+});
+
+it('product dependency: resolves a .product whose name is also a local target to the product', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote(undefined, undefined, 'Helper')],
+    '.target(name: "Main", dependencies: [.product(name: "Helper", package: "remote")], path: "ios"), .binaryTarget(name: "Helper", path: "Helper.xcframework")'
+  );
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Helper']);
+});
+
+it('product dependency: rejects a .product platform condition like any other dependency', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [remote()],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote", condition: .when(platforms: [.iOS]))], path: "ios")'
     ),
-    /: it depends on \.product\(name: "Remote", package: "remote"\)/
+    /: dependency "Remote" has a platform condition, but the generated dependency format cannot preserve it\./
+  );
+});
+
+it('product dependency: rejects .product moduleAliases instead of silently dropping them', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [remote()],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote", moduleAliases: ["Remote": "RemoteAlias"])], path: "ios")'
+    ),
+    /: dependency "Remote" declares moduleAliases, which the generated dependency format cannot preserve\./
+  );
+});
+
+it('product dependency: rejects a .product naming a product absent from spm.config.json', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [remote()],
+      '.target(name: "Main", dependencies: [.product(name: "Ghost", package: "remote")], path: "ios")'
+    ),
+    /: it depends on \.product\(name: "Ghost", package: "remote"\), but no spmPackages entry in spm\.config\.json has productName "Ghost"\./
+  );
+});
+
+const PACKAGE_NAME_DIFFERS = (configured: string) =>
+  new RegExp(
+    `: it depends on \\.product\\(name: "Remote", package: "[^"]+"\\), but spm\\.config\\.json resolves product "Remote" to package "${configured}", .*\\. Set packageName in spm\\.config\\.json or package: in Package\\.swift`
+  );
+
+it('product dependency: accepts a .product package that matches the URL-derived name exactly', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote()],
+    '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+  );
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Remote']);
+});
+
+it('product dependency: accepts a .product package that differs from the derived name only in case', async () => {
+  const url = 'https://example.com/Remote.git';
+  const input = withPackages(
+    `.package(url: "${url}", exact: "1.2.3")`,
+    [remote(undefined, url)],
+    '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+  );
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Remote']);
+});
+
+it('product dependency: rejects a .product package that differs from the URL-derived name', async () => {
+  await rejectsManifest(
+    withPackages(
+      `${REMOTE_PACKAGE}, .package(url: "https://example.com/other.git", exact: "1.0.0")`,
+      [remote(), remote({ exact: '1.0.0' }, 'https://example.com/other.git', 'Other')],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "other")], path: "ios")'
+    ),
+    PACKAGE_NAME_DIFFERS('remote')
+  );
+});
+
+it('product dependency: rejects a .product package that differs from an explicit packageName', async () => {
+  await rejectsManifest(
+    withPackages(
+      REMOTE_PACKAGE,
+      [{ ...remote(), packageName: 'RemoteKit' }],
+      '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote")], path: "ios")'
+    ),
+    PACKAGE_NAME_DIFFERS('RemoteKit')
+  );
+});
+
+// SwiftPM only accepts a `package:` that names a declared package identity, so a real manifest
+// cannot spell a packageName that differs from the URL; the stubbed dump isolates the override.
+for (const [label, packageName, accepted] of [
+  ['honours an explicit packageName over the URL-derived name', 'RemoteKit', true],
+  ['does not fall back to the URL-derived name without packageName', undefined, false],
+] as const) {
+  it(`product dependency: ${label}`, async () => {
+    const input = fixture();
+    input.product.spmPackages = [{ ...remote(), packageName }];
+    const bin = stubSwiftDump(
+      input,
+      { dependencies: [{ product: ['Remote', 'remotekit', null, null] }] },
+      { dependencies: [{ sourceControl: [pinned] }] }
+    );
+    await withSwiftOnPath(bin, async () => {
+      if (accepted) {
+        assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, ['Remote']);
+      } else {
+        await rejectsManifest(input, PACKAGE_NAME_DIFFERS('remote'));
+      }
+    });
+  });
+}
+
+it('product dependency: rejects a .product naming only an externalDependencies entry', async () => {
+  const input = withPackages(
+    REMOTE_PACKAGE,
+    [remote()],
+    '.target(name: "Main", dependencies: [.product(name: "React", package: "remote")], path: "ios")'
+  );
+  input.product.externalDependencies = ['React'];
+  await rejectsManifest(
+    input,
+    /: it depends on \.product\(name: "React", package: "remote"\), but no spmPackages entry in spm\.config\.json has productName "React"\./
+  );
+});
+
+it('product dependency: rejects a .product named like a regular target in the product graph', async () => {
+  const input = fixture(
+    '.target(name: "Main", dependencies: [.product(name: "Helper", package: "remote")], path: "ios"), .target(name: "Helper", path: "helper")',
+    { 'ios/Main.swift': 'public let value = 1', 'helper/Helper.swift': 'public let helper = 1' },
+    { dependencies: REMOTE_PACKAGE, members: '"Main", "Helper"' }
+  );
+  input.product.spmPackages = [remote(undefined, undefined, 'Helper')];
+  await rejectsManifest(
+    input,
+    /: dependency \.product\(name: "Helper", package: "remote"\) has the same name as regular target "Helper", /
   );
 });
 
@@ -213,7 +672,7 @@ for (const [kind, declaration, imports] of [
   ['macro', '.macro(name: "Helper", path: "macro")', 'import CompilerPluginSupport'],
   ['system-library', '.systemLibrary(name: "Helper", path: "system")', ''],
 ] as const) {
-  it(`D-G unsupported target: rejects a declared ${kind} target`, async () => {
+  it(`rejects a declared ${kind} target`, async () => {
     await rejectsManifest(
       fixture(`.target(name: "Main", path: "ios"), ${declaration}`, undefined, { imports }),
       new RegExp(
@@ -224,7 +683,7 @@ for (const [kind, declaration, imports] of [
   });
 }
 
-it('D-G Tests directory: rejects uncovered nested test sources', async () => {
+it('rejects uncovered nested test sources', async () => {
   await rejectsManifest(
     fixture(undefined, {
       'ios/Main.swift': 'public let value = 1',
@@ -234,7 +693,7 @@ it('D-G Tests directory: rejects uncovered nested test sources', async () => {
   );
 });
 
-it('D-G mixed language: rejects Swift and C-family sources in one target', async () => {
+it('rejects Swift and C-family sources in one target', async () => {
   await rejectsManifest(
     fixture(undefined, {
       'ios/Main.swift': 'public let value = 1',
@@ -244,21 +703,21 @@ it('D-G mixed language: rejects Swift and C-family sources in one target', async
   );
 });
 
-it('D-G zero sources: rejects an empty resolved source set', async () => {
+it('rejects an empty resolved source set', async () => {
   await rejectsManifest(
     fixture(undefined, { 'ios/README.md': 'No sources' }),
     /: its resolved source set is empty, so the pipeline cannot infer its language\./
   );
 });
 
-it('D-G zero sources: an explicit empty sources array does not mean all files', async () => {
+it('an explicit empty sources array does not mean all files', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "ios", sources: [])'),
     /: its resolved source set is empty, so the pipeline cannot infer its language\./
   );
 });
 
-it('D-G Tests directory: explicit sources do not waive the exclude requirement', async () => {
+it('explicit sources do not waive the exclude requirement', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "ios", sources: ["Main.swift"])', {
       'ios/Main.swift': 'public let value = 1',
@@ -268,7 +727,7 @@ it('D-G Tests directory: explicit sources do not waive the exclude requirement',
   );
 });
 
-it('D-G Tests directory: excluding an ancestor covers nested tests', async () => {
+it('excluding an ancestor covers nested tests', async () => {
   const input = fixture('.target(name: "Main", path: "ios", exclude: ["Support"])', {
     'ios/Main.swift': 'public let value = 1',
     'ios/Support/Tests/Bad.swift': 'INVALID SWIFT',
@@ -276,7 +735,7 @@ it('D-G Tests directory: excluding an ancestor covers nested tests', async () =>
   assert.equal((await resolve(input.root, input.product))[0].type, 'swift');
 });
 
-it('A1 canonicalizes collapsed exclude paths', async () => {
+it('canonicalizes collapsed exclude paths', async () => {
   const input = fixture('.target(name: "Main", path: "ios", exclude: ["Folder/../Tests"])', {
     'ios/Folder/Keep.swift': 'public let keep = 1',
     'ios/Tests/Bad.swift': 'INVALID SWIFT',
@@ -286,7 +745,7 @@ it('A1 canonicalizes collapsed exclude paths', async () => {
   assert.deepEqual(target.exclude, ['src/Tests']);
 });
 
-it('A1 canonicalizes trailing separators in exclude paths', async () => {
+it('canonicalizes trailing separators in exclude paths', async () => {
   const input = fixture('.target(name: "Main", path: "ios", exclude: ["Tests/"])', {
     'ios/Tests/Bad.swift': 'INVALID SWIFT',
     'ios/Main.swift': 'public let value = 1',
@@ -295,7 +754,7 @@ it('A1 canonicalizes trailing separators in exclude paths', async () => {
   assert.deepEqual(target.exclude, ['src/Tests']);
 });
 
-it('A1 canonicalizes trailing separators in sources and public headers', async () => {
+it('canonicalizes trailing separators in sources and public headers', async () => {
   const input = fixture(
     '.target(name: "Main", path: "ios", sources: ["Chosen/"]), .target(name: "ObjC", path: "objc", publicHeadersPath: "headers/")',
     {
@@ -310,14 +769,14 @@ it('A1 canonicalizes trailing separators in sources and public headers', async (
   assert.equal(targets[1].publicHeadersPath, 'src/headers');
 });
 
-it('D-G zero sources: a target-directory exclude rejects an empty resolved source set', async () => {
+it('rejects the empty source set a target-directory exclude leaves', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "ios", exclude: ["."])'),
     /: its resolved source set is empty, so the pipeline cannot infer its language\. Provide a real target path and sources containing Swift, Objective-C, C, or C\+\+ files, and check that exclude does not remove them all\.$/
   );
 });
 
-it('D-G zero sources: excluding the target root empties an explicit source directory', async () => {
+it('rejects an explicit source directory emptied by excluding the target root', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "ios", exclude: ["."], sources: ["Chosen"])', {
       'ios/Chosen/Main.swift': 'public let value = 1',
@@ -327,7 +786,7 @@ it('D-G zero sources: excluding the target root empties an explicit source direc
 });
 
 // The real toolchain collapses `..` in resource paths before dump, so the raw uncollapsed shape needed to exercise this module's own canonicalisation can only be produced by a stub.
-it('A2 canonicalizes collapsed resource paths before inferring language', async () => {
+it('canonicalizes collapsed resource paths before inferring language', async () => {
   const input = fixture(
     '.target(name: "Main", path: "ios", resources: [.copy("Folder/../Assets")])',
     {
@@ -348,15 +807,34 @@ it('A2 canonicalizes collapsed resource paths before inferring language', async 
   );
 });
 
-it('D-G path: keeps rejecting collapsed paths that escape the target source directory', async () => {
+it('keeps rejecting collapsed paths that escape the target source directory', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "ios", exclude: ["Support/../../other"])'),
     /: path "Support\/\.\.\/\.\.\/other" escapes the target source directory\. Keep sources, excludes, resources, and public headers inside the target directory\.$/
   );
 });
 
+it('rejects a target path that escapes the package root through a symbolic link', async () => {
+  const input = fixture();
+  const outside = path.join(process.env.EXPO_ROOT_DIR!, 'outside');
+  fs.mkdirSync(outside);
+  fs.writeFileSync(path.join(outside, 'Main.swift'), 'public let value = 1');
+  fs.rmSync(path.join(input.root, 'ios'), { recursive: true });
+  fs.symlinkSync(outside, path.join(input.root, 'ios'));
+  await rejectsManifest(input, /escapes the package root/);
+});
+
+it('walks a target directory with cyclic symbolic links to completion', async () => {
+  const input = fixture();
+  // Two links make the unguarded walk exponential; one alone only repeats until ELOOP.
+  fs.symlinkSync('.', path.join(input.root, 'ios/first'));
+  fs.symlinkSync('.', path.join(input.root, 'ios/second'));
+  const [target] = await resolve(input.root, input.product);
+  assert.equal(target.type, 'swift');
+});
+
 for (const field of ['headerPattern', 'fileMapping'] as const) {
-  it(`D-G config layout: rejects ${field}`, async () => {
+  it(`rejects ${field} in spm.config.json`, async () => {
     const input = fixture();
     const target = input.product.targets[0] as SourceTarget;
     if (field === 'headerPattern') target.headerPattern = '**/*.h';
@@ -364,7 +842,7 @@ for (const field of ['headerPattern', 'fileMapping'] as const) {
     await rejectsManifest(input, new RegExp(`: spm.config\\.json declares ${field},`));
   });
 
-  it(`D-G config layout: rejects a declared empty ${field}`, async () => {
+  it(`rejects a declared empty ${field} in spm.config.json`, async () => {
     const input = fixture();
     const target = input.product.targets[0] as SourceTarget;
     if (field === 'headerPattern') target.headerPattern = '';
@@ -373,7 +851,7 @@ for (const field of ['headerPattern', 'fileMapping'] as const) {
   });
 }
 
-it('D-G config layout: rejects pattern, the glob a checked-in manifest never applies', async () => {
+it('rejects pattern, the glob a checked-in manifest never applies', async () => {
   const input = fixture();
   const target = input.product.targets[0] as SourceTarget;
   target.pattern = '*.swift';
@@ -388,7 +866,7 @@ it('D-G config layout: rejects pattern, the glob a checked-in manifest never app
   });
 });
 
-it('D-G config layout: rejects a declared empty pattern', async () => {
+it('rejects a declared empty pattern in spm.config.json', async () => {
   const input = fixture();
   const target = input.product.targets[0] as SourceTarget;
   target.pattern = '';
@@ -405,7 +883,7 @@ it('reports the moduleMapContent conflict with read-only manifest-owned headers'
   await rejectsManifest(input, /: spm\.config\.json declares moduleMapContent,/);
 });
 
-it('A4 merges sibling and external dependencies in equivalent Mode A order without duplicates', async () => {
+it('merges sibling and external dependencies in equivalent Mode A order without duplicates', async () => {
   const input = fixture(
     '.target(name: "Main", dependencies: ["Helper", "Helper"], path: "ios"), .target(name: "Helper", path: "helper")',
     { 'ios/Main.swift': 'public let value = 1', 'helper/Helper.swift': 'public let helper = 1' }
@@ -445,7 +923,7 @@ it('A4 merges sibling and external dependencies in equivalent Mode A order witho
   );
 });
 
-it('A6 stages real directories and compiles a source relying on generated exports', async () => {
+it('stages real directories and compiles a source relying on generated exports', async () => {
   const input = fixture(
     '.target(name: "Main", dependencies: ["Helper"], path: "ios", exclude: ["Tests"]), .target(name: "Helper", path: "helper")',
     {
@@ -500,15 +978,13 @@ it('A6 stages real directories and compiles a source relying on generated export
     fs.readFileSync(path.join(input.root, 'ios/UsesExports.swift'), 'utf8'),
     sourceBefore
   );
-  console.log(
-    'A6: swift package describe accepted; swift build compiled UsesExports.swift using generated Foundation and Helper exports.'
-  );
 });
 
-it('D-F1 keeps config settings and platforms while replacing structure and membership', async () => {
+it('keeps config settings and platforms while replacing structure and membership', async () => {
   const input = fixture(
     '.target(name: "Main", path: "ios", linkerSettings: [.linkedFramework("AppKit")]), .target(name: "Unused", path: "unused")',
-    { 'ios/Main.swift': 'public let value = 1', 'unused/Unused.swift': 'public let unused = 1' }
+    { 'ios/Main.swift': 'public let value = 1', 'unused/Unused.swift': 'public let unused = 1' },
+    { dependencies: REMOTE_PACKAGE }
   );
   const target = input.product.targets[0] as SourceTarget;
   target.compilerFlags = ['-DCONFIG_FLAG=1'];
@@ -516,19 +992,77 @@ it('D-F1 keeps config settings and platforms while replacing structure and membe
   input.product.spmPackages = [
     { url: 'https://example.com/remote.git', productName: 'Remote', version: { exact: '1.2.3' } },
   ];
-  input.product.targets.push({ type: 'objc', name: 'StaleConfigTarget', path: 'nonexistent' });
   const output = SPMGenerator.getSwiftPackagePath(input.pkg, input.product);
   await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Release');
   const manifest = fs.readFileSync(output, 'utf8');
   assert.match(manifest, /\.macOS\(\.v11\)/);
-  assert.doesNotMatch(manifest, /v13|AppKit|StaleConfigTarget|Unused/);
+  assert.doesNotMatch(manifest, /v13|AppKit|Unused/);
   assert.match(manifest, /\.linkedFramework\("Foundation"\)/);
   assert.match(manifest, /CONFIG_FLAG=1/);
   assert.match(manifest, /-lz/);
   assert.match(manifest, /\.package\(url: "https:\/\/example.com\/remote.git", exact: "1.2.3"\)/);
 });
 
-it('D-B checks only the package-root manifest', async () => {
+function rejectsLinkedFrameworks(target: string, offender: string) {
+  return (error: Error) => {
+    assert.ok(!(error instanceof TypeError), `Expected a diagnostic, got ${error.stack}`);
+    assert.ok(
+      error.message.startsWith(
+        `Cannot read "linkedFrameworks" for target "${target}": ${offender} is not`
+      ),
+      `Unexpected message: ${error.message}`
+    );
+    return true;
+  };
+}
+
+const generationStages = {
+  manifest: (input: ReturnType<typeof fixture>) =>
+    SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug'),
+  sources: (input: ReturnType<typeof fixture>) =>
+    SPMGenerator.generateIsolatedSourcesForTargetsAsync(input.pkg, input.product),
+};
+
+// Keep `null`: in Mode B it is the only value that fails if the checked-in-manifest read loses its
+// validation, because `?? []` would turn it into an empty list, while `["Foo.Bar"]` would still be
+// caught later by resolveSourceTarget.
+for (const linkedFrameworks of [null, ['Foo.Bar']]) {
+  const label = JSON.stringify(linkedFrameworks);
+  const offender = JSON.stringify(linkedFrameworks?.[0] ?? linkedFrameworks);
+
+  for (const mode of ['A', 'B'] as const) {
+    for (const [stage, generate] of Object.entries(generationStages)) {
+      it(`rejects linkedFrameworks ${label} on a source target in Mode ${mode} during ${stage} generation`, async () => {
+        const input = fixture();
+        if (mode === 'A') fs.rmSync(path.join(input.root, 'Package.swift'));
+        (input.product.targets[0] as SourceTarget).linkedFrameworks =
+          linkedFrameworks as unknown as string[];
+        await assert.rejects(generate(input), rejectsLinkedFrameworks('Main', offender));
+      });
+    }
+
+    it(`rejects linkedFrameworks ${label} on a framework target in Mode ${mode}`, async () => {
+      const input = fixture();
+      if (mode === 'A') fs.rmSync(path.join(input.root, 'Package.swift'));
+      fs.mkdirSync(path.join(input.root, 'Vendor.xcframework'));
+      input.product.targets = [
+        { type: 'swift', name: 'Main', path: 'ios', dependencies: ['Vendor'] },
+        {
+          type: 'framework',
+          name: 'Vendor',
+          path: 'Vendor.xcframework',
+          linkedFrameworks: linkedFrameworks as unknown as string[],
+        },
+      ];
+      await assert.rejects(
+        generationStages.manifest(input),
+        rejectsLinkedFrameworks('Vendor', offender)
+      );
+    });
+  }
+}
+
+it('checks only the package-root manifest', async () => {
   const input = fixture();
   fs.mkdirSync(path.join(input.root, 'apple'));
   fs.renameSync(
@@ -545,7 +1079,7 @@ it('D-B checks only the package-root manifest', async () => {
 });
 
 it('preserves resolved SPM product references and sibling transitive dependencies', async () => {
-  const input = fixture();
+  const input = fixture(undefined, undefined, { dependencies: REMOTE_PACKAGE });
   const target = input.product.targets[0] as SourceTarget;
   target.dependencies = ['Remote', 'Sibling'];
   input.product.spmPackages = [
@@ -643,9 +1177,32 @@ it('ignores stale config edges between source targets', async () => {
       'helper/Helper.swift': 'public let helper = 1',
     }
   );
-  (input.product.targets[0] as SourceTarget).dependencies = ['Helper', 'Stale'];
-  input.product.targets.push({ name: 'Stale', type: 'swift', path: 'old' });
+  (input.product.targets[0] as SourceTarget).dependencies = ['Helper'];
   assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, []);
+});
+
+for (const typo of [
+  { type: 'objc', name: 'Typo' },
+  { type: 'objc', name: 'Typo', path: 'ios/typo' },
+] as const) {
+  it(`rejects a config target the manifest does not declare${'path' in typo ? ', even with a path' : ''}`, async () => {
+    const input = fixture();
+    input.product.targets.push(typo);
+    await rejectsManifest(
+      input,
+      /spm\.config\.json declares this target, but the checked-in Package\.swift declares no regular target with that name/,
+      'Typo'
+    );
+  });
+}
+
+it('rejects a config target the manifest declares but the library product never reaches', async () => {
+  const input = fixture(
+    '.target(name: "Main", path: "ios"), .target(name: "Helper", path: "helper")',
+    { 'ios/Main.swift': 'public let value = 1', 'helper/Helper.swift': 'public let helper = 1' }
+  );
+  input.product.targets.push({ type: 'swift', name: 'Helper', path: 'helper' });
+  await rejectsManifest(input, /the library product "Fixture" does not reach it/, 'Helper');
 });
 
 it('uses the evaluated manifest rather than matching dependency text in comments', async () => {
@@ -665,14 +1222,14 @@ it('rejects conditional sibling dependencies instead of making them unconditiona
   );
 });
 
-it('R2 A1 rejects an undeclared Ghost dependency instead of silently dropping it', async () => {
+it('rejects an undeclared Ghost dependency instead of silently dropping it', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", dependencies: ["Ghost"], path: "ios")'),
     /unknown dependency "Ghost"/
   );
 });
 
-it('R2 A2 rejects a legal build-tool plugin application', async () => {
+it('rejects a legal build-tool plugin application', async () => {
   const input = fixture(
     `.target(name: "Main", path: "ios", plugins: [.plugin(name: "Generate")]),
      .plugin(name: "Generate", capability: .buildTool(), path: "plugin")`,
@@ -696,7 +1253,7 @@ it('R2 A2 rejects a legal build-tool plugin application', async () => {
   await rejectsManifest(input, /non-regular target "Generate" \(plugin\)/);
 });
 
-it('R2 A3 preserves the environment-owned vendored binary target in Mode B', async () => {
+it('preserves the environment-owned vendored binary target in Mode B', async () => {
   const input = fixture();
   fs.mkdirSync(path.join(input.root, 'Vendor.xcframework'));
   input.product.targets = [
@@ -717,7 +1274,7 @@ it('R2 A3 preserves the environment-owned vendored binary target in Mode B', asy
 });
 
 for (const stage of ['manifest', 'sources'] as const) {
-  it(`R2 A6 keeps third-party root manifests in Mode A during ${stage} generation`, async () => {
+  it(`keeps third-party root manifests in Mode A during ${stage} generation`, async () => {
     const input = fixture();
     const externalRoot = path.join(process.env.EXPO_ROOT_DIR!, 'node_modules/react-native-screens');
     fs.mkdirSync(path.dirname(externalRoot), { recursive: true });
@@ -742,7 +1299,7 @@ for (const stage of ['manifest', 'sources'] as const) {
   });
 }
 
-it('R2 S1 respects config publicHeaders false', async () => {
+it('respects config publicHeaders false', async () => {
   const input = fixture(undefined, { 'ios/Main.c': 'int value(void) { return 1; }' });
   input.product.targets = [{ type: 'objc', name: 'Main', path: 'ios', publicHeaders: false }];
   await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug');
@@ -758,7 +1315,7 @@ for (const rule of [
   'resources: [.copy("../other")]',
   'publicHeadersPath: "../other"',
 ]) {
-  it(`R2 S2 rejects paths escaping src for ${rule}`, async () => {
+  it(`rejects paths escaping src for ${rule}`, async () => {
     await rejectsManifest(
       fixture(`.target(name: "Main", path: "ios", ${rule})`, {
         'ios/Main.c': 'int value(void) { return 1; }',
@@ -769,7 +1326,7 @@ for (const rule of [
   });
 }
 
-it('R2 S3 escapes quoted source paths in emitted Swift', async () => {
+it('escapes quoted source paths in emitted Swift', async () => {
   const input = fixture('.target(name: "Main", path: "ios", sources: ["a\\"b.swift"])', {
     'ios/a"b.swift': 'public let value = 1',
   });
@@ -790,7 +1347,7 @@ it('R2 S3 escapes quoted source paths in emitted Swift', async () => {
   ]);
 });
 
-it('R2 S4 prunes Mode A staging and stale exports without touching real sources', async () => {
+it('prunes Mode A staging and stale exports without touching real sources', async () => {
   const input = fixture();
   (input.product.targets[0] as SourceTarget).path = 'ios';
   fs.renameSync(path.join(input.root, 'Package.swift'), path.join(input.root, 'Input.swift'));
@@ -812,7 +1369,7 @@ it('R2 S4 prunes Mode A staging and stale exports without touching real sources'
   );
 });
 
-it('R2 S7 dumps a package only once while resolving fresh product settings', async () => {
+it('dumps a package only once while resolving fresh product settings', async () => {
   const input = fixture();
   const bin = path.join(input.root, 'bin');
   const counter = path.join(input.root, 'swift-calls');
@@ -839,8 +1396,12 @@ it('R2 S7 dumps a package only once while resolving fresh product settings', asy
   }
 });
 
-it('R2 A1 retains by-name dependencies owned by externalDependencies and spmPackages', async () => {
-  const input = fixture('.target(name: "Main", dependencies: ["React", "Remote"], path: "ios")');
+it('retains by-name dependencies owned by externalDependencies and spmPackages', async () => {
+  const input = fixture(
+    '.target(name: "Main", dependencies: ["React", "Remote"], path: "ios")',
+    undefined,
+    { dependencies: REMOTE_PACKAGE }
+  );
   (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
   input.product.externalDependencies = ['React'];
   input.product.spmPackages = [
@@ -856,7 +1417,7 @@ it('R2 A1 retains by-name dependencies owned by externalDependencies and spmPack
   );
 });
 
-it('R2 A6 recognizes a scoped in-repo package', async () => {
+it('recognizes a scoped in-repo package', async () => {
   const input = fixture();
   const scopedRoot = path.join(process.env.EXPO_ROOT_DIR!, 'packages/@expo/fixture');
   fs.mkdirSync(path.dirname(scopedRoot), { recursive: true });
@@ -870,7 +1431,7 @@ it('R2 A6 recognizes a scoped in-repo package', async () => {
 });
 
 for (const directory of ['Templates', 'Tests']) {
-  it(`review 2 treats ${directory} containing C files as resources, not sources`, async () => {
+  it(`treats ${directory} containing C files as resources, not sources`, async () => {
     const input = fixture(
       `.target(name: "Main", path: "ios", resources: [.copy("${directory}")])`,
       {
@@ -884,7 +1445,7 @@ for (const directory of ['Templates', 'Tests']) {
   });
 }
 
-it('review 3 rejects packages/fixture symlinked to node_modules/third-party', () => {
+it('rejects packages/fixture symlinked to node_modules/third-party', () => {
   const input = fixture();
   const external = path.join(process.env.EXPO_ROOT_DIR!, 'node_modules/third-party');
   fs.mkdirSync(path.dirname(external), { recursive: true });
@@ -894,7 +1455,7 @@ it('review 3 rejects packages/fixture symlinked to node_modules/third-party', ()
 });
 
 for (const stage of ['manifest', 'sources'] as const) {
-  it(`review 3 keeps a real ExternalPackage workspace link in Mode A during ${stage} generation`, async () => {
+  it(`keeps a real ExternalPackage workspace link in Mode A during ${stage} generation`, async () => {
     const input = fixture();
     const repo = fs.realpathSync(process.env.EXPO_ROOT_DIR!);
     process.env.EXPO_ROOT_DIR = repo;
@@ -930,7 +1491,7 @@ for (const stage of ['manifest', 'sources'] as const) {
   });
 }
 
-it('review 3 recognizes PACKAGES on a case-insensitive filesystem', (t: TestContext) => {
+it('recognizes PACKAGES on a case-insensitive filesystem', (t: TestContext) => {
   const input = fixture();
   const flipped = path.join(process.env.EXPO_ROOT_DIR!, 'PACKAGES/fixture');
   // The precondition is a volume that folds case, which no platform check can stand in for: macOS
@@ -943,12 +1504,12 @@ it('review 3 recognizes PACKAGES on a case-insensitive filesystem', (t: TestCont
   assert.equal(resolveCheckedInManifestRoot(input.pkg), fs.realpathSync.native(input.root));
 });
 
-it('review 8 opts a first-party package carrying Package.swift into Mode B', () => {
+it('opts a first-party package carrying Package.swift into Mode B', () => {
   const input = fixture();
   assert.equal(resolveCheckedInManifestRoot(input.pkg), fs.realpathSync.native(input.root));
 });
 
-it('review 8 rejects a package when the packages root is inside node_modules', () => {
+it('rejects a package when the packages root is inside node_modules', () => {
   const input = fixture();
   const repoRoot = process.env.EXPO_ROOT_DIR!;
   const nestedRepoRoot = path.join(repoRoot, 'node_modules/expo');
@@ -959,7 +1520,7 @@ it('review 8 rejects a package when the packages root is inside node_modules', (
   assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
 });
 
-it('review 8 contains a package and a scoped package under the packages directory', () => {
+it('contains a package and a scoped package under the packages directory', () => {
   const root = '/repo/packages';
   assert.equal(isFirstPartyPackagePath(root, '/repo/packages/fixture'), true);
   assert.equal(isFirstPartyPackagePath(root, '/repo/packages/@scope/fixture'), true);
@@ -971,23 +1532,31 @@ for (const [reason, candidate] of [
   ['a node_modules directory under a scope', '/repo/packages/@scope/node_modules'],
   ['a package nested below the scope level', '/repo/packages/@scope/fixture/nested'],
 ] as const) {
-  it(`review 8 rejects ${reason}`, () => {
+  it(`rejects ${reason}`, () => {
     assert.equal(isFirstPartyPackagePath('/repo/packages', candidate), false);
   });
 }
 
-function captureDebugLines(run: () => void): string[] {
+function captureConsoleLines(level: 'debug' | 'warn', run: () => void): string[] {
   const lines: string[] = [];
-  const original = console.debug;
-  console.debug = (...args: unknown[]) => {
+  const original = console[level];
+  console[level] = (...args: unknown[]) => {
     lines.push(args.map((argument) => String(argument)).join(' '));
   };
   try {
     run();
   } finally {
-    console.debug = original;
+    console[level] = original;
   }
   return lines;
+}
+
+function captureDebugLines(run: () => void): string[] {
+  return captureConsoleLines('debug', run);
+}
+
+function captureWarnLines(run: () => void): string[] {
+  return captureConsoleLines('warn', run);
 }
 
 /** A second repository root beside the fixture's own, standing in for an EXPO_ROOT_DIR that points
@@ -999,11 +1568,11 @@ function otherRepositoryRoot(): string {
   return root;
 }
 
-it('review 10 rejects a sibling that differs from the packages directory only in case', () => {
+it('rejects a sibling that differs from the packages directory only in case', () => {
   assert.equal(isFirstPartyPackagePath('/repo/packages', '/repo/PACKAGES/fixture'), false);
 });
 
-it('review 10 answers false when the packages directory does not exist', () => {
+it('answers false when the packages directory does not exist', () => {
   const input = fixture();
   const missing = path.join(input.root, 'missing-checkout');
   process.env.EXPO_ROOT_DIR = missing;
@@ -1016,11 +1585,11 @@ it('review 10 answers false when the packages directory does not exist', () => {
   );
 });
 
-it('review 10 names both canonical paths when containment rejects', () => {
+it('names both canonical paths when containment rejects', () => {
   const input = fixture();
   const other = otherRepositoryRoot();
   process.env.EXPO_ROOT_DIR = other;
-  const lines = captureDebugLines(() => {
+  const lines = captureWarnLines(() => {
     assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
   });
   const logged = lines.join('\n');
@@ -1030,12 +1599,32 @@ it('review 10 names both canonical paths when containment rejects', () => {
   ]) {
     assert.ok(
       logged.includes(canonical),
-      `Expected a debug line naming ${canonical}, got ${JSON.stringify(lines)}`
+      `Expected a warning naming ${canonical}, got ${JSON.stringify(lines)}`
     );
   }
 });
 
-it('review 10 rejects a package directory symlinked outside the packages directory', () => {
+it('warns once per package when containment falls back to a generated manifest', () => {
+  const input = fixture();
+  const other = otherRepositoryRoot();
+  process.env.EXPO_ROOT_DIR = other;
+  const lines = captureWarnLines(() => {
+    assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
+    assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
+  });
+  assert.equal(lines.length, 1, `Expected exactly one warning, got ${JSON.stringify(lines)}`);
+  for (const canonical of [
+    fs.realpathSync.native(path.join(other, 'packages')),
+    fs.realpathSync.native(input.root),
+  ]) {
+    assert.ok(
+      lines[0].includes(canonical),
+      `Expected the warning to name ${canonical}: ${lines[0]}`
+    );
+  }
+});
+
+it('rejects a package directory symlinked outside the packages directory', () => {
   const input = fixture();
   const outside = path.join(process.env.EXPO_ROOT_DIR!, 'vendor/fixture');
   fs.mkdirSync(path.dirname(outside), { recursive: true });
@@ -1044,7 +1633,7 @@ it('review 10 rejects a package directory symlinked outside the packages directo
   assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
 });
 
-it('review 10 reports the package directory that does not resolve', () => {
+it('reports the package directory that does not resolve', () => {
   const input = fixture();
   input.pkg.path = path.join(process.env.EXPO_ROOT_DIR!, 'packages/absent');
   const lines = captureDebugLines(() => {
@@ -1056,7 +1645,7 @@ it('review 10 reports the package directory that does not resolve', () => {
   );
 });
 
-it('review 11 resolves a package reached through lexical .. traversal to its canonical directory', () => {
+it('resolves a package reached through lexical .. traversal to its canonical directory', () => {
   const input = fixture();
   const repoRoot = process.env.EXPO_ROOT_DIR!;
   fs.mkdirSync(path.join(repoRoot, 'packages/anchor'));
@@ -1064,7 +1653,7 @@ it('review 11 resolves a package reached through lexical .. traversal to its can
   assert.equal(resolveCheckedInManifestRoot(input.pkg), fs.realpathSync.native(input.root));
 });
 
-it('review 11 rejects a package path whose lexical and canonical spellings disagree', () => {
+it('rejects a package path whose lexical and canonical spellings disagree', () => {
   const input = fixture();
   const repoRoot = process.env.EXPO_ROOT_DIR!;
   fs.rmSync(path.join(input.root, 'Package.swift'));
@@ -1109,7 +1698,7 @@ let package = Package(
   return input;
 }
 
-it('review 11 stages the canonical manifest when the package path resolves through a symlink', async () => {
+it('stages the canonical manifest when the package path resolves through a symlink', async () => {
   const input = fixtureBehindSymlink();
   await SPMGenerator.generateIsolatedSourcesForTargetsAsync(input.pkg, input.product);
   const generated = SPMGenerator.getGeneratedProductFilesPath(input.pkg, input.product);
@@ -1120,7 +1709,7 @@ it('review 11 stages the canonical manifest when the package path resolves throu
   assert.equal(fs.existsSync(path.join(generated, 'Decoy')), false);
 });
 
-it('review 11 writes the canonical manifest targets when the package path resolves through a symlink', async () => {
+it('writes the canonical manifest targets when the package path resolves through a symlink', async () => {
   const input = fixtureBehindSymlink();
   const output = path.join(input.pkg.buildPath, 'generated/Fixture/Package.swift');
   await SPMPackage.writePackageSwiftAsync(
@@ -1136,7 +1725,7 @@ it('review 11 writes the canonical manifest targets when the package path resolv
   assert.doesNotMatch(manifest, /Decoy/);
 });
 
-it('review 11 rejects a dependency tree nested inside a first-party package', () => {
+it('rejects a dependency tree nested inside a first-party package', () => {
   const input = fixture();
   const nested = path.join(input.root, 'node_modules/evil');
   fs.mkdirSync(nested, { recursive: true });
@@ -1145,7 +1734,7 @@ it('review 11 rejects a dependency tree nested inside a first-party package', ()
   assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
 });
 
-it('review 11 says what to do when the package directory does not resolve', () => {
+it('says what to do when the package directory does not resolve', () => {
   const input = fixture();
   input.pkg.path = path.join(process.env.EXPO_ROOT_DIR!, 'packages/absent');
   const lines = captureDebugLines(() => {
@@ -1154,16 +1743,16 @@ it('review 11 says what to do when the package directory does not resolve', () =
   assertLoggedNextStep(lines, /did not resolve/);
 });
 
-it('review 11 says what to do when the package is outside the packages directory', () => {
+it('says what to do when the package is outside the packages directory', () => {
   const input = fixture();
   process.env.EXPO_ROOT_DIR = otherRepositoryRoot();
-  const lines = captureDebugLines(() => {
+  const lines = captureWarnLines(() => {
     assert.equal(resolveCheckedInManifestRoot(input.pkg), null);
   });
   assertLoggedNextStep(lines, /is not a package directory under/);
 });
 
-it('review 10 opts a scoped first-party package into Mode B', () => {
+it('opts a scoped first-party package into Mode B', () => {
   const input = fixture();
   const scoped = path.join(process.env.EXPO_ROOT_DIR!, 'packages/@expo/fixture');
   fs.mkdirSync(path.dirname(scoped), { recursive: true });
@@ -1172,7 +1761,7 @@ it('review 10 opts a scoped first-party package into Mode B', () => {
   assert.equal(resolveCheckedInManifestRoot(input.pkg), fs.realpathSync.native(scoped));
 });
 
-it('review 4 rejects a target path escaping the package root', async () => {
+it('rejects a target path escaping the package root', async () => {
   const input = fixture('.target(name: "Main", path: "../secret")', {
     '../secret/Value.swift': 'public let value = 1',
   });
@@ -1180,7 +1769,7 @@ it('review 4 rejects a target path escaping the package root', async () => {
 });
 
 for (const rule of ['publicHeadersPath: "/abs/x"']) {
-  it(`review 6 rejects absolute paths for ${rule}`, async () => {
+  it(`rejects absolute paths for ${rule}`, async () => {
     await rejectsManifest(
       fixture(`.target(name: "Main", path: "ios", ${rule})`),
       /path "\/abs\/x" escapes the target source directory/
@@ -1209,12 +1798,17 @@ exec '${swift}' "$@"
   return { bin, counter };
 }
 
-function stubSwiftDump(input: ReturnType<typeof fixture>, target: Record<string, unknown>) {
+function stubSwiftDump(
+  input: ReturnType<typeof fixture>,
+  target: Record<string, unknown>,
+  manifest: Record<string, unknown> = {}
+) {
   const bin = path.join(input.root, 'bin');
   const dumped = {
-    name: 'Fixture',
+    name: 'fixture',
     products: [{ name: 'Fixture', type: { library: ['automatic'] }, targets: ['Main'] }],
     targets: [{ name: 'Main', type: 'regular', path: 'ios', ...target }],
+    ...manifest,
   };
   fs.mkdirSync(bin, { recursive: true });
   const script = `#!/bin/sh\ncat <<'JSON'\n${JSON.stringify(dumped)}\nJSON\n`;
@@ -1238,7 +1832,7 @@ for (const [rule, dumped] of [
   ['resources', { resources: [{ path: '/abs/x', rule: { copy: {} } }] }],
   ['publicHeadersPath', { publicHeadersPath: '/abs/x' }],
 ] as const) {
-  it(`review 8 rejects an absolute ${rule} path reported by a dumped manifest`, async () => {
+  it(`rejects an absolute ${rule} path reported by a dumped manifest`, async () => {
     const input = fixture();
     await withSwiftOnPath(stubSwiftDump(input, dumped), () =>
       rejectsManifest(input, /path "\/abs\/x" escapes the target source directory/)
@@ -1248,8 +1842,8 @@ for (const [rule, dumped] of [
 
 // Swift rejects absolute sources, excludes and resources itself, so our guard never sees them
 // from a real manifest. It stays as defence in depth for dumps we do not control; the four
-// `review 8 rejects an absolute ... path reported by a dumped manifest` tests above reach it.
-it('review 8 surfaces Swift rejecting an absolute sources entry before the guard runs', async () => {
+// `rejects an absolute ... path reported by a dumped manifest` tests above reach it.
+it('surfaces Swift rejecting an absolute sources entry before the guard runs', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "ios", sources: ["/abs/x"])'),
     /Swift Package Manager could not read .*fixture\/Package\.swift: swift package .* non-zero code/
@@ -1260,7 +1854,7 @@ it('review 8 surfaces Swift rejecting an absolute sources entry before the guard
   assert.equal((await resolve(control.root, control.product))[0].name, 'Main');
 });
 
-it('review 6 retries a failed dump without changing the manifest stamp', async () => {
+it('retries a failed dump without changing the manifest stamp', async () => {
   const input = fixture();
   const { bin, counter } = failFirstSwiftDump(input);
   const originalPath = process.env.PATH;
@@ -1274,7 +1868,7 @@ it('review 6 retries a failed dump without changing the manifest stamp', async (
   }
 });
 
-it('review 7 Mode A staging writes framework and internal dependency exports', async () => {
+it('Mode A staging writes framework and internal dependency exports', async () => {
   const input = fixture(undefined, {
     'ios/Main.swift': 'public let value = 1',
     'helper/Helper.swift': 'public let helper = 1',
@@ -1300,7 +1894,7 @@ it('review 7 Mode A staging writes framework and internal dependency exports', a
   assert.equal(fs.existsSync(path.join(generated, 'Main/src')), false);
 });
 
-it('review 7 staging retries a transient failed dump before returning to Mode A', async () => {
+it('staging retries a transient failed dump before returning to Mode A', async () => {
   const input = fixture();
   (input.product.targets[0] as SourceTarget).path = 'ios';
   const { bin, counter } = failFirstSwiftDump(input);
@@ -1329,7 +1923,7 @@ it('review 7 staging retries a transient failed dump before returning to Mode A'
 });
 
 for (const mutation of ['missing remediation', 'wrong quoted target'] as const) {
-  it(`review 5 rejects diagnostics with ${mutation}`, () => {
+  it(`rejects diagnostics with ${mutation}`, () => {
     const target = mutation === 'wrong quoted target' ? 'Wrong' : 'Main';
     const remediation =
       mutation === 'missing remediation'

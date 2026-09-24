@@ -4,14 +4,22 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 
+import { type CheckedInResolvedTarget, isCheckedInResolvedTarget } from './CheckedInManifest';
+import type { BuildFlavor } from './Prebuilder.types';
 import type { ObjcTarget, SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
+  applyCheckedInTarget,
+  assertUniqueTargetNames,
   buildCSettings,
+  buildLinkerSettings,
   buildSwiftSettings,
   expandTransitiveExternalDeps,
   findSiblingProductDependencies,
+  resolveCompilerFlags,
+  SPMPackage,
   type ExternalDepResolver,
 } from './SPMPackage';
+import type { ResolvedTarget } from './SPMPackage.types';
 
 /** Builds an ArtifactPaths fixture whose React cache slot we then populate per-format. */
 function makeArtifactPaths(cachePath: string, version: string) {
@@ -389,4 +397,395 @@ describe('buildCSettings include directories', () => {
       }
     );
   });
+});
+
+describe('applyCheckedInTarget', () => {
+  function resolvedTarget(overrides: Partial<ResolvedTarget> = {}): ResolvedTarget {
+    return {
+      type: 'swift',
+      name: 'ExpoHaptics',
+      path: 'ios',
+      dependencies: ['ExpoModulesCore'],
+      linkedFrameworks: ['UIKit'],
+      publicHeadersPath: 'ios/include',
+      cSettings: ['-I/repo/packages/expo-haptics/ios'],
+      cxxSettings: ['-std=c++20'],
+      swiftSettings: ['-DEXPO_CONFIGURATION_DEBUG'],
+      linkerSettings: ['-ObjC'],
+      resources: [{ path: 'ios/Assets', rule: 'copy' }],
+      ...overrides,
+    };
+  }
+
+  function checkedInTarget(
+    overrides: Partial<CheckedInResolvedTarget> = {}
+  ): CheckedInResolvedTarget {
+    return {
+      type: 'objc',
+      name: 'ExpoHaptics',
+      path: 'ExpoHaptics',
+      sourceRoot: '/repo/packages/expo-haptics/ios',
+      productMember: true,
+      sources: ['src'],
+      exclude: ['src/Tests'],
+      dependencies: ['ManifestOnly'],
+      linkedFrameworks: ['CoreHaptics'],
+      resources: [],
+      publicHeadersPath: 'src/include',
+      ...overrides,
+    };
+  }
+
+  it('takes the manifest spelling for every key the manifest owns', () => {
+    const merged = applyCheckedInTarget(resolvedTarget(), checkedInTarget());
+    assert.equal(merged.type, 'objc');
+    assert.equal(merged.path, 'ExpoHaptics');
+    assert.equal(merged.publicHeadersPath, 'src/include');
+    assert.deepEqual(merged.linkedFrameworks, ['CoreHaptics']);
+    assert.deepEqual(merged.resources, []);
+    // Mode B is discriminated on sourceRoot and sources alone, and five call sites gate the
+    // whole checked-in layout on it: dropping either key emits the package with Mode A spelling.
+    assert.ok(isCheckedInResolvedTarget(merged), 'The merged target must still read as Mode B');
+    assert.equal(merged.sourceRoot, '/repo/packages/expo-haptics/ios');
+    assert.deepEqual(merged.sources, ['src']);
+    assert.deepEqual(merged.exclude, ['src/Tests']);
+    assert.equal(merged.productMember, true);
+  });
+
+  it('leaves a key the manifest does not own to the resolved target', () => {
+    const merged = applyCheckedInTarget(
+      resolvedTarget(),
+      checkedInTarget({ includeDirectories: ['src/include'] })
+    );
+    // Whatever the manifest reader grows next must not silently replace what the config
+    // resolved: only the listed keys cross over, everything else stays where it was computed.
+    assert.ok(
+      !('includeDirectories' in merged),
+      `A key outside the merged set must not cross over: ${JSON.stringify(merged)}`
+    );
+  });
+
+  it('keeps the dependencies and compiler settings the config resolved', () => {
+    const merged = applyCheckedInTarget(resolvedTarget(), checkedInTarget());
+    assert.deepEqual(merged.dependencies, ['ExpoModulesCore']);
+    assert.deepEqual(merged.cSettings, ['-I/repo/packages/expo-haptics/ios']);
+    assert.deepEqual(merged.cxxSettings, ['-std=c++20']);
+    assert.deepEqual(merged.swiftSettings, ['-DEXPO_CONFIGURATION_DEBUG']);
+    assert.deepEqual(merged.linkerSettings, ['-ObjC']);
+  });
+
+  it('clears a resolved public headers path the manifest leaves undefined', () => {
+    const merged = applyCheckedInTarget(
+      resolvedTarget({ publicHeadersPath: 'ios/include' }),
+      checkedInTarget({ publicHeadersPath: undefined })
+    );
+    // A Swift target, and any target opting out with publicHeaders: false, carries the key
+    // present and undefined; keeping the config's path there would export headers Mode B does not.
+    assert.ok('publicHeadersPath' in merged, 'The manifest owns the key even when it has no value');
+    assert.equal(merged.publicHeadersPath, undefined);
+  });
+});
+
+describe('assertUniqueTargetNames', () => {
+  type TargetNames = Parameters<typeof assertUniqueTargetNames>[1];
+  const noNames: TargetNames = { frameworkTargets: [], siblingProducts: [], sourceTargets: [] };
+
+  function expectCollision(
+    names: Partial<TargetNames>,
+    collidingName: string,
+    roles: [string, string]
+  ) {
+    assert.throws(
+      () => assertUniqueTargetNames('FixtureProduct', { ...noNames, ...names }),
+      (error: Error) => {
+        assert.match(error.message, new RegExp(`"${collidingName}"`));
+        assert.match(error.message, /"FixtureProduct"/);
+        assert.match(error.message, new RegExp(`both a ${roles[0]} and a ${roles[1]}`));
+        assert.match(error.message, /SwiftPM requires/);
+        assert.match(error.message, /spm\.config\.json/);
+        return true;
+      }
+    );
+  }
+
+  it('rejects a source target named like a vendored framework target', () => {
+    expectCollision({ frameworkTargets: ['Shared'], sourceTargets: ['Shared'] }, 'Shared', [
+      'vendored framework target',
+      'source target',
+    ]);
+  });
+
+  it('rejects a source target named like a sibling product', () => {
+    expectCollision({ siblingProducts: ['Shared'], sourceTargets: ['Shared'] }, 'Shared', [
+      'sibling product',
+      'source target',
+    ]);
+  });
+
+  it('rejects two source targets with the same name', () => {
+    expectCollision({ sourceTargets: ['Core', 'Shared', 'Shared'] }, 'Shared', [
+      'source target',
+      'source target',
+    ]);
+  });
+
+  it('rejects a sibling product named like a vendored framework target', () => {
+    expectCollision({ frameworkTargets: ['Shared'], siblingProducts: ['Shared'] }, 'Shared', [
+      'vendored framework target',
+      'sibling product',
+    ]);
+  });
+
+  it('accepts distinct names across every role', () => {
+    assert.doesNotThrow(() =>
+      assertUniqueTargetNames('FixtureProduct', {
+        frameworkTargets: ['Vendored'],
+        siblingProducts: ['Sibling'],
+        sourceTargets: ['Core', 'Extras'],
+      })
+    );
+  });
+
+  it('stops Package.swift generation instead of dropping the colliding source target', async () => {
+    const packageRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-target-names-'));
+    try {
+      const product: SPMProduct = {
+        name: 'FixtureProduct',
+        podName: 'FixtureProduct',
+        platforms: ['iOS(.v15)'],
+        targets: [
+          { type: 'framework', name: 'Shared', path: 'Shared.xcframework' },
+          { type: 'swift', name: 'Shared', path: 'ios' },
+        ],
+      };
+      await assert.rejects(
+        SPMPackage.writePackageSwiftAsync(
+          {
+            path: packageRoot,
+            buildPath: path.join(packageRoot, '.build'),
+            packageName: 'fixture-package',
+            packageVersion: '1.0.0',
+            getSwiftPMConfiguration: () => ({ products: [product] }),
+          },
+          product,
+          'Debug',
+          path.join(packageRoot, '.build', 'Package.swift'),
+          packageRoot
+        ),
+        /"Shared" as both a vendored framework target and a source target/
+      );
+    } finally {
+      fs.rmSync(packageRoot, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('resolveCompilerFlags', () => {
+  /** Asserts the thrown diagnostic names the target and points at the offending key or value. */
+  function expectRejection(flags: unknown, offender: RegExp, buildType: BuildFlavor = 'Debug') {
+    assert.throws(
+      () => resolveCompilerFlags(flags, buildType, 'FixtureSqlite'),
+      (error: Error) => {
+        assert.ok(!(error instanceof TypeError), `Expected a diagnostic, got ${error.stack}`);
+        assert.match(error.message, /target "FixtureSqlite"/);
+        assert.match(error.message, offender);
+        return true;
+      }
+    );
+  }
+
+  it('applies a bare array to both C and C++', () => {
+    assert.deepEqual(resolveCompilerFlags(['-DFOO=1'], 'Debug', 'FixtureSqlite'), {
+      c: ['-DFOO=1'],
+      cxx: ['-DFOO=1'],
+    });
+  });
+
+  it('applies common flags to both build flavors', () => {
+    const flags = { common: ['-DSQLITE_ENABLE_SESSION'] };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DSQLITE_ENABLE_SESSION'],
+      cxx: ['-DSQLITE_ENABLE_SESSION'],
+    });
+    assert.deepEqual(resolveCompilerFlags(flags, 'Release', 'FixtureSqlite'), {
+      c: ['-DSQLITE_ENABLE_SESSION'],
+      cxx: ['-DSQLITE_ENABLE_SESSION'],
+    });
+  });
+
+  it('applies debug flags only to a Debug build', () => {
+    const flags = { common: ['-DCOMMON'], debug: ['-DDEBUG_ONLY'] };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DCOMMON', '-DDEBUG_ONLY'],
+      cxx: ['-DCOMMON', '-DDEBUG_ONLY'],
+    });
+    assert.deepEqual(resolveCompilerFlags(flags, 'Release', 'FixtureSqlite'), {
+      c: ['-DCOMMON'],
+      cxx: ['-DCOMMON'],
+    });
+  });
+
+  it('applies release flags only to a Release build', () => {
+    const flags = { common: ['-DCOMMON'], release: ['-DRELEASE_ONLY'] };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Release', 'FixtureSqlite'), {
+      c: ['-DCOMMON', '-DRELEASE_ONLY'],
+      cxx: ['-DCOMMON', '-DRELEASE_ONLY'],
+    });
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DCOMMON'],
+      cxx: ['-DCOMMON'],
+    });
+  });
+
+  it('splits a per-language variant between C and C++', () => {
+    const flags = { common: { c: ['-DC_ONLY'] }, debug: { cxx: ['-std=c++20'] } };
+    assert.deepEqual(resolveCompilerFlags(flags, 'Debug', 'FixtureSqlite'), {
+      c: ['-DC_ONLY'],
+      cxx: ['-std=c++20'],
+    });
+  });
+
+  it('accepts an empty object as no flags', () => {
+    assert.deepEqual(resolveCompilerFlags({}, 'Debug', 'FixtureSqlite'), { c: [], cxx: [] });
+  });
+
+  it('accepts an object whose only variant does not apply to this build', () => {
+    assert.deepEqual(
+      resolveCompilerFlags({ debug: ['-DDEBUG_ONLY'] }, 'Release', 'FixtureSqlite'),
+      {
+        c: [],
+        cxx: [],
+      }
+    );
+  });
+
+  it('rejects the per-language shape written at the top level', () => {
+    expectRejection({ c: ['-DFOO'] }, /"c"/);
+  });
+
+  it('rejects a misspelled build variant', () => {
+    expectRejection({ debugg: ['-DFOO'] }, /"debugg"/);
+  });
+
+  it('rejects an unknown key inside a variant', () => {
+    expectRejection({ common: { swift: ['-DFOO'] } }, /"swift"/);
+  });
+
+  it('rejects a string where a list of flags belongs', () => {
+    expectRejection({ common: '-DFOO' }, /"-DFOO"/);
+  });
+
+  it('rejects a non-string item in a flag list', () => {
+    expectRejection({ common: [1] }, /contains 1, which is not a flag string/);
+  });
+
+  it('rejects a malformed variant that this build would not apply', () => {
+    // A Release-only mistake must not wait for a Release build to surface.
+    expectRejection({ release: { swift: ['-DFOO'] } }, /"swift"/, 'Debug');
+  });
+
+  it('spells out the accepted shapes so the config can be fixed from the message alone', () => {
+    assert.throws(
+      () => resolveCompilerFlags({ debugg: ['-DFOO'] }, 'Debug', 'FixtureSqlite'),
+      (error: Error) => {
+        assert.match(error.message, /"compilerFlags": \["-DFOO=1"\]/);
+        assert.match(error.message, /"common"/);
+        assert.match(error.message, /"debug"/);
+        assert.match(error.message, /"release"/);
+        assert.match(error.message, /"c": \[\.\.\.\], "cxx": \[\.\.\.\]/);
+        assert.match(error.message, /spm\.config\.json/);
+        return true;
+      }
+    );
+  });
+});
+
+describe('malformed compilerFlags reaching the resolver from its call sites', () => {
+  // JSON can hold a falsy malformed value, and a truthiness guard skips validation for every one
+  // of them — the same silent drop the validation exists to stop, moved up one frame.
+  const falsyMalformed = [null, '', 0, false];
+
+  for (const value of falsyMalformed) {
+    const label = JSON.stringify(value) ?? String(value);
+
+    it(`rejects ${label} on a Swift target`, () => {
+      assert.throws(
+        () =>
+          buildSwiftSettings(['ExpoModulesCore'], null, '/tmp/pkg', 'Debug', {
+            type: 'swift',
+            name: 'FixtureSwift',
+            path: 'ios',
+            compilerFlags: value,
+          } as unknown as SwiftTarget),
+        /Cannot read "compilerFlags" for target "FixtureSwift"/
+      );
+    });
+
+    it(`rejects ${label} on an ObjC target`, () => {
+      assert.throws(
+        () =>
+          buildCSettings(
+            {
+              type: 'objc',
+              name: 'FixtureObjC',
+              path: 'ios',
+              compilerFlags: value,
+            } as unknown as ObjcTarget,
+            [],
+            null,
+            '/repo/packages/precompile/.build/fixture/spm',
+            'Fixture',
+            '1.0.0',
+            '/repo/packages/fixture',
+            '/repo/packages/precompile/.build/fixture',
+            'Debug'
+          ),
+        /Cannot read "compilerFlags" for target "FixtureObjC"/
+      );
+    });
+  }
+});
+
+describe('buildLinkerSettings', () => {
+  it('returns undefined when there are no frameworks and no flags', () => {
+    assert.equal(buildLinkerSettings([], undefined, 'FixtureLinker'), undefined);
+    assert.equal(buildLinkerSettings([], [], 'FixtureLinker'), undefined);
+  });
+
+  it('emits linked frameworks before the unsafe linker flags', () => {
+    assert.deepEqual(buildLinkerSettings(['Foundation'], ['-lz', '-all_load'], 'FixtureLinker'), [
+      '.linkedFramework("Foundation")',
+      '.unsafeFlags(["-lz", "-all_load"])',
+    ]);
+  });
+
+  it('escapes quotes and backslashes in a linker flag', () => {
+    assert.deepEqual(buildLinkerSettings([], ['-Wl,-foo="a\\b"'], 'FixtureLinker'), [
+      '.unsafeFlags(["-Wl,-foo=\\"a\\\\b\\""])',
+    ]);
+  });
+
+  const malformed: [string, unknown, RegExp][] = [
+    ['an object', { common: ['-lz'] }, /\{"common":\["-lz"\]\}/],
+    ['a bare string', '-lz', /"-lz"/],
+    ['a non-string entry', [1], /contains 1/],
+    ['null', null, /is null/],
+    ['an empty string', '', /is ""/],
+    ['zero', 0, /is 0/],
+    ['false', false, /is false/],
+  ];
+
+  for (const [description, value, offender] of malformed) {
+    it(`rejects ${description} with a diagnostic naming the target`, () => {
+      assert.throws(
+        () => buildLinkerSettings([], value, 'FixtureLinker'),
+        (error: Error) => {
+          assert.ok(!(error instanceof TypeError), `Expected a diagnostic, got ${error.stack}`);
+          assert.match(error.message, /Cannot read "linkerFlags" for target "FixtureLinker"/);
+          assert.match(error.message, offender);
+          return true;
+        }
+      );
+    });
+  }
 });

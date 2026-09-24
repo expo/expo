@@ -2,98 +2,123 @@
 
 import ExpoModulesCore
 
-private typealias SQLiteColumnNames = [String]
 private typealias SQLiteColumnValues = [Any]
 private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 private let MEMORY_DB_NAME = ":memory:"
 
 private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
 
-public final class SQLiteModule: Module {
+// `@unchecked Sendable`: the `@JS(.concurrent)` members send the module off the JavaScript thread, which
+// Swift 6 mode allows only for a `Sendable` module. The mutable state is either guarded by `lockQueue` or
+// only read off the JavaScript thread (`hasListeners`).
+@ExpoModule("ExpoSQLite")
+public final class SQLiteModule: Module, @unchecked Sendable {
   // Store unmanaged (SQLiteModule, Database) pairs for sqlite callbacks,
   // will release the pair when `closeDatabase` is called.
   private var contextPairs = [Unmanaged<AnyObject>]()
 
   private static let lockQueue = DispatchQueue(label: "expo.modules.sqlite.lockQueue")
   private var cachedDatabases = [NativeDatabase]()
-  private var hasListeners = false
+  private(set) var hasListeners = false
+
+  @JS
+  var defaultDatabaseDirectory: String? {
+    #if os(tvOS)
+    return appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
+    #else
+    return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
+    #endif
+  }
+
+  @JS
+  var bundledExtensions: [String: [String: String?]] {
+    var bundledExtensions: [String: [String: String?]] = [:]
+    #if WITH_SQLITE_VEC
+    bundledExtensions["sqlite-vec"] = [
+      "libPath": Bundle(identifier: "sqlite-vec")?.path(forResource: "vec", ofType: ""),
+      "entryPoint": "sqlite3_vec_init"
+    ]
+    #endif
+    return bundledExtensions
+  }
+
+  @Event("onDatabaseChange")
+  var onDatabaseChange: (DatabaseChangeEvent) -> Void
+
+  public override func didStartListening(event: String) {
+    hasListeners = true
+  }
+
+  public override func didStopListening(event: String) {
+    hasListeners = false
+  }
+
+  public override func willDestroy() {
+    removeAllCachedDatabases().forEach {
+      do {
+        try closeDatabase($0)
+      } catch {}
+    }
+  }
+
+  // MARK: - Module functions
+
+  @JS(.concurrent)
+  func deleteDatabaseAsync(databasePath: String) async throws {
+    try deleteDatabase(databasePath: databasePath)
+  }
+
+  @JS
+  func deleteDatabaseSync(databasePath: String) throws {
+    try deleteDatabase(databasePath: databasePath)
+  }
+
+  @JS(.concurrent)
+  func importAssetDatabaseAsync(databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) async throws {
+    try importAssetDatabase(databasePath: databasePath, assetDatabasePath: assetDatabasePath, forceOverwrite: forceOverwrite)
+  }
+
+  @JS(.concurrent)
+  func ensureDatabasePathExistsAsync(databasePath: String) async throws {
+    _ = try ensureDatabasePathExists(path: databasePath)
+  }
+
+  @JS
+  func ensureDatabasePathExistsSync(databasePath: String) throws {
+    _ = try ensureDatabasePathExists(path: databasePath)
+  }
+
+  @JS(.concurrent)
+  func backupDatabaseAsync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: String,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: String
+  ) async throws {
+    try backupDatabase(
+      destDatabase: destDatabase,
+      destDatabaseName: destDatabaseName,
+      sourceDatabase: sourceDatabase,
+      sourceDatabaseName: sourceDatabaseName
+    )
+  }
+
+  @JS
+  func backupDatabaseSync(
+    destDatabase: NativeDatabase,
+    destDatabaseName: String,
+    sourceDatabase: NativeDatabase,
+    sourceDatabaseName: String
+  ) throws {
+    try backupDatabase(
+      destDatabase: destDatabase,
+      destDatabaseName: destDatabaseName,
+      sourceDatabase: sourceDatabase,
+      sourceDatabaseName: sourceDatabaseName
+    )
+  }
 
   public func definition() -> ModuleDefinition {
-    Name("ExpoSQLite")
-
-    Constant("defaultDatabaseDirectory") {
-      #if os(tvOS)
-      return appContext?.config.cacheDirectory?.appendingPathComponent("SQLite").standardized.path
-      #else
-      return appContext?.config.documentDirectory?.appendingPathComponent("SQLite").standardized.path
-      #endif
-    }
-
-    Constant("bundledExtensions") {
-      var bundledExtensions: [String: [String: String?]] = [:]
-      #if WITH_SQLITE_VEC
-      bundledExtensions["sqlite-vec"] = [
-        "libPath": Bundle(identifier: "sqlite-vec")?.path(forResource: "vec", ofType: ""),
-        "entryPoint": "sqlite3_vec_init"
-      ]
-      #endif
-      return bundledExtensions
-    }
-
-    Events("onDatabaseChange")
-
-    OnStartObserving {
-      hasListeners = true
-    }
-
-    OnStopObserving {
-      hasListeners = false
-    }
-
-    OnDestroy {
-      removeAllCachedDatabases().forEach {
-        do {
-          try closeDatabase($0)
-        } catch {}
-      }
-    }
-
-    AsyncFunction("deleteDatabaseAsync") { (databasePath: String) in
-      try deleteDatabase(databasePath: databasePath)
-    }.runOnQueue(moduleQueue)
-    Function("deleteDatabaseSync") { (databasePath: String) in
-      try deleteDatabase(databasePath: databasePath)
-    }
-
-    AsyncFunction("importAssetDatabaseAsync") { (databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) in
-      let path = try ensureDatabasePathExists(path: databasePath)
-      let fileManager = FileManager.default
-      if fileManager.fileExists(atPath: path.toFilePath()) && !forceOverwrite {
-        return
-      }
-      guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
-        fileManager.fileExists(atPath: assetPath) else {
-        throw DatabaseNotFoundException(assetDatabasePath)
-      }
-      try? fileManager.removeItem(atPath: path.absoluteString)
-      try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
-    }.runOnQueue(moduleQueue)
-
-    AsyncFunction("ensureDatabasePathExistsAsync") { (databasePath: String) in
-      try ensureDatabasePathExists(path: databasePath)
-    }.runOnQueue(moduleQueue)
-    Function("ensureDatabasePathExistsSync") { (databasePath: String) in
-      try ensureDatabasePathExists(path: databasePath)
-    }
-
-    // swiftlint:disable:next line_length
-    AsyncFunction("backupDatabaseAsync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
-      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
-    }.runOnQueue(moduleQueue)
-    Function("backupDatabaseSync") { (destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) in
-      try backupDatabase(destDatabase: destDatabase, destDatabaseName: destDatabaseName, sourceDatabase: sourceDatabase, sourceDatabaseName: sourceDatabaseName)
-    }
-
     // MARK: - NativeDatabase
 
     // swiftlint:disable:next closure_body_length
@@ -128,72 +153,33 @@ public final class SQLiteModule: Module {
         try initDb(database: database)
       }
 
-      AsyncFunction("isInTransactionAsync") { (database: NativeDatabase) -> Bool in
-        try maybeThrowForClosedDatabase(database)
-        return exsqlite3_get_autocommit(database.pointer) == 0
-      }.runOnQueue(moduleQueue)
-      Function("isInTransactionSync") { (database: NativeDatabase) -> Bool in
-        try maybeThrowForClosedDatabase(database)
-        return exsqlite3_get_autocommit(database.pointer) == 0
-      }
-
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
         try maybeThrowForClosedDatabase(database)
         if let db = removeCachedDatabase(of: database) {
           try closeDatabase(db)
         }
       }.runOnQueue(moduleQueue)
+      // Interrupt must reach SQLite immediately, without waiting for the running query's queue.
+      Function("interruptSync") { (database: NativeDatabase) in
+        // Do not block the JS thread or touch a connection being closed on another thread.
+        guard database.closeLock.try() else {
+          throw DatabaseClosingException()
+        }
+        defer { database.closeLock.unlock() }
+        try maybeThrowForClosedDatabase(database)
+        exsqlite3_interrupt(database.pointer)
+      }
       Function("closeSync") { (database: NativeDatabase) in
         try maybeThrowForClosedDatabase(database)
         if let db = removeCachedDatabase(of: database) {
           try closeDatabase(db)
         }
       }
-
-      AsyncFunction("execAsync") { (database: NativeDatabase, source: String) in
-        try exec(database: database, source: source)
-      }.runOnQueue(moduleQueue)
-      Function("execSync") { (database: NativeDatabase, source: String) in
-        try exec(database: database, source: source)
-      }
-
-      AsyncFunction("serializeAsync") { (database: NativeDatabase, databaseName: String) in
-        try serialize(database: database, databaseName: databaseName)
-      }.runOnQueue(moduleQueue)
-      Function("serializeSync") { (database: NativeDatabase, databaseName: String) in
-        try serialize(database: database, databaseName: databaseName)
-      }
-
-      AsyncFunction("prepareAsync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
-        try prepareStatement(database: database, statement: statement, source: source)
-      }.runOnQueue(moduleQueue)
-      Function("prepareSync") { (database: NativeDatabase, statement: NativeStatement, source: String) in
-        try prepareStatement(database: database, statement: statement, source: source)
-      }
-
-      AsyncFunction("createSessionAsync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
-        try sessionCreate(database: database, session: session, dbName: dbName)
-      }.runOnQueue(moduleQueue)
-      Function("createSessionSync") { (database: NativeDatabase, session: NativeSession, dbName: String) in
-        try sessionCreate(database: database, session: session, dbName: dbName)
-      }
-
-      AsyncFunction("loadExtensionAsync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
-        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
-      }.runOnQueue(moduleQueue)
-      Function("loadExtensionSync") { (database: NativeDatabase, libPath: String, entryPoint: String?) in
-        try loadExtension(database: database, libPath: libPath, entryPoint: entryPoint)
-      }
     }
 
     // MARK: - NativeStatement
 
-    // swiftlint:disable:next closure_body_length
     Class(NativeStatement.self) {
-      Constructor {
-        return NativeStatement()
-      }
-
       // swiftlint:disable line_length
 
       AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: ArrayBuffer], shouldPassAsArray: Bool) -> [String: Any] in
@@ -218,86 +204,11 @@ public final class SQLiteModule: Module {
       Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
         return try getAll(statement: statement, database: database)
       }
-
-      AsyncFunction("resetAsync") { (statement: NativeStatement, database: NativeDatabase) in
-        try reset(statement: statement, database: database)
-      }.runOnQueue(moduleQueue)
-      Function("resetSync") { (statement: NativeStatement, database: NativeDatabase) in
-        try reset(statement: statement, database: database)
-      }
-
-      AsyncFunction("getColumnNamesAsync") { (statement: NativeStatement) -> SQLiteColumnNames in
-        return try getColumnNames(statement: statement)
-      }.runOnQueue(moduleQueue)
-      Function("getColumnNamesSync") { (statement: NativeStatement) -> SQLiteColumnNames in
-        return try getColumnNames(statement: statement)
-      }
-
-      AsyncFunction("finalizeAsync") { (statement: NativeStatement, database: NativeDatabase) in
-        try finalize(statement: statement, database: database)
-      }.runOnQueue(moduleQueue)
-      Function("finalizeSync") { (statement: NativeStatement, database: NativeDatabase) in
-        try finalize(statement: statement, database: database)
-      }
     }
 
     // MARK: - NativeSession
 
-    // swiftlint:disable:next closure_body_length
-    Class(NativeSession.self) {
-      Constructor {
-        return NativeSession()
-      }
-
-      AsyncFunction("attachAsync") { (session: NativeSession, database: NativeDatabase, table: String?) in
-        try sessionAttach(database: database, session: session, table: table)
-      }.runOnQueue(moduleQueue)
-      Function("attachSync") { (session: NativeSession, database: NativeDatabase, table: String?) in
-        try sessionAttach(database: database, session: session, table: table)
-      }
-
-      AsyncFunction("enableAsync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
-        try sessionEnable(database: database, session: session, enabled: enabled)
-      }.runOnQueue(moduleQueue)
-      Function("enableSync") { (session: NativeSession, database: NativeDatabase, enabled: Bool) in
-        try sessionEnable(database: database, session: session, enabled: enabled)
-      }
-
-      AsyncFunction("closeAsync") { (session: NativeSession, database: NativeDatabase) in
-        try sessionClose(database: database, session: session)
-      }.runOnQueue(moduleQueue)
-      Function("closeSync") { (session: NativeSession, database: NativeDatabase) in
-        try sessionClose(database: database, session: session)
-      }
-
-      AsyncFunction("createChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateChangeset(database: database, session: session)
-      }.runOnQueue(moduleQueue)
-      Function("createChangesetSync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateChangeset(database: database, session: session)
-      }
-
-      AsyncFunction("createInvertedChangesetAsync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateInvertedChangeset(database: database, session: session)
-      }.runOnQueue(moduleQueue)
-      Function("createInvertedChangesetSync") { (session: NativeSession, database: NativeDatabase) -> ArrayBuffer in
-        return try sessionCreateInvertedChangeset(database: database, session: session)
-      }
-
-      AsyncFunction("applyChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) in
-        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
-      }.runOnQueue(moduleQueue)
-      Function("applyChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) in
-        try sessionApplyChangeset(database: database, session: session, changeset: changeset)
-      }
-
-      AsyncFunction("invertChangesetAsync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) -> ArrayBuffer in
-        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
-      }.runOnQueue(moduleQueue)
-      Function("invertChangesetSync") { (session: NativeSession, database: NativeDatabase, changeset: ArrayBuffer) -> ArrayBuffer in
-        return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
-      }
-    }
+    NativeSession._synthesizedClassDefinition()
   }
 
   private func ensureDatabasePathExists(path: String) throws -> URL {
@@ -338,7 +249,7 @@ public final class SQLiteModule: Module {
     let flags = UInt32(SQLITE_DESERIALIZE_RESIZEABLE | SQLITE_DESERIALIZE_FREEONCLOSE)
     let ret = exsqlite3_deserialize(db, "main", buffer.assumingMemoryBound(to: UInt8.self), size, size, flags)
     if ret != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+      throw SQLiteErrorException(sqliteErrorMessage(for: db))
     }
     return db
   }
@@ -350,39 +261,6 @@ public final class SQLiteModule: Module {
     }
   }
 
-  private func exec(database: NativeDatabase, source: String) throws {
-    try maybeThrowForClosedDatabase(database)
-    var error: UnsafeMutablePointer<CChar>?
-    let ret = exsqlite3_exec(database.pointer, source, nil, nil, &error)
-    if ret != SQLITE_OK, let error = error {
-      let errorString = String(cString: error)
-      exsqlite3_free(error)
-      throw SQLiteErrorException(errorString)
-    }
-  }
-
-  private func serialize(database: NativeDatabase, databaseName: String) throws -> Data {
-    try maybeThrowForClosedDatabase(database)
-
-    var size: sqlite3_int64 = 0
-    guard let bytes = exsqlite3_serialize(database.pointer, databaseName, &size, 0) else {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-
-    let serializedData = Data(bytes: bytes, count: Int(size))
-    exsqlite3_free(bytes)
-    return serializedData
-  }
-
-  private func prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) throws {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-    let sourceString = source.cString(using: .utf8)
-    if exsqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-  }
-
   // swiftlint:disable line_length
 
   private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: any AnyArrayBuffer], shouldPassAsArray: Bool) throws -> [String: Any] {
@@ -391,36 +269,33 @@ public final class SQLiteModule: Module {
 
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    exsqlite3_reset(statement.pointer)
-    exsqlite3_clear_bindings(statement.pointer)
-    for (key, param) in bindParams {
-      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
-      if index > 0 {
-        try bindStatementParam(statement: statement, with: param, at: index)
+    return try statement.lock.withLock { _ -> [String: Any] in
+      exsqlite3_reset(statement.pointer)
+      exsqlite3_clear_bindings(statement.pointer)
+      for (key, param) in bindParams {
+        let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+        if index > 0 {
+          try bindStatementParam(statement: statement, with: param, at: index)
+        }
       }
-    }
-    for (key, param) in bindBlobParams {
-      let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
-      if index > 0 {
-        try bindStatementParam(statement: statement, with: param, at: index)
+      for (key, param) in bindBlobParams {
+        let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
+        if index > 0 {
+          try bindStatementParam(statement: statement, with: param, at: index)
+        }
       }
-    }
 
-    let ret = exsqlite3_step(statement.pointer)
-    if ret != SQLITE_ROW && ret != SQLITE_DONE {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      let ret = exsqlite3_step(statement.pointer)
+      if ret != SQLITE_ROW && ret != SQLITE_DONE {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+      let firstRowValues: SQLiteColumnValues = (ret == SQLITE_ROW) ? try getColumnValues(statement: statement) : []
+      return [
+        "lastInsertRowId": Int(exsqlite3_last_insert_rowid(database.pointer)),
+        "changes": Int(exsqlite3_changes(database.pointer)),
+        "firstRowValues": firstRowValues
+      ]
     }
-    let firstRowValues: SQLiteColumnValues = (ret == SQLITE_ROW) ? try getColumnValues(statement: statement) : []
-    return [
-      "lastInsertRowId": Int(exsqlite3_last_insert_rowid(database.pointer)),
-      "changes": Int(exsqlite3_changes(database.pointer)),
-      "firstRowValues": firstRowValues
-    ]
   }
 
   // swiftlint:enable line_length
@@ -430,19 +305,16 @@ public final class SQLiteModule: Module {
     try maybeThrowForFinalizedStatement(statement)
 
     // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
+    return try statement.lock.withLock { _ -> SQLiteColumnValues? in
+      let ret = exsqlite3_step(statement.pointer)
+      if ret == SQLITE_ROW {
+        return try getColumnValues(statement: statement)
+      }
+      if ret != SQLITE_DONE {
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      }
+      return nil
     }
-
-    let ret = exsqlite3_step(statement.pointer)
-    if ret == SQLITE_ROW {
-      return try getColumnValues(statement: statement)
-    }
-    if ret != SQLITE_DONE {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    return nil
   }
 
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
@@ -450,84 +322,49 @@ public final class SQLiteModule: Module {
     try maybeThrowForFinalizedStatement(statement)
 
     // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    var columnValuesList: [SQLiteColumnValues] = []
-    while true {
-      let ret = exsqlite3_step(statement.pointer)
-      if ret == SQLITE_ROW {
-        columnValuesList.append(try getColumnValues(statement: statement))
-        continue
+    return try statement.lock.withLock { _ -> [SQLiteColumnValues] in
+      var columnValuesList: [SQLiteColumnValues] = []
+      while true {
+        let ret = exsqlite3_step(statement.pointer)
+        if ret == SQLITE_ROW {
+          columnValuesList.append(try getColumnValues(statement: statement))
+          continue
+        }
+        if ret == SQLITE_DONE {
+          break
+        }
+        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
       }
-      if ret == SQLITE_DONE {
-        break
-      }
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
+      return columnValuesList
     }
-    return columnValuesList
-  }
-
-  private func reset(statement: NativeStatement, database: NativeDatabase) throws {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
-    // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    if exsqlite3_reset(statement.pointer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-  }
-
-  private func finalize(statement: NativeStatement, database: NativeDatabase) throws {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
-    // Guard the stateful statement, see `run` above.
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
-    }
-
-    if exsqlite3_finalize(statement.pointer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    statement.isFinalized = true
-  }
-
-  private func convertSqlLiteErrorToString(_ db: OpaquePointer?) -> String {
-    let code = exsqlite3_errcode(db)
-    let message = String(cString: exsqlite3_errmsg(db), encoding: .utf8) ?? ""
-    return "Error code \(code): \(message)"
   }
 
   private func convertSqlLiteErrorToString(_ db: NativeDatabase) -> String {
-    return convertSqlLiteErrorToString(db.pointer)
+    return db.lastErrorMessage()
   }
 
   private func closeDatabase(_ db: NativeDatabase) throws {
+    db.closeLock.lock()
+    defer { db.closeLock.unlock() }
+    try maybeThrowForClosedDatabase(db)
     try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)
     db.isClosed = true
 
-    if let index = contextPairs.firstIndex(where: {
-      guard let pair = $0.takeUnretainedValue() as? (SQLiteModule, NativeDatabase) else {
-        return false
+    Self.lockQueue.sync {
+      if let index = contextPairs.firstIndex(where: {
+        guard let pair = $0.takeUnretainedValue() as? (SQLiteModule, NativeDatabase) else {
+          return false
+        }
+        if pair.1.sharedObjectId != db.sharedObjectId {
+          return false
+        }
+        $0.release()
+        return true
+      }) {
+        contextPairs.remove(at: index)
       }
-      if pair.1.sharedObjectId != db.sharedObjectId {
-        return false
-      }
-      $0.release()
-      return true
-    }) {
-      contextPairs.remove(at: index)
     }
 
     if ret != SQLITE_OK {
@@ -547,6 +384,20 @@ public final class SQLiteModule: Module {
     try DatabaseFileUtils.deleteDatabaseFiles(atPath: path)
   }
 
+  private func importAssetDatabase(databasePath: String, assetDatabasePath: String, forceOverwrite: Bool) throws {
+    let path = try ensureDatabasePathExists(path: databasePath)
+    let fileManager = FileManager.default
+    if fileManager.fileExists(atPath: path.toFilePath()) && !forceOverwrite {
+      return
+    }
+    guard let assetPath = Utilities.urlFrom(string: assetDatabasePath)?.path,
+      fileManager.fileExists(atPath: assetPath) else {
+      throw DatabaseNotFoundException(assetDatabasePath)
+    }
+    try? fileManager.removeItem(atPath: path.absoluteString)
+    try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
+  }
+
   private func backupDatabase(destDatabase: NativeDatabase, destDatabaseName: String, sourceDatabase: NativeDatabase, sourceDatabaseName: String) throws {
     try maybeThrowForClosedDatabase(destDatabase)
     try maybeThrowForClosedDatabase(sourceDatabase)
@@ -561,7 +412,9 @@ public final class SQLiteModule: Module {
 
   private func addUpdateHook(_ database: NativeDatabase) {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
-    contextPairs.append(contextPair)
+    Self.lockQueue.sync {
+      contextPairs.append(contextPair)
+    }
     // swiftlint:disable:next multiline_arguments
     exsqlite3_update_hook(database.pointer, { obj, action, databaseName, tableName, rowId in
       guard let obj,
@@ -573,38 +426,16 @@ public final class SQLiteModule: Module {
       let database = pair.1
       let databaseFilePath = exsqlite3_db_filename(database.pointer, databaseName)
       if selfInstance.hasListeners, let databaseName, let databaseFilePath {
-        selfInstance.sendEvent("onDatabaseChange", [
-          "databaseName": String(cString: UnsafePointer(databaseName)),
-          "databaseFilePath": String(cString: UnsafePointer(databaseFilePath)),
-          "tableName": String(cString: UnsafePointer(tableName)),
-          "rowId": rowId,
-          "typeId": SQLAction.fromCode(value: action)
-        ])
+        selfInstance.onDatabaseChange(DatabaseChangeEvent(
+          databaseName: String(cString: UnsafePointer(databaseName)),
+          databaseFilePath: String(cString: UnsafePointer(databaseFilePath)),
+          tableName: String(cString: UnsafePointer(tableName)),
+          rowId: Int(rowId),
+          typeId: SQLAction.fromCode(value: action)
+        ))
       }
     },
     contextPair.toOpaque())
-  }
-
-  private func loadExtension(database: NativeDatabase, libPath: String, entryPoint: String?) throws {
-    try maybeThrowForClosedDatabase(database)
-    exsqlite3_enable_load_extension(database.pointer, 1)
-    var error: UnsafeMutablePointer<CChar>?
-    let ret = exsqlite3_load_extension(database.pointer, libPath.cString(using: .utf8), entryPoint, &error)
-    if ret != SQLITE_OK, let error = error {
-      let errorString = String(cString: error)
-      exsqlite3_free(error)
-      throw SQLiteErrorException(errorString)
-    }
-  }
-
-  private func getColumnNames(statement: NativeStatement) throws -> SQLiteColumnNames {
-    try maybeThrowForFinalizedStatement(statement)
-    let columnCount = Int(exsqlite3_column_count(statement.pointer))
-    var columnNames: SQLiteColumnNames = Array(repeating: "", count: columnCount)
-    for i in 0..<columnCount {
-      columnNames[i] = String(cString: exsqlite3_column_name(statement.pointer, Int32(i)))
-    }
-    return columnNames
   }
 
   private func getColumnValues(statement: NativeStatement) throws -> SQLiteColumnValues {
@@ -670,15 +501,11 @@ public final class SQLiteModule: Module {
   }
 
   private func maybeThrowForClosedDatabase(_ database: NativeDatabase) throws {
-    if database.isClosed {
-      throw AccessClosedResourceException()
-    }
+    try database.ensureOpen()
   }
 
   private func maybeThrowForFinalizedStatement(_ statement: NativeStatement) throws {
-    if statement.isFinalized {
-      throw AccessClosedResourceException()
-    }
+    try statement.ensureNotFinalized()
   }
 
   @inline(__always)
@@ -750,94 +577,6 @@ public final class SQLiteModule: Module {
         ExpoModulesCore.log.warn("exsqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
       }
       stmt = nextStmt
-    }
-  }
-
-  // MARK: - Session Extension
-
-  private func sessionCreate(database: NativeDatabase, session: NativeSession, dbName: String) throws {
-    try maybeThrowForClosedDatabase(database)
-    let db = dbName.cString(using: .utf8)
-    if exsqlite3session_create(database.pointer, db, &session.pointer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-  }
-
-  private func sessionAttach(database: NativeDatabase, session: NativeSession, table: String?) throws {
-    try maybeThrowForClosedDatabase(database)
-    let tableName = table?.cString(using: .utf8)
-    if exsqlite3session_attach(session.pointer, tableName) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-  }
-
-  private func sessionEnable(database: NativeDatabase, session: NativeSession, enabled: Bool) throws {
-    try maybeThrowForClosedDatabase(database)
-    exsqlite3session_enable(session.pointer, enabled ? 1 : 0)
-  }
-
-  private func sessionClose(database: NativeDatabase, session: NativeSession) throws {
-    try maybeThrowForClosedDatabase(database)
-    exsqlite3session_delete(session.pointer)
-  }
-
-  private func sessionCreateChangeset(database: NativeDatabase, session: NativeSession) throws -> ArrayBuffer {
-    try maybeThrowForClosedDatabase(database)
-    var size: Int32 = 0
-    var buffer: UnsafeMutableRawPointer?
-    if exsqlite3session_changeset(session.pointer, &size, &buffer) != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-    }
-    guard let buffer else {
-      return ArrayBuffer(size: 0)
-    }
-    defer { exsqlite3_free(buffer) }
-    return ArrayBuffer.copy(of: buffer, count: Int(size))
-  }
-
-  private func sessionCreateInvertedChangeset(database: NativeDatabase, session: NativeSession) throws -> ArrayBuffer {
-    do {
-      let changeset = try sessionCreateChangeset(database: database, session: session)
-      return try sessionInvertChangeset(database: database, session: session, changeset: changeset)
-    } catch {
-      throw error
-    }
-  }
-
-  private func sessionApplyChangeset(database: NativeDatabase, session: NativeSession, changeset: some AnyArrayBuffer) throws {
-    try maybeThrowForClosedDatabase(database)
-    try changeset.withUnsafeBytes {
-      let buffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
-      if exsqlite3changeset_apply(
-        database.pointer,
-        Int32(changeset.byteLength),
-        buffer,
-        nil,
-        { _, _, _ -> Int32 in
-          return SQLITE_CHANGESET_REPLACE
-        },
-        nil
-      ) != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-      }
-    }
-  }
-
-  private func sessionInvertChangeset(database: NativeDatabase, session: NativeSession, changeset: some AnyArrayBuffer) throws -> ArrayBuffer {
-    try maybeThrowForClosedDatabase(database)
-    return try changeset.withUnsafeBytes {
-      let inBuffer = UnsafeMutableRawPointer(mutating: $0.baseAddress)
-      var outSize: Int32 = 0
-      var outBuffer: UnsafeMutableRawPointer?
-
-      if exsqlite3changeset_invert(Int32(changeset.byteLength), inBuffer, &outSize, &outBuffer) != SQLITE_OK {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-      }
-      guard let outBuffer else {
-        return ArrayBuffer(size: 0)
-      }
-      defer { exsqlite3_free(outBuffer) }
-      return ArrayBuffer.copy(of: outBuffer, count: Int(outSize))
     }
   }
 }

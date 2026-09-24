@@ -27,3 +27,33 @@ export function assertSafeSPMIdentifier(
       `paths and generated Swift source — fix it in spm.config.json.`
   );
 }
+
+// Stricter than SAFE_SPM_IDENTIFIER: a framework name is also written as a bare
+// Swift `import`, where ".", "+" and "-" are not part of a module name.
+const FRAMEWORK_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
+
+function isFrameworkName(entry: unknown): entry is string {
+  return typeof entry === 'string' && FRAMEWORK_NAME.test(entry);
+}
+
+/**
+ * Reads a target's `linkedFrameworks` from spm.config.json, which nothing validates at runtime.
+ * A missing value means no frameworks; any other value that is not a list of framework names throws.
+ */
+export function parseLinkedFrameworks(value: unknown, targetName: string): string[] {
+  if (value === undefined) {
+    return [];
+  }
+  if (Array.isArray(value) && value.every(isFrameworkName)) {
+    return value;
+  }
+  const offender = Array.isArray(value) ? value.find((entry) => !isFrameworkName(entry)) : value;
+  throw new Error(
+    `Cannot read "linkedFrameworks" for target "${targetName}": ${JSON.stringify(offender)} is ` +
+      `not ${Array.isArray(value) ? 'a framework name' : 'a list of framework names'}. Each ` +
+      `entry is written into the generated Package.swift as .linkedFramework("…") and into ` +
+      `Swift source as @_exported import …, so it must be a plain framework name. Write them ` +
+      `in the package's spm.config.json as, for example\n` +
+      `  "linkedFrameworks": ["UIKit", "AVFoundation"]`
+  );
+}

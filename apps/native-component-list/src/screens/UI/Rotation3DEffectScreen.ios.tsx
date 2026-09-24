@@ -20,7 +20,8 @@ export default function Rotation3DEffectScreen() {
       <VStack
         alignment="center"
         modifiers={[
-          frame({ maxWidth: 10000, height: 200 }),
+          frame({ height: 200 }),
+          frame({ maxWidth: 10000 }),
           padding({ all: 24 }),
           background('#007AFF'),
           cornerRadius(20),
