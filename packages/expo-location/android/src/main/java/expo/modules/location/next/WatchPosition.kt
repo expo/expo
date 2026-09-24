@@ -1,21 +1,29 @@
 package expo.modules.location.next
 
-import android.annotation.SuppressLint
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.WatchPositionParameters
 import expo.modules.location.next.locationProviders.WatchSession
+import expo.modules.location.next.locationProviders.WatchUpdate
 import kotlin.time.Duration
 
+@OptimizedRecord
 class PositionChangedEvent(
   @Field val data: Position? = null,
   @Field val error: String? = null
 ) : Record
 
+private fun WatchUpdate.toEvent(): PositionChangedEvent = when (this) {
+  is WatchUpdate.Fix -> PositionChangedEvent(data = position)
+  is WatchUpdate.Failure -> PositionChangedEvent(error = cause.message ?: cause.toString())
+}
+
 class PositionWatchStatus(
   @Field val isSubscribed: Boolean = false,
+  @Field val canDeliverUpdates: Boolean = false,
   @Field val isHandleAlive: Boolean = false,
   @Field val isStarted: Boolean = false,
   @Field val isPaused: Boolean = false,
@@ -35,26 +43,36 @@ class PausableWatchSession(
   var isPaused: Boolean = false
   var isStarted: Boolean = false
   var isReleased: Boolean = false
-  var isSubscribed: Boolean = false
   var isInForeground: Boolean = true
 
-  private var onPosition: ((Position) -> Unit)? = null
+  private var onEvent: ((PositionChangedEvent) -> Unit)? = null
 
-  @SuppressLint("MissingPermission")
   @Synchronized
-  private fun handleLocationUpdatesRequest(): Boolean {
-    val shouldRequestUpdates = !isSubscribed && !isPaused && isStarted && !isReleased && isInForeground
-    val shouldRemoveRequest = isSubscribed && (isPaused || !isStarted || isReleased || !isInForeground)
-    val onPosition = this.onPosition
-    if (shouldRequestUpdates && onPosition != null) {
-      isSubscribed = session.startUpdates(activeParameters, onPosition)
-      return isSubscribed
+  private fun handleLocationUpdatesRequest(): Throwable? {
+    val shouldBeActive = !isPaused && isStarted && !isReleased && isInForeground
+    val shouldRequestUpdates = !session.isSubscribed() && shouldBeActive
+    val onEvent = this.onEvent
+    if (shouldRequestUpdates && onEvent != null) {
+      val failure = try {
+        if (session.startUpdates(activeParameters) { onEvent(it.toEvent()) }) {
+          null
+        } else {
+          PositionWatchSubscriptionException()
+        }
+      } catch (cause: Throwable) {
+        cause
+      }
+      return failure
     }
-    if (shouldRemoveRequest) {
+    if (!shouldBeActive) {
       session.stopUpdates()
-      isSubscribed = false
     }
-    return true
+    return null
+  }
+
+  private fun emitEventOnFailure(cause: Throwable?) {
+    cause ?: return
+    onEvent?.invoke(WatchUpdate.Failure(cause).toEvent())
   }
 
   @Synchronized
@@ -69,36 +87,28 @@ class PausableWatchSession(
 
   @Synchronized
   fun restart(): Boolean {
-    val needsResubscribe = !isSubscribed && isStarted && !isPaused && !isReleased && isInForeground
-    if (stagedParameters == activeParameters && !needsResubscribe) {
-      return true
-    }
+    session.stopUpdates()
     activeParameters = stagedParameters
-    val onPosition = this.onPosition
-    if (isSubscribed && onPosition != null) {
-      session.stopUpdates()
-      isSubscribed = session.startUpdates(activeParameters, onPosition)
-      return isSubscribed
-    }
-    return handleLocationUpdatesRequest()
+    return handleLocationUpdatesRequest() == null
   }
 
   @Synchronized
   fun onLifecycleChange(isInForeground: Boolean) {
     this.isInForeground = isInForeground
-    handleLocationUpdatesRequest()
+    emitEventOnFailure(handleLocationUpdatesRequest())
   }
 
   @Synchronized
-  fun start(onPosition: (Position) -> Unit) {
+  fun start(onEvent: (PositionChangedEvent) -> Unit) {
     isStarted = true
-    this.onPosition = onPosition
-    handleLocationUpdatesRequest()
+    this.onEvent = onEvent
+    emitEventOnFailure(handleLocationUpdatesRequest())
   }
 
   @Synchronized
   fun stop() {
     isStarted = false
+    onEvent = null
     handleLocationUpdatesRequest()
   }
 
@@ -111,7 +121,7 @@ class PausableWatchSession(
   @Synchronized
   fun resume(): Boolean {
     isPaused = false
-    return handleLocationUpdatesRequest()
+    return handleLocationUpdatesRequest() == null
   }
 
   @Synchronized
@@ -123,7 +133,8 @@ class PausableWatchSession(
   @Synchronized
   fun status(): PositionWatchStatus {
     return PositionWatchStatus(
-      isSubscribed = isSubscribed,
+      isSubscribed = session.isSubscribed(),
+      canDeliverUpdates = session.canDeliverUpdates(),
       isHandleAlive = !isReleased,
       isStarted = isStarted,
       isPaused = isPaused,
@@ -138,7 +149,7 @@ class PositionWatchHandle(
 
   override fun onStartListeningToEvent(eventName: String) {
     if (eventName == POSITION_CHANGED) {
-      session.start { position -> emit(POSITION_CHANGED, PositionChangedEvent(data = position)) }
+      session.start { event -> emit(POSITION_CHANGED, event) }
     }
   }
 
@@ -153,4 +164,5 @@ class PositionWatchHandle(
   }
 }
 
-class LocationWatchHandleCreationException : CodedException("LocationWatchHandle cannot be created from JavaScript!")
+class PositionWatchSubscriptionException : CodedException("Could not subscribe to location updates")
+class PositionWatchHandleCreationException : CodedException("PositionWatchHandle cannot be created from JavaScript!")
