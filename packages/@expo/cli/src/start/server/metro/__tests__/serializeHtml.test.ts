@@ -15,15 +15,29 @@ describe(serialAssetsToStaticContentAssets, () => {
     const resources: SerialAsset[] = [
       {
         type: 'css-external',
-        filename: 'https://x/y.css',
-        originFilename: 'y',
-        source: '<link rel="stylesheet" href="https://x/y.css">',
+        filename: 'https://x/a.css',
+        originFilename: 'a',
+        source: '<link rel="stylesheet" href="https://x/a.css">',
         metadata: {},
       } as any,
       {
         type: 'css',
-        filename: 'dist/styles.css',
-        originFilename: 'styles',
+        filename: 'dist/a.css',
+        originFilename: 'a',
+        source: '',
+        metadata: {},
+      } as any,
+      {
+        type: 'css-external',
+        filename: 'https://x/b.css',
+        originFilename: 'b',
+        source: '<link rel="stylesheet" href="https://x/b.css">',
+        metadata: {},
+      } as any,
+      {
+        type: 'css',
+        filename: 'dist/b.css',
+        originFilename: 'b',
         source: '',
         metadata: {},
       } as any,
@@ -59,8 +73,10 @@ describe(serialAssetsToStaticContentAssets, () => {
       '/dist/entry.js',
     ]);
     expect(assets.css).toEqual([
-      { type: 'external', source: '<link rel="stylesheet" href="https://x/y.css">' },
-      { type: 'css', href: '/dist/styles.css' },
+      { type: 'external', href: 'https://x/a.css', media: undefined },
+      { type: 'css', href: '/dist/a.css' },
+      { type: 'external', href: 'https://x/b.css', media: undefined },
+      { type: 'css', href: '/dist/b.css' },
     ]);
   });
 

@@ -10,6 +10,7 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import type { AssetInfo } from 'expo-server/private';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -18,7 +19,6 @@ import {
   createLoaderDataScriptAsString,
   injectAssetsIntoHtml,
   serializeHelmetToHtml,
-  type StaticContentAssets,
 } from '../utils/html';
 import { getRootComponent } from './getRootComponent';
 
@@ -42,7 +42,7 @@ export type GetStaticContentOptions = {
   };
   request?: Request;
   hydrate?: boolean;
-  assets?: StaticContentAssets;
+  assets?: AssetInfo;
 };
 
 /**

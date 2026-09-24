@@ -9,7 +9,7 @@ export type SerialAsset = {
 
   metadata: {
     hmrId?: string;
-    /** Media query baked into a `css-external` `<link>` tag (e.g. `screen and (min-width: 900px)`). */
+    /** Media query for a `css-external` stylesheet (e.g. `screen and (min-width: 900px)`). */
     media?: string;
     isAsync?: boolean;
     modulePaths?: string[];
