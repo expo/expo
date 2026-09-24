@@ -7,30 +7,48 @@ public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber
 
   private var completionHandlers: [String: BackgroundSessionCompletionHandler] = [:]
   private var completionHandlerTokens: [String: UUID] = [:]
-  private var pendingDownloads: [String: Set<String>] = [:]
-  private var downloadsAwaitingCompletion: [String: Set<String>] = [:]
+  private var downloadsAwaitingAcknowledgment: [String: Set<String>] = [:]
   private var sessionsByDownload: [String: String] = [:]
   private var finishedSessions: Set<String> = []
 
   public func registerDownload(_ uuid: String, forSessionIdentifier identifier: String) {
     DispatchQueue.main.async {
-      self.pendingDownloads[identifier, default: []].insert(uuid)
       self.sessionsByDownload[uuid] = identifier
     }
   }
 
-  public func completeDownload(_ uuid: String) {
+  public func finishDownload(_ uuid: String, succeeded: Bool) {
     DispatchQueue.main.async {
-      guard let identifier = self.sessionsByDownload.removeValue(forKey: uuid) else {
+      guard let identifier = self.sessionsByDownload[uuid] else {
         return
       }
-      self.pendingDownloads[identifier]?.remove(uuid)
-      self.downloadsAwaitingCompletion[identifier]?.remove(uuid)
-      if self.pendingDownloads[identifier]?.isEmpty == true {
-        self.pendingDownloads.removeValue(forKey: identifier)
+      if succeeded {
+        self.downloadsAwaitingAcknowledgment[identifier, default: []].insert(uuid)
+      } else {
+        self.discardDownloadNow(uuid)
       }
-      self.completeSessionIfReady(identifier)
     }
+  }
+
+  public func completeDownload(_ uuid: String) {
+    discardDownload(uuid)
+  }
+
+  public func discardDownload(_ uuid: String) {
+    DispatchQueue.main.async {
+      self.discardDownloadNow(uuid)
+    }
+  }
+
+  private func discardDownloadNow(_ uuid: String) {
+    guard let identifier = sessionsByDownload.removeValue(forKey: uuid) else {
+      return
+    }
+    downloadsAwaitingAcknowledgment[identifier]?.remove(uuid)
+    if downloadsAwaitingAcknowledgment[identifier]?.isEmpty == true {
+      downloadsAwaitingAcknowledgment.removeValue(forKey: identifier)
+    }
+    completeSessionIfReady(identifier)
   }
 
   public func invokeCompletionHandler(forSessionIdentifier identifier: String) {
@@ -46,7 +64,7 @@ public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber
   private func completeSessionIfReady(_ identifier: String) {
     guard completionHandlers[identifier] != nil,
       finishedSessions.contains(identifier),
-      downloadsAwaitingCompletion[identifier]?.isEmpty != false else {
+      downloadsAwaitingAcknowledgment[identifier]?.isEmpty != false else {
       return
     }
     completeSession(identifier)
@@ -58,13 +76,9 @@ public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber
     }
     completionHandlerTokens.removeValue(forKey: identifier)
     finishedSessions.remove(identifier)
-    if let downloads = downloadsAwaitingCompletion.removeValue(forKey: identifier) {
+    if let downloads = downloadsAwaitingAcknowledgment.removeValue(forKey: identifier) {
       for uuid in downloads {
-        pendingDownloads[identifier]?.remove(uuid)
         sessionsByDownload.removeValue(forKey: uuid)
-      }
-      if pendingDownloads[identifier]?.isEmpty == true {
-        pendingDownloads.removeValue(forKey: identifier)
       }
     }
     completionHandler()
@@ -75,10 +89,6 @@ public final class FileSystemBackgroundSessionHandler: ExpoAppDelegateSubscriber
   #if os(iOS) || os(tvOS)
   public func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
     completionHandlers[identifier] = completionHandler
-    guard pendingDownloads[identifier]?.isEmpty == false else {
-      return
-    }
-    downloadsAwaitingCompletion[identifier] = pendingDownloads[identifier]
     let token = UUID()
     completionHandlerTokens[identifier] = token
     // Give JS time to process the file, but do not hold iOS's completion handler indefinitely.

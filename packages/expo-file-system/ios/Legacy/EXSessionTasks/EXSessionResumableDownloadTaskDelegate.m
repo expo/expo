@@ -5,6 +5,7 @@
 @interface EXSessionResumableDownloadTaskDelegate ()
 
 @property (strong, nonatomic, readonly) EXDownloadDelegateOnWriteCallback onWriteCallback;
+@property (copy, nonatomic, readonly) EXDownloadDelegateOnFinishCallback onFinishCallback;
 @property (weak, nonatomic) EXTaskHandlersManager *manager;
 @property (strong, nonatomic) NSString *uuid;
 
@@ -17,6 +18,7 @@
                                localUrl:(NSURL *)localUrl
                      shouldCalculateMd5:(BOOL)shouldCalculateMd5
                         onWriteCallback:(EXDownloadDelegateOnWriteCallback)onWriteCallback
+                       onFinishCallback:(EXDownloadDelegateOnFinishCallback)onFinishCallback
                        resumableManager:(EXTaskHandlersManager *)manager
                                    uuid:(NSString *)uuid;
 {
@@ -25,6 +27,7 @@
                            localUrl:localUrl
                  shouldCalculateMd5:shouldCalculateMd5]) {
     _onWriteCallback = onWriteCallback;
+    _onFinishCallback = [onFinishCallback copy];
     _manager = manager;
     _uuid = uuid;
   }
@@ -34,12 +37,14 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location
 {
   [super URLSession:session downloadTask:downloadTask didFinishDownloadingToURL:location];
+  _onFinishCallback(_uuid, self.didSaveFile);
   [_manager unregisterTask:_uuid];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error
 {
   if (error) {
+    _onFinishCallback(_uuid, NO);
     // The task was paused by us. So, we shouldn't throw.
     if (error.code == NSURLErrorCancelled) {
       self.resolve([NSNull null]);
