@@ -7,14 +7,19 @@ import expo.modules.calendar.next.records.AlarmMethod as RecordAlarmMethod
 import expo.modules.calendar.next.records.AlarmRecord
 
 class ReminderMapper {
-  fun toDomain(record: AlarmRecord) = ReminderInput(
-    method = record.method?.toDomain(),
-    minutes = record.relativeOffset
+  // `relativeOffset` is negative for an alarm before the event start,
+  // while `CalendarContract.Reminders.MINUTES` is positive for a reminder before it.
+  fun toDomain(record: AlarmRecord): ReminderInput {
+    val relativeOffset = record.relativeOffset
       ?: throw IllegalArgumentException("AlarmRecord must have relativeOffset defined")
-  )
+    return ReminderInput(
+      method = record.method?.toDomain(),
+      minutes = -relativeOffset
+    )
+  }
 
   fun toRecord(entity: ReminderEntity) = AlarmRecord(
-    relativeOffset = entity.minutes,
+    relativeOffset = -entity.minutes,
     method = entity.method?.toRecord()
   )
 
