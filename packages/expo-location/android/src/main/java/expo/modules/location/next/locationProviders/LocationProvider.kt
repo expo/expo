@@ -18,6 +18,11 @@ data class WatchPositionParameters(
   val maxUpdateDelay: Duration
 )
 
+sealed interface WatchUpdate {
+  data class Fix(val position: Position) : WatchUpdate
+  data class Failure(val cause: Throwable) : WatchUpdate
+}
+
 data class GetCurrentPositionOptions(
   val maxCachedAge: Duration,
   val timeout: Duration,
@@ -49,8 +54,10 @@ sealed interface EnableLocationServicesResult {
 }
 
 interface WatchSession {
-  fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean
+  fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean
   fun stopUpdates()
+  fun isSubscribed(): Boolean
+  fun canDeliverUpdates(): Boolean
 }
 
 interface LocationProvider {
