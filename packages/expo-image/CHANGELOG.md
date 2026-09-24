@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `prefetch` crashing with `PromiseAlreadySettledException` when Glide restarts a failed request after connectivity is restored, resolving the already-settled promise a second time. ([#49942](https://github.com/expo/expo/issues/49942), [#49944](https://github.com/expo/expo/pull/49944) by [@riorafe](https://github.com/riorafe))
+- [Android] Fixed `prefetch` crashing with `PromiseAlreadySettledException` when Glide restarts a failed request after connectivity is restored, resolving the already-settled promise a second time. ([#49944](https://github.com/expo/expo/pull/49944) by [@riorafe](https://github.com/riorafe))
 
 ### 💡 Others
 
