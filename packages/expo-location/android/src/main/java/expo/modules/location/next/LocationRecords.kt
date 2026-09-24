@@ -2,6 +2,8 @@ package expo.modules.location.next
 
 import android.location.Location
 import android.os.Build
+import android.os.Bundle
+import android.os.PersistableBundle
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -104,7 +106,25 @@ class Coordinates (
   @Field val latitude: Double,
   @Field val longitude: Double,
 ) : Record {
+  fun toPersistableBundle(): PersistableBundle {
+    val bundle = PersistableBundle()
+    bundle.putDouble("lat", latitude)
+    bundle.putDouble("lon", longitude)
+    return bundle
+  }
+
+  fun toBundle(): Bundle {
+    val bundle = Bundle()
+    bundle.putDouble("latitude", latitude)
+    bundle.putDouble("longitude", longitude)
+    return bundle
+  }
 }
+
+fun PersistableBundle.toCoordinates(): Coordinates = Coordinates(
+  getDouble("lat"),
+  getDouble("lon"),
+)
 
 @OptimizedRecord
 class Position (
@@ -122,7 +142,57 @@ class Position (
   @Field val speedAccuracy: Double? = null,
   @Field val headingAccuracy: Double? = null,
 ) : Record {
+  fun toPersistableBundle(): PersistableBundle {
+    val bundle = PersistableBundle()
+    bundle.putPersistableBundle("coordinates", coordinates.toPersistableBundle())
+    bundle.putDouble("time", timestamp)
+    bundle.putBoolean("mocked", mocked)
+    // Optional fields are omitted rather than written as null — PersistableBundle has no null
+    // primitives, and getDouble's default cannot be told apart from a stored value.
+    mslAltitude?.let { bundle.putDouble("mslAltitude", it) }
+    altitude?.let { bundle.putDouble("altitude", it) }
+    speed?.let { bundle.putDouble("speed", it) }
+    heading?.let { bundle.putDouble("heading", it) }
+    horizontalAccuracy?.let { bundle.putDouble("horizontalAccuracy", it) }
+    verticalAccuracy?.let { bundle.putDouble("verticalAccuracy", it) }
+    speedAccuracy?.let { bundle.putDouble("speedAccuracy", it) }
+    headingAccuracy?.let { bundle.putDouble("headingAccuracy", it) }
+    return bundle
+  }
+
+  fun toBundle(): Bundle {
+    val bundle = Bundle()
+    bundle.putBundle("coordinates", coordinates.toBundle())
+    bundle.putDouble("timestamp", timestamp)
+    bundle.putBoolean("mocked", mocked)
+    mslAltitude?.let { bundle.putDouble("mslAltitude", it) }
+    altitude?.let { bundle.putDouble("altitude", it) }
+    speed?.let { bundle.putDouble("speed", it) }
+    heading?.let { bundle.putDouble("heading", it) }
+    horizontalAccuracy?.let { bundle.putDouble("horizontalAccuracy", it) }
+    verticalAccuracy?.let { bundle.putDouble("verticalAccuracy", it) }
+    speedAccuracy?.let { bundle.putDouble("speedAccuracy", it) }
+    headingAccuracy?.let { bundle.putDouble("headingAccuracy", it) }
+    return bundle
+  }
 }
+
+private fun PersistableBundle.getDoubleOrNull(key: String): Double? =
+  if (containsKey(key)) getDouble(key) else null
+
+fun PersistableBundle.toPosition(): Position = Position(
+  coordinates = getPersistableBundle("coordinates")?.toCoordinates() ?: Coordinates(0.0, 0.0),
+  timestamp = getDouble("time"),
+  mocked = getBoolean("mocked"),
+  mslAltitude = getDoubleOrNull("mslAltitude"),
+  altitude = getDoubleOrNull("altitude"),
+  speed = getDoubleOrNull("speed"),
+  heading = getDoubleOrNull("heading"),
+  horizontalAccuracy = getDoubleOrNull("horizontalAccuracy"),
+  verticalAccuracy = getDoubleOrNull("verticalAccuracy"),
+  speedAccuracy = getDoubleOrNull("speedAccuracy"),
+  headingAccuracy = getDoubleOrNull("headingAccuracy"),
+)
 
 fun Location.mslAltitude(): Double? {
   return if (Build.VERSION.SDK_INT >= 34 && hasMslAltitude()) {

@@ -1,6 +1,7 @@
 package expo.modules.location.next.locationProviders
 
 import android.app.Activity
+import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.next.Position
 import kotlinx.coroutines.CompletableDeferred
@@ -64,6 +65,9 @@ interface LocationProvider {
   // The caller guarantees the location services are turned off, so there is no reason to check the
   // master toggle again. An implementation may still check whether the settings satisfy its own request.
   suspend fun enableLocationServices(activity: Activity, promptResult: CompletableDeferred<Boolean>): ProviderResult<Unit> = ProviderResult.Unsupported
+
+  // This class must have (Context, TaskManagerUtilsInterface?) constructor as it will be constructed like this by TaskManager.
+  fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
 }
 
 class LocationUnavailableException : CodedException("Location fix is currently unavailable")
