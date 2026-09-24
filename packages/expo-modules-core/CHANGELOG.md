@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`).
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23
