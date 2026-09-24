@@ -619,6 +619,33 @@ describe('SSR window check', () => {
     // Code is fully minified away
     expect((await minifyLikeMetroAsync(res!)).code).toBe(`console.log('ssr.1');`);
   });
+
+  it.each([
+    { isDev: true, isServer: true, nodeEnv: '"development"' },
+    { isDev: true, isServer: false, nodeEnv: 'process.env.NODE_ENV' },
+    { isDev: undefined, isServer: true, nodeEnv: 'process.env.NODE_ENV' },
+  ])(
+    'inlines NODE_ENV when isDev is $isDev and isServer is $isServer',
+    ({ isDev, isServer, nodeEnv }) => {
+      const options = {
+        babelrc: false,
+        presets: [preset],
+        filename: 'unknown',
+        compact: true,
+        caller: getCaller({
+          name: 'metro',
+          platform: 'web',
+          isServer,
+          ...(isDev === undefined ? {} : { isDev }),
+        }),
+      };
+
+      const res = babel.transform(`module.exports = process.env.NODE_ENV;`, options);
+
+      expect(res?.code).toContain(`module.exports=${nodeEnv}`);
+    }
+  );
+
   it(`removes process.env.EXPO_SERVER usage in client bundles`, async () => {
     const options = {
       babelrc: false,
