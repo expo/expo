@@ -5,22 +5,21 @@ import {
   useItemKeys,
   useRecycledRows,
   type RecycledSlotProps,
-  type RenderItem,
   type WindowChangeEvent,
 } from '../../recycling/useRecycledRows';
 import { type ViewEvent } from '../../types';
 
-export interface LazyItemsProps<ItemT> {
+export interface LazyItemsProps<T> {
   /** Items to display. Replace the array when updating data. */
-  data: readonly ItemT[];
+  data: readonly T[];
   /** Returns a stable, unique string key, also used as the lazy list item key. */
-  keyExtractor: (item: ItemT, index: number) => string;
+  keyExtractor: (item: T, index: number) => string;
   /**
    * Renders a row. Wrap it in `useCallback`, or every row re-renders on each parent render.
    * Recycled rows are reused for other items, so their local state (`useState`) carries over.
    * Reset it when the item changes, or keep the state outside the row.
    */
-  children: RenderItem<ItemT>;
+  children: (info: { item: T; index: number }) => ReactElement;
   /**
    * Renders only the rows near the visible range and reuses them while scrolling. Set to `false` to
    * render every row at once. Set it once; changing it remounts the rows.
@@ -35,8 +34,7 @@ export interface LazyItemsProps<ItemT> {
   overscanCount?: number;
   /**
    * Placeholder size in dp along the scroll axis, until a row is measured. Must be positive.
-   * Measurements reset when the data changes. In `LazyColumn.Items` they also reset when the list
-   * width changes. Ignored when `recycling` is `false`.
+   * Ignored when `recycling` is `false`.
    * @default 64
    */
   estimatedItemSize?: number;
@@ -62,8 +60,7 @@ const LazyItemsPoolNativeView: React.ComponentType<{ children: ReactElement[] }>
  * so large data sets stay cheap. Rows that are not ready yet show a placeholder of
  * `estimatedItemSize`, or of the size last measured for that item.
  *
- * Mount it as a direct child of `LazyColumn` or `LazyRow`. Plain children of the same list stay
- * single items, so static and recycled content can be mixed in order.
+ * Mount it as a direct child of `LazyColumn` or `LazyRow`.
  * @platform android
  */
 export const LazyItems = createLazyItems('LazyColumn.Items');
@@ -73,29 +70,29 @@ export const LazyItems = createLazyItems('LazyColumn.Items');
  * Creates the `Items` component of one lazy list, so its errors name that list.
  */
 export function createLazyItems(componentName: string) {
-  function Items<ItemT>({ recycling = true, ...props }: LazyItemsProps<ItemT>) {
+  function Items<T>({ recycling = true, ...props }: LazyItemsProps<T>) {
     return recycling ? <RecycledItems {...props} /> : <StaticItems {...props} />;
   }
 
   // Each row is a plain child of the lazy list, so it becomes one lazy item.
-  function StaticItems<ItemT>({
+  function StaticItems<T>({
     data,
     keyExtractor,
     children: renderItem,
-  }: Omit<LazyItemsProps<ItemT>, 'recycling'>) {
+  }: Omit<LazyItemsProps<T>, 'recycling'>) {
     const itemKeys = useItemKeys(componentName, data, keyExtractor);
     return data.map((item, index) => (
       <Fragment key={itemKeys[index]}>{renderItem({ item, index })}</Fragment>
     ));
   }
 
-  function RecycledItems<ItemT>({
+  function RecycledItems<T>({
     data,
     keyExtractor,
     children: renderItem,
     overscanCount,
     estimatedItemSize = 64,
-  }: Omit<LazyItemsProps<ItemT>, 'recycling'>) {
+  }: Omit<LazyItemsProps<T>, 'recycling'>) {
     const { itemKeys, revision, rows, onWindowChange } = useRecycledRows({
       componentName,
       Slot: LazyItemsSlotNativeView,
