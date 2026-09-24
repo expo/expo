@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Stop generating `CLAUDE.md` for new projects. Claude Code now reads `AGENTS.md` directly. ([#50400](https://github.com/expo/expo/pull/50400) by [@davidmokos](https://github.com/davidmokos))
+
 ## 4.0.3 — 2026-08-17
 
 ### 🎉 New features
