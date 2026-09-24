@@ -12,11 +12,31 @@ const { IOSConfig } = require('@expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
 
+// Not a dependency of this package; resolving it through config-plugins also
+// yields the exact parser IOSConfig's helpers expect.
+const xcode = require(
+  require.resolve('xcode', { paths: [path.dirname(require.resolve('@expo/config-plugins'))] })
+);
+
 /** Written by RN's SwiftPM injector into the .xcodeproj it modified. */
 const INJECTION_MARKER = '.spm-injected.json';
 
+/** In the order IOSConfig.Paths.getAllPBXProjectPaths picks them, which prebuild writes through. */
+function listXcodeProjects(appRoot) {
+  try {
+    return fs
+      .readdirSync(appRoot)
+      .filter((name) => name.endsWith('.xcodeproj'))
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => path.join(appRoot, name))
+      .filter((project) => isFile(path.join(project, 'project.pbxproj')));
+  } catch {
+    return [];
+  }
+}
+
 /**
- * The target RN injected into, per the marker on disk.
+ * The project RN injected into and the target it names, per the marker on disk.
  *
  * Deliberately not `process.env.TARGET_NAME`: the plugin runs both outside
  * Xcode (`react-native spm sync`) and inside a build, and for the test target
@@ -26,16 +46,9 @@ const INJECTION_MARKER = '.spm-injected.json';
  * recompile the registry. The marker names the target that actually compiles
  * the provider, whoever is asking.
  */
-function readInjectedTargetName(appRoot) {
-  let entries = [];
-  try {
-    entries = fs.readdirSync(appRoot);
-  } catch {
-    return null;
-  }
-  const markers = entries
-    .filter((name) => name.endsWith('.xcodeproj'))
-    .map((name) => path.join(appRoot, name, INJECTION_MARKER))
+function readInjectionMarker(appRoot, projects) {
+  const markers = projects
+    .map((project) => path.join(project, INJECTION_MARKER))
     .filter((marker) => fs.existsSync(marker));
   if (markers.length > 1) {
     // RN injects into the first project it finds; matching that guess could
@@ -48,11 +61,12 @@ function readInjectedTargetName(appRoot) {
     );
   }
   if (markers.length !== 1) return null;
+  const project = path.dirname(markers[0]);
   try {
     const { target } = JSON.parse(fs.readFileSync(markers[0], 'utf8'));
-    return typeof target === 'string' && target.length > 0 ? target : null;
+    return { project, targetName: typeof target === 'string' && target.length > 0 ? target : null };
   } catch {
-    return null;
+    return { project, targetName: null };
   }
 }
 
@@ -69,21 +83,23 @@ const WARNING = '[expo-spm-plugin] WARNING:';
 /** Xcode expands both `$(SRCROOT)` and `${SRCROOT}`; neither can be expanded here. */
 const BUILD_VARIABLE = /\$[({]/;
 
-function warnUnreadableProject(appRoot, error) {
+function warnUnreadableProject(appRoot, projectPath, error) {
   console.warn(
-    `${WARNING} the Xcode project under ${appRoot} could not be read (${error.message}), so the ` +
-      `Expo module registry will report no app groups. Modules that rely on an app group will not ` +
-      `find one at runtime.`
+    `${WARNING} the Xcode project ${projectPath ?? `under ${appRoot}`} could not be read ` +
+      `(${error.message}), so the Expo module registry will report no app groups. Modules that ` +
+      'rely on an app group will not find one at runtime.'
   );
 }
 
 /** The native target the registry is generated for, with its project, or null. */
-function findTarget(appRoot, targetName) {
+function findTarget(appRoot, projectPath, targetName) {
   let project;
   try {
-    project = IOSConfig.XcodeUtils.getPbxproj(path.dirname(appRoot));
+    if (projectPath == null) throw new Error('no .xcodeproj with a project.pbxproj was found');
+    project = xcode.project(path.join(projectPath, 'project.pbxproj'));
+    project.parseSync();
   } catch (error) {
-    warnUnreadableProject(appRoot, error);
+    warnUnreadableProject(appRoot, projectPath, error);
     return null;
   }
   try {
@@ -116,12 +132,8 @@ function findTarget(appRoot, targetName) {
  * one, but a declared path with nothing behind it yields an empty registry, and
  * the configurations are not iterated in the order the target lists them anyway.
  */
-function findEntitlementsFile(appRoot, targetName) {
-  // `getPbxproj` locates the project by globbing `ios/*.xcodeproj` under the
-  // package root and takes no explicit project path, so a project directory
-  // named anything else cannot be read at all.
-  if (path.basename(appRoot) !== 'ios') return null;
-  const found = findTarget(appRoot, targetName);
+function findEntitlementsFile(appRoot, projectPath, targetName) {
+  const found = findTarget(appRoot, projectPath, targetName);
   if (found == null) return null;
   const { project, target } = found;
   const name = IOSConfig.XcodeUtils.unquote(String(target.name));
@@ -133,7 +145,7 @@ function findEntitlementsFile(appRoot, targetName) {
       target.buildConfigurationList
     );
   } catch (error) {
-    warnUnreadableProject(appRoot, error);
+    warnUnreadableProject(appRoot, projectPath, error);
     return null;
   }
 
@@ -182,11 +194,13 @@ function findEntitlementsFile(appRoot, targetName) {
  * generator then falls back to what it does for an app that has none.
  */
 function resolveAppTarget(appRoot) {
-  const targetName = readInjectedTargetName(appRoot);
+  const projects = listXcodeProjects(appRoot);
+  const marker = readInjectionMarker(appRoot, projects);
+  const targetName = marker?.targetName ?? null;
   const podfilePropertiesPath = path.join(appRoot, 'Podfile.properties.json');
   return {
     targetName,
-    entitlementPath: findEntitlementsFile(appRoot, targetName),
+    entitlementPath: findEntitlementsFile(appRoot, marker?.project ?? projects[0], targetName),
     podfilePropertiesPath: fs.existsSync(podfilePropertiesPath) ? podfilePropertiesPath : null,
   };
 }

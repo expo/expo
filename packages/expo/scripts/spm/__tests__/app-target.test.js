@@ -130,14 +130,26 @@ describe('the Xcode target name', () => {
   // RN's injector takes the first marker it finds; guessing the same one is not
   // safe, but a silently dropped --target-name is undiagnosable, so say it.
   it('is omitted with a warning when several Xcode projects carry a marker', () => {
-    const appRoot = makeApp({ pbxproj: null });
+    const appRoot = makeApp();
     const stale = path.join(appRoot, 'stale.xcodeproj');
     fs.mkdirSync(stale, { recursive: true });
+    fs.writeFileSync(path.join(stale, 'project.pbxproj'), TESTER_PBXPROJ);
     fs.writeFileSync(path.join(stale, '.spm-injected.json'), JSON.stringify({ target: 'stale' }));
 
     expect(resolveAppTarget(appRoot).targetName).toBeNull();
     expect(warnings()).toContain('minimalswiftpm.xcodeproj');
     expect(warnings()).toContain('stale.xcodeproj');
+  });
+
+  // A leftover directory with no project in it is not a project RN can inject into.
+  it('ignores a marker in an .xcodeproj without a project.pbxproj', () => {
+    const appRoot = makeApp();
+    const stale = path.join(appRoot, 'Stale.xcodeproj');
+    fs.mkdirSync(stale);
+    fs.writeFileSync(path.join(stale, '.spm-injected.json'), JSON.stringify({ target: 'stale' }));
+
+    expect(resolveAppTarget(appRoot).targetName).toBe('minimalswiftpm');
+    expect(warn).not.toHaveBeenCalled();
   });
 
   it('is omitted when the marker is unreadable or names no target', () => {
@@ -245,15 +257,80 @@ describe('the entitlements file', () => {
   });
 
   it('is omitted with a warning when the Xcode project cannot be read', () => {
-    const appRoot = makeApp({ pbxproj: null });
+    const appRoot = makeApp({ pbxproj: 'not a pbxproj' });
     expect(resolveAppTarget(appRoot).entitlementPath).toBeNull();
-    expect(warnings()).toContain(appRoot);
+    expect(warnings()).toContain(path.join(appRoot, 'minimalswiftpm.xcodeproj'));
     expect(warnings()).toContain('app groups');
   });
 
-  // config-plugins can only locate a project under a directory named `ios`.
-  it('is omitted when the Xcode project directory is not named ios', () => {
-    expect(resolveAppTarget(makeApp({ projectDirName: 'App' })).entitlementPath).toBeNull();
+  it('is omitted with a warning when there is no Xcode project', () => {
+    const appRoot = makeApp({ pbxproj: null });
+    expect(resolveAppTarget(appRoot).entitlementPath).toBeNull();
+    expect(warnings()).toContain(appRoot);
+    expect(warnings()).toContain('no .xcodeproj');
+    expect(warnings()).toContain('app groups');
+  });
+
+  it('is read from a marked Xcode project only when it has a project.pbxproj', () => {
+    const appRoot = makeApp({ marker: null });
+    const stale = path.join(appRoot, 'Stale.xcodeproj');
+    fs.mkdirSync(stale);
+    fs.writeFileSync(
+      path.join(stale, '.spm-injected.json'),
+      JSON.stringify({ target: 'minimalswiftpm' })
+    );
+
+    expect(resolveAppTarget(appRoot).entitlementPath).toBe(
+      path.join(appRoot, 'minimalswiftpm/minimalswiftpm.entitlements')
+    );
+  });
+
+  // Matches IOSConfig.Paths.getAllPBXProjectPaths, which `expo prebuild` writes through.
+  it('is read from the Xcode project config-plugins would pick when none carries a marker', () => {
+    const appRoot = makeApp({ pbxproj: null, marker: null });
+    fs.mkdirSync(path.join(appRoot, 'Aardvark.xcodeproj'));
+    for (const [name, pbxproj] of [
+      ['alpha', TESTER_PBXPROJ],
+      ['Zebra', withoutEntitlementsSettings(TESTER_PBXPROJ)],
+    ]) {
+      fs.mkdirSync(path.join(appRoot, `${name}.xcodeproj`));
+      fs.writeFileSync(path.join(appRoot, `${name}.xcodeproj`, 'project.pbxproj'), pbxproj);
+    }
+
+    expect(resolveAppTarget(appRoot).entitlementPath).toBe(
+      path.join(appRoot, 'minimalswiftpm/minimalswiftpm.entitlements')
+    );
+  });
+
+  it('is found when the Xcode project directory is not named ios', () => {
+    const appRoot = makeApp({ projectDirName: 'App' });
+    expect(resolveAppTarget(appRoot).entitlementPath).toBe(
+      path.join(appRoot, 'minimalswiftpm/minimalswiftpm.entitlements')
+    );
+  });
+
+  // Reading whichever project sorts first would miss the target and blame a rename.
+  it('is read from the Xcode project that carries the marker, not the first one', () => {
+    const appRoot = makeApp({
+      pbxproj: withTestTarget(TESTER_PBXPROJ),
+      marker: { target: 'minimalswiftpmTests' },
+      entitlements: ['minimalswiftpmTests/minimalswiftpmTests.entitlements'],
+    });
+    const unmarked = path.join(appRoot, 'Archived.xcodeproj');
+    fs.mkdirSync(unmarked);
+    fs.writeFileSync(path.join(unmarked, 'project.pbxproj'), TESTER_PBXPROJ);
+
+    expect(resolveAppTarget(appRoot).entitlementPath).toBe(
+      path.join(appRoot, 'minimalswiftpmTests/minimalswiftpmTests.entitlements')
+    );
+    expect(warnings()).not.toContain('renamed');
+  });
+
+  it('is read from the first application target when no Xcode project carries a marker', () => {
+    const appRoot = makeApp({ marker: null });
+    expect(resolveAppTarget(appRoot).entitlementPath).toBe(
+      path.join(appRoot, 'minimalswiftpm/minimalswiftpm.entitlements')
+    );
   });
 
   // Both configurations normally declare the same file; warning about that would
