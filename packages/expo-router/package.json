@@ -41,6 +41,7 @@
     "node",
     "plugin",
     "rsc",
+    "src",
     "_async-server-import.js"
   ],
   "sideEffects": [
@@ -85,18 +86,14 @@
     },
     "./build/*.js": {
       "types": {
-        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./build/*": {
       "types": {
-        "expo-source": "./src/*.ts",
         "default": "./build/*.d.ts"
       },
-      "expo-source": "./src/*.ts",
       "default": "./build/*.js"
     },
     "./drawer": {
