@@ -1,0 +1,60 @@
+name: SwiftPM package contents
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, "sdk-*"]
+    paths: &paths
+      - .github/workflows/swiftpm-package-contents.yml
+      - .github/scripts/check-swiftpm-package.mjs
+      - packages/expo/package.json
+      - packages/expo/Package.swift
+      - packages/expo/.npmignore
+      - packages/expo-modules-jsi/**
+      - packages/expo-module-scripts/**
+      - tools/**
+      - pnpm-lock.yaml
+      - pnpm-workspace.yaml
+      - package.json
+      - turbo.json
+  pull_request:
+    paths: *paths
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package-contents:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Switch to publishing toolchain
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - name: Add expotools to PATH
+        run: echo "$PWD/bin" >> "$GITHUB_PATH"
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Check Expo manifest in npm tarball
+        run: node .github/scripts/check-swiftpm-package.mjs expo
+      - name: Check JSI publishing opt-in
+        run: node .github/scripts/check-swiftpm-package.mjs expo-modules-jsi --config-only
+      - name: Test prepack validation
+        run: node --test packages/expo-module-scripts/utils/iosPrebuilds.test.js
+      - name: Build expotools and its workspace dependencies
+        run: pnpm turbo build --filter expotools...
+      - name: Build JSI using its publishing task
+        run: pnpm --dir packages/expo-modules-jsi precompile-ios
+      - name: Check both JSI configurations in npm tarball
+        run: node .github/scripts/check-swiftpm-package.mjs expo-modules-jsi
