@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use the project's package manager in the `expo install --check` hint shown by `expo start` instead of always suggesting `npx`. ([#50580](https://github.com/expo/expo/pull/50580) by [@periakteon](https://github.com/periakteon))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23
