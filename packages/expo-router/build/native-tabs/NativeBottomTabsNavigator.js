@@ -44,6 +44,7 @@ const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
 const NativeTabTrigger_1 = require("./NativeTabTrigger");
 const NativeTabsView_1 = require("./NativeTabsView");
 const utils_1 = require("./utils");
+const Route_1 = require("../Route");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const linking_1 = require("../link/linking");
 const native_1 = require("../react-navigation/native");
@@ -55,6 +56,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     if ((0, react_2.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
+    const routeNode = (0, Route_1.useRouteNode)();
     const processedLabelStyle = (0, utils_1.convertLabelStylePropToObject)(labelStyle);
     const processedIconColor = (0, utils_1.convertIconColorPropToObject)(iconColor);
     const selectedLabelStyle = processedLabelStyle.selected
@@ -69,6 +71,8 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
         children,
         backBehavior,
         screenListeners,
+        // Honor layout `unstable_settings.initialRouteName` the same way headless Tabs does.
+        initialRouteName: routeNode?.initialRouteName,
         screenOptions: {
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
             labelStyle: processedLabelStyle.default,
