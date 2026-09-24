@@ -3150,6 +3150,20 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
   });
 
   // Pass 2 re-emits a package's first pod when a sibling is not precompiled.
+  it('reports a precompiled gated pod once when pass 2 reaches its package again', () => {
+    const [scanner] = modules['expo-scanner'].pods;
+    modules['expo-scanner'].pods.push({
+      podName: 'ExpoScannerExtra',
+      podspecDir: scanner.podspecDir,
+    });
+
+    const { thrown } = run({ ...sourceGated(), precompiled: ['ExpoScanner'] });
+
+    expect(
+      thrown.unsupported.filter((entry) => entry.reason === 'unchecked-autolink-condition')
+    ).toEqual([expect.objectContaining({ podName: 'ExpoScanner', precompiled: true })]);
+  });
+
   it('reports a gated companion of a precompiled pod once when pass 2 reaches its package again', () => {
     const [camera] = modules['expo-camera'].pods;
     modules['expo-camera'].pods.push({
