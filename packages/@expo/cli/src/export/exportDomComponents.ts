@@ -184,8 +184,9 @@ export function transformNativeBundleForMd5Filename({
       // replacement can clobber a neighbouring string.
       if (artifact.metadata.expoDomComponentReferences?.length) {
         throw new Error(
-          `Cannot rename DOM component asset "${htmlOutputName}" inside the compiled Hermes bytecode of "${artifact.filename}". ` +
-            'This is a bug in Expo CLI: bytecode compilation for chunks that reference DOM components must be deferred until after the rename (see `compileDeferredHermesArtifactsAsync`).'
+          `Cannot rename DOM component asset "${htmlOutputName}" inside the compiled Hermes bytecode of "${artifact.filename}": the chunk was compiled before the rename. ` +
+            'This usually means the project resolves a different @expo/metro-config version than @expo/cli (for example, @expo/metro-config installed directly); run `npx expo-doctor` to find the mismatch. ' +
+            'Otherwise, it is a bug in Expo CLI: chunks that reference DOM components must be compiled after the rename (see `compileDeferredHermesArtifactsAsync`).'
         );
       }
       continue;
