@@ -1,10 +1,11 @@
+import { getOriginalEnv, loadProjectEnv, logLoadedEnv } from '@expo/env';
 import assert from 'assert';
 
 import { createFingerprintForBuildAsync } from './createFingerprintForBuildAsync';
 import { createManifestForBuildAsync } from './createManifestForBuildAsync';
 import { findUpProjectRoot } from './findUpProjectRoot';
 
-(async function () {
+export async function createUpdatesResourcesAsync() {
   const platform = process.argv[2] as 'ios' | 'android';
   if (!['ios', 'android'].includes(platform)) {
     throw new Error(`Unsupported platform: ${platform}`);
@@ -29,6 +30,10 @@ import { findUpProjectRoot } from './findUpProjectRoot';
   }
 
   const entryFileArg = process.argv[6];
+  const mode = process.argv[7];
+
+  process.env = getOriginalEnv();
+  logLoadedEnv(loadProjectEnv(possibleProjectRoot, { mode }));
 
   await Promise.all([
     createUpdatesResourcesMode === 'all'
@@ -36,9 +41,13 @@ import { findUpProjectRoot } from './findUpProjectRoot';
       : null,
     createFingerprintForBuildAsync(platform, possibleProjectRoot, destinationDir),
   ]);
-})().catch((e) => {
-  // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
-  e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`;
-  console.error(e);
-  process.exit(1);
-});
+}
+
+if (require.main === module) {
+  createUpdatesResourcesAsync().catch((e) => {
+    // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
+    e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`;
+    console.error(e);
+    process.exit(1);
+  });
+}
