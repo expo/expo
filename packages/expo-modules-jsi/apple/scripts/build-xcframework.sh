@@ -78,6 +78,9 @@ SOURCE_FILES=(
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
   "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
   "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+  # Defines the `jsi` module the slices compile against, so its contents change
+  # the build output the same way a source file does.
+  "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
   # JSI headers we compile against. `cat` follows the symlinks CocoaPods
   # installs into Pods/Headers/Public so the real header contents get hashed.
   "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
