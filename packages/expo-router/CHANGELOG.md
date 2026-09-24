@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix the API reference showing a Web badge on `Stack.Toolbar` sub-components that do not render on web. ([#00000](https://github.com/expo/expo/pull/00000) by [@ramen2020](https://github.com/ramen2020))
+- Fix the API reference showing a Web badge on `Stack.Toolbar` sub-components that do not render on web. ([#50602](https://github.com/expo/expo/pull/50602) by [@ramen2020](https://github.com/ramen2020))
 
 ### 💡 Others
 
