@@ -978,9 +978,6 @@ it('stages real directories and compiles a source relying on generated exports',
     fs.readFileSync(path.join(input.root, 'ios/UsesExports.swift'), 'utf8'),
     sourceBefore
   );
-  console.log(
-    'A6: swift package describe accepted; swift build compiled UsesExports.swift using generated Foundation and Helper exports.'
-  );
 });
 
 it('keeps config settings and platforms while replacing structure and membership', async () => {
