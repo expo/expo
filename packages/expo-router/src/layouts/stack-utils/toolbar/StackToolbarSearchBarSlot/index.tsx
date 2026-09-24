@@ -32,7 +32,7 @@ export type { StackToolbarSearchBarSlotProps, NativeToolbarSearchBarSlotProps } 
  *
  * @platform iOS 26+
  */
-export const StackToolbarSearchBarSlot: React.FC<StackToolbarSearchBarSlotProps> = (props) => {
+export const StackToolbarSearchBarSlot = (props: StackToolbarSearchBarSlotProps) => {
   const placement = useToolbarPlacement();
 
   if (placement !== 'bottom') {
