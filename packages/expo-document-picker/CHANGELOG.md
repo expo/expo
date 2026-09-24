@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the typed config plugin (`expo-document-picker/plugin`) not accepting `iCloudContainerEnvironment` and `kvStoreIdentifier` props. ([#50601](https://github.com/expo/expo/issues/50601) by [@rvieceli](https://github.com/rvieceli))
+- Fixed the typed config plugin (`expo-document-picker/plugin`) not accepting `iCloudContainerEnvironment` and `kvStoreIdentifier` props. ([#50601](https://github.com/expo/expo/issues/50601) by [@rvieceli](https://github.com/rvieceli), [#50606](https://github.com/expo/expo/pull/50606) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
