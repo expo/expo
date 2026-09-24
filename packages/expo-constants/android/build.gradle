@@ -19,4 +19,11 @@ android {
     versionCode 33
     versionName "58.0.7"
   }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.debug)
+      matchingFallbacks += ["release"]
+    }
+  }
 }
