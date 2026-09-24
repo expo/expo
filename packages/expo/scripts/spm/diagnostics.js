@@ -17,6 +17,8 @@
 
 const fs = require('fs');
 
+const { autolinkConditionLabel } = require('./autolink-gate');
+
 /**
  * Pod-name families already covered by the SwiftPM graph: Expo's own modules
  * (contributed by this plugin) and React Native's products (contributed by RN).
@@ -518,10 +520,23 @@ function renderUncheckedAutolinkCondition({
   moduleRoot,
   productName,
   precompiled,
+  linkedThrough,
+  autolinkWhen,
 }) {
   const linkedAs = precompiled
     ? 'as a precompiled XCFramework'
     : 'from source without a checked-in Package.swift';
+  if (linkedThrough != null) {
+    const condition = autolinkConditionLabel(autolinkWhen);
+    return renderBlock(
+      `error: Expo module "${packageName}" links its pod ${linkedThrough} ${linkedAs}, so its product "${productName}" would be left out of the app, although its autolinkWhen condition on ${condition} is met.`,
+      [
+        `Without a checked-in Package.swift, the Swift Package Manager plugin cannot link a product that autolinking does not resolve as a pod. CocoaPods links "${productName}" for this app, so the sync stops instead of building the app without it.`,
+        `Ship a checked-in Package.swift for ${packageName} that exports "${productName}", so the condition decides whether it is linked. If the app does not need "${productName}", change the app so that the condition on ${condition} is no longer met.`,
+      ],
+      moduleRoot
+    );
+  }
   return renderBlock(
     `error: Expo module "${packageName}" declares an autolinkWhen condition for its product "${productName}" (pod ${podName}), but the product would be linked ${linkedAs}.`,
     [
