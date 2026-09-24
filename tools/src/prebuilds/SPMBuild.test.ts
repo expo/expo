@@ -327,7 +327,7 @@ describe('buildXcodeBuildArgs', () => {
 
   describe('a checked-in target directory', () => {
     const layout = checkedIn([
-      { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' },
+      { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
     ]);
     const targetDirectory =
       '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/';
@@ -390,7 +390,9 @@ describe('buildXcodeBuildArgs', () => {
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+      ])
     );
     // The compiler records the staging source link, not the directory it points at, so the
     // mapped side carries the extra `src` segment while the canonical side stays the one a
@@ -417,8 +419,8 @@ describe('buildXcodeBuildArgs', () => {
       'Debug',
       'iOS',
       checkedIn([
-        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' },
-        { name: 'ObjC', sourceRoot: '/repo/packages/expo-haptics/objc' },
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+        { name: 'ObjC', sourceRoot: '/repo/packages/expo-haptics/objc', type: 'objc' },
       ])
     );
     const mapping =
@@ -431,6 +433,34 @@ describe('buildXcodeBuildArgs', () => {
     assert.ok(
       settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${mapping}`),
       `Swift flags need the map too: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+    );
+  });
+
+  it('passes Swift flags when only the manifest says a target is Swift', () => {
+    const manifestTargets = [
+      {
+        name: 'ExpoHaptics',
+        sourceRoot: '/repo/packages/expo-haptics/ios',
+        type: 'swift' as const,
+      },
+    ];
+    const args = buildXcodeBuildArgs(
+      pkg,
+      productWithTargets([{ type: 'objc', name: 'ExpoHaptics' }]),
+      'Debug',
+      'iOS',
+      checkedIn(manifestTargets)
+    );
+    assert.ok(
+      args.includes('BUILD_LIBRARY_FOR_DISTRIBUTION=YES'),
+      `The manifest decides the language: ${args.join(' ')}`
+    );
+    assert.ok(
+      settingValue(args, 'OTHER_SWIFT_FLAGS').includes(
+        '-debug-prefix-map /repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +
+          '/expo-src/packages/expo-haptics/ios/'
+      ),
+      `The Swift target needs its map: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
     );
   });
 
@@ -447,7 +477,9 @@ describe('buildXcodeBuildArgs', () => {
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+      ])
     );
     assert.ok(
       settingValue(args, 'OTHER_CFLAGS').includes('=/expo-src/packages/expo-haptics/ios/'),
@@ -461,7 +493,7 @@ describe('buildXcodeBuildArgs', () => {
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics' }])
+      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics', type: 'swift' }])
     );
     // An empty source directory must not leave a doubled separator behind: no recorded path
     // ever spells `…/expo-haptics//`, so such a map matches nothing.
@@ -481,7 +513,9 @@ describe('buildXcodeBuildArgs', () => {
       productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
       'Debug',
       'iOS',
-      checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/..shared' }])
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/..shared', type: 'swift' },
+      ])
     );
     assert.ok(
       settingValue(args, 'OTHER_CFLAGS').includes('=/expo-src/packages/expo-haptics/..shared/'),
@@ -500,7 +534,11 @@ describe('buildXcodeBuildArgs', () => {
           'Debug',
           'iOS',
           checkedIn([
-            { name: 'ExpoHapticsShared', sourceRoot: '/repo/packages/expo-haptics-shared/ios' },
+            {
+              name: 'ExpoHapticsShared',
+              sourceRoot: '/repo/packages/expo-haptics-shared/ios',
+              type: 'swift',
+            },
           ])
         ),
       (error: Error) => {

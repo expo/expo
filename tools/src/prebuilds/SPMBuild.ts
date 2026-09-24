@@ -214,8 +214,9 @@ export const getBuildPlatformsForProduct = (
   return platform ? allPlatforms.filter((p) => p === platform) : allPlatforms;
 };
 
-/** What a checked-in `Package.swift` contributes here: where a target's sources really live. */
-export type CheckedInTargetLayout = Pick<CheckedInResolvedTarget, 'name' | 'sourceRoot'>;
+/** What a checked-in `Package.swift` contributes here: where a target's sources really live, and
+ * the language the resolver inferred from them. */
+export type CheckedInTargetLayout = Pick<CheckedInResolvedTarget, 'name' | 'sourceRoot' | 'type'>;
 
 /**
  * A package layout read from a checked-in `Package.swift`. `root` is the canonical package
@@ -247,7 +248,9 @@ export const buildXcodeBuildArgs = (
   hermesIncludeDirs?: string[]
 ): string[] => {
   const derivedDataPath = SPMBuild.getPackageBuildPath(pkg, product, buildType);
-  const containsSwiftTargets = product.targets.some((target) => target?.type === 'swift');
+  const containsSwiftTargets = (checkedIn?.targets ?? product.targets).some(
+    (target) => target.type === 'swift'
+  );
 
   // Remap absolute build paths to a canonical /expo-src prefix in DWARF debug info.
   // This ensures dSYMs are portable across machines — the canonical prefix is resolved
