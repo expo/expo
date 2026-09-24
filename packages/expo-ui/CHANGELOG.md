@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `onPress` on universal components such as `Row` and `Column` not firing when tapping empty space, such as a `Spacer`.
+- [iOS] Fixed `onPress` on universal components such as `Row` and `Column` not firing when tapping empty space, such as a `Spacer`. ([#50599](https://github.com/expo/expo/pull/50599) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
