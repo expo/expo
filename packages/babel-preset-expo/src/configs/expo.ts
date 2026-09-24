@@ -298,6 +298,8 @@ function getInlinesFromOptions(
     inlines['process.env.NODE_ENV'] = 'production';
     inlines['__DEV__'] = false;
     inlines['Platform.OS'] = options.platform;
+  } else if (options.isDev && options.isServerEnv) {
+    inlines['process.env.NODE_ENV'] = 'development';
   }
 
   if (process.env.NODE_ENV !== 'test') {

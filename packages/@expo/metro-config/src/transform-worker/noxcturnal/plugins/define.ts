@@ -30,6 +30,8 @@ export function createDefinePlugin(nox: Noxcturnal): DefinedNativePlugin<DefineS
         identifiers.set('__DEV__', false);
         members.set('Platform.OS', options.platform);
         members.set('process.env.NODE_ENV', 'production');
+      } else if (isServer) {
+        members.set('process.env.NODE_ENV', 'development');
       }
       if (process.env.NODE_ENV !== 'test') {
         const baseUrl = options.customTransformOptions?.baseUrl;
