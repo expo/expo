@@ -3,10 +3,12 @@ import type { ColorValue } from 'react-native';
 import {
   background,
   border,
+  contentShape,
   disabled,
   font,
   onTapGesture,
   padding,
+  shapes,
 } from '../../swift-ui/modifiers';
 import { transformToModifiers } from '../transformStyle';
 
@@ -45,9 +47,33 @@ describe('transformToModifiers (iOS)', () => {
     const onPress = jest.fn();
     const userTap = onTapGesture(jest.fn());
     expect(transformToModifiers(undefined, { onPress }, [userTap])).toEqual([
+      contentShape(shapes.rectangle()),
       onTapGesture(onPress),
       userTap,
     ]);
+  });
+
+  it('makes the whole frame tappable for onPress, including empty space', () => {
+    const onPress = jest.fn();
+    expect(transformToModifiers({ padding: 8 }, { onPress })).toEqual([
+      padding({ all: 8 }),
+      contentShape(shapes.rectangle()),
+      onTapGesture(onPress),
+    ]);
+  });
+
+  it('keeps the onPress hit area when the user supplies their own contentShape', () => {
+    const onPress = jest.fn();
+    const userShape = contentShape(shapes.capsule(), 'dragPreview');
+    expect(transformToModifiers(undefined, { onPress }, [userShape])).toEqual([
+      contentShape(shapes.rectangle()),
+      onTapGesture(onPress),
+      userShape,
+    ]);
+  });
+
+  it('does not add a hit area without onPress', () => {
+    expect(transformToModifiers({ padding: 8 }, {})).toEqual([padding({ all: 8 })]);
   });
 
   it('keeps behavior modifiers when the user supplies the same type', () => {
