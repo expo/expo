@@ -1842,7 +1842,7 @@ for (const [rule, dumped] of [
 
 // Swift rejects absolute sources, excludes and resources itself, so our guard never sees them
 // from a real manifest. It stays as defence in depth for dumps we do not control; the four
-// `review 8 rejects an absolute ... path reported by a dumped manifest` tests above reach it.
+// `rejects an absolute ... path reported by a dumped manifest` tests above reach it.
 it('surfaces Swift rejecting an absolute sources entry before the guard runs', async () => {
   await rejectsManifest(
     fixture('.target(name: "Main", path: "ios", sources: ["/abs/x"])'),
