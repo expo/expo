@@ -69,6 +69,7 @@
     "@expo/metro-file-map": "workspace:^",
     "@expo/osascript": "workspace:^",
     "@expo/package-manager": "workspace:^",
+    "@expo/platforms": "workspace:^",
     "@expo/plist": "workspace:^",
     "@expo/prebuild-config": "workspace:^",
     "@expo/require-utils": "workspace:^",

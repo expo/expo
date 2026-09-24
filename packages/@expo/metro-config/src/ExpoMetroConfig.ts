@@ -11,6 +11,11 @@ import type {
   ReadOnlyGraph,
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
+import {
+  OUT_OF_TREE_PLATFORMS,
+  getReactNativeHostPackage as getHostPackageForPlatform,
+  isOutOfTreePlatform,
+} from '@expo/platforms';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -59,15 +64,7 @@ export interface DefaultConfigOptions {
 let hasWarnedAboutReactNative = false;
 
 function getReactNativeHostPackage(platform?: string | null): string {
-  // NOTE(@kitten): Duplicated as `getSupportPackageForPlatform` in expo-modules-autolinking
-  switch (platform) {
-    case 'tvos':
-      return 'react-native-tvos';
-    case 'macos':
-      return 'react-native-macos';
-    default:
-      return 'react-native';
-  }
+  return isOutOfTreePlatform(platform) ? getHostPackageForPlatform(platform)! : 'react-native';
 }
 
 function getReactNativeHostPath(projectRoot: string, platform?: string | null): string {
@@ -310,13 +307,14 @@ export function getDefaultConfig(
       unstable_conditionsByPlatform: {
         ios: ['react-native'],
         android: ['react-native'],
-        tvos: ['react-native'],
-        macos: ['react-native'],
+        ...Object.fromEntries(
+          OUT_OF_TREE_PLATFORMS.map((platform) => [platform, ['react-native']])
+        ),
         // This is removed for server platforms.
         web: ['browser'],
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
-      platforms: ['ios', 'android', 'tvos', 'macos'],
+      platforms: ['ios', 'android', ...OUT_OF_TREE_PLATFORMS],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Additional font files missing from default values
