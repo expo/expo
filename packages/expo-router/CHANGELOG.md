@@ -6,6 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.7 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-21
+
+### 🎉 New features
+
 - Prevent browser unloads on web while `usePreventRemove` is active. ([#50260](https://github.com/expo/expo/pull/50260) by [@Ubax](https://github.com/Ubax))
 - Stabilize async routes on web and enable them by default. Native async routes remain experimental and opt-in. ([#48327](https://github.com/expo/expo/pull/48327) by [@hassankhan](https://github.com/hassankhan))
 - Upgrade react-native-screens to 4.28.0 (by [@Ubax](https://github.com/Ubax)) ([#50328](https://github.com/expo/expo/pull/50328) by [@Ubax](https://github.com/Ubax))

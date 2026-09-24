@@ -5,7 +5,7 @@ import Foundation
 
 /// `IntentPerson` models a name and a handle rather than a plain address, so pull the address out
 /// when Spotlight wants one.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 extension IntentPerson {
   var emailAddress: String? {
     guard let handle, case .emailAddress(let emailAddress) = handle.value else {
@@ -18,13 +18,13 @@ extension IntentPerson {
 /// Lets expo-app-intents rebuild drafts from the catalog that JavaScript publishes, which is what
 /// keeps the Spotlight index in step with `setEntityCatalogAsync`. The base entity already has the
 /// matching initializer, so this only declares the conformance.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 extension MailDraftEntity: AppIntentEntityRecordConvertible {}
 
 /// Makes the draft entity Spotlight-indexable. This is added as an extension so the base
 /// `MailDraftEntity` stays unchanged: conformance and indexing are the only things visual
 /// intelligence adds to it.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 extension MailDraftEntity: IndexedEntity {
   /// Groups the app's Spotlight items so they can be managed together.
   static let spotlightDomainIdentifier = "dev.expo.appintents.mailDraft"

@@ -301,6 +301,48 @@ describe(withBuildProperties, () => {
     });
   });
 
+  it('generates the android.buildExpoModulesCoreFromSource property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { buildExpoModulesCoreFromSource: true },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'expo.core.buildFromSource',
+      value: 'true',
+    });
+  });
+
+  it('does not generate the expo.core.buildFromSource property when unset', async () => {
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: { android: {} },
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults.map((item) => (item as any).key)).not.toContain(
+      'expo.core.buildFromSource'
+    );
+  });
+
   it('generates the android.cmakeVersion property', async () => {
     const pluginProps: PluginConfigType = {
       android: { cmakeVersion: '3.31.6' },

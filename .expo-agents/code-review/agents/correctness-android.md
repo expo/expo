@@ -1,5 +1,5 @@
 ---
-model: anthropic/claude-opus-5
+model: anthropic/claude-opus-5-5
 description: Correctness of changed Kotlin and Java — logic and algorithm defects, SDK level gating across minSdk 24 to 36, integer overflow on file and media sizes, R8 and minification breakage, coroutine cancellation and leaks, query escaping, bitmap memory, and Expo Modules API contract mistakes on Android.
 ---
 

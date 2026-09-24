@@ -37,7 +37,8 @@ export default function GeometryGroupScreen() {
             {busy ? (
               <Rectangle
                 modifiers={[
-                  frame({ maxWidth: Infinity, height: 150 }),
+                  frame({ height: 150 }),
+                  frame({ maxWidth: Infinity }),
                   foregroundStyle('#FFD60A'),
                   cornerRadius(18),
                 ]}

@@ -170,6 +170,9 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
+    ExpoUIView(DataListForEachView.self)
+    View(DataListForEachItemView.self)
+    View(DataListForEachPoolView.self)
     ExpoUIView(ListForEachView.self)
 
     ExpoUIView(PickerView.self)

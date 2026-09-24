@@ -113,7 +113,7 @@ public class ExpoPrintWithPrinter {
           promise.reject(PrintingJobFailedException("Provided printer is not available."))
         }
       }
-    } else if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
+    } else if rootController.traitCollection.horizontalSizeClass == .regular {
       printInteractionController.present(from: rootController.view.frame, in: rootController.view, animated: true, completionHandler: completionHandler)
     } else {
       printInteractionController.present(animated: true, completionHandler: completionHandler)

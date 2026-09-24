@@ -76,7 +76,7 @@ const VISUAL_INTELLIGENCE_TEMPLATE_FILES = [
  * Indented for the body of `OnCreate`, because it is both rendered into a new setup module and
  * offered to the user for pasting into one this run kept.
  */
-const VISUAL_INTELLIGENCE_REGISTRATION = `      if #available(iOS 18.0, *) {
+const VISUAL_INTELLIGENCE_REGISTRATION = `      if #available(iOS 18.0, macOS 15.0, *) {
         AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
       }`;
 

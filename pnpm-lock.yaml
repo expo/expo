@@ -227,12 +227,18 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-ai:
+        specifier: workspace:*
+        version: link:../../packages/expo-ai
       expo-app-intents:
         specifier: workspace:*
         version: link:../../packages/expo-app-intents
       expo-app-metrics:
         specifier: workspace:*
         version: link:../../packages/expo-app-metrics
+      expo-audio:
+        specifier: workspace:*
+        version: link:../../packages/expo-audio
       expo-background-fetch:
         specifier: workspace:*
         version: link:../../packages/expo-background-fetch
@@ -960,6 +966,9 @@ importers:
       expo-age-range:
         specifier: workspace:*
         version: link:../../packages/expo-age-range
+      expo-ai:
+        specifier: workspace:*
+        version: link:../../packages/expo-ai
       expo-app-intents:
         specifier: workspace:*
         version: link:../../packages/expo-app-intents
@@ -3883,6 +3892,19 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
 
+  packages/expo-ai:
+    dependencies:
+      react-native:
+        specifier: 0.88.0-rc.1
+        version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
+    devDependencies:
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+
   packages/expo-app-integrity:
     dependencies:
       react-native:
@@ -3899,7 +3921,7 @@ importers:
   packages/expo-app-intents:
     dependencies:
       '@expo/ui':
-        specifier: workspace:^58.0.3
+        specifier: workspace:^58.0.6
         version: link:../expo-ui
       commander:
         specifier: ^12.1.0
@@ -5381,9 +5403,15 @@ importers:
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.1.7
+        version: 19.2.3(@types/react@19.3.0)
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      react-dom:
+        specifier: 19.3.0
+        version: 19.3.0(react@19.3.0)
 
   packages/expo-modules-jsi:
     dependencies:
@@ -6446,6 +6474,9 @@ importers:
         specifier: 0.88.0-rc.1
         version: 0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
+      '@testing-library/react-native':
+        specifier: ^13.3.0
+        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14

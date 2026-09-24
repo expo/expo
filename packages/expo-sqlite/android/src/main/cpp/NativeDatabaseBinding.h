@@ -23,6 +23,7 @@ public:
   int sqlite3_changes();
   void sqlite3_finalize_all_statement();
   int sqlite3_close();
+  void sqlite3_interrupt();
   std::string sqlite3_db_filename(const std::string &databaseName);
   int sqlite3_enable_load_extension(int onoff);
   int sqlite3_exec(const std::string &source);

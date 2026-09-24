@@ -34,6 +34,10 @@ struct AsyncFunctionTests {
       AsyncFunction("returnsOptionalString") { (returnNil: Bool) -> String? in
         return returnNil ? nil : "present"
       }
+
+      AsyncFunction("returnsOptionalRecordWithNilField") { () -> SynthesizedMixedRecord? in
+        return SynthesizedMixedRecord(name: "present", count: 7, note: nil)
+      }
     })
   }
 
@@ -89,6 +93,16 @@ struct AsyncFunctionTests {
     let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalString(false)")
     #expect(result.isString() == true)
     #expect(result.getString() == "present")
+  }
+
+  @Test
+  func `keeps a nil field as null when returning an optional record`() async throws {
+    let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalRecordWithNilField()")
+    let object = try result.asObject()
+
+    #expect(try object.getProperty("name").asString() == "present")
+    #expect(object.hasProperty("note") == true)
+    #expect(object.getProperty("note").isNull() == true)
   }
 
   nonisolated private func expect(equals expected: String) async throws {
