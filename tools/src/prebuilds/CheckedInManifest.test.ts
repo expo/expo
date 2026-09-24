@@ -35,7 +35,13 @@ afterEach(() => {
 function fixture(
   targets = '.target(name: "Main", path: "ios")',
   files: Record<string, string> = { 'ios/Main.swift': 'public let value = 1' },
-  options: { dependencies?: string; members?: string; imports?: string } = {}
+  options: {
+    dependencies?: string;
+    members?: string;
+    imports?: string;
+    packageName?: string;
+    packageJson?: Record<string, unknown>;
+  } = {}
 ) {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'checked-in-manifest-'));
   temporaryDirectories.push(repoRoot);
@@ -45,14 +51,19 @@ function fixture(
 import PackageDescription
 ${options.imports ?? ''}
 let package = Package(
-  name: "Fixture",
+  name: "${options.packageName ?? 'fixture'}",
   platforms: [.macOS(.v13)],
   products: [.library(name: "Fixture", targets: [${options.members ?? '"Main"'}])],
   dependencies: [${options.dependencies ?? ''}],
   targets: [${targets}]
 )
 `;
-  for (const [relative, content] of Object.entries({ 'Package.swift': manifest, ...files })) {
+  const packageJson = JSON.stringify(options.packageJson ?? { name: 'fixture', version: '1.0.0' });
+  for (const [relative, content] of Object.entries({
+    'package.json': packageJson,
+    'Package.swift': manifest,
+    ...files,
+  })) {
     const destination = path.join(root, relative);
     fs.mkdirSync(path.dirname(destination), { recursive: true });
     fs.writeFileSync(destination, content);
@@ -131,6 +142,52 @@ it('A1 transforms manifest layout and drops test targets', async () => {
   assert.deepEqual(targets[0].resources, [{ path: 'src/PrivacyInfo.xcprivacy', rule: 'copy' }]);
   assert.equal(targets[1].publicHeadersPath, 'src/headers');
   assert.deepEqual(targets[1].sources, ['src']);
+});
+
+for (const [npmName, packageName] of [
+  ['fixture', 'fixture'],
+  ['@expo/log-box', 'expo-log-box'],
+]) {
+  it(`package name: accepts Package(name: "${packageName}") for npm package ${npmName}`, async () => {
+    const input = fixture(undefined, undefined, { packageName, packageJson: { name: npmName } });
+    const targets = await resolve(input.root, input.product);
+    assert.deepEqual(
+      targets.map((target) => target.name),
+      ['Main']
+    );
+  });
+}
+
+for (const [npmName, packageName, expected] of [
+  ['fixture', 'Fixture', 'fixture'],
+  ['@expo/log-box', 'log-box', 'expo-log-box'],
+  ['@expo/log-box', '@expo/log-box', 'expo-log-box'],
+]) {
+  it(`package name: rejects Package(name: "${packageName}") for npm package ${npmName}`, async () => {
+    const input = fixture(undefined, undefined, { packageName, packageJson: { name: npmName } });
+    await rejectsManifest(
+      input,
+      new RegExp(
+        `declares Package\\(name: "${packageName}"\\), but .*"${expected}".*Set name: "${expected}"`
+      )
+    );
+  });
+}
+
+for (const [label, packageJson] of [
+  ['no name', { version: '1.0.0' }],
+  ['a non-string name', { name: 42 }],
+] as const) {
+  it(`package name: rejects a package.json with ${label}`, async () => {
+    const input = fixture(undefined, undefined, { packageJson });
+    await rejectsManifest(input, /package\.json does not declare a non-empty string "name"/);
+  });
+}
+
+it('package name: rejects a package directory without package.json', async () => {
+  const input = fixture();
+  fs.rmSync(path.join(input.root, 'package.json'));
+  await rejectsManifest(input, /could not read .*package\.json/);
 });
 
 for (const [extension, expected] of [
@@ -1682,7 +1739,7 @@ function stubSwiftDump(
 ) {
   const bin = path.join(input.root, 'bin');
   const dumped = {
-    name: 'Fixture',
+    name: 'fixture',
     products: [{ name: 'Fixture', type: { library: ['automatic'] }, targets: ['Main'] }],
     targets: [{ name: 'Main', type: 'regular', path: 'ios', ...target }],
     ...manifest,

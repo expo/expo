@@ -457,6 +457,27 @@ function inferLanguage(product: string, target: string, files: string[]): 'swift
   return files.some((file) => CPP_EXTENSIONS.test(file)) ? 'cpp' : 'objc';
 }
 
+async function readExpectedPackageName(root: string, error: ManifestError): Promise<string> {
+  const packageJsonPath = path.join(root, 'package.json');
+  let packageJson: unknown;
+  try {
+    packageJson = await fs.readJson(packageJsonPath);
+  } catch (cause) {
+    throw error(
+      `could not read ${packageJsonPath}, which names the SwiftPM package: ${cause instanceof Error ? cause.message : String(cause)}.`,
+      'Check that the package directory contains a valid package.json.'
+    );
+  }
+  const name = isRecord(packageJson) ? packageJson.name : undefined;
+  if (!isNonEmptyString(name)) {
+    throw error(
+      `${packageJsonPath} does not declare a non-empty string "name", so the expected SwiftPM package name cannot be derived from it.`,
+      'Add the npm package name to package.json.'
+    );
+  }
+  return name.startsWith('@') ? name.slice(1).replace('/', '-') : name;
+}
+
 function environmentForTarget(product: SPMProduct, targetName: string): SourceTarget | undefined {
   const target = product.targets.find((candidate) => candidate.name === targetName);
   return target?.type === 'framework' ? undefined : target;
@@ -498,17 +519,29 @@ export async function resolveCheckedInManifestAsync(
     }
   }
 
+  const firstTargetName =
+    product.targets.find((target) => target.type !== 'framework')?.name ?? product.name;
+  const expectedPackageName = await readExpectedPackageName(root, (what, how) =>
+    manifestError(product.name, firstTargetName, what, how)
+  );
+
   let manifest: DumpedManifest;
   try {
     manifest = await dumpManifest(root);
   } catch (error) {
-    const targetName =
-      product.targets.find((target) => target.type !== 'framework')?.name ?? product.name;
     throw manifestError(
       product.name,
-      targetName,
+      firstTargetName,
       `Swift Package Manager could not read ${path.join(root, 'Package.swift')}: ${error instanceof Error ? error.message : String(error)}.`,
       'Fix the manifest so `swift package dump-package` succeeds.'
+    );
+  }
+  if (manifest.name !== expectedPackageName) {
+    throw manifestError(
+      product.name,
+      firstTargetName,
+      `the manifest declares Package(name: "${manifest.name}"), but this package must be named "${expectedPackageName}". A converted Expo module uses its npm package name as its SwiftPM package name, with a scoped name's "@scope/name" written as "scope-name".`,
+      `Set name: "${expectedPackageName}" in the Package(...) call in ${path.join(root, 'Package.swift')}.`
     );
   }
 
