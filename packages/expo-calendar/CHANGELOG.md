@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix the sign of alarm `relativeOffset` in the `next` API so that negative values fire before the event start, matching iOS and the legacy API. Apps that passed positive offsets on Android to work around this should remove that workaround. ([#50586](https://github.com/expo/expo/pull/50586) by [@huhu415](https://github.com/huhu415))
+
 ### 💡 Others
 
 ## 57.0.5 — 2026-09-24
