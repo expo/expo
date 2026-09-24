@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`). ([#50603](https://github.com/expo/expo/pull/50603) by [@gkueny](https://github.com/gkueny))
 - [iOS] Fixed a crash (`The app context has been lost`) when an Expo view mounts during a reload. ([#50721](https://github.com/expo/expo/pull/50721) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
