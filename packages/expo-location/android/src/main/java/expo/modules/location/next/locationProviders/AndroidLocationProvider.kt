@@ -3,8 +3,10 @@ package expo.modules.location.next.locationProviders
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
@@ -142,26 +144,89 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
 private class AndroidWatchSession(
   private val context: Context,
   private val locationManager: LocationManager,
-) : WatchSession {
-  private var listener: LocationListenerCompat? = null
+) : WatchSession, BroadcastReceiver() {
+  private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchUpdate) -> Unit)
+  private class SessionState(val listener: LocationListenerCompat, val provider: String)
 
-  @SuppressLint("MissingPermission")
-  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean {
-    stopUpdates()
-    val provider = resolveLocationProvider(parameters.priority, context, locationManager) ?: return false
-    val request = LocationRequestCompat.Builder(parameters.interval.inWholeMilliseconds)
-      .setQuality(parameters.priority.toQuality())
-      .setMaxUpdateDelayMillis(parameters.maxUpdateDelay.inWholeMilliseconds)
-      .build()
-    val listener = LocationListenerCompat { location -> onPosition(location.toPosition()) }
-    this.listener = listener
-    LocationManagerCompat.requestLocationUpdates(locationManager, provider, request, listener, Looper.getMainLooper())
-    return true
+  private var mConfig: SessionConfig? = null
+  private var mState: SessionState? = null
+
+  private fun clearConfig() {
+    if (mConfig != null) {
+      mConfig = null
+      context.unregisterReceiver(this)
+    }
   }
 
   @SuppressLint("MissingPermission")
+  private fun clearState() {
+    val state = mState
+    if (state != null) {
+      mState = null
+      LocationManagerCompat.removeUpdates(locationManager, state.listener)
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun tryConfiguringListener(config: SessionConfig, provider: String, emitError: Boolean = false): LocationListenerCompat? {
+    return try {
+      val request = LocationRequestCompat.Builder(config.parameters.interval.inWholeMilliseconds)
+        .setQuality(config.parameters.priority.toQuality())
+        .setMaxUpdateDelayMillis(config.parameters.maxUpdateDelay.inWholeMilliseconds)
+        .build()
+      val listener = LocationListenerCompat { location -> config.onUpdate(WatchUpdate.Fix(location.toPosition())) }
+      LocationManagerCompat.requestLocationUpdates(locationManager, provider, request, listener, Looper.getMainLooper())
+      listener
+    } catch (cause: Throwable) {
+      if (emitError) {
+        config.onUpdate(WatchUpdate.Failure(cause))
+      }
+      null
+    }
+  }
+
+  @Synchronized
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean {
+    clearConfig()
+    clearState()
+    val provider = resolveLocationProvider(parameters.priority, context, locationManager)
+    val desiredConfig = SessionConfig(parameters, onUpdate)
+
+    val listener = provider?.let { tryConfiguringListener(desiredConfig, it) }
+    if (listener != null) {
+      mState = SessionState(listener, provider)
+    }
+
+    ContextCompat.registerReceiver(context, this, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED)
+    mConfig = desiredConfig
+
+    return listener != null
+  }
+
+  @Synchronized
+  @SuppressLint("MissingPermission")
   override fun stopUpdates() {
-    listener?.let { LocationManagerCompat.removeUpdates(locationManager, it) }
-    listener = null
+    clearState()
+    clearConfig()
+  }
+
+  @Synchronized override fun isSubscribed(): Boolean = mConfig != null
+  @Synchronized override fun canDeliverUpdates(): Boolean = mState != null
+
+  @Synchronized @SuppressLint("MissingPermission")
+  override fun onReceive(receiverContext: Context?, intent: Intent?) {
+    val config = mConfig ?: return
+    val state = mState
+    val provider = resolveLocationProvider(config.parameters.priority, context, locationManager)
+    if (state != null && state.provider == provider) {
+      return
+    }
+
+    clearState()
+
+    val listener = provider?.let { tryConfiguringListener(config, it, emitError = true) }
+    if (listener != null) {
+      mState = SessionState(listener, provider)
+    }
   }
 }

@@ -9,6 +9,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -117,29 +118,58 @@ class GmsLocationProvider(
 private class GmsWatchSession(
   private val fusedLocationProvider: FusedLocationProviderClient
 ) : WatchSession {
+  @Volatile
   private var callback: LocationCallback? = null
 
   @SuppressLint("MissingPermission")
-  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean {
+  @Synchronized
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean {
     stopUpdates()
     val locationRequest = LocationRequest
       .Builder(parameters.priority.toGmsPriority(), parameters.interval.inWholeMilliseconds)
       .setMaxUpdateDelayMillis(parameters.maxUpdateDelay.inWholeMilliseconds)
       .build()
-    val callback = object: LocationCallback() {
+    val locationCallback = object: LocationCallback() {
       override fun onLocationResult(locationResult: LocationResult) {
+        if (callback != this) return
         locationResult.lastLocation?.let {
-          onPosition(it.toPosition())
+          onUpdate(WatchUpdate.Fix(it.toPosition()))
+          available = true
         }
       }
+
+      override fun onLocationAvailability(availability: LocationAvailability) {
+        if (callback != this) return
+        available = availability.isLocationAvailable
+      }
     }
-    this.callback = callback
-    fusedLocationProvider.requestLocationUpdates(locationRequest, callback, Looper.getMainLooper())
+    callback = locationCallback
+    available = true
+    fusedLocationProvider
+      .requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+      .addOnFailureListener {
+        synchronized(this) {
+          if (callback == locationCallback) {
+            available = false
+            callback = null
+            onUpdate(WatchUpdate.Failure(it))
+          }
+        }
+      }
     return true
   }
 
+  @Synchronized
   override fun stopUpdates() {
     callback?.let { fusedLocationProvider.removeLocationUpdates(it) }
     callback = null
+    available = false
   }
+
+  @Synchronized
+  override fun isSubscribed(): Boolean = callback != null
+
+  @Volatile
+  var available = false
+  override fun canDeliverUpdates(): Boolean = available
 }

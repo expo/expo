@@ -21,7 +21,7 @@ import kotlinx.coroutines.CompletableDeferred
 import expo.modules.location.next.locationProviders.WatchPositionParameters
 import expo.modules.location.next.locationProviders.WatchSession
 import java.lang.ref.WeakReference
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.milliseconds
 
 class RequestingBackgroundPermissionsWithoutForegroundGrantException : CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
 
@@ -145,7 +145,7 @@ class LocationModuleNext : Module() {
 
     Class(PositionWatchHandle::class) {
       Constructor { ->
-        throw LocationWatchHandleCreationException()
+        throw PositionWatchHandleCreationException()
       }
 
       Events(POSITION_CHANGED)
@@ -163,8 +163,13 @@ class LocationModuleNext : Module() {
         locationWatchHandle
       }
 
-      Function("withInterval") { locationWatchHandle: PositionWatchHandle, intervalSeconds: Double ->
-        locationWatchHandle.session.withInterval(intervalSeconds.seconds)
+      Function("withInterval") { locationWatchHandle: PositionWatchHandle, intervalMs: Double ->
+        val interval = if (!(0.0 <= intervalMs && intervalMs < Long.MAX_VALUE)) {
+          0.0
+        } else {
+          intervalMs
+        }
+        locationWatchHandle.session.withInterval(interval.milliseconds)
         locationWatchHandle
       }
 
