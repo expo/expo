@@ -174,6 +174,49 @@ function productAutolinkCondition(autolinkConditions, moduleRoot, productName) {
 }
 
 /**
+ * The gated products autolinking never resolves as a pod, by package root: companions
+ * such as expo-camera's barcode scanner, which only a checked-in manifest links.
+ */
+function indexGatedCompanions(metadata, records) {
+  const byRoot = new Map();
+  for (const [podName, { packageRoot, productName, autolinkWhen }] of metadata) {
+    if (autolinkWhen == null || packageRoot == null || records.has(podName)) continue;
+    const root = path.resolve(packageRoot);
+    byRoot.set(root, [...(byRoot.get(root) ?? []), { podName, productName, autolinkWhen }]);
+  }
+  return byRoot;
+}
+
+/**
+ * Only a checked-in manifest's products have their autolinkWhen checked. A gated pod
+ * linked any other way fails the sync whichever way its condition falls. Its module's
+ * gated companions are left out, so each fails the sync only where its condition is
+ * met: there CocoaPods would link it.
+ *
+ * @param linked the precompiled and pure-Swift records, in pass order.
+ */
+function uncheckedAutolinkConditions(linked, { gatedCompanions, manifestRoots, autolinkGate }) {
+  const companionRootsSeen = new Set();
+  return linked.flatMap(({ identity, linkedAs }) => {
+    const { podName, packageName, moduleRoot, productName, autolinkWhen } = identity;
+    const refusal = {
+      reason: 'unchecked-autolink-condition',
+      packageName,
+      moduleRoot,
+      precompiled: linkedAs === 'precompiled',
+    };
+    const own = autolinkWhen != null ? [{ ...refusal, podName, productName }] : [];
+    const root = path.resolve(moduleRoot);
+    if (manifestRoots.has(root) || companionRootsSeen.has(root)) return own;
+    companionRootsSeen.add(root);
+    const companions = (gatedCompanions.get(root) ?? [])
+      .filter((companion) => autolinkConditionMet(companion.autolinkWhen, autolinkGate))
+      .map((companion) => ({ ...refusal, ...companion, linkedThrough: podName }));
+    return [...own, ...companions];
+  });
+}
+
+/**
  * A pod nothing covers, with every refusal that applies to it: those recorded at
  * its module root, if any, and what its identity alone says. `classifyUnsupported`
  * reports the most specific of them.
@@ -377,13 +420,22 @@ function gateProducts(emitted, autolinkConditions, autolinkGate) {
  * diagnostics, and what each pass linked. Each check runs once per pod, in pass
  * order — the precompiled pods, then the modules pass 2 emitted. `precompiled` is
  * what `linkPrecompiledPods` returned; `emitted` and `refusals` are what
- * `linkSourceModules` returned.
+ * `linkSourceModules` returned; `gatedCompanions` is what `indexGatedCompanions` returned.
  *
  * @param satisfiedDependencies the SwiftPM packages already declared as frameworks.
  */
 function summarizeRecords(
   records,
-  { precompiled, emitted, refusals, react, satisfiedDependencies, autolinkConditions, autolinkGate }
+  {
+    precompiled,
+    emitted,
+    refusals,
+    react,
+    satisfiedDependencies,
+    autolinkConditions,
+    gatedCompanions,
+    autolinkGate,
+  }
 ) {
   const pureSwift = emitted.filter((r) => r.linkedAs === 'pure-swift');
   const refusalsFor = (identity) =>
@@ -406,18 +458,15 @@ function summarizeRecords(
       ),
     }))
     .filter((entry) => entry.pods.length > 0);
-  // Only a checked-in manifest's products have their autolinkWhen checked; a gated
-  // pod linked any other way fails the sync instead.
-  const uncheckedConditions = [...precompiled, ...pureSwift]
-    .filter(({ identity }) => identity.autolinkWhen != null)
-    .map(({ identity, linkedAs }) => ({
-      reason: 'unchecked-autolink-condition',
-      podName: identity.podName,
-      packageName: identity.packageName,
-      moduleRoot: identity.moduleRoot,
-      productName: identity.productName,
-      precompiled: linkedAs === 'precompiled',
-    }));
+  const uncheckedConditions = uncheckedAutolinkConditions([...precompiled, ...pureSwift], {
+    gatedCompanions,
+    manifestRoots: new Set(
+      emitted
+        .filter((r) => r.linkedAs === 'manifest')
+        .map((r) => path.resolve(r.identity.moduleRoot))
+    ),
+    autolinkGate,
+  });
   const xcconfigLinkage = pureSwift
     .filter(({ identity }) => identity.podspec.linkerFlags != null)
     .map(({ identity }) => ({
@@ -589,6 +638,7 @@ module.exports = function expoSpmPlugin(context) {
     react,
     satisfiedDependencies: new Set(dependencyFrameworks.map((f) => f.frameworkName)),
     autolinkConditions,
+    gatedCompanions: indexGatedCompanions(metadata, records),
     autolinkGate,
   });
   const logListed = (label, names) =>

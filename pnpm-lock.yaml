@@ -819,9 +819,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
-      expo-camera:
-        specifier: workspace:*
-        version: link:../../packages/expo-camera
       expo-constants:
         specifier: workspace:*
         version: link:../../packages/expo-constants

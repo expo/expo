@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "expo": "workspace:*",
-    "expo-camera": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-crypto": "workspace:*",
     "expo-image": "workspace:*",
