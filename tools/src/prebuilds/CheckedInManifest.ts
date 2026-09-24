@@ -397,10 +397,16 @@ function isExcluded(relativePath: string, excludes: string[]): boolean {
 
 function collectSourceFiles(root: string, sources: string[], excludes: string[]): string[] {
   const files: string[] = [];
+  // Keyed by real path, so a symbolic link back to an ancestor is walked once instead of until
+  // the path length or the symlink limit gives out.
+  const visitedDirectories = new Set<string>();
   const visit = (absolute: string, relative: string) => {
     if (isExcluded(relative, excludes) || !fs.pathExistsSync(absolute)) return;
     const stat = fs.statSync(absolute);
     if (stat.isDirectory()) {
+      const realDirectory = fs.realpathSync.native(absolute);
+      if (visitedDirectories.has(realDirectory)) return;
+      visitedDirectories.add(realDirectory);
       for (const entry of fs.readdirSync(absolute)) {
         visit(path.join(absolute, entry), path.join(relative, entry));
       }
@@ -734,21 +740,33 @@ export async function resolveCheckedInManifestAsync(
   const configSourceTargetNames = new Set(
     product.targets.filter((target) => target.type !== 'framework').map((target) => target.name)
   );
+  const canonicalRoot = fs.realpathSync.native(root);
   const result: CheckedInResolvedTarget[] = [];
   for (const target of regular.filter((candidate) => reachable.has(candidate.name))) {
     const targetPath = resolveTargetPath(root, target, regular.length);
     if (targetPath != null) prefixSourcePath(targetPath, product.name, target.name, 'package root');
-    const sourceRoot = targetPath == null ? null : path.resolve(root, targetPath);
+    const lexicalSourceRoot = targetPath == null ? null : path.resolve(root, targetPath);
     if (
-      sourceRoot == null ||
-      !fs.pathExistsSync(sourceRoot) ||
-      !fs.statSync(sourceRoot).isDirectory()
+      lexicalSourceRoot == null ||
+      !fs.pathExistsSync(lexicalSourceRoot) ||
+      !fs.statSync(lexicalSourceRoot).isDirectory()
     ) {
       throw manifestError(
         product.name,
         target.name,
         `its source path ${JSON.stringify(targetPath)} does not resolve to a real directory.`,
         "Set path in Package.swift to the directory containing this target's sources."
+      );
+    }
+    // The lexical check above cannot see a symbolic link inside the target path.
+    const sourceRoot = fs.realpathSync.native(lexicalSourceRoot);
+    const fromRoot = path.relative(canonicalRoot, sourceRoot);
+    if (fromRoot === '..' || fromRoot.startsWith(`..${path.sep}`) || path.isAbsolute(fromRoot)) {
+      throw manifestError(
+        product.name,
+        target.name,
+        `its source path ${JSON.stringify(targetPath)} resolves to ${sourceRoot}, which escapes the package root ${canonicalRoot} through a symbolic link.`,
+        'Keep the target path inside the package root, and replace the symbolic link with the directory it points to.'
       );
     }
     const prefix = (value: string) => prefixSourcePath(value, product.name, target.name);

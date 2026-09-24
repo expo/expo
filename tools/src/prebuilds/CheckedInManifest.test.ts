@@ -814,6 +814,25 @@ it('D-G path: keeps rejecting collapsed paths that escape the target source dire
   );
 });
 
+it('rejects a target path that escapes the package root through a symbolic link', async () => {
+  const input = fixture();
+  const outside = path.join(process.env.EXPO_ROOT_DIR!, 'outside');
+  fs.mkdirSync(outside);
+  fs.writeFileSync(path.join(outside, 'Main.swift'), 'public let value = 1');
+  fs.rmSync(path.join(input.root, 'ios'), { recursive: true });
+  fs.symlinkSync(outside, path.join(input.root, 'ios'));
+  await rejectsManifest(input, /escapes the package root/);
+});
+
+it('walks a target directory with cyclic symbolic links to completion', async () => {
+  const input = fixture();
+  // Two links make the unguarded walk exponential; one alone only repeats until ELOOP.
+  fs.symlinkSync('.', path.join(input.root, 'ios/first'));
+  fs.symlinkSync('.', path.join(input.root, 'ios/second'));
+  const [target] = await resolve(input.root, input.product);
+  assert.equal(target.type, 'swift');
+});
+
 for (const field of ['headerPattern', 'fileMapping'] as const) {
   it(`D-G config layout: rejects ${field}`, async () => {
     const input = fixture();
