@@ -63,7 +63,7 @@ UUID means universally unique identifier.
 
 The application source options install and launch the app for `agent-device`, `argent`, and `web-preview-only` sessions. For `appium`, install and launch the app through your Appium client.
 
-A `web-preview-only` session provides the web preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a web preview on supported iOS sessions. The deprecated `serve-sim` type is iOS-only and returns `previewUrl` instead of `webPreviewUrl`.
+A `web-preview-only` session provides the web preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a web preview. The deprecated `serve-sim` type is iOS-only and returns `previewUrl` instead of `webPreviewUrl`.
 
 ### Example
 
@@ -202,7 +202,7 @@ The fields in `remoteConfig` depend on the session type. Connection details are 
 
 For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Run and control an app](/preview/eas-simulator/run-and-control/) for controller usage.
 
-Open `webPreviewUrl` (or `previewUrl` for a deprecated `serve-sim` session) in a desktop browser to view supported iOS sessions. Do not open it on the remote device. Android sessions do not currently provide a browser preview.
+Open `webPreviewUrl` (or `previewUrl` for a deprecated `serve-sim` session) in a desktop browser to view the live iOS Simulator or Android Emulator. Do not open it on the remote device.
 
 ## Stop a session
 
