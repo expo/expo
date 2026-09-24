@@ -13,6 +13,17 @@ enum class LocationPriority {
   PASSIVE,
 }
 
+data class WatchPositionParameters(
+  val priority: LocationPriority,
+  val interval: Duration,
+  val maxUpdateDelay: Duration
+)
+
+sealed interface WatchUpdate {
+  data class Fix(val position: Position) : WatchUpdate
+  data class Failure(val cause: Throwable) : WatchUpdate
+}
+
 data class GetCurrentPositionOptions(
   val maxCachedAge: Duration,
   val timeout: Duration,
@@ -37,17 +48,21 @@ sealed interface ProviderResult<out T> {
   }
 }
 
+interface WatchSession {
+  fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean
+  fun stopUpdates()
+  fun isSubscribed(): Boolean
+  fun canDeliverUpdates(): Boolean
+}
+
 interface LocationProvider {
   suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position>
+  fun watchPosition(): ProviderResult<WatchSession>
   fun name(): String
 
   // Prompt user to enable location services.
   // The caller guarantees the location services are turned off, so there is no reason to check the
   // master toggle again. An implementation may still check whether the settings satisfy its own request.
-  // The user's answer is reported through [promptResult], not the return value. An implementation must
-  // complete it on every path returning Success where no activity result will follow -- when the settings
-  // already satisfy the request, or when launching the prompt failed. Otherwise the module completes it
-  // once the activity result arrives.
   suspend fun enableLocationServices(activity: Activity, promptResult: CompletableDeferred<Boolean>): ProviderResult<Unit> = ProviderResult.Unsupported
 }
 
