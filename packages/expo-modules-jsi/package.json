@@ -14,6 +14,7 @@
     "benchmark": "TEST_RUNNER_EXPO_BENCHMARK=1 DESTINATION=\"${DESTINATION:-platform=macOS,variant=Mac Catalyst}\" apple/scripts/test.sh -configuration Release -only-testing Benchmarks -enableCodeCoverage NO",
     "build:xcframework": "apple/scripts/build-xcframework.sh",
     "precompile-ios": "et prebuild-package-for-publish",
+    "prepack": "expo-module prepack",
     "clean": "apple/scripts/clear-caches.sh",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
@@ -38,7 +39,9 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-jsi",
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*"
+  },
   "peerDependencies": {
     "react-native": "*"
   },
