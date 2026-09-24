@@ -298,10 +298,6 @@ export const buildXcodeBuildArgs = (
   // /expo-src/generated/<package>/<product>/<target>/ instead, which the dSYM check knows to
   // expect.
   const stagingBase = path.resolve(pkg.buildPath, 'generated', product.name);
-  const checkedInRoot = checkedIn?.root;
-  const checkedInSourceRoots = new Map(
-    (checkedIn?.targets ?? []).map((target) => [target.name, target.sourceRoot])
-  );
   // posix.join rather than interpolation: an empty source directory — a target whose source
   // root is the package root — must not leave a doubled separator that matches nothing.
   const sourcePath = (sourceDirectory: string) =>
@@ -311,41 +307,42 @@ export const buildXcodeBuildArgs = (
   // Ordered from the least to the most specific prefix, which matters where one target maps both
   // its staging directory and the `src` link inside it.
   const targetPrefixMaps: { from: string; to: string }[] = [];
-  for (const target of product.targets) {
-    // Skip binary framework targets (no source files to compile)
-    if (target.type === 'framework') continue;
-
-    const stagingTargetPath = path.join(stagingBase, target.name);
-    const checkedInSourceRoot = checkedInSourceRoots.get(target.name);
-    // A config target the manifest does not name is inert: nothing is built under it, so there
-    // is no staging path to remap. warnUnreconciledConfigTargets reports it once per product.
-    if (checkedInRoot != null && !checkedInSourceRoot) continue;
-    // A checked-in manifest decides the staging shape whatever spm.config.json says, because the
-    // sources are reached through the `src` link rather than copied to the target directory,
-    // which holds only generated files such as <Product>+Exports.swift.
-    if (checkedInRoot != null && checkedInSourceRoot) {
+  if (checkedIn) {
+    // The manifest alone decides which targets are built, and every one is reached through the
+    // `src` link rather than copied, so its target directory holds only generated files such as
+    // <Product>+Exports.swift.
+    for (const target of checkedIn.targets) {
       // Relative to the manifest root rather than to pkg.path: only the manifest root is
       // canonicalised, and the two can spell one directory two ways.
-      const sourceDirectory = path.relative(checkedInRoot, checkedInSourceRoot);
+      const sourceDirectory = path.relative(checkedIn.root, target.sourceRoot);
       if (sourceDirectory === '..' || sourceDirectory.startsWith(`..${path.sep}`)) {
         throw new Error(
           `Cannot remap debug info for ${product.name}/${target.name}: its source root ` +
-            `${checkedInSourceRoot} is outside the manifest root ${checkedInRoot}, so it has no ` +
+            `${target.sourceRoot} is outside the manifest root ${checkedIn.root}, so it has no ` +
             `canonical /expo-src/packages/${pkg.packageName}/… path to record. A correct build ` +
             `cannot reach this, because the manifest reader resolves every source root against ` +
             `that same root. Find how the two roots came to differ; the package itself is fine.`
         );
       }
+      const stagingTargetPath = path.join(stagingBase, target.name);
       targetPrefixMaps.push(
         { from: stagingTargetPath, to: generatedPath(target.name) },
         { from: path.join(stagingTargetPath, 'src'), to: sourcePath(sourceDirectory) }
       );
-    } else if (target.path?.startsWith('.build/')) {
-      targetPrefixMaps.push({ from: stagingTargetPath, to: generatedPath(target.name) });
-    } else if (target.path) {
-      targetPrefixMaps.push({ from: stagingTargetPath, to: sourcePath(target.path) });
     }
-    // A Mode A target with no path is an error SPMGenerator reports before anything is built.
+  } else {
+    for (const target of product.targets) {
+      // Skip binary framework targets (no source files to compile)
+      if (target.type === 'framework') continue;
+
+      const stagingTargetPath = path.join(stagingBase, target.name);
+      if (target.path?.startsWith('.build/')) {
+        targetPrefixMaps.push({ from: stagingTargetPath, to: generatedPath(target.name) });
+      } else if (target.path) {
+        targetPrefixMaps.push({ from: stagingTargetPath, to: sourcePath(target.path) });
+      }
+      // A target with no path is an error SPMGenerator reports before anything is built.
+    }
   }
 
   // Trailing '/' ensures directory-boundary matching — without it, a target named

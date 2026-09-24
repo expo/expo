@@ -472,6 +472,30 @@ describe('buildXcodeBuildArgs', () => {
     );
   });
 
+  it('maps a manifest target that spm.config.json does not list', () => {
+    const args = buildXcodeBuildArgs(
+      pkg,
+      productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
+      'Debug',
+      'iOS',
+      checkedIn([
+        { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' },
+        { name: 'ObjC', sourceRoot: '/repo/packages/expo-haptics/objc' },
+      ])
+    );
+    const mapping =
+      '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ObjC/src/=' +
+      '/expo-src/packages/expo-haptics/objc/';
+    assert.ok(
+      settingValue(args, 'OTHER_CFLAGS').includes(`-fdebug-prefix-map=${mapping}`),
+      `The manifest decides the targets, so every one it builds is mapped: ${settingValue(args, 'OTHER_CFLAGS')}`
+    );
+    assert.ok(
+      settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${mapping}`),
+      `Swift flags need the map too: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+    );
+  });
+
   it('maps a target when the package path spells the manifest root differently', () => {
     // pkg.path is never canonicalised, the manifest root always is, so the two can name one
     // directory two ways. Comparing them lexically drops the map and silently restores the
