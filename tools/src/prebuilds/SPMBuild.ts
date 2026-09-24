@@ -207,7 +207,7 @@ export const getBuildPlatformsForProduct = (
  * @param buildPlatform Target platform
  * @returns Array of xcodebuild arguments
  */
-const buildXcodeBuildArgs = (
+export const buildXcodeBuildArgs = (
   pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
@@ -254,11 +254,11 @@ const buildXcodeBuildArgs = (
   const debugPrefixMap = `-fdebug-prefix-map=${repoRoot}=/expo-src`;
   const swiftDebugPrefixMap = `-debug-prefix-map ${repoRoot}=/expo-src`;
 
-  // Build compound flag strings: repo root map FIRST (catch-all), per-target maps LAST (override).
-  // Clang applies -fdebug-prefix-map in reverse order (last on command line wins), so the
-  // more specific per-target maps must come last to take priority over the general repo root map.
+  // The per-target map must beat the general catch-all: clang applies the last matching flag,
+  // while swiftc applies the first. The catch-all therefore leads the two clang-facing lists
+  // but trails the Swift list.
   const allCPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].join(' ');
-  const allSwiftPrefixMaps = [swiftDebugPrefixMap, ...swiftTargetPrefixMaps].join(' ');
+  const allSwiftPrefixMaps = [...swiftTargetPrefixMaps, swiftDebugPrefixMap].join(' ');
   const allXccPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].map((m) => `-Xcc ${m}`).join(' ');
 
   // Build extra include flags for headers that can't be in Package.swift
