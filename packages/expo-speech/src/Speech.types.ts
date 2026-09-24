@@ -54,7 +54,7 @@ export type SpeechOptions = {
    */
   volume?: number;
   /**
-   * Voice identifier.
+   * The [`identifier`](#voice) of a voice that [`Speech.getAvailableVoicesAsync()`](#speechgetavailablevoicesasync) returns.
    */
   voice?: string;
   _voiceIndex?: number;
@@ -83,11 +83,18 @@ export enum VoiceQuality {
  */
 export type Voice = {
   /**
-   * Voice unique identifier.
+   * Voice identifier that the `voice` option of [`Speech.speak()`](#speechspeaktext-options) accepts.
+   * Its format depends on the platform:
+   *
+   * - On Android, it is the voice name from the device's default text-to-speech engine, which [`Voice.getName()`](https://developer.android.com/reference/android/speech/tts/Voice#getName()) returns. It has the same value as `name`.
+   * - On iOS, it is the [`identifier`](https://developer.apple.com/documentation/avfaudio/avspeechsynthesisvoice/identifier) of the `AVSpeechSynthesisVoice`.
+   * - On web, it is the [`voiceURI`](https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisVoice/voiceURI) of the `SpeechSynthesisVoice`.
+   *
+   * The available voices also depend on the device. Get the identifier from [`Speech.getAvailableVoicesAsync()`](#speechgetavailablevoicesasync) at runtime instead of hardcoding it.
    */
   identifier: string;
   /**
-   * Voice name.
+   * Voice name. On Android, it has the same value as `identifier`.
    */
   name: string;
   /**
