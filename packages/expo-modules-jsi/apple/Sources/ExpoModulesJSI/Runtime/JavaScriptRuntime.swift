@@ -319,7 +319,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let nativeConstructorKey = "__native_constructor__"
 
     // Validate that the name is a valid JS identifier to prevent code injection via eval.
-    if name.wholeMatch(of: /^[a-zA-Z_$][a-zA-Z0-9_$]*$/) == nil {
+    if name.wholeMatch(of: #/^[a-zA-Z_$][a-zA-Z0-9_$]*$/#) == nil {
       throw InvalidIdentifierError(identifier: name)
     }
 
