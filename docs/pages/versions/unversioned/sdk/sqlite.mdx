@@ -115,7 +115,7 @@ If you deploy your app on [EAS Hosting](/eas/hosting/introduction/), you can con
 
 ### Opening a database from more than one tab
 
-By default the web backend holds an exclusive [OPFS](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system) access handle for the whole origin, so opening a second tab of your app fails with `NoModificationAllowedError`. Pass `enableMultiTabSupport` to store the database with a backend that supports concurrent connections:
+By default, the web storage backend holds exclusive access to its files in the [origin private file system (OPFS)](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API/Origin_private_file_system). As a result, opening a database from a second tab of your app fails with `NoModificationAllowedError`. Pass `enableMultiTabSupport` to store the database with a backend that supports concurrent connections:
 
 ```js Opening a database from more than one tab
 const db = await SQLite.openDatabaseAsync('databaseName', {
@@ -125,9 +125,9 @@ const db = await SQLite.openDatabaseAsync('databaseName', {
 
 Note the following trade-offs:
 
-- The two backends lay the database out differently in OPFS, so a database created with `enableMultiTabSupport` is not readable without it, and the other way round. Set the option consistently for a given database.
-- Writes are slower, because the default backend relies on exclusive locking that concurrent connections cannot use.
-- A transaction cannot span more than one attached database.
+- The two backends lay the database out differently in OPFS. Opening an existing database with a different `enableMultiTabSupport` value creates a new, empty database instead of reading the existing one. Set the option consistently for a given database.
+- Opening a database is slower, and so is accessing it from several tabs at the same time.
+- A transaction cannot access more than one database, such as the main database and an attached database.
 
 This option has no effect outside web, where multiple connections are always supported.
 

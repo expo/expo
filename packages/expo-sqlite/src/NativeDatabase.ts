@@ -64,10 +64,13 @@ export interface SQLiteOpenOptions {
    * `NoModificationAllowedError`, because the default web storage backend holds an exclusive
    * OPFS access handle for the whole origin.
    *
-   * This changes how the database is laid out in OPFS, so a database created with this option is
-   * not readable without it, and vice versa. Set it consistently for a given database. It also
-   * disables the exclusive locking that the default backend relies on for write throughput, and
-   * transactions cannot span more than one attached database.
+   * > **warning** This option changes how the database is laid out in OPFS. Opening an existing
+   * > database with a different `enableMultiTabSupport` value creates a new, empty database
+   * > instead of reading the existing one.
+   *
+   * Opening a database is slower with this option, and so is accessing it from several tabs at the
+   * same time. A transaction cannot access more than one database, such as the main database and
+   * an attached database.
    *
    * @default false
    * @platform web

@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Web] Added `enableMultiTabSupport` to the open options, which stores the database with a backend that allows the same database to be opened from more than one tab. Without it, a second tab fails with `NoModificationAllowedError`. ([#36835](https://github.com/expo/expo/issues/36835) by [@Maher-Reven](https://github.com/Maher-Reven))
+- [Web] Added `enableMultiTabSupport` to the open options, which stores the database with a backend that allows the same database to be opened from more than one tab. Without it, opening a database from a second tab fails with `NoModificationAllowedError`. ([#36835](https://github.com/expo/expo/issues/36835) by [@Maher-Reven](https://github.com/Maher-Reven))
 
 ### 🐛 Bug fixes
 
