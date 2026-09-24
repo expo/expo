@@ -17,8 +17,6 @@
 
 const fs = require('fs');
 
-const { autolinkConditionLabel } = require('./autolink-gate');
-
 /**
  * Pod-name families already covered by the SwiftPM graph: Expo's own modules
  * (contributed by this plugin) and React Native's products (contributed by RN).
@@ -510,9 +508,31 @@ function renderPartiallyPrecompiled({
 }
 
 /**
- * Refused whether or not the condition is met: a link that never consults the
- * condition is only right by coincidence, and the coincidence changes with the
- * app's configuration.
+ * Why CocoaPods links a companion for this app, and the app-side switch that stops it,
+ * where one exists. The keys are read in `autolinkConditionMet`'s order.
+ */
+function companionCondition({ podName, npmPackage, podfileProperty, disabledValue } = {}) {
+  if (podName != null) return { because: `the app has the ${podName} pod` };
+  if (npmPackage != null) return { because: `the app depends on ${npmPackage}` };
+  if (podfileProperty != null) {
+    return disabledValue != null
+      ? {
+          because: `the Podfile property "${podfileProperty}" is not "${disabledValue}"`,
+          turnOff: `set "${podfileProperty}" to "${disabledValue}" in ios/Podfile.properties.json`,
+        }
+      : {
+          because: `the Podfile property "${podfileProperty}" is set`,
+          turnOff: `remove "${podfileProperty}" from ios/Podfile.properties.json`,
+        };
+  }
+  return { because: 'its autolinkWhen condition is met' };
+}
+
+/**
+ * A gated pod is refused whether or not the condition is met: a link that never
+ * consults the condition is only right by coincidence, and the coincidence changes
+ * with the app's configuration. A companion (`linkedThrough`) is refused only where
+ * its condition is met, because its module leaves it out.
  */
 function renderUncheckedAutolinkCondition({
   podName,
@@ -527,12 +547,13 @@ function renderUncheckedAutolinkCondition({
     ? 'as a precompiled XCFramework'
     : 'from source without a checked-in Package.swift';
   if (linkedThrough != null) {
-    const condition = autolinkConditionLabel(autolinkWhen);
+    const { because, turnOff } = companionCondition(autolinkWhen);
     return renderBlock(
-      `error: Expo module "${packageName}" links its pod ${linkedThrough} ${linkedAs}, so its product "${productName}" would be left out of the app, although its autolinkWhen condition on ${condition} is met.`,
+      `error: Expo module "${packageName}" links its pod ${linkedThrough} ${linkedAs}, so its product "${productName}" would be left out of the app.`,
       [
-        `Without a checked-in Package.swift, the Swift Package Manager plugin cannot link a product that autolinking does not resolve as a pod. CocoaPods links "${productName}" for this app, so the sync stops instead of building the app without it.`,
-        `Ship a checked-in Package.swift for ${packageName} that exports "${productName}", so the condition decides whether it is linked. If the app does not need "${productName}", change the app so that the condition on ${condition} is no longer met.`,
+        `CocoaPods links "${productName}" because ${because}. Swift Package Manager cannot link "${productName}" yet, so the sync stops instead of building the app without it.`,
+        ...(turnOff != null ? [`If the app does not need "${productName}", ${turnOff}.`] : []),
+        `If the app needs "${productName}", report it at https://github.com/expo/expo/issues and include this error.`,
       ],
       moduleRoot
     );

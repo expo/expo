@@ -364,6 +364,68 @@ describe('renderUnsupportedReport', () => {
     expect(text).toContain('expo-weird');
     expect(text).toMatch(/ios|apple/);
   });
+
+  describe('a gated companion product its module would leave out', () => {
+    const companion = (autolinkWhen) =>
+      renderUnsupportedReport([
+        {
+          reason: 'unchecked-autolink-condition',
+          podName: 'ExpoCameraBarcodeScanning',
+          productName: 'ExpoCameraBarcodeScanning',
+          packageName: 'expo-camera',
+          moduleRoot: '/m/expo-camera',
+          precompiled: true,
+          linkedThrough: 'ExpoCamera',
+          autolinkWhen,
+        },
+      ]);
+
+    it.each([
+      {
+        gate: 'a Podfile property',
+        autolinkWhen: {
+          podfileProperty: 'expo.camera.barcode-scanner-enabled',
+          disabledValue: 'false',
+        },
+        because: 'the Podfile property "expo.camera.barcode-scanner-enabled" is not "false"',
+      },
+      {
+        gate: 'a pod',
+        autolinkWhen: { podName: 'RNWorklets' },
+        because: 'the app has the RNWorklets pod',
+      },
+      {
+        gate: 'an npm package',
+        autolinkWhen: { npmPackage: 'react-native-worklets' },
+        because: 'the app depends on react-native-worklets',
+      },
+    ])(
+      'says why CocoaPods links it and where to report it, for $gate',
+      ({ autolinkWhen, because }) => {
+        const text = companion(autolinkWhen);
+
+        expect(text).toContain(`CocoaPods links "ExpoCameraBarcodeScanning" because ${because}.`);
+        expect(text).toContain('Swift Package Manager cannot link "ExpoCameraBarcodeScanning" yet');
+        expect(text).toContain('https://github.com/expo/expo/issues');
+        expect(text).not.toContain('Package.swift');
+      }
+    );
+
+    it('tells the app how to turn off a product gated on a Podfile property', () => {
+      const text = companion({
+        podfileProperty: 'expo.camera.barcode-scanner-enabled',
+        disabledValue: 'false',
+      });
+
+      expect(text).toContain(
+        'set "expo.camera.barcode-scanner-enabled" to "false" in ios/Podfile.properties.json'
+      );
+    });
+
+    it('offers no switch for a product gated on a pod', () => {
+      expect(companion({ podName: 'RNWorklets' })).not.toContain('Podfile.properties.json');
+    });
+  });
 });
 
 describe('renderUnmappedDependencyWarning', () => {
