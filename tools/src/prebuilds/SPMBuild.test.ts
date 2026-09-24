@@ -333,6 +333,119 @@ describe('buildXcodeBuildArgs', () => {
     );
   });
 
+  describe('a target generated under .build/', () => {
+    const screensPkg: SPMPackageSource = {
+      path: '/repo/node_modules/react-native-screens',
+      buildPath: '/repo/packages/precompile/.build/react-native-screens',
+      packageName: 'react-native-screens',
+      packageVersion: '4.0.0',
+      getSwiftPMConfiguration: () => ({ products: [] }),
+    };
+    const screensProduct: SPMProduct = {
+      name: 'RNScreens',
+      podName: 'RNScreens',
+      platforms: ['iOS("16.4")'],
+      targets: [
+        {
+          type: 'cpp',
+          name: 'RNScreens_codegen_components',
+          path: '.build/codegen/build/generated/ios/ReactCodegen/react/renderer/components/rnscreens',
+        },
+        { type: 'swift', name: 'RNScreensSwift', path: 'ios/swift' },
+      ],
+    };
+    const stagingDirectory =
+      '/repo/packages/precompile/.build/react-native-screens/generated/RNScreens/RNScreens_codegen_components/';
+    const generatedMapping = `${stagingDirectory}=/expo-src/generated/react-native-screens/RNScreens/RNScreens_codegen_components/`;
+
+    it('maps its staging directory to a canonical generated path', () => {
+      const args = buildXcodeBuildArgs(screensPkg, screensProduct, 'Debug', 'iOS');
+      assert.ok(
+        settingValue(args, 'OTHER_CFLAGS').includes(`-fdebug-prefix-map=${generatedMapping}`),
+        `clang needs the generated map: ${settingValue(args, 'OTHER_CFLAGS')}`
+      );
+      assert.ok(
+        settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${generatedMapping}`),
+        `swiftc needs the generated map: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+      );
+    });
+
+    it('orders the generated map so it beats the repository-root catch-all', () => {
+      const args = buildXcodeBuildArgs(screensPkg, screensProduct, 'Debug', 'iOS');
+      const swiftFlags = settingValue(args, 'OTHER_SWIFT_FLAGS');
+      const swiftGenerated = swiftFlags.indexOf(`-debug-prefix-map ${generatedMapping}`);
+      assert.ok(
+        swiftGenerated >= 0 && swiftGenerated < swiftFlags.indexOf('-debug-prefix-map /repo='),
+        `The generated map must lead for swiftc: ${swiftFlags}`
+      );
+      const cFlags = settingValue(args, 'OTHER_CFLAGS');
+      assert.ok(
+        cFlags.indexOf('-fdebug-prefix-map=/repo=') <
+          cFlags.indexOf(`-fdebug-prefix-map=${generatedMapping}`),
+        `The generated map must trail for clang: ${cFlags}`
+      );
+    });
+  });
+
+  describe('a checked-in target directory', () => {
+    const layout = checkedIn([
+      { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' },
+    ]);
+    const targetDirectory =
+      '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/';
+    // Holds <Product>+Exports.swift, which is written beside the `src` link rather than under it.
+    const generatedMapping = `${targetDirectory}=/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/`;
+    const sourceMapping = `${targetDirectory}src/=/expo-src/packages/expo-haptics/ios/`;
+
+    it('maps the files generated beside the source link', () => {
+      const args = buildXcodeBuildArgs(
+        pkg,
+        productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
+        'Debug',
+        'iOS',
+        layout
+      );
+      assert.ok(
+        settingValue(args, 'OTHER_CFLAGS').includes(`-fdebug-prefix-map=${generatedMapping}`),
+        `clang needs the target directory map: ${settingValue(args, 'OTHER_CFLAGS')}`
+      );
+      assert.ok(
+        settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${generatedMapping}`),
+        `swiftc needs the target directory map: ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`
+      );
+    });
+
+    it('lets the source link map beat the target directory map for every compiler', () => {
+      const args = buildXcodeBuildArgs(
+        pkg,
+        productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
+        'Debug',
+        'iOS',
+        layout
+      );
+      const swiftFlags = settingValue(args, 'OTHER_SWIFT_FLAGS');
+      const swiftSource = swiftFlags.indexOf(`-debug-prefix-map ${sourceMapping}`);
+      const swiftGenerated = swiftFlags.indexOf(`-debug-prefix-map ${generatedMapping}`);
+      assert.ok(
+        swiftSource >= 0 && swiftGenerated >= 0 && swiftSource < swiftGenerated,
+        `swiftc applies the first match, so src/ must lead: ${swiftFlags}`
+      );
+      const xccSource = swiftFlags.indexOf(`-Xcc -fdebug-prefix-map=${sourceMapping}`);
+      const xccGenerated = swiftFlags.indexOf(`-Xcc -fdebug-prefix-map=${generatedMapping}`);
+      assert.ok(
+        xccSource >= 0 && xccGenerated >= 0 && xccGenerated < xccSource,
+        `clang applies the last match, so src/ must trail in the -Xcc list: ${swiftFlags}`
+      );
+      const cFlags = settingValue(args, 'OTHER_CFLAGS');
+      const cSource = cFlags.indexOf(`-fdebug-prefix-map=${sourceMapping}`);
+      const cGenerated = cFlags.indexOf(`-fdebug-prefix-map=${generatedMapping}`);
+      assert.ok(
+        cSource >= 0 && cGenerated >= 0 && cGenerated < cSource,
+        `clang applies the last match, so src/ must trail: ${cFlags}`
+      );
+    });
+  });
+
   it('maps a target whose layout comes from a checked-in Package.swift', () => {
     const args = buildXcodeBuildArgs(
       pkg,
@@ -349,7 +462,9 @@ describe('buildXcodeBuildArgs', () => {
       '/expo-src/packages/expo-haptics/ios/';
     assert.equal(
       settingValue(args, 'OTHER_CFLAGS'),
-      `$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=${mapping}`
+      '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
+        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
+        `/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=${mapping}`
     );
     assert.ok(
       settingValue(args, 'OTHER_SWIFT_FLAGS').includes(`-debug-prefix-map ${mapping}`),
@@ -391,6 +506,8 @@ describe('buildXcodeBuildArgs', () => {
     assert.equal(
       settingValue(args, 'OTHER_CFLAGS'),
       '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
+        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
+        '/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=' +
         '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +
         '/expo-src/packages/expo-haptics/'
     );
@@ -463,6 +580,8 @@ describe('buildXcodeBuildArgs', () => {
     assert.equal(
       settingValue(args, 'OTHER_CFLAGS'),
       '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
+        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
+        '/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=' +
         '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +
         '/expo-src/packages/expo-haptics/ios/'
     );

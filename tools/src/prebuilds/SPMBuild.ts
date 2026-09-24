@@ -294,30 +294,39 @@ export const buildXcodeBuildArgs = (
   // the compiler records that staging path rather than where the sources really are. These maps
   // make DWARF record the canonical /expo-src/packages/<package>/<source dir>/ prefix instead,
   // so the resolve-dsym-sourcemaps.js script can map it to the consumer's local package path.
+  // Sources generated during the build have no checkout path, so their staging directory maps to
+  // /expo-src/generated/<package>/<product>/<target>/ instead, which the dSYM check knows to
+  // expect.
   const stagingBase = path.resolve(pkg.buildPath, 'generated', product.name);
   const checkedInRoot = checkedIn?.root;
   const checkedInSourceRoots = new Map(
     (checkedIn?.targets ?? []).map((target) => [target.name, target.sourceRoot])
   );
-  const cTargetPrefixMaps: string[] = [];
-  const swiftTargetPrefixMaps: string[] = [];
+  // posix.join rather than interpolation: an empty source directory — a target whose source
+  // root is the package root — must not leave a doubled separator that matches nothing.
+  const sourcePath = (sourceDirectory: string) =>
+    path.posix.join(`/expo-src/packages/${pkg.packageName}`, sourceDirectory);
+  const generatedPath = (targetName: string) =>
+    path.posix.join('/expo-src/generated', pkg.packageName, product.name, targetName);
+  // Ordered from the least to the most specific prefix, which matters where one target maps both
+  // its staging directory and the `src` link inside it.
+  const targetPrefixMaps: { from: string; to: string }[] = [];
   for (const target of product.targets) {
     // Skip binary framework targets (no source files to compile)
     if (target.type === 'framework') continue;
 
+    const stagingTargetPath = path.join(stagingBase, target.name);
     const checkedInSourceRoot = checkedInSourceRoots.get(target.name);
     // A config target the manifest does not name is inert: nothing is built under it, so there
     // is no staging path to remap. warnUnreconciledConfigTargets reports it once per product.
     if (checkedInRoot != null && !checkedInSourceRoot) continue;
-    let stagingTargetPath: string;
-    let sourceDirectory: string;
     // A checked-in manifest decides the staging shape whatever spm.config.json says, because the
-    // sources are reached through the `src` link rather than copied to the target directory.
+    // sources are reached through the `src` link rather than copied to the target directory,
+    // which holds only generated files such as <Product>+Exports.swift.
     if (checkedInRoot != null && checkedInSourceRoot) {
-      stagingTargetPath = path.join(stagingBase, target.name, 'src');
       // Relative to the manifest root rather than to pkg.path: only the manifest root is
       // canonicalised, and the two can spell one directory two ways.
-      sourceDirectory = path.relative(checkedInRoot, checkedInSourceRoot);
+      const sourceDirectory = path.relative(checkedInRoot, checkedInSourceRoot);
       if (sourceDirectory === '..' || sourceDirectory.startsWith(`..${path.sep}`)) {
         throw new Error(
           `Cannot remap debug info for ${product.name}/${target.name}: its source root ` +
@@ -327,30 +336,34 @@ export const buildXcodeBuildArgs = (
             `that same root. Find how the two roots came to differ; the package itself is fine.`
         );
       }
-    } else {
-      // A target with no path names no source directory, and one generated under .build/ has no
-      // canonical source path at all. The repository-root map below covers both.
-      if (!target.path || target.path.startsWith('.build/')) continue;
-      stagingTargetPath = path.join(stagingBase, target.name);
-      sourceDirectory = target.path;
+      targetPrefixMaps.push(
+        { from: stagingTargetPath, to: generatedPath(target.name) },
+        { from: path.join(stagingTargetPath, 'src'), to: sourcePath(sourceDirectory) }
+      );
+    } else if (target.path?.startsWith('.build/')) {
+      targetPrefixMaps.push({ from: stagingTargetPath, to: generatedPath(target.name) });
+    } else if (target.path) {
+      targetPrefixMaps.push({ from: stagingTargetPath, to: sourcePath(target.path) });
     }
-    // posix.join rather than interpolation: an empty source directory — a target whose source
-    // root is the package root — must not leave a doubled separator that matches nothing.
-    const canonicalPath = path.posix.join(`/expo-src/packages/${pkg.packageName}`, sourceDirectory);
-
-    // Trailing '/' ensures directory-boundary matching — without it, a target named
-    // "ExpoModulesCore" would also match "ExpoModulesCore_ios_objc" as a string prefix.
-    cTargetPrefixMaps.push(`-fdebug-prefix-map=${stagingTargetPath}/=${canonicalPath}/`);
-    swiftTargetPrefixMaps.push(`-debug-prefix-map ${stagingTargetPath}/=${canonicalPath}/`);
+    // A Mode A target with no path is an error SPMGenerator reports before anything is built.
   }
+
+  // Trailing '/' ensures directory-boundary matching — without it, a target named
+  // "ExpoModulesCore" would also match "ExpoModulesCore_ios_objc" as a string prefix.
+  const cTargetPrefixMaps = targetPrefixMaps.map(
+    ({ from, to }) => `-fdebug-prefix-map=${from}/=${to}/`
+  );
+  const swiftTargetPrefixMaps = [...targetPrefixMaps]
+    .reverse()
+    .map(({ from, to }) => `-debug-prefix-map ${from}/=${to}/`);
 
   // General repo root map as catch-all
   const debugPrefixMap = `-fdebug-prefix-map=${repoRoot}=/expo-src`;
   const swiftDebugPrefixMap = `-debug-prefix-map ${repoRoot}=/expo-src`;
 
-  // The per-target map must beat the general catch-all: clang applies the last matching flag,
-  // while swiftc applies the first. The catch-all therefore leads the two clang-facing lists
-  // but trails the Swift list.
+  // The more specific map must win: clang applies the last matching flag, while swiftc applies
+  // the first. The catch-all therefore leads the two clang-facing lists but trails the Swift
+  // list, and the per-target maps run in opposite orders for the same reason.
   const allCPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].join(' ');
   const allSwiftPrefixMaps = [...swiftTargetPrefixMaps, swiftDebugPrefixMap].join(' ');
   const allXccPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].map((m) => `-Xcc ${m}`).join(' ');

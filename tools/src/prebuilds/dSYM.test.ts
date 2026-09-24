@@ -85,6 +85,26 @@ describe('analyzeDwarfPrefixMapping', () => {
     assert.equal(result.success, true);
   });
 
+  it('accepts a source generated at build time, which has no checkout path to resolve to', () => {
+    const result = analyzeDwarfPrefixMapping(
+      dwarfDump(STAGING_COMP_DIR, [
+        '/expo-src/generated/react-native-screens/RNScreens/RNScreens_codegen_components/Foo.cpp',
+      ])
+    );
+
+    assert.equal(result.success, true);
+  });
+
+  it('fails when a build-time generated source leaks its staging path', () => {
+    const result = analyzeDwarfPrefixMapping(
+      dwarfDump(STAGING_COMP_DIR, [
+        '/expo-src/packages/precompile/.build/react-native-screens/generated/RNScreens/RNScreens_codegen_components/Foo.cpp',
+      ])
+    );
+
+    assert.equal(result.success, false);
+  });
+
   it('fails when a source file name points into the SwiftPM staging directory', () => {
     const result = analyzeDwarfPrefixMapping(
       dwarfDump(STAGING_COMP_DIR, [

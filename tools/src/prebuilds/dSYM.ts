@@ -175,13 +175,19 @@ const systemPrefixes = [
  *
  * A relative name is not resolvable either: the debugger resolves it against DW_AT_comp_dir,
  * which is always SwiftPM's staging directory. Only dwarfdump's synthetic bracketed names, such
- * as `<swift-imported-modules>`, are tolerated — they are not source files.
+ * as `<swift-imported-modules>`, are tolerated — they are not source files. So are sources
+ * generated during the build under /expo-src/generated/: no checkout holds them, so they are
+ * expected to stay unresolvable, and the canonical prefix tells them apart from a staging path
+ * that leaked.
  */
 const isResolvableSourcePath = (sourcePath: string): boolean => {
   if (sourcePath.startsWith('<') && sourcePath.endsWith('>')) {
     return true;
   }
   if (systemPrefixes.some((prefix) => sourcePath.startsWith(prefix))) {
+    return true;
+  }
+  if (sourcePath.startsWith('/expo-src/generated/')) {
     return true;
   }
   if (
