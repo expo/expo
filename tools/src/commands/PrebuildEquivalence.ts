@@ -299,6 +299,7 @@ function assertDistinctArtifacts(pathA: string, pathB: string): void {
   if (resolve(pathA) !== resolve(pathB)) {
     return;
   }
+  assertArtifactExists(pathA, 'A');
 
   throw new Error(
     `${pathA} and ${pathB} are the same artifact, so comparing them would pass without comparing ` +
@@ -536,7 +537,7 @@ export function parseFlavor(value: string): BuildFlavor {
  * basename rather than by the product name: the product `ExpoApplication` builds
  * `EXApplication.xcframework`, and a slice can carry a second framework beside the product's.
  */
-function inspectArtifact(xcframeworkPath: string, label: string): InspectedArtifact {
+function assertArtifactExists(xcframeworkPath: string, label: string): void {
   if (!fs.existsSync(xcframeworkPath)) {
     throw new Error(
       `There is no xcframework at ${xcframeworkPath} (side ${label}). The equivalence check ` +
@@ -544,6 +545,10 @@ function inspectArtifact(xcframeworkPath: string, label: string): InspectedArtif
         `(\`et prebuild <package> -f <flavor>\`) or point at an existing xcframework.`
     );
   }
+}
+
+function inspectArtifact(xcframeworkPath: string, label: string): InspectedArtifact {
+  assertArtifactExists(xcframeworkPath, label);
   const framework = path.basename(xcframeworkPath, '.xcframework');
   const binaries = fs
     .readdirSync(xcframeworkPath, { withFileTypes: true })

@@ -201,6 +201,26 @@ describe('runPrebuildEquivalence — agreement is a precondition of the whole ru
     assert.deepEqual(calls, []);
   });
 
+  it('says an artifact passed twice is missing when it does not exist', () => {
+    const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage' }]);
+    const { runtime, calls } = runtimeSpy(roots);
+    const missing = path.join(
+      fs.mkdtempSync(path.join(os.tmpdir(), 'prebuild-equivalence-')),
+      IMAGE_DEBUG
+    );
+
+    assert.throws(
+      () => runPrebuildEquivalence(missing, missing, options(), runtime),
+      (error) => {
+        assert.ok(error instanceof Error);
+        assert.match(error.message, /There is no xcframework at/);
+        assert.doesNotMatch(error.message, /same artifact/);
+        return true;
+      }
+    );
+    assert.deepEqual(calls, []);
+  });
+
   it('refuses a mismatched pair before printing a verdict', () => {
     const roots = packagesDirWith('expo-image', [{ name: 'ExpoImage', spmPackages: SPM_PACKAGES }]);
     const { runtime, calls } = runtimeSpy(roots);
