@@ -238,6 +238,20 @@ struct EventEmitterTests {
   }
 
   @Test
+  func `removes a listener with a detached remove function`() throws {
+    let wasCalled = try runtime.eval([
+      "wasCalled = false",
+      "emitter = new expo.EventEmitter()",
+      "remove = emitter.addListener('test', () => { wasCalled = true }).remove",
+      "remove()",
+      "emitter.emit('test')",
+      "wasCalled"
+    ])
+
+    #expect(try wasCalled.asBool() == false)
+  }
+
+  @Test
   func `removes only related listener`() throws {
     let counter = try runtime.eval([
       "counter = 0",

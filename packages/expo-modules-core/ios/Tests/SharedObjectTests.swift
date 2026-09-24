@@ -147,6 +147,60 @@ struct SharedObjectTests {
     #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
   }
 
+  @Test
+  func `releases the native object after removing a listener when stopObserving throws`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        sharedObject.stopObserving = () => {
+          throw new Error('stopObserving failed');
+        };
+        const subscription = sharedObject.addListener('test event', () => sharedObject);
+        try {
+          subscription.remove();
+        } catch {}
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
+  func `releases the native object after removing a listener with removeListener`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        const listener = () => subscription;
+        const subscription = sharedObject.addListener('test event', listener);
+        sharedObject.removeListener('test event', listener);
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
+  func `releases the native object after removing all listeners`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        const subscription = sharedObject.addListener('test event', () => subscription);
+        sharedObject.removeAllListeners('test event');
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
   // MARK: - Native object
 
   @Test
