@@ -11,9 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-A lazily-loaded horizontal list component that only renders visible items for efficient scrolling. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/lists) for more information.
-
-> **info** `LazyRow` is not truly lazy yet: the native side only composes visible items, but React still creates every child up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
+Expo UI LazyRow matches the official Jetpack Compose [LazyRow API](https://developer.android.com/develop/ui/compose/lists) and displays a horizontally scrolling list.
 
 <ContentSpotlight
   variant="component"
@@ -31,10 +29,77 @@ A lazily-loaded horizontal list component that only renders visible items for ef
 
 ### Basic lazy row
 
+Each child of [`LazyRow`](#lazyrow) is one item. Use the `horizontalArrangement` and `contentPadding` props to space the items.
+
 <ComponentExample
   title="BasicLazyRow.tsx"
-  src="/static/images/expo-ui/examples/lazyrow-basic-android-light.webp"
-  darkSrc="/static/images/expo-ui/examples/lazyrow-basic-android-dark.webp"
+  src="/static/images/expo-ui/examples/lazyrow-static-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyrow-static-android-dark.webp"
+  alt="Three outlined items in a horizontal row, separated by a small gap">
+
+```tsx
+import {
+  Host,
+  LazyRow,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
+import {
+  border,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicLazyRow() {
+  const colors = useMaterialColors();
+
+  return (
+    <Host style={{ height: 100 }}>
+      <LazyRow
+        horizontalArrangement={{ spacedBy: 8 }}
+        verticalAlignment="center">
+        <Text
+          style={{ fontSize: 28 }}
+          color={colors.onBackground}
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
+          Photos
+        </Text>
+        <Text
+          style={{ fontSize: 28 }}
+          color={colors.onBackground}
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
+          Music
+        </Text>
+        <Text
+          style={{ fontSize: 28 }}
+          color={colors.onBackground}
+          modifiers={[
+            border(1, colors.outline),
+            padding(12, 6, 12, 6),
+          ]}>
+          Videos
+        </Text>
+      </LazyRow>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Large lists
+
+Use [`LazyRow.Items`](#lazyitems) to render items from an array. Pass the items as `data`, a unique key for each item with `keyExtractor`, and a `children` function that returns the view for an item. `LazyRow.Items` renders only the items near the visible area and reuses them while you scroll.
+
+<ComponentExample
+  title="LargeLazyRow.tsx"
+  src="/static/images/expo-ui/examples/lazyrow-large-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyrow-large-android-dark.webp"
   alt="Outlined items in a horizontal row, scrolling off the right edge of the screen">
 
 ```tsx
@@ -50,93 +115,42 @@ import {
 } from '@expo/ui/jetpack-compose/modifiers';
 
 const items = Array.from(
-  { length: 100 },
+  { length: 10000 },
   (_, i) => `Item ${i + 1}`
 );
 
-export default function BasicLazyRow() {
+function Chip({ label }: { label: string }) {
   const colors = useMaterialColors();
 
   return (
-    <Host style={{ height: 100 }}>
-      <LazyRow>
-        {items.map(item => (
-          <Text
-            key={item}
-            style={{ fontSize: 28 }}
-            color={colors.onBackground}
-            modifiers={[
-              border(1, colors.outline),
-              padding(12, 6, 12, 6),
-            ]}>
-            {item}
-          </Text>
-        ))}
-      </LazyRow>
-    </Host>
+    <Text
+      style={{ fontSize: 28 }}
+      color={colors.onBackground}
+      modifiers={[
+        border(1, colors.outline),
+        padding(12, 6, 12, 6),
+      ]}>
+      {label}
+    </Text>
   );
 }
-```
 
-</ComponentExample>
+function renderItem({ item }: { item: string }) {
+  return <Chip label={item} />;
+}
 
-### With arrangement
-
-Use the `horizontalArrangement` prop to control how items are spaced within the list. Pass a string value like `'spaceBetween'` or an object like `{ spacedBy: 8 }` for fixed spacing in dp.
-
-<ComponentExample
-  title="LazyRowArrangement.tsx"
-  src="/static/images/expo-ui/examples/lazyrow-arrangement-android-light.webp"
-  darkSrc="/static/images/expo-ui/examples/lazyrow-arrangement-android-dark.webp"
-  alt="Outlined row items separated by a sixteen density independent pixel gap">
-
-```tsx
-import {
-  Host,
-  LazyRow,
-  Text,
-  useMaterialColors,
-} from '@expo/ui/jetpack-compose';
-import {
-  border,
-  padding,
-} from '@expo/ui/jetpack-compose/modifiers';
-
-export default function LazyRowArrangement() {
-  const colors = useMaterialColors();
-
+export default function LargeLazyRow() {
   return (
     <Host style={{ height: 100 }}>
       <LazyRow
-        horizontalArrangement={{ spacedBy: 16 }}
+        horizontalArrangement={{ spacedBy: 8 }}
         verticalAlignment="center">
-        <Text
-          style={{ fontSize: 28 }}
-          color={colors.onBackground}
-          modifiers={[
-            border(1, colors.outline),
-            padding(12, 6, 12, 6),
-          ]}>
-          Spaced item 1
-        </Text>
-        <Text
-          style={{ fontSize: 28 }}
-          color={colors.onBackground}
-          modifiers={[
-            border(1, colors.outline),
-            padding(12, 6, 12, 6),
-          ]}>
-          Spaced item 2
-        </Text>
-        <Text
-          style={{ fontSize: 28 }}
-          color={colors.onBackground}
-          modifiers={[
-            border(1, colors.outline),
-            padding(12, 6, 12, 6),
-          ]}>
-          Spaced item 3
-        </Text>
+        <LazyRow.Items
+          data={items}
+          keyExtractor={item => item}
+          estimatedItemSize={120}>
+          {renderItem}
+        </LazyRow.Items>
       </LazyRow>
     </Host>
   );
@@ -145,69 +159,15 @@ export default function LazyRowArrangement() {
 
 </ComponentExample>
 
-### With content padding
+Follow these rules when you render items:
 
-Use the `contentPadding` prop to add padding around the list content in dp.
-
-<ComponentExample
-  title="LazyRowPadding.tsx"
-  src="/static/images/expo-ui/examples/lazyrow-padding-android-light.webp"
-  darkSrc="/static/images/expo-ui/examples/lazyrow-padding-android-dark.webp"
-  alt="Outlined row items inset from the start of the list by content padding">
-
-```tsx
-import {
-  Host,
-  LazyRow,
-  Text,
-  useMaterialColors,
-} from '@expo/ui/jetpack-compose';
-import {
-  border,
-  padding,
-} from '@expo/ui/jetpack-compose/modifiers';
-
-export default function LazyRowPadding() {
-  const colors = useMaterialColors();
-
-  return (
-    <Host style={{ height: 100 }}>
-      <LazyRow
-        contentPadding={{ start: 16, top: 8, end: 16, bottom: 8 }}>
-        <Text
-          style={{ fontSize: 28 }}
-          color={colors.onBackground}
-          modifiers={[
-            border(1, colors.outline),
-            padding(12, 6, 12, 6),
-          ]}>
-          Padded item 1
-        </Text>
-        <Text
-          style={{ fontSize: 28 }}
-          color={colors.onBackground}
-          modifiers={[
-            border(1, colors.outline),
-            padding(12, 6, 12, 6),
-          ]}>
-          Padded item 2
-        </Text>
-        <Text
-          style={{ fontSize: 28 }}
-          color={colors.onBackground}
-          modifiers={[
-            border(1, colors.outline),
-            padding(12, 6, 12, 6),
-          ]}>
-          Padded item 3
-        </Text>
-      </LazyRow>
-    </Host>
-  );
-}
-```
-
-</ComponentExample>
+- Give the `LazyRow` a fixed height. Items that are not ready yet show an empty placeholder that fills the height of the row.
+- Define the `children` function outside the component, or wrap it in `useCallback`. Otherwise, the items near the visible area render again each time the component renders.
+- A reused view keeps the local state (`useState`) of the item it showed before. Reset the state when the item changes, or keep the state outside the view.
+- Set `estimatedItemSize` close to the width of your items, in dp.
+- Use `overscanCount` to prepare more items before and after the visible items.
+- To update the items, pass a new `data` array. Do not change the array in place.
+- Set `recycling={false}` to render every item up front.
 
 ## API
 
