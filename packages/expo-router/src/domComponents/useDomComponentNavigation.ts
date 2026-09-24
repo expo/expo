@@ -23,13 +23,13 @@ export function useDomComponentNavigation() {
           router.linkTo(data.href, data.options);
           break;
         case ROUTER_DISMISS_ALL_TYPE:
-          router.dismissAll();
+          router.dismissAll(data.options);
           break;
         case ROUTER_DISMISS_TYPE:
-          router.dismiss(data.count);
+          router.dismiss(data.count, data.options);
           break;
         case ROUTER_BACK_TYPE:
-          router.back();
+          router.back(data.options);
           break;
         case ROUTER_SET_PARAMS_TYPE:
           router.setParams(data.params);

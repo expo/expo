@@ -1,5 +1,5 @@
 import type { ReactNavigationState } from '../global-state/types';
-import type { NavigationAction } from '../react-navigation';
+import type { NavigationAction, NavigationState } from '../react-navigation';
 
 export interface BasePageEvent {
   pathname: string;
@@ -36,4 +36,11 @@ export interface ActionDispatchedEvent {
   actionType: NavigationAction['type'];
   payload: NavigationAction['payload'];
   state: ReactNavigationState;
+}
+
+/** Fires after navigation state commits for each `PRELOAD` action that changes it. */
+export interface RoutePreloadedEvent {
+  type: 'routePreloaded';
+  routeKey: string;
+  state: NavigationState;
 }

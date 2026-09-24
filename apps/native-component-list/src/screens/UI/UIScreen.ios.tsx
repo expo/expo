@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'List.ForEach data',
+    route: 'ui/virtualized-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DataListForEachScreen'));
+    },
+  },
+  {
     name: 'Label component',
     route: 'ui/label',
     options: {},
@@ -144,6 +152,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./StepperScreen'));
+    },
+  },
+  {
+    name: 'NavigationStack component',
+    route: 'ui/navigationstack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationStackScreen'));
+    },
+  },
+  {
+    name: 'NavigationSplitView component',
+    route: 'ui/navigationsplitview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationSplitViewScreen'));
     },
   },
   {

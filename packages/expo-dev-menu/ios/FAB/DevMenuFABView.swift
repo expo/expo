@@ -22,6 +22,14 @@ enum FABConstants {
   )
 }
 
+struct FABPillHeightKey: PreferenceKey {
+  static let defaultValue: CGFloat = FABConstants.iconSize
+
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = nextValue()
+  }
+}
+
 struct FabPill: View {
   @Binding var isPressed: Bool
   @Binding var isDragging: Bool
@@ -63,6 +71,11 @@ struct FabPill: View {
           .transition(.opacity.combined(with: .scale(scale: 0.8)))
       }
     }
+    .background(
+      GeometryReader { proxy in
+        Color.clear.preference(key: FABPillHeightKey.self, value: proxy.size.height)
+      }
+    )
     .saturation(isIdle ? 0 : 1)
     .opacity(isIdle ? 0.5 : 1)
     .animation(.easeInOut(duration: 0.3), value: isIdle)
@@ -113,6 +126,18 @@ struct DevMenuFABView: View {
 
   private let fabSize = CGSize(width: 72, height: FABConstants.iconSize + 50)
 
+  /// Centred in the touch frame, so its top moves as the label appears and dismisses.
+  private var drawnFrame: CGRect {
+    let ring = FABPlacement.ringOverhang
+    let width = FABConstants.iconSize + ring * 2
+    return CGRect(
+      x: (fabSize.width - width) / 2,
+      y: (fabSize.height - pillHeight) / 2 - ring,
+      width: width,
+      height: pillHeight + ring * 2
+    )
+  }
+
   // UserDefaults keys for persisting position
   private static let positionXKey = "DevMenuFAB.positionX"
   private static let positionYKey = "DevMenuFAB.positionY"
@@ -136,6 +161,7 @@ struct DevMenuFABView: View {
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
   @State private var didPosition = false
+  @State private var pillHeight: CGFloat = FABConstants.iconSize
 
   // Get safe area from window since .ignoresSafeArea() may zero out geometry values
   private var windowSafeArea: UIEdgeInsets {
@@ -164,6 +190,21 @@ struct DevMenuFABView: View {
 
       FabPill(isPressed: $isPressed, isDragging: $isDragging)
         .frame(width: fabSize.width, height: fabSize.height)
+        .onPreferenceChange(FABPillHeightKey.self) { height in
+          pillHeight = height
+          let ranges = placementRanges(bounds: geometry.size, safeArea: safeArea)
+          let clamped = CGPoint(
+            x: position.x.clamped(to: ranges.x),
+            y: position.y.clamped(to: ranges.y)
+          )
+          guard clamped != position else { return }
+          var transaction = Transaction()
+          transaction.disablesAnimations = true
+          withTransaction(transaction) {
+            position = clamped
+          }
+          onFrameChange(CGRect(origin: clamped, size: fabSize))
+        }
         .position(x: currentFrame.midX, y: currentFrame.midY)
         .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
         .onAppear {
@@ -236,15 +277,10 @@ struct DevMenuFABView: View {
   private func placeInitially(bounds: CGSize, safeArea: EdgeInsets) {
     let initialPos: CGPoint
     if let storedPos = Self.loadStoredPosition() {
-      let margin = FABConstants.margin
-      let minX = margin / 2
-      let maxX = bounds.width - fabSize.width - margin / 2
-      let minY = safeArea.top + FABConstants.verticalPadding
-      let maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-
+      let ranges = placementRanges(bounds: bounds, safeArea: safeArea)
       initialPos = CGPoint(
-        x: storedPos.x.clamped(to: minX...maxX),
-        y: storedPos.y.clamped(to: minY...maxY)
+        x: storedPos.x.clamped(to: ranges.x),
+        y: storedPos.y.clamped(to: ranges.y)
       )
     } else {
       initialPos = defaultPosition(bounds: bounds, safeArea: safeArea)
@@ -258,11 +294,27 @@ struct DevMenuFABView: View {
     }
   }
 
-  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
-    CGPoint(
-      x: bounds.width - fabSize.width - FABConstants.margin / 2,
-      y: safeArea.top + FABConstants.verticalPadding
+  private func placementRanges(
+    bounds: CGSize,
+    safeArea: EdgeInsets
+  ) -> (x: ClosedRange<CGFloat>, y: ClosedRange<CGFloat>) {
+    let ranges = FABPlacement.ranges(
+      bounds: bounds,
+      safeArea: FABInsets(
+        top: safeArea.top,
+        leading: safeArea.leading,
+        bottom: safeArea.bottom,
+        trailing: safeArea.trailing
+      ),
+      drawnFrame: drawnFrame,
+      inset: FABConstants.margin
     )
+    return (ranges.x, ranges.y)
+  }
+
+  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
+    let ranges = placementRanges(bounds: bounds, safeArea: safeArea)
+    return CGPoint(x: ranges.x.upperBound, y: ranges.y.lowerBound)
   }
 
   private func snapToEdge(
@@ -271,19 +323,13 @@ struct DevMenuFABView: View {
     bounds: CGSize,
     safeArea: EdgeInsets
   ) -> CGPoint {
-    let margin = FABConstants.margin
-    let edgeMargin = margin / 2  // Closer to screen edge when snapped
     let momentumX = velocity.x * FABConstants.momentumFactor
     let momentumY = velocity.y * FABConstants.momentumFactor
+    let ranges = placementRanges(bounds: bounds, safeArea: safeArea)
 
     let estimatedCenterX = point.x + self.fabSize.width / 2 + momentumX
-    let targetX: CGFloat = estimatedCenterX < bounds.width / 2
-      ? edgeMargin
-    : bounds.width - self.fabSize.width - edgeMargin
-
-    let minY = safeArea.top + FABConstants.verticalPadding
-    let maxY = bounds.height - self.fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-    let targetY = (point.y + momentumY).clamped(to: minY...maxY)
+    let targetX = estimatedCenterX < bounds.width / 2 ? ranges.x.lowerBound : ranges.x.upperBound
+    let targetY = (point.y + momentumY).clamped(to: ranges.y)
 
     return CGPoint(x: targetX, y: targetY)
   }

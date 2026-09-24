@@ -6,6 +6,46 @@
 
 ### 🎉 New features
 
+- Add the `ExpoLauncherURL` parser for the reserved `__expo_*` deep linking URL params. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.6 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a data race on `DevMenuManager`'s registered callbacks and app context that could crash the app when one app context registered its dev menu callbacks while another tore down, such as on a dev-client reload. ([#49559](https://github.com/expo/expo/pull/49559) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.5 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Kept the floating dev menu button clear of system bars, the front camera and the home indicator by clamping the drawn button, rather than its touch frame, to the safe area on every edge. ([#50445](https://github.com/expo/expo/pull/50445) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Add a JavaScript API to show or hide the floating Tools button at runtime. ([#47746](https://github.com/expo/expo/pull/47746) by [@KevinvdBurg](https://github.com/KevinvdBurg))
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Read the performance monitor state from hosts that replace the default FPS overlay with their own monitor.
@@ -23,6 +63,7 @@
 - [iOS] Replace dev-menu swizzling and reflection into React Native internals with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove the manual packager socket reconnect now that the bundle configuration resolves the dev server host. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+- Show QuickJS as the JavaScript engine in the dev menu on Android and iOS. ([#49994](https://github.com/expo/expo/pull/49994) by [@ammarahm-ed](https://github.com/ammarahm-ed))
 
 ## 57.0.10 - 2026-07-29
 

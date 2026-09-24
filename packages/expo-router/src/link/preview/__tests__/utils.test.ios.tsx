@@ -1,611 +1,118 @@
-import { getLinkingConfig } from '../../../getLinkingConfig';
-import { getRoutes } from '../../../getRoutes';
-import { getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
-import { navigationRef } from '../../../global-state/navigationRef';
-import { Stack } from '../../../layouts/Stack';
-import { NativeTabs } from '../../../native-tabs/index';
-import { INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME } from '../../../navigationParams';
-import type { NavigationState } from '../../../react-navigation/native';
-import { getMockContext, renderRouter } from '../../../testing-library';
 import {
-  deepEqual,
-  getPreloadedRouteFromRootStateByHref,
-  getTabPathFromRootStateByHref,
-} from '../utils';
+  INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
+} from '../../../navigationParams';
+import type { NavigationState } from '../../../react-navigation/native';
+import { findPreviewActivationPath } from '../utils';
 
-// TODO: Remove this after the logs are removed from react-native-screens
-let originalConsoleInfo: typeof console.info;
-beforeAll(() => {
-  originalConsoleInfo = console.info;
-  console.info = (...args) => {
-    const message = args[0];
-    if (message && typeof message === 'string') {
-      if (message.includes('TabsScreen') || message.includes('BottomTabs render')) {
-        // Ignore logs from react-native-screens
-        return;
-      }
-    }
-    originalConsoleInfo(...args); // Call the original console.info
-  };
-});
-afterAll(() => {
-  console.info = originalConsoleInfo;
-});
-
-const routes = {
-  _layout: () => (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index" />
-      <NativeTabs.Trigger name="faces" />
-      <NativeTabs.Trigger name="explore" />
-    </NativeTabs>
-  ),
-  index: () => null,
-  'faces/_layout': () => <Stack />,
-  'faces/index': () => null,
-  'faces/[face]': () => null,
-  'explore/_layout': () => <Stack />,
-  'explore/index': () => null,
-  'explore/news/_layout': () => <Stack />,
-  'explore/news/index': () => null,
-  'explore/news/[title]': () => null,
+const previewId = 'preview';
+const previewParams = {
+  item: 'two',
+  [INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME]: previewId,
+  [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
 };
-const context = getMockContext(routes);
-const routeNode = getRoutes(context, {
-  ignoreEntryPoints: true,
-  platform: 'ios',
-  preserveRedirectAndRewrites: true,
-  skipGenerated: true,
-})!;
-const linking = getLinkingConfig(routeNode, context, {
-  metaOnly: false,
-  redirects: [],
-  skipGenerated: false,
-  sitemap: true,
-  notFound: true,
-});
-const getRouteInfo = () => getRouteInfoFromState(navigationRef.getRootState());
 
-describe('deepEqual', () => {
-  it('returns true for same object reference', () => {
-    const obj = { a: 1 };
-    expect(deepEqual(obj, obj)).toBe(true);
-  });
+function stackState(): NavigationState {
+  return {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'root-stack',
+    index: 0,
+    routeNames: ['index', 'details'],
+    routes: [
+      { key: 'index-key', name: 'index' },
+      { key: 'details-key', name: 'details', params: previewParams },
+    ],
+  };
+}
 
-  it('returns true for deeply equal objects', () => {
-    const a = { x: 1, y: { z: 2 } };
-    const b = { x: 1, y: { z: 2 } };
-    expect(deepEqual(a, b)).toBe(true);
-  });
-
-  it('returns false for objects with different keys', () => {
-    const a = { x: 1 };
-    const b = { x: 1, y: 2 };
-    expect(deepEqual(a, b)).toBe(false);
-  });
-
-  it('returns false for objects with different values', () => {
-    const a = { x: 1 };
-    const b = { x: 2 };
-    expect(deepEqual(a, b)).toBe(false);
-  });
-
-  it('returns false if one is null', () => {
-    type DeepEqualParam = Parameters<typeof deepEqual>[0];
-    expect(deepEqual(null as unknown as DeepEqualParam, { a: 1 })).toBe(false);
-    expect(deepEqual({ a: 1 }, null as unknown as DeepEqualParam)).toBe(false);
-  });
-
-  it('returns false if both are null', () => {
-    type DeepEqualParam = Parameters<typeof deepEqual>[0];
-    expect(deepEqual(null as unknown as DeepEqualParam, null as unknown as DeepEqualParam)).toBe(
-      true
-    );
-  });
-
-  it('returns false for non-object types', () => {
-    type DeepEqualParam = Parameters<typeof deepEqual>[0];
-    expect(deepEqual(1 as unknown as DeepEqualParam, { a: 1 })).toBe(false);
-    expect(deepEqual({ a: 1 }, 1 as unknown as DeepEqualParam)).toBe(false);
-    expect(
-      deepEqual('test' as unknown as DeepEqualParam, 'test' as unknown as DeepEqualParam)
-    ).toBe(true);
-  });
-
-  it('returns true for deeply nested equal objects', () => {
-    const a = { a: { b: { c: 3 } } };
-    const b = { a: { b: { c: 3 } } };
-    expect(deepEqual(a, b)).toBe(true);
-  });
-
-  it('returns false for deeply nested unequal objects', () => {
-    const a = { a: { b: { c: 3 } } };
-    const b = { a: { b: { c: 4 } } };
-    expect(deepEqual(a, b)).toBe(false);
-  });
-
-  it('returns true for empty objects', () => {
-    expect(deepEqual({}, {})).toBe(true);
-  });
-});
-
-describe(getTabPathFromRootStateByHref, () => {
-  beforeEach(() => {
-    renderRouter(routes);
-  });
-
-  it('returns single tab path with one tab navigator in href, but without change', () => {
-    const state = {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'stack-JffH1vhEyC5DchHoYg_-L',
-      index: 0,
-      routeNames: ['__root', '+not-found', '_sitemap'],
-      routes: [
-        {
-          name: '__root',
-          state: {
-            stale: false,
-            routeKeySeq: 0,
-            type: 'tab',
-            key: 'tab-IBiK_OuEIIGFJ_YDRF760',
-            index: 1,
-            routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-              },
-            ],
-            routes: [
-              {
-                name: 'index',
-                path: '/',
-                key: 'index-Zv_CsLcfPO6mXyfEQG-n0',
-              },
-              {
-                name: 'faces',
-                key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-                state: {
-                  stale: false,
-                  routeKeySeq: 0,
-                  type: 'stack',
-                  key: 'stack-7sR1tGrlUaLv2LXn74x0d',
-                  index: 0,
-                  routeNames: ['index', '[face]'],
-                  routes: [
-                    {
-                      key: 'index-pmXH7A8Wnk3QyMNq1Gsvw',
-                      name: 'index',
-                    },
-                    {
-                      key: '[face]-9rms2gdsibY9dVYUGCpZG',
-                      name: '[face]',
-                      params: {
-                        face: '1e3a8a',
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                name: 'explore',
-                key: 'explore-zPybZdl_CGIZxtUVLaT2K',
-              },
-            ],
-          },
-          key: '__root-fIzYvzoMkBMsXahmRCQXB',
-        },
-      ],
-    };
-    const href = '/faces/1e3a8a';
-    const tabPath = getTabPathFromRootStateByHref(
-      href,
-      state as NavigationState,
-      getRouteInfo(),
-      linking
-    );
-    expect(tabPath).toEqual([
+function tabsState(): NavigationState {
+  return {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'root-stack',
+    index: 0,
+    routeNames: ['__root'],
+    routes: [
       {
-        oldTabKey: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-        newTabKey: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-      },
-    ]);
-  });
-
-  it('returns single tab path with one tab navigator in href and with change', () => {
-    const state = {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'stack-BwGGEF5WBtNuQP8AG6YUK',
-      index: 0,
-      routeNames: ['__root', '+not-found', '_sitemap'],
-      routes: [
-        {
-          name: '__root',
-          state: {
-            stale: false,
-            routeKeySeq: 0,
-            type: 'tab',
-            key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
-            index: 0,
-            routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'index-rYeU6j6cRmkJK1pXpEFHs',
+        key: 'root-key',
+        name: '__root',
+        state: {
+          stale: false,
+          routeKeySeq: 0,
+          key: 'root-tabs',
+          index: 0,
+          routeNames: ['home', 'settings'],
+          routes: [
+            { key: 'home-key', name: 'home' },
+            {
+              key: 'settings-key',
+              name: 'settings',
+              state: {
+                stale: false,
+                routeKeySeq: 0,
+                key: 'settings-stack',
+                index: 0,
+                routeNames: ['index', 'details'],
+                routes: [
+                  { key: 'settings-index-key', name: 'index' },
+                  {
+                    key: 'details-key',
+                    name: 'details',
+                    params: previewParams,
+                  },
+                ],
               },
-            ],
-            routes: [
-              {
-                name: 'index',
-                path: '/',
-                key: 'index-rYeU6j6cRmkJK1pXpEFHs',
-              },
-              {
-                name: 'faces',
-                key: 'faces-CtzasUGRC7VBM70ECYYD9',
-                state: {
-                  stale: false,
-                  routeKeySeq: 0,
-                  type: 'stack',
-                  key: 'stack-0o3mKk6OKgAREN0rnNN9T',
-                  index: 0,
-                  routeNames: ['index', '[face]'],
-                  routes: [
-                    {
-                      key: 'index-E5BQcVJKhurHWYfmd4miV',
-                      name: 'index',
-                    },
-                    {
-                      key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
-                      name: '[face]',
-                      params: {
-                        face: '1e3a8a',
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                name: 'explore',
-                key: 'explore-1rRkVf5WySMDWZdpYR5gY',
-              },
-            ],
-          },
-          key: '__root-i4ih9bAW8jcq6MHWZNUhE',
-        },
-      ],
-    };
-    const href = '/faces/1e3a8a';
-    const tabPath = getTabPathFromRootStateByHref(
-      href,
-      state as NavigationState,
-      getRouteInfo(),
-      linking
-    );
-    expect(tabPath).toEqual([
-      {
-        oldTabKey: 'index-rYeU6j6cRmkJK1pXpEFHs',
-        newTabKey: 'faces-CtzasUGRC7VBM70ECYYD9',
-      },
-    ]);
-  });
-});
-
-describe(getPreloadedRouteFromRootStateByHref, () => {
-  let getStateForHref: jest.SpyInstance | undefined;
-
-  beforeEach(() => {
-    renderRouter(routes);
-  });
-
-  afterEach(() => {
-    getStateForHref?.mockRestore();
-    getStateForHref = undefined;
-  });
-
-  it('returns correct preloaded route in the same stack', () => {
-    const state = {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'stack-JffH1vhEyC5DchHoYg_-L',
-      index: 0,
-      routeNames: ['__root', '+not-found', '_sitemap'],
-      routes: [
-        {
-          name: '__root',
-          state: {
-            stale: false,
-            routeKeySeq: 0,
-            type: 'tab',
-            key: 'tab-IBiK_OuEIIGFJ_YDRF760',
-            index: 1,
-            routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-              },
-            ],
-            routes: [
-              {
-                name: 'index',
-                path: '/',
-                key: 'index-Zv_CsLcfPO6mXyfEQG-n0',
-              },
-              {
-                name: 'faces',
-                key: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
-                state: {
-                  stale: false,
-                  routeKeySeq: 0,
-                  type: 'stack',
-                  key: 'stack-7sR1tGrlUaLv2LXn74x0d',
-                  index: 0,
-                  routeNames: ['index', '[face]'],
-                  routes: [
-                    {
-                      key: 'index-pmXH7A8Wnk3QyMNq1Gsvw',
-                      name: 'index',
-                    },
-                    {
-                      key: '[face]-9rms2gdsibY9dVYUGCpZG',
-                      name: '[face]',
-                      params: {
-                        face: '1e3a8a',
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                name: 'explore',
-                key: 'explore-zPybZdl_CGIZxtUVLaT2K',
-              },
-            ],
-          },
-          key: '__root-fIzYvzoMkBMsXahmRCQXB',
-        },
-      ],
-    };
-    const href = '/faces/1e3a8a';
-    const preloadedRoute = getPreloadedRouteFromRootStateByHref(
-      href,
-      // The inline fixture is a complete navigation state despite widened string literals.
-      state as NavigationState,
-      getRouteInfo(),
-      linking
-    );
-    expect(preloadedRoute).toEqual({
-      key: '[face]-9rms2gdsibY9dVYUGCpZG',
-      name: '[face]',
-      params: {
-        face: '1e3a8a',
-      },
-    });
-  });
-
-  it('returns correct preloaded route in the different stack in different tab', () => {
-    const state = {
-      stale: false,
-      routeKeySeq: 0,
-      type: 'stack',
-      key: 'stack-BwGGEF5WBtNuQP8AG6YUK',
-      index: 0,
-      routeNames: ['__root', '+not-found', '_sitemap'],
-      routes: [
-        {
-          name: '__root',
-          state: {
-            stale: false,
-            routeKeySeq: 0,
-            type: 'tab',
-            key: 'tab-gFrqtQnDMQQ8qMMIptL6E',
-            index: 0,
-            routeNames: ['index', 'faces', 'explore'],
-            history: [
-              {
-                type: 'route',
-                key: 'index-rYeU6j6cRmkJK1pXpEFHs',
-              },
-            ],
-            routes: [
-              {
-                name: 'index',
-                path: '/',
-                key: 'index-rYeU6j6cRmkJK1pXpEFHs',
-              },
-              {
-                name: 'faces',
-                key: 'faces-CtzasUGRC7VBM70ECYYD9',
-                state: {
-                  stale: false,
-                  routeKeySeq: 0,
-                  type: 'stack',
-                  key: 'stack-0o3mKk6OKgAREN0rnNN9T',
-                  index: 0,
-                  routeNames: ['index', '[face]'],
-                  routes: [
-                    {
-                      key: 'index-E5BQcVJKhurHWYfmd4miV',
-                      name: 'index',
-                    },
-                    {
-                      key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
-                      name: '[face]',
-                      params: {
-                        face: '1e3a8a',
-                      },
-                    },
-                  ],
-                },
-              },
-              {
-                name: 'explore',
-                key: 'explore-1rRkVf5WySMDWZdpYR5gY',
-              },
-            ],
-          },
-          key: '__root-i4ih9bAW8jcq6MHWZNUhE',
-        },
-      ],
-    };
-    const href = '/faces/1e3a8a';
-    const preloadedRoute = getPreloadedRouteFromRootStateByHref(
-      href,
-      // The inline fixture is a complete navigation state despite widened string literals.
-      state as NavigationState,
-      getRouteInfo(),
-      linking
-    );
-    expect(preloadedRoute).toEqual({
-      key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
-      name: '[face]',
-      params: {
-        face: '1e3a8a',
-      },
-    });
-  });
-
-  it('matches the preloaded route by nested state shape', () => {
-    getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
-      routes: [
-        {
-          name: 'details',
-          params: { id: 'one' },
-          state: {
-            routes: [{ name: 'child', params: { filter: 'target' } }],
-          },
-        },
-      ],
-    } as any);
-    const matchingRoute = {
-      key: 'details-matching',
-      name: 'details',
-      params: {
-        id: 'one',
-        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
-      },
-      state: {
-        key: 'child-stack-generated',
-        index: 0,
-        routeNames: ['child'],
-        routes: [
-          {
-            key: 'child-generated',
-            name: 'child',
-            params: {
-              filter: 'target',
-              [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
             },
-          },
-        ],
-        stale: false as const,
-        routeKeySeq: 0,
-        type: 'stack' as const,
+          ],
+        },
       },
-    };
-    const state = {
-      key: 'root-stack',
-      index: 0,
-      routeNames: ['details'],
-      routes: [
-        {
-          key: 'details-active',
-          name: 'details',
-          params: { id: 'one' },
-          state: {
-            key: 'active-child-stack',
-            index: 0,
-            routeNames: ['child'],
-            routes: [
-              {
-                key: 'active-child',
-                name: 'child',
-                params: { filter: 'active' },
-              },
-            ],
-            stale: false as const,
-            routeKeySeq: 0,
-            type: 'stack' as const,
-          },
-        },
-        {
-          key: 'details-wrong',
-          name: 'details',
-          params: { id: 'one' },
-          state: {
-            key: 'wrong-child-stack',
-            index: 0,
-            routeNames: ['child'],
-            routes: [
-              {
-                key: 'wrong-child',
-                name: 'child',
-                params: { filter: 'wrong' },
-              },
-            ],
-            stale: false as const,
-            routeKeySeq: 0,
-            type: 'stack' as const,
-          },
-        },
-        matchingRoute,
-      ],
-      stale: false as const,
-      routeKeySeq: 0,
-      type: 'stack' as const,
-    };
+    ],
+  };
+}
 
-    expect(getPreloadedRouteFromRootStateByHref('/details', state, getRouteInfo(), linking)).toBe(
-      matchingRoute
-    );
-  });
+it('returns the ancestor path to a preloaded route in the focused stack', () => {
+  expect(findPreviewActivationPath(stackState(), 'details-key', previewId)).toEqual([
+    { key: 'details-key' },
+  ]);
+});
 
-  it('does not match a preloaded route from a different branch', () => {
-    getStateForHref = jest.spyOn(linking, 'getStateFromPath').mockReturnValue({
-      routes: [
-        {
-          name: 'target',
-          state: { routes: [{ name: 'child', params: { filter: 'target' } }] },
-        },
-      ],
-    } as any);
-    const unrelatedPreloadedRoute = {
-      key: 'child-preloaded',
-      name: 'child',
-      params: { filter: 'target' },
-    };
-    const state = {
-      key: 'root-stack',
-      index: 0,
-      routeNames: ['current', 'target'],
-      routes: [
-        {
-          key: 'current',
-          name: 'current',
-          state: {
-            key: 'current-stack',
-            index: 0,
-            routeNames: ['index', 'child'],
-            routes: [{ key: 'index', name: 'index' }, unrelatedPreloadedRoute],
-            stale: false as const,
-            routeKeySeq: 0,
-            type: 'stack' as const,
-          },
-        },
-      ],
-      stale: false as const,
-      routeKeySeq: 0,
-      type: 'stack' as const,
-    };
+it('returns the ancestor path to a preloaded route in another tab', () => {
+  expect(findPreviewActivationPath(tabsState(), 'details-key', previewId)).toEqual([
+    { key: 'root-key' },
+    { key: 'settings-key' },
+    { key: 'details-key' },
+  ]);
+});
 
-    expect(
-      getPreloadedRouteFromRootStateByHref('/target/child', state, getRouteInfo(), linking)
-    ).toBeUndefined();
-  });
+it('returns undefined when the preview id does not match', () => {
+  expect(findPreviewActivationPath(stackState(), 'details-key', 'other')).toBeUndefined();
+});
+
+it('returns undefined when a focused sibling has the same public route', () => {
+  const state = stackState();
+  state.routes[0] = {
+    key: 'details-focused-key',
+    name: 'details',
+    params: { item: 'two' },
+  };
+
+  expect(findPreviewActivationPath(state, 'details-key', previewId)).toBeUndefined();
+});
+
+it('returns the preloaded route when a focused sibling has different public params', () => {
+  const state = stackState();
+  state.routes[0] = {
+    key: 'details-focused-key',
+    name: 'details',
+    params: { item: 'one' },
+  };
+
+  expect(findPreviewActivationPath(state, 'details-key', previewId)).toEqual([
+    { key: 'details-key' },
+  ]);
+});
+
+it('returns undefined when the route key is absent', () => {
+  expect(findPreviewActivationPath(tabsState(), 'missing', previewId)).toBeUndefined();
 });

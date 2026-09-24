@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-expo",
-  "version": "57.0.1",
+  "version": "58.0.2",
   "description": "ESLint config for Expo apps",
   "main": "default.js",
   "scripts": {
@@ -52,8 +52,8 @@
     "eslint8": "npm:eslint@^8.57.1",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.8.3",
-    "react": "19.2.3",
-    "react-native": "0.87.1"
+    "react": "19.3.0",
+    "react-native": "0.88.0-rc.1"
   },
   "peerDependencies": {
     "eslint": ">=8.10"

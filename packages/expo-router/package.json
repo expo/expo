@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "57.0.9",
+  "version": "58.0.7",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",
@@ -20,12 +20,13 @@
   "files": [
     "link",
     "android",
+    "!android/.gitignore",
+    "!android/build/**",
     "local-maven-repo",
     "assets",
     "build",
     "internal",
     "vendor",
-    "!src",
     "_ctx-html.js",
     "_ctx-shared.js",
     "_ctx.*",
@@ -202,13 +203,21 @@
       "expo-source": "./src/ui/index.ts",
       "default": "./build/ui/index.js"
     },
-    "./unstable-native-tabs": {
+    "./native-tabs": {
       "types": {
         "expo-source": "./src/native-tabs/index.ts",
         "default": "./build/native-tabs/index.d.ts"
       },
       "expo-source": "./src/native-tabs/index.ts",
       "default": "./build/native-tabs/index.js"
+    },
+    "./unstable-native-tabs": {
+      "types": {
+        "expo-source": "./src/unstable-native-tabs.ts",
+        "default": "./build/unstable-native-tabs.d.ts"
+      },
+      "expo-source": "./src/unstable-native-tabs.ts",
+      "default": "./build/unstable-native-tabs.js"
     },
     "./unstable-split-view": {
       "types": {
@@ -286,7 +295,7 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-native-masked-view/masked-view": "^0.3.2",
-    "@react-native/normalize-colors": "0.87.1",
+    "@react-native/normalize-colors": "0.88.0-rc.1",
     "client-only": "^0.0.1",
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
@@ -295,7 +304,7 @@
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.2",
-    "react-native-screens": "^4.27.0",
+    "react-native-screens": "^4.28.0 || ^5.0.0-alpha.3",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "standard-navigation": "^0.0.5"
@@ -310,20 +319,21 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "@types/react-dom": "^19.1.7",
     "@types/react-is": "^19.0.0",
     "@types/react-test-renderer": "^19.1.0",
     "expect-type": "^1.3.0",
     "expo-symbols": "workspace:^",
     "immer": "^10.1.1",
-    "react-native-gesture-handler": "~3.1.0",
+    "react-native-gesture-handler": "~3.2.1",
     "react-native-pager-view": "^8.0.2",
-    "react-native-reanimated": "4.5.1",
-    "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "^4.27.0",
+    "react-native-reanimated": "4.6.0",
+    "react-native-safe-area-context": "~5.9.1",
+    "react-native-screens": "^4.28.0",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "~0.21.0",
+    "react-native-worklets": "0.12.2",
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
@@ -341,9 +351,10 @@
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 5.4.0",
-    "react-native-screens": "^4.27.0",
+    "react-native-screens": "^4.28.0 || ^5.0.0-alpha.3",
     "react-native-web": "*",
-    "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
+    "react-native-worklets": "*",
+    "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4 || ~19.3.0"
   },
   "peerDependenciesMeta": {
     "@expo/ui": {
@@ -365,6 +376,9 @@
       "optional": true
     },
     "react-native-web": {
+      "optional": true
+    },
+    "react-native-worklets": {
       "optional": true
     },
     "react-server-dom-webpack": {

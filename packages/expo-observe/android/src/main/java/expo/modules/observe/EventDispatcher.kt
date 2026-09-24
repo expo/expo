@@ -27,6 +27,8 @@ class EventDispatcher(
 
   private fun logsEndpointUrl(): String = "$baseProjectUrl/v1/logs"
 
+  private fun tracesEndpointUrl(): String = "$baseProjectUrl/v1/traces"
+
   /**
    * POSTs `events` to the metrics endpoint and classifies the response per the OTLP retry
    * spec. Non-throwing: payload-encoding errors collapse to `NonRetryable` (same bytes will
@@ -74,6 +76,30 @@ class EventDispatcher(
         return@suspendCancellableCoroutine Unit
       }
       executePost(continuation, logsEndpointUrl(), body)
+    }
+
+  /**
+   * Dispatches span batches to `{baseUrl}/{projectId}/v1/traces`. Each batch carries one
+   * session's spans plus the event holding that session's resource metadata.
+   */
+  suspend fun dispatchSpans(batches: List<SpanBatch>): DispatchResult =
+    suspendCancellableCoroutine { continuation ->
+      if (batches.isEmpty()) {
+        // Empty input isn't a server response - signal success.
+        continuation.resume(DispatchResult.Success)
+        return@suspendCancellableCoroutine Unit
+      }
+      val easId = EASClientID(context).uuid.toString()
+      val body = try {
+        OTTracesRequestBody(
+          resourceSpans = batches.map { it.event.toOTResourceSpans(easId, it.spans) }
+        ).toJson(prettyPrint = true)
+      } catch (e: Exception) {
+        Log.w(OBSERVE_TAG, "Encoding traces request body failed: ${e.message}")
+        continuation.resume(DispatchResult.NonRetryableFailure("encoding error: ${e.message}"))
+        return@suspendCancellableCoroutine Unit
+      }
+      executePost(continuation, tracesEndpointUrl(), body)
     }
 
   private fun executePost(

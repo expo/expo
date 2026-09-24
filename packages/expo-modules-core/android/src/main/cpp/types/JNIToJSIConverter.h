@@ -10,6 +10,7 @@
 #include "ObjectDeallocator.h"
 #include "../JavaScriptArrayBuffer.h"
 #include "../NativeArrayBuffer.h"
+#include "../MutableBufferNativeState.h"
 #include "../concepts/jni_deref.h"
 #include "../concepts/jni.h"
 #include "../concepts/jsi.h"
@@ -54,6 +55,18 @@ struct RawArray {
   size_t size;
 };
 
+inline std::string jstringToUtf8(JNIEnv *env, jni::alias_ref<jstring> value) {
+  const auto utf16Length = static_cast<size_t>(env->GetStringLength(value.get()));
+  const char *rawValue = env->GetStringUTFChars(value.get(), nullptr);
+  const bool isPlainAscii = strnlen(rawValue, utf16Length + 1) == utf16Length;
+  std::optional<std::string> result;
+  if (isPlainAscii) {
+    result.emplace(rawValue, utf16Length);
+  }
+  env->ReleaseStringUTFChars(value.get(), rawValue);
+  return result ? std::move(*result) : value->toStdString();
+}
+
 template<typename T>
 inline auto unwrapJNIRef(
   JNIEnv *env,
@@ -62,10 +75,7 @@ inline auto unwrapJNIRef(
   if constexpr (HasCthis<T>) {
     return value->cthis();
   } else if constexpr (IsJString<T>) {
-    const char *rawValue = env->GetStringUTFChars(value.get(), nullptr);
-    std::string result = rawValue;
-    env->ReleaseStringUTFChars(value.get(), rawValue);
-    return result;
+    return jstringToUtf8(env, value);
   } else if constexpr (IsJBoolean<T>) {
     return static_cast<bool>(value->value());
   } else if constexpr (HasValue<T>) {
@@ -182,7 +192,7 @@ struct JNIToJSIConverter<JavaScriptArrayBuffer *> {
 template<>
 struct JNIToJSIConverter<NativeArrayBuffer *> {
   static jsi::Value convert(JNIEnv *, jsi::Runtime &rt, NativeArrayBuffer *value) {
-    jsi::ArrayBuffer arrayBuffer(rt, value->jsiMutableBuffer());
+    auto arrayBuffer = createNativeBackedArrayBuffer(rt, value->jsiMutableBuffer());
     return jsi::Value{rt, arrayBuffer};
   }
 };

@@ -9,7 +9,10 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
+import {
+  flattenSourceMap,
+  sourceMapStringNonBlocking,
+} from '@expo/metro-config/build/serializer/sourceMap';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
@@ -98,6 +101,8 @@ import {
   getRouterDirectoryModuleIdWithManifest,
   hasWarnedAboutApiRoutes,
   isApiRouteConvention,
+  isApiRoutesEnabled,
+  isExpoRouterApp,
   warnInvalidWebOutput,
 } from './router';
 import { serialAssetsToStaticContentAssets } from './serializeHtml';
@@ -210,17 +215,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         /(?<=^|\n)\/\/# sourceMappingURL=[^\n]*(?=\s*$)/,
         `//# sourceMappingURL=${artifactBasename}`
       );
-      const parsedMap = typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
+      // Metro emits indexed source maps, which have no top-level `sources` to rewrite
+      const parsedMap = flattenSourceMap(
+        typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map
+      );
       const mapData: any = {
         ...descriptor,
         contents: JSON.stringify({
           version: parsedMap.version,
-          sources: parsedMap.sources.map((source: string) => {
-            source =
-              typeof source === 'string' && source.startsWith(this.projectRoot)
-                ? path.relative(this.projectRoot, source)
-                : source;
-            return convertPathToModuleSpecifier(source);
+          sources: parsedMap.sources.map((source) => {
+            if (source == null) {
+              return source;
+            }
+            return convertPathToModuleSpecifier(
+              source.startsWith(this.projectRoot) ? path.relative(this.projectRoot, source) : source
+            );
           }),
           sourcesContent: new Array(parsedMap.sources.length).fill(null),
           names: parsedMap.names,
@@ -453,6 +462,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
     }
 
+    if (!isApiRoutesEnabled(exp)) {
+      manifest.apiRoutes = [];
+    }
+
     return manifest;
   }
 
@@ -507,9 +520,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     const { exp } = getConfig(this.projectRoot);
-    const useServerRendering = exp.extra?.router?.unstable_useServerRendering ?? false;
-    const isExportingWithSSR =
-      exp.web?.output === 'server' && useServerRendering && !this.isReactServerComponentsEnabled;
+    const isExportingWithSSR = exp.web?.output === 'server' && !this.isReactServerComponentsEnabled;
 
     const serverManifest = await getBuildTimeServerManifestAsync({
       ...exp.extra?.router,
@@ -598,7 +609,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     request?: ImmutableRequest;
     resolveMetadata?: ResolveMetadataFunction;
   }): Promise<DevServerRenderOptions> {
-    const { exp } = getConfig(this.projectRoot);
     const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
     const params = resolvedLoaderRoute?.params ?? {};
     const renderOptions: DevServerRenderOptions = { params };
@@ -622,8 +632,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     }
 
-    const useServerDataLoaders = exp.extra?.router?.unstable_useServerDataLoaders === true;
-    if (!useServerDataLoaders || !resolvedLoaderRoute) {
+    if (!resolvedLoaderRoute) {
       return renderOptions;
     }
 
@@ -689,8 +698,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bytecode: false,
     });
 
-    const isSSREnabled =
-      exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+    const isSSREnabled = exp.web?.output === 'server';
     const location = new URL(pathname, this.getDevServerUrlOrAssert());
 
     if (isSSREnabled) {
@@ -1256,8 +1264,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
 
-    const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
-    const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';
+    const useServerRendering =
+      isExpoRouterApp(config.pkg) && ['static', 'server'].includes(exp.web?.output ?? '');
+    const hasApiRoutes = isReactServerComponentsEnabled || isApiRoutesEnabled(exp);
     const baseUrl = getBaseUrlFromExpoConfig(exp);
     const asyncRoutes = getAsyncRoutesFromExpoConfig(exp, options.mode ?? 'development', 'web');
     const routerRoot = getRouterDirectoryModuleIdWithManifest(this.projectRoot, exp);
@@ -1526,9 +1535,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 }
                 // Only pass the request in SSR mode (server output with SSR enabled).
                 // In static mode, loaders should not receive request data.
-                const isSSREnabled =
-                  exp.web?.output === 'server' &&
-                  exp.extra?.router?.unstable_useServerRendering === true;
+                const isSSREnabled = exp.web?.output === 'server';
                 return this.executeServerDataLoaderAsync(
                   url,
                   resolvedLoaderRoute,
@@ -1859,8 +1866,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
    *
    * This function is used during development and production builds, and **must** receive a valid
    * matched route.
-   *
-   * @experimental
    */
   async executeServerDataLoaderAsync(
     location: URL,
@@ -1869,14 +1874,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     request?: ImmutableRequest
   ): Promise<Response | undefined> {
     const { exp } = getConfig(this.projectRoot);
-    const { unstable_useServerDataLoaders, unstable_useServerRendering } = exp.extra?.router;
-
-    if (!unstable_useServerDataLoaders) {
-      throw new CommandError(
-        'LOADERS_NOT_ENABLED',
-        'Server data loaders are not enabled. Add `unstable_useServerDataLoaders` to your `expo-router` plugin config.'
-      );
-    }
 
     const { routerRoot } = this.instanceMetroOptions;
     assert(
@@ -1904,7 +1901,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         let headers: Headers | undefined;
         if (maybeResponse instanceof Response) {
           // In SSR, preserve `Response` from the loader
-          if (exp.web?.output === 'server' && unstable_useServerRendering) {
+          if (exp.web?.output === 'server') {
             return maybeResponse;
           }
 

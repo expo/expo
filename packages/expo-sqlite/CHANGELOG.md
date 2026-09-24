@@ -4,9 +4,46 @@
 
 ### 🛠 Breaking changes
 
-- Removed libSQL support. `syncLibSQL()` and the `libSQLOptions` open option are gone, and the `useLibSQL` config plugin property is deprecated: it warns during prebuild and no longer has any effect. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.5 — 2026-09-23
 
 ### 🎉 New features
+
+- [Android][iOS][macOS][tvOS] Add `interruptSync()` to cancel running operations on a database connection. ([#50123](https://github.com/expo/expo/pull/50123) by [@savv](https://github.com/savv))
+
+## 58.0.4 — 2026-09-21
+
+### 💡 Others
+
+- [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.3 — 2026-09-15
+
+### 🎉 New features
+
+- Ship an agent skill for SQLite queries, migrations, storage, and platform configuration in the npm package. ([#49867](https://github.com/expo/expo/pull/49867) by [@Kudo](https://github.com/Kudo))
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Built the vendored SQLite with `SQLITE_ENABLE_API_ARMOR` so misuse returns `SQLITE_MISUSE` instead of crashing. ([#49068](https://github.com/expo/expo/pull/49068) by [@kudo](https://github.com/kudo))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- Removed libSQL support. `syncLibSQL()` and the `libSQLOptions` open option are gone, and the `useLibSQL` config plugin property is deprecated: it warns during prebuild and no longer has any effect. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

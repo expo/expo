@@ -6,6 +6,28 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.3 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- Wait for pending source replacements before releasing players created by `useVideoPlayer`. ([#49981](https://github.com/expo/expo/pull/49981) by [@behenate](https://github.com/behenate))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - [Android] Added the `controllerAutoShow` prop to `VideoView` to control whether the native controls auto-show on play. ([#46665](https://github.com/expo/expo/pull/46665) by [@stevesouth](https://github.com/stevesouth))
 - [Android][iOS] Add `maxResolution` player option to cap adaptive video track selection. ([#46992](https://github.com/expo/expo/pull/46992) by [@vargajacint](https://github.com/vargajacint))
 - [Android] Added the `videoChangeFrameRateStrategy` player builder option to control whether ExoPlayer may change the display refresh rate to match the video frame rate. On adaptive refresh rate displays (Pixel 9/10) the default matching can cap the entire app UI at 30Hz while a 30 fps video is visible. ([#47873](https://github.com/expo/expo/pull/47873) by [@invivek26](https://github.com/invivek26))

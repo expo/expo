@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 
+import { stripAnsi } from '../../utils/ansi';
 import { fetch } from '../../utils/fetch';
 import { logNewSection } from '../../utils/ora';
 import { cloneTemplateAndCopyToProjectAsync } from '../updateFromTemplate';
@@ -40,8 +41,7 @@ describe(cloneTemplateAndCopyToProjectAsync, () => {
     expect(mockFetch).toHaveBeenCalledWith(
       'https://api.github.com/repos/expo/expo/contents/templates/this-template-does-not-exist/package.json?ref=main'
     );
-    expect(spinner.fail).toHaveBeenNthCalledWith(
-      1,
+    expect(stripAnsi(spinner.fail.mock.calls[0][0])).toBe(
       `Could not locate the repository for "${templateUrl}". Check that the repository exists and try again.`
     );
     expect(spinner.fail).toHaveBeenNthCalledWith(2, 'Failed to create the native directories');

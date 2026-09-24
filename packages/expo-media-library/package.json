@@ -1,6 +1,6 @@
 {
   "name": "expo-media-library",
-  "version": "57.0.3",
+  "version": "58.0.1",
   "description": "Provides access to user's media library.",
   "keywords": [
     "cameraroll",

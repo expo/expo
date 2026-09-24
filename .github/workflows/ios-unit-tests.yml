@@ -84,6 +84,7 @@ jobs:
           # React.xcframework the other restored. A Release framework in a Debug build fails
           # to link, since Debug ExpoModulesCore references debug-only Fabric symbols.
           bare-expo-pods-configuration: 'Debug'
+          ccache-variant: 'unit-tests-debug'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules

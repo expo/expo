@@ -66,6 +66,7 @@ class ObserveModule : Module() {
       AsyncFunction("dispatchEvents") Coroutine { ->
         observabilityManager.dispatchUnsentMetrics()
         observabilityManager.dispatchUnsentLogs()
+        observabilityManager.dispatchUnsentSpans()
       }
 
       Function("configure") { config: Config ->

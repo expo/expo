@@ -106,7 +106,7 @@ export default function ContactsScreen({ navigation }: Props) {
   return <ContactsView navigation={navigation} />;
 }
 
-function ContactsView({ navigation }: Props) {
+function ContactsView(_props: Props) {
   let rawContacts: Record<string, Contacts.ExistingContact> = {};
 
   const [contacts, setContacts] = React.useState<Contacts.ExistingContact[]>([]);
@@ -117,7 +117,7 @@ function ContactsView({ navigation }: Props) {
   );
 
   const onPressItem = React.useCallback((id: string) => {
-    router.push({ pathname: '/apis/contact/detail', params: { id } });
+    router.push({ pathname: '/apis/contact/detail', params: { contactId: id } });
   }, []);
 
   const loadAsync = async (event: { distanceFromEnd?: number } = {}, restart = false) => {

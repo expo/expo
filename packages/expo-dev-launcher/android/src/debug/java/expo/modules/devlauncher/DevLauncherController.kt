@@ -21,8 +21,6 @@ import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.hasEnabledFlag
-import expo.modules.devlauncher.helpers.hasUrlQueryParam
-import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.helpers.runBlockingOnMainThread
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
@@ -41,6 +39,8 @@ import expo.modules.devlauncher.launcher.loaders.createAppLoader
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.services.DependencyInjection
+import expo.modules.devmenu.launch.ExpoLauncherUrl
+import expo.modules.devmenu.launch.applyDevMenuLaunchParams
 import expo.modules.kotlin.weak
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
@@ -137,6 +137,8 @@ class DevLauncherController private constructor(
       manifest = result.manifest
       manifestURL = result.manifestURL
 
+      // Dev menu params on URLs that did not come through `handleIntent`, e.g. typed into the launcher.
+      DependencyInjection.devMenuPreferences?.let { result.devLauncherUrl?.launch?.applyDevMenuLaunchParams(it) }
       if (url.toString().contains("disableOnboarding=1") || manifestURL?.toString()?.contains("disableOnboarding=1") == true) {
         DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
       }
@@ -289,17 +291,33 @@ class DevLauncherController private constructor(
     intent
       ?.data
       ?.let { uri ->
+        val launch = ExpoLauncherUrl(uri)
+
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
           DependencyInjection.devMenuPreferences?.showsAtLaunch = false
           DependencyInjection.devMenuPreferences?.isOnboardingFinished = true
         }
 
-        if (!isDevLauncherUrl(uri)) {
+        if (!launch.isLauncherCommand) {
           return handleExternalIntent(intent)
         }
 
-        if (!hasUrlQueryParam(uri)) {
+        // The dev menu params apply to every launcher command, with or without a `__expo_url`.
+        DependencyInjection.devMenuPreferences?.let { launch.applyDevMenuLaunchParams(it) }
+
+        if (launch.targetUrl == null) {
+          if (!launch.isLegacyHost && launch.remainderHasDestination) {
+            // e.g. `myapp://login?__expo_disable_fab=1`: the reserved params are applied above,
+            // the app receives the rest as a regular deep link.
+            intent.data = launch.strippedUrl
+            return handleExternalIntent(intent)
+          }
+          if (!launch.isLegacyHost && mode == Mode.APP) {
+            // e.g. `exp+slug://?__expo_disable_fab=1` while a project is open: the params are applied
+            // above and there is nothing to open, so keep the project running.
+            return true
+          }
           // edge case: this is a dev launcher url, but it does not specify what url to open
           // fallback to navigating to the launcher home screen
           if (useDefaultLaunchUrlFallback) {
@@ -312,7 +330,8 @@ class DevLauncherController private constructor(
 
         coroutineScope.launch {
           try {
-            pendingIntentRegistry.intent = intent
+            // The app must not see the reserved params.
+            pendingIntentRegistry.intent = Intent(intent).setData(launch.strippedUrl)
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))

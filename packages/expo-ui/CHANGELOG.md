@@ -4,6 +4,67 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.6 — 2026-09-23
+
+### 🛠 Breaking changes
+
+- [iOS] `frame()` now matches SwiftUI's two `frame` overloads, so one call accepts either `width`/`height` or `min*`/`ideal*`/`max*`, not both. ([#50537](https://github.com/expo/expo/issues/50537) by [@wwisheess](https://github.com/wwisheess), [#50544](https://github.com/expo/expo/pull/50544) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 🎉 New features
+
+- [iOS] `List.ForEach` recycles rows from a small pool around the visible range, so large lists only render the rows near the viewport. Deprecated element children in favor of this form. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `LazyColumn.Items` and `LazyRow.Items`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large lists only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50258](https://github.com/expo/expo/pull/50258) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 58.0.5 — 2026-09-22
+
+### 🎉 New features
+
+- [Android] Added the widget-only `cornerRadius` modifier to `jetpack-compose`. ([#50332](https://github.com/expo/expo/pull/50332) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `<Host matchContents>` centering its content, and so shifting it by half the height change for a frame, whenever the hosted view was not yet the size of its SwiftUI content. ([#50496](https://github.com/expo/expo/pull/50496) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Cache Material 3 palettes generated from an explicit `scheme` and `seedColor`, so `getMaterialColors` and `useMaterialColors` stop calling the synchronous native module on every render, and `Host` stops re-solving the same scheme on every recomposition. ([#50494](https://github.com/expo/expo/pull/50494) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `ToolbarItem` component with `placement` and `visibilityPriority`. ([#50360](https://github.com/expo/expo/pull/50360) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `scrollEdgeEffectStyle` modifier. ([#50367](https://github.com/expo/expo/pull/50367) by [@expo-bot](https://github.com/expo-bot))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.3 — 2026-09-16
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `NavigationSplitView` component, together with the `navigationSplitViewStyle` and `navigationSplitViewColumnWidth` modifiers. ([#50075](https://github.com/expo/expo/pull/50075) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [macOS] Added minimal macOS support. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Update the native tabs import path in the `TabView` API reference. ([#50119](https://github.com/expo/expo/pull/50119) by [@Ubax](https://github.com/Ubax))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `HStack`, `VStack` and `GlassEffectContainer` collapsing an unset `spacing` to `0` instead of forwarding `nil` to SwiftUI, so they now use the system default spacing like `Grid`, `LazyHStack` and `LazyVStack` already do. Pass `spacing={0}` explicitly to keep the previous layout. (by [@Den1Marshall](https://github.com/Den1Marshall))
 - [Android] Removed the `style` prop from `RNHostView`. It set a React Native style on a view that Jetpack Compose positions and sizes; use `modifiers` instead. Hosted views are now measured where Compose drew them, so a style is no longer needed to keep `measure()` and the drawn position in agreement. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -36,11 +97,13 @@
 - [iOS] Taught the `presentationBackground` modifier to paint with any `ShapeStyle`, matching SwiftUI, so a sheet can be backed by a material, a gradient or a hierarchical style instead of only a color. iOS 26 renders a material as a flat color rather than a translucent blur. ([#49767](https://github.com/expo/expo/pull/49767) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `scrollClipDisabled` modifier, which lets content that draws outside a scrollable view's bounds, such as a shadow or a scaled-up card, stay visible instead of being clipped. ([#49780](https://github.com/expo/expo/pull/49780) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Taught the `tint`, `border`, `strokeBorder` and `containerBackground` modifiers to paint with any `ShapeStyle`, matching SwiftUI, where all four take a `ShapeStyle` rather than a color. The `color` parameter of `border` and `strokeBorder` is deprecated in favor of `content`, the name SwiftUI gives it. ([#49838](https://github.com/expo/expo/pull/49838) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Added the `NavigationStack` and `Toolbar` components, the `navigationTitle` modifier, and the `close` button role. ([#49940](https://github.com/expo/expo/pull/49940) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `NavigationLink` component, and the `path` and `onPathChange` props and the `NavigationDestination` component, so a stack can push a destination that is built only when the link is followed. ([#49991](https://github.com/expo/expo/pull/49991) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
+- [Android] Fix hosted React Native content sliding off the top of a `BottomSheet` when the keyboard opens. ([#49399](https://github.com/expo/expo/issues/49399) by [@starsky-nev](https://github.com/starsky-nev)) ([#49427](https://github.com/expo/expo/pull/49427) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fix `DatePickerDialog` preselecting today when `initialDate` is omitted, and keep its confirm button disabled while no date is selected so `onDateSelected` never receives an invalid date. ([#49898](https://github.com/expo/expo/pull/49898) by [@pataar](https://github.com/pataar))
-
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme. ([#49697](https://github.com/expo/expo/pull/49697) by [@expo-bot](https://github.com/expo-bot))
 - [iOS][Android] Fixed a `matchContents` `RNHostView` inside a `matchContents` `Host` growing the layout on every pass. ([#49483](https://github.com/expo/expo/pull/49483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
@@ -68,6 +131,7 @@
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fix `Host` color scheme type errors on React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fixed `PlatformColor` and `DynamicColorIOS` values dropping the `backgroundColor` and `borderColor` of a universal component. Both were stringified to `"[object Object]"`, which the native color converter rejects, so the modifier was discarded without a trace. ([#49746](https://github.com/expo/expo/pull/49746) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Preserve string-based child identities in `Overlay`, `Background`, and `Mask`. ([#49734](https://github.com/expo/expo/pull/49734) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

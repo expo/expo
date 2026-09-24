@@ -32,4 +32,8 @@ else
   exit 1
 fi
 
-"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST"
+# Debug builds only, by the same configuration test expo-updates uses. The `|| echo` keeps a
+# release build from tripping `set -e`.
+EMBED_FINGERPRINT=$([[ "$CONFIGURATION" == *Debug* ]] && echo true || echo false)
+
+"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST" "ios" "$EMBED_FINGERPRINT"

@@ -1,7 +1,8 @@
 import {
   type CommonNavigationAction,
+  extendRouterActions,
   type ParamListBase,
-  type Router,
+  type RouterActionContext,
   type TabActionType as RNTabActionType,
   type TabNavigationState,
   type TabRouterOptions as RNTabRouterOptions,
@@ -9,7 +10,6 @@ import {
 } from '../react-navigation/native';
 import { ensureStateHistory } from '../react-navigation/routers/TabRouter';
 import { attachRouteState, type RouteState } from '../react-navigation/routers/attachRouteState';
-import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { getTabRoute, type TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
@@ -31,58 +31,57 @@ export type ExpoTabActionType =
       };
     };
 
-export function ExpoTabRouter(options: ExpoTabRouterOptions) {
-  const rnTabRouter = RNTabRouter(options);
+export const ExpoTabRouter = extendRouterActions(
+  RNTabRouter,
+  (
+    state,
+    action: ExpoTabActionType,
+    {
+      baseRouter,
+      options,
+    }: RouterActionContext<
+      TabNavigationState<ParamListBase>,
+      ExpoTabActionType,
+      ExpoTabRouterOptions
+    >
+  ) => {
+    if (action.type !== 'JUMP_TO') {
+      return undefined;
+    }
 
-  const router: Router<
-    TabNavigationState<ParamListBase>,
-    ExpoTabActionType | CommonNavigationAction
-  > = {
-    ...rnTabRouter,
-    getStateForAction(state, action, routerConfigOptions) {
-      if (action.type !== 'JUMP_TO') {
-        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
+    const { route, isSwitching } = getTabRoute(state, action.payload.name);
+
+    if (!route) {
+      return undefined;
+    }
+
+    const shouldReset =
+      'resetOnFocus' in action.payload && Boolean(action.payload.resetOnFocus && isSwitching);
+
+    if (shouldReset) {
+      state = {
+        ...state,
+        routes: state.routes.map((r) => {
+          if (r.key !== route.key) {
+            return r;
+          }
+          return { ...r, state: undefined };
+        }),
+      };
+    }
+
+    if (!isSwitching && route.state !== undefined) {
+      const selectedRoute = attachRouteState(route, action);
+      if (selectedRoute === route) {
+        state = ensureStateHistory(
+          state,
+          options.backBehavior ?? 'firstRoute',
+          options.initialRouteName
+        );
+        return { state, affectedRouteKey: route.key };
       }
+    }
 
-      const { route, isSwitching } = getTabRoute(state, action.payload.name);
-
-      if (!route) {
-        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
-      }
-
-      const shouldReset =
-        'resetOnFocus' in action.payload && Boolean(action.payload.resetOnFocus && isSwitching);
-
-      if (shouldReset) {
-        state = {
-          ...state,
-          routes: state.routes.map((r) => {
-            if (r.key !== route.key) {
-              return r;
-            }
-            return { ...r, state: undefined };
-          }),
-        };
-      }
-
-      if (!isSwitching && route.state !== undefined) {
-        const selectedRoute = attachRouteState(route, action);
-        if (selectedRoute === route) {
-          state = ensureStateType(
-            ensureStateHistory(
-              state,
-              options.backBehavior ?? 'firstRoute',
-              options.initialRouteName
-            ),
-            'tab'
-          );
-          return { state, affectedRouteKey: route.key };
-        }
-      }
-
-      return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
-    },
-  };
-
-  return router;
-}
+    return baseRouter.getStateForAction(state, action);
+  }
+);

@@ -8,6 +8,22 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 58.0.2 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the glass effect not rendering when the view fades in from low opacity ([#48994](https://github.com/expo/expo/pull/48994) by [@Nezz](https://github.com/Nezz))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
 - [iOS] Report `isLiquidGlassAvailable` as `true` in apps built with the iOS 27 SDK, which ignores `UIDesignRequiresCompatibility`. ([#49850](https://github.com/expo/expo/pull/49850) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others

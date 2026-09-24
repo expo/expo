@@ -11,7 +11,7 @@ exports[`normalizeOptionsAsync should return the default options if no options a
     "android",
     "ios",
   ],
-  "sourceSkips": 25091,
+  "sourceSkips": 57859,
   "useCNGForPlatforms": {
     "android": false,
     "ios": false,

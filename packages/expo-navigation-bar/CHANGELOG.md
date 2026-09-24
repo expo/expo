@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- Prevent unhandled promise rejections when declarative navigation bar updates race with Android activity teardown. ([#48097](https://github.com/expo/expo/pull/48097) by [@zoontek](https://github.com/zoontek))
-
 ### 💡 Others
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- Prevent unhandled promise rejections when declarative navigation bar updates race with Android activity teardown. ([#48097](https://github.com/expo/expo/pull/48097) by [@zoontek](https://github.com/zoontek))
 
 ## 57.0.2 - 2026-07-15
 

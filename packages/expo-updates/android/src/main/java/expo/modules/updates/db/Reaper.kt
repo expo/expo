@@ -82,9 +82,7 @@ object Reaper {
     for (asset in erroredAssets) {
       val path = File(updatesDirectory, asset.relativePath)
       try {
-        if (!path.exists() || path.delete()) {
-          erroredAssets.remove(asset)
-        } else {
+        if (path.exists() && !path.delete()) {
           Log.e(
             TAG,
             "Retried and failed again deleting asset with URL " + asset.url + " at path " + path.toString()
@@ -96,7 +94,6 @@ object Reaper {
           "Retried and failed again deleting asset with URL " + asset.url + " at path " + path.toString(),
           e
         )
-        erroredAssets.add(asset)
       }
     }
   }

@@ -21,7 +21,7 @@ internal final class SecureWindowCanvas {
     textField.isSecureTextEntry = true
     textField.isUserInteractionEnabled = false
     textField.backgroundColor = .clear
-    textField.frame = UIScreen.main.bounds
+    textField.frame = window.bounds
 
     originalParent.addSublayer(textField.layer)
 
