@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve pnpm catalog references when fixing package versions with `expo install --fix`. (by [@matheusmichels](https://github.com/matheusmichels))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23

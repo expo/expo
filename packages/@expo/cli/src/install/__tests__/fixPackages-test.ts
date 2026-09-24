@@ -1,15 +1,24 @@
+import { getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 
 import { applyPluginsAsync } from '../applyPlugins';
 import { fixPackagesAsync } from '../fixPackages';
 import { installExpoPackageAsync } from '../installExpoPackage';
+import { updatePnpmCatalogAsync } from '../updatePnpmCatalog';
 
 jest.mock('../../log');
+jest.mock('@expo/config', () => ({
+  ...jest.requireActual('@expo/config'),
+  getPackageJson: jest.fn(() => ({})),
+}));
 jest.mock('../applyPlugins', () => ({
   applyPluginsAsync: jest.fn(),
 }));
 jest.mock('../installExpoPackage', () => ({
   installExpoPackageAsync: jest.fn(),
+}));
+jest.mock('../updatePnpmCatalog', () => ({
+  updatePnpmCatalogAsync: jest.fn(),
 }));
 jest.mock('../../start/doctor/dependencies/getVersionedPackages', () => ({
   getOperationLog: jest.fn(() => []),
@@ -17,8 +26,56 @@ jest.mock('../../start/doctor/dependencies/getVersionedPackages', () => ({
 
 describe(fixPackagesAsync, () => {
   beforeEach(() => {
+    jest.mocked(getPackageJson).mockReturnValue({} as ReturnType<typeof getPackageJson>);
     jest.mocked(applyPluginsAsync).mockClear();
     jest.mocked(installExpoPackageAsync).mockClear();
+    jest.mocked(updatePnpmCatalogAsync).mockClear();
+  });
+
+  it('updates pnpm catalog entries without replacing manifest references', async () => {
+    const packageManager = Object.assign(PackageManager.createForProject('/path/to/project'), {
+      name: 'pnpm',
+      installAsync: jest.fn(),
+    });
+    jest.mocked(getPackageJson).mockReturnValue({
+      dependencies: { 'expo-sms': 'catalog:', 'expo-auth-session': 'catalog:expo' },
+      devDependencies: { 'expo-calendar': 'catalog:' },
+    } as ReturnType<typeof getPackageJson>);
+
+    await fixPackagesAsync('/path/to/project', {
+      packageManager,
+      packages: [
+        {
+          packageName: 'expo-sms',
+          packageType: 'dependencies',
+          expectedVersionOrRange: '~1.0.0',
+          actualVersion: '0.9.0',
+        },
+        {
+          packageName: 'expo-auth-session',
+          packageType: 'dependencies',
+          expectedVersionOrRange: '~2.0.0',
+          actualVersion: '1.9.0',
+        },
+        {
+          packageName: 'expo-calendar',
+          packageType: 'devDependencies',
+          expectedVersionOrRange: '~3.0.0',
+          actualVersion: '2.9.0',
+        },
+      ],
+      packageManagerArguments: [],
+      sdkVersion: '55.0.0',
+    });
+
+    expect(updatePnpmCatalogAsync).toHaveBeenCalledWith('/path/to/project', [
+      { name: 'expo-sms', catalog: '', version: '~1.0.0' },
+      { name: 'expo-auth-session', catalog: 'expo', version: '~2.0.0' },
+      { name: 'expo-calendar', catalog: '', version: '~3.0.0' },
+    ]);
+    expect(packageManager.installAsync).toHaveBeenCalledWith([]);
+    expect(packageManager.addAsync).not.toHaveBeenCalled();
+    expect(packageManager.addDevAsync).not.toHaveBeenCalled();
   });
 
   it('builds an npm-alias install spec for a TV-corrected react-native dep', async () => {
@@ -143,8 +200,40 @@ describe(fixPackagesAsync, () => {
       packageManagerArguments: [],
       expoPackageToInstall: 'expo@^55.0.0',
       followUpCommandArgs: ['--fix'],
+      installFromCatalog: false,
     });
     // When expo is being upgraded, we bail early and don't run addAsync directly.
     expect(packageManager.addAsync).not.toHaveBeenCalled();
+  });
+
+  it('updates the catalog before reinstalling expo', async () => {
+    const packageManager = Object.assign(PackageManager.createForProject('/path/to/project'), {
+      name: 'pnpm',
+    });
+    jest.mocked(getPackageJson).mockReturnValue({
+      dependencies: { expo: 'catalog:' },
+    } as ReturnType<typeof getPackageJson>);
+
+    await fixPackagesAsync('/path/to/project', {
+      packageManager,
+      packages: [
+        {
+          packageName: 'expo',
+          packageType: 'dependencies',
+          expectedVersionOrRange: '~57.0.25',
+          actualVersion: '57.0.22',
+        },
+      ],
+      packageManagerArguments: [],
+      sdkVersion: '57.0.0',
+    });
+
+    expect(updatePnpmCatalogAsync).toHaveBeenCalledWith('/path/to/project', [
+      { name: 'expo', catalog: '', version: '~57.0.25' },
+    ]);
+    expect(installExpoPackageAsync).toHaveBeenCalledWith(
+      '/path/to/project',
+      expect.objectContaining({ installFromCatalog: true })
+    );
   });
 });
