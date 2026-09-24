@@ -398,6 +398,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   @objc
   public func registerNativeModules(provider: ModulesProvider) {
     useModulesProvider(provider)
+    ExpoFabricView.appContextDidRegisterModules(self)
 
     // TODO: Make `registerNativeViews` thread-safe
     if Thread.isMainThread {
