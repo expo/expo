@@ -15,13 +15,12 @@ import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
-describe('exports static with bundle splitting', () => {
+describe('exports static with bitset bundle splitting', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-static-splitting';
   const outputDir = path.join(projectRoot, outputName);
 
   beforeAll(async () => {
-    // NODE_ENV=production EXPO_USE_STATIC=static E2E_ROUTER_SRC=static-rendering npx expo export -p web --source-maps --output-dir dist-static-splitting
     await executeExpoAsync(
       projectRoot,
       ['export', '-p', 'web', '--source-maps', '--output-dir', outputName],
@@ -30,6 +29,8 @@ describe('exports static with bundle splitting', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_SPLIT_STRATEGY: 'bitset',
+          E2E_ROUTER_ASYNC: 'true',
         },
       }
     );
@@ -59,28 +60,32 @@ describe('exports static with bundle splitting', () => {
 
   const { getScriptTagsAsync } = getHtmlHelpers(outputDir);
 
+  function expectPageScripts(scripts: string[], route?: string) {
+    expect(scripts[0]).toEqual(expectChunkPathMatching('__expo-metro-runtime'));
+    expect(scripts.at(-1)).toEqual(expectChunkPathMatching('entry'));
+    expect(scripts).toEqual(
+      expect.arrayContaining(['_layout', ...(route ? [route] : [])].map(expectChunkPathMatching))
+    );
+    expect(scripts.some((script) => script.includes('__shared-'))).toBe(true);
+    expect(scripts.some((script) => script.includes('__common'))).toBe(false);
+    expect(new Set(scripts).size).toBe(scripts.length);
+    for (const script of scripts) expect(fs.existsSync(path.join(outputDir, script))).toBe(true);
+  }
+
   // Ensure the correct script tags are injected.
   it('has eager script tags in html', async () => {
-    expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['__expo-metro-runtime', '_layout', 'index', '__common', 'entry'].map(expectChunkPathMatching)
-    );
+    expectPageScripts(await getScriptTagsAsync('index.html'), 'index');
   });
   it('has eager script tags in dynamic html', async () => {
     const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
 
-    expect(staticParamsPage).toEqual(
-      ['__expo-metro-runtime', '_layout', '[post]', '__common', 'entry'].map(
-        expectChunkPathMatching
-      )
-    );
+    expectPageScripts(staticParamsPage, '[post]');
 
     expect(await getScriptTagsAsync('[post].html')).toEqual(staticParamsPage);
   });
   it('has (fewer) eager script tags in generated routes', async () => {
     // Less chunks because the not-found route is not an async import.
-    expect(await getScriptTagsAsync('+not-found.html')).toEqual(
-      ['__expo-metro-runtime', '_layout', '__common', 'entry'].map(expectChunkPathMatching)
-    );
+    expectPageScripts(await getScriptTagsAsync('+not-found.html'));
   });
 
   it('has source maps', async () => {
@@ -88,10 +93,9 @@ describe('exports static with bundle splitting', () => {
     const mapFiles = files.filter((file) => file?.endsWith('.map')).sort();
 
     // "_expo/static/js/web/[file]-[hash].js.map",
-    expect(mapFiles).toEqual(
+    expect(mapFiles.filter((file) => !file!.includes('__shared-'))).toEqual(
       [
         '__expo-metro-runtime',
-        '__common',
         'entry',
         '_layout',
         'index',
@@ -116,11 +120,11 @@ describe('exports static with bundle splitting', () => {
       expect(sourceMap.version).toBe(3);
 
       // Common chunk
-      if (file!.match(/__common/)) {
+      if (file!.match(/__common|__shared-/)) {
         expect(sourceMap.sections.length).toBeGreaterThan(0);
         for (const section of sourceMap.sections) {
           expect(section).toEqual(
-            expectSourceMapSection(expect.stringMatching(/^\/(packages|node_modules)\//))
+            expectSourceMapSection(expect.stringMatching(/^\/(packages|node_modules|apps)\//))
           );
         }
       } else {

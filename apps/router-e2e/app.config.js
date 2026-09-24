@@ -63,6 +63,7 @@ module.exports = {
     [
       'expo-router',
       {
+        unstable_chunking: process.env.E2E_ROUTER_SPLIT_STRATEGY === 'bitset',
         asyncRoutes:
           process.env.E2E_ROUTER_ASYNC === 'true'
             ? true
