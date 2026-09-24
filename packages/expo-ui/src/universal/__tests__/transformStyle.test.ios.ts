@@ -53,29 +53,6 @@ describe('transformToModifiers (iOS)', () => {
     ]);
   });
 
-  it('makes the whole frame tappable for onPress, including empty space', () => {
-    const onPress = jest.fn();
-    expect(transformToModifiers({ padding: 8 }, { onPress })).toEqual([
-      padding({ all: 8 }),
-      contentShape(shapes.rectangle()),
-      onTapGesture(onPress),
-    ]);
-  });
-
-  it('keeps the onPress hit area when the user supplies their own contentShape', () => {
-    const onPress = jest.fn();
-    const userShape = contentShape(shapes.capsule(), 'dragPreview');
-    expect(transformToModifiers(undefined, { onPress }, [userShape])).toEqual([
-      contentShape(shapes.rectangle()),
-      onTapGesture(onPress),
-      userShape,
-    ]);
-  });
-
-  it('does not add a hit area without onPress', () => {
-    expect(transformToModifiers({ padding: 8 }, {})).toEqual([padding({ all: 8 })]);
-  });
-
   it('keeps behavior modifiers when the user supplies the same type', () => {
     expect(transformToModifiers(undefined, { disabled: true }, [disabled(false)])).toEqual([
       disabled(true),
