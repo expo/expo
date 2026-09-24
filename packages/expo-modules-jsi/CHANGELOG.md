@@ -11,6 +11,9 @@
 - [iOS] Fix the `.swiftinterface` failing to compile with Xcode 27 (Swift 6.4), because a C++ type extension was no longer stripped from it. ([#50569](https://github.com/expo/expo/pull/50569) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix the xcframework build phase failing iOS archives under Xcode 27. ([#50587](https://github.com/expo/expo/pull/50587) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fix the xcframework build warning about jsi headers missing from the umbrella header. ([#50588](https://github.com/expo/expo/pull/50588) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix `RuntimeScheduler`'s constructors failing to compile on newer Swift compilers due to an invalid `SWIFT_RETURNS_RETAINED` annotation. (by [@Radeonares32](https://github.com/Radeonares32))
+- [iOS] Fix a Swift compiler parser error (`'$' is not a valid digit in integer literal`) on the class-name-validation regex literal in `JavaScriptRuntime.createClass`. (by [@Radeonares32](https://github.com/Radeonares32))
+- [iOS] Fix `JavaScriptPromise` failing to compile because its `LongLivedState` initializer was actor-isolated but called from a synchronous context. (by [@Radeonares32](https://github.com/Radeonares32))
 
 ### 💡 Others
 
