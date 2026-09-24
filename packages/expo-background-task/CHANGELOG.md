@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added a `requiresNetworkConnectivity` option to `BackgroundTaskOptions`, letting tasks that do only local work run while the device is offline. It defaults to `true`, which is the current behavior.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
