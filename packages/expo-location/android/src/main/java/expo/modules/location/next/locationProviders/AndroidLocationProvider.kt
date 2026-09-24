@@ -17,13 +17,12 @@ import androidx.core.location.LocationManagerCompat
 import expo.modules.location.next.Position
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
 import expo.modules.location.next.toPosition
-import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 import kotlin.time.Duration
 
-fun resolveLocationProvider(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? {
+fun resolveSystemProviderName(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? {
   // Pick the desired provider based on LocationPriority options
   val desiredProvider = when (locationPriority) {
     LocationPriority.HIGH_ACCURACY, LocationPriority.BALANCED_POWER_ACCURACY -> {
@@ -45,7 +44,7 @@ fun resolveLocationProvider(locationPriority: LocationPriority, context: Context
   }
 
   // Downgrade provider if it is not valid.
-  var provider : String? = desiredProvider
+  var provider: String? = desiredProvider
   while (provider != null && provider !in validProviders) {
     provider = when (provider) {
       LocationManager.FUSED_PROVIDER -> LocationManager.GPS_PROVIDER
@@ -61,9 +60,7 @@ fun resolveLocationProvider(locationPriority: LocationPriority, context: Context
 class AndroidLocationProvider(private val context: Context) : LocationProvider {
   val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-  override fun name(): String {
-    return "Android"
-  }
+  override val name = "Android"
 
   @SuppressLint("MissingPermission")
   private fun getLastKnownLocation(): Location? {
@@ -103,19 +100,23 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
       return lastPositionResult
     }
 
-    val provider = resolveLocationProvider(options.priority, context, locationManager) ?: return lastPositionResult
+    val provider = resolveSystemProviderName(options.priority, context, locationManager) ?: return lastPositionResult
     val currentLocation = getCurrentLocationWithTimeout(provider, options.timeout)
     val currentPosition = currentLocation?.toPosition() ?: return lastPositionResult
     return ProviderResult.Success(currentPosition)
   }
 
   // On plain android we can only move user to settings.
-  override suspend fun enableLocationServices(activity: Activity, promptResult: CompletableDeferred<Boolean>): ProviderResult<Unit> {
-    try {
-      activity.startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), SETTINGS_REQUEST_CODE)
-    } catch (e: Throwable) {
-      promptResult.complete(false)
-    }
-    return ProviderResult.Success(Unit)
+  override suspend fun enableLocationServices(activity: Activity): ProviderResult<EnableLocationServicesResult> {
+    val enableServicesResult = runCatching {
+      activity.startActivityForResult(
+        Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS),
+        SETTINGS_REQUEST_CODE
+      )
+    }.fold(
+      onSuccess = { EnableLocationServicesResult.ResolutionPending },
+      onFailure = { EnableLocationServicesResult.Disabled }
+    )
+    return ProviderResult.Success(enableServicesResult)
   }
 }

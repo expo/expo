@@ -87,14 +87,13 @@ class GetPositionOptions(
 }
 
 @OptimizedRecord
-class Coordinates (
+class Coordinates(
   @Field val latitude: Double,
-  @Field val longitude: Double,
-) : Record {
-}
+  @Field val longitude: Double
+) : Record
 
 @OptimizedRecord
-class Position (
+class Position(
   @Field val coordinates: Coordinates,
   @Field val timestamp: Double,
   @Field val mocked: Boolean,
@@ -107,32 +106,39 @@ class Position (
   @Field val horizontalAccuracy: Double? = null,
   @Field val verticalAccuracy: Double? = null,
   @Field val speedAccuracy: Double? = null,
-  @Field val headingAccuracy: Double? = null,
-) : Record {
-}
+  @Field val headingAccuracy: Double? = null
+) : Record
 
 fun Location.mslAltitude(): Double? {
   return if (Build.VERSION.SDK_INT >= 34 && hasMslAltitude()) {
     mslAltitudeMeters
-  } else null
+  } else {
+    null
+  }
 }
 
 fun Location.verticalAccuracy(): Double? {
   return if (Build.VERSION.SDK_INT >= 26 && hasAltitude() && hasVerticalAccuracy()) {
     verticalAccuracyMeters.toDouble()
-  } else null
+  } else {
+    null
+  }
 }
 
 fun Location.speedAccuracy(): Double? {
   return if (Build.VERSION.SDK_INT >= 26 && hasSpeed() && hasSpeedAccuracy()) {
     speedAccuracyMetersPerSecond.toDouble()
-  } else null
+  } else {
+    null
+  }
 }
 
 fun Location.headingAccuracy(): Double? {
   return if (Build.VERSION.SDK_INT >= 26 && hasBearing() && hasBearingAccuracy()) {
     bearingAccuracyDegrees.toDouble()
-  } else null
+  } else {
+    null
+  }
 }
 
 fun Location.mocked(): Boolean {
@@ -154,13 +160,29 @@ fun Location.toPosition(): Position {
     mocked = mocked(),
 
     mslAltitude = mslAltitude(),
-    altitude = if (hasAltitude()) altitude else null,
-    speed = if (hasSpeed()) speed.toDouble() else null,
-    heading = if (hasBearing()) bearing.toDouble() else null,
+    altitude = if (hasAltitude()) {
+      altitude
+    } else {
+      null
+    },
+    speed = if (hasSpeed()) {
+      speed.toDouble()
+    } else {
+      null
+    },
+    heading = if (hasBearing()) {
+      bearing.toDouble()
+    } else {
+      null
+    },
 
-    horizontalAccuracy = if (this.hasAccuracy()) this.accuracy.toDouble() else null,
+    horizontalAccuracy = if (this.hasAccuracy()) {
+      this.accuracy.toDouble()
+    } else {
+      null
+    },
     verticalAccuracy = verticalAccuracy(),
     speedAccuracy = speedAccuracy(),
-    headingAccuracy = headingAccuracy(),
+    headingAccuracy = headingAccuracy()
   )
 }

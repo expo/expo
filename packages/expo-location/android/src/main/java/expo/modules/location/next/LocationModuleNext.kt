@@ -14,19 +14,24 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.location.next.locationProviders.AndroidLocationProvider
+import expo.modules.location.next.locationProviders.EnableLocationServicesResult
 import expo.modules.location.next.locationProviders.FallbackLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.next.locationProviders.LocationProvider
 import kotlinx.coroutines.CompletableDeferred
 
-class RequestingBackgroundPermissionsWithoutForegroundGrantException : CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
+class RequestingBackgroundPermissionsWithoutForegroundGrantException :
+  CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
 
 class LocationModuleNext : Module() {
   lateinit var mContext: Context
+
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw NoPermissionsModuleException()
+
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
+
     val gmsLocationProvider = GmsLocationProvider(
       fusedLocationProvider,
       LocationServices.getSettingsClient(mContext)
@@ -34,15 +39,21 @@ class LocationModuleNext : Module() {
 
     SharedRef(gmsLocationProvider)
   }
+
   val androidLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     SharedRef(AndroidLocationProvider(mContext))
   }
+
   lateinit var currentLocationProvider: LocationProvider
+
   lateinit var locationManager: LocationManager
+
   @Volatile
   private var locationServicesPrompt: CompletableDeferred<Boolean>? = null
 
   override fun definition() = ModuleDefinition {
+    Name("LocationModuleNext")
+
     OnCreate {
       mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       currentLocationProvider = FallbackLocationProvider(
@@ -75,8 +86,8 @@ class LocationModuleNext : Module() {
       currentLocationProvider = locationProvider.ref
     }
 
-    Function("getSelectedLocationProviderName") { ->
-      currentLocationProvider.name()
+    Function("getSelectedLocationProviderName") {
+      currentLocationProvider.name
     }
 
     Class("LocationProvider") {
@@ -94,7 +105,7 @@ class LocationModuleNext : Module() {
     AsyncFunction("getPosition") Coroutine { options: GetPositionOptions? ->
       permissionsManager.ensureForegroundPermissions()
       val providerOptions = (options ?: GetPositionOptions()).toProviderOptions()
-      return@Coroutine currentLocationProvider.getPosition(providerOptions).getOrNull()
+      return@Coroutine currentLocationProvider.getPosition(providerOptions).getOrNull("getPosition")
     }
 
     Function<Boolean>("hasLocationServicesEnabled") { ->
@@ -112,8 +123,20 @@ class LocationModuleNext : Module() {
       val promptResult = CompletableDeferred<Boolean>()
       locationServicesPrompt = promptResult
       try {
-        currentLocationProvider.enableLocationServices(appContext.throwingActivity, promptResult).getOrThrow()
+        val enableServicesResult = currentLocationProvider
+          .enableLocationServices(appContext.throwingActivity)
+          .getOrThrow("enableLocationServices")
+
+        when (enableServicesResult) {
+          is EnableLocationServicesResult.Disabled -> promptResult.complete(false)
+          is EnableLocationServicesResult.Enabled -> promptResult.complete(true)
+          is EnableLocationServicesResult.ResolutionPending -> {}
+        }
+
         return@Coroutine promptResult.await()
+      } catch (cause: Throwable) {
+        promptResult.completeExceptionally(cause)
+        throw cause
       } finally {
         locationServicesPrompt = null
       }
