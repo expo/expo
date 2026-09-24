@@ -976,12 +976,11 @@ it('D-F1 keeps config settings and platforms while replacing structure and membe
   input.product.spmPackages = [
     { url: 'https://example.com/remote.git', productName: 'Remote', version: { exact: '1.2.3' } },
   ];
-  input.product.targets.push({ type: 'objc', name: 'StaleConfigTarget', path: 'nonexistent' });
   const output = SPMGenerator.getSwiftPackagePath(input.pkg, input.product);
   await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Release');
   const manifest = fs.readFileSync(output, 'utf8');
   assert.match(manifest, /\.macOS\(\.v11\)/);
-  assert.doesNotMatch(manifest, /v13|AppKit|StaleConfigTarget|Unused/);
+  assert.doesNotMatch(manifest, /v13|AppKit|Unused/);
   assert.match(manifest, /\.linkedFramework\("Foundation"\)/);
   assert.match(manifest, /CONFIG_FLAG=1/);
   assert.match(manifest, /-lz/);
@@ -1162,9 +1161,32 @@ it('ignores stale config edges between source targets', async () => {
       'helper/Helper.swift': 'public let helper = 1',
     }
   );
-  (input.product.targets[0] as SourceTarget).dependencies = ['Helper', 'Stale'];
-  input.product.targets.push({ name: 'Stale', type: 'swift', path: 'old' });
+  (input.product.targets[0] as SourceTarget).dependencies = ['Helper'];
   assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, []);
+});
+
+for (const typo of [
+  { type: 'objc', name: 'Typo' },
+  { type: 'objc', name: 'Typo', path: 'ios/typo' },
+] as const) {
+  it(`rejects a config target the manifest does not declare${'path' in typo ? ', even with a path' : ''}`, async () => {
+    const input = fixture();
+    input.product.targets.push(typo);
+    await rejectsManifest(
+      input,
+      /spm\.config\.json declares this target, but the checked-in Package\.swift declares no regular target with that name/,
+      'Typo'
+    );
+  });
+}
+
+it('rejects a config target the manifest declares but the library product never reaches', async () => {
+  const input = fixture(
+    '.target(name: "Main", path: "ios"), .target(name: "Helper", path: "helper")',
+    { 'ios/Main.swift': 'public let value = 1', 'helper/Helper.swift': 'public let helper = 1' }
+  );
+  input.product.targets.push({ type: 'swift', name: 'Helper', path: 'helper' });
+  await rejectsManifest(input, /the library product "Fixture" does not reach it/, 'Helper');
 });
 
 it('uses the evaluated manifest rather than matching dependency text in comments', async () => {

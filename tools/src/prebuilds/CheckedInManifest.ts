@@ -683,6 +683,26 @@ export async function resolveCheckedInManifestAsync(
     }
   }
 
+  // Config settings reach a manifest target only by name, so an unmatched config target would
+  // silently lose its compilerFlags, linkedFrameworks, and the rest.
+  for (const target of product.targets) {
+    if (target.type === 'framework' || reachable.has(target.name)) continue;
+    if (regularByName.has(target.name)) {
+      throw manifestError(
+        product.name,
+        target.name,
+        `spm.config.json gives this target settings, and the manifest declares it, but the library product "${product.name}" does not reach it, so it is never built and those settings apply to nothing.`,
+        `Add "${target.name}" to the targets of .library(name: "${product.name}") or to the dependencies of a target the product builds, or remove it from spm.config.json.`
+      );
+    }
+    throw manifestError(
+      product.name,
+      target.name,
+      `spm.config.json declares this target, but the checked-in Package.swift declares no regular target with that name, so the settings spm.config.json gives it apply to nothing.`,
+      "Set the target's name in spm.config.json to the one Package.swift declares, or remove the target from spm.config.json."
+    );
+  }
+
   for (const target of regular.filter((candidate) => reachable.has(candidate.name))) {
     for (const [productName, packageName] of (target.dependencies ?? []).flatMap((dependency) =>
       dependency.product ? [dependency.product] : []

@@ -24,7 +24,6 @@ import {
   findFirstExisting,
   findXCFrameworkInDir,
   getBuildPlatformsFromProductPlatform,
-  warnUnreconciledConfigTargets,
 } from './SPMBuild';
 import type { SPMProduct, SPMTarget } from './SPMConfig.types';
 
@@ -175,7 +174,7 @@ describe('findXCFrameworkInDir', () => {
 });
 
 // ---------------------------------------------------------------------------
-// buildXcodeBuildArgs / warnUnreconciledConfigTargets
+// buildXcodeBuildArgs
 // ---------------------------------------------------------------------------
 
 function productWithTargets(targets: SPMTarget[]): SPMProduct {
@@ -209,67 +208,6 @@ function checkedIn(
 ): CheckedInLayout {
   return { root, targets };
 }
-
-describe('warnUnreconciledConfigTargets', () => {
-  it('reports a config target the checked-in manifest does not declare', () => {
-    const warnings = captureWarnings(() => {
-      warnUnreconciledConfigTargets(
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC' },
-        ]),
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    // Nothing else reconciles the two name sets, so an unmatched name would otherwise be a
-    // silently inert entry: either a typo hiding sources, or dead configuration.
-    assert.equal(warnings.length, 1, `The unmatched target must be reported: ${warnings.join()}`);
-    const warning = warnings[0];
-    assert.ok(
-      warning.includes('ExpoHaptics/ExpoHapticsObjC'),
-      `Name the product and the target: ${warning}`
-    );
-    assert.ok(
-      warning.includes('Package.swift'),
-      `Name the manifest that decides the targets: ${warning}`
-    );
-    assert.ok(
-      warning.includes('/repo/packages/expo-haptics'),
-      `Name the manifest root: ${warning}`
-    );
-  });
-
-  it('reports an unmatched config target that still declares a path', () => {
-    const warnings = captureWarnings(() => {
-      warnUnreconciledConfigTargets(
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC', path: 'ios/objc' },
-        ]),
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    assert.equal(
-      warnings.length,
-      1,
-      `A leftover path does not reconcile a name: ${warnings.join()}`
-    );
-  });
-
-  it('stays silent when every config target is declared', () => {
-    const warnings = captureWarnings(() => {
-      warnUnreconciledConfigTargets(
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'framework', name: 'Prebuilt', path: 'ios/Prebuilt.xcframework' },
-        ]),
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    // A framework target is a prebuilt binary, not a manifest target: it is never declared there.
-    assert.deepEqual(warnings, []);
-  });
-});
 
 describe('buildXcodeBuildArgs', () => {
   const originalRepoRoot = process.env.EXPO_ROOT_DIR;
@@ -581,59 +519,6 @@ describe('buildXcodeBuildArgs', () => {
         );
         return true;
       }
-    );
-  });
-
-  it('skips a config target the checked-in manifest does not declare', () => {
-    let args: string[] = [];
-    const warnings = captureWarnings(() => {
-      args = buildXcodeBuildArgs(
-        pkg,
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC' },
-        ]),
-        'Debug',
-        'iOS',
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    // warnUnreconciledConfigTargets reports the mismatch once for the whole product; repeating
-    // it here would print the same paragraph again for every platform and flavor.
-    assert.deepEqual(warnings, [], 'The mismatch is reported once per product, not per platform');
-    assert.equal(
-      settingValue(args, 'OTHER_CFLAGS'),
-      '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
-        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
-        '/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=' +
-        '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +
-        '/expo-src/packages/expo-haptics/ios/'
-    );
-  });
-
-  it('skips an unmatched config target that still declares a path', () => {
-    let args: string[] = [];
-    const warnings = captureWarnings(() => {
-      args = buildXcodeBuildArgs(
-        pkg,
-        productWithTargets([
-          { type: 'swift', name: 'ExpoHaptics' },
-          { type: 'objc', name: 'ExpoHapticsObjC', path: 'ios/objc' },
-        ]),
-        'Debug',
-        'iOS',
-        checkedIn([{ name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios' }])
-      );
-    });
-    assert.deepEqual(warnings, [], 'The mismatch is reported once per product, not per platform');
-    // The manifest alone decides the targets, so no staging directory is ever generated for
-    // this one: a map built from its config path would rewrite nothing.
-    assert.ok(
-      !settingValue(args, 'OTHER_CFLAGS').includes('ExpoHapticsObjC'),
-      `A target the manifest does not declare must not be mapped: ${settingValue(
-        args,
-        'OTHER_CFLAGS'
-      )}`
     );
   });
 

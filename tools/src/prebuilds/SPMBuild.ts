@@ -65,8 +65,7 @@ export const SPMBuild = {
       );
     }
 
-    // Resolved here rather than per platform: the layout is the same for every platform, and the
-    // reconciliation it feeds must report a mismatch once, not once per platform.
+    // Resolved here rather than per platform: the layout is the same for every platform.
     const checkedInRoot = resolveCheckedInManifestRoot(pkg);
     const checkedIn = checkedInRoot
       ? {
@@ -74,9 +73,6 @@ export const SPMBuild = {
           targets: await resolveCheckedInManifestAsync(checkedInRoot, product),
         }
       : undefined;
-    if (checkedIn) {
-      warnUnreconciledConfigTargets(product, checkedIn);
-    }
 
     // Build for each platform
     for (const buildPlatform of buildPlatforms) {
@@ -230,33 +226,6 @@ export type CheckedInTargetLayout = Pick<CheckedInResolvedTarget, 'name' | 'sour
 export type CheckedInLayout = {
   root: string;
   targets: readonly CheckedInTargetLayout[];
-};
-
-/**
- * Warns about each spm.config.json target the checked-in manifest does not declare. Nothing else
- * reconciles the two name sets: the generated package is built from the manifest's targets alone,
- * so a config target the manifest does not name is inert.
- *
- * Called once for the whole product rather than from the per-platform argument build, which would
- * repeat the same paragraph for every platform.
- */
-export const warnUnreconciledConfigTargets = (
-  product: SPMProduct,
-  checkedIn: CheckedInLayout
-): void => {
-  const declared = new Set(checkedIn.targets.map((target) => target.name));
-  for (const target of product.targets) {
-    if (target.type === 'framework' || declared.has(target.name)) continue;
-    logger.warn(
-      `⚠️  Not remapping debug info for ${product.name}/${target.name}: spm.config.json ` +
-        `declares this target, but the checked-in Package.swift in ${checkedIn.root} declares ` +
-        `no target with that name, and the manifest alone decides what the build contains. ` +
-        `Nothing is built under this name, so if it is a typo the sources it names are ` +
-        `missing from the xcframework, and if Package.swift covers them under another name ` +
-        `this entry is dead configuration. Rename the target in spm.config.json to the ` +
-        `manifest's spelling, or remove it.`
-    );
-  }
 };
 
 /**
