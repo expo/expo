@@ -57,4 +57,20 @@ export interface SQLiteOpenOptions {
    * @hidden
    */
   finalizeUnusedStatementsBeforeClosing?: boolean;
+
+  /**
+   * Whether to store the database in a way that allows the same database to be opened from more
+   * than one browser tab or worker at a time. Without it, opening a second tab fails with
+   * `NoModificationAllowedError`, because the default web storage backend holds an exclusive
+   * OPFS access handle for the whole origin.
+   *
+   * This changes how the database is laid out in OPFS, so a database created with this option is
+   * not readable without it, and vice versa. Set it consistently for a given database. It also
+   * disables the exclusive locking that the default backend relies on for write throughput, and
+   * transactions cannot span more than one attached database.
+   *
+   * @default false
+   * @platform web
+   */
+  enableMultiTabSupport?: boolean;
 }
