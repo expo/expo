@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix assets copied by `Album.create` (with `moveAssets` set to `false`) being named after the full `file://` path of the original asset instead of its file name.
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-22
