@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `seekBy` being ignored when called while the source is still loading. ([#50634](https://github.com/expo/expo/pull/50634) by [@u9g](https://github.com/u9g))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-23
