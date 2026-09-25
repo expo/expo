@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use `inert` instead of `aria-hidden` for unfocused screens on web. ([#50454](https://github.com/expo/expo/pull/50454) by [@vmanapat](https://github.com/vmanapat))
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-25
