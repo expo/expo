@@ -7,6 +7,8 @@ export type CodeSigningInfo = Record<
   {
     developmentTeams: string[];
     provisioningProfiles: string[];
+    configurations: string[];
+    manualSigningConfigurations: string[];
   }
 >;
 
@@ -19,6 +21,8 @@ export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningIn
   for (const [nativeTargetId, nativeTarget] of targets) {
     const developmentTeams: string[] = [];
     const provisioningProfiles: string[] = [];
+    const configurations: string[] = [];
+    const manualSigningConfigurations: string[] = [];
 
     IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
       project,
@@ -29,7 +33,12 @@ export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningIn
           item.buildSettings.PRODUCT_NAME
       )
       .forEach(([, item]: IOSConfig.XcodeUtils.ConfigurationSectionEntry) => {
-        const { DEVELOPMENT_TEAM, PROVISIONING_PROFILE } = item.buildSettings;
+        const {
+          DEVELOPMENT_TEAM,
+          PROVISIONING_PROFILE,
+          PROVISIONING_PROFILE_SPECIFIER,
+          CODE_SIGN_STYLE,
+        } = item.buildSettings;
         if (
           typeof DEVELOPMENT_TEAM === 'string' &&
           // If the user selects "Team: none" in Xcode, it'll be an empty string.
@@ -39,13 +48,23 @@ export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningIn
         ) {
           developmentTeams.push(DEVELOPMENT_TEAM);
         }
-        if (typeof PROVISIONING_PROFILE === 'string' && !!PROVISIONING_PROFILE) {
-          provisioningProfiles.push(PROVISIONING_PROFILE);
+        const profiles = [PROVISIONING_PROFILE, PROVISIONING_PROFILE_SPECIFIER].filter(
+          isNonEmptyBuildSetting
+        );
+        provisioningProfiles.push(...profiles);
+        configurations.push(item.name);
+        if (
+          profiles.length ||
+          (isNonEmptyBuildSetting(CODE_SIGN_STYLE) && trimQuotes(CODE_SIGN_STYLE) === 'Manual')
+        ) {
+          manualSigningConfigurations.push(item.name);
         }
       });
     signingInfo[nativeTargetId] = {
       developmentTeams,
       provisioningProfiles,
+      configurations,
+      manualSigningConfigurations,
     };
   }
 
@@ -115,6 +134,14 @@ export function setAutoCodeSigningInfoForPbxproj(
   mutateXcodeProjectWithAutoCodeSigningInfo({ project, appleTeamId });
 
   fs.writeFileSync(project.filepath, project.writeSync());
+}
+
+function isNonEmptyBuildSetting(value: unknown): value is string {
+  return typeof value === 'string' && !!value && value !== '""';
+}
+
+function trimQuotes(value: string): string {
+  return value.replace(/^"(.*)"$/, '$1');
 }
 
 const ensureQuotes = (value: string) => {

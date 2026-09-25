@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow provisioning updates in `expo run:ios --device` for projects that already use automatic signing. ([#50270](https://github.com/expo/expo/pull/50270) by [@tahakocal](https://github.com/tahakocal))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23
