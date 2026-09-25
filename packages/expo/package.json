@@ -33,6 +33,7 @@
     "src",
     "AppEntry.js",
     "Expo.podspec",
+    "Package.swift",
     "bundledNativeModules.json",
     "expo-module.config.json",
     "metro-config.js",
