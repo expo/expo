@@ -201,11 +201,26 @@ for (const [extension, expected] of [
   ['cxx', 'cpp'],
   ['mm', 'cpp'],
 ] as const) {
-  it(`infers ${expected} from .${extension} sources rather than config`, async () => {
+  it(`infers ${expected} from .${extension} sources`, async () => {
     const input = fixture(undefined, { [`ios/Main.${extension}`]: '// source' });
+    input.product.targets[0].type = expected;
     assert.equal((await resolve(input.root, input.product))[0].type, expected);
   });
 }
+
+it('rejects a config type that differs from the language of the manifest sources', async () => {
+  const input = fixture(undefined, { 'ios/Main.m': '// source' });
+  await rejectsManifest(
+    input,
+    /spm\.config\.json declares type "swift", but the target's sources resolve to type "objc".*Set "type" to "objc"/
+  );
+});
+
+it('accepts a manifest target that spm.config.json does not list', async () => {
+  const input = fixture(undefined, { 'ios/Main.m': '// source' });
+  input.product.targets = [];
+  assert.equal((await resolve(input.root, input.product))[0].type, 'objc');
+});
 
 it('applies explicit sources and excludes before inferring language', async () => {
   const input = fixture(
@@ -1142,6 +1157,7 @@ it('prefixes implicit C public headers and builds through the source symlink', a
     'native/Thing.c': '#include "Thing.h"\nint thing(void) { return 1; }',
     'native/include/Thing.h': 'int thing(void);',
   });
+  input.product.targets[0].type = 'objc';
   (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
   assert.equal((await resolve(input.root, input.product))[0].publicHeadersPath, 'src/include');
   await SPMGenerator.generateIsolatedSourcesForTargetsAsync(input.pkg, input.product);
