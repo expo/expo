@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve pnpm catalog references when fixing package versions with `expo install --fix`. (by [@matheusmichels](https://github.com/matheusmichels))
+
 ### 💡 Others
 
 - [Internal] Fix the `BundleOptions` import in `internal/unstable-expo-updates-exports.d.ts`, which pointed at a subpath `@expo/metro` doesn't ship. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
