@@ -20,7 +20,8 @@ let package = Package(
     .target(
       name: "ExpoHaptics",
       dependencies: [],
-      path: "ios"
+      path: "ios",
+      exclude: ["ExpoHaptics.podspec"]
     )
   ]
 )
