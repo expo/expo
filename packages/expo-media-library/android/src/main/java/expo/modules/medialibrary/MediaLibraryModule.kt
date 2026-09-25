@@ -116,7 +116,13 @@ class MediaLibraryModule : Module() {
 
     AsyncFunction("addAssetsToAlbumAsync") Coroutine { assetsId: Array<String>, albumId: String, copyToAlbum: Boolean ->
       requireSystemPermissions()
-      requestMediaLibraryActionPermission(if (copyToAlbum) emptyArray() else assetsId)
+      requestMediaLibraryActionPermission(
+        if (copyToAlbum) {
+          emptyArray()
+        } else {
+          assetsId
+        }
+      )
       return@Coroutine addAssetsToAlbum(context, assetsId, albumId, copyToAlbum)
     }
 
@@ -356,10 +362,18 @@ class MediaLibraryModule : Module() {
 
   private fun requireSystemPermissions(isWritePermissionRequired: Boolean = true) {
     val missingPermissionsCondition =
-      if (isWritePermissionRequired) isMissingWritePermission else isMissingPermissions
+      if (isWritePermissionRequired) {
+        isMissingWritePermission
+      } else {
+        isMissingPermissions
+      }
     if (missingPermissionsCondition) {
       val missingPermissionsMessage =
-        if (isWritePermissionRequired) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
+        if (isWritePermissionRequired) {
+          ERROR_NO_WRITE_PERMISSION_MESSAGE
+        } else {
+          ERROR_NO_PERMISSIONS_MESSAGE
+        }
       throw PermissionsException(missingPermissionsMessage)
     }
   }
