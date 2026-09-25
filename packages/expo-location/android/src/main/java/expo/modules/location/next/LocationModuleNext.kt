@@ -19,6 +19,10 @@ import expo.modules.location.next.locationProviders.FallbackLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.next.locationProviders.LocationProvider
 import kotlinx.coroutines.CompletableDeferred
+import expo.modules.location.next.locationProviders.WatchPositionParameters
+import expo.modules.location.next.locationProviders.WatchSession
+import java.lang.ref.WeakReference
+import kotlin.time.Duration.Companion.milliseconds
 
 class RequestingBackgroundPermissionsWithoutForegroundGrantException :
   CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
@@ -29,6 +33,8 @@ class LocationModuleNext : Module() {
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw NoPermissionsModuleException()
 
+  val sessionsLock = Any()
+  val watchSessions: MutableList<WeakReference<PausableWatchSession>> = mutableListOf()
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
 
@@ -50,6 +56,12 @@ class LocationModuleNext : Module() {
 
   @Volatile
   private var locationServicesPrompt: CompletableDeferred<Boolean>? = null
+
+  fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: WatchSession): PositionWatchHandle = synchronized(sessionsLock) {
+    val pausableSession = PausableWatchSession(initialParameters, session)
+    watchSessions.add(WeakReference(pausableSession))
+    return@synchronized PositionWatchHandle(pausableSession)
+  }
 
   override fun definition() = ModuleDefinition {
     Name("LocationModuleNext")
@@ -108,6 +120,12 @@ class LocationModuleNext : Module() {
       return@Coroutine currentLocationProvider.getPosition(providerOptions).getOrNull("getPosition")
     }
 
+    Function("watchPosition") { profile: LocationProfile? ->
+      permissionsManager.ensureForegroundPermissions()
+      val parameters = (profile ?: LocationProfile.DEFAULT).watchParameters()
+      return@Function createPositionWatchHandle(parameters, currentLocationProvider.watchPosition().getOrThrow("watchPosition"))
+    }
+
     Function<Boolean>("hasLocationServicesEnabled") { ->
       hasLocationServicesEnabled()
     }
@@ -145,6 +163,70 @@ class LocationModuleNext : Module() {
     OnActivityResult { _, payload ->
       if (payload.requestCode == SETTINGS_REQUEST_CODE) {
         locationServicesPrompt?.complete(hasLocationServicesEnabled())
+      }
+    }
+
+    Class(PositionWatchHandle::class) {
+      Constructor { ->
+        throw PositionWatchHandleCreationException()
+      }
+
+      Events(POSITION_CHANGED)
+
+      Function("pause") { locationWatchHandle: PositionWatchHandle ->
+        locationWatchHandle.session.pause()
+      }
+
+      Function("resume") { locationWatchHandle: PositionWatchHandle ->
+        return@Function locationWatchHandle.session.resume()
+      }
+
+      Function("withProfile") { locationWatchHandle: PositionWatchHandle, profile: LocationProfile ->
+        locationWatchHandle.session.withProfile(profile)
+        locationWatchHandle
+      }
+
+      Function("withInterval") { locationWatchHandle: PositionWatchHandle, intervalMs: Double ->
+        val interval = if (0.0 <= intervalMs && intervalMs < Long.MAX_VALUE) {
+          intervalMs
+        } else {
+          0.0
+        }
+        locationWatchHandle.session.withInterval(interval.milliseconds)
+        locationWatchHandle
+      }
+
+      Function("restart") { locationWatchHandle: PositionWatchHandle ->
+        return@Function locationWatchHandle.session.restart()
+      }
+
+      Function("status") { locationWatchHandle: PositionWatchHandle ->
+        locationWatchHandle.session.status()
+      }
+    }
+
+    OnDestroy {
+      synchronized(sessionsLock) {
+        for (session in watchSessions) {
+          session.get()?.release()
+        }
+      }
+    }
+
+    OnActivityEntersForeground {
+      synchronized(sessionsLock) {
+        for (session in watchSessions) {
+          session.get()?.onLifecycleChange(true)
+        }
+      }
+    }
+
+    OnActivityEntersBackground {
+      synchronized(sessionsLock) {
+        watchSessions.removeIf { it.get() == null }
+        for (session in watchSessions) {
+          session.get()?.onLifecycleChange(false)
+        }
       }
     }
   }

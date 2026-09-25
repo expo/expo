@@ -3,17 +3,22 @@ package expo.modules.location.next.locationProviders
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.CancellationSignal
+import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings
 import androidx.core.content.ContextCompat
+import androidx.core.location.LocationListenerCompat
 import androidx.core.location.LocationManagerCompat
+import androidx.core.location.LocationRequestCompat
 import expo.modules.location.next.Position
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
 import expo.modules.location.next.toPosition
@@ -21,6 +26,14 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 import kotlin.time.Duration
+
+fun LocationPriority.toQuality(): Int {
+  return when (this) {
+    LocationPriority.HIGH_ACCURACY -> LocationRequestCompat.QUALITY_HIGH_ACCURACY
+    LocationPriority.BALANCED_POWER_ACCURACY -> LocationRequestCompat.QUALITY_BALANCED_POWER_ACCURACY
+    LocationPriority.LOW_POWER, LocationPriority.PASSIVE -> LocationRequestCompat.QUALITY_LOW_POWER
+  }
+}
 
 fun resolveSystemProviderName(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? {
   // Pick the desired provider based on LocationPriority options
@@ -106,6 +119,13 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
     return ProviderResult.Success(currentPosition)
   }
 
+  override fun watchPosition(): ProviderResult<WatchSession> {
+    if (locationManager.getProviders(true).isEmpty()) {
+      return ProviderResult.Unavailable
+    }
+    return ProviderResult.Success(AndroidWatchSession(context, locationManager))
+  }
+
   // On plain android we can only move user to settings.
   override suspend fun enableLocationServices(activity: Activity): ProviderResult<EnableLocationServicesResult> {
     val enableServicesResult = runCatching {
@@ -118,5 +138,97 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
       onFailure = { EnableLocationServicesResult.Disabled }
     )
     return ProviderResult.Success(enableServicesResult)
+  }
+}
+
+private class AndroidWatchSession(
+  private val context: Context,
+  private val locationManager: LocationManager
+) : WatchSession, BroadcastReceiver() {
+  private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchUpdate) -> Unit)
+  private class SessionState(val listener: LocationListenerCompat, val provider: String)
+
+  private var config: SessionConfig? = null
+  private var state: SessionState? = null
+
+  private fun clearConfig() {
+    if (config != null) {
+      config = null
+      context.unregisterReceiver(this)
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun clearState() {
+    val oldState = state
+    if (oldState != null) {
+      state = null
+      LocationManagerCompat.removeUpdates(locationManager, oldState.listener)
+    }
+  }
+
+  @SuppressLint("MissingPermission")
+  private fun tryConfiguringListener(config: SessionConfig, provider: String, emitError: Boolean = false): LocationListenerCompat? {
+    return runCatching {
+      val request = LocationRequestCompat.Builder(config.parameters.interval.inWholeMilliseconds)
+        .setQuality(config.parameters.priority.toQuality())
+        .setMaxUpdateDelayMillis(config.parameters.maxUpdateDelay.inWholeMilliseconds)
+        .build()
+      val listener = LocationListenerCompat { location -> config.onUpdate(WatchUpdate.Fix(location.toPosition())) }
+      LocationManagerCompat.requestLocationUpdates(locationManager, provider, request, listener, Looper.getMainLooper())
+      listener
+    }.onFailure {
+      if (emitError) {
+        config.onUpdate(WatchUpdate.Failure(it))
+      }
+    }.getOrNull()
+  }
+
+  @Synchronized
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean {
+    clearConfig()
+    clearState()
+
+    val provider = resolveSystemProviderName(parameters.priority, context, locationManager)
+    val desiredConfig = SessionConfig(parameters, onUpdate)
+
+    val listener = provider?.let { tryConfiguringListener(desiredConfig, it) }
+    if (listener != null) {
+      state = SessionState(listener, provider)
+    }
+
+    ContextCompat.registerReceiver(context, this, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED)
+    config = desiredConfig
+
+    return listener != null
+  }
+
+  @Synchronized
+  @SuppressLint("MissingPermission")
+  override fun stopUpdates() {
+    clearState()
+    clearConfig()
+  }
+
+  @Synchronized override fun isSubscribed(): Boolean = config != null
+
+  @Synchronized override fun canDeliverUpdates(): Boolean = state != null
+
+  @Synchronized
+  @SuppressLint("MissingPermission")
+  override fun onReceive(receiverContext: Context?, intent: Intent?) {
+    val config = config ?: return
+    val currentState = state
+    val provider = resolveSystemProviderName(config.parameters.priority, context, locationManager)
+    if (currentState != null && currentState.provider == provider) {
+      return
+    }
+
+    clearState()
+
+    val listener = provider?.let { tryConfiguringListener(config, it, emitError = true) }
+    if (listener != null) {
+      state = SessionState(listener, provider)
+    }
   }
 }
