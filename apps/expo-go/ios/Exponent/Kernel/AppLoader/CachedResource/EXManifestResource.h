@@ -33,7 +33,7 @@ extern NSString * const EXShowTryAgainButtonKey;
 
 - (NSError *)verifyManifestSdkVersion:(EXManifestsManifest *)maybeManifest;
 - (NSError *)formatError:(NSError *)error;
-+ (NSString * _Nonnull)formatHeader:(NSError * _Nonnull)error;
++ (NSString * _Nullable)formatHeader:(NSError * _Nonnull)error;
 + (NSAttributedString *)parseUrlsInAttributedString:(NSAttributedString *)inputString;
 + (NSAttributedString *)parseBoldInAttributedString:(NSAttributedString *)inputString withFont:(UIFont *)font;
 + (NSAttributedString *)parseUrlsAndBoldInAttributedString:(NSAttributedString *)inputString withFont:(UIFont *)font;
