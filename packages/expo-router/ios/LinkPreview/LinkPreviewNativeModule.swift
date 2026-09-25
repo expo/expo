@@ -14,6 +14,10 @@ public class LinkPreviewNativeModule: Module {
         view.previewActivationPath = previewActivationPath
       }
 
+      Prop("previewCornerRadius") { (view: NativeLinkPreviewView, previewCornerRadius: Double?) in
+        view.previewCornerRadius = previewCornerRadius
+      }
+
       Prop("disableForceFlatten") { (_: NativeLinkPreviewView, _: Bool) in
         // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }

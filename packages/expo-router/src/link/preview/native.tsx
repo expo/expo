@@ -81,6 +81,7 @@ export interface NativeLinkPreviewProps extends ViewProps {
       }
     | undefined;
   disableForceFlatten?: boolean;
+  previewCornerRadius?: number;
   onWillPreviewOpen?: () => void;
   onDidPreviewOpen?: () => void;
   onPreviewWillClose?: () => void;

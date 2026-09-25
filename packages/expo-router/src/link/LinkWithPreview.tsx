@@ -104,6 +104,7 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
   return (
     <NativeLinkPreview
       previewActivationPath={previewActivationPath}
+      previewCornerRadius={triggerElement?.props.previewCornerRadius}
       onWillPreviewOpen={() => {
         if (hasPreview) {
           isPreviewTapped.current = false;
