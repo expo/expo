@@ -402,6 +402,10 @@ function isExcluded(relativePath: string, excludes: string[]): boolean {
 }
 
 function collectSourceFiles(root: string, sources: string[], excludes: string[]): string[] {
+  return collectFiles(root, sources, excludes).filter((file) => SOURCE_EXTENSIONS.test(file));
+}
+
+function collectFiles(root: string, sources: string[], excludes: string[]): string[] {
   const files: string[] = [];
   // Keyed by real path, so a symbolic link back to an ancestor is walked once instead of until
   // the path length or the symlink limit gives out.
@@ -416,7 +420,7 @@ function collectSourceFiles(root: string, sources: string[], excludes: string[])
       for (const entry of fs.readdirSync(absolute)) {
         visit(path.join(absolute, entry), path.join(relative, entry));
       }
-    } else if (SOURCE_EXTENSIONS.test(relative)) {
+    } else {
       files.push(canonicalRelative(relative));
     }
   };
@@ -424,6 +428,22 @@ function collectSourceFiles(root: string, sources: string[], excludes: string[])
     visit(path.join(root, source), source);
   }
   return files;
+}
+
+/**
+ * Every file under the target's source directory that its `exclude` leaves in, plus its resources,
+ * as absolute paths. `sources` is ignored on purpose: the superset can only cause a needless
+ * rebuild, while honouring it risks a missed one. Resources are listed even when an exclude
+ * covers them, for the same reason.
+ */
+export function listCheckedInTargetInputs(target: CheckedInResolvedTarget): string[] {
+  const fromSourceRoot = (prefixed: string) => path.posix.relative('src', prefixed);
+  const excludes = target.exclude.map(fromSourceRoot);
+  const resources = (target.resources ?? []).map((resource) => fromSourceRoot(resource.path));
+  return [
+    ...collectFiles(target.sourceRoot, [''], excludes),
+    ...collectFiles(target.sourceRoot, resources, []),
+  ].map((file) => path.join(target.sourceRoot, file));
 }
 
 function prefixSourcePath(

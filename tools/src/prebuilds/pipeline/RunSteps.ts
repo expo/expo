@@ -18,7 +18,11 @@ import logger from '../../Logger';
 import { getPackageByName } from '../../Packages';
 import { getBundledVersionsAsync } from '../../ProjectVersions';
 import { Artifacts } from '../Artifacts';
-import { resolveCheckedInManifestRoot } from '../CheckedInManifest';
+import {
+  listCheckedInTargetInputs,
+  resolveCheckedInManifestAsync,
+  resolveCheckedInManifestRoot,
+} from '../CheckedInManifest';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
 import { getExternalPackageByProductName, isExternalPackage } from '../ExternalPackage';
@@ -259,7 +263,10 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
 type DependencyFrameworkStatus =
   | { status: 'fresh' }
   | { status: 'missing'; flavor: BuildFlavor }
-  | { status: 'stale'; flavor: BuildFlavor };
+  | { status: 'stale'; flavor: BuildFlavor }
+  | { status: 'unknown-inputs'; reason: string };
+
+type NewestProductInput = { mtimeMs: number } | { unknownReason: string };
 
 function getPathMtimeMs(filePath: string): number {
   try {
@@ -285,10 +292,8 @@ function getSourceTargetPath(pkg: SPMPackageSource, target: SPMTarget): string |
     return resolveFrameworkTargetPath(pkg.path, target);
   }
 
-  // A target naming no directory has no sources to scan. Both states that produce one — a
-  // checked-in Package.swift naming them instead, and a config that omits `path` without one —
-  // already forced a rebuild in getNewestProductInputMtimeMs, so no freshness decision rests
-  // on this null.
+  // Source targets of a package with a checked-in Package.swift are never listed here, and a
+  // pathless one without it already forced a rebuild, so no freshness decision rests on this null.
   if (!target.path) return null;
 
   const isBuildArtifact = target.path.startsWith('.build/');
@@ -317,17 +322,6 @@ function collectTargetInputPaths(pkg: SPMPackageSource, target: SPMTarget): stri
 }
 
 /**
- * Whether the package's sources are named by a checked-in `Package.swift` rather than by
- * spm.config.json — the single mode test, so that a `path` left behind in a converted config
- * cannot claim to name a source root the build never reads. Listing those sources means reading
- * the manifest, which is asynchronous, and this freshness check is not, so the inputs of every
- * product in such a package stay unknown here.
- */
-function hasUnenumerableInputs(pkg: SPMPackageSource): boolean {
-  return resolveCheckedInManifestRoot(pkg) !== null;
-}
-
-/**
  * Whether a non-framework target omits `path` with no checked-in manifest to supply the layout —
  * a config error, and one this check has to catch itself. The error SPMGenerator raises for it is
  * only reached by building the package, which a product judged fresh never is.
@@ -337,42 +331,69 @@ function hasPathlessSourceTarget(product: SPMProduct): boolean {
   return product.targets.some((target) => target.type !== 'framework' && !target.path);
 }
 
-function getNewestProductInputMtimeMs(pkg: SPMPackageSource, product: SPMProduct): number {
-  // Unknown inputs must not read as fresh. Every path to here runs from
-  // expandWithUnbuiltDependencies, so the effect is that such a product is always auto-added
-  // when another package pulls it in as a dependency. A package the caller asked for builds
-  // either way, and this never widens that set.
-  if (hasUnenumerableInputs(pkg) || hasPathlessSourceTarget(product)) {
-    return Number.POSITIVE_INFINITY;
-  }
-
-  const inputPaths = [
-    path.join(pkg.path, 'package.json'),
-    path.join(pkg.path, 'spm.config.json'),
-    ...product.targets.flatMap((target) => collectTargetInputPaths(pkg, target)),
-  ];
-
-  for (const target of product.targets) {
-    if (target.type === 'framework') continue;
-    for (const resource of target.resources ?? []) {
-      for (const file of glob.sync(resource.path, {
-        cwd: pkg.path,
-        nodir: true,
-      })) {
-        inputPaths.push(path.join(pkg.path, file));
-      }
-    }
-  }
-
-  return Math.max(...inputPaths.map(getPathMtimeMs));
+function getResourceInputPaths(pkg: SPMPackageSource, product: SPMProduct): string[] {
+  return product.targets.flatMap((target) =>
+    target.type === 'framework'
+      ? []
+      : (target.resources ?? []).flatMap((resource) =>
+          glob
+            .sync(resource.path, { cwd: pkg.path, nodir: true })
+            .map((file) => path.join(pkg.path, file))
+        )
+  );
 }
 
-function getDependencyFrameworkStatus(
+/**
+ * A package with a checked-in Package.swift takes its source targets from the manifest alone, so
+ * a `path` left behind in its converted config cannot name a source root the build never reads.
+ * Inputs that cannot be listed yield a reason instead of an mtime, so they never read as fresh;
+ * building the package reports the underlying error in full.
+ */
+async function getNewestProductInputAsync(
+  pkg: SPMPackageSource,
+  product: SPMProduct
+): Promise<NewestProductInput> {
+  const inputPaths = [path.join(pkg.path, 'package.json'), path.join(pkg.path, 'spm.config.json')];
+  const frameworkTargets = product.targets.filter((target) => target.type === 'framework');
+  const checkedInRoot = resolveCheckedInManifestRoot(pkg);
+
+  if (checkedInRoot) {
+    let targets;
+    try {
+      targets = await resolveCheckedInManifestAsync(checkedInRoot, product);
+    } catch {
+      return { unknownReason: 'its checked-in Package.swift could not be resolved' };
+    }
+    let targetInputs;
+    try {
+      targetInputs = targets.flatMap(listCheckedInTargetInputs);
+    } catch {
+      return { unknownReason: 'the files its checked-in Package.swift names could not be listed' };
+    }
+    inputPaths.push(
+      path.join(checkedInRoot, 'Package.swift'),
+      ...targetInputs,
+      ...frameworkTargets.flatMap((target) => collectTargetInputPaths(pkg, target))
+    );
+  } else {
+    if (hasPathlessSourceTarget(product)) {
+      return { unknownReason: 'a target declares no "path" in spm.config.json' };
+    }
+    inputPaths.push(
+      ...product.targets.flatMap((target) => collectTargetInputPaths(pkg, target)),
+      ...getResourceInputPaths(pkg, product)
+    );
+  }
+
+  return { mtimeMs: Math.max(...inputPaths.map(getPathMtimeMs)) };
+}
+
+async function getDependencyFrameworkStatusAsync(
   pkg: SPMPackageSource,
   product: SPMProduct,
   buildFlavors: BuildFlavor[]
-): DependencyFrameworkStatus {
-  const newestInputMtimeMs = getNewestProductInputMtimeMs(pkg, product);
+): Promise<DependencyFrameworkStatus> {
+  const newestInput = await getNewestProductInputAsync(pkg, product);
 
   for (const flavor of buildFlavors) {
     const frameworkPath = Frameworks.findFrameworkAtAnyVersion(pkg.buildPath, product.name, flavor);
@@ -380,7 +401,11 @@ function getDependencyFrameworkStatus(
       return { status: 'missing', flavor };
     }
 
-    if (getFrameworkMtimeMs(frameworkPath) < newestInputMtimeMs) {
+    if ('unknownReason' in newestInput) {
+      return { status: 'unknown-inputs', reason: newestInput.unknownReason };
+    }
+
+    if (getFrameworkMtimeMs(frameworkPath) < newestInput.mtimeMs) {
       return { status: 'stale', flavor };
     }
   }
@@ -404,10 +429,10 @@ type DependencyExpansionOptions = {
  * and that dependency's xcframework doesn't exist yet, it's automatically added
  * to the build set so the build can succeed without manual intervention.
  */
-export function expandWithUnbuiltDependencies(
+export async function expandWithUnbuiltDependencies(
   packages: SPMPackageSource[],
   options: DependencyExpansionOptions = {}
-): SPMPackageSource[] {
+): Promise<SPMPackageSource[]> {
   const buildFlavors = options.buildFlavors ?? ['Debug', 'Release'];
   const resolvePackageByName = options.resolvePackageByName ?? getPackageByName;
   const packagesByName = new Map(packages.map((p) => [p.packageName, p]));
@@ -481,17 +506,19 @@ export function expandWithUnbuiltDependencies(
           } else if (isCustomBuild) {
             reason = 'customBuild — script decides cache';
           } else if (depProduct) {
-            const status = getDependencyFrameworkStatus(depPkg, depProduct, buildFlavors);
+            const status = await getDependencyFrameworkStatusAsync(
+              depPkg,
+              depProduct,
+              buildFlavors
+            );
             if (status.status === 'fresh') continue;
 
             if (status.status === 'missing') {
               reason = `${status.flavor} xcframework not found`;
-            } else if (hasUnenumerableInputs(depPkg)) {
+            } else if (status.status === 'unknown-inputs') {
               // Its sources may well be untouched; nothing here can tell. Saying "stale" would
               // send a developer looking for a change that need not exist.
-              reason = 'inputs not enumerable (builds from a checked-in Package.swift)';
-            } else if (hasPathlessSourceTarget(depProduct)) {
-              reason = 'a target declares no "path" in spm.config.json';
+              reason = status.reason;
             } else {
               reason = `${status.flavor} xcframework stale`;
             }
@@ -567,7 +594,7 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     // 2. Auto-add unbuilt dependencies to the build set
     const unsortedPackages = request.exactPackage
       ? requestedPackages
-      : expandWithUnbuiltDependencies(requestedPackages, {
+      : await expandWithUnbuiltDependencies(requestedPackages, {
           buildFlavors: request.buildFlavors,
           clean: request.clean,
         });
