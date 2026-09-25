@@ -11,7 +11,10 @@ export function ObserveRouterIntegrationProvider({ children }: PropsWithChildren
     isInitialized() ? createRouterIntegrationStorage() : null
   );
   const [listenersCleanup] = useState(() => {
-    if (!storage || !optionalRouter) return;
+    // Listeners are attached during render so they exist before child effects emit the first
+    // `pageFocused`. Server rendering never runs the effect cleanup below, so subscribing there
+    // would leak a listener per request; navigation never happens on the server anyway.
+    if (!storage || !optionalRouter || typeof window === 'undefined') return;
     return initListeners(storage, optionalRouter.unstable_navigationEvents);
   });
 

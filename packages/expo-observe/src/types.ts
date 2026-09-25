@@ -67,6 +67,14 @@ export type ObserveConfig = {
    */
   sampleRate?: number;
   /**
+   * Whether the web implementation is enabled. When `true`, `configure` on web initializes the
+   * navigation integrations and emits the `configure` event, and log events are dispatched to
+   * EAS Observe. When `false`, Observe stays a no-op on web. Has no effect on Android and iOS.
+   *
+   * @default false
+   */
+  web?: boolean;
+  /**
    * Whether to record unhandled JavaScript errors as `exception` log events.
    *
    * When `false`, unhandled errors are no longer recorded. React Native's own handling is
@@ -195,7 +203,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    *
    * Events are dispatched automatically when the app moves to the background. On Android,
    * a background worker dispatches events once network connectivity is available. On iOS,
-   * dispatching happens when the app resigns active state or is about to terminate. Call
+   * dispatching happens when the app resigns active state or is about to terminate. On web,
+   * log events are dispatched when the page is hidden. Call
    * this method to flush events manually, for example, during testing or to ensure events
    * are sent before a specific point.
    *
