@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { useWindowDimensions, View, StyleSheet } from 'react-native';
+import { Platform, useWindowDimensions, View, StyleSheet } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 
 import { BottomSheet as NativeBottomSheet } from '../../swift-ui/BottomSheet';
@@ -20,6 +20,8 @@ import type { BottomSheetMethods, BottomSheetProps } from './types';
 import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
+
+const FORM_SHEET_WIDTH = 540;
 
 // #region Helpers
 
@@ -95,6 +97,8 @@ export function BottomSheet(props: BottomSheetProps) {
     children,
   } = props;
   const { width } = useWindowDimensions();
+  const fittedWidth =
+    Platform.OS === 'ios' && Platform.isPad ? Math.min(width, FORM_SHEET_WIDTH) : width;
 
   const [isPresented, setIsPresented] = useState(indexProp >= 0);
   const [currentIndex, setCurrentIndex] = useState(Math.max(indexProp, 0));
@@ -235,12 +239,12 @@ export function BottomSheet(props: BottomSheetProps) {
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
                     compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
                     height without inheriting the scrollable child's intrinsic content height. With matchContents,
-                    RNHostView lays the hosted view out at its own size, so `width` gives it the sheet width
+                    RNHostView lays the hosted view out at its own size, so `fittedWidth` gives it the sheet width
                     while its height stays content-sized. */}
                 <View
                   style={
                     fitToContents
-                      ? { width, paddingTop: handleComponent !== null ? 16 : 0 }
+                      ? { width: fittedWidth, paddingTop: handleComponent !== null ? 16 : 0 }
                       : { flexGrow: 1, height: 0, paddingTop: handleComponent !== null ? 16 : 0 }
                   }>
                   <SheetScrollContextReset>{children}</SheetScrollContextReset>

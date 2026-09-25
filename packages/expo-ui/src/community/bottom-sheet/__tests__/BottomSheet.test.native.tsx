@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 import { isValidElement, type ReactNode } from 'react';
-import { Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, Platform, type PlatformIOSStatic, StyleSheet, View } from 'react-native';
 
 import { findNativeViewProps } from '../../../__mocks__/expo';
 import { BottomSheet } from '../BottomSheet';
@@ -17,6 +17,10 @@ function hostedViewStyle() {
 }
 
 describe('BottomSheet', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('gives the hosted content the sheet width when the sheet sizes to its content', () => {
     render(
       <BottomSheet index={0}>
@@ -27,6 +31,21 @@ describe('BottomSheet', () => {
     expect(findNativeViewProps('RNHostView')?.matchContents).toBe(true);
     expect(hostedViewStyle()?.width).toBe(Dimensions.get('window').width);
   });
+
+  (Platform.OS === 'ios' ? it : it.skip)(
+    'caps the hosted content at the form sheet width on iPad',
+    () => {
+      jest.spyOn(Platform as PlatformIOSStatic, 'isPad', 'get').mockReturnValue(true);
+
+      render(
+        <BottomSheet index={0}>
+          <View />
+        </BottomSheet>
+      );
+
+      expect(hostedViewStyle()?.width).toBe(540);
+    }
+  );
 
   it('fills the snap point height when snap points are set', () => {
     render(

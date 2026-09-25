@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a community `BottomSheet` without snap points opening nearly as wide as the window on iPad. ([#50430](https://github.com/expo/expo/pull/50430) by [@oscnord](https://github.com/oscnord))
+
 ### 💡 Others
 
 ## 58.0.7 — 2026-09-25
