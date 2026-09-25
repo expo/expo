@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Compare the installed version of `react-native` / `expo` against the recommended version during prebuild, instead of the raw `package.json` spec. Fixes misleading warnings for pnpm catalogs, yarn/pnpm workspaces, npm aliases, and other non-semver specifiers. ([#44880](https://github.com/expo/expo/pull/44880) by [@hknakn](https://github.com/hknakn))
+
 ### 💡 Others
 
 - [Internal] Fix the `BundleOptions` import in `internal/unstable-expo-updates-exports.d.ts`, which pointed at a subpath `@expo/metro` doesn't ship. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
