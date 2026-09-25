@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Keep the previously registered font when a font loaded from a new path has the same PostScript name, instead of unregistering it and crashing on render. ([#50561](https://github.com/expo/expo/pull/50561) by [@eliotgevers](https://github.com/eliotgevers))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-21
