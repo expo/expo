@@ -29,7 +29,7 @@ Expo UI LazyColumn matches the official Jetpack Compose [LazyColumn API](https:/
 
 ### Basic lazy column
 
-Each child of [`LazyColumn`](#lazycolumn) is one row. Use the `verticalArrangement` and `contentPadding` props to space the rows.
+Each child of [`LazyColumn`](#lazycolumn) is one row. Use the `verticalArrangement` prop to space the rows and the `contentPadding` prop to add padding around the list content.
 
 <ComponentExample
   title="BasicLazyColumn.tsx"
@@ -140,7 +140,7 @@ Follow these rules when you render rows:
 
 - Define the `children` function outside the component, or wrap it in `useCallback`. Otherwise, the rows near the visible area render again each time the component renders.
 - A reused row keeps the local state (`useState`) of the item it showed before. Reset the state when the item changes, or keep the state outside the row.
-- A row that is not ready yet shows an empty placeholder. Set `estimatedItemSize` close to the height of your rows, in dp.
+- A row that is not ready yet shows an empty placeholder. Set `estimatedItemSize` close to the height of your rows, in density-independent pixels (dp).
 - Use `overscanCount` to prepare more rows above and below the visible rows.
 - To update the rows, pass a new `data` array. Do not change the array in place.
 - Set `recycling={false}` to render every row up front.

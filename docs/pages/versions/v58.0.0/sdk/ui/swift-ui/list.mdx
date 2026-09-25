@@ -144,7 +144,7 @@ Follow these rules when you render rows:
 
 - Define the `children` function outside the component, or wrap it in `useCallback`. Otherwise, the rows near the visible area render again each time the component renders.
 - A reused row keeps the local state (`useState`) of the item it showed before. Reset the state when the item changes, or keep the state outside the row.
-- A row that is not ready yet shows an empty placeholder. Set `estimatedItemSize` close to the height of your rows, in points.
+- A row that is not ready yet shows an empty placeholder. Set `estimatedItemSize` close to the height of your row content, excluding the `List` insets, in points.
 - Use `overscanCount` to prepare more rows above and below the visible rows.
 - To update the rows, pass a new `data` array. Do not change the array in place.
 - Set `recycling={false}` to render every row up front.
@@ -253,6 +253,10 @@ const INITIAL_TASKS: Task[] = [
   { id: '4', title: 'Task 4' },
 ];
 
+function renderTask({ item }: { item: Task }) {
+  return <Label title={item.title} />;
+}
+
 export default function EditableListExample() {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -299,7 +303,7 @@ export default function EditableListExample() {
             keyExtractor={task => task.id}
             onDelete={handleDelete}
             onMove={handleMove}>
-            {({ item }) => <Label title={item.title} />}
+            {renderTask}
           </List.ForEach>
         </Section>
       </List>
