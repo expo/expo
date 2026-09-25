@@ -1,0 +1,15 @@
+# expo-video: enter and leave fullscreen and check the fullscreen events. Native port of
+# fullscreen-test.yaml. Android: reveal the player controls, then press the fullscreen toggle.
+# The toggle keeps the label "Enter fullscreen" while in fullscreen.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://components/video/fullscreen"
+wait text "Enter Fullscreen" 20000
+press "role=button label=\"Enter Fullscreen\""
+wait "label=\"Show player controls\"" 10000
+press label="Show player controls"
+press label="Enter fullscreen"
+wait text "Enter Fullscreen" 10000
+wait text "0 = onFullscreenEnter" 10000
+wait text "1 = onFullscreenExit" 10000
+close
