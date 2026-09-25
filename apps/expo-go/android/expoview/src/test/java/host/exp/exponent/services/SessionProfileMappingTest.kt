@@ -5,10 +5,27 @@ import com.apollographql.apollo.api.parseResponse
 import host.exp.exponent.graphql.Home_CurrentUserActorQuery
 import okio.Buffer
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SessionProfileMappingTest {
+  private fun response(json: String) =
+    Home_CurrentUserActorQuery().parseResponse(Buffer().writeUtf8(json).jsonReader())
+
+  @Test
+  fun aNullActorWithoutErrorsIsARevokedSession() {
+    assertTrue(response("""{"data":{"meActor":null}}""").isRevokedSession())
+  }
+
+  @Test
+  fun aNullActorWithErrorsIsNotARevokedSession() {
+    val json = """{"data":{"meActor":null},"errors":[{"message":"Internal server error"}]}"""
+
+    assertFalse(response(json).isRevokedSession())
+  }
+
   private fun parse(json: String) =
     Home_CurrentUserActorQuery().parseResponse(Buffer().writeUtf8(json).jsonReader()).data?.meActor?.currentUserActorData
 

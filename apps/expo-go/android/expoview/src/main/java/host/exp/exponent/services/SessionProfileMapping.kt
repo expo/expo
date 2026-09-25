@@ -1,5 +1,7 @@
 package host.exp.exponent.services
 
+import com.apollographql.apollo.api.ApolloResponse
+import host.exp.exponent.graphql.Home_CurrentUserActorQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 
 fun CurrentUserActorData.toSessionProfile(): SessionProfile =
@@ -20,3 +22,6 @@ fun CurrentUserActorData.toSessionProfile(): SessionProfile =
       )
     }
   )
+
+fun ApolloResponse<Home_CurrentUserActorQuery.Data>.isRevokedSession(): Boolean =
+  data != null && data?.meActor == null && exception == null && errors.isNullOrEmpty()

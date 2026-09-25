@@ -42,6 +42,7 @@ import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
 import host.exp.exponent.services.SessionRepository
 import host.exp.exponent.services.SessionsState
+import host.exp.exponent.services.isRevokedSession
 import host.exp.exponent.services.toSessionProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -236,7 +237,7 @@ class HomeAppViewModel(
           Toast.makeText(getApplication<Application>(), "You're already signed in as ${profile.username}.", Toast.LENGTH_SHORT).show()
         }
       }
-      response.data != null && response.exception == null -> sessionStore.remove(sessionId)
+      response.isRevokedSession() -> sessionStore.remove(sessionId)
     }
     return actor
   }
