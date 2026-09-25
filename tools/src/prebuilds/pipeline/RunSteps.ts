@@ -364,9 +364,15 @@ async function getNewestProductInputAsync(
     } catch {
       return { unknownReason: 'its checked-in Package.swift could not be resolved' };
     }
+    let targetInputs;
+    try {
+      targetInputs = targets.flatMap(listCheckedInTargetInputs);
+    } catch {
+      return { unknownReason: 'the files its checked-in Package.swift names could not be listed' };
+    }
     inputPaths.push(
       path.join(checkedInRoot, 'Package.swift'),
-      ...targets.flatMap(listCheckedInTargetInputs),
+      ...targetInputs,
       ...frameworkTargets.flatMap((target) => collectTargetInputPaths(pkg, target))
     );
   } else {

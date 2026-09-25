@@ -128,8 +128,9 @@ function writeCheckedInManifest(
   productName: string,
   sourcePath: string,
   mtime: Date,
-  exclude: string[] = []
+  { exclude = [], resources = [] }: { exclude?: string[]; resources?: string[] } = {}
 ) {
+  const copies = resources.map((resource) => `.copy(${JSON.stringify(resource)})`).join(', ');
   writeFileWithMtime(
     path.join(pkg.path, 'Package.swift'),
     `// swift-tools-version: 5.9
@@ -138,7 +139,7 @@ import PackageDescription
 let package = Package(
   name: "${pkg.packageName}",
   products: [.library(name: "${productName}", targets: ["${productName}"])],
-  targets: [.target(name: "${productName}", path: "${sourcePath}", exclude: ${JSON.stringify(exclude)})]
+  targets: [.target(name: "${productName}", path: "${sourcePath}", exclude: ${JSON.stringify(exclude)}, resources: [${copies}])]
 )
 `,
     mtime
@@ -484,15 +485,19 @@ describe('expandWithUnbuiltDependencies', () => {
     const edited = new Date('2026-01-03T00:00:00Z');
 
     /** A consumer and a Mode B `dep` whose inputs and both xcframeworks predate `built`. */
-    function makeFreshModeBDependency(dir: string, exclude: string[] = []) {
+    function makeFreshModeBDependency(
+      dir: string,
+      layout: { exclude?: string[]; resources?: string[] } = {},
+      depProduct: SPMProduct = makeCheckedInManifestProduct('DepProduct')
+    ) {
       const consumer = makeTempPackage(
         dir,
         'consumer',
         [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
         old
       );
-      const dep = makeTempPackage(dir, 'dep', [makeCheckedInManifestProduct('DepProduct')], old);
-      writeCheckedInManifest(dep, 'DepProduct', 'ios', old, exclude);
+      const dep = makeTempPackage(dir, 'dep', [depProduct], old);
+      writeCheckedInManifest(dep, 'DepProduct', 'ios', old, layout);
       writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.swift'), 'public struct E {}', old);
       writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', built);
       writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'release', built);
@@ -551,10 +556,9 @@ describe('expandWithUnbuiltDependencies', () => {
 
     it('ignores files the target excludes', async () => {
       await withTempPackagesDir(async (dir) => {
-        const { consumer, dep } = makeFreshModeBDependency(dir, [
-          'Generated',
-          'DepProduct.podspec',
-        ]);
+        const { consumer, dep } = makeFreshModeBDependency(dir, {
+          exclude: ['Generated', 'DepProduct.podspec'],
+        });
         writeFileWithMtime(path.join(dep.path, 'ios/Generated/Output.swift'), '', edited);
         writeFileWithMtime(path.join(dep.path, 'ios/DepProduct.podspec'), '', edited);
 
@@ -579,6 +583,71 @@ describe('expandWithUnbuiltDependencies', () => {
         assert.doesNotMatch(reason, /stale/);
       });
     });
+
+    it('auto-adds a dependency whose resource is newer, even when an exclude covers it', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(dir, {
+          exclude: ['Assets'],
+          resources: ['Assets'],
+        });
+        writeFileWithMtime(path.join(dep.path, 'ios/Assets/icon.png'), 'x', edited);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /Debug xcframework stale/);
+      });
+    });
+
+    it('auto-adds a dependency whose vendored xcframework is newer', async () => {
+      await withTempPackagesDir(async (dir) => {
+        const { consumer, dep } = makeFreshModeBDependency(
+          dir,
+          {},
+          {
+            ...makeProduct('DepProduct'),
+            targets: [
+              { type: 'swift', name: 'DepProduct' },
+              { type: 'framework', name: 'Vendor', path: 'Vendor.xcframework' },
+            ],
+          }
+        );
+        const vendor = path.join(dep.path, 'Vendor.xcframework');
+        writeFileWithMtime(path.join(vendor, 'Info.plist'), '<plist />', old);
+        fs.utimesSync(vendor, edited, edited);
+
+        const { packageNames, reason } = await expand(consumer, dep);
+
+        assert.deepEqual(packageNames, ['consumer', 'dep']);
+        assert.ok(reason, 'The auto-add must be reported');
+        assert.match(reason, /Debug xcframework stale/);
+      });
+    });
+
+    it(
+      'auto-adds a dependency whose target files cannot be listed',
+      { skip: process.getuid?.() === 0 && 'root reads a directory whatever its permissions' },
+      async () => {
+        await withTempPackagesDir(async (dir) => {
+          // The resolver never walks a resource directory, so only the input listing reads it.
+          const { consumer, dep } = makeFreshModeBDependency(dir, { resources: ['Locked'] });
+          const locked = path.join(dep.path, 'ios/Locked');
+          fs.mkdirSync(locked);
+          fs.chmodSync(locked, 0o000);
+          try {
+            const { packageNames, reason } = await expand(consumer, dep);
+
+            assert.deepEqual(packageNames, ['consumer', 'dep']);
+            assert.ok(reason, 'The auto-add must be reported');
+            assert.match(reason, /could not be listed/);
+            assert.doesNotMatch(reason, /stale/);
+          } finally {
+            fs.chmodSync(locked, 0o755);
+          }
+        });
+      }
+    );
 
     it('reads the sources the manifest names, not a path left in the config', async () => {
       await withTempPackagesDir(async (dir) => {
