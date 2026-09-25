@@ -73,18 +73,24 @@ function reduceExpoObject(config?: any): SplitConfigs | null {
  * @param exp
  */
 function getSupportedPlatforms(projectRoot: string, exp: Partial<ExpoConfig>): Platform[] {
+  // `skipNodePath` keeps this to the project's own node_modules. Without it, pnpm's bin shims put
+  // the workspace's whole virtual store on NODE_PATH, so a project with no `react-dom` of its own
+  // would report `web` because some other package in the workspace has one.
+  const resolveInProject = (moduleId: string) =>
+    resolveFrom(projectRoot, moduleId, { skipNodePath: true });
+
   const platforms: Platform[] = [];
-  if (resolveFrom(projectRoot, 'react-native/package.json')) {
+  if (resolveInProject('react-native/package.json')) {
     platforms.push('ios', 'android');
   }
-  if (resolveFrom(projectRoot, 'react-dom/package.json')) {
+  if (resolveInProject('react-dom/package.json')) {
     platforms.push('web');
   }
   if (exp.experiments?.outOfTreePlatforms) {
-    if (resolveFrom(projectRoot, 'react-native-tvos/package.json')) {
+    if (resolveInProject('react-native-tvos/package.json')) {
       platforms.push('tvos');
     }
-    if (resolveFrom(projectRoot, 'react-native-macos/package.json')) {
+    if (resolveInProject('react-native-macos/package.json')) {
       platforms.push('macos');
     }
   }
