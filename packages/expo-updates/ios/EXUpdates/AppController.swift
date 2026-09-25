@@ -259,6 +259,11 @@ public class AppController: NSObject {
           message: "The expo-updates system is disabled due to an invalid configuration. Ensure a valid URL is supplied.",
           code: .initializationError
         )
+      case .InvalidMaxUpdatesToKeep:
+        logger.warn(
+          message: "The expo-updates system is disabled due to an invalid configuration. Ensure EXUpdatesMaxUpdatesToKeep is an integer of at least 2.",
+          code: .initializationError
+        )
       case .InvalidMissingRuntimeVersion:
         logger.warn(
           message: "The expo-updates system is disabled due to an invalid configuration. Ensure a runtime version is supplied.",
