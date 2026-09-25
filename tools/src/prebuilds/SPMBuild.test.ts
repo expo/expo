@@ -358,6 +358,95 @@ describe('buildXcodeBuildArgs', () => {
     });
   });
 
+  describe('sources SwiftPM derives into the derived data directory', () => {
+    // Such as resource_bundle_accessor.swift, which a non-WMO Debug build compiles on its own.
+    const derivedDataMapping =
+      '/repo/packages/precompile/.build/expo-haptics/output/debug/frameworks/ExpoHaptics/Build/Intermediates.noindex/=' +
+      '/expo-src/generated/expo-haptics/ExpoHaptics/DerivedData/Build/Intermediates.noindex/';
+
+    function assertDerivedDataMapWins(args: string[], mapping = derivedDataMapping) {
+      const swiftFlags = settingValue(args, 'OTHER_SWIFT_FLAGS');
+      const swiftDerived = swiftFlags.indexOf(`-debug-prefix-map ${mapping}`);
+      assert.ok(
+        swiftDerived >= 0 && swiftDerived < swiftFlags.indexOf('-debug-prefix-map /repo='),
+        `swiftc applies the first match, so the derived data map must lead: ${swiftFlags}`
+      );
+      const xccDerived = swiftFlags.indexOf(`-Xcc -fdebug-prefix-map=${mapping}`);
+      assert.ok(
+        xccDerived >= 0 && swiftFlags.indexOf('-Xcc -fdebug-prefix-map=/repo=') < xccDerived,
+        `clang applies the last match, so the derived data map must trail in -Xcc: ${swiftFlags}`
+      );
+      const cFlags = settingValue(args, 'OTHER_CFLAGS');
+      const cDerived = cFlags.indexOf(`-fdebug-prefix-map=${mapping}`);
+      assert.ok(
+        cDerived >= 0 && cFlags.indexOf('-fdebug-prefix-map=/repo=') < cDerived,
+        `clang applies the last match, so the derived data map must trail: ${cFlags}`
+      );
+    }
+
+    it('maps them for a product built from spm.config.json', () => {
+      assertDerivedDataMapWins(
+        buildXcodeBuildArgs(
+          pkg,
+          productWithTargets([{ type: 'swift', name: 'ExpoHaptics', path: 'ios' }]),
+          'Debug',
+          'iOS'
+        )
+      );
+    });
+
+    it('maps them for a product built from a checked-in Package.swift', () => {
+      assertDerivedDataMapWins(
+        buildXcodeBuildArgs(
+          pkg,
+          productWithTargets([{ type: 'swift', name: 'ExpoHaptics' }]),
+          'Debug',
+          'iOS',
+          checkedIn([
+            { name: 'ExpoHaptics', sourceRoot: '/repo/packages/expo-haptics/ios', type: 'swift' },
+          ])
+        )
+      );
+    });
+
+    it('maps them for a package built into its own directory', () => {
+      // Without its own map this path would pass for a checkout path, /expo-src/packages/….
+      const localPkg: SPMPackageSource = {
+        ...pkg,
+        buildPath: '/repo/packages/expo-haptics/.expo-prebuild',
+      };
+      assertDerivedDataMapWins(
+        buildXcodeBuildArgs(
+          localPkg,
+          productWithTargets([{ type: 'swift', name: 'ExpoHaptics', path: 'ios' }]),
+          'Release',
+          'iOS'
+        ),
+        '/repo/packages/expo-haptics/.expo-prebuild/intermediates/products/release/ExpoHaptics/Build/Intermediates.noindex/=' +
+          '/expo-src/generated/expo-haptics/ExpoHaptics/DerivedData/Build/Intermediates.noindex/'
+      );
+    });
+
+    it('leaves third-party package checkouts to the repository-root catch-all', () => {
+      // Source-built dependencies are real sources, not generated ones: rewriting them under
+      // /expo-src/generated/ would hide from the dSYM check that the consumer cannot resolve them.
+      const checkoutSource =
+        '/repo/packages/precompile/.build/expo-haptics/output/debug/frameworks/ExpoHaptics/' +
+        'SourcePackages/checkouts/ZXingObjC/Sources/a.swift';
+      const args = buildXcodeBuildArgs(
+        pkg,
+        productWithTargets([{ type: 'swift', name: 'ExpoHaptics', path: 'ios' }]),
+        'Debug',
+        'iOS'
+      );
+      const flags = `${settingValue(args, 'OTHER_CFLAGS')} ${settingValue(args, 'OTHER_SWIFT_FLAGS')}`;
+      const covering = [...flags.matchAll(/-f?debug-prefix-map[= ](\S+?)=/g)]
+        .map(([, from]) => from)
+        .filter((from) => from !== '/repo' && checkoutSource.startsWith(from));
+      assert.deepEqual(covering, [], `No map but the catch-all may cover ${checkoutSource}`);
+    });
+  });
+
   it('maps a target whose layout comes from a checked-in Package.swift', () => {
     const args = buildXcodeBuildArgs(
       pkg,
@@ -377,6 +466,8 @@ describe('buildXcodeBuildArgs', () => {
     assert.equal(
       settingValue(args, 'OTHER_CFLAGS'),
       '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
+        '/repo/packages/precompile/.build/expo-haptics/output/debug/frameworks/ExpoHaptics/Build/Intermediates.noindex/=' +
+        '/expo-src/generated/expo-haptics/ExpoHaptics/DerivedData/Build/Intermediates.noindex/ -fdebug-prefix-map=' +
         '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
         `/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=${mapping}`
     );
@@ -474,6 +565,8 @@ describe('buildXcodeBuildArgs', () => {
     assert.equal(
       settingValue(args, 'OTHER_CFLAGS'),
       '$(inherited) -fdebug-prefix-map=/repo=/expo-src -fdebug-prefix-map=' +
+        '/repo/packages/precompile/.build/expo-haptics/output/debug/frameworks/ExpoHaptics/Build/Intermediates.noindex/=' +
+        '/expo-src/generated/expo-haptics/ExpoHaptics/DerivedData/Build/Intermediates.noindex/ -fdebug-prefix-map=' +
         '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/=' +
         '/expo-src/generated/expo-haptics/ExpoHaptics/ExpoHaptics/ -fdebug-prefix-map=' +
         '/repo/packages/precompile/.build/expo-haptics/generated/ExpoHaptics/ExpoHaptics/src/=' +

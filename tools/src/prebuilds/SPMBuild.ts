@@ -269,7 +269,13 @@ export const buildXcodeBuildArgs = (
   // so the resolve-dsym-sourcemaps.js script can map it to the consumer's local package path.
   // Sources generated during the build have no checkout path, so their staging directory maps to
   // /expo-src/generated/<package>/<product>/<target>/ instead, which the dSYM check knows to
-  // expect.
+  // expect. So do the sources SwiftPM derives itself, such as resource_bundle_accessor.swift,
+  // under the derived data directory's Build/Intermediates.noindex/; they map to
+  // …/<product>/DerivedData/Build/Intermediates.noindex/, beside the target directories. Only that
+  // subdirectory is mapped: SourcePackages/checkouts/ beside it holds third-party sources, which
+  // are not generated and must stay flagged when they leak. The derived data directory is a
+  // sibling of the staging directory under pkg.buildPath in both build path layouts, so its map
+  // never overlaps a per-target one.
   const stagingBase = path.resolve(pkg.buildPath, 'generated', product.name);
   // posix.join rather than interpolation: an empty source directory — a target whose source
   // root is the package root — must not leave a doubled separator that matches nothing.
@@ -279,7 +285,12 @@ export const buildXcodeBuildArgs = (
     path.posix.join('/expo-src/generated', pkg.packageName, product.name, targetName);
   // Ordered from the least to the most specific prefix, which matters where one target maps both
   // its staging directory and the `src` link inside it.
-  const targetPrefixMaps: { from: string; to: string }[] = [];
+  const targetPrefixMaps: { from: string; to: string }[] = [
+    {
+      from: path.join(path.resolve(derivedDataPath), 'Build', 'Intermediates.noindex'),
+      to: path.posix.join(generatedPath('DerivedData'), 'Build', 'Intermediates.noindex'),
+    },
+  ];
   if (checkedIn) {
     // The manifest alone decides which targets are built, and every one is reached through the
     // `src` link rather than copied, so its target directory holds only generated files such as
