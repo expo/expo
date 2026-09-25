@@ -191,7 +191,13 @@ class Kernel : KernelInterface() {
 
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
     val bundleUrlToLoad =
-      bundleUrl + (if (ExpoViewBuildConfig.DEBUG) "" else "?versionName=" + ExpoViewKernel.instance.versionName)
+      bundleUrl + (
+        if (ExpoViewBuildConfig.DEBUG) {
+          ""
+        } else {
+          "?versionName=" + ExpoViewKernel.instance.versionName
+        }
+        )
     if (exponentSharedPreferences.shouldUseEmbeddedKernel()) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH)
     } else {

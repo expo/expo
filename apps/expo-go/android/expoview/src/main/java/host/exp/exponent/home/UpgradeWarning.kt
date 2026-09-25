@@ -73,7 +73,9 @@ private suspend fun shouldShowUpgradeWarning(context: Context): Pair<Boolean, St
       client.newCall(request).execute()
     }
 
-    if (!response.isSuccessful) return false to null
+    if (!response.isSuccessful) {
+      return false to null
+    }
     val responseBody = response.body?.string() ?: return false to null
     val data = gson.fromJson(responseBody, VersionsApiResponse::class.java)
 
@@ -86,7 +88,9 @@ private suspend fun shouldShowUpgradeWarning(context: Context): Pair<Boolean, St
       }
       .sortedBy { it.first.toIntOrNull() ?: 0 }
 
-    if (publishedVersions.size < 2) return false to null
+    if (publishedVersions.size < 2) {
+      return false to null
+    }
 
     val lastVersion = publishedVersions.last()
     val penultimateVersion = publishedVersions[publishedVersions.size - 2]

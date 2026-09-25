@@ -46,7 +46,11 @@ fun EnterUrlRow() {
       onClick = onClick,
       icon = {
         val rotation by animateFloatAsState(
-          targetValue = if (isExpanded) 90f else 0f,
+          targetValue = if (isExpanded) {
+            90f
+          } else {
+            0f
+          },
           label = "accordion-arrow"
         )
         Icon(
