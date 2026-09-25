@@ -42,6 +42,8 @@ subprojects { project ->
       kotlin {
         target '**/*.kt'
         ktlint("1.0.1")
+            // Provided by the included build in packages/expo-ktlint-rules
+            .customRuleSets(["expo.ktlint:ktlint-rules:1.0.0"])
             .editorConfigOverride([
                 "ktlint_standard_no-wildcard-imports"          : "disabled",
                 "ktlint_standard_import-ordering"              : "disabled",
