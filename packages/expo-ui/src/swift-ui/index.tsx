@@ -53,6 +53,7 @@ export {
 export * from './SecureField';
 export * from './Namespace';
 export * from './GlassEffectContainer';
+export * from './RecyclingList';
 export * from './ScrollView';
 export * from './Shapes';
 export * from './Mask';
