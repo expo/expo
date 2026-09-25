@@ -6,7 +6,7 @@
     "expo": "workspace:*",
     "react": "19.3.0",
     "react-native": "0.88.0-rc.1",
-    "react-native-reanimated": "4.6.0",
-    "react-native-worklets": "0.12.2"
+    "react-native-reanimated": "4.7.0",
+    "react-native-worklets": "0.13.0"
   }
 }

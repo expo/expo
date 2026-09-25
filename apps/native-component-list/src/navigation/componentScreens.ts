@@ -1,15 +1,36 @@
-import { BlurScreens } from '../screens/BlurView/BlurViewScreen';
-import { CameraScreens } from '../screens/Camera/CameraScreen';
 import { componentScreensToListElements } from '../screens/ComponentListScreen';
-import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
-import { GLScreens } from '../screens/GL/GLScreen';
-import { ImageScreens } from '../screens/Image/ImageScreen';
-import { SVGScreens } from '../screens/SVG/SVGScreen';
-import { UIScreens } from '../screens/UI/UIScreen';
-import { UIUniversalScreens } from '../screens/UIUniversal/UIUniversalScreen';
-import { VideoScreens } from '../screens/Video/VideoScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
-import { optionalRequire } from './routeBuilder';
+import { optionalRequire, optionalScreens } from './routeBuilder';
+
+// Screen groups are loaded lazily so a group whose module fails to load, for example because it
+// imports a native module the current platform does not have, only drops itself from the list.
+const BlurScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/BlurView/BlurViewScreen').BlurScreens
+);
+const CameraScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Camera/CameraScreen').CameraScreens
+);
+const MapsScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/ExpoMaps/MapsScreen').MapsScreens
+);
+const GLScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/GL/GLScreen').GLScreens
+);
+const ImageScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Image/ImageScreen').ImageScreens
+);
+const SVGScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/SVG/SVGScreen').SVGScreens
+);
+const UIScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/UI/UIScreen').UIScreens
+);
+const UIUniversalScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/UIUniversal/UIUniversalScreen').UIUniversalScreens
+);
+const VideoScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Video/VideoScreen').VideoScreens
+);
 
 export const ScreensList: ScreenConfig[] = [
   {

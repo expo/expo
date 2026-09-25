@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add the `ExpoLauncherURL` parser for the reserved `__expo_*` deep linking URL params. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.7 — 2026-09-25
+
+### 🎉 New features
+
+- Add the `ExpoLauncherURL` parser for the reserved `__expo_*` deep linking URL params. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.6 — 2026-09-23
 

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 58.0.6 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.5 — 2026-09-23
 
 ### 🎉 New features
@@ -21,6 +25,7 @@
 ### 💡 Others
 
 - [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add native benchmarks for the statement API, run with `et native-unit-tests -p ios --packages expo-sqlite --benchmarks`. ([#50303](https://github.com/expo/expo/pull/50303) by [@tsapeta](https://github.com/tsapeta))
 
 ## 58.0.3 — 2026-09-15
 

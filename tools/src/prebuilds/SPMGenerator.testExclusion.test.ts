@@ -73,3 +73,25 @@ describe('expo-camera source selection', () => {
     assert.ok(files.length > 0, 'expo-camera must still contribute Swift sources');
   });
 });
+
+describe('expo-sqlite source selection', () => {
+  it('keeps the Benchmarks test spec out of the framework sources', async () => {
+    const packagePath = path.join(getExpoRepositoryRootDir(), 'packages/expo-sqlite');
+    const config: SPMConfig = await fs.readJson(path.join(packagePath, 'spm.config.json'));
+    const product = config.products.find(({ name }) => name === 'ExpoSQLite');
+    assert.ok(product, 'expo-sqlite must declare an ExpoSQLite product');
+    const target = product.targets.find((candidate) => candidate.type === 'swift');
+    assert.ok(target, 'expo-sqlite must declare a Swift target');
+
+    const files = await glob(target.pattern ?? '**/*.swift', {
+      cwd: path.join(packagePath, target.path),
+      ignore: getTargetExcludePatterns(target),
+    });
+
+    assert.deepEqual(
+      files.filter((file) => file.startsWith('Benchmarks/')),
+      []
+    );
+    assert.ok(files.length > 0, 'expo-sqlite must still contribute Swift sources');
+  });
+});
