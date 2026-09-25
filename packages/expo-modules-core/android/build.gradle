@@ -1,9 +1,13 @@
 import expo.modules.plugin.gradle.ExpoModuleExtension
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.ValueSource
+import org.gradle.api.provider.ValueSourceParameters
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.tukaani.xz.LZMA2Options
 import org.tukaani.xz.XZInputStream
@@ -11,6 +15,7 @@ import org.tukaani.xz.XZOutputStream
 
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
+import java.security.MessageDigest
 import java.time.Instant
 import java.util.regex.Matcher
 
@@ -118,6 +123,7 @@ def reactNativeVersionString = expoModuleExtension.reactNativeVersion.toString()
 def prebuiltNativeLibsDir = project.file("prebuilt")
 def prebuiltNativeLibsArchive = project.file("prebuilt/native-libs.tar.xz")
 def prebuiltMetadataFile = project.file("prebuilt/metadata.json")
+def packageDir = project.projectDir.parentFile
 
 def decompressedNativeLibsDir = layout.buildDirectory.dir("expo-prebuilt-natives").get().asFile
 
@@ -129,9 +135,18 @@ def isPrebuiltUsable = {
   if (!prebuiltMetadataFile.exists() || !prebuiltNativeLibsArchive.exists()) {
     return false
   }
+
   def metadata = new JsonSlurper().parseText(prebuiltMetadataFile.text)
   if (metadata.reactNativeVersion != reactNativeVersionString) {
     logger.warn("[expo-modules-core] Ignoring prebuilt libs: built for RN ${metadata.reactNativeVersion}, installed RN ${reactNativeVersionString} - building from source")
+    return false
+  }
+
+  def sourceHash = providers.of(PrebuiltSourceHashValueSource) {
+    it.parameters.packageDir.set(packageDir)
+  }.get()
+  if (metadata.sourceHash != sourceHash) {
+    logger.warn("[expo-modules-core] Ignoring prebuilt libs: the C++ sources changed after they were built - building from source. Run the `cachePrebuiltNativeLibs` task to rebuild them")
     return false
   }
   return true
@@ -404,9 +419,80 @@ tasks.register("prepareKotlinBuildScriptModel") {
 
 def prebuiltNativeLibNames = ["libexpo-modules-core.so", "libexpo-modules-jsi.so"]
 
-// Helpers for the cachePrebuiltNativeLibs task. They are `static` so the task action can call them
-// without capturing the build script, which keeps the task configuration-cache compatible.
 class PrebuiltNativeLibs {
+  /**
+   * Package-relative files and directories compiled into the prebuilt libs.
+   */
+  static final List<String> SOURCE_ROOTS = [
+    "android/CMakeLists.txt",
+    "android/cmake",
+    "android/src/jsi",
+    "android/src/main/cpp",
+    "common/cpp",
+  ]
+
+  /**
+   * Paths inside `SOURCE_ROOTS` that build separate libraries, which are never prebuilt.
+   */
+  static final List<String> SOURCE_EXCLUDES = [
+    "android/cmake/tests.cmake",
+    "android/cmake/worklets.cmake",
+    "android/src/main/cpp/tests",
+    "android/src/main/cpp/worklets",
+  ]
+
+  /**
+   * MD5 over every source file, ordered by package-relative path.
+   * Statically compiled, because it runs in every build and dynamic Groovy dispatch doubles its cost.
+   */
+  @CompileStatic
+  static String computeSourceHash(File packageDir) {
+    List<String> relativePaths = new ArrayList<String>()
+    for (String root : SOURCE_ROOTS) {
+      collectSourceFiles(packageDir, root, relativePaths)
+    }
+    Collections.sort(relativePaths)
+
+    MessageDigest digest = MessageDigest.getInstance("MD5")
+    byte[] buffer = new byte[8192]
+    for (String relativePath : relativePaths) {
+      digest.update(relativePath.getBytes("UTF-8"))
+      digest.update((byte) 0)
+      InputStream input = Files.newInputStream(new File(packageDir, relativePath).toPath())
+      try {
+        int read
+        while ((read = input.read(buffer)) != -1) {
+          digest.update(buffer, 0, read)
+        }
+      } finally {
+        input.close()
+      }
+      digest.update((byte) 0)
+    }
+    return digest.digest().encodeHex().toString()
+  }
+
+  @CompileStatic
+  private static void collectSourceFiles(File packageDir, String relativePath, List<String> result) {
+    if (SOURCE_EXCLUDES.contains(relativePath)) {
+      return
+    }
+    File file = new File(packageDir, relativePath)
+    if (file.isDirectory()) {
+      String[] names = file.list()
+      if (names == null) {
+        return
+      }
+      for (String name : names) {
+        if (!name.startsWith(".")) {
+          collectSourceFiles(packageDir, relativePath + "/" + name, result)
+        }
+      }
+    } else if (file.isFile()) {
+      result.add(relativePath)
+    }
+  }
+
   /**
    * Returns host tag based on the OS name.
    */
@@ -509,6 +595,17 @@ class PrebuiltNativeLibs {
   }
 }
 
+interface PrebuiltSourceHashParameters extends ValueSourceParameters {
+  DirectoryProperty getPackageDir()
+}
+
+abstract class PrebuiltSourceHashValueSource implements ValueSource<String, PrebuiltSourceHashParameters> {
+  @Override
+  String obtain() {
+    return PrebuiltNativeLibs.computeSourceHash(parameters.packageDir.get().asFile)
+  }
+}
+
 def stripBinary = PrebuiltNativeLibs.findLlvmStrip(android.ndkDirectory)
 def cacheStagingDir = layout.buildDirectory.dir("tmp/cache-prebuilt-natives").get().asFile
 def variantDescriptors = prebuiltVariants.collect { variant ->
@@ -555,6 +652,7 @@ tasks.register("cachePrebuiltNativeLibs") {
 
     prebuiltMetadataFile.text = JsonOutput.prettyPrint(JsonOutput.toJson([
       reactNativeVersion: reactNativeVersionString,
+      sourceHash        : PrebuiltNativeLibs.computeSourceHash(packageDir),
       variants          : variantDescriptors.collect { it.name },
       abis              : allAbis as List,
       soFiles           : prebuiltNativeLibNames as List,
