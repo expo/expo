@@ -208,25 +208,21 @@ private fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCat
   val ndk = extra.setIfNotExist("ndkVersion") { versionCatalogs.getVersionOrDefault("ndkVersion", "27.1.12297006") }
 
   // Kotlin related
-  val kotlin = extra.setIfNotExist("kotlinVersion") { versionCatalogs.getVersionOrDefault("kotlin", "2.2.0") }
+  val kotlinGradlePluginVersion = kotlinGradlePluginVersionOrNull()
+  val catalogKotlinVersion = versionCatalogs.getVersionOrNull("kotlin")
+  val kotlin = extra.setIfNotExist("kotlinVersion") {
+    resolveKotlinVersion(kotlinGradlePluginVersion, catalogKotlinVersion)
+  }
+  if (kotlinGradlePluginVersion != null && catalogKotlinVersion != null && kotlinGradlePluginVersion != catalogKotlinVersion) {
+    project.logger.quiet(
+      "${"[ExpoRootProject]".withColor(Colors.GREEN)} The Kotlin Gradle plugin used by this build is " +
+        "${kotlinGradlePluginVersion.withColor(Colors.GREEN)}, but the version catalog declares " +
+        "${catalogKotlinVersion.withColor(Colors.YELLOW)}. Using the plugin version."
+    )
+  }
   val ksp = extra.setIfNotExist("kspVersion") {
     versionCatalogs.getVersionOrDefault("ksp") {
-      val kotlinVersion = extra.get("kotlinVersion") as String
-
-      KSPLookup[kotlinVersion]?.let { return@getVersionOrDefault it }
-      if (kotlinVersion >= "2.3.0") {
-        return@getVersionOrDefault latestKspVersion
-      }
-
-      val minSupported = KSPLookup.keys.min()
-      throw IllegalStateException(
-        """
-        Kotlin $kotlinVersion is not supported by Expo modules.
-        The minimum supported Kotlin version is $minSupported. 
-        Update 'kotlinVersion' in your project's build.gradle to a supported version. 
-        Alternatively, you can set 'kspVersion' explicitly in build.gradle to bypass this check, but this is unsupported and may cause build failures.  
-        """.trimIndent()
-      )
+      resolveKspVersion(extra.get("kotlinVersion") as String)
     }
   }
 
@@ -264,10 +260,14 @@ inline fun ExtraPropertiesExtension.setIfNotExist(name: String, value: () -> Any
   return get(name)
 }
 
+fun Optional<VersionCatalog>.getVersionOrNull(name: String): String? {
+  return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion
+}
+
 fun Optional<VersionCatalog>.getVersionOrDefault(name: String, default: String): String {
-  return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion ?: default
+  return getVersionOrNull(name) ?: default
 }
 
 fun Optional<VersionCatalog>.getVersionOrDefault(name: String, default: () -> String): String {
-  return getOrNull()?.findVersion(name)?.getOrNull()?.requiredVersion ?: default.invoke()
+  return getVersionOrNull(name) ?: default.invoke()
 }

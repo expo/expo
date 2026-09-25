@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone.
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-25
