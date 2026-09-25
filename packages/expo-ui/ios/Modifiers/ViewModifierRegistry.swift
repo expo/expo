@@ -2349,6 +2349,10 @@ extension ViewModifierRegistry {
       return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
     }
 
+    register("presentationCornerRadius") { params, appContext, _ in
+      return try PresentationCornerRadiusModifier(from: params, appContext: appContext)
+    }
+
     register("presentationBackgroundInteraction") { params, appContext, _ in
       return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
     }

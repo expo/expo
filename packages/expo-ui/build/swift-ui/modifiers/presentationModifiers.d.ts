@@ -35,6 +35,14 @@ export declare const presentationDetents: (detents: PresentationDetent[], option
  */
 export declare const presentationDragIndicator: (visibility: "automatic" | "visible" | "hidden") => ModifierConfig;
 /**
+ * Sets the corner radius of a sheet presentation.
+ * @param cornerRadius - The corner radius in points, or `null` to use the system default.
+ * @platform ios 16.4+
+ * @platform tvos 16.4+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationcornerradius(_:)).
+ */
+export declare const presentationCornerRadius: (cornerRadius: number | null) => ModifierConfig;
+/**
  * Presentation background interaction type.
  */
 export type PresentationBackgroundInteractionType = 'automatic' | 'enabled' | 'disabled' | {
