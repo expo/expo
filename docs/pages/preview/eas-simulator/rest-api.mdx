@@ -49,7 +49,7 @@ UUID means universally unique identifier.
 | `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                          |
 | `platform`              | string        | Yes      | `android` or `ios`.                                                                                                                                                                                                                |
 | `name`                  | string        | No       | A descriptive session name, up to 255 characters. Must not be blank.                                                                                                                                                               |
-| `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. Defaults to `agent-device`. `serve-sim` is deprecated. Use `web-preview-only` instead.                                                                                  |
+| `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. Defaults to `agent-device`. The removed `serve-sim` type returns `400`. Use `web-preview-only` instead.                                                                 |
 | `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                             |
 | `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                       |
 | `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The 115-minute limit excludes five minutes reserved for cleanup. Omit to use the account default.            |
@@ -63,7 +63,7 @@ UUID means universally unique identifier.
 
 The application source options install and launch the app for `agent-device`, `argent`, and `web-preview-only` sessions. For `appium`, install and launch the app through your Appium client.
 
-A `web-preview-only` session provides the web preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a web preview. The deprecated `serve-sim` type is iOS-only and returns `previewUrl` instead of `webPreviewUrl`.
+A `web-preview-only` session provides the web preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a web preview. Sessions created before `serve-sim` was removed still return `"type": "serve-sim"`.
 
 ### Example
 
@@ -192,17 +192,16 @@ Poll this endpoint every five seconds until `status` is `in-progress` and `remot
 
 The fields in `remoteConfig` depend on the session type. Connection details are only returned while the session is `in-progress`. After it stops or errors, the session response returns `remoteConfig: null` even if the session previously had connection details.
 
-| Session type             | Connection fields                                                                            |
-| ------------------------ | -------------------------------------------------------------------------------------------- |
-| `agent-device`           | `agentDeviceRemoteSessionUrl` and `agentDeviceRemoteSessionToken`. Optional `webPreviewUrl`. |
-| `argent`                 | `toolsUrl`, optional `toolsAuthToken`, and optional `webPreviewUrl`.                         |
-| `appium`                 | `appiumUrl`, a `capabilities` object, and optional `webPreviewUrl`.                          |
-| `web-preview-only`       | `webPreviewUrl`. This session type has no controller.                                        |
-| `serve-sim` (deprecated) | `previewUrl`. This session type has no controller.                                           |
+| Session type       | Connection fields                                                                            |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| `agent-device`     | `agentDeviceRemoteSessionUrl` and `agentDeviceRemoteSessionToken`. Optional `webPreviewUrl`. |
+| `argent`           | `toolsUrl`, optional `toolsAuthToken`, and optional `webPreviewUrl`.                         |
+| `appium`           | `appiumUrl`, a `capabilities` object, and optional `webPreviewUrl`.                          |
+| `web-preview-only` | `webPreviewUrl`. This session type has no controller.                                        |
 
 For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Run and control an app](/preview/eas-simulator/run-and-control/) for controller usage.
 
-Open `webPreviewUrl` (or `previewUrl` for a deprecated `serve-sim` session) in a desktop browser to view the live iOS Simulator or Android Emulator. Do not open it on the remote device.
+Open `webPreviewUrl` in a desktop browser to view the live iOS Simulator or Android Emulator. Do not open it on the remote device.
 
 ## Stop a session
 
