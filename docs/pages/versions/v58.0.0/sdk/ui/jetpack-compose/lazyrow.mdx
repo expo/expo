@@ -29,7 +29,7 @@ Expo UI LazyRow matches the official Jetpack Compose [LazyRow API](https://devel
 
 ### Basic lazy row
 
-Each child of [`LazyRow`](#lazyrow) is one item. Use the `horizontalArrangement` and `contentPadding` props to space the items.
+Each child of [`LazyRow`](#lazyrow) is one item. Use the `horizontalArrangement` prop to space the items and the `contentPadding` prop to add padding around the list content.
 
 <ComponentExample
   title="BasicLazyRow.tsx"
@@ -164,7 +164,7 @@ Follow these rules when you render items:
 - Give the `LazyRow` a fixed height. Items that are not ready yet show an empty placeholder that fills the height of the row.
 - Define the `children` function outside the component, or wrap it in `useCallback`. Otherwise, the items near the visible area render again each time the component renders.
 - A reused view keeps the local state (`useState`) of the item it showed before. Reset the state when the item changes, or keep the state outside the view.
-- Set `estimatedItemSize` close to the width of your items, in dp.
+- Set `estimatedItemSize` close to the width of your items, in density-independent pixels (dp).
 - Use `overscanCount` to prepare more items before and after the visible items.
 - To update the items, pass a new `data` array. Do not change the array in place.
 - Set `recycling={false}` to render every item up front.

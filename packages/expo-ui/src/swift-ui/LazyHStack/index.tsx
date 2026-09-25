@@ -11,25 +11,25 @@ export interface LazyHStackForEachProps<T> {
   /** Returns a stable, unique string key for each item. */
   keyExtractor: (item: T, index: number) => string;
   /**
-   * Renders a row. Wrap it in `useCallback`, or every row re-renders on each parent render.
-   * Recycled rows are reused for other items, so their local state (`useState`) carries over.
-   * Reset it when the item changes, or keep the state outside the row.
+   * Renders an item. Wrap it in `useCallback`, or every item re-renders on each parent render.
+   * Recycled views are reused for other items, so their local state (`useState`) carries over.
+   * Reset it when the item changes, or keep the state outside the view.
    */
   children: (info: { item: T; index: number }) => ReactElement;
   /**
-   * Renders only the rows near the visible range and reuses them while scrolling. Set to `false` to
-   * render every row at once. Set it once; changing it remounts the rows.
+   * Renders only the items near the visible range and reuses them while scrolling. Set to `false`
+   * to render every item at once. Set it once; changing it remounts the items.
    * @default true
    */
   recycling?: boolean;
   /**
-   * Extra rows to prepare on each side of the visible rows. Must be a non-negative integer.
+   * Extra items to prepare on each side of the visible items. Must be a non-negative integer.
    * Ignored when `recycling` is `false`.
    * @default 10
    */
   overscanCount?: number;
   /**
-   * Placeholder size in points along the stack axis, until a row is measured. Must be positive.
+   * Placeholder size in points along the stack axis, until an item is measured. Must be positive.
    * Ignored when `recycling` is `false`.
    * @default 64
    */
@@ -70,7 +70,6 @@ export function LazyHStack(props: LazyHStackProps) {
  * the size last measured for that item.
  *
  * Mount it as a direct child of `LazyHStack`.
- * @platform ios
  */
 export const LazyHStackForEach: <T>(props: LazyHStackForEachProps<T>) => ReactElement =
   createLazyStackForEach('LazyHStack.ForEach', 'horizontal');

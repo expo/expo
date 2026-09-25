@@ -70,7 +70,6 @@ export function LazyVStack(props: LazyVStackProps) {
  * the size last measured for that row.
  *
  * Mount it as a direct child of `LazyVStack`.
- * @platform ios
  */
 export const LazyVStackForEach: <T>(props: LazyVStackForEachProps<T>) => ReactElement =
   createLazyStackForEach('LazyVStack.ForEach', 'vertical');
