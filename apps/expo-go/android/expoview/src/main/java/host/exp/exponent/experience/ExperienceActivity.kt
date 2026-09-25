@@ -686,7 +686,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
     val mutableFlag =
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
 
     // Home
     val homeIntent = Intent(this, LauncherActivity::class.java)

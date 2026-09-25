@@ -60,7 +60,15 @@ private fun createMetroConnection(appUrl: Uri): ReconnectingWebSocket {
 
 private fun createNetworkInspectorUrl(appUrl: Uri): String {
   val host = appUrl.host ?: "localhost"
-  val port = if (appUrl.port > 0) appUrl.port else 8081
-  val scheme = if (appUrl.scheme == "https") "wss" else "ws"
+  val port = if (appUrl.port > 0) {
+    appUrl.port
+  } else {
+    8081
+  }
+  val scheme = if (appUrl.scheme == "https") {
+    "wss"
+  } else {
+    "ws"
+  }
   return "$scheme://$host:$port/inspector/network"
 }

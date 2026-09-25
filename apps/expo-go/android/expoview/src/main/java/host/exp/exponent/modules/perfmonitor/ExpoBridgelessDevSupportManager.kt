@@ -81,7 +81,13 @@ internal class ExpoBridgelessDevSupportManager(
   fun setDevServer(bundleUrl: String) {
     val uri = Uri.parse(bundleUrl)
     val host = uri.host ?: return
-    val port = if (uri.port != -1) uri.port else if (uri.scheme == "https") 443 else 80
+    val port = if (uri.port != -1) {
+      uri.port
+    } else if (uri.scheme == "https") {
+      443
+    } else {
+      80
+    }
 
     val settings = devSettings.packagerConnectionSettings
     settings.debugServerHost = "$host:$port"
