@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Detect Simulator.app with `pgrep` instead of AppleScript, so `run:ios` and `start` no longer crash after launching the app from a sandboxed or headless process. ([#50297](https://github.com/expo/expo/pull/50297) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
 
 ## 58.0.6 — 2026-09-23

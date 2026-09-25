@@ -1,4 +1,3 @@
-import { spawnAsync as spawnAppleScriptAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
 import * as Log from '../../../log';
@@ -46,20 +45,17 @@ async function waitForSimulatorAppToStart({
 // I think the app can be open while no simulators are booted.
 async function isSimulatorAppRunningAsync(): Promise<boolean> {
   try {
-    const result = await spawnAppleScriptAsync(
-      'tell app "System Events" to count processes whose name is "Simulator" or name is "DeviceHub"'
-    );
-    if (result.stdout.trim() === '0') {
-      return false;
-    }
+    // `pgrep` needs no Apple Events, so this also works from sandboxed and headless processes
+    // where System Events refuses AppleScript.
+    await spawnAsync('pgrep', ['-x', 'Simulator|DeviceHub']);
+    return true;
   } catch (error: any) {
-    if (error.message.includes('Application isn’t running')) {
+    // pgrep exits 1 when nothing matched.
+    if (error.status === 1) {
       return false;
     }
     throw error;
   }
-
-  return true;
 }
 
 async function openSimulatorAppAsync(device: { udid?: string }) {
