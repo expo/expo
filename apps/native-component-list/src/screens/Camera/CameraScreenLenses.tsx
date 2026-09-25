@@ -10,7 +10,7 @@ import {
   PermissionStatus,
 } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 
@@ -26,6 +26,17 @@ interface State {
 }
 
 export default function CameraScreenLenses() {
+  if (Platform.OS !== 'ios') {
+    return (
+      <View style={styles.noPermissions}>
+        <Text>Camera lens selection is only available on iOS.</Text>
+      </View>
+    );
+  }
+  return <CameraScreenLensesIOS />;
+}
+
+function CameraScreenLensesIOS() {
   const camera = useRef<CameraView>(null);
   const [availableLenses, setAvailableLenses] = useState<LensInfo[]>([]);
 

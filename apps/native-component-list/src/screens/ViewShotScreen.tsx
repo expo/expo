@@ -52,13 +52,18 @@ export default function ViewShotScreen() {
 
   const handleAddToMediaLibraryPress = async () => {
     if (screenUri) {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-
-      if (status === 'granted') {
-        await MediaLibrary.createAssetAsync(screenUri);
-        alert('Successfully added captured screen to media library');
-      } else {
-        alert('Media library permissions not granted');
+      try {
+        if (Platform.OS !== 'android' || Platform.Version < 29) {
+          const { granted } = await MediaLibrary.requestPermissionsAsync(true, ['photo']);
+          if (!granted) {
+            Alert.alert('Media library permissions not granted');
+            return;
+          }
+        }
+        await MediaLibrary.saveToLibraryAsync(screenUri);
+        Alert.alert('Successfully added captured screen to media library');
+      } catch (error) {
+        Alert.alert('Could not save captured screen', String(error));
       }
     }
   };

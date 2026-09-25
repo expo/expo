@@ -242,8 +242,13 @@ const EventsScreen = ({ route }: Props) => {
       <View style={{ gap: 10 }}>
         <Button
           title="get permissions"
-          onPress={() => {
-            Calendar.requestCalendarPermissionsAsync();
+          onPress={async () => {
+            try {
+              const permissions = await Calendar.requestCalendarPermissions();
+              Alert.alert('Calendar permissions', permissions.status);
+            } catch (error) {
+              Alert.alert('Could not request calendar permissions', String(error));
+            }
           }}
         />
         <Button onPress={() => addEvent(false)} title="Add New Event" />
