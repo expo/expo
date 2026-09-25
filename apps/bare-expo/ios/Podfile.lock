@@ -463,6 +463,10 @@ PODS:
   - ExpoImageManipulator (57.0.20):
     - ExpoModulesCore
     - SDWebImageWebPCoder
+  - ExpoImageManipulator/Tests (57.0.20):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - SDWebImageWebPCoder
   - ExpoImagePicker (57.0.20):
     - ExpoModulesCore
   - ExpoImagePicker/Tests (57.0.20):
@@ -3420,6 +3424,7 @@ DEPENDENCIES:
   - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
+  - ExpoImageManipulator/Tests (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoImagePicker/Tests (from `../../../packages/expo-image-picker/ios`)
   - ExpoInsights (from `../../../packages/expo-insights/ios`)
@@ -4088,7 +4093,7 @@ SPEC CHECKSUMS:
   ExpoGlassEffect: 310dc75c8d862de1c4b3ff15a90439ba51a39798
   ExpoHaptics: 32efd02d88953d30a5c2ff796c0fce692e7bcd2e
   ExpoImage: abe60c6c68d08d837b2c51fb9e8b6c6e320b9125
-  ExpoImageManipulator: e795a8d623905815a335edda5c967a88e25b5539
+  ExpoImageManipulator: 23357feee9cd32c1f9ad61b313bd60982f184bef
   ExpoImagePicker: 661e13a7616fbcea630cfb9409b7483094978e02
   ExpoInsights: c25fca088edb6bc6786af803f8d265aeeb01a5d6
   ExpoKeepAwake: 72af0b3be3615e59bc819d26061ff4e06b155ee0
