@@ -547,6 +547,35 @@ describe('mirrored target file rules', () => {
     );
   });
 
+  it('keeps a podspec exclude relative to the mirrored target path (expo-haptics)', () => {
+    // Verbatim `swift package dump-package` of packages/expo-haptics/Package.swift (Swift 6.4),
+    // trimmed to the keys the parser reads.
+    const haptics = JSON.stringify({
+      name: 'expo-haptics',
+      platforms: [{ options: [], platformName: 'ios', version: '16.4' }],
+      products: [
+        {
+          name: 'ExpoHaptics',
+          settings: [],
+          targets: ['ExpoHaptics'],
+          type: { library: ['automatic'] },
+        },
+      ],
+      targets: [
+        {
+          name: 'ExpoHaptics',
+          type: 'regular',
+          path: 'ios',
+          dependencies: [],
+          exclude: ['ExpoHaptics.podspec'],
+        },
+      ],
+    });
+    expect(render(parseDumpedManifest(haptics))).toContain(
+      ['            path: "root/ios",', '            exclude: ["ExpoHaptics.podspec"],'].join('\n')
+    );
+  });
+
   it('omits every key the module does not declare', () => {
     const out = render(
       parseDumpedManifest(
