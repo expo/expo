@@ -129,7 +129,7 @@ describe('exports static', () => {
               new RegExp(
                 [
                   '/node_modules/metro-runtime/src/polyfills/require.js',
-                  '/@expo/cli/build/metro-require/require.js',
+                  '/@expo/metro-config/build/metro-require/require.js',
                 ].join('|')
               )
             )

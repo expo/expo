@@ -61,14 +61,16 @@
     "access": "public"
   },
   "scripts": {
-    "build": "expo-build cjs:src",
+    "build": "pnpm run build:src && pnpm run build:metro-require",
+    "build:src": "expo-build cjs:src",
+    "build:metro-require": "expo-build --base metro-require script:src=../build/metro-require",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
     "test": "jest",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json && tsc -p metro-require/tsconfig.json"
   },
   "dependencies": {
     "2g": "^0.4.3",
@@ -108,10 +110,15 @@
     "@types/babel__generator": "^7.27.0",
     "@types/getenv": "^1.0.0",
     "@types/picomatch": "^4.0.2",
+    "@types/react": "~19.3.0",
+    "@types/react-test-renderer": "^19.1.0",
     "dedent": "^1.5.3",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0",
     "metro-minify-terser": "^0.84.2",
+    "react": "*",
+    "react-refresh": "^0.14.2",
+    "react-test-renderer": "19.3.0",
     "sass": "^1.60.0"
   },
   "peerDependencies": {

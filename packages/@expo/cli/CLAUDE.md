@@ -74,7 +74,6 @@ CLI tool for all Expo projects. The public interface should be lean, all command
 │   ├── loading-page/  # Default loading page HTML for dev server
 │   ├── shims/         # Web polyfills for Metro (react-native-web shims)
 │   └── template/      # Template files for `expo customize`
-├── metro-require/     # Custom Metro require with named module support
 ├── internal/          # Internal exports (used by expo-updates)
 ├── ts-declarations/   # TypeScript declaration files
 └── docs/              # Additional documentation for agents

@@ -4,6 +4,6 @@ module.exports = {
   clearMocks: true,
   displayName: require('./package').name,
   rootDir: __dirname,
-  roots: ['../cli/__mocks__', 'src'],
+  roots: ['../cli/__mocks__', 'src', 'metro-require'],
   setupFiles: ['<rootDir>/../cli/jest.setup.ts'],
 };

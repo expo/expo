@@ -1,6 +1,6 @@
 const path = require('path');
 
-const roots = ['__mocks__', 'src', 'metro-require'];
+const roots = ['__mocks__', 'src'];
 
 /** @type {import('jest').Config} */
 module.exports = {

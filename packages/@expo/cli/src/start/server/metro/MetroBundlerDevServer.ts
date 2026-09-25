@@ -150,7 +150,7 @@ interface SSRModuleContentsResult extends Omit<BundleDirectResult, 'bundle'> {
 
 // TODO(@kitten): We access this here to run server-side code bundled by metro
 // It's not isolated into a worker thread yet
-// Check `metro-require/require.ts` for how this function is defined
+// Check `@expo/metro-config`'s `metro-require/require.ts` for how this function is defined
 declare namespace globalThis {
   const __c: (() => void) | undefined;
   let __expo_rsc_inject_module: (params: { code: string; id: string }) => void | undefined;

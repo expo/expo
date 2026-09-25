@@ -87,7 +87,7 @@ type MessageSocket = {
 
 // TODO(@kitten): We assign this here to run server-side code bundled by metro
 // It's not isolated into a worker thread yet
-// Check `metro-require/require.ts` for how this setting is used
+// Check `@expo/metro-config`'s `metro-require/require.ts` for how this setting is used
 declare namespace globalThis {
   let __requireCycleIgnorePatterns: readonly RegExp[] | undefined;
 }

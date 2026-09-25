@@ -471,6 +471,10 @@ export function getDefaultConfig(
 export const unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
 export const internal_supervisingTransformerPath =
   require.resolve('./transform-worker/supervising-transform-worker');
+/** Expo's replacement for Metro's module system (`require`) polyfill, built from `metro-require/require.ts` */
+// The published package only ships `build/`. Resolving through `../build` gives the same file
+// whether this module runs from `src/` or `build/`.
+export const internal_metroRequirePath = path.join(__dirname, '../build/metro-require/require.js');
 
 // re-export for use in config files.
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };

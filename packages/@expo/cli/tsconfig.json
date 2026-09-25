@@ -1,6 +1,6 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
-  "include": ["./src", "./metro-require"],
+  "include": ["./src"],
   "exclude": ["**/__typetests__/*"],
   "compilerOptions": {
     "noEmit": true,

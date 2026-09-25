@@ -40,9 +40,7 @@
     "./*.js": "./*.js"
   },
   "scripts": {
-    "build": "pnpm run build:cli && pnpm run build:metro-require",
-    "build:cli": "expo-build cjs:src=build/src",
-    "build:metro-require": "expo-build script:metro-require=build/metro-require",
+    "build": "expo-build cjs:src=build/src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
@@ -137,7 +135,6 @@
     "@types/progress": "^2.0.5",
     "@types/prompts": "^2.0.6",
     "@types/react": "~19.3.0",
-    "@types/react-test-renderer": "^19.1.0",
     "@types/resolve": "^1.20.2",
     "@types/semver": "^7.5.8",
     "@types/send": "^0.17.1",
@@ -160,8 +157,6 @@
     "node-html-parser": "^6.1.5",
     "playwright": "^1.59.0",
     "react": "*",
-    "react-refresh": "^0.14.2",
-    "react-test-renderer": "19.3.0",
     "tree-kill": "^1.2.2"
   },
   "peerDependencies": {

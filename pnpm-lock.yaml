@@ -2259,9 +2259,6 @@ importers:
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
-      '@types/react-test-renderer':
-        specifier: ^19.1.0
-        version: 19.1.0
       '@types/resolve':
         specifier: ^1.20.2
         version: 1.20.6
@@ -2328,12 +2325,6 @@ importers:
       react:
         specifier: '*'
         version: 19.3.0
-      react-refresh:
-        specifier: ^0.14.2
-        version: 0.14.2
-      react-test-renderer:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
@@ -2901,6 +2892,12 @@ importers:
       '@types/picomatch':
         specifier: ^4.0.2
         version: 4.0.2
+      '@types/react':
+        specifier: ~19.3.0
+        version: 19.3.0
+      '@types/react-test-renderer':
+        specifier: ^19.1.0
+        version: 19.1.0
       dedent:
         specifier: ^1.5.3
         version: 1.7.2
@@ -2913,6 +2910,15 @@ importers:
       metro-minify-terser:
         specifier: ^0.84.2
         version: 0.84.6
+      react:
+        specifier: '*'
+        version: 19.3.0
+      react-refresh:
+        specifier: ^0.14.2
+        version: 0.14.2
+      react-test-renderer:
+        specifier: 19.3.0
+        version: 19.3.0(react@19.3.0)
       sass:
         specifier: ^1.60.0
         version: 1.98.0
