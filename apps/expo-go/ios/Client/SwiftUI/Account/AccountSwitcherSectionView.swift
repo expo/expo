@@ -4,34 +4,36 @@ import SwiftUI
 
 struct AccountSwitcherSectionView: View {
   let section: AccountSwitcherSection
+  let showsHeader: Bool
   let onSelect: (AccountSwitcherRowModel) -> Void
   let onReauthenticate: () -> Void
-  let onRemove: () -> Void
+  let onSignOut: () -> Void
 
   var body: some View {
-    VStack(spacing: 0) {
+    VStack(alignment: .leading, spacing: 8) {
+      if showsHeader {
+        Text(section.username)
+          .font(.footnote.weight(.medium))
+          .foregroundStyle(.secondary)
+          .padding(.horizontal, 8)
+      }
+
       if section.isExpired {
-        ExpiredSessionRow(username: section.username, isPartner: section.isPartner, onTap: onReauthenticate)
+        ExpiredSessionRow(
+          username: section.username,
+          isPartner: section.isPartner,
+          onTap: onReauthenticate,
+          onSignOut: onSignOut
+        )
       } else {
         ForEach(section.rows) { row in
           AccountSwitcherRow(
             row: row,
-            username: section.isActive ? nil : section.username,
-            isPartner: section.isPartner
-          ) {
-            onSelect(row)
-          }
-          if row.id != section.rows.last?.id {
-            Divider()
-          }
-        }
-      }
-    }
-    .clipShape(.rect(cornerRadius: 12))
-    .contextMenu {
-      if !section.isActive {
-        Button(role: .destructive, action: onRemove) {
-          Label("Remove \(section.username)", systemImage: "person.crop.circle.badge.minus")
+            username: section.username,
+            isPartner: section.isPartner,
+            onTap: { onSelect(row) },
+            onSignOut: onSignOut
+          )
         }
       }
     }

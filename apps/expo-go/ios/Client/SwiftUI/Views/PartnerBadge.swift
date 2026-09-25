@@ -4,11 +4,15 @@ import SwiftUI
 
 struct PartnerBadge: View {
   var body: some View {
-    Text("Partner")
-      .font(.caption2.weight(.semibold))
-      .foregroundStyle(.secondary)
-      .padding(.horizontal, 6)
-      .padding(.vertical, 2)
-      .background(Color.expoSystemGray5, in: Capsule())
+    Image(systemName: "link")
+      .font(.system(size: 7, weight: .bold))
+      .foregroundStyle(.white)
+      .frame(width: 12, height: 12)
+      .background(Color.expoBlue, in: .rect(cornerRadius: 3))
+      .overlay {
+        RoundedRectangle(cornerRadius: 3)
+          .stroke(Color.expoSystemBackground, lineWidth: 1)
+      }
+      .accessibilityLabel("Partner account")
   }
 }

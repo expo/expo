@@ -19,7 +19,6 @@ struct DeviceAccountView: View {
         if !showsLogin {
           AccountSwitcherView(onAddAccount: startAddingAccount)
             .ignoresSafeArea(.keyboard)
-            .padding(.horizontal, 16)
             .transition(.opacity)
         } else {
           ScrollView {
@@ -43,6 +42,7 @@ struct DeviceAccountView: View {
       }
       .navigationTitle("Account")
       .navigationBarTitleDisplayMode(.inline)
+      .toolbar(showsLogin ? .visible : .hidden, for: .navigationBar)
       .toolbar {
         ToolbarItem(placement: .topBarLeading) {
           Button(action: close) {
@@ -68,6 +68,7 @@ struct DeviceAccountView: View {
       }
     }
     .animation(.default, value: showsLogin)
+    .presentationDetents(showsLogin ? [.large] : [.medium, .large])
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.expoSystemBackground)
   }

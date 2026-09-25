@@ -9,7 +9,9 @@ struct SimulatorAccountView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      header
+      if !viewModel.isAuthenticated {
+        header
+      }
 
       if !viewModel.isAuthenticated {
         Spacer()
@@ -24,7 +26,6 @@ struct SimulatorAccountView: View {
       VStack(spacing: 0) {
         if viewModel.isAuthenticated {
           AccountSwitcherView(onAddAccount: signInToAnotherAccount)
-            .padding(.horizontal, 16)
         } else {
           loginSignupCard
             .padding(.horizontal, 16)
@@ -33,6 +34,7 @@ struct SimulatorAccountView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.expoSystemBackground)
+    .presentationDetents(viewModel.isAuthenticated ? [.medium, .large] : [.large])
   }
 
   private func signInToAnotherAccount() {

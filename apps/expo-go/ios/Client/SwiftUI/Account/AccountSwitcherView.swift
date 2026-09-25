@@ -4,60 +4,60 @@ import SwiftUI
 import UIKit
 
 struct AccountSwitcherView: View {
-  @Environment(\.dismiss) private var dismiss
   @EnvironmentObject var viewModel: HomeViewModel
   let onAddAccount: () -> Void
-  @State private var sessionPendingRemoval: AccountSwitcherSection?
+  @State private var sessionPendingSignOut: AccountSwitcherSection?
 
   var body: some View {
-    VStack(spacing: 0) {
+    let sections = viewModel.accountSwitcherSections
+
+    VStack(spacing: 8) {
+      Text("Accounts")
+        .font(.title3.weight(.semibold))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 8)
+
       ScrollView {
-        VStack(spacing: 16) {
-          ForEach(viewModel.accountSwitcherSections) { section in
+        VStack(alignment: .leading, spacing: 16) {
+          ForEach(sections) { section in
             AccountSwitcherSectionView(
               section: section,
+              showsHeader: sections.count > 1,
               onSelect: select,
               onReauthenticate: addAccount,
-              onRemove: { sessionPendingRemoval = section }
+              onSignOut: { sessionPendingSignOut = section }
             )
           }
-
-          Button(action: addAccount) {
-            Label("Add account", systemImage: "plus")
-              .font(.headline)
-              .foregroundStyle(.secondary)
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .padding(.horizontal, 16)
-              .padding(.vertical, 12)
-              .contentShape(.rect)
-          }
-          .buttonStyle(.plain)
         }
-        .padding(.top, 8)
       }
-      .frame(maxHeight: .infinity)
 
-      Button(action: signOut) {
-        Text("Log out")
-          .font(.headline)
-          .fontWeight(.bold)
-          .foregroundStyle(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
+      Button(action: addAccount) {
+        HStack(spacing: 8) {
+          Image(systemName: "plus")
+            .font(.system(size: 14, weight: .semibold))
+            .frame(width: 24, height: 24)
+          Text("Add account")
+            .font(.subheadline.weight(.semibold))
+        }
+        .foregroundStyle(.secondary)
+        .padding(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(.rect)
       }
-      .background(Color.black, in: .rect(cornerRadius: 12))
+      .buttonStyle(.plain)
     }
+    .padding(16)
     .confirmationDialog(
-      "Remove \(sessionPendingRemoval?.username ?? "")?",
+      "Log out of \(sessionPendingSignOut?.username ?? "")?",
       isPresented: Binding(
-        get: { sessionPendingRemoval != nil },
-        set: { if !$0 { sessionPendingRemoval = nil } }
+        get: { sessionPendingSignOut != nil },
+        set: { if !$0 { sessionPendingSignOut = nil } }
       ),
       titleVisibility: .visible,
-      presenting: sessionPendingRemoval
+      presenting: sessionPendingSignOut
     ) { section in
-      Button("Remove", role: .destructive) {
-        viewModel.removeSession(id: section.sessionId)
+      Button("Log out", role: .destructive) {
+        viewModel.signOut(sessionId: section.sessionId)
       }
     }
   }
@@ -72,11 +72,5 @@ struct AccountSwitcherView: View {
   private func addAccount() {
     UIImpactFeedbackGenerator(style: .light).impactOccurred()
     onAddAccount()
-  }
-
-  private func signOut() {
-    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-    viewModel.signOut()
-    dismiss()
   }
 }

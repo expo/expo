@@ -167,8 +167,12 @@ class HomeViewModel: ObservableObject {
     startPollingSelectedAccount()
   }
 
-  func removeSession(id: String) {
-    authService.removeSession(id: id)
+  func signOut(sessionId: String) {
+    if sessionId == activeSessionId {
+      signOut()
+    } else {
+      authService.removeSession(id: sessionId)
+    }
   }
 
   func refreshData() async {
