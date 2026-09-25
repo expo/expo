@@ -2043,7 +2043,7 @@ importers:
         specifier: ~58.0.0-rc.0
         version: 58.0.0-rc.0
       '@expo/metro-config':
-        specifier: workspace:~
+        specifier: workspace:*
         version: link:../metro-config
       '@expo/metro-file-map':
         specifier: workspace:^
@@ -2941,9 +2941,6 @@ importers:
         specifier: ^1.0.8
         version: 1.0.8
     devDependencies:
-      '@expo/metro':
-        specifier: ~58.0.0-rc.0
-        version: 58.0.0-rc.0
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
@@ -4652,9 +4649,6 @@ importers:
       '@expo/json-file':
         specifier: workspace:*
         version: link:../@expo/json-file
-      '@expo/metro':
-        specifier: ~58.0.0-rc.0
-        version: 58.0.0-rc.0
       '@expo/schemer':
         specifier: workspace:*
         version: link:../@expo/schemer
@@ -5341,9 +5335,6 @@ importers:
       '@babel/core':
         specifier: ^7.26.0
         version: 7.29.7
-      '@expo/metro':
-        specifier: ~58.0.0-rc.0
-        version: 58.0.0-rc.0
 
   packages/expo-module-template:
     devDependencies:

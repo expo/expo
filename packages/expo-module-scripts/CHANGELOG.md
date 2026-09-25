@@ -22,6 +22,7 @@
 - [Internal] Remove the remaining `@expo/metro` type augmentations, which `@expo/metro@56.1.0` covers with Metro's own types. ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- [Internal] Disallow runtime dependencies on `@expo/metro` outside `@expo/metro-config`, `@expo/cli` and `expo` in `depscheck`, and drop the unused `@expo/metro` devDependency. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
 
 ## 56.0.3 - 2026-05-29
 

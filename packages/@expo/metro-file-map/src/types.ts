@@ -5,13 +5,40 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { PerfLogger, RootPerfLogger } from '@expo/metro/metro-config';
-
 import type { HType, HTypeValue } from './constants';
 
 export type { HType, HTypeValue };
 
-export type { PerfLoggerFactory, PerfLogger } from '@expo/metro/metro-config';
+// Structural mirrors of `metro-config`'s perf logger types, so the file map can take Metro's
+// `unstable_perfLoggerFactory` without depending on Metro.
+type PerfAnnotations = Partial<{
+  string: Readonly<{ [key: string]: string }>;
+  int: Readonly<{ [key: string]: number }>;
+  double: Readonly<{ [key: string]: number }>;
+  bool: Readonly<{ [key: string]: boolean }>;
+  string_array: Readonly<{ [key: string]: readonly string[] }>;
+  int_array: Readonly<{ [key: string]: readonly number[] }>;
+  double_array: Readonly<{ [key: string]: readonly number[] }>;
+  bool_array: Readonly<{ [key: string]: readonly boolean[] }>;
+}>;
+
+type PerfLoggerPointOptions = Readonly<{ timestamp?: number }>;
+
+export interface PerfLogger {
+  point(name: string, opts?: PerfLoggerPointOptions): void;
+  annotate(annotations: PerfAnnotations): void;
+  subSpan(label: string): PerfLogger;
+}
+
+export interface RootPerfLogger extends PerfLogger {
+  start(opts?: PerfLoggerPointOptions): void;
+  end(status: 'SUCCESS' | 'FAIL' | 'CANCEL', opts?: PerfLoggerPointOptions): void;
+}
+
+export type PerfLoggerFactory = (
+  type: 'START_UP' | 'BUNDLING_REQUEST' | 'HMR',
+  opts?: Readonly<{ key?: number }>
+) => RootPerfLogger;
 
 // These inputs affect the internal data collected for a given filesystem
 // state, and changes may invalidate a cache.
