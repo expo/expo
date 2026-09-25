@@ -3,6 +3,7 @@
 /**
  * This script is used to reset the project to a blank state.
  * It deletes or moves the /src and /scripts directories to /example based on user input and creates a new /src/app directory with an index.tsx and _layout.tsx file.
+ * Images under /assets that are only used by the example screens are deleted or moved along with them.
  * You can remove the `reset-project` script from package.json and safely delete this file after running it.
  */
 
@@ -12,6 +13,17 @@ const readline = require("readline");
 
 const root = process.cwd();
 const oldDirs = ["src", "scripts"];
+const exampleAssets = [
+  "assets/images/expo-badge-white.png",
+  "assets/images/expo-badge.png",
+  "assets/images/expo-logo.png",
+  "assets/images/logo-glow.png",
+  "assets/images/react-logo.png",
+  "assets/images/react-logo@2x.png",
+  "assets/images/react-logo@3x.png",
+  "assets/images/tabIcons",
+  "assets/images/tutorial-web.png",
+];
 const exampleDir = "example";
 const newAppDir = "src/app";
 const exampleDirPath = path.join(root, exampleDir);
@@ -55,20 +67,21 @@ const moveDirectories = async (userInput) => {
       console.log(`📁 /${exampleDir} directory created.`);
     }
 
-    // Move old directories to new app-example directory or delete them
-    for (const dir of oldDirs) {
-      const oldDirPath = path.join(root, dir);
-      if (fs.existsSync(oldDirPath)) {
+    // Move old directories and example-only assets to the example directory or delete them
+    for (const entry of [...oldDirs, ...exampleAssets]) {
+      const oldPath = path.join(root, entry);
+      if (fs.existsSync(oldPath)) {
         if (userInput === "y") {
-          const newDirPath = path.join(root, exampleDir, dir);
-          await fs.promises.rename(oldDirPath, newDirPath);
-          console.log(`➡️ /${dir} moved to /${exampleDir}/${dir}.`);
+          const newPath = path.join(root, exampleDir, entry);
+          await fs.promises.mkdir(path.dirname(newPath), { recursive: true });
+          await fs.promises.rename(oldPath, newPath);
+          console.log(`➡️ /${entry} moved to /${exampleDir}/${entry}.`);
         } else {
-          await fs.promises.rm(oldDirPath, { recursive: true, force: true });
-          console.log(`❌ /${dir} deleted.`);
+          await fs.promises.rm(oldPath, { recursive: true, force: true });
+          console.log(`❌ /${entry} deleted.`);
         }
       } else {
-        console.log(`➡️ /${dir} does not exist, skipping.`);
+        console.log(`➡️ /${entry} does not exist, skipping.`);
       }
     }
 
