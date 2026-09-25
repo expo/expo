@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add `unwrapDevLaunchURL()` to resolve the URL an app should route from an Expo Go or development build launch URL, dropping the reserved `__expo_*` params. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
+
+- Stop decoding query parameter values twice in `parse()`. Values with percent-encoded `%`, `+` or `@` were altered, and malformed percent-encoding threw a `URIError`. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
