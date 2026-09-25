@@ -20,6 +20,11 @@ struct GraphQLErrorLocation: Codable {
 
 struct MeActorResponse: Codable {
   let data: MeActorData
+  let errors: [GraphQLError]?
+
+  var isRevokedSession: Bool {
+    data.meActor == nil && (errors ?? []).isEmpty
+  }
 }
 
 struct MeActorData: Codable {

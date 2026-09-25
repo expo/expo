@@ -40,6 +40,36 @@ final class SessionStoreTests: XCTestCase {
     XCTAssertNil(reloaded.activeSession)
   }
 
+  func testUndecodableAccountsKeepTheSession() throws {
+    keychain.data = Data("""
+    {"sessions":[{"id":"s1","actorType":"user","sessionSecret":"secret","accounts":[{"unexpected":true}]}],
+     "activeSessionId":"s1"}
+    """.utf8)
+
+    let reloaded = SessionStore(keychain: keychain)
+
+    let session = try XCTUnwrap(reloaded.activeSession)
+    XCTAssertEqual(session.sessionSecret, "secret")
+    XCTAssertTrue(session.accounts.isEmpty)
+  }
+
+  func testFallBackFromExpiredActiveSessionWhenALiveSessionExists() {
+    let live = store.add(sessionSecret: "live")
+    store.add(sessionSecret: "expired", expiresAt: Date().addingTimeInterval(-1))
+
+    store.fallBackFromExpiredActiveSession()
+
+    XCTAssertEqual(store.activeSession?.id, live.id)
+  }
+
+  func testFallBackKeepsTheExpiredActiveSessionWhenNoLiveSessionExists() {
+    let expired = store.add(sessionSecret: "expired", expiresAt: Date().addingTimeInterval(-1))
+
+    store.fallBackFromExpiredActiveSession()
+
+    XCTAssertEqual(store.activeSession?.id, expired.id)
+  }
+
   func testExpiredActiveSessionIsNotLive() {
     store.add(sessionSecret: "a", expiresAt: Date().addingTimeInterval(-1))
 

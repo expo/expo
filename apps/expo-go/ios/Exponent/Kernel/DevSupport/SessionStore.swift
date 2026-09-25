@@ -27,6 +27,22 @@ struct StoredSession: Codable, Equatable, Identifiable {
   }
 }
 
+extension StoredSession {
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    id = try container.decode(String.self, forKey: .id)
+    userId = try container.decodeIfPresent(String.self, forKey: .userId)
+    username = try container.decodeIfPresent(String.self, forKey: .username)
+    displayName = try container.decodeIfPresent(String.self, forKey: .displayName)
+    avatarUrl = try container.decodeIfPresent(String.self, forKey: .avatarUrl)
+    actorType = try container.decode(ActorType.self, forKey: .actorType)
+    sessionSecret = try container.decode(String.self, forKey: .sessionSecret)
+    expiresAt = try container.decodeIfPresent(Date.self, forKey: .expiresAt)
+    selectedAccountId = try container.decodeIfPresent(String.self, forKey: .selectedAccountId)
+    accounts = (try? container.decode([Account].self, forKey: .accounts)) ?? []
+  }
+}
+
 final class SessionStore: @unchecked Sendable {
   static let shared: SessionStore = {
     let store = SessionStore(keychain: KeychainItem(key: "host.exp.exponent.sessions", service: "app"))
@@ -117,6 +133,17 @@ final class SessionStore: @unchecked Sendable {
         return
       }
       state.activeSessionId = Self.fallbackId(in: state.sessions)
+    }
+  }
+
+  func fallBackFromExpiredActiveSession() {
+    mutate { state in
+      guard let active = state.sessions.first(where: { $0.id == state.activeSessionId }),
+            active.isExpired,
+            let fallbackId = Self.fallbackId(in: state.sessions) else {
+        return
+      }
+      state.activeSessionId = fallbackId
     }
   }
 

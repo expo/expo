@@ -52,6 +52,7 @@ class AuthenticationService: ObservableObject {
   }
 
   func checkAuthenticationStatus() {
+    store.fallBackFromExpiredActiveSession()
     publishStoreState()
     if isAuthenticated {
       Task {
@@ -111,6 +112,9 @@ class AuthenticationService: ObservableObject {
       return true
     }
     guard let actor = response.data.meActor else {
+      guard response.isRevokedSession else {
+        throw APIError.invalidResponse
+      }
       print("[AuthenticationService] meActor was null. Signed in as an actor type Expo Go does not model.")
       return false
     }
