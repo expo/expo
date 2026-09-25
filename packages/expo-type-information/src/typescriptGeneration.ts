@@ -47,11 +47,11 @@ const newlineIdentifier = () => ts.factory.createIdentifier('\n\n');
  */
 export type OutputFile = {
   /**
-   * @field Generated file content.
+   * Generated file content.
    */
   content: string;
   /**
-   * @field Generated file base name (e.g. `ExpoSettings.types.ts`).
+   * Generated file base name (e.g. `ExpoSettings.types.ts`).
    */
   name: string;
 };
@@ -1099,7 +1099,7 @@ function baseIdentifierFileMap(): IdentifierDeclarationImportMap {
 }
 
 // Ambient in any TS program, never imported.
-const GLOBAL_IDENTIFIERS = new Set<string>(['Uint8Array', 'Map', 'Set', 'Promise']);
+const GLOBAL_IDENTIFIERS = new Set<string>(['Uint8Array', 'Map', 'Set', 'Promise', 'Record']);
 
 function createIdentifierFileMapping(
   fileIdentifiersInfo: { identifiersInfo: IdentifiersInfo; importPath: string }[]
@@ -1636,7 +1636,7 @@ export async function generateFullTsInterface(
         moduleTypesFileNodes.length > 0
           ? createExportAllDeclaration({
               importFromName: `./${moduleTypesFileImportName}`,
-              justTypes: true,
+              justTypes: false,
             })
           : null,
         createExportDefaultAsDeclaration({
