@@ -22,7 +22,9 @@ internal class LanguageModelTasks(private val scope: CoroutineScope, private val
 
     fun ensureActive() = synchronized(lock) {
       failure?.let { throw it }
-      if (settled || disposed) throw LanguageModelException.disposed()
+      if (settled || disposed) {
+        throw LanguageModelException.disposed()
+      }
     }
 
     fun emit(body: () -> Unit) = synchronized(lock) {
@@ -31,7 +33,9 @@ internal class LanguageModelTasks(private val scope: CoroutineScope, private val
     }
 
     internal fun reject(error: LanguageModelException) {
-      if (settled) return
+      if (settled) {
+        return
+      }
       failure = error
       settled = true
       promise.reject(error)
@@ -60,8 +64,12 @@ internal class LanguageModelTasks(private val scope: CoroutineScope, private val
     body: suspend (Request) -> Any?
   ) {
     val request = synchronized(lock) {
-      if (disposed) throw LanguageModelException.disposed()
-      if (id.isEmpty()) throw LanguageModelException.invalid("requestId must not be empty.")
+      if (disposed) {
+        throw LanguageModelException.disposed()
+      }
+      if (id.isEmpty()) {
+        throw LanguageModelException.invalid("requestId must not be empty.")
+      }
       if (requests.containsKey(id) || (singleRequest && requests.isNotEmpty())) {
         throw LanguageModelException("ERR_SESSION_BUSY", "A language model request is already running.")
       }
@@ -81,12 +89,16 @@ internal class LanguageModelTasks(private val scope: CoroutineScope, private val
     }
     synchronized(lock) {
       request.job = job
-      if (request.settled) job.cancel()
+      if (request.settled) {
+        job.cancel()
+      }
     }
     // A lazy job can be cancelled before its body starts, so cleanup belongs here.
     job.invokeOnCompletion {
       synchronized(lock) {
-        if (!request.settled) request.reject(LanguageModelException.cancelled())
+        if (!request.settled) {
+          request.reject(LanguageModelException.cancelled())
+        }
         requests.remove(id, request)
       }
     }

@@ -36,7 +36,9 @@ internal data class LanguageModelRequestOptions(val stream: Boolean, val maximum
         false
       }
       val maximumToolCalls = value.optionalInteger("maximumToolCalls", 0) ?: 0
-      if (maximumToolCalls > 16) throw LanguageModelException.invalid("maximumToolCalls must not exceed 16.")
+      if (maximumToolCalls > 16) {
+        throw LanguageModelException.invalid("maximumToolCalls must not exceed 16.")
+      }
       return LanguageModelRequestOptions(stream, value.optionalInteger("maximumOutputTokens", 1))
     }
   }
@@ -49,12 +51,16 @@ private fun parseObject(json: String, allowed: Set<String>): JSONObject {
     throw LanguageModelException.invalid("Options must be a JSON object.")
   }
   val unknown = value.keys().asSequence().filter { it !in allowed }.toList()
-  if (unknown.isNotEmpty()) throw LanguageModelException.invalid("Unsupported options: ${unknown.joinToString()}.")
+  if (unknown.isNotEmpty()) {
+    throw LanguageModelException.invalid("Unsupported options: ${unknown.joinToString()}.")
+  }
   return value
 }
 
 private fun JSONObject.optionalInteger(key: String, minimum: Int): Int? {
-  if (!has(key)) return null
+  if (!has(key)) {
+    return null
+  }
   val number = (get(key) as? Number)?.toDouble()
     ?: throw LanguageModelException.invalid("$key must be an integer of at least $minimum.")
   if (!number.isFinite() || number % 1 != 0.0 || number < minimum || number > Int.MAX_VALUE) {
