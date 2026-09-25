@@ -50,17 +50,8 @@ internal class FilePickingHandler: FilePickingResultHandler {
     picker.presentationController?.delegate = pickerDelegate
     picker.allowsMultipleSelection = multipleDocuments
 
-    if UIDevice.current.userInterfaceIdiom == .pad {
-      let viewFrame = currentVc.view.frame
-      picker.popoverPresentationController?.sourceRect = CGRect(
-        x: viewFrame.midX,
-        y: viewFrame.maxY,
-        width: 0,
-        height: 0
-      )
-      picker.popoverPresentationController?.sourceView = currentVc.view
-      picker.modalPresentationStyle = .pageSheet
-    }
+    SceneGeometry.anchorPopover(of: picker, to: currentVc.view)
+    picker.modalPresentationStyle = .pageSheet
 
     currentVc.present(picker, animated: true)
   }

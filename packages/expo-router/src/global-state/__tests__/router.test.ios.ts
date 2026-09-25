@@ -22,7 +22,6 @@ import {
 
 jest.mock('../navigationRef', () => ({
   navigationRef: {
-    isReady: jest.fn(() => true),
     getRootState: jest.fn(),
     current: {
       canGoBack: jest.fn(),
@@ -55,24 +54,30 @@ jest.mock('../../link/href', () => ({
 }));
 
 const mockAdd = jest.fn();
+const mockSetTransitionMode = jest.fn();
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;
+const mountedNavigation = navigationRef.current;
 beforeEach(() => {
   jest.clearAllMocks();
-  (navigationRef.isReady as jest.Mock).mockReturnValue(true);
+  navigationRef.current = mountedNavigation;
   (navigationRef.getRootState as jest.Mock).mockReturnValue(undefined);
 });
 
 it('throws before the module-level router is installed', () => {
   expect(() => navigate('/first')).toThrow('first render');
 
-  Object.assign(router, createImperativeRouter(mockAdd));
+  Object.assign(router, createImperativeRouter(mockAdd, mockSetTransitionMode));
 });
 
 describe('canDismiss', () => {
+  it('returns false when the container is not mounted', () => {
+    navigationRef.current = null;
+    expect(canDismiss()).toBe(false);
+  });
+
   it('returns false when state is undefined', () => {
-    (navigationRef.isReady as jest.Mock).mockReturnValue(false);
     expect(canDismiss()).toBe(false);
   });
 
@@ -263,6 +268,65 @@ describe('router action functions', () => {
     );
   });
 
+  it('push forwards the inTransition option', () => {
+    push('/path', { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'NAVIGATE_TO_HREF',
+      inTransition: true,
+      payload: {
+        href: '/path',
+        options: { event: 'PUSH' },
+      },
+    });
+  });
+
+  it('back forwards the inTransition option', () => {
+    router.back({ inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+      inTransition: true,
+    });
+  });
+
+  it('dismiss forwards the inTransition option', () => {
+    router.dismiss(2, { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP', payload: { count: 2 } } },
+      inTransition: true,
+    });
+  });
+
+  it('dismissAll forwards the inTransition option', () => {
+    router.dismissAll({ inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP_TO_TOP' } },
+      inTransition: true,
+    });
+  });
+
+  it('preserves inTransition when a relative href becomes GO_BACK', () => {
+    push('..', { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+      inTransition: true,
+    });
+  });
+
+  it('sets the transition mode for subsequent queue batches', () => {
+    router.setTransitionMode('preload-only');
+
+    expect(mockSetTransitionMode).toHaveBeenCalledWith('preload-only');
+  });
+
   it('replace enqueues NAVIGATE_TO_HREF intent with REPLACE event', () => {
     replace('/path');
 
@@ -329,10 +393,10 @@ describe('router action functions', () => {
     });
   });
 
-  it('goBack enqueues GO_BACK without requiring the container to be ready', () => {
+  it('goBack enqueues GO_BACK without requiring a mounted container', () => {
+    navigationRef.current = null;
     goBack();
 
-    expect(navigationRef.isReady).not.toHaveBeenCalled();
     expect(mockAdd).toHaveBeenCalledWith({
       type: 'ACTION',
       payload: { action: { type: 'GO_BACK' } },
@@ -343,9 +407,8 @@ describe('router action functions', () => {
     expect(() => reload()).toThrow('not implemented');
   });
 
-  it('canGoBack returns false when navigation not ready', () => {
-    (navigationRef.isReady as jest.Mock).mockReturnValueOnce(false);
-
+  it('canGoBack returns false when the container is not mounted', () => {
+    navigationRef.current = null;
     expect(canGoBack()).toBe(false);
   });
 
@@ -356,11 +419,16 @@ describe('router action functions', () => {
     expect(navigationRef.current!.canGoBack).toHaveBeenCalled();
   });
 
-  it('setParams checks navigation readiness', () => {
+  it('setParams forwards when the container is mounted', () => {
     setParams({ name: 'test' });
 
-    expect(navigationRef.isReady).toHaveBeenCalled();
     expect(navigationRef.current!.setParams).toHaveBeenCalledWith({ name: 'test' });
+  });
+
+  it('setParams throws when the container is not mounted', () => {
+    navigationRef.current = null;
+
+    expect(() => setParams({ name: 'test' })).toThrow('before mounting the Root Layout');
   });
 });
 
@@ -368,28 +436,27 @@ describe('DOM short-circuit paths', () => {
   it('dismiss short-circuits when emitDomDismiss returns true', () => {
     mockEmitDomDismiss.mockReturnValueOnce(true);
 
-    dismiss(1);
+    dismiss(1, { inTransition: true });
 
-    expect(mockEmitDomDismiss).toHaveBeenCalledWith(1);
+    expect(mockEmitDomDismiss).toHaveBeenCalledWith(1, { inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 
   it('dismissAll short-circuits when emitDomDismissAll returns true', () => {
     mockEmitDomDismissAll.mockReturnValueOnce(true);
 
-    dismissAll();
+    dismissAll({ inTransition: true });
 
-    expect(mockEmitDomDismissAll).toHaveBeenCalled();
+    expect(mockEmitDomDismissAll).toHaveBeenCalledWith({ inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 
   it('goBack short-circuits when emitDomGoBack returns true', () => {
     mockEmitDomGoBack.mockReturnValueOnce(true);
 
-    goBack();
+    goBack({ inTransition: true });
 
-    expect(mockEmitDomGoBack).toHaveBeenCalled();
+    expect(mockEmitDomGoBack).toHaveBeenCalledWith({ inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
-    expect(navigationRef.isReady).not.toHaveBeenCalled();
   });
 });

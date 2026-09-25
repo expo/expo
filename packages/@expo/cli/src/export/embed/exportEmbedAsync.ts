@@ -6,8 +6,6 @@
  */
 import { getConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
@@ -23,6 +21,11 @@ import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
+import { isApiRoutesEnabled } from '../../start/server/metro/router';
+import {
+  patchGetDeltaForCacheVary,
+  patchTransformFileForCacheVary,
+} from '../../start/server/metro/withMetroCacheVary';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
@@ -222,8 +225,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     // We optimistically build the server-side API routes code here, to ensure they're
     // valid or to enable parallel deployment in the future (TBD). This is disabled using
     // the explicit `--skip-server` flag.
-    const apiRoutesEnabled =
-      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
+    const apiRoutesEnabled = devServer.isReactServerComponentsEnabled || isApiRoutesEnabled(exp);
     if (!options.skipServer && apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
@@ -254,7 +256,8 @@ export async function exportEmbedBundleAndAssetsAsync(
             dev: options.dev,
             devServer,
             isHermes,
-            includeSourceMaps: !!sourceMapUrl,
+            // don't ship sourcemap in the www.bundle
+            includeSourceMaps: false,
             exp,
             files,
           });
@@ -384,11 +387,9 @@ export async function createMetroServerAndBundleRequestAsync(
     }),
   }));
 
-  // The dev server applies the same patch from `instantiateMetro.ts`;
-  // this is the export-embed / `expo-updates` path, where `data.map`
-  // would otherwise reach Metro's readers in the unwrapped wire shape.
-  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
-  patchMetroSourceMapStringForPackedMaps();
+  // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
+  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchGetDeltaForCacheVary();
 
   return { server: metro, bundleRequest };
 }

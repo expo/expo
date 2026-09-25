@@ -7,15 +7,34 @@ declare module '2g' {
     'platform:activate_window_lsof': { args: string };
     'platform:activate_window_pid': { pid: string };
     // android/adb.ts
-    'platform:adb_property_data': { devicePid: string | undefined; prop: string; data: string };
+    'platform:adb_property_data': {
+      devicePid: string | undefined;
+      prop: string;
+      data: string;
+    };
     'platform:adb_parsed_properties': { props: Record<string, string> };
     // android/adbReverse.ts
     'platform:adb_reverse_sdk_missing': { error: SerializedError };
     'platform:adb_reverse_port_failed': { port: number; deviceName: string };
-    'platform:adb_reverse_unforward_failed': { port: number; error: SerializedError };
+    'platform:adb_reverse_unforward_failed': {
+      port: number;
+      error: SerializedError;
+    };
     // android/ADBServer.ts
     'platform:adb_server_run': { command: string };
     'platform:adb_file_output': { output: string };
+    'platform:adb_operation_start': {
+      operation: string;
+      phase: 'host-request' | 'device-service';
+      waitLimitMs: number | undefined;
+    };
+    'platform:adb_operation_cleanup': {
+      operation: string;
+      phase: 'host-request' | 'device-service';
+      reason: 'wait-limit' | 'cancelled';
+      status: 'terminated' | 'killed' | 'exit-unobserved';
+    };
+    'platform:adb_host_probe': { endpoint: string; result: string };
     // android/gradle.ts
     'platform:gradle_spawn': { command: string };
     // ExpoGoInstaller.ts
@@ -51,14 +70,21 @@ declare module '2g' {
     };
     'platform:simctl_url_scheme_parse_error': { error: SerializedError };
     'platform:simctl_allowed_links': { plistData: Record<string, unknown> };
-    'platform:simctl_allow_deep_link': { key: string; appId: string | undefined };
+    'platform:simctl_allow_deep_link': {
+      key: string;
+      appId: string | undefined;
+    };
     // ios/xcrun.ts
     'platform:xcrun_run': { command: string };
     // PlatformManager.ts
     'platform:open_launch_url': { appId: string; redirectUrl: string };
     'platform:open_custom': { props: string };
     'platform:open_custom_url': { url: string | null; props: string };
-    'platform:open_async': { runtime: string; platform: string; shouldPrompt: boolean | undefined };
+    'platform:open_async': {
+      runtime: string;
+      platform: string;
+      shouldPrompt: boolean | undefined;
+    };
     // android/AndroidPlatformManager.ts
     'platform:android_open_custom_launch_activity': { launchActivity: string };
     // android/AndroidAppIdResolver.ts

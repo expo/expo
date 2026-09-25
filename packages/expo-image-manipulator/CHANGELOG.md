@@ -6,13 +6,63 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- [iOS] Fixed `renderAsync` failing with `ERR_IMAGE_CONTEXT_LOST` for 10-bit HDR images, such as HEIC screenshots. ([#50011](https://github.com/expo/expo/pull/50011) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Keep the full pixel resolution of images loaded with a scale factor greater than 1 instead of downscaling them to their point size. ([#50011](https://github.com/expo/expo/pull/50011) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+## 58.0.8 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Added `maxWidth`/`maxHeight` options to `ImageManipulator.manipulate` and `useImageManipulator` that downsample large images while decoding, significantly reducing the peak memory usage and avoiding out-of-memory crashes. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed `release()` not releasing image manipulation resources. ([#49831](https://github.com/expo/expo/pull/49831) by [@mozzius](https://github.com/mozzius))
 - Fixed `ImageManipulator.Image` being typed as an `ImageRef` instance rather than the class it holds at runtime, which rejected `instanceof` checks and made instance members appear to exist on it. ([#48613](https://github.com/expo/expo/pull/48613) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+- Add missing `react` and `react-native` peer dependencies ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
+
+### 📚 3rd party library updates
+
+- Bump `SDWebImage` to 5.21.6 and `SDWebImageWebPCoder` to 0.15.0 to align with `expo-image` ([#49744](https://github.com/expo/expo/pull/49744) by [@kitten](https://github.com/kitten))
 
 ## 57.0.7 - 2026-07-29
 

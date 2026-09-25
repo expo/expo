@@ -17,6 +17,7 @@ program.command('clean', `Removes compiled files`);
 
 // Lifecycle scripts
 program.command('prepare', `Scripts to run during the "prepare" phase`);
+program.command('prepack', `Scripts to run during the "prepack" phase`);
 program.command('prepublishOnly', `Scripts to run during the "prepublishOnly" phase`);
 
 // Pass-through scripts

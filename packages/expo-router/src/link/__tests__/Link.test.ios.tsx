@@ -12,6 +12,7 @@ import { RoutingQueueProvider } from '../../global-state/routingQueueContext';
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
+import { NativeTabs } from '../../native-tabs';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { renderRouter } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
@@ -62,6 +63,12 @@ jest.mock('../preview/native', () => {
     )),
     __EVENTS__: handlerMap,
   };
+});
+
+jest.mock('../../hooks/useRouter', () => {
+  const actual =
+    jest.requireActual<typeof import('../../hooks/useRouter')>('../../hooks/useRouter');
+  return { ...actual, useRouter: jest.fn(actual.useRouter) };
 });
 
 jest.mock('../zoom/ZoomTransitionEnabler', () => {
@@ -619,7 +626,7 @@ test('can dynamically route using singular function', () => {
 });
 
 describe('prefetch', () => {
-  it('can preload the href', () => {
+  it('can prefetch the href', () => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -649,6 +656,7 @@ describe('prefetch', () => {
                 key: expect.any(String),
                 name: 'test',
                 params: {},
+                isPreloaded: true,
               },
             ],
             stale: false,
@@ -697,12 +705,22 @@ describe('prefetch', () => {
         key: expect.stringMatching(/^test:/),
         name: 'test',
         params: {},
+        isPreloaded: true,
       },
     ]);
   });
 });
 
 describe('Preview', () => {
+  afterEach(() => {
+    jest
+      .mocked(useRouter)
+      .mockImplementation(
+        jest.requireActual<typeof import('../../hooks/useRouter')>('../../hooks/useRouter')
+          .useRouter
+      );
+  });
+
   it('when Link.Preview is not used, then does not render LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
     renderRouter({
       index: () => {
@@ -728,6 +746,52 @@ describe('Preview', () => {
     });
     expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
     expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
+  });
+  it('navigates with the preloaded screen id reported by native', () => {
+    const emitters = require('../preview/native').__EVENTS__;
+    const navigate = jest.fn();
+    const mockUseRouter = jest.mocked(useRouter);
+    mockUseRouter.mockReturnValue({ ...router, navigate, prefetch: jest.fn() });
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger />
+          <Link.Preview />
+        </Link>
+      ),
+      test: () => null,
+    });
+
+    act(() =>
+      emitters['link-onPreviewTapped']({
+        nativeEvent: { screenId: 'test-key' },
+      })
+    );
+
+    expect(navigate).toHaveBeenCalledWith('/test', {
+      __internal__PreviewKey: 'test-key',
+    });
+  });
+  it('navigates without a preview key when native reports no preloaded screen', () => {
+    const emitters = require('../preview/native').__EVENTS__;
+    const navigate = jest.fn();
+    const mockUseRouter = jest.mocked(useRouter);
+    mockUseRouter.mockReturnValue({ ...router, navigate, prefetch: jest.fn() });
+    renderRouter({
+      index: () => (
+        <Link href="/test">
+          <Link.Trigger />
+          <Link.Preview />
+        </Link>
+      ),
+      test: () => null,
+    });
+
+    act(() => emitters['link-onPreviewTapped']({ nativeEvent: {} }));
+
+    expect(navigate).toHaveBeenCalledWith('/test', {
+      __internal__PreviewKey: undefined,
+    });
   });
   it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
     expect(() => {
@@ -1082,7 +1146,7 @@ describe('Preview', () => {
       warn.mockRestore();
     });
 
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    it('passes the activation path for the correct preloaded route with duplicate names', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1117,12 +1181,19 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByText('Preload A and C')));
       act(() => emitters['link-onWillPreviewOpen']());
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen, setTimeout from prefetch
-      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB:[-\w]+/);
+      await waitFor(() =>
+        expect(
+          NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0]
+            .previewActivationPath?.path
+        ).toHaveLength(2)
+      );
+      const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB:[-\w]+/);
+      expect(props).not.toHaveProperty('nextScreenId');
+      expect(props).not.toHaveProperty('tabPath');
       expect(warn).not.toHaveBeenCalled();
     });
-    it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
+    it('passes the activation path for the correct nested preloaded route with duplicate names', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
       function Index() {
@@ -1162,12 +1233,48 @@ describe('Preview', () => {
       act(() => emitters['link-onWillPreviewOpen']());
 
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen, setTimeout from prefetch
-      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(
-        NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB\/\[xyz\]:[-\w]+/);
+      await waitFor(() =>
+        expect(
+          NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0]
+            .previewActivationPath?.path
+        ).toHaveLength(2)
+      );
+      const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/slotB\/\[xyz\]:[-\w]+/);
+      expect(props).not.toHaveProperty('nextScreenId');
+      expect(props).not.toHaveProperty('tabPath');
       expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('passes a cross-tab NativeTabs activation path', async () => {
+      const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
+      const emitters = require('../preview/native').__EVENTS__;
+
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="second" />
+          </NativeTabs>
+        ),
+        index: () => (
+          <Link href="/second">
+            <Link.Trigger>Second</Link.Trigger>
+            <Link.Preview />
+          </Link>
+        ),
+        second: () => <View testID="second" />,
+      });
+
+      act(() => emitters['link-onWillPreviewOpen']());
+      await waitFor(() =>
+        expect(
+          NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0]
+            .previewActivationPath?.path
+        ).toHaveLength(2)
+      );
+      const props = NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0];
+      expect(props.previewActivationPath?.path[1]?.key).toMatch(/second:[-\w]+/);
     });
   });
   describe('external links in preview', () => {

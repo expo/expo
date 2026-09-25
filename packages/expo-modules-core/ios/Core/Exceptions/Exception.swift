@@ -7,7 +7,7 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
    String describing the reason of the exception.
    */
   open var reason: String {
-    "undefined reason"
+    customReason ?? "undefined reason"
   }
 
   /**
@@ -21,19 +21,26 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
   let customCode: String?
 
   /**
+   A custom reason of the exception, given as the `description` to the initializer that takes a name.
+   When unset, the `reason` is expected to come from an override in a subclass.
+   */
+  let customReason: String?
+
+  /**
    The default initializer that captures the place in the code where the exception was created.
    - Warning: Call it only without arguments!
    */
   public init(file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.origin = ExceptionOrigin(file: file, line: line, function: function)
     self.customCode = nil
+    self.customReason = nil
   }
 
   public init(name: String, description: String, code: String? = nil, file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.origin = ExceptionOrigin(file: file, line: line, function: function)
     self.customCode = code
+    self.customReason = description
     self.name = name
-    self.description = description
   }
 
   // MARK: - CodedError

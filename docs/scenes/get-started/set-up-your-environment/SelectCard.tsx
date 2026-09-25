@@ -27,7 +27,7 @@ export function SelectCard({
     <ButtonBase onClick={onClick}>
       <div
         className={mergeClasses(
-          'flex w-62.5 flex-col overflow-hidden rounded-lg border border-default shadow-xs transition-all',
+          'flex w-62.5 flex-col overflow-hidden rounded-3xl border border-default shadow-xs transition-all',
           'hocus:scale-[102%] hocus:shadow-sm'
         )}>
         <div

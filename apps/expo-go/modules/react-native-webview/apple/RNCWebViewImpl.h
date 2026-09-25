@@ -90,6 +90,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) BOOL keyboardDisplayRequiresUserAction;
 @property (nonatomic, assign) BOOL hideKeyboardAccessoryView;
+@property (nonatomic, assign) BOOL removeIosKeyboardObserver;
 @property (nonatomic, assign) BOOL allowsBackForwardNavigationGestures;
 @property (nonatomic, assign) BOOL incognito;
 @property (nonatomic, assign) BOOL useSharedProcessPool;

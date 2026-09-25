@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Presented the print and printer-picker sheets as popovers on every regular-width display, not only iPad, so they present correctly on iPhone Duo. ([#50437](https://github.com/expo/expo/pull/50437) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.1 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Resolve the presenting view controller from the foregrounded scene's key window instead of the deprecated `UIApplication.keyWindow`, so `print` and `selectPrinter` keep working in apps that use the UIScene life cycle. ([#50368](https://github.com/expo/expo/pull/50368) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

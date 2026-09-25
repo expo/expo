@@ -74,6 +74,13 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       default: '"Allow $(PRODUCT_NAME) to use your location"',
     },
     {
+      name: 'motionUsagePermission',
+      platform: 'ios',
+      description:
+        'A string to set the `NSMotionUsageDescription` permission message shown when `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.',
+      default: '"Allow $(PRODUCT_NAME) to detect your current motion activity"',
+    },
+    {
       name: 'isIosBackgroundLocationEnabled',
       platform: 'ios',
       description: 'A boolean to enable `location` in the `UIBackgroundModes` in **Info.plist**.',
@@ -187,7 +194,7 @@ To use location tracking or Geofencing in the background, you must request the a
 - On iOS, it must be granted with the `Always` option using [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync).
 
 <Collapsible summary="Expo and iOS permissions">
-iOS permissions are divided into the two categories `When In Use` and `Always` and maps to Expo's foreground and background location permissions requested via:
+iOS permissions are divided into the two categories `When In Use` and `Always` and map to Expo's foreground and background location permissions requested via:
 
 - [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync) maps to `When In Use`
 - [`requestBackgroundPermissionsAsync`](#locationrequestbackgroundpermissionsasync) maps to `Always`
@@ -321,12 +328,12 @@ For Android 12 and higher, go to **Settings** > **Location** > **Location Servic
 
 ### iOS Simulator
 
-With Simulator open, go to **Features** > **Location** and choose any option besides **None**.
+With Device Hub open, go to **Device** > **Location** and choose any option besides **None**.
 
 <ContentSpotlight
-  alt="Location settings in iOS simulator."
-  src="/static/images/sdk/location/ios-simulator-location.webp"
-  className="max-w-[480px]"
+  alt="Device menu in Device Hub with the Location submenu open."
+  src="/static/images/sdk/location/device-hub-location.webp"
+  className="max-w-[640px]"
 />
 
 ## API

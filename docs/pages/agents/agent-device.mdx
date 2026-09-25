@@ -4,7 +4,7 @@ sidebar_title: agent-device
 description: Use agent-device to let your AI coding agent verify, debug, profile, and test a running Expo app across local and remote devices.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
@@ -160,14 +160,14 @@ After setup, describe the outcome and evidence you want. For example:
   title="Expo MCP Server"
   description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and EAS."
   href="/mcp/#installation-and-setup"
-  Icon={BookOpen02Icon}
+  Icon={Star06Icon}
 />
 
 <BoxLink
   title="Expo Skills"
   description="Install the plugin that teaches agents known-good Expo patterns."
   href="/skills/#install-expo-skills"
-  Icon={BookOpen02Icon}
+  Icon={Star06Icon}
 />
 
 For automated pull request testing, start with Callstack's [`agent-device` EAS Workflow template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml). It shows how to run an AI QA agent against an Expo app and retain reviewable artifacts.
@@ -197,4 +197,5 @@ MCP provides structured tools for the same device workflows. Keep the CLI availa
 - React Native component inspection and React profiling require a development server and a compatible React DevTools connection, so keep it running. In Expo Go, native CPU, memory, and trace profiling targets the Expo Go host process rather than an app-specific native binary, so use a development build to profile your native code.
 - Logging is off by default. Ask the agent to open a focused log window for a reproduction instead of collecting an unbounded device log.
 - Physical device automation requires platform-specific pairing, signing, permissions, and trust setup. Start with a simulator or emulator, then follow the [installation guide](https://oss.callstack.com/agent-device/docs/installation) for physical devices.
+- In an [EAS Simulator](/preview/eas-simulator/introduction/) Android session, boot the emulator headless. Set `AGENT_DEVICE_HEADLESS=1`, or pass `--headless` to `agent-device boot`. A windowed emulator does not start there.
 - Run `agent-device help react-native`, `agent-device help debugging`, or `agent-device help dogfood` when a task needs deeper, version-matched guidance.

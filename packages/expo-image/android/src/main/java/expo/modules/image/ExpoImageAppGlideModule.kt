@@ -6,6 +6,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.GlideBuilder
 import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.load.engine.cache.InternalCacheDiskCacheFactory
 import com.bumptech.glide.load.resource.gif.ByteBufferGifDecoder
 import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.bumptech.glide.load.resource.gif.StreamGifDecoder
@@ -21,6 +22,10 @@ import java.nio.ByteBuffer
 class ExpoImageAppGlideModule : AppGlideModule() {
   override fun applyOptions(context: Context, builder: GlideBuilder) {
     super.applyOptions(context, builder)
+
+    builder.setDiskCache(
+      ExpoImageDiskCache.Factory(InternalCacheDiskCacheFactory(context))
+    )
 
     builder.setLogLevel(
       if (BuildConfig.ALLOW_GLIDE_LOGS) {

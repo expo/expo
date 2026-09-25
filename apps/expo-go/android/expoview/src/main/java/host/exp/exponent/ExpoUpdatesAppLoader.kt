@@ -8,7 +8,7 @@ import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.easclient.EASClientID
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
-import expo.modules.updates.db.DatabaseHolder
+import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
@@ -30,6 +30,7 @@ import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConfig
+import host.exp.exponent.services.SessionRepository
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.HermesBundleUtils
 import kotlinx.coroutines.CoroutineScope
@@ -70,7 +71,10 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
   @Inject
-  lateinit var databaseHolder: DatabaseHolder
+  lateinit var sessionRepository: SessionRepository
+
+  @Inject
+  lateinit var database: UpdatesDatabase
 
   @Inject
   lateinit var kernel: Kernel
@@ -173,7 +177,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       EASClientID(context).uuid.toString(),
       configuration,
       logger,
-      databaseHolder.database
+      database
     )
     loaderScope.launch {
       startLoaderTask(configuration, fileDownloader, directory, selectionPolicy, context, logger)
@@ -192,7 +196,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     LoaderTask(
       context,
       configuration,
-      databaseHolder,
+      database,
       directory,
       fileDownloader,
       selectionPolicy,
@@ -333,17 +337,19 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     shouldShowAppLoaderStatus = !manifest.isDevelopmentSilentLaunch()
   }
 
+  private fun requestHeaders(manifestUrl: Uri): Map<String, String?> =
+    requestHeaders(manifestUrl, ExpoViewKernel.instance.versionName)
+
   // XDL expects the full "exponent-" header names
-  private fun requestHeaders(manifestUrl: Uri): Map<String, String?> {
+  internal fun requestHeaders(manifestUrl: Uri, versionName: String?): Map<String, String?> {
     val headers = mutableMapOf<String, String>()
     headers["Expo-Updates-Environment"] = clientEnvironment
     headers["Expo-Client-Environment"] = clientEnvironment
     headers.putAll(getForwardedHeaders(manifestUrl))
-    val versionName = ExpoViewKernel.instance.versionName
     if (versionName != null) {
       headers["Exponent-Version"] = versionName
     }
-    val sessionSecret = exponentSharedPreferences.sessionSecret
+    val sessionSecret = sessionRepository.getSessionSecret()
     if (sessionSecret != null) {
       headers["Expo-Session"] = sessionSecret
     }

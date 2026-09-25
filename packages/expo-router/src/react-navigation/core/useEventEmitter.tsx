@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 
+import useLatestCallback from '../../utils/useLatestCallback';
 import type { EventArg, EventConsumer, EventEmitter } from './types';
 
 export type NavigationEventEmitter<T extends Record<string, any>> = EventEmitter<T> & {
@@ -15,11 +16,7 @@ type Listeners = Set<(e: any) => void>;
 export function useEventEmitter<T extends Record<string, any>>(
   listen?: (e: any) => void
 ): NavigationEventEmitter<T> {
-  const listenRef = React.useRef(listen);
-
-  React.useEffect(() => {
-    listenRef.current = listen;
-  });
+  const latestListen = useLatestCallback((e: any) => listen?.(e));
 
   const listeners = React.useRef<Record<string, Record<string, Listeners>>>(Object.create(null));
 
@@ -131,13 +128,13 @@ export function useEventEmitter<T extends Record<string, any>>(
         });
       }
 
-      listenRef.current?.(event);
+      latestListen(event);
 
       callbacks?.forEach((cb) => cb(event));
 
       return event as any;
     },
-    []
+    [latestListen]
   );
 
   return React.useMemo(() => ({ create, emit }), [create, emit]);

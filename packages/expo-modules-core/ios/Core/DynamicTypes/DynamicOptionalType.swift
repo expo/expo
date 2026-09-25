@@ -44,6 +44,20 @@ internal struct DynamicOptionalType: AnyDynamicType {
     return try wrappedType.castToJS(value, appContext: appContext)
   }
 
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if Optional.isNil(value) || value is NSNull {
+      return .null
+    }
+    return try wrappedType.convertToJS(value, appContext: appContext)
+  }
+
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    if Optional.isNil(value) || value is NSNull {
+      return .null
+    }
+    return try wrappedType.convertToJS(value, appContext: appContext, in: runtime)
+  }
+
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     // Delegate the conversion to the wrapped type
     return try wrappedType.convertResult(result, appContext: appContext)

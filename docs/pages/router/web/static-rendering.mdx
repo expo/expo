@@ -49,6 +49,8 @@ Start the development server:
 
 ## Production
 
+In SDK 58 and later, you can combine static rendering with [API routes](/router/web/api-routes/#create-an-api-route) by setting `apiRoutes: true` in the `expo-router` config plugin. This exports prerendered HTML and API routes to **dist/server**, with client assets in **dist/client**, and requires a deployed server.
+
 To bundle your static website for production, run the export command:
 
 <Terminal
@@ -61,7 +63,7 @@ To bundle your static website for production, run the export command:
 />
 
 This will create a **dist** directory with your statically rendered website. If you have files in a local **public** directory, these will be copied over as well.
-You can test the production build locally by running the following command and opening the linked URL in your browser:
+When API routes are enabled, use `npx expo serve` to test the production build locally. Otherwise, run the following command and open the linked URL in your browser:
 
 <Terminal
   cmd={{
@@ -72,7 +74,7 @@ You can test the production build locally by running the following command and o
   }}
 />
 
-This project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (for example, **src/app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
+With API routes disabled, this project can be deployed to almost every hosting service. Note that this is not a single-page application, nor does it contain a custom server API. This means dynamic routes (for example, **src/app/[id].tsx**) will not arbitrarily work. You may need to build a serverless function to handle dynamic routes.
 
 ## Dynamic Routes
 
@@ -324,7 +326,7 @@ This generates the following static HTML:
 
 There is no prescriptive way to add a custom server. You can use any server you want. However, you will need to handle dynamic routes yourself. You can use the `generateStaticParams` function to generate static HTML files for known routes.
 
-In the future, there will be a server API, and a new `web.output` mode which will generate a project that will (among other things) support dynamic routes.
+In SDK 58 and later, set `apiRoutes: true` in the `expo-router` config plugin to [add API routes](/router/web/api-routes/#create-an-api-route) alongside your static HTML. To render pages at request time, use [server rendering](/router/web/server-rendering).
 
 ## Server-side rendering
 

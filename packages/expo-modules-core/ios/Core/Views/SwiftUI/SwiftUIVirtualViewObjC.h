@@ -12,6 +12,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SwiftUIVirtualViewObjC : NSObject
 
 @property (nonatomic) NSInteger tag;
+
+#if TARGET_OS_OSX
+//  react-native-macos uses `reactTag` instead because `NSView.tag` is read-only
+@property (nonatomic, copy, nullable) NSNumber *reactTag;
+#endif
+
 @property (nonatomic, copy, nullable) NSString *componentName;
 
 /**

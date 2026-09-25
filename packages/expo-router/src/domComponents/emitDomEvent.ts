@@ -1,4 +1,4 @@
-import type { LinkToOptions } from '../global-state/routing';
+import type { LinkToOptions, TransitionOptions } from '../global-state/types';
 import {
   ROUTER_SET_PARAMS_TYPE,
   ROUTER_DISMISS_TYPE,
@@ -22,16 +22,16 @@ export function emitDomSetParams(
   return emitDomEvent(ROUTER_SET_PARAMS_TYPE, { params });
 }
 
-export function emitDomDismiss(count?: number) {
-  return emitDomEvent(ROUTER_DISMISS_TYPE, { count });
+export function emitDomDismiss(count?: number, options?: TransitionOptions) {
+  return emitDomEvent(ROUTER_DISMISS_TYPE, { count, options });
 }
 
-export function emitDomGoBack() {
-  return emitDomEvent(ROUTER_BACK_TYPE);
+export function emitDomGoBack(options?: TransitionOptions) {
+  return emitDomEvent(ROUTER_BACK_TYPE, { options });
 }
 
-export function emitDomDismissAll() {
-  return emitDomEvent(ROUTER_DISMISS_ALL_TYPE);
+export function emitDomDismissAll(options?: TransitionOptions) {
+  return emitDomEvent(ROUTER_DISMISS_ALL_TYPE, { options });
 }
 
 export function emitDomLinkEvent(href: string, options: LinkToOptions) {

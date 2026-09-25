@@ -284,12 +284,15 @@ export const general = [
       makePage('router/advanced/web-modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/protected.mdx'),
+      makePage('router/advanced/prevent-screen-removal.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
+      makePage('router/advanced/navigation-transitions.mdx'),
+      makePage('router/advanced/react-activity.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
       makePage('router/advanced/custom-navigators.mdx'),
       makePage('router/advanced/stack-toolbar.mdx'),
@@ -322,6 +325,7 @@ export const general = [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
       makePage('router/migrate/sdk-55-to-56.mdx'),
+      makePage('router/migrate/sdk-57-to-58.mdx'),
     ]),
   ]),
   makeSection(
@@ -425,17 +429,13 @@ export const general = [
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/controlled-components.mdx'),
       ]),
-      makeSection('Expo UI', [
-        makePage('guides/expo-ui-swift-ui/index.mdx'),
-        makePage('guides/expo-ui-swift-ui/extending.mdx'),
-        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
-      ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
         makePage('troubleshooting/application-has-not-been-registered.mdx'),
         makePage('troubleshooting/clear-cache-macos-linux.mdx'),
         makePage('troubleshooting/clear-cache-windows.mdx'),
         makePage('troubleshooting/expo-go-version-mismatch.mdx'),
+        makePage('troubleshooting/expo-go-sign-in-required.mdx'),
         makePage('troubleshooting/react-native-version-mismatch.mdx'),
         makePage('troubleshooting/proxies.mdx'),
       ]),
@@ -614,21 +614,6 @@ export const eas = [
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
     ]),
   ]),
-  makeSection('EAS Metadata', [
-    makePage('eas/metadata/index.mdx'),
-    makePage('eas/metadata/getting-started.mdx'),
-    makeGroup(
-      'Reference',
-      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
-      { expanded: false }
-    ),
-  ]),
-  makeSection('EAS Insights', [
-    makePage('eas-insights/introduction.mdx'),
-    makePage('eas-insights/app-usage.mdx'),
-    makePage('eas-insights/workflows.mdx'),
-    makePage('eas-insights/maestro.mdx'),
-  ]),
   makeSection('EAS Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
@@ -646,8 +631,25 @@ export const eas = [
     ]),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
+      makePage('eas/observe/reference/client-id.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
+  ]),
+  makeSection('EAS Metadata', [
+    makePage('eas/metadata/index.mdx'),
+    makePage('eas/metadata/getting-started.mdx'),
+    makeGroup(
+      'Reference',
+      [makePage('eas/metadata/config.mdx'), makePage('eas/metadata/schema.mdx')],
+      { expanded: false }
+    ),
+  ]),
+  makeSection('EAS Insights', [
+    makePage('eas-insights/introduction.mdx'),
+    makePage('eas-insights/app-usage.mdx'),
+    makePage('eas-insights/workflows.mdx'),
+    makePage('eas-insights/maestro.mdx'),
+    makePage('eas-insights/eas-cli.mdx'),
   ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
@@ -753,7 +755,9 @@ const preview = [
         makePage('preview/eas-simulator/introduction.mdx'),
         makePage('preview/eas-simulator/get-started.mdx'),
         makePage('preview/eas-simulator/run-and-control.mdx'),
+        makePage('preview/eas-simulator/create-session-links.mdx'),
         makePage('preview/eas-simulator/cli-reference.mdx'),
+        makePage('preview/eas-simulator/rest-api.mdx'),
         makePage('preview/eas-simulator/troubleshooting.mdx'),
       ],
       { expanded: true }
@@ -915,6 +919,7 @@ function makePage(file) {
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,
+    sidebarOrder: data.sidebar_order ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {
@@ -944,18 +949,7 @@ function pagesFromDir(dir) {
     .filter(entity => entity.isDirectory())
     .map(folder => {
       const folderPages = pagesFromDir(path.join(dir, folder.name));
-      const sortedFolderPages = folderPages.sort((a, b) => {
-        // prioritize index files first
-        if (a.isIndex && !b.isIndex) {
-          return -1;
-        }
-        if (!a.isIndex && b.isIndex) {
-          return 1;
-        }
-
-        // otherwise sort by name (title)
-        return a.name.localeCompare(b.name);
-      });
+      const sortedFolderPages = folderPages.sort(compareSidebarEntries);
 
       if (folderPages.length === 0) {
         return null;
@@ -989,25 +983,29 @@ function pagesFromDir(dir) {
     })
     .filter(Boolean);
 
-  return [...files, ...folders].sort((a, b) => {
-    // prioritize index files first
-    if (a.isIndex && !b.isIndex) {
-      return -1;
-    }
-    if (!a.isIndex && b.isIndex) {
-      return 1;
-    }
+  return [...files, ...folders].sort(compareSidebarEntries);
+}
 
-    // an explicit `order` in metadata.json wins; anything without one stays alphabetical
-    if (a.sidebarOrder !== undefined || b.sidebarOrder !== undefined) {
-      return (
-        (a.sidebarOrder ?? Number.MAX_SAFE_INTEGER) - (b.sidebarOrder ?? Number.MAX_SAFE_INTEGER)
-      );
-    }
+/**
+ * Orders one level of the sidebar: the index page first, then by explicit order, then
+ * alphabetically by sidebar title.
+ *
+ * The order is a weight, from a folder's `metadata.json` or a page's `sidebar_order`
+ * frontmatter, and defaults to 0. A negative weight sorts above the alphabetical run and
+ * a positive one below it, so a page can be pinned to either end of its group.
+ */
+function compareSidebarEntries(a, b) {
+  if (a.isIndex !== b.isIndex) {
+    return a.isIndex ? -1 : 1;
+  }
 
-    // otherwise sort by name (title)
-    return a.name.localeCompare(b.name);
-  });
+  const aOrder = a.sidebarOrder ?? 0;
+  const bOrder = b.sidebarOrder ?? 0;
+  if (aOrder !== bOrder) {
+    return aOrder - bOrder;
+  }
+
+  return a.name.localeCompare(b.name);
 }
 
 /**

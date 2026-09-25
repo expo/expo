@@ -46,6 +46,8 @@ import type { NativeStackNavigationEventMap } from './react-navigation/native-st
 import type { UnknownOutputParams } from './types';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
+import { useActivityThreshold } from './views/NavigationActivityContext';
+import { NavigationAwareActivity } from './views/NavigationAwareActivity';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
@@ -79,6 +81,12 @@ export type ScreenProps<
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
   dangerouslySingular?: SingularOptions;
+
+  /**
+   * Overrides React Activity behavior inherited from the navigator. For stack navigators, a number
+   * specifies how many screens must be above this route before its content is hidden.
+   */
+  activityEnabled?: TState extends { type?: 'stack' } ? boolean | number : boolean;
 };
 
 export type SingularOptions =
@@ -106,7 +114,7 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular, activityEnabled }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -144,7 +152,7 @@ function getSortedChildren<
 
         return {
           route: match,
-          props: { listeners, options, getId },
+          props: { listeners, options, getId, activityEnabled },
           routeSource: 'layout' as const,
         };
       }
@@ -327,6 +335,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
     const isRouteType = value.type === 'route';
@@ -393,6 +402,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         segment={value.route}
       />
     );
+    const screenContent =
+      ScreenErrorBoundary && isRouteType ? (
+        <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+      ) : (
+        screenComponent
+      );
 
     return (
       <Route node={value} params={route?.params}>
@@ -409,15 +424,20 @@ export function getQualifiedRouteComponent(value: RouteNode) {
             <React.Suspense
               name={route ? `Route(${route.name})` : undefined}
               fallback={
+                // `ResolvedSuspenseFallback` only selects between statically defined
+                // components; nothing is created during render.
+                // oxlint-disable-next-line react/static-components
                 <ResolvedSuspenseFallback
                   route={value.contextKey}
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {ScreenErrorBoundary && isRouteType ? (
-                <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+              {isRouteType && typeof activityThreshold === 'number' ? (
+                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
+                  {screenContent}
+                </NavigationAwareActivity>
               ) : (
-                screenComponent
+                screenContent
               )}
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>
@@ -443,14 +463,13 @@ function AnalyticsListeners({
   };
   screenId: string;
 }) {
-  const isFirstRenderRef = React.useRef(true);
+  const hasEmittedPagePreloadedRef = React.useRef(false);
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
   const isFocused = navigation.isFocused();
 
-  if (isFirstRenderRef.current) {
-    isFirstRenderRef.current = false;
+  const emitPagePreloaded = React.useEffectEvent(() => {
     if (routeInfo && !isFocused) {
       unstable_navigationEvents.emit('pagePreloaded', {
         pathname: routeInfo.pathname,
@@ -459,7 +478,15 @@ function AnalyticsListeners({
         screenId,
       });
     }
-  }
+  });
+
+  useEffect(() => {
+    // We only one to emit once
+    if (!hasEmittedPagePreloadedRef.current) {
+      hasEmittedPagePreloadedRef.current = true;
+      emitPagePreloaded();
+    }
+  }, []);
 
   useEffect(() => {
     if (routeInfo) {
@@ -524,17 +551,20 @@ function AnalyticsListeners({
   return null;
 }
 
-export function screenOptionsFactory(
+export function screenOptionsFactory<TOptions extends object = Record<string, any>>(
   route: RouteNode,
-  options?: ScreenProps['options'],
+  options?: ScreenProps<TOptions>['options'],
   isGuarded?: boolean
-): ScreenProps['options'] {
+): ScreenProps<TOptions>['options'] {
   return (args) => {
     // Only eager load generated components
     const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-    const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+    // Route modules are untyped, while callers define the option shape for their navigator.
+    const staticResult = (
+      typeof staticOptions === 'function' ? staticOptions(args) : staticOptions
+    ) as TOptions | null | undefined;
     const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-    const output = {
+    const output: Partial<TOptions> & { hidden?: boolean } = {
       ...staticResult,
       ...dynamicResult,
     };
@@ -546,7 +576,8 @@ export function screenOptionsFactory(
       output.hidden = true;
     }
 
-    return output;
+    // The merged object may contain only part of `TOptions`.
+    return output as TOptions;
   };
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "57.0.8",
+  "version": "58.0.7",
   "description": "The core of Expo Modules architecture",
   "keywords": [
     "expo",
@@ -65,25 +65,29 @@
   },
   "scripts": {
     "build": "expo-build src",
+    "precompile-ios": "et prebuild-package-for-publish",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest",
+    "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/expo-modules-macros-plugin": "0.8.0",
-    "expo-modules-jsi": "workspace:~56.0.7",
+    "@expo/expo-modules-macros-plugin": "0.12.0",
+    "expo-modules-jsi": "workspace:~",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.3.0",
     "@types/invariant": "^2.2.33",
-    "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/react": "~19.3.0",
+    "@types/react-dom": "^19.1.7",
+    "expo-module-scripts": "workspace:*",
+    "react-dom": "19.3.0"
   },
   "peerDependencies": {
     "react": "*",

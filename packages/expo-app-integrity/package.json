@@ -1,6 +1,6 @@
 {
   "name": "@expo/app-integrity",
-  "version": "57.0.1",
+  "version": "58.0.0",
   "description": "A native module that helps assert app integrity on mobile platforms",
   "keywords": [
     "android",

@@ -1,19 +1,47 @@
 import { isRunningInExpoGo } from 'expo';
 
-import { AppIntentsScreens } from '../screens/AppIntents/AppIntentsScreen';
-import { AudioScreens } from '../screens/Audio/AudioScreen';
-import { BlobScreens } from '../screens/Blob/BlobScreen';
-import { CalendarNextScreens } from '../screens/Calendar@Next/CalendarNextScreens';
-import { CalendarsScreens } from '../screens/CalendarsScreen';
 import { apiScreensToListElements } from '../screens/ComponentListScreen';
-import { ContactsScreens } from '../screens/Contacts/ContactsScreen';
-import { ContactsNextScreens } from '../screens/Contacts@Next/ContactsNextScreen';
-import { CryptoScreens } from '../screens/Crypto/CryptoScreen';
-import { MediaLibraryScreens } from '../screens/MediaLibrary@Next/MediaLibraryScreens';
-import { ModulesCoreScreens } from '../screens/ModulesCore/ModulesCoreScreen';
-import { WorkletsScreens } from '../screens/Worklets/WorkletsScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
-import { optionalRequire } from './routeBuilder';
+import { optionalRequire, optionalScreens } from './routeBuilder';
+
+// Screen groups are loaded lazily so a group whose module fails to load, for example because it
+// imports a native module the current platform does not have, only drops itself from the list.
+const AIScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/AI/AIScreen').AIScreens
+);
+const AppIntentsScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/AppIntents/AppIntentsScreen').AppIntentsScreens
+);
+const AudioScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Audio/AudioScreen').AudioScreens
+);
+const BlobScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Blob/BlobScreen').BlobScreens
+);
+const CalendarNextScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Calendar@Next/CalendarNextScreens').CalendarNextScreens
+);
+const CalendarsScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/CalendarsScreen').CalendarsScreens
+);
+const ContactsScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Contacts/ContactsScreen').ContactsScreens
+);
+const ContactsNextScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Contacts@Next/ContactsNextScreen').ContactsNextScreens
+);
+const CryptoScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Crypto/CryptoScreen').CryptoScreens
+);
+const MediaLibraryScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/MediaLibrary@Next/MediaLibraryScreens').MediaLibraryScreens
+);
+const ModulesCoreScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/ModulesCore/ModulesCoreScreen').ModulesCoreScreens
+);
+const WorkletsScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/Worklets/WorkletsScreen').WorkletsScreens
+);
 
 export const ScreensList: ScreenConfig[] = [
   {
@@ -83,6 +111,17 @@ export const ScreensList: ScreenConfig[] = [
           },
           name: 'AgeRange',
           options: { title: 'Age Range' },
+        },
+      ]),
+  ...(isRunningInExpoGo()
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/AI/AIScreen'));
+          },
+          name: 'AI',
+          options: { title: 'AI' },
         },
       ]),
   {
@@ -420,6 +459,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ScreenCaptureAdvancedScreen'));
+    },
+    name: 'ScreenCaptureAdvanced',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SensorScreen'));
     },
     name: 'Sensor',
@@ -510,6 +555,7 @@ export const ScreensList: ScreenConfig[] = [
 
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
+  ...(isRunningInExpoGo() ? [] : AIScreens),
   ...AppIntentsScreens,
   ...ModulesCoreScreens,
   ...MediaLibraryScreens,

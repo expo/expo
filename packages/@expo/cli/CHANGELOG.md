@@ -4,6 +4,79 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+### 🛠 Breaking changes
+
+- `web.output: 'server'` now renders HTML pages on each request instead of prerendering them during export. ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+- Remove the fallback resolver for packages importing themselves by name. Metro now resolves self-references natively, but, like Node.js, only for packages that declare `exports`. ([#50238](https://github.com/expo/expo/pull/50238) by [@robhogan](https://github.com/robhogan))
+
+### 🎉 New features
+
+- Enable data loaders by default for static and server output ([#50118](https://github.com/expo/expo/pull/50118) by [@hassankhan](https://github.com/hassankhan))
+- Enable server rendering by default for `web.output: "server"` ([#50120](https://github.com/expo/expo/pull/50120) by [@hassankhan](https://github.com/hassankhan))
+- Add the `apiRoutes` config plugin option to support API routes with static rendering. ([#50148](https://github.com/expo/expo/pull/50148) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Fix cache pollution in production by inlined environment variable values with a vary-cache approach ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Add `VaryingCacheStore` and embed `expoCacheVary` fingerprints into transform results so a cache output never holds on to stale values inline ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-15
+
+### 🛠 Breaking changes
+
+- Bundle source maps served by `expo start` and written by `expo export` are now [index maps](https://tc39.es/ecma426/#sec-index-source-map), as Metro now always emits them. ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+### 🎉 New features
+
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Remove Expo Router compatibility checks for `@react-navigation` packages. ([#50176](https://github.com/expo/expo/pull/50176) by [@Ubax](https://github.com/Ubax))
+- Fix app names in prebuild templates: derive project identifiers from the raw name in XML and plists ('A & B' gave 'AampB' in plists but 'AB' elsewhere), and escape display names for Android resources and plists. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- Remove `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD`. Uninstall `expo-symbols` to exclude Material Symbols support from Android apps. ([#49738](https://github.com/expo/expo/pull/49738) by [@Ubax](https://github.com/Ubax))
 - Remove the `EXPO_UNSTABLE_WEB_MODAL` environment variable and its Expo Router module alias. ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
 - Use the Expo command mode to set `NODE_ENV` and load **.env** files. ([#48741](https://github.com/expo/expo/pull/48741) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Make browser-based login the default for `expo login`. Use `--no-browser` (or pass `--username`/`--password`) for username/password login. Non-interactive environments such as CI continue to use username/password login. ([#46832](https://github.com/expo/expo/pull/46832) by [@byronkarlen](https://github.com/byronkarlen))
@@ -24,9 +97,11 @@
 
 ### 🐛 Bug fixes
 
+- Stop writing DOM component source maps into the app binary during `expo export:embed`, so Android release builds no longer ship `www.bundle` source maps with the original app source. ([#49480](https://github.com/expo/expo/pull/49480) by [@expo-bot](https://github.com/expo-bot))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - Show the Xcode build log path when `run:ios` fails. ([#48624](https://github.com/expo/expo/pull/48624) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fix iOS asset catalog scale-to-file pairing for assets with non-standard scales. ([#48525](https://github.com/expo/expo/pull/48525) by [@janicduplessis](https://github.com/janicduplessis))
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
 - Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
@@ -38,6 +113,7 @@
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 - Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
 - Fix resolution of ESLint failing in `expo lint` after prerequisites check installs it ([#46223](https://github.com/expo/expo/pull/46223) by [@claritystorm](https://github.com/claritystorm))
+- Make Android tooling (avd and adb) handling safer, more reliable, and cancellable ([#49258](https://github.com/expo/expo/pull/49258) by [@kitten](https://github.com/kitten))
 - Serve one virtual Metro asset registry to every consumer on React Native 0.87 — Metro's generated asset modules, `react-native/asset-registry` and legacy `@react-native/assets-registry` imports, and React Native core's internal registry imports — so Metro-registered assets and React Native's `<Image>` share one registry instance. ([#49444](https://github.com/expo/expo/pull/49444) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Depend on `@react-native/js-polyfills` directly for the web polyfills instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
@@ -61,6 +137,10 @@
 - Prewarm Metro transform workers while waiting for the first development bundle request ([#48836](https://github.com/expo/expo/pull/48836) by [@kitten](https://github.com/kitten))
 - Discover `.ts`, `.mts`, and `.cts` ESLint configs as well when checking for prerequisites for ESLint ([#46225](https://github.com/expo/expo/pull/46225) by [@claritystorm](https://github.com/claritystorm))
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
+- [Internal] Align local annotations in the Metro integration with Metro's own types. ([#49669](https://github.com/expo/expo/pull/49669) by [@robhogan](https://github.com/robhogan))
+- [Internal] Import Expo's Metro type extensions from `@expo/metro-config` instead of relying on global type augmentations. ([#49670](https://github.com/expo/expo/pull/49670) by [@robhogan](https://github.com/robhogan))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
+- Remove the unused `confirm_account` query param from the browser login URL. ([#49891](https://github.com/expo/expo/pull/49891) by [@byronkarlen](https://github.com/byronkarlen))
 
 ## 57.0.11 - 2026-07-29
 

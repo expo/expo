@@ -257,47 +257,6 @@ class DispatchUtilsClassifyResponseTest {
   }
 }
 
-class DispatchUtilsShouldRemovePendingTest {
-  // On `Success`, the queue moves past the dispatched batch so the next round reads only
-  // newer rows. Unchanged from the pre-OTLP behavior; locked here for the table.
-  @Test
-  fun `Success removes pending IDs`() {
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.Success))
-  }
-
-  // Multi-record payloads are retried in smaller chunks before this check, so a 413 here
-  // represents a single oversized record that must not wedge the queue.
-  @Test
-  fun `PayloadTooLarge removes pending IDs`() {
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.PayloadTooLarge))
-  }
-
-  // `Retryable` is the "leave them alone" case — the next dispatch round picks the same
-  // rows up again. This is what keeps an in-flight outage from losing telemetry.
-  @Test
-  fun `Retryable keeps pending IDs`() {
-    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure()))
-    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure(retryAfterMs = 30_000L)))
-  }
-
-  // `PartialSuccess` removes pending IDs like `Success` does: the bytes landed on the
-  // server (a subset was rejected server-side, but the batch as a whole was accepted), so
-  // re-sending the same rows would just trip the same rejection.
-  @Test
-  fun `PartialSuccess removes pending IDs`() {
-    val partial = OTPartialSuccess(rejectedDataPoints = 1, errorMessage = "x")
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.PartialSuccess(partial)))
-  }
-
-  // The acceptance-criterion behavior: a non-retryable response (e.g. 400, 403) drops the
-  // offending batch. Without this, the next round would re-send the same rows and the
-  // server would refuse them again, wedging the queue indefinitely.
-  @Test
-  fun `NonRetryable removes pending IDs`() {
-    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.NonRetryableFailure("HTTP 400")))
-  }
-}
-
 class DispatchUtilsParseRetryAfterTest {
   // Test-local bounds passed explicitly to every call so the suite is independent of the
   // production constants. A separate test verifies the default-argument path.

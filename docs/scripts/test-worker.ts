@@ -1,13 +1,17 @@
 /* oxlint-disable no-console */
 import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
 const PORT = 8788;
 const BASE_URL = `http://localhost:${PORT}`;
 
-const TEST_DIR = '.worker-test';
+const TEST_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-docs-worker-test-'));
 
 let wranglerProcess: ChildProcess | null = null;
+let workerOutput = '';
+const NATIVE_TABS = '/versions/latest/sdk/router/native-tabs/';
 
 function waitForReady(process: ChildProcess, timeoutMs = 30000): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -53,7 +57,6 @@ async function cleanupAsync(): Promise<void> {
 function setupTestDirectory(): void {
   console.log('\n--- Setting up test directory ---');
 
-  fs.mkdirSync(TEST_DIR, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/test-page`, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/html-only-page`, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/bare/upgrade/52-to-57`, { recursive: true });
@@ -61,12 +64,65 @@ function setupTestDirectory(): void {
   // Copy worker files, including the real _redirects: its /*.md wildcard
   // rewrite shapes how .md URLs resolve, so tests must run against it
   const routesContent = fs.readFileSync('public/_routes.json', 'utf8');
-  const workerContent = fs.readFileSync('public/_worker.js', 'utf8');
+  const workerContent = `
+import worker from ${JSON.stringify(path.resolve('public/_worker.js'))};
+
+const AI = {
+  gateway(id) {
+    return {
+      async run({ provider, endpoint, query: { state, questions } }, { signal }) {
+        if (provider !== 'workers-ai' || endpoint !== 'run/typesafe/jev' || id !== 'default' || !(signal instanceof AbortSignal)) {
+          throw new Error('Unexpected AI Gateway request');
+        }
+        signal.throwIfAborted();
+        const choice = ['/router/basics/tabs/', '/router/layouts/tabs/'].includes(state.path)
+          ? ${JSON.stringify(NATIVE_TABS)}
+          : 'none_of_the_above';
+        return Response.json({
+          state: 'Completed',
+          result: {
+            answers: Object.fromEntries(Object.entries(questions).map(([id, question]) => [id, {
+              type: 'choice',
+              choice,
+              confidence: 0.95,
+              probabilities: Object.fromEntries(Object.keys(question.criteria).map(option => [
+                option, option === choice ? 1 : 0,
+              ])),
+            }])),
+          },
+        });
+      },
+    };
+  },
+};
+export default {
+  fetch(request, env) {
+    return worker.fetch(request, { ...env, AI });
+  },
+};
+`;
   const redirectsContent = fs.readFileSync('public/_redirects', 'utf8');
 
   fs.writeFileSync(`${TEST_DIR}/_routes.json`, routesContent);
   fs.writeFileSync(`${TEST_DIR}/_worker.js`, workerContent);
   fs.writeFileSync(`${TEST_DIR}/_redirects`, redirectsContent);
+  fs.copyFileSync('public/_headers', `${TEST_DIR}/_headers`);
+  // The test configuration has no AI binding, so tests never make billable requests.
+  fs.writeFileSync(
+    `${TEST_DIR}/wrangler.toml`,
+    'name = "docs-worker-test"\ncompatibility_date = "2026-02-07"\npages_build_output_dir = "."\n'
+  );
+  fs.writeFileSync(`${TEST_DIR}/404.html`, '<html><body>Page not found</body></html>');
+  fs.writeFileSync(
+    `${TEST_DIR}/_url-recovery.json`,
+    JSON.stringify([
+      { path: NATIVE_TABS, title: 'Router Native tabs', description: 'Native tab layouts' },
+      { path: '/html-only-page/', title: 'HTML only', description: '' },
+    ])
+  );
+  fs.mkdirSync(`${TEST_DIR}${NATIVE_TABS}`, { recursive: true });
+  fs.writeFileSync(`${TEST_DIR}${NATIVE_TABS}index.html`, '<html><body>Native tabs</body></html>');
+  fs.writeFileSync(`${TEST_DIR}${NATIVE_TABS}index.md`, '# Native tabs');
   fs.writeFileSync(`${TEST_DIR}/index.html`, '<html><body><h1>Test Page</h1></body></html>');
   fs.writeFileSync(
     `${TEST_DIR}/test-page/index.html`,
@@ -95,11 +151,18 @@ function setupTestDirectory(): void {
 async function startWranglerAsync(): Promise<void> {
   console.log('\n--- Starting wrangler pages dev ---');
 
-  wranglerProcess = spawn('wrangler', ['pages', 'dev', TEST_DIR, '--port', String(PORT)], {
+  wranglerProcess = spawn('wrangler', ['pages', 'dev', '--port', String(PORT)], {
+    cwd: TEST_DIR,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
 
   // Wait for "Ready on" message in stdout/stderr
+  wranglerProcess.stdout?.on('data', chunk => {
+    workerOutput += chunk;
+  });
+  wranglerProcess.stderr?.on('data', chunk => {
+    workerOutput += chunk;
+  });
   await waitForReady(wranglerProcess);
 
   console.log('✓ Wrangler started');
@@ -116,7 +179,7 @@ async function testHttpResponseAsync(): Promise<void> {
 }
 
 async function testDirectMarkdownAccessAsync(): Promise<void> {
-  console.log('\n--- Testing direct .md file access (bypasses worker) ---');
+  console.log('\n--- Testing direct .md file access ---');
 
   const response = await fetch(`${BASE_URL}/test-page/index.md`);
 
@@ -128,6 +191,12 @@ async function testDirectMarkdownAccessAsync(): Promise<void> {
 
   if (!body.includes('Test Markdown Content')) {
     throw new Error('Direct .md request did not return markdown content');
+  }
+  if (
+    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt"' ||
+    response.headers.get('X-Llms-Txt') !== '/llms.txt'
+  ) {
+    throw new Error('Direct .md response lost the asset discovery headers');
   }
   console.log('✓ Direct .md file request serves content correctly');
 }
@@ -143,6 +212,13 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
     throw new Error('Expected HTML content for normal request, got: ' + htmlBody.slice(0, 200));
   }
   console.log('✓ Normal request serves HTML');
+
+  if (!varyTokens(htmlResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the HTML variant, got: ${htmlResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ HTML variant of a negotiated page returns Vary: Accept');
 
   // With Accept: text/markdown, should serve markdown
   const mdResponse = await fetch(`${BASE_URL}/test-page`, {
@@ -161,6 +237,32 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
     throw new Error(`Expected Content-Type text/markdown, got: ${mdContentType}`);
   }
   console.log('✓ Accept: text/markdown request returns correct Content-Type');
+
+  if (!varyTokens(mdResponse).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept, got: ${mdResponse.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request returns Vary: Accept');
+
+  const etag = mdResponse.headers.get('etag');
+  if (!etag) {
+    throw new Error('Expected an ETag for negotiated Markdown');
+  }
+  const conditional = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown', 'If-None-Match': etag },
+  });
+  if (conditional.status !== 304 || (await conditional.text()) !== '') {
+    throw new Error(`Expected an empty HTTP 304 for unchanged Markdown, got ${conditional.status}`);
+  }
+  if (!varyTokens(conditional).includes('accept')) {
+    throw new Error('Expected Vary: Accept on the Markdown 304');
+  }
+  console.log('✓ Conditional Markdown requests preserve HTTP 304 and Vary: Accept');
+}
+
+function varyTokens(response: Response): string[] {
+  return (response.headers.get('vary') ?? '').split(',').map(token => token.trim().toLowerCase());
 }
 
 async function testMarkdownNotFoundAsync(): Promise<void> {
@@ -176,6 +278,28 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
   }
   console.log('✓ Missing .md file returns 404');
 
+  if (!varyTokens(missingMd).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the markdown 404, got: ${missingMd.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+  console.log('✓ Markdown 404 response includes Vary: Accept');
+
+  const missingMdType = missingMd.headers.get('content-type') ?? '';
+
+  if (!missingMdType.includes('text/markdown')) {
+    throw new Error(`Expected markdown Content-Type on the 404, got: ${missingMdType}`);
+  }
+
+  const missingMdBody = await missingMd.text();
+
+  if (!missingMdBody.includes('/llms.txt') || !missingMdBody.includes('/sitemap.xml')) {
+    throw new Error(
+      `Expected recovery links on the markdown 404, got: ${missingMdBody.slice(0, 200)}`
+    );
+  }
+  console.log('✓ Markdown 404 responds with a markdown body and recovery links');
+
   // Nonexistent page should also 404
   const notFound = await fetch(`${BASE_URL}/nonexistent-page`, {
     headers: { Accept: 'text/markdown' },
@@ -185,6 +309,46 @@ async function testMarkdownNotFoundAsync(): Promise<void> {
     throw new Error(`Expected 404 for nonexistent page, got: HTTP ${notFound.status}`);
   }
   console.log('✓ Nonexistent page returns 404');
+}
+
+async function testAcceptQualityValuesAsync(): Promise<void> {
+  console.log('\n--- Testing Accept header q-values ---');
+
+  const htmlPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/html;q=0.9, text/markdown;q=0.1' },
+  });
+  const htmlPreferredBody = await htmlPreferred.text();
+
+  if (!htmlPreferredBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when it carries the higher q, got: ' + htmlPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ HTML with the higher q is served over markdown');
+
+  const markdownRejected = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0, text/html' },
+  });
+  const markdownRejectedBody = await markdownRejected.text();
+
+  if (!markdownRejectedBody.includes('Test Page HTML')) {
+    throw new Error(
+      'Expected HTML when markdown has q=0, got: ' + markdownRejectedBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with q=0 is never served');
+
+  const markdownPreferred = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown;q=0.9, text/html;q=0.1' },
+  });
+  const markdownPreferredBody = await markdownPreferred.text();
+
+  if (!markdownPreferredBody.includes('Test Markdown Content')) {
+    throw new Error(
+      'Expected markdown when it carries the higher q, got: ' + markdownPreferredBody.slice(0, 200)
+    );
+  }
+  console.log('✓ Markdown with the higher q is served');
 }
 
 async function testUpgradePairNegotiationAsync(): Promise<void> {
@@ -249,9 +413,8 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Pair page resolves at the /<slug>.md convention');
 
-  // Known limit: .md paths bypass the worker (excluded in _routes.json) and
-  // _redirects cannot read query strings, so a pair query on the .md page
-  // path serves the default markdown, whose top note points at pair URLs.
+  // A pair query on the .md page path serves the default markdown, whose
+  // top note points at pair URLs.
   const mdPathWithQuery = await fetch(`${BASE_URL}/bare/upgrade.md?fromSdk=52&toSdk=57`);
   const mdPathWithQueryBody = await mdPathWithQuery.text();
 
@@ -287,7 +450,7 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Regular /<slug>.md path serves markdown through the worker');
 
-  // The canonical index.md file path serves directly (bypassing the worker)
+  // The canonical index.md file path also serves markdown through the worker.
   const direct = await fetch(`${BASE_URL}/bare/upgrade/52-to-57/index.md`);
   const directBody = await direct.text();
 
@@ -328,6 +491,19 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
     );
   }
   console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
+
+  const mdRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build`, {
+    headers: { Accept: 'text/markdown' },
+    redirect: 'manual',
+  });
+  const mdLocation = mdRedirect.headers.get('location') ?? '';
+
+  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-eas')) {
+    throw new Error(
+      `Expected the markdown request to pass through the page redirect, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
+    );
+  }
+  console.log('✓ Accept: text/markdown request passes through page redirects');
 }
 
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
@@ -363,10 +539,34 @@ async function testHtmlNotFoundAsync(): Promise<void> {
   // Nonexistent page without Accept: text/markdown should not 500
   const response = await fetch(`${BASE_URL}/nonexistent-page`);
 
-  if (response.status >= 500) {
-    throw new Error(`Server error for nonexistent page: HTTP ${response.status}`);
+  if (response.status !== 404) {
+    throw new Error(`Expected HTTP 404 for nonexistent page, got ${response.status}`);
   }
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
+}
+
+async function testUrlRecoveryAsync(): Promise<void> {
+  console.log('\n--- Testing URL recovery with the mock AI binding ---');
+  for (const path of ['/router/basics/tabs/', '/router/layouts/tabs']) {
+    const response = await fetch(`${BASE_URL}${path}`, { redirect: 'manual' });
+    if (
+      response.status !== 302 ||
+      response.headers.get('location') !== `${BASE_URL}${NATIVE_TABS}`
+    ) {
+      throw new Error(`Expected recovery redirect for ${path}, got ${response.status}`);
+    }
+    const markdown = await fetch(`${BASE_URL}${path}`, { headers: { Accept: 'text/markdown' } });
+    if (markdown.status !== 200 || !(await markdown.text()).includes('# Native tabs')) {
+      throw new Error(`Expected recovered Markdown for ${path}`);
+    }
+  }
+  for (const path of ['/router/basics/tabs.md', '/router/layouts/tabs/index.md']) {
+    const response = await fetch(`${BASE_URL}${path}`);
+    if (response.status !== 200 || !(await response.text()).includes('# Native tabs')) {
+      throw new Error(`Expected recovered Markdown for ${path}`);
+    }
+  }
+  console.log('✓ Missing HTML and Markdown URLs recover to existing pages');
 }
 
 async function mainAsync(): Promise<void> {
@@ -379,14 +579,17 @@ async function mainAsync(): Promise<void> {
     await testDirectMarkdownAccessAsync();
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
+    await testAcceptQualityValuesAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
+    await testUrlRecoveryAsync();
 
     console.log('\n=== All tests passed! ===');
   } catch (error) {
     console.error('\n✗ Test failed:', error instanceof Error ? error.message : error);
+    console.error(workerOutput);
     process.exitCode = 1;
   } finally {
     await cleanupAsync();

@@ -8,9 +8,55 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Respect the declared `UTI`/`mimeType` when sharing. ([#48052](https://github.com/expo/expo/pull/48052) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 58.0.10 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.9 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Anchored the share sheet on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50437](https://github.com/expo/expo/pull/50437) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.7 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [iOS] Respect the declared `UTI`/`mimeType` when sharing. ([#48052](https://github.com/expo/expo/pull/48052) by [@behenate](https://github.com/behenate))
 
 ## 57.0.8 - 2026-07-29
 

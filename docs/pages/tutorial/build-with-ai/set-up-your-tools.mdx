@@ -3,7 +3,7 @@ title: Set up your tools
 description: In this chapter, install an AI coding agent, Node.js, and Expo Go, and teach your agent about Expo.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -121,6 +121,10 @@ Expo Go is a free app that lets you test your project on your phone while you bu
 2. Create a free account at [expo.dev/signup](https://expo.dev/signup) on your computer.
 3. Open Expo Go on your phone and sign in with the same account.
 
+On a physical iOS device, Expo Go opens your project only when Expo CLI is signed in to the same account. Sign in to Expo CLI now:
+
+<Terminal cmd={['$ npx expo login']} />
+
 </Step>
 
 <Step label="5">
@@ -165,7 +169,7 @@ Then reopen Cursor and verify the skills appear under **Settings** > **Rules, Sk
 
 <BoxLink
   title="Expo Skills"
-  Icon={BookOpen02Icon}
+  Icon={Star06Icon}
   description="Full installation instructions for every agent, and a list of all available skills."
   href="/skills/"
 />
@@ -227,7 +231,7 @@ The MCP server also offers local capabilities: with extra setup, a multimodal ag
 
 <BoxLink
   title="Expo MCP server"
-  Icon={BookOpen02Icon}
+  Icon={Star06Icon}
   description="Full installation instructions, available tools, and data privacy details."
   href="/mcp/"
 />

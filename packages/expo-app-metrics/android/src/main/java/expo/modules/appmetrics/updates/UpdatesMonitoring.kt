@@ -59,6 +59,10 @@ class UpdatesMonitoring(
     val updateId = downloadedManifest["id"] as? String ?: return null
     val startTime = context.downloadStartTime ?: return null
     val finishTime = context.downloadFinishTime ?: return null
+    // expo-updates emits `downloadCompleteWithUpdate` for an update that is already downloaded and
+    // ready on disk too. We don't want to write metrics for those events, so check for
+    // downloadProgress > 0, which only happens on real asset downloads.
+    if (context.downloadProgress <= 0) return null
 
     val downloadTimeSeconds = (finishTime.time - startTime.time).toDouble() / 1000.0
 

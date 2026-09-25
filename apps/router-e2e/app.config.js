@@ -68,7 +68,7 @@ module.exports = {
             ? true
             : process.env.E2E_ROUTER_ASYNC === 'false'
               ? false
-              : process.env.E2E_ROUTER_ASYNC || false,
+              : process.env.E2E_ROUTER_ASYNC,
         root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
         origin: 'http://localhost:8081/',
         sitemap:
@@ -90,15 +90,9 @@ module.exports = {
         pageHeaders: process.env.E2E_ROUTER_PAGE_HEADERS
           ? JSON.parse(process.env.E2E_ROUTER_PAGE_HEADERS)
           : undefined,
-        unstable_useServerDataLoaders: process.env.E2E_ROUTER_SERVER_LOADERS === 'true',
-        unstable_useServerMiddleware: process.env.E2E_ROUTER_SERVER_MIDDLEWARE === 'true',
-        unstable_useServerRendering: process.env.E2E_ROUTER_SERVER_RENDERING === 'true',
-      },
-    ],
-    [
-      'expo-asset',
-      {
-        assets: ['./assets/expo-logo.png', './assets/expo-transparent.png'],
+        apiRoutes: process.env.E2E_ROUTER_API_ROUTES
+          ? process.env.E2E_ROUTER_API_ROUTES === 'true'
+          : undefined,
       },
     ],
   ],

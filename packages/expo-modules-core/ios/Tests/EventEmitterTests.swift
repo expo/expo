@@ -221,6 +221,23 @@ struct EventEmitterTests {
   }
 
   @Test
+  func `does not remove a listener added again after its subscription was removed`() throws {
+    let callCount = try runtime.eval([
+      "callCount = 0",
+      "emitter = new expo.EventEmitter()",
+      "listener = () => { callCount++ }",
+      "subscription = emitter.addListener('test', listener)",
+      "subscription.remove()",
+      "emitter.addListener('test', listener)",
+      "subscription.remove()",
+      "emitter.emit('test')",
+      "callCount"
+    ])
+
+    #expect(try callCount.asInt() == 1)
+  }
+
+  @Test
   func `removes only related listener`() throws {
     let counter = try runtime.eval([
       "counter = 0",

@@ -160,6 +160,16 @@ internal struct PresentationDragIndicatorModifier: ViewModifier, Record {
   }
 }
 
+// MARK: - Presentation Corner Radius
+
+internal struct PresentationCornerRadiusModifier: ViewModifier, Record {
+  @Field var cornerRadius: Double?
+
+  func body(content: Content) -> some View {
+    content.presentationCornerRadius(cornerRadius.map { CGFloat($0) })
+  }
+}
+
 // MARK: - Presentation Background Interaction
 
 internal enum PresentationBackgroundInteractionTypeModifier: String, Enumerable {
@@ -208,11 +218,11 @@ internal struct InteractiveDismissDisabledModifier: ViewModifier, Record {
 // MARK: - Presentation Background
 
 internal struct PresentationBackgroundModifier: ViewModifier, Record {
-  @Field var color: Color?
+  @Field var style: ShapeStyleValue?
 
   func body(content: Content) -> some View {
-    if #available(iOS 16.4, tvOS 16.4, *), let color {
-      content.presentationBackground(color)
+    if let shapeStyle = style?.toAnyShapeStyle() {
+      content.presentationBackground(shapeStyle)
     } else {
       content
     }

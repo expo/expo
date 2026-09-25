@@ -49,8 +49,6 @@ expoAutolinking.useExpoModules()
 
 include ':app'
 
-apply from: new File(rootDir, "versioning_linking.gradle")
-
 // Linked manually to used version from our RN fork
 includeBuild(new File(rootDir, "../../../react-native-lab/react-native/packages/gradle-plugin").toString())
 
@@ -72,10 +70,3 @@ include ':packages:react-native:ReactAndroid:hermes-engine'
 project(':packages:react-native:ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../../../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../../../packages/expo-modules-test-core/android')
-
-[
-    // ADD_NEW_SUPPORTED_ABIS_HERE
-].forEach({ abiVariant ->
-  include ":expoview-$abiVariant"
-  project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
-})

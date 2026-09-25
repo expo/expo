@@ -13,7 +13,8 @@ suspend fun attributeAndStoreCrashReport(
   currentSessionId: String?,
   sessionId: String?,
   origin: CrashOrigin,
-  report: CrashReport
+  report: CrashReport,
+  logDetails: CrashLogDetails = CrashLogDetails()
 ) {
   runCatching {
     // A null target stores the report as an orphan.
@@ -29,7 +30,12 @@ suspend fun attributeAndStoreCrashReport(
       // id-less JVM file (a crash before the main session existed) → orphan.
       else -> null
     }
-    sessionManager.setCrashReport(target, report.encodeToJsonString())
+    val payload = report.encodeToJsonString()
+    if (target != null) {
+      sessionManager.storeCrashReportIfNew(target, payload, report.toLogRecord(target, logDetails))
+    } else {
+      sessionManager.setCrashReport(null, payload)
+    }
   }.onFailure {
     Log.e(TAG, "Failed to persist a crash report", it)
   }

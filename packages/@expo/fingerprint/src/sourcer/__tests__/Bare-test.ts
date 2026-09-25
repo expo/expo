@@ -213,7 +213,10 @@ describe('getCoreAutolinkingSources', () => {
         signal: null,
         output: [fixture, ''],
       });
-      const sources = await testFn('/root/apps/demo', await normalizeOptionsAsync('/app'));
+      const sources = await testFn(
+        '/root/apps/demo',
+        await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None })
+      );
       expect(sources).toContainEqual(
         expect.objectContaining({
           type: 'dir',
@@ -229,6 +232,46 @@ describe('getCoreAutolinkingSources', () => {
       expect(sources).toMatchSnapshot();
     });
 
+    it('should keep autolinking projects and strip path fields when SourceSkips.AutolinkingConfigPaths is set', async () => {
+      const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+      const fixture = fs.readFileSync(
+        path.join(__dirname, 'fixtures', 'RncoreAutoLinkingFromRncCli.json'),
+        'utf8'
+      );
+      mockSpawnAsync.mockResolvedValue({
+        stdout: fixture,
+        stderr: '',
+        status: 0,
+        signal: null,
+        output: [fixture, ''],
+      });
+      const sources = await testFn(
+        '/root/apps/demo',
+        await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.AutolinkingConfigPaths })
+      );
+      expect(sources).toContainEqual(
+        expect.objectContaining({
+          type: 'dir',
+          filePath: '../../node_modules/react-native-reanimated',
+        })
+      );
+      const contentsSources = sources.filter((source) => source.type === 'contents');
+      expect(contentsSources).toHaveLength(1);
+      expect(contentsSources[0]).toBeDefined();
+      const parsed = JSON.parse(String(contentsSources[0]!.contents));
+      expect(parsed).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'react-native-reanimated' }),
+          expect.objectContaining({
+            name: 'react-native-navigation-bar-color',
+            platforms: expect.objectContaining({ ios: null }),
+          }),
+        ])
+      );
+      expect(JSON.stringify(parsed)).not.toMatch(/node_modules/);
+      expect(JSON.stringify(parsed)).toContain('packageImportPath');
+    });
+
     it('should not contain absolute paths', async () => {
       const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
       const fixture = fs.readFileSync(
@@ -242,7 +285,10 @@ describe('getCoreAutolinkingSources', () => {
         signal: null,
         output: [fixture, ''],
       });
-      const sources = await testFn('/root/apps/demo', await normalizeOptionsAsync('/app'));
+      const sources = await testFn(
+        '/root/apps/demo',
+        await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None })
+      );
       for (const source of sources) {
         if (source.type === 'dir' || source.type === 'file' || source.type === 'package') {
           expect(source.filePath).not.toMatch(/^\/root/);

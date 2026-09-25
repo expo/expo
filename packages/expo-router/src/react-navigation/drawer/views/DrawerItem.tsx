@@ -3,7 +3,7 @@ import * as React from 'react';
 import type { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { Color } from '../../../utils/color';
+import { alpha } from '../../../utils/color';
 import { PlatformPressable, Text } from '../../elements';
 import { type Route, useTheme } from '../../native';
 
@@ -114,9 +114,9 @@ export function DrawerItem(props: Props) {
   const { borderRadius = 56 } = StyleSheet.flatten(style || {});
   const color: ColorValue = focused
     ? activeTintColor
-    : (inactiveTintColor ?? Color(colors.text)?.alpha(0.68).string() ?? colors.text);
+    : (inactiveTintColor ?? alpha(colors.text, 0.68) ?? colors.text);
   const backgroundColor: ColorValue = focused
-    ? (activeBackgroundColor ?? Color(activeTintColor)?.alpha(0.12).string() ?? 'transparent')
+    ? (activeBackgroundColor ?? alpha(activeTintColor, 0.12) ?? 'transparent')
     : inactiveBackgroundColor;
 
   const iconNode = icon ? icon({ size: 24, focused, color }) : null;

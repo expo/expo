@@ -6,14 +6,54 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.8 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a data race on `EXTaskService`'s collections that could crash the app when one app context registered its task manager while another tore down, such as on a dev-client reload or `Updates.reloadAsync()`. ([#49558](https://github.com/expo/expo/pull/49558) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.6 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Warn when defining tasks after the JavaScript bundle has finished loading. ([#49398](https://github.com/expo/expo/pull/49398) by [@HubertBer](https://github.com/HubertBer))
 
 ### 🐛 Bug fixes
 
 - [Android] Clear headless task manager on context destroy ([#47958](https://github.com/expo/expo/pull/47958) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Fix a crash on Android 9 when delivering a task event through `JobScheduler` (geofencing, background location), where the job was built without the scheduling constraint that `JobInfo.Builder.build()` requires. ([#48305](https://github.com/expo/expo/pull/48305) by [@rvaccone](https://github.com/rvaccone))
-
-### 💡 Others
 
 ## 57.0.7 - 2026-07-29
 

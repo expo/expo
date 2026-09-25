@@ -1,5 +1,6 @@
 {
   "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "publishPrebuilds": true,
   "products": [
     {
       "name": "ExpoCamera",
@@ -42,7 +43,7 @@
           "url": "https://github.com/zxingify/zxingify-objc.git",
           "productName": "ZXingObjC",
           "version": {
-            "exact": "3.6.9"
+            "revision": "510db5f6ed293bf2f9e1905d3b8268c502f3fb55"
           }
         }
       ],

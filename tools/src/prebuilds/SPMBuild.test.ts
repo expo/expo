@@ -12,13 +12,16 @@ import { describe, it, before, after } from 'node:test';
 import os from 'os';
 import path from 'path';
 
+import type { SPMPackageSource } from './ExternalPackage';
 import {
+  buildXcodeBuildArgs,
   derivePackageName,
   formatVersionRequirement,
   findFirstExisting,
   findXCFrameworkInDir,
   getBuildPlatformsFromProductPlatform,
 } from './SPMBuild';
+import type { SPMProduct, SPMTarget } from './SPMConfig.types';
 
 // ---------------------------------------------------------------------------
 // getBuildPlatformsFromProductPlatform
@@ -163,5 +166,62 @@ describe('findXCFrameworkInDir', () => {
     await fs.mkdirp(emptyDir);
     const result = await findXCFrameworkInDir(emptyDir, 'Anything');
     assert.equal(result, null);
+  });
+});
+
+function productWithTargets(targets: SPMTarget[]): SPMProduct {
+  return {
+    name: 'ExpoHaptics',
+    podName: 'ExpoHaptics',
+    platforms: ['iOS("16.4")'],
+    targets,
+  };
+}
+
+describe('buildXcodeBuildArgs', () => {
+  const originalRepoRoot = process.env.EXPO_ROOT_DIR;
+
+  before(() => {
+    process.env.EXPO_ROOT_DIR = '/repo';
+  });
+
+  after(() => {
+    if (originalRepoRoot === undefined) delete process.env.EXPO_ROOT_DIR;
+    else process.env.EXPO_ROOT_DIR = originalRepoRoot;
+  });
+
+  const pkg: SPMPackageSource = {
+    path: '/repo/packages/expo-haptics',
+    buildPath: '/repo/packages/precompile/.build/expo-haptics',
+    packageName: 'expo-haptics',
+    packageVersion: '1.0.0',
+    getSwiftPMConfiguration: () => ({ products: [] }),
+  };
+
+  function settingValue(args: string[], setting: string): string {
+    const entry = args.find((arg) => arg.startsWith(`${setting}=`));
+    assert.ok(entry, `${setting} must be passed to xcodebuild: ${args.join(' ')}`);
+    return entry.slice(setting.length + 1);
+  }
+
+  it('orders each compiler flag list so the per-target map wins', () => {
+    const args = buildXcodeBuildArgs(
+      pkg,
+      productWithTargets([{ type: 'swift', name: 'ExpoHaptics', path: 'ios' }]),
+      'Debug',
+      'iOS'
+    );
+    const swiftFlags = settingValue(args, 'OTHER_SWIFT_FLAGS');
+    assert.ok(
+      swiftFlags.indexOf('-debug-prefix-map /repo/packages/precompile') <
+        swiftFlags.indexOf('-debug-prefix-map /repo='),
+      `The per-target map must lead for swiftc: ${swiftFlags}`
+    );
+    const cFlags = settingValue(args, 'OTHER_CFLAGS');
+    assert.ok(
+      cFlags.indexOf('-fdebug-prefix-map=/repo=') <
+        cFlags.indexOf('-fdebug-prefix-map=/repo/packages/precompile'),
+      `The per-target map must trail for clang: ${cFlags}`
+    );
   });
 });

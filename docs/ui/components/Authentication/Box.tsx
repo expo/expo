@@ -14,7 +14,7 @@ type BoxProps = PropsWithChildren<{
 }>;
 
 export const Box = ({ name, image, createUrl, children }: BoxProps) => (
-  <APIBox className={mergeClasses('mt-6 px-4 pt-3', '[&_.table-wrapper]:mb-4')}>
+  <APIBox className={mergeClasses('mt-6 rounded-3xl px-4 pt-3', '[&_.table-wrapper]:mb-4')}>
     <div className="inline-flex w-full flex-row items-center gap-4 pb-4 max-md:flex-col max-md:gap-3">
       <div className="flex w-[inherit] flex-row items-center gap-3 [&>h3]:mb-0!">
         <Icon title={name} image={image} className="size-12" />

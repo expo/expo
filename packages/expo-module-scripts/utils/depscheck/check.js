@@ -302,12 +302,8 @@ function createExternalImportValidator(packageName, packageJson) {
       seenDependencyName.add(ref.packageName);
       const dependency = dependencyMap.get(ref.packageName);
       if (dependency && dependency.kind !== DependencyKind.Dev) {
-        let { versionRange } = dependency;
-        if (versionRange.startsWith(WORKSPACE_SPECIFIER)) {
-          versionRange = versionRange.slice(WORKSPACE_SPECIFIER.length);
-        }
-        // NOTE: Loose check to see if a dependency is pinned
-        const isLoose = /[~|^><=](\s*\d+\.)/.test(versionRange) || versionRange === '*';
+        const { versionRange } = dependency;
+        const isLoose = isLooseDependencyVersionRange(versionRange);
         const isPrerelease = versionRange.includes('-');
         const isPinned = /^\d+\.\d+\.\d+$/.test(versionRange);
         return !isPrerelease && (!isLoose || isPinned);
@@ -315,6 +311,24 @@ function createExternalImportValidator(packageName, packageJson) {
       return null;
     },
   };
+}
+
+/**
+ * Loosely checks whether a dependency range allows more than one version
+ *
+ * @param {string} versionRange
+ * @returns {boolean}
+ */
+function isLooseDependencyVersionRange(versionRange) {
+  if (versionRange.startsWith(WORKSPACE_SPECIFIER)) {
+    versionRange = versionRange.slice(WORKSPACE_SPECIFIER.length);
+  }
+  return (
+    versionRange === '*' ||
+    versionRange === '~' ||
+    versionRange === '^' ||
+    /[~|^><=](\s*\d+\.)/.test(versionRange)
+  );
 }
 
 /** @type {DepsLogger} */

@@ -5,11 +5,14 @@ description: Solutions for common EAS Observe issues.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
 
 <TabsGroup>
+
+<FAQ>
 
 ## Common issues
 
@@ -76,6 +79,8 @@ This metric requires manual instrumentation. Verify that:
 </Tab>
 
 </Tabs>
+
+</FAQ>
 
 <Collapsible summary="Migrating from expo-eas-observe">
 

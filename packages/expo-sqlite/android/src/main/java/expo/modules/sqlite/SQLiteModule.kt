@@ -147,6 +147,19 @@ class SQLiteModule : Module() {
           closeDatabase(db)
         }
       }.runOnQueue(moduleCoroutineScope)
+      // Interrupt must reach SQLite immediately, without waiting for the running query's queue.
+      Function("interruptSync") { database: NativeDatabase ->
+        // Do not block the JS thread or touch a connection being closed on another thread.
+        if (!database.closeLock.tryLock()) {
+          throw DatabaseClosingException()
+        }
+        try {
+          maybeThrowForClosedDatabase(database)
+          database.ref.sqlite3_interrupt()
+        } finally {
+          database.closeLock.unlock()
+        }
+      }
       Function("closeSync") { database: NativeDatabase ->
         maybeThrowForClosedDatabase(database)
         val db = removeCachedDatabase(database)
@@ -418,40 +431,52 @@ class SQLiteModule : Module() {
   private fun step(statement: NativeStatement, database: NativeDatabase): SQLiteColumnValues? {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    val ret = statement.ref.sqlite3_step()
-    if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-      return statement.getTransformedColumnValues()
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      val ret = statement.ref.sqlite3_step()
+      if (ret == NativeDatabaseBinding.SQLITE_ROW) {
+        return statement.getTransformedColumnValues()
+      }
+      if (ret != NativeDatabaseBinding.SQLITE_DONE) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      return null
     }
-    if (ret != NativeDatabaseBinding.SQLITE_DONE) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-    }
-    return null
   }
 
   @Throws(AccessClosedResourceException::class, InvalidConvertibleException::class, SQLiteErrorException::class)
   private fun getAll(statement: NativeStatement, database: NativeDatabase): List<SQLiteColumnValues> {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    val columnValuesList = mutableListOf<SQLiteColumnValues>()
-    while (true) {
-      val ret = statement.ref.sqlite3_step()
-      if (ret == NativeDatabaseBinding.SQLITE_ROW) {
-        columnValuesList.add(statement.getTransformedColumnValues())
-        continue
-      } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
-        break
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      val columnValuesList = mutableListOf<SQLiteColumnValues>()
+      while (true) {
+        val ret = statement.ref.sqlite3_step()
+        if (ret == NativeDatabaseBinding.SQLITE_ROW) {
+          columnValuesList.add(statement.getTransformedColumnValues())
+          continue
+        } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
+          break
+        }
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
       }
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      return columnValuesList
     }
-    return columnValuesList
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun reset(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
     }
   }
 
@@ -459,10 +484,14 @@ class SQLiteModule : Module() {
   private fun finalize(statement: NativeStatement, database: NativeDatabase) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+
+    // Guard the stateful statement, see `run` above.
+    synchronized(statement) {
+      if (statement.ref.sqlite3_finalize() != NativeDatabaseBinding.SQLITE_OK) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      statement.isFinalized = true
     }
-    statement.isFinalized = true
   }
 
   private fun addUpdateHook(database: NativeDatabase) {
@@ -496,12 +525,18 @@ class SQLiteModule : Module() {
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun closeDatabase(database: NativeDatabase) {
-    maybeFinalizeAllStatements(database)
-    val ret = database.ref.sqlite3_close()
-    if (ret != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+    database.closeLock.lock()
+    try {
+      maybeThrowForClosedDatabase(database)
+      maybeFinalizeAllStatements(database)
+      val ret = database.ref.sqlite3_close()
+      if (ret != NativeDatabaseBinding.SQLITE_OK) {
+        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      }
+      database.isClosed = true
+    } finally {
+      database.closeLock.unlock()
     }
-    database.isClosed = true
   }
 
   private fun deleteDatabase(databasePath: String) {

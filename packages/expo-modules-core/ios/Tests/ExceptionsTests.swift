@@ -28,6 +28,25 @@ struct ExceptionsTests {
   }
 
   @Test
+  func `has reason from the description it was created with`() {
+    let error = TestCodedException()
+    #expect(error.reason == "This is a test Exception with a code")
+  }
+
+  @Test
+  func `includes the description it was created with in the debug description`() {
+    let error = TestCodedException()
+    #expect(error.debugDescription.contains("TestException: This is a test Exception with a code"))
+  }
+
+  @Test
+  func `includes cause description when created with a description`() {
+    let error = TestCodedException().causedBy(TestExceptionCause())
+    #expect(error.description.contains("This is a test Exception with a code"))
+    #expect(error.description.contains("This is the cause of the test exception"))
+  }
+
+  @Test
   func `can be chained once`() {
     func throwable() throws {
       do {
@@ -142,6 +161,18 @@ struct ExceptionsTests {
     #expect(code.getString() == "E_TEST_CODE")
   }
 
+  @Test
+  func `async function reject with a code and a description exposes the description to JS`() async throws {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    Self.registerTestModule(on: appContext)
+
+    let message = try await runtime.evalAsync(
+      "expo.modules.TestModule.codedRejectWithDescriptionAsync().then(() => 'NO_ERROR', (error) => error.message ?? 'NO_MESSAGE')"
+    )
+    #expect(message.getString().contains("This is the rejection description"))
+  }
+
   private static func registerTestModule(on appContext: AppContext) {
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
       Name("TestModule")
@@ -156,6 +187,10 @@ struct ExceptionsTests {
 
       AsyncFunction("codedExceptionRejectAsync") { (promise: Promise) in
         promise.reject(TestCodedException())
+      }
+
+      AsyncFunction("codedRejectWithDescriptionAsync") { (promise: Promise) in
+        promise.reject("E_TEST_CODE", "This is the rejection description")
       }
 
       AsyncFunction("codedExceptionConcurrentAsync") { () async throws in

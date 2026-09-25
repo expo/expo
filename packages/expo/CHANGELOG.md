@@ -4,12 +4,43 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Enable R8 (`android.enableMinifyInReleaseBuilds=true`) by default in the bare template. ([#50108](https://github.com/expo/expo/pull/50108) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+- [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+
+### 🐛 Bug fixes
+
+- [iOS] Include the SwiftPM manifest in the published npm package. ([#50612](https://github.com/expo/expo/pull/50612) by [@vonovak](https://github.com/vonovak))
+- [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
+- [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Emit JavaScript `url` events for deep links delivered to a running app under the UIKit scene life cycle. ([#50235](https://github.com/expo/expo/pull/50235) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Import `Foundation` in `ResponseSink`, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
+- [Web] Stub `requestAnimationFrame` in server bundles, where `react-native-worklets` 0.12 calls it unguarded when Reanimated is imported, crashing server rendering and `expo export`. ([#50507](https://github.com/expo/expo/pull/50507) by [@robhogan](https://github.com/robhogan))
+- [iOS] Accept prebuilt-framework tarballs that bundle SwiftPM dependency XCFrameworks alongside the product in the SwiftPM plugin, instead of rejecting them. ([#50141](https://github.com/expo/expo/pull/50141) by [@chrfalch](https://github.com/chrfalch))
+
+### 💡 Others
+
+- [iOS] Bring the `Package.swift` the SwiftPM autolinking plugin generates up to what CocoaPods already carries: a module's build settings, its declared iOS deployment floor and its `PrivacyInfo.xcprivacy`, plus `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target. Modules the plugin cannot place are now reported with the reason and the fix, including one whose `Package.swift` depends on a target the generated package cannot declare. The podspec reader no longer mistakes a `test_spec`'s linkage for the module's own. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.0-preview.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
+- [Android] Allow `getDefaultReactHost` to take a custom `jsRuntimeFactory`, so an app can run a JavaScript engine other than Hermes. ([#49686](https://github.com/expo/expo/pull/49686) by [@ammarahm-ed](https://github.com/ammarahm-ed))
+
 ### 🐛 Bug fixes
 
+- [iOS] Fix a Hermes JSI crash during reloads where two overlapping `RCTHost` runtime callbacks shared `EXReactNativeFactory`'s app context ivar, letting one callback decorate objects against the other callback's runtime. ([#48576](https://github.com/expo/expo/issues/48576) by [@LizunovSergey](https://github.com/LizunovSergey))
 - [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
 - Fix `expo/fetch` body-stream teardown races: aborting via an `AbortSignal` now rejects the in-flight read with an `AbortError` instead of hanging forever, and late native events no longer throw `The stream is not in a state that permits enqueue`/`close` from outside any consumer `try`/`catch`. ([#47573](https://github.com/expo/expo/pull/47573) by [@idoyana](https://github.com/idoyana))
 - [iOS] Fix `expo/fetch` `Response.text()` and `.arrayBuffer()` never settling when the request fails (network drop, `abort()`) after the response was already delivered. ([#48230](https://github.com/expo/expo/pull/48230) by [@zoontek](https://github.com/zoontek))
@@ -26,9 +57,12 @@
 - Fix `import.meta.url` being `null` on web when `transform.inlineRequires` is enabled. ([#49045](https://github.com/expo/expo/pull/49045) by [@expo-bot](https://github.com/expo-bot))
 - Fix platform resolution of the `expo/dom` and `expo/dom/internal` subpath exports ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
 - [iOS] Remove a duplicated `ExpoModulesCore-Swift.h` import block in `ExpoReactNativeFactory.mm` whose `#else` branch imported the header unconditionally, breaking builds where neither form is on the header search path. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Forward URL, user activity, life cycle and quick action events to `AppDelegate` overrides under the UIScene life cycle. ([#49925](https://github.com/expo/expo/pull/49925) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
+- [iOS] Split the mixed Swift/Objective-C sources into `Expo` and `ExpoObjC` so the module can be built with Swift Package Manager, and add a `Package.swift` describing them. ([#45906](https://github.com/expo/expo/pull/45906) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make the `Expo`/`ExpoObjC` source split compile under Swift Package Manager: a new `ExpoLoader` target breaks the Swift↔ObjC cycle, and UIKit and React's app-delegate headers are imported explicitly. No-ops for CocoaPods. ([#49832](https://github.com/expo/expo/pull/49832) by [@chrfalch](https://github.com/chrfalch))
 - Re-export `useReleasingSharedObjectWithLifecycle` from `expo-modules-core`. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] `ExpoReactHostFactory` now passes host handlers' `DevSupportManagerFactory` to `ReactHostImpl`. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build by guarding the `bundleConfiguration` override, which requires react-native 0.84+. ([#48494](https://github.com/expo/expo/pull/48494) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
@@ -41,6 +75,7 @@
 - [Internal] Derive `getDevServer` from the bundle URL internally and expose `getBundleUrl` helper ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 - Rewrite the `TextDecoder` implementation to increase decoding performance ([#48877](https://github.com/expo/expo/pull/48877) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.9 - 2026-07-29
 

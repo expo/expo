@@ -4,10 +4,13 @@ package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedObjectId
 import expo.modules.kotlin.sharedobjects.sharedObjectIdPropertyName
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert
 import org.junit.Test
 
 class SharedObjectTest {
@@ -223,6 +226,188 @@ class SharedObjectTest {
 
     Truth.assertThat(lastStartObserving).isEqualTo("event")
     Truth.assertThat(lastOnStopObserving).isEqualTo("event")
+  }
+
+  @Test
+  fun rejects_an_async_call_whose_receiver_was_explicitly_released_before_the_body_ran() = withSingleModule({
+    Class(SharedObjectExampleClass::class) {
+      Constructor { SharedObjectExampleClass() }
+      AsyncFunction("work") Coroutine { self: SharedObjectExampleClass -> 1 }
+    }
+  }) {
+    // An explicit `release()` is the user's decision, so it takes effect at once. Only a garbage
+    // collection is prevented from releasing the object while the call is pending.
+    val exception = Assert.assertThrows(PromiseException::class.java) {
+      waitForAsyncFunction(
+        """
+        (() => {
+          const so = new $moduleRef.SharedObjectExampleClass();
+          const promise = so.work();
+          so.release();
+          return promise;
+        })()
+        """.trimIndent()
+      )
+    }
+    Truth.assertThat(exception.message).contains("Cannot use shared object that was already released")
+  }
+
+  @Test
+  fun releases_a_shared_object_that_nothing_references() {
+    ReleaseTrackingSharedObject.releaseCount = 0
+
+    withSingleModule({
+      Class(ReleaseTrackingSharedObject::class) {
+        Constructor { ReleaseTrackingSharedObject() }
+      }
+    }) {
+      evaluateScript("(() => { new $moduleRef.ReleaseTrackingSharedObject(); })()")
+      val registry = requireNotNull(jsiInterop.runtimeHolder.get()?.sharedObjectRegistry)
+      val weakJsObject = registry.pairs.values.single().second
+
+      val deallocated = collectGarbage()
+      val registrySize = registry.pairs.size
+      val jsObjectCollected = weakJsObject.lock() == null
+
+      Truth.assertWithMessage("The JNI hybrid of the JS object was not deallocated").that(deallocated).isGreaterThan(0)
+      Truth.assertWithMessage("Hermes did not collect the JS object").that(jsObjectCollected).isTrue()
+      Truth.assertWithMessage("The registry still holds the pair").that(registrySize).isEqualTo(0)
+      Truth.assertThat(ReleaseTrackingSharedObject.releaseCount).isEqualTo(1)
+    }
+  }
+
+  @Test
+  fun keeps_the_js_object_alive_until_the_async_call_settles() {
+    val gate = CompletableDeferred<Unit>()
+    ReleaseTrackingSharedObject.releaseCount = 0
+
+    withSingleModule({
+      Class(ReleaseTrackingSharedObject::class) {
+        Constructor { ReleaseTrackingSharedObject() }
+        AsyncFunction("work") Coroutine { self: ReleaseTrackingSharedObject ->
+          gate.await()
+          self.wasReleased
+        }
+      }
+    }) {
+      evaluateScript(
+        """
+        global.result = undefined;
+        (() => {
+          const so = new $moduleRef.ReleaseTrackingSharedObject();
+          return so.work();
+        })().then(r => { global.result = r });
+        """.trimIndent()
+      )
+      // Runs the body until it suspends on the gate.
+      methodQueue.testScheduler.advanceUntilIdle()
+
+      // The JS object is a temporary that nothing in JS references anymore.
+      collectGarbage()
+
+      Truth
+        .assertWithMessage("The shared object was released while its async call was still pending")
+        .that(ReleaseTrackingSharedObject.releaseCount)
+        .isEqualTo(0)
+
+      gate.complete(Unit)
+      methodQueue.testScheduler.advanceUntilIdle()
+      jsiInterop.drainJSEventLoop()
+
+      Truth.assertThat(evaluateScript("global.result").getBool()).isFalse()
+
+      // The promise is settled, so the JS object can be collected now.
+      collectGarbage()
+
+      Truth
+        .assertWithMessage("The shared object should be released after the async call settled")
+        .that(ReleaseTrackingSharedObject.releaseCount)
+        .isEqualTo(1)
+    }
+  }
+
+  @Test
+  fun keeps_a_shared_object_argument_alive_until_the_async_call_settles() {
+    val gate = CompletableDeferred<Unit>()
+    ReleaseTrackingSharedObject.releaseCount = 0
+
+    withSingleModule({
+      Class(ReleaseTrackingSharedObject::class) {
+        Constructor { ReleaseTrackingSharedObject() }
+      }
+      AsyncFunction("work") Coroutine { first: Int, other: ReleaseTrackingSharedObject ->
+        gate.await()
+        other.wasReleased
+      }
+    }) {
+      evaluateScript(
+        """
+        global.result = undefined;
+        (() => $moduleRef.work(1, new $moduleRef.ReleaseTrackingSharedObject()))().then(r => { global.result = r });
+        """.trimIndent()
+      )
+      methodQueue.testScheduler.advanceUntilIdle()
+
+      collectGarbage()
+
+      Truth
+        .assertWithMessage("The shared object argument was released while its async call was still pending")
+        .that(ReleaseTrackingSharedObject.releaseCount)
+        .isEqualTo(0)
+
+      gate.complete(Unit)
+      methodQueue.testScheduler.advanceUntilIdle()
+      jsiInterop.drainJSEventLoop()
+
+      Truth.assertThat(evaluateScript("global.result").getBool()).isFalse()
+
+      collectGarbage()
+
+      Truth.assertThat(ReleaseTrackingSharedObject.releaseCount).isEqualTo(1)
+    }
+  }
+
+  /**
+   * Collects the JS object of a shared object that nothing references anymore.
+   * The constructor wraps the JS object in a JNI hybrid that keeps it alive until the JVM collects
+   * the wrapper and the deallocator resets the hybrid. Both steps happen here, then Hermes collects.
+   */
+  private fun SingleTestContext.collectGarbage(): Int {
+    val deallocator = requireNotNull(jsiInterop.runtimeHolder.get()?.deallocator)
+    var deallocated = 0
+    for (attempt in 0 until 20) {
+      System.gc()
+      System.runFinalization()
+      deallocated += deallocator.processPendingReferences()
+      if (deallocated > 0) {
+        break
+      }
+      Thread.sleep(50)
+    }
+    // Hermes may run the finalizer of the native state in a later collection than the one that frees the object.
+    val registry = requireNotNull(jsiInterop.runtimeHolder.get()?.sharedObjectRegistry)
+    for (attempt in 0 until 10) {
+      evaluateScript("gc()")
+      if (registry.pairs.isEmpty()) {
+        break
+      }
+      Thread.sleep(20)
+    }
+    return deallocated
+  }
+
+  private class ReleaseTrackingSharedObject : SharedObject() {
+    companion object {
+      @Volatile
+      var releaseCount = 0
+    }
+
+    val wasReleased: Boolean
+      get() = releaseCount > 0
+
+    override fun sharedObjectDidRelease() {
+      releaseCount++
+    }
   }
 
   private class SharedObjectExampleClass : SharedObject() {

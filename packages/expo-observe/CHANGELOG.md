@@ -6,18 +6,68 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.9 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-15
+
+### 🎉 New features
+
+- Add a `networkTraces` option to `configure` to record network requests as trace spans, with an optional capture filter. Recording is opt-in, so it never adds to your event usage unless you turn it on. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.3 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
 - Add `Observe.registerIntegration` to register an integration ([#48245](https://github.com/expo/expo/pull/48245), [#48268](https://github.com/expo/expo/pull/48268) by [@Ubax](https://github.com/Ubax))
 - Expose `ObserveErrorBoundary`, a React error boundary that records render-phase errors. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 - Add `reportError` to report caught, non-fatal errors from your own `try`/`catch` blocks. ([#47871](https://github.com/expo/expo/pull/47871) by [@tsapeta](https://github.com/tsapeta))
 - Add an `errorHandlingEnabled` option to `configure` to opt out of recording unhandled JavaScript errors. ([#48506](https://github.com/expo/expo/pull/48506) by [@tsapeta](https://github.com/tsapeta))
+- Add `Observe.clientId`, the EAS client id recorded on every event, so apps can correlate Observe data with other services. ([#49599](https://github.com/expo/expo/pull/49599) by [@kadikraman](https://github.com/kadikraman))
+- Export network requests as OTLP traces. ([#48883](https://github.com/expo/expo/pull/48883) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Fix OTel date conversion ([#48161](https://github.com/expo/expo/pull/48161) by [@Ubax](https://github.com/Ubax))
+- [iOS] Stop overlapping dispatches from sending the same pending rows twice. `dispatchEvents()` now waits for a dispatch already in progress instead of overlapping with it. ([#48883](https://github.com/expo/expo/pull/48883) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
+- [Android] Replace pending telemetry queues with persisted row-id cursors. ([#49547](https://github.com/expo/expo/pull/49547) by [@Ubax](https://github.com/Ubax))
 - [iOS] Dispatch pending metrics and logs in chunks of 200 and retry HTTP 413 responses with smaller batches. ([#49121](https://github.com/expo/expo/pull/49121) by [@Ubax](https://github.com/Ubax))
 - [Android] Retry a dispatch that gets HTTP 413 ([#49016](https://github.com/expo/expo/pull/49016) by [@Ubax](https://github.com/Ubax))
 - [Android] Dispatch pending metrics and logs in bounded, oldest-first chunks without replacing active background work. ([#49012](https://github.com/expo/expo/pull/49012) by [@Ubax](https://github.com/Ubax))

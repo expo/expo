@@ -6,10 +6,52 @@
 
 ### 🎉 New features
 
-- Add docs. ([#47226](https://github.com/expo/expo/pull/47226) by [@behenate](https://github.com/behenate))
-- Add cli tool. ([#47223](https://github.com/expo/expo/pull/47223) by [@behenate](https://github.com/behenate))
-- Initial release. ([#47207](https://github.com/expo/expo/pull/47207) by [@behenate](https://github.com/behenate))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.4.5 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.4 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- Annotate the mail example templates with macOS availability so `npx expo-app-intents init` output works on macOS. ([#50525](https://github.com/expo/expo/pull/50525) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.4.3 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.2 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- Fix the duplicate setup check in `init` reporting Windows-style paths, which also made its tests fail on Windows. ([#50175](https://github.com/expo/expo/pull/50175) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.1 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2026-09-14
+
+### 🎉 New features
+
+- [iOS] Add `AppEntityView`, a UIKit wrapper for associating React Native content with an App Entity. ([#49663](https://github.com/expo/expo/pull/49663) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [iOS] Drop macOS from the podspec platforms to fix `pod install` failing with "Unable to find a specification for `ExpoUI`". ([#50065](https://github.com/expo/expo/pull/50065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.2.0 — 2026-09-10
+
+### 🎉 New features
+
+- Add docs. ([#47226](https://github.com/expo/expo/pull/47226) by [@behenate](https://github.com/behenate))
+- Add cli tool. ([#47223](https://github.com/expo/expo/pull/47223) by [@behenate](https://github.com/behenate))
+- Initial release. ([#47207](https://github.com/expo/expo/pull/47207) by [@behenate](https://github.com/behenate))
