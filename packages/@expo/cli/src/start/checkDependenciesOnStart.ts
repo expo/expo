@@ -2,11 +2,18 @@ import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import * as Log from '../log';
+import {
+  formatExpoCommand,
+  resolvePackageManagerForHints,
+  type PackageManagerName,
+} from '../utils/expoCommand';
 import { getVersionedDependenciesAsync } from './doctor/dependencies/validateDependenciesVersions';
 
 export interface DependencyCheckResult {
   expo?: { actualVersion: string; expectedVersionOrRange: string };
   otherCount: number;
+  /** Package manager used to format the suggested `expo install --check` command. */
+  packageManager: PackageManagerName;
 }
 
 export interface DependencyCheckRef {
@@ -39,6 +46,7 @@ async function checkDependenciesAsync(
         }
       : undefined,
     otherCount,
+    packageManager: resolvePackageManagerForHints(projectRoot),
   };
 }
 
@@ -75,13 +83,15 @@ export function getDependencyCheckMessage(
   result: DependencyCheckResult | null | undefined
 ): string[] {
   if (result?.expo) {
+    const checkCommand = formatExpoCommand(result.packageManager, 'install --check');
     return [
       chalk.yellow`An update for {bold expo} is available: {red ${result.expo.actualVersion}} {dim →} {green ${result.expo.expectedVersionOrRange}}`,
-      chalk.yellow`${result.otherCount} other package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold npx expo install --check} for details.`,
+      chalk.yellow`${result.otherCount} other package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold ${checkCommand}} for details.`,
     ];
   } else if (result?.otherCount) {
+    const checkCommand = formatExpoCommand(result.packageManager, 'install --check');
     return [
-      chalk.yellow`${result.otherCount} package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold npx expo install --check} for details.`,
+      chalk.yellow`${result.otherCount} package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold ${checkCommand}} for details.`,
     ];
   } else {
     return [];

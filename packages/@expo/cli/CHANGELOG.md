@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use the project's package manager in the `expo install --check` hint shown by `expo start` instead of always suggesting `npx`. ([#50580](https://github.com/expo/expo/pull/50580) by [@periakteon](https://github.com/periakteon))
+
 ### 💡 Others
 
 - [Internal] Fix the `BundleOptions` import in `internal/unstable-expo-updates-exports.d.ts`, which pointed at a subpath `@expo/metro` doesn't ship. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
