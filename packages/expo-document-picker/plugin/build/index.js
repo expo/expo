@@ -1,3 +1,3 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = () => 'expo-document-picker';
+exports.default = (props = {}) => ['expo-document-picker', props];
