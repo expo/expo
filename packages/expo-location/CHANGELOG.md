@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Reject `geocodeAsync` and `reverseGeocodeAsync` when the geocoder fails on Android 13+ instead of leaving the promise pending forever.
+- [Android] Reject `geocodeAsync` and `reverseGeocodeAsync` when the geocoder fails on Android 13+ instead of leaving the promise pending forever. ([#50657](https://github.com/expo/expo/pull/50657) by [@ramen2020](https://github.com/ramen2020))
 
 ### 💡 Others
 
