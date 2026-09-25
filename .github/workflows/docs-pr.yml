@@ -54,6 +54,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: 🧪 Run Docs tests
         run: pnpm test
+      - name: 🌐 Report stale Japanese translations
+        run: pnpm ja:check
       - name: 🧪 Test Cloudflare worker and routes
         run: pnpm test:worker
       - name: 🚨 Lint Docs website code

@@ -1,31 +1,16 @@
-import fs from 'node:fs';
+import { findStalePages } from './sync.ts';
 
-import { englishSourceFor, hashEnglishSource, listJaPages, readManifest, relKey } from './sync.ts';
+const { checked, stale } = findStalePages();
+const annotation = process.env.GITHUB_ACTIONS === 'true' ? '::warning::' : '';
 
-const manifest = readManifest();
-const jaPages = listJaPages();
-const issues: string[] = [];
-
-for (const jaPath of jaPages) {
-  const key = relKey(jaPath);
-  const englishPath = englishSourceFor(jaPath);
-  if (!fs.existsSync(englishPath)) {
-    issues.push(`pages/ja/${key}  orphan translation (no English source)`);
-  } else if (!manifest[key]) {
-    issues.push(`pages/ja/${key}  missing from checks/ja/source-hashes.json (run pnpm ja:stamp)`);
-  } else if (manifest[key] !== hashEnglishSource(englishPath)) {
-    issues.push(
-      `pages/ja/${key}  stale: English source changed since last sync (update the translation, then run pnpm ja:stamp)`
-    );
-  }
-}
-
-for (const issue of issues) {
-  console.log(issue);
+for (const key of stale) {
+  console.log(
+    `${annotation}pages/ja/${key} is stale because its English source changed since the last sync. After the English change merges, the Docs Japanese Sync workflow opens a PR that updates it. To sync it by hand, update the translation and run pnpm ja:stamp ${key}.`
+  );
 }
 
 console.log(
-  issues.length === 0
-    ? `All ${jaPages.length} Japanese pages are in sync with their English sources.`
-    : `${issues.length} of ${jaPages.length} Japanese pages need a sync.`
+  stale.length === 0
+    ? `All ${checked} Japanese pages are in sync with their English sources.`
+    : `${stale.length} of ${checked} Japanese pages need a sync.`
 );
