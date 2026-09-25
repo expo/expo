@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `jest` as a peer dependency to prevent silent major version mismatches when tools like Dependabot upgrade `jest` to an incompatible version. ([#44167](https://github.com/expo/expo/pull/44167) by [@ForestSpark](https://github.com/ForestSpark))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-21
