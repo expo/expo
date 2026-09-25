@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Reject `geocodeAsync` and `reverseGeocodeAsync` when the geocoder fails on Android 13+ instead of leaving the promise pending forever.
+
 ### 💡 Others
 
 ## 58.0.7 — 2026-09-25
