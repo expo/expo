@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Fixed sync worker result length encoding and made oversized results fail immediately instead of timing out. ([#44148](https://github.com/expo/expo/pull/44148) by [@silto](https://github.com/silto))
+
 ### 💡 Others
 
 ## 58.0.5 — 2026-09-23
