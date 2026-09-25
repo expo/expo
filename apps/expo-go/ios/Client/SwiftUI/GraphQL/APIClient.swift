@@ -39,13 +39,7 @@ actor APIClient {
       : "https://expo.dev"
   }
 
-  private var sessionSecret: String?
-
   private init() {}
-
-  func setSession(_ sessionSecret: String?) {
-    self.sessionSecret = sessionSecret
-  }
 
   func request<T: Decodable>(_ query: String, variables: [String: Any]? = nil) async throws -> T {
     guard let url = URL(string: apiEndpoint) else {
@@ -56,7 +50,7 @@ actor APIClient {
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-    if let sessionSecret {
+    if let sessionSecret = SessionStore.shared.activeLiveSession?.sessionSecret {
       request.setValue(sessionSecret, forHTTPHeaderField: "expo-session")
     }
 

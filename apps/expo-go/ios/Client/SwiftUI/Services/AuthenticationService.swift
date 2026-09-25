@@ -9,23 +9,28 @@ extension Notification.Name {
   static let expoSessionDidChange = Notification.Name("expo-session-did-change")
 }
 
+enum LoginOutcome: Equatable {
+  case signedIn
+  case alreadySignedIn(username: String)
+  case failed
+}
+
 @MainActor
 class AuthenticationService: ObservableObject {
   @Published var user: UserActor?
   @Published var selectedAccountId: String?
   @Published var isAuthenticating = false
   @Published var isAuthenticated = false
+  @Published private(set) var sessions: [StoredSession] = []
+  @Published private(set) var activeSessionId: String?
 
-  nonisolated static let sessionKey = "expo-session-secret"
-  nonisolated static let usernameKey = "expo-username"
-  nonisolated static let selectedAccountKey = "expo-selected-account-id"
-  nonisolated static let sessionExpiresAtKey = "expo-session-expires-at"
   nonisolated static let deviceLoginGrantsKey = "expo-device-login-grants"
+  private let store: SessionStore
   private let presentationContext = AuthPresentationContextProvider()
   private var cancellables = Set<AnyCancellable>()
 
   var sessionSecret: String? {
-    UserDefaults.standard.string(forKey: Self.sessionKey)
+    store.activeLiveSession?.sessionSecret
   }
 
   var selectedAccount: Account? {
@@ -40,39 +45,38 @@ class AuthenticationService: ObservableObject {
     return isAuthenticated && user != nil
   }
 
-  init() {
-    selectedAccountId = UserDefaults.standard.string(forKey: Self.selectedAccountKey)
+  init(store: SessionStore = .shared) {
+    self.store = store
     checkAuthenticationStatus()
     observeSessionChanges()
   }
 
   func checkAuthenticationStatus() {
-    if Self.isSessionExpired() {
-      // The bridge reads this expiry to explain the failure, then clears it.
-      Self.deleteNativeSession()
-      user = nil
-      selectedAccountId = nil
-      isAuthenticated = false
-      return
-    }
-
-    let sessionSecret = UserDefaults.standard.string(forKey: Self.sessionKey)
-    isAuthenticated = !(sessionSecret?.isEmpty ?? true)
-
+    publishStoreState()
     if isAuthenticated {
-      if let sessionSecret {
-        Self.saveNativeSession(sessionSecret)
-      }
       Task {
-        if let sessionSecret {
-          await APIClient.shared.setSession(sessionSecret)
-        }
         await loadUserInfo()
       }
-    } else {
-      Self.deleteNativeSession()
+    }
+  }
+
+  func reloadActiveSession() async {
+    publishStoreState()
+    await loadUserInfo()
+  }
+
+  private func publishStoreState() {
+    let active = store.activeSession
+    if active?.id != activeSessionId {
       user = nil
-      selectedAccountId = nil
+    }
+    sessions = store.sessions
+    activeSessionId = active?.id
+    let live = store.activeLiveSession
+    isAuthenticated = live != nil
+    selectedAccountId = live?.selectedAccountId
+    if live == nil {
+      user = nil
     }
   }
 
@@ -90,7 +94,7 @@ class AuthenticationService: ObservableObject {
     guard isAuthenticated else { return }
     do {
       if try await fetchUserInfo() == false {
-        signOut()
+        await signOut()
       }
     } catch {
       print("[AuthenticationService] Failed to load user info: \(error)")
@@ -99,110 +103,128 @@ class AuthenticationService: ObservableObject {
 
   /// Returns false only when the actor is definitively null, not when the request merely failed.
   private func fetchUserInfo() async throws -> Bool {
+    guard let sessionId = store.activeLiveSession?.id else {
+      return true
+    }
     let response: MeActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
+    guard store.activeSession?.id == sessionId else {
+      return true
+    }
     guard let actor = response.data.meActor else {
       print("[AuthenticationService] meActor was null. Signed in as an actor type Expo Go does not model.")
       return false
     }
+    store.updateProfile(id: sessionId, from: actor)
+    publishStoreState()
     user = actor
-    UserDefaults.standard.set(actor.username, forKey: Self.usernameKey)
-
-    if selectedAccountId == nil, let firstAccount = actor.accounts.first {
-      selectAccount(accountId: firstAccount.id)
-    }
     return true
   }
 
-  func signUp() async throws {
+  @discardableResult
+  func signUp() async throws -> LoginOutcome? {
+    try await authenticate(path: "signup")
+  }
+
+  @discardableResult
+  func signIn() async throws -> LoginOutcome? {
+    try await authenticate(path: "login")
+  }
+
+  @discardableResult
+  func ssoLogin() async throws -> LoginOutcome? {
+    try await authenticate(path: "sso-login")
+  }
+
+  private func authenticate(path: String) async throws -> LoginOutcome? {
     isAuthenticating = true
     defer { isAuthenticating = false }
 
-    if let sessionSecret = try await performAuthentication(path: "signup") {
-      await completeLogin(with: sessionSecret)
+    guard let sessionSecret = try await performAuthentication(path: path) else {
+      return nil
     }
+    return await completeLogin(with: sessionSecret)
   }
 
-  func signIn() async throws {
-    isAuthenticating = true
-    defer { isAuthenticating = false }
-
-    if let sessionSecret = try await performAuthentication(path: "login") {
-      await completeLogin(with: sessionSecret)
-    }
-  }
-
-  func ssoLogin() async throws {
-    isAuthenticating = true
-    defer { isAuthenticating = false }
-
-    if let sessionSecret = try await performAuthentication(path: "sso-login") {
-      await completeLogin(with: sessionSecret)
-    }
-  }
-
-  func completeLogin(with sessionSecret: String, expiresAt: Date? = nil) async {
-    UserDefaults.standard.set(sessionSecret, forKey: Self.sessionKey)
-    if let expiresAt {
-      UserDefaults.standard.set(expiresAt.timeIntervalSince1970, forKey: Self.sessionExpiresAtKey)
-    } else {
-      UserDefaults.standard.removeObject(forKey: Self.sessionExpiresAtKey)
-    }
-    Self.saveNativeSession(sessionSecret)
-    await APIClient.shared.setSession(sessionSecret)
+  @discardableResult
+  func completeLogin(with sessionSecret: String, expiresAt: Date? = nil) async -> LoginOutcome {
+    let knownUserIds = Set(store.sessions.compactMap(\.userId))
+    let previousSessionId = store.activeSession?.id
+    let session = store.add(sessionSecret: sessionSecret, expiresAt: expiresAt)
     do {
-      // Fetch user info before setting isAuthenticated so account data is ready
-      // when the UI switches to the account selector
+      // Fetch user info before publishing so account data is ready
+      // when the UI switches to the account list
       guard try await fetchUserInfo() else {
-        signOut()
-        return
+        store.remove(id: session.id)
+        if let previousSessionId {
+          store.activate(id: previousSessionId)
+        }
+        await reloadActiveSession()
+        return .failed
       }
-      isAuthenticated = true
     } catch {
       print("[AuthenticationService] Failed to load user info: \(error)")
-      isAuthenticated = true
+      publishStoreState()
+      return .signedIn
     }
+    if let current = store.activeSession, let userId = current.userId, knownUserIds.contains(userId) {
+      return .alreadySignedIn(username: current.username ?? userId)
+    }
+    return .signedIn
   }
 
-  func signOut() {
-    Self.clearSession()
-    user = nil
-    selectedAccountId = nil
-    isAuthenticated = false
+  func signOut() async {
+    if let id = store.activeSession?.id {
+      removeSessionAndGrants(id: id)
+    }
+    await reloadActiveSession()
   }
 
-  nonisolated private static func saveNativeSession(_ sessionSecret: String) {
-    do {
-      try Session.sharedInstance.saveSession(
-        toKeychain: ["sessionSecret": sessionSecret] as NSDictionary
-      )
-    } catch {
-      print("[AuthenticationService] Failed to save native session: \(error.localizedDescription)")
-    }
+  func switchSession(id: String) async {
+    store.activate(id: id)
+    await reloadActiveSession()
   }
 
-  nonisolated private static func deleteNativeSession() {
-    do {
-      try Session.sharedInstance.deleteSessionFromKeychain()
-    } catch {
-      print("[AuthenticationService] Failed to clear native session: \(error.localizedDescription)")
+  func removeSession(id: String) {
+    removeSessionAndGrants(id: id)
+    publishStoreState()
+  }
+
+  func selectAccount(accountId: String) {
+    guard let id = store.activeSession?.id else { return }
+    selectAccount(accountId, inSession: id)
+    selectedAccountId = accountId
+  }
+
+  func selectAccount(_ accountId: String, inSession id: String) {
+    store.selectAccount(accountId, forSession: id)
+    sessions = store.sessions
+  }
+
+  private func removeSessionAndGrants(id: String) {
+    if let username = store.sessions.first(where: { $0.id == id })?.username {
+      Self.removeDeviceLoginGrants(forUsername: username)
     }
+    store.remove(id: id)
   }
 
   /// The stored expiry is the only local signal that the session died, avoiding a round trip on every project open.
   nonisolated static func isSessionExpired() -> Bool {
-    guard let expiresAt = UserDefaults.standard.object(forKey: sessionExpiresAtKey) as? Double else {
-      return false
-    }
-    return Date().timeIntervalSince1970 >= expiresAt
+    SessionStore.shared.activeSession?.isExpired ?? false
   }
 
   /// The signed-in username, or nil if there is no live, unexpired session.
   nonisolated static var currentUsername: String? {
-    guard UserDefaults.standard.string(forKey: sessionKey) != nil,
-          !isSessionExpired() else {
-      return nil
-    }
-    return UserDefaults.standard.string(forKey: usernameKey)
+    SessionStore.shared.activeLiveSession?.username
+  }
+
+  nonisolated static func deactivateExpiredSession() {
+    SessionStore.shared.deactivateExpiredActiveSession()
+    NotificationCenter.default.post(name: .expoSessionDidChange, object: nil)
+  }
+
+  nonisolated static func removeDeviceLoginGrants(forUsername username: String) {
+    let grants = UserDefaults.standard.dictionary(forKey: deviceLoginGrantsKey) as? [String: String] ?? [:]
+    UserDefaults.standard.set(grants.filter { $0.value != username }, forKey: deviceLoginGrantsKey)
   }
 
   /// Remembers which account a device login granted for a verification host, so rescanning a project behind that
@@ -219,22 +241,6 @@ class AuthenticationService: ObservableObject {
     }
     let grants = UserDefaults.standard.dictionary(forKey: deviceLoginGrantsKey) as? [String: String] ?? [:]
     return grants[host] == username
-  }
-
-  nonisolated static func clearSession() {
-    let defaults = UserDefaults.standard
-    defaults.removeObject(forKey: sessionKey)
-    defaults.removeObject(forKey: usernameKey)
-    defaults.removeObject(forKey: selectedAccountKey)
-    defaults.removeObject(forKey: sessionExpiresAtKey)
-    deleteNativeSession()
-    Task { await APIClient.shared.setSession(nil) }
-    NotificationCenter.default.post(name: .expoSessionDidChange, object: nil)
-  }
-
-  func selectAccount(accountId: String) {
-    selectedAccountId = accountId
-    UserDefaults.standard.set(accountId, forKey: Self.selectedAccountKey)
   }
 
   private func performAuthentication(path: String) async throws -> String? {

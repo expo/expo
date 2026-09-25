@@ -21,6 +21,8 @@ class HomeViewModel: ObservableObject {
   @Published var selectedAccountId: String?
   @Published var isAuthenticating = false
   @Published var isAuthenticated = false
+  @Published var sessions: [StoredSession] = []
+  @Published var activeSessionId: String?
 
   @Published var developmentServers: [DevelopmentServer] = []
   @Published var projects: [ExpoProject] = []
@@ -122,10 +124,19 @@ class HomeViewModel: ObservableObject {
   }
 
   func signOut() {
-    authService.signOut()
     clearRecentlyOpenedApps()
     dataService.clearData()
     dataService.stopPolling()
+    Task {
+      await authService.signOut()
+      startPollingSelectedAccount()
+    }
+  }
+
+  private func startPollingSelectedAccount() {
+    if let account = selectedAccount {
+      dataService.startPolling(accountName: account.name)
+    }
   }
 
   func selectAccount(accountId: String) {
@@ -253,6 +264,17 @@ class HomeViewModel: ObservableObject {
     authService.$isAuthenticated
       .sink { [weak self] isAuthenticated in
         self?.isAuthenticated = isAuthenticated
+        self?.serverService.setSessionSecret(self?.authService.sessionSecret)
+      }
+      .store(in: &cancellables)
+
+    authService.$sessions
+      .sink { [weak self] in self?.sessions = $0 }
+      .store(in: &cancellables)
+
+    authService.$activeSessionId
+      .sink { [weak self] id in
+        self?.activeSessionId = id
         self?.serverService.setSessionSecret(self?.authService.sessionSecret)
       }
       .store(in: &cancellables)
