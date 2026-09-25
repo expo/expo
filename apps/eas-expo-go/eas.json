@@ -120,6 +120,9 @@
     "versioned-quest-client": {
       "extends": "versioned-client",
       "android": {
+        "env": {
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent.quest"
+        },
         "gradleCommand": ":app:assembleQuestDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     },
@@ -132,6 +135,9 @@
     "unversioned-quest-client": {
       "extends": "unversioned-client",
       "android": {
+        "env": {
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent.quest"
+        },
         "gradleCommand": ":app:assembleQuestDebug -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     },
@@ -141,12 +147,18 @@
         "EAS_BUILD_PROFILE": "release-client"
       },
       "android": {
-        "gradleCommand": ":app:bundleQuestRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
+        "env": {
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent.quest"
+        },
+        "gradleCommand": ":app:assembleQuestRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     },
     "publish-quest-client": {
       "extends": "publish-client",
       "android": {
+        "env": {
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent.quest"
+        },
         "gradleCommand": ":app:assembleQuestRelease -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false"
       }
     }
