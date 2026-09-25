@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `preview` option to `shareAsync` to head the share sheet with a title and a thumbnail of the file instead of its name and size. ([#50633](https://github.com/expo/expo/pull/50633) by [@u9g](https://github.com/u9g))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
