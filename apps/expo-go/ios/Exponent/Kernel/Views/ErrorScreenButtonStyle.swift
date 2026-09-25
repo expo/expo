@@ -8,7 +8,7 @@ struct ErrorScreenButtonStyle: ButtonStyle {
 
   func makeBody(configuration: Configuration) -> some View {
     configuration.label
-      .font(.system(size: 14, weight: .semibold))
+      .font(.system(size: 16, weight: .semibold))
       .foregroundStyle(foreground)
       .frame(maxWidth: .infinity, minHeight: 36)
       .background(background, in: .rect(cornerRadius: 10))
