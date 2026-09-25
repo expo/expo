@@ -9,11 +9,11 @@ struct SimulatorAccountView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      if !viewModel.isAuthenticated {
+      if !viewModel.hasStoredSessions {
         header
       }
 
-      if !viewModel.isAuthenticated {
+      if !viewModel.hasStoredSessions {
         Spacer()
         Image("expo-go-logo")
           .resizable()
@@ -24,7 +24,7 @@ struct SimulatorAccountView: View {
       }
 
       VStack(spacing: 0) {
-        if viewModel.isAuthenticated {
+        if viewModel.hasStoredSessions {
           AccountSwitcherView(onAddAccount: signInToAnotherAccount)
         } else {
           loginSignupCard
@@ -34,7 +34,7 @@ struct SimulatorAccountView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.expoSystemBackground)
-    .presentationDetents(viewModel.isAuthenticated ? [.medium, .large] : [.large])
+    .presentationDetents(viewModel.hasStoredSessions ? [.medium, .large] : [.large])
   }
 
   private func signInToAnotherAccount() {

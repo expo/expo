@@ -10,7 +10,7 @@ struct DeviceAccountView: View {
   @State private var isAddingAccount = false
 
   private var showsLogin: Bool {
-    !viewModel.isAuthenticated || isAddingAccount
+    !viewModel.hasStoredSessions || isAddingAccount
   }
 
   var body: some View {

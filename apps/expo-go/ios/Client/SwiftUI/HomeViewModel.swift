@@ -38,6 +38,7 @@ class HomeViewModel: ObservableObject {
 
   var selectedAccount: Account? { authService.selectedAccount }
   var isLoggedIn: Bool { authService.isLoggedIn }
+  var hasStoredSessions: Bool { !sessions.isEmpty }
   var accountSwitcherSections: [AccountSwitcherSection] {
     AccountSwitcherSections.make(sessions: sessions, activeSessionId: activeSessionId)
   }
