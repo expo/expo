@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Make `AudioPlayer.playbackRate` writable, as documented. Assigning to it used to throw because the native property only had a getter.
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-22
