@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Include the privacy manifest in prebuilt frameworks. ([#50503](https://github.com/expo/expo/pull/50503) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-22
