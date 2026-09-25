@@ -25,20 +25,18 @@
     "preprepare": "node scripts/prepare.js",
     "prepare": "./bin/expo-turbo build"
   },
-  "dependencies": {
-    "expo-asset": "workspace:*",
-    "expo-modules-core": "workspace:*",
-    "jest-expo": "workspace:*",
-    "jsc-android": "^250231.0.0"
-  },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "@vercel/ncc": "^0.38.4",
+    "expo-asset": "workspace:*",
     "expo-module-scripts": "workspace:*",
+    "expo-modules-core": "workspace:*",
     "expotools": "workspace:*",
     "jest": "^29.7.0",
+    "jest-expo": "workspace:*",
+    "jsc-android": "^250231.0.0",
     "lint-staged": "^17.0.8",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.79.0",
