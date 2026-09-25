@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Default `preservesPitch` to `true` to match the documented default and the iOS and web behavior.
+- [Android] Default `preservesPitch` to `true` to match the documented default and the iOS and web behavior. ([#50658](https://github.com/expo/expo/pull/50658) by [@ramen2020](https://github.com/ramen2020))
 
 ### 💡 Others
 
