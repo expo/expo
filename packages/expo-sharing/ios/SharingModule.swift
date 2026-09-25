@@ -30,7 +30,8 @@ public final class SharingModule: Module {
 
       let shareURL = try prepareShareUrl(url: url, options: options)
       let stagedDirectory = shareURL == url ? nil : shareURL.deletingLastPathComponent()
-      let activityController = UIActivityViewController(activityItems: [shareURL], applicationActivities: nil)
+      let item: Any = options.preview.map { SharePreviewItem(url: shareURL, title: $0.title) } ?? shareURL
+      let activityController = UIActivityViewController(activityItems: [item], applicationActivities: nil)
       activityController.title = options.dialogTitle
 
       // weak self = self to avoid warnings
