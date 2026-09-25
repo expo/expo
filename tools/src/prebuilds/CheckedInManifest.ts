@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import os from 'node:os';
 import path from 'node:path';
+import { isDeepStrictEqual } from 'node:util';
 
 import { getPackagesDir } from '../Directories';
 import logger from '../Logger';
@@ -46,11 +47,9 @@ type DumpedTarget = {
   resources?: DumpedResource[];
   publicHeadersPath?: string;
   dependencies?: DumpedDependency[];
-  pluginUsages?: { plugin: [string, string | null] }[];
 };
 type DumpedManifest = {
   name: string;
-  defaultLocalization?: string;
   dependencies?: unknown[];
   products?: { name: string; type: Record<string, unknown>; targets?: string[] }[];
   targets?: DumpedTarget[];
@@ -214,8 +213,271 @@ function traitNames(traits: unknown): string[] | null {
   return names.length === traits.length ? names : null;
 }
 
+function records(value: unknown): Record<string, unknown>[] {
+  return Array.isArray(value) ? value.filter(isRecord) : [];
+}
+
+function remoteUrl(entry: Record<string, unknown>): unknown {
+  const remote = isRecord(entry.location) ? sole(entry.location.remote) : undefined;
+  return isRecord(remote) ? remote.urlString : undefined;
+}
+
+type DumpedOwner = { kind: string; name: string };
+
+type DumpedKeyRule =
+  | 'supported'
+  | {
+      /** What SwiftPM dumps when the manifest leaves the key out. A rule without a default
+       * rejects the key whenever it is present. */
+      default?: unknown;
+      what: (value: unknown, owner: DumpedOwner, key: string) => string;
+      how: string;
+    };
+type DumpedKeyRules = Record<string, DumpedKeyRule>;
+
+const declares =
+  (consequence: string) =>
+  (value: unknown, { kind, name }: DumpedOwner, key: string) =>
+    `${kind} "${name}" declares ${key} ${JSON.stringify(value)}, ${consequence}`;
+
+const UNSUPPORTED = 'but et prebuild does not support it and would build as if it were not set.';
+
+const PACKAGE_KEYS: DumpedKeyRules = {
+  name: 'supported',
+  toolsVersion: 'supported',
+  packageKind: 'supported',
+  platforms: 'supported',
+  dependencies: 'supported',
+  products: 'supported',
+  targets: 'supported',
+  defaultLocalization: {
+    default: null,
+    what: (value) =>
+      `the manifest declares default localization ${JSON.stringify(value)}, which the generated target cannot represent.`,
+    how: 'Remove the localization, or remove Package.swift to build this product from spm.config.json instead.',
+  },
+  swiftLanguageVersions: {
+    default: null,
+    what: declares(
+      'but et prebuild does not apply the Swift language modes in Package.swift. It builds with swiftLanguageVersions of the product in spm.config.json.'
+    ),
+    how: 'Remove swiftLanguageModes or swiftLanguageVersions from the Package(...) call in Package.swift, and set swiftLanguageVersions on the product in spm.config.json instead.',
+  },
+  cLanguageStandard: {
+    default: null,
+    what: declares(
+      "but et prebuild does not apply it, so the prebuilt framework would compile C with the compiler's default standard."
+    ),
+    how: 'Remove cLanguageStandard from the Package(...) call in Package.swift.',
+  },
+  cxxLanguageStandard: {
+    default: null,
+    what: declares('but et prebuild does not apply it and always compiles C++ as C++20.'),
+    how: 'Remove cxxLanguageStandard from the Package(...) call in Package.swift.',
+  },
+  pkgConfig: {
+    default: null,
+    what: declares(UNSUPPORTED),
+    how: 'Remove pkgConfig from the Package(...) call in Package.swift.',
+  },
+  providers: {
+    default: null,
+    what: declares(UNSUPPORTED),
+    how: 'Remove providers from the Package(...) call in Package.swift.',
+  },
+  traits: {
+    default: [],
+    what: declares(
+      'but et prebuild does not support package traits and would build as if none were declared.'
+    ),
+    how: 'Remove traits from the Package(...) call in Package.swift.',
+  },
+};
+
+const PRODUCT_KEYS: DumpedKeyRules = {
+  name: 'supported',
+  targets: 'supported',
+  type: 'supported',
+  settings: {
+    default: [],
+    what: declares(
+      'but et prebuild does not read product settings from Package.swift, so they would be missing from the prebuilt framework.'
+    ),
+    how: 'Remove the settings from the product in Package.swift.',
+  },
+};
+
+const TARGET_KEYS: DumpedKeyRules = {
+  name: 'supported',
+  type: 'supported',
+  path: 'supported',
+  exclude: 'supported',
+  sources: 'supported',
+  resources: 'supported',
+  publicHeadersPath: 'supported',
+  dependencies: 'supported',
+  pluginUsages: {
+    default: [],
+    what: (value, owner, key) => {
+      const usage = Array.isArray(value) && isRecord(value[0]) ? value[0].plugin : undefined;
+      const plugin = Array.isArray(usage) ? usage[0] : undefined;
+      return isNonEmptyString(plugin)
+        ? `it depends on non-regular target "${plugin}" (plugin), which the generated package does not mirror.`
+        : declares('which the generated package does not mirror.')(value, owner, key);
+    },
+    how: 'Remove the plugin application or move its implementation into a regular target.',
+  },
+  settings: {
+    default: [],
+    what: declares(
+      'but et prebuild does not read build settings from Package.swift, so they would be missing from the prebuilt framework.'
+    ),
+    how: 'Remove cSettings, cxxSettings, swiftSettings, and linkerSettings from the target in Package.swift. Swift compiler settings have no spm.config.json equivalent. Set the other flags on the target in spm.config.json instead: includeDirectories for header search paths, compilerFlags for C, C++, and Objective-C, linkerFlags, and linkedFrameworks.',
+  },
+  packageAccess: {
+    default: true,
+    what: declares(
+      'but et prebuild does not support it and would build the target with package access.'
+    ),
+    how: 'Remove packageAccess from the target in Package.swift.',
+  },
+};
+
+const DEPENDENCY_CASES: DumpedKeyRules = {
+  sourceControl: 'supported',
+  fileSystem: {
+    what: (value) => {
+      const entry = sole(value);
+      return `the manifest declares local package dependency ${JSON.stringify(isRecord(entry) ? entry.path : value)}, which spmPackages in spm.config.json cannot mirror.`;
+    },
+    how: 'Remove the .package(path:) declaration, or depend on the package through a remote URL listed in spmPackages.',
+  },
+  registry: {
+    what: (_value, { name }) =>
+      `the manifest declares registry package dependency ${JSON.stringify(name)}, which spmPackages in spm.config.json cannot mirror.`,
+    how: "Use .package(url:exact:) with the package's Git URL instead, and list it in spmPackages.",
+  },
+};
+
+const SOURCE_CONTROL_KEYS: DumpedKeyRules = {
+  identity: 'supported',
+  location: 'supported',
+  requirement: 'supported',
+  traits: 'supported',
+  productFilter: {
+    default: null,
+    what: declares(UNSUPPORTED),
+    how: 'Remove the product filter from the .package declaration in Package.swift.',
+  },
+};
+
+const REQUIREMENT_CASES: DumpedKeyRules = {
+  exact: 'supported',
+  branch: 'supported',
+  revision: 'supported',
+  range: {
+    what: (_value, { name }) =>
+      `the manifest declares ${name} with a version range, which spm.config.json cannot mirror exactly, because SwiftPM reports from: and upToNextMinor: only as the range they expand to.`,
+    how: 'Use exact: in Package.swift and the same exact version in spmPackages in spm.config.json.',
+  },
+};
+
+function checkDumpedKeys(
+  object: Record<string, unknown>,
+  rules: DumpedKeyRules,
+  owner: DumpedOwner,
+  fail: ManifestError
+): void {
+  for (const [key, value] of Object.entries(object)) {
+    if (!Object.hasOwn(rules, key)) {
+      throw fail(
+        `${owner.kind} "${owner.name}" declares key "${key}", which this version of et prebuild does not know, so it cannot tell whether the prebuilt framework would honor it.`,
+        `Add "${key}" to the ${owner.kind} keys in the allow-list in tools/src/prebuilds/CheckedInManifest.ts after deciding how the build handles it.`
+      );
+    }
+    const rule = rules[key];
+    if (rule === 'supported' || ('default' in rule && isDeepStrictEqual(value, rule.default))) {
+      continue;
+    }
+    throw fail(rule.what(value, owner, key), rule.how);
+  }
+}
+
+/** A dumped enum is an object whose single key names its case. readDeclaredPackages reports a
+ * missing or unknown case as unreadable, so only the listed cases are checked here. */
+function checkDumpedCase(
+  object: Record<string, unknown>,
+  cases: DumpedKeyRules,
+  owner: DumpedOwner,
+  fail: ManifestError
+): void {
+  const kind = soleKey(object);
+  if (kind != null && Object.hasOwn(cases, kind)) checkDumpedKeys(object, cases, owner, fail);
+}
+
+/**
+ * Rejects each dumped key that et prebuild would otherwise ignore: a key it does not know, and a
+ * known key whose value differs from what SwiftPM dumps when the manifest leaves it out. Checks
+ * the package, its library product `productName`, the targets in `reachedTargets`, and the
+ * package dependencies. The values of supported keys are checked where they are read.
+ */
+export function assertCheckedInManifestKeys(
+  manifest: Record<string, unknown>,
+  productName: string,
+  reachedTargets: ReadonlySet<string>
+): void {
+  const libraryProduct = records(manifest.products).find(
+    (candidate) =>
+      candidate.name === productName && isRecord(candidate.type) && 'library' in candidate.type
+  );
+  const [firstTarget] = Array.isArray(libraryProduct?.targets) ? libraryProduct.targets : [];
+  const packageTarget = isNonEmptyString(firstTarget) ? firstTarget : productName;
+  const packageError: ManifestError = (what, how) =>
+    manifestError(productName, packageTarget, what, how);
+
+  checkDumpedKeys(
+    manifest,
+    PACKAGE_KEYS,
+    { kind: 'package', name: String(manifest.name) },
+    packageError
+  );
+  if (libraryProduct) {
+    checkDumpedKeys(
+      libraryProduct,
+      PRODUCT_KEYS,
+      { kind: 'product', name: productName },
+      packageError
+    );
+  }
+  const targetsByName = new Map(records(manifest.targets).map((target) => [target.name, target]));
+  for (const name of reachedTargets) {
+    const target = targetsByName.get(name);
+    if (!target) continue;
+    checkDumpedKeys(target, TARGET_KEYS, { kind: 'target', name }, (what, how) =>
+      manifestError(productName, name, what, how)
+    );
+  }
+  for (const dependency of records(manifest.dependencies)) {
+    const kind = soleKey(dependency);
+    const entry = kind == null ? undefined : sole(dependency[kind]);
+    const url = isRecord(entry) ? remoteUrl(entry) : undefined;
+    const owner = {
+      kind: 'package dependency',
+      name: isNonEmptyString(url) ? url : String(isRecord(entry) ? entry.identity : kind),
+    };
+    checkDumpedCase(dependency, DEPENDENCY_CASES, owner, packageError);
+    if (kind !== 'sourceControl' || !isRecord(entry)) continue;
+    checkDumpedKeys(entry, SOURCE_CONTROL_KEYS, owner, packageError);
+    if (isRecord(entry.requirement)) {
+      checkDumpedCase(entry.requirement, REQUIREMENT_CASES, owner, packageError);
+    }
+  }
+}
+
 /** The remote packages a dumped manifest declares, keyed by normalized URL. Every other
- * dependency form, and any shape this does not recognize, is rejected rather than skipped. */
+ * dependency form, and any shape this does not recognize, is rejected rather than skipped;
+ * assertCheckedInManifestKeys has already given local, registry, and range dependencies their
+ * own diagnostics. */
 function readDeclaredPackages(
   dependencies: unknown,
   fail: ManifestError
@@ -232,30 +494,11 @@ function readDeclaredPackages(
     const kind = isRecord(dependency) ? soleKey(dependency) : null;
     const entry = isRecord(dependency) && kind != null ? sole(dependency[kind]) : undefined;
     if (!isRecord(entry)) throw unreadable(dependency);
-    if (kind === 'fileSystem') {
-      throw fail(
-        `the manifest declares local package dependency ${JSON.stringify(entry.path)}, which spmPackages in spm.config.json cannot mirror.`,
-        'Remove the .package(path:) declaration, or depend on the package through a remote URL listed in spmPackages.'
-      );
-    }
-    if (kind === 'registry') {
-      throw fail(
-        `the manifest declares registry package dependency ${JSON.stringify(entry.identity)}, which spmPackages in spm.config.json cannot mirror.`,
-        "Use .package(url:exact:) with the package's Git URL instead, and list it in spmPackages."
-      );
-    }
-    const remote = isRecord(entry.location) ? sole(entry.location.remote) : undefined;
-    const url = isRecord(remote) ? remote.urlString : undefined;
+    const url = remoteUrl(entry);
     if (kind !== 'sourceControl' || !isNonEmptyString(url) || !isRecord(entry.requirement)) {
       throw unreadable(dependency);
     }
     const requirementKind = soleKey(entry.requirement);
-    if (requirementKind === 'range') {
-      throw fail(
-        `the manifest declares ${url} with a version range, which spm.config.json cannot mirror exactly, because SwiftPM reports from: and upToNextMinor: only as the range they expand to.`,
-        'Use exact: in Package.swift and the same exact version in spmPackages in spm.config.json.'
-      );
-    }
     if (!isPinnedKind(requirementKind)) throw unreadable(dependency);
     const value = sole(entry.requirement[requirementKind]);
     if (!isNonEmptyString(value)) throw unreadable(dependency);
@@ -365,7 +608,7 @@ function containsSources(directory: string): boolean {
 
 function resolveTargetPath(
   root: string,
-  target: DumpedTarget,
+  target: Pick<DumpedTarget, 'name' | 'path'>,
   regularCount: number
 ): string | null {
   if (target.path != null) return target.path;
@@ -379,6 +622,47 @@ function resolveTargetPath(
     }
   }
   return null;
+}
+
+/**
+ * The canonical source directory of a regular target in a dumped manifest, inferred the way
+ * SwiftPM infers it when the target omits `path`. `regularCount` is the number of regular
+ * targets the manifest declares. Throws when the directory does not exist or leaves `root`.
+ */
+export function resolveCheckedInTargetSourceRoot(
+  root: string,
+  productName: string,
+  target: Pick<DumpedTarget, 'name' | 'path'>,
+  regularCount: number
+): string {
+  const targetPath = resolveTargetPath(root, target, regularCount);
+  if (targetPath != null) prefixSourcePath(targetPath, productName, target.name, 'package root');
+  const lexicalSourceRoot = targetPath == null ? null : path.resolve(root, targetPath);
+  if (
+    lexicalSourceRoot == null ||
+    !fs.pathExistsSync(lexicalSourceRoot) ||
+    !fs.statSync(lexicalSourceRoot).isDirectory()
+  ) {
+    throw manifestError(
+      productName,
+      target.name,
+      `its source path ${JSON.stringify(targetPath)} does not resolve to a real directory.`,
+      "Set path in Package.swift to the directory containing this target's sources."
+    );
+  }
+  // The lexical check above cannot see a symbolic link inside the target path.
+  const sourceRoot = fs.realpathSync.native(lexicalSourceRoot);
+  const canonicalRoot = fs.realpathSync.native(root);
+  const fromRoot = path.relative(canonicalRoot, sourceRoot);
+  if (fromRoot === '..' || fromRoot.startsWith(`..${path.sep}`) || path.isAbsolute(fromRoot)) {
+    throw manifestError(
+      productName,
+      target.name,
+      `its source path ${JSON.stringify(targetPath)} resolves to ${sourceRoot}, which escapes the package root ${canonicalRoot} through a symbolic link.`,
+      'Keep the target path inside the package root, and replace the symbolic link with the directory it points to.'
+    );
+  }
+  return sourceRoot;
 }
 
 /** The single relative-path spelling this module compares and emits: POSIX separators, `.` and
@@ -590,28 +874,6 @@ export async function resolveCheckedInManifestAsync(
       `Add .library(name: "${product.name}", targets: [...]) to Package.swift.`
     );
   }
-  if (manifest.defaultLocalization != null) {
-    const targetName = libraryProduct.targets?.[0] ?? product.name;
-    throw manifestError(
-      product.name,
-      targetName,
-      `the manifest declares default localization "${manifest.defaultLocalization}", which the generated target cannot represent.`,
-      'Remove the localization, or remove Package.swift to build this product from spm.config.json instead.'
-    );
-  }
-
-  const packagesTargetName =
-    libraryProduct.targets?.[0] ??
-    product.targets.find((target) => target.type !== 'framework')?.name ??
-    product.name;
-  const packageError: ManifestError = (what, how) =>
-    manifestError(product.name, packagesTargetName, what, how);
-  reconcilePackages(
-    readDeclaredPackages(manifest.dependencies, packageError),
-    product.spmPackages ?? [],
-    packageError
-  );
-
   const externalNames = new Set([
     ...(product.externalDependencies ?? []),
     ...(product.spmPackages ?? []).map((dependency) => dependency.productName),
@@ -632,15 +894,46 @@ export async function resolveCheckedInManifestAsync(
       );
     }
     reachable.add(name);
-    const plugin = target.pluginUsages?.[0];
-    if (plugin) {
-      throw manifestError(
-        product.name,
-        target.name,
-        `it depends on non-regular target "${plugin.plugin[0]}" (plugin), which the generated package does not mirror.`,
-        'Remove the plugin application or move its implementation into a regular target.'
-      );
+    for (const dependency of target.dependencies ?? []) {
+      if (dependency.product) continue;
+      const dependencyTargetName = dependencyName(dependency);
+      if (dependencyTargetName && declaredByName.has(dependencyTargetName)) {
+        const declared = declaredByName.get(dependencyTargetName)!;
+        if (declared.type !== 'regular') {
+          throw manifestError(
+            product.name,
+            target.name,
+            `it depends on non-regular target "${dependencyTargetName}" (${declared.type}), which the generated package does not mirror.`,
+            'Remove that dependency or move its implementation into a regular target.'
+          );
+        }
+        queue.push(dependencyTargetName);
+      } else if (!dependencyTargetName || !externalNames.has(dependencyTargetName)) {
+        throw manifestError(
+          product.name,
+          target.name,
+          `it names unknown dependency "${dependencyTargetName ?? JSON.stringify(dependency)}", which the generated package cannot resolve.`,
+          'Declare a regular target or list the dependency in externalDependencies or spmPackages in spm.config.json.'
+        );
+      }
     }
+  }
+
+  assertCheckedInManifestKeys(manifest, product.name, reachable);
+
+  const packagesTargetName =
+    libraryProduct.targets?.[0] ??
+    product.targets.find((target) => target.type !== 'framework')?.name ??
+    product.name;
+  const packageError: ManifestError = (what, how) =>
+    manifestError(product.name, packagesTargetName, what, how);
+  reconcilePackages(
+    readDeclaredPackages(manifest.dependencies, packageError),
+    product.spmPackages ?? [],
+    packageError
+  );
+
+  for (const target of [...reachable].map((name) => regularByName.get(name)!)) {
     for (const dependency of target.dependencies ?? []) {
       const dependencyTargetName = dependencyName(dependency);
       if (
@@ -663,51 +956,32 @@ export async function resolveCheckedInManifestAsync(
           'Remove moduleAliases, or remove Package.swift to build this product from spm.config.json instead.'
         );
       }
-      if (dependency.product) {
-        const [productName, packageName] = dependency.product;
-        const dependencyLabel = `.product(name: "${productName}", package: "${packageName}")`;
-        // The generated manifest names the package the way SPMPackage.ts does, and SwiftPM matches
-        // it against the package identity regardless of letter case.
-        const configuredPackageNames = (product.spmPackages ?? [])
-          .filter((entry) => entry.productName === productName)
-          .map((entry) => entry.packageName || derivePackageNameFromUrl(entry.url));
-        if (configuredPackageNames.length === 0) {
-          throw manifestError(
-            product.name,
-            target.name,
-            `it depends on ${dependencyLabel}, but no spmPackages entry in spm.config.json has productName "${productName}".`,
-            `Add an spmPackages entry with productName "${productName}", or fix the product name in Package.swift.`
-          );
-        }
-        if (
-          !configuredPackageNames.some(
-            (configured) => configured.toLowerCase() === packageName.toLowerCase()
-          )
-        ) {
-          throw manifestError(
-            product.name,
-            target.name,
-            `it depends on ${dependencyLabel}, but spm.config.json resolves product "${productName}" to package ${configuredPackageNames.map((name) => JSON.stringify(name)).join(' or ')}, so the generated manifest would take it from a different package.`,
-            'Set packageName in spm.config.json or package: in Package.swift so both name the same package; letter case does not matter.'
-          );
-        }
-      } else if (dependencyTargetName && declaredByName.has(dependencyTargetName)) {
-        const declared = declaredByName.get(dependencyTargetName)!;
-        if (declared.type !== 'regular') {
-          throw manifestError(
-            product.name,
-            target.name,
-            `it depends on non-regular target "${dependencyTargetName}" (${declared.type}), which the generated package does not mirror.`,
-            'Remove that dependency or move its implementation into a regular target.'
-          );
-        }
-        queue.push(dependencyTargetName);
-      } else if (!dependencyTargetName || !externalNames.has(dependencyTargetName)) {
+      if (!dependency.product) continue;
+      const [productName, packageName] = dependency.product;
+      const dependencyLabel = `.product(name: "${productName}", package: "${packageName}")`;
+      // The generated manifest names the package the way SPMPackage.ts does, and SwiftPM matches
+      // it against the package identity regardless of letter case.
+      const configuredPackageNames = (product.spmPackages ?? [])
+        .filter((entry) => entry.productName === productName)
+        .map((entry) => entry.packageName || derivePackageNameFromUrl(entry.url));
+      if (configuredPackageNames.length === 0) {
         throw manifestError(
           product.name,
           target.name,
-          `it names unknown dependency "${dependencyTargetName ?? JSON.stringify(dependency)}", which the generated package cannot resolve.`,
-          'Declare a regular target or list the dependency in externalDependencies or spmPackages in spm.config.json.'
+          `it depends on ${dependencyLabel}, but no spmPackages entry in spm.config.json has productName "${productName}".`,
+          `Add an spmPackages entry with productName "${productName}", or fix the product name in Package.swift.`
+        );
+      }
+      if (
+        !configuredPackageNames.some(
+          (configured) => configured.toLowerCase() === packageName.toLowerCase()
+        )
+      ) {
+        throw manifestError(
+          product.name,
+          target.name,
+          `it depends on ${dependencyLabel}, but spm.config.json resolves product "${productName}" to package ${configuredPackageNames.map((name) => JSON.stringify(name)).join(' or ')}, so the generated manifest would take it from a different package.`,
+          'Set packageName in spm.config.json or package: in Package.swift so both name the same package; letter case does not matter.'
         );
       }
     }
@@ -764,35 +1038,9 @@ export async function resolveCheckedInManifestAsync(
   const configSourceTargetNames = new Set(
     product.targets.filter((target) => target.type !== 'framework').map((target) => target.name)
   );
-  const canonicalRoot = fs.realpathSync.native(root);
   const result: CheckedInResolvedTarget[] = [];
   for (const target of regular.filter((candidate) => reachable.has(candidate.name))) {
-    const targetPath = resolveTargetPath(root, target, regular.length);
-    if (targetPath != null) prefixSourcePath(targetPath, product.name, target.name, 'package root');
-    const lexicalSourceRoot = targetPath == null ? null : path.resolve(root, targetPath);
-    if (
-      lexicalSourceRoot == null ||
-      !fs.pathExistsSync(lexicalSourceRoot) ||
-      !fs.statSync(lexicalSourceRoot).isDirectory()
-    ) {
-      throw manifestError(
-        product.name,
-        target.name,
-        `its source path ${JSON.stringify(targetPath)} does not resolve to a real directory.`,
-        "Set path in Package.swift to the directory containing this target's sources."
-      );
-    }
-    // The lexical check above cannot see a symbolic link inside the target path.
-    const sourceRoot = fs.realpathSync.native(lexicalSourceRoot);
-    const fromRoot = path.relative(canonicalRoot, sourceRoot);
-    if (fromRoot === '..' || fromRoot.startsWith(`..${path.sep}`) || path.isAbsolute(fromRoot)) {
-      throw manifestError(
-        product.name,
-        target.name,
-        `its source path ${JSON.stringify(targetPath)} resolves to ${sourceRoot}, which escapes the package root ${canonicalRoot} through a symbolic link.`,
-        'Keep the target path inside the package root, and replace the symbolic link with the directory it points to.'
-      );
-    }
+    const sourceRoot = resolveCheckedInTargetSourceRoot(root, product.name, target, regular.length);
     const prefix = (value: string) => prefixSourcePath(value, product.name, target.name);
     const excludes = target.exclude ?? [];
     const prefixedExcludes = excludes.map(prefix);

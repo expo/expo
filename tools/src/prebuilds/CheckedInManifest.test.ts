@@ -1012,7 +1012,7 @@ it(
 
 it('keeps config settings and platforms while replacing structure and membership', async () => {
   const input = fixture(
-    '.target(name: "Main", path: "ios", linkerSettings: [.linkedFramework("AppKit")]), .target(name: "Unused", path: "unused")',
+    '.target(name: "Main", path: "ios"), .target(name: "Unused", path: "unused")',
     { 'ios/Main.swift': 'public let value = 1', 'unused/Unused.swift': 'public let unused = 1' },
     { dependencies: REMOTE_PACKAGE }
   );
@@ -1026,7 +1026,7 @@ it('keeps config settings and platforms while replacing structure and membership
   await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Release');
   const manifest = fs.readFileSync(output, 'utf8');
   assert.match(manifest, /\.macOS\(\.v11\)/);
-  assert.doesNotMatch(manifest, /v13|AppKit|Unused/);
+  assert.doesNotMatch(manifest, /v13|Unused/);
   assert.match(manifest, /\.linkedFramework\("Foundation"\)/);
   assert.match(manifest, /CONFIG_FLAG=1/);
   assert.match(manifest, /-lz/);
@@ -1211,6 +1211,13 @@ it('rejects a default localization rather than silently removing it', async () =
   await rejectsManifest(
     input,
     /: the manifest declares default localization "en", which the generated target cannot represent\./
+  );
+});
+
+it('rejects target build settings rather than silently dropping them', async () => {
+  await rejectsManifest(
+    fixture('.target(name: "Main", path: "ios", linkerSettings: [.linkedFramework("AppKit")])'),
+    /: target "Main" declares settings \[.*"AppKit".*\], .* in spm\.config\.json instead: .*linkedFrameworks\.$/
   );
 });
 
