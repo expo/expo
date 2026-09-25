@@ -9,6 +9,7 @@ import { SQLiteOptions } from './SQLiteOptions';
 import { sendWorkerResult } from './WorkerChannel';
 import { AccessHandlePoolVFS } from './wa-sqlite/AccessHandlePoolVFS';
 import { MemoryVFS } from './wa-sqlite/MemoryVFS';
+import { OPFSCoopSyncVFS } from './wa-sqlite/OPFSCoopSyncVFS';
 import * as SQLite from './wa-sqlite/sqlite-api';
 import {
   SQLITE_ROW,
@@ -46,14 +47,19 @@ interface SessionEntity {
 }
 
 const VFS_NAME_PERSISTENT = 'expo-sqlite';
+const VFS_NAME_PERSISTENT_MULTI_TAB = 'expo-sqlite-multitab';
 const VFS_NAME_MEMORY = 'expo-sqlite-memfs';
 
 const MAX_INT32 = 0x7fffffff;
 const MIN_INT32 = -0x80000000;
 
+type PersistentVFS = AccessHandlePoolVFS | OPFSCoopSyncVFS;
+
 let _sqlite3: SQLiteAPI | null = null;
 let _vfs: AccessHandlePoolVFS | null = null;
+let _vfsMultiTab: OPFSCoopSyncVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
+let _wasmModulePromise: ReturnType<typeof WaSQLiteFactory> | null = null;
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
@@ -263,10 +269,46 @@ async function closeDatabase(nativeDatabaseId: number) {
 }
 
 async function deleteDatabase(databasePath: string): Promise<void> {
-  const { vfs } = await maybeInitAsync();
-  if (databasePath !== ':memory:') {
-    vfs.jDelete(databasePath, 0 /* unused arg for AccessHandlePoolVFS */);
+  if (databasePath === ':memory:') {
+    return;
   }
+  // An app can use both persistent VFS implementations at once, and they lay their files out
+  // differently, so delete from whichever one holds this database rather than guessing.
+  if (_vfs != null && _vfsMultiTab != null) {
+    for (const vfs of [_vfs, _vfsMultiTab]) {
+      if (await persistentVfsHasFileAsync(vfs, databasePath)) {
+        await deleteFromPersistentVfsAsync(vfs, databasePath);
+        return;
+      }
+    }
+  }
+  const { vfs } = await maybeInitPersistentVfsAsync(isMultiTabVfsInUse());
+  await deleteFromPersistentVfsAsync(vfs, databasePath);
+}
+
+async function deleteFromPersistentVfsAsync(
+  vfs: PersistentVFS,
+  databasePath: string
+): Promise<void> {
+  if (vfs instanceof OPFSCoopSyncVFS) {
+    await vfs.deleteFileAsync(databasePath);
+    return;
+  }
+  const result = vfs.jDelete(databasePath, 0 /* unused arg, the implementation ignores it */);
+  if (result !== SQLITE_OK) {
+    throw new SQLiteErrorException(
+      `Failed to delete database - databasePath[${databasePath}] result[${result}]`
+    );
+  }
+}
+
+async function persistentVfsHasFileAsync(
+  vfs: PersistentVFS,
+  databasePath: string
+): Promise<boolean> {
+  const buffer = new DataView(new ArrayBuffer(4));
+  await vfs.jAccess(databasePath, 0 /* unused arg, both implementations ignore it */, buffer);
+  return buffer.getUint8(0) === 1;
 }
 
 async function deserializeDatabase(
@@ -343,13 +385,10 @@ async function importAssetDatabase(
   assetDatabasePath: string,
   forceOverwrite: boolean
 ): Promise<void> {
-  const { sqlite3, vfs } = await maybeInitAsync();
-  if (!forceOverwrite) {
-    const buffer = new DataView(new ArrayBuffer(4));
-    await vfs.jAccess(databasePath, 0 /* unused arg for AccessHandlePoolVFS */, buffer);
-    if (buffer.getUint8(0) === 1) {
-      return;
-    }
+  const { sqlite3 } = await maybeInitAsync();
+  const { vfs, vfsName } = await maybeInitPersistentVfsAsync(isMultiTabVfsInUse());
+  if (!forceOverwrite && (await persistentVfsHasFileAsync(vfs, databasePath))) {
+    return;
   }
   const response = await fetch(assetDatabasePath);
   if (!response.ok) {
@@ -361,10 +400,14 @@ async function importAssetDatabase(
   const srcDb = await sqlite3.open_v2(
     databasePath,
     SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
-    VFS_NAME_PERSISTENT
+    vfsName
   );
   await sqlite3.deserialize(srcDb, 'main', serializedData);
-  const destDb = await sqlite3.open_v2(databasePath);
+  const destDb = await sqlite3.open_v2(
+    databasePath,
+    SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+    vfsName
+  );
   await sqlite3.backup(destDb, 'main', srcDb, 'main');
   await sqlite3.close(srcDb);
   await sqlite3.close(destDb);
@@ -402,7 +445,12 @@ async function openDatabase(
     }
 
     const flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
-    const vfsName = databasePath === ':memory:' ? VFS_NAME_MEMORY : VFS_NAME_PERSISTENT;
+    let vfsName: string;
+    if (databasePath === ':memory:') {
+      vfsName = VFS_NAME_MEMORY;
+    } else {
+      ({ vfsName } = await maybeInitPersistentVfsAsync(options.enableMultiTabSupport));
+    }
     pointer = await sqlite3.open_v2(databasePath, flags, vfsName);
   }
 
@@ -774,25 +822,14 @@ async function maybeFinalizeAllStatements(nativeDatabaseId: number) {
 
 async function maybeInitAsync(): Promise<{
   sqlite3: SQLiteAPI;
-  vfs: AccessHandlePoolVFS;
   vfsMemory: MemoryVFS;
 }> {
   if (!_sqlite3) {
-    const module = await WaSQLiteFactory({
-      locateFile: () => wasmModule,
-    });
+    const module = await getWasmModuleAsync();
     _sqlite3 = SQLite.Factory(module) as SQLiteAPI;
     if (!_sqlite3) {
       throw new Error('Failed to initialize wa-sqlite');
     }
-
-    if (_vfs == null) {
-      _vfs = await AccessHandlePoolVFS.create(VFS_NAME_PERSISTENT, module);
-      if (_vfs == null) {
-        throw new Error('Failed to initialize AccessHandlePoolVFS');
-      }
-    }
-    _sqlite3.vfs_register(_vfs, true);
 
     if (_vfsMemory == null) {
       _vfsMemory = await MemoryVFS.create(VFS_NAME_MEMORY, module);
@@ -800,12 +837,64 @@ async function maybeInitAsync(): Promise<{
         throw new Error('Failed to initialize MemoryVFS');
       }
     }
-    _sqlite3.vfs_register(_vfsMemory, false);
+    _sqlite3.vfs_register(_vfsMemory, true);
   }
-  if (_vfs == null || _vfsMemory == null) {
+  if (_vfsMemory == null) {
     throw new Error('Invalid VFS state');
   }
-  return { sqlite3: _sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
+  return { sqlite3: _sqlite3, vfsMemory: _vfsMemory };
+}
+
+/**
+ * Whether a multi-tab capable persistent VFS has already been created in this worker.
+ *
+ * Operations that are not scoped to an open database, such as `deleteDatabase`, have no open
+ * options to read the preference from, so they follow whichever persistent VFS this worker
+ * already uses. Only the multi-tab VFS is filesystem transparent, so the two write different
+ * layouts and must not be mixed for the same database.
+ */
+function isMultiTabVfsInUse(): boolean {
+  return _vfsMultiTab != null && _vfs == null;
+}
+
+/**
+ * Lazily creates and registers the persistent VFS for the requested mode.
+ *
+ * `AccessHandlePoolVFS` opens an exclusive OPFS sync access handle for every file in its pool as
+ * soon as it is created, so it must not be created at all in a tab that only uses multi-tab
+ * databases, otherwise a second tab fails with `NoModificationAllowedError` before it ever opens
+ * a database.
+ */
+async function maybeInitPersistentVfsAsync(
+  multiTab: boolean | undefined
+): Promise<{ vfs: PersistentVFS; vfsName: string }> {
+  const { sqlite3 } = await maybeInitAsync();
+  const module = await getWasmModuleAsync();
+
+  if (multiTab) {
+    if (_vfsMultiTab == null) {
+      _vfsMultiTab = await OPFSCoopSyncVFS.create(VFS_NAME_PERSISTENT_MULTI_TAB, module);
+      if (_vfsMultiTab == null) {
+        throw new Error('Failed to initialize OPFSCoopSyncVFS');
+      }
+      sqlite3.vfs_register(_vfsMultiTab, true);
+    }
+    return { vfs: _vfsMultiTab, vfsName: VFS_NAME_PERSISTENT_MULTI_TAB };
+  }
+
+  if (_vfs == null) {
+    _vfs = await AccessHandlePoolVFS.create(VFS_NAME_PERSISTENT, module);
+    if (_vfs == null) {
+      throw new Error('Failed to initialize AccessHandlePoolVFS');
+    }
+    sqlite3.vfs_register(_vfs, true);
+  }
+  return { vfs: _vfs, vfsName: VFS_NAME_PERSISTENT };
+}
+
+async function getWasmModuleAsync() {
+  _wasmModulePromise ??= WaSQLiteFactory({ locateFile: () => wasmModule });
+  return await _wasmModulePromise;
 }
 
 //#endregion Internal helpers
