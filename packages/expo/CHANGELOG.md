@@ -13,6 +13,7 @@
 
 ### 🐛 Bug fixes
 
+- Reject `expo/fetch` network failures with a `TypeError`, as the Fetch Standard requires, so retry libraries that branch on `instanceof TypeError` behave the same on native as on web, and keep the native error as the rejection’s `cause` so its `code` survives. `error.name` is now `"TypeError"` rather than `"Error"`. ([#50371](https://github.com/expo/expo/pull/50371) by [@LizunovSergey](https://github.com/LizunovSergey))
 - [iOS] Forward Handoff preparation, update, and failure events to app delegate subscribers under the UIKit scene life cycle. ([#50032](https://github.com/expo/expo/pull/50032) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Request the `ACCESS_LOCAL_NETWORK` permission in debug builds on Android 17 before loading the app, so the dev server can be reached without `expo-dev-client`.
 - [iOS] Fix the SwiftPM autolinking plugin generating an `ExpoModulesProvider` that reports no app groups and registers no inline modules. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
