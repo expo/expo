@@ -44,7 +44,15 @@ class KotlinInteropModuleRegistry(
       registry
         .flatMap { module ->
           module.definition.viewManagerDefinitions.map { (name, definition) ->
-            ViewManagerWrapperDelegate(module, definition, if (name == DEFAULT_MODULE_VIEW) module.name else null)
+            ViewManagerWrapperDelegate(
+              module,
+              definition,
+              if (name == DEFAULT_MODULE_VIEW) {
+                module.name
+              } else {
+                null
+              }
+            )
           }
         }
     }
