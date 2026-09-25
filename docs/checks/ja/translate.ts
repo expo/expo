@@ -165,7 +165,7 @@ function writeSummary(synced: Synced[], skipped: Skipped[]): string {
   lines.push(
     '# Test Plan',
     '',
-    'A native Japanese reader reviews each updated page. `pnpm ja:check` lists none of the updated pages as stale.'
+    '`pnpm ja:check` lists none of the updated pages as stale.'
   );
   return `${lines.join('\n')}\n`;
 }
