@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Added `presentationCornerRadius` modifier. ([#50555](https://github.com/expo/expo/issues/50555) by [@shanelord01](https://github.com/shanelord01))
+- [iOS] Added `presentationCornerRadius` modifier. ([#50632](https://github.com/expo/expo/pull/50632) by [@shanelord01](https://github.com/shanelord01))
 
 ### 🐛 Bug fixes
 
