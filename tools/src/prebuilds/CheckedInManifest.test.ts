@@ -923,62 +923,67 @@ it('merges sibling and external dependencies in equivalent Mode A order without 
   );
 });
 
-it('stages real directories and compiles a source relying on generated exports', async () => {
-  const input = fixture(
-    '.target(name: "Main", dependencies: ["Helper"], path: "ios", exclude: ["Tests"]), .target(name: "Helper", path: "helper")',
-    {
-      'ios/UsesExports.swift':
-        'public func fixtureDate() -> Date { Date() }\npublic let fromHelper = helper',
-      'ios/Tests/Bad.swift': 'THIS MUST NOT COMPILE',
-      'helper/Helper.swift': 'public let helper = 42',
-    }
-  );
-  const sourceBefore = fs.readFileSync(path.join(input.root, 'ios/UsesExports.swift'), 'utf8');
-  assert.doesNotMatch(sourceBefore, /import/);
-  await SPMGenerator.generateIsolatedSourcesForTargetsAsync(input.pkg, input.product);
-  await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug');
-  const generated = SPMGenerator.getGeneratedProductFilesPath(input.pkg, input.product);
-  assert.ok(fs.lstatSync(path.join(generated, 'Main/src')).isSymbolicLink());
-  assert.equal(
-    fs.realpathSync(path.join(generated, 'Main/src')),
-    fs.realpathSync(path.join(input.root, 'ios'))
-  );
-  const exports = fs.readFileSync(path.join(generated, 'Main/Fixture+Exports.swift'), 'utf8');
-  assert.match(exports, /@_exported import Foundation/);
-  assert.match(exports, /@_exported import Helper/);
-  assert.ok(!fs.existsSync(path.join(input.root, 'ios/Fixture+Exports.swift')));
-  const manifest = fs.readFileSync(path.join(generated, 'Package.swift'), 'utf8');
-  assert.match(manifest, /targets: \["Main"\]/);
-  assert.match(manifest, /sources: \["src", "Fixture\+Exports.swift"\]/);
-  assert.match(manifest, /exclude: \["src\/Tests"\]/);
-  const swiftOptions = [
-    '--disable-sandbox',
-    '--package-path',
-    generated,
-    '--cache-path',
-    path.join(input.root, 'cache'),
-    '--config-path',
-    path.join(input.root, 'config'),
-    '--security-path',
-    path.join(input.root, 'security'),
-    '--scratch-path',
-    path.join(input.root, 'swift-build'),
-  ];
-  const env = { ...process.env, CLANG_MODULE_CACHE_PATH: path.join(input.root, 'clang-cache') };
-  const described = execFileSync('swift', ['package', ...swiftOptions, 'describe'], {
-    encoding: 'utf8',
-    env,
-  });
-  assert.match(described, /UsesExports.swift/);
-  assert.match(described, /Fixture\+Exports.swift/);
-  assert.doesNotMatch(described, /Bad.swift/);
-  const built = execFileSync('swift', ['build', ...swiftOptions], { encoding: 'utf8', env });
-  assert.match(built, /Build complete!/);
-  assert.equal(
-    fs.readFileSync(path.join(input.root, 'ios/UsesExports.swift'), 'utf8'),
-    sourceBefore
-  );
-});
+// The generated manifest links Foundation as a framework, which only Apple platforms provide.
+it(
+  'stages real directories and compiles a source relying on generated exports',
+  { skip: process.platform !== 'darwin' && 'links Foundation, which needs an Apple platform' },
+  async () => {
+    const input = fixture(
+      '.target(name: "Main", dependencies: ["Helper"], path: "ios", exclude: ["Tests"]), .target(name: "Helper", path: "helper")',
+      {
+        'ios/UsesExports.swift':
+          'public func fixtureDate() -> Date { Date() }\npublic let fromHelper = helper',
+        'ios/Tests/Bad.swift': 'THIS MUST NOT COMPILE',
+        'helper/Helper.swift': 'public let helper = 42',
+      }
+    );
+    const sourceBefore = fs.readFileSync(path.join(input.root, 'ios/UsesExports.swift'), 'utf8');
+    assert.doesNotMatch(sourceBefore, /import/);
+    await SPMGenerator.generateIsolatedSourcesForTargetsAsync(input.pkg, input.product);
+    await SPMGenerator.generateSwiftPackageAsync(input.pkg, input.product, 'Debug');
+    const generated = SPMGenerator.getGeneratedProductFilesPath(input.pkg, input.product);
+    assert.ok(fs.lstatSync(path.join(generated, 'Main/src')).isSymbolicLink());
+    assert.equal(
+      fs.realpathSync(path.join(generated, 'Main/src')),
+      fs.realpathSync(path.join(input.root, 'ios'))
+    );
+    const exports = fs.readFileSync(path.join(generated, 'Main/Fixture+Exports.swift'), 'utf8');
+    assert.match(exports, /@_exported import Foundation/);
+    assert.match(exports, /@_exported import Helper/);
+    assert.ok(!fs.existsSync(path.join(input.root, 'ios/Fixture+Exports.swift')));
+    const manifest = fs.readFileSync(path.join(generated, 'Package.swift'), 'utf8');
+    assert.match(manifest, /targets: \["Main"\]/);
+    assert.match(manifest, /sources: \["src", "Fixture\+Exports.swift"\]/);
+    assert.match(manifest, /exclude: \["src\/Tests"\]/);
+    const swiftOptions = [
+      '--disable-sandbox',
+      '--package-path',
+      generated,
+      '--cache-path',
+      path.join(input.root, 'cache'),
+      '--config-path',
+      path.join(input.root, 'config'),
+      '--security-path',
+      path.join(input.root, 'security'),
+      '--scratch-path',
+      path.join(input.root, 'swift-build'),
+    ];
+    const env = { ...process.env, CLANG_MODULE_CACHE_PATH: path.join(input.root, 'clang-cache') };
+    const described = execFileSync('swift', ['package', ...swiftOptions, 'describe'], {
+      encoding: 'utf8',
+      env,
+    });
+    assert.match(described, /UsesExports.swift/);
+    assert.match(described, /Fixture\+Exports.swift/);
+    assert.doesNotMatch(described, /Bad.swift/);
+    const built = execFileSync('swift', ['build', ...swiftOptions], { encoding: 'utf8', env });
+    assert.match(built, /Build complete!/);
+    assert.equal(
+      fs.readFileSync(path.join(input.root, 'ios/UsesExports.swift'), 'utf8'),
+      sourceBefore
+    );
+  }
+);
 
 it('keeps config settings and platforms while replacing structure and membership', async () => {
   const input = fixture(
