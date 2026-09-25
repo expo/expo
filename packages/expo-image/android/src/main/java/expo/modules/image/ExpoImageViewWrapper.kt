@@ -69,6 +69,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private var firstTarget = ImageViewWrapperTarget(WeakReference(this))
   private var secondTarget = ImageViewWrapperTarget(WeakReference(this))
+  private var foregroundTarget: ImageViewWrapperTarget? = null
 
   internal val onLoadStart by EventDispatcher<Unit>()
   internal val onProgress by EventDispatcher<ImageProgressEvent>()
@@ -396,6 +397,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.applyTransformationMatrix()
     }
     target.isUsed = true
+    foregroundTarget = target
 
     if (resource is Animatable) {
       resource.start()
@@ -462,6 +464,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   }
 
   fun onTargetCleared(target: ImageViewWrapperTarget) {
+    if (foregroundTarget === target) {
+      foregroundTarget = null
+    }
+
     // Recycle before cancelling because a cancelled fade-out runs its end action. The end action
     // must observe a null current target so it cannot clear a new resource when this target is reused.
     if (firstView.currentTarget === target) {
@@ -575,10 +581,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
 
       onLoadStart.invoke(Unit)
-      val newTarget = if (secondTarget.isUsed) {
-        firstTarget
-      } else {
-        secondTarget
+      val newTarget = when (foregroundTarget) {
+        firstTarget -> secondTarget
+        secondTarget -> firstTarget
+        else -> if (secondTarget.isUsed) firstTarget else secondTarget
       }
       newTarget.hasSource = sourceToLoad != null
       newTarget.cacheType = ImageCacheType.NONE
