@@ -71,6 +71,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private var firstTarget = ImageViewWrapperTarget(WeakReference(this))
   private var secondTarget = ImageViewWrapperTarget(WeakReference(this))
+  private var foregroundTarget: ImageViewWrapperTarget? = null
 
   internal val onLoadStart by EventDispatcher<Unit>()
   internal val onProgress by EventDispatcher<ImageProgressEvent>()
@@ -184,9 +185,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
   fun setIsAnimating(setAnimating: Boolean) {
-    // Animatable animations always start from the beginning when resumed.
-    // So we check first if the resource is a GifDrawable, because it can continue
-    // from where it was paused.
+    // APNG4Android's GifDrawable supports pause and resume, while the generic Animatable API only
+    // exposes start and stop.
     when (val resource = activeView.drawable) {
       is GifDrawable -> setIsAnimating(resource, setAnimating)
       is Animatable -> setIsAnimating(resource, setAnimating)
@@ -429,6 +429,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.applyTransformationMatrix()
     }
     target.isUsed = true
+    foregroundTarget = target
 
     if (resource is Animatable) {
       resource.start()
@@ -492,6 +493,20 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
     requestManager.clear(firstTarget)
     requestManager.clear(secondTarget)
+  }
+
+  fun onTargetCleared(target: ImageViewWrapperTarget) {
+    if (foregroundTarget === target) {
+      foregroundTarget = null
+    }
+
+    // Detach a cleared Glide drawable before its pooled resource is released.
+    if (firstView.currentTarget === target) {
+      firstView.recycleView()
+    }
+    if (secondView.currentTarget === target) {
+      secondView.recycleView()
+    }
   }
 
   private fun cleanIfNeeded(
@@ -595,10 +610,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
 
       onLoadStart.invoke(Unit)
-      val newTarget = if (secondTarget.isUsed) {
-        firstTarget
-      } else {
-        secondTarget
+      val newTarget = when (foregroundTarget) {
+        firstTarget -> secondTarget
+        secondTarget -> firstTarget
+        else -> if (secondTarget.isUsed) firstTarget else secondTarget
       }
       newTarget.hasSource = sourceToLoad != null
       newTarget.cacheType = ImageCacheType.NONE
