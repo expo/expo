@@ -65,7 +65,7 @@ final class KernelErrorView: UIView {
         self.delegate?.errorViewDidSelectRetry(self)
       },
       onGoHome: {
-        EXKernel.sharedInstance().browserController.moveHomeToVisible()
+        EXKernel.sharedInstance().browserController?.moveHomeToVisible()
       }
     )
   }

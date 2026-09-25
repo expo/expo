@@ -35,6 +35,23 @@ final class ErrorScreenTextTests: XCTestCase {
     XCTAssertTrue(text.runs.allSatisfy { $0.inlinePresentationIntent == nil })
   }
 
+  func testLinkInsideBoldIsBoldAndLinked() throws {
+    let text = ErrorScreenText.attributed("See **[the docs](https://docs.expo.dev)** now.")
+
+    XCTAssertEqual(String(text.characters), "See the docs now.")
+    let run = try XCTUnwrap(text.runs.first { $0.link != nil })
+    XCTAssertEqual(String(text[run.range].characters), "the docs")
+    XCTAssertEqual(run.link, URL(string: "https://docs.expo.dev"))
+    XCTAssertEqual(run.inlinePresentationIntent, .stronglyEmphasized)
+  }
+
+  func testBareURLInsideBoldIsLinked() {
+    let text = ErrorScreenText.attributed("Open **https://expo.dev/go** first.")
+
+    XCTAssertEqual(String(text.characters), "Open https://expo.dev/go first.")
+    XCTAssertEqual(text.runs.compactMap(\.link), [URL(string: "https://expo.dev/go")!])
+  }
+
   func testPlainTextIsUnchanged() {
     XCTAssertEqual(String(ErrorScreenText.attributed("Nothing special.").characters), "Nothing special.")
   }

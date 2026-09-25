@@ -63,9 +63,9 @@ import UIKit
       let icon = Self.makeLoadingIcon(sfSymbol: sfSymbol)
       let fixedDelay = snackParams?["loadingFixedDelay"] as? Double ?? 0
       let minDuration = fixedDelay > 0 ? 0 : 0.5  // Use minimum display duration unless a fixed delay is set
-      EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: "Preparing playground...", iconImage: icon, dismissDelay: minDuration, fixedDismissDelay: fixedDelay)
+      EXKernel.sharedInstance().browserController?.showAppLoadingOverlay(withStatusText: "Preparing playground...", iconImage: icon, dismissDelay: minDuration, fixedDismissDelay: fixedDelay)
     } else {
-      EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: "Opening project...")
+      EXKernel.sharedInstance().browserController?.showAppLoadingOverlay(withStatusText: "Opening project...")
     }
 
     // For non-snack apps, open synchronously to avoid timing issues with native module registration.
@@ -90,7 +90,7 @@ import UIKit
     if params["code"] == nil {
       // Not an embedded snack — require login at minimum
       guard let currentUser = authenticatedUsername() else {
-        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+        EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
         showError("Sign in to Expo Go to open your Snack playgrounds.")
         completion(false, nil)
         return
@@ -100,7 +100,7 @@ import UIKit
       if let snackId = params["snackId"] as? String,
          let owner = ownerUsername(fromSnackId: snackId),
          owner != currentUser {
-        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+        EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
         showError("This playground belongs to @\(owner). Sign in as @\(owner) to open it, or open one of your own.")
         completion(false, nil)
         return
@@ -307,7 +307,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
-          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+          EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }
@@ -320,7 +320,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
-          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+          EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }
