@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Pass the app name to `updateXcodeProject` only as a tiebreak fallback — `@expo/inline-modules` now resolves the main target from the pbxproj. ([#49413](https://github.com/expo/expo/pull/49413) by [@vonovak](https://github.com/vonovak))
+
 ## 58.0.6 — 2026-09-23
 
 _This version does not introduce any user-facing changes._
