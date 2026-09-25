@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Default `preservesPitch` to `true` to match the documented default and the iOS and web behavior.
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-23
