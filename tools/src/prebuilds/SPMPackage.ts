@@ -1204,7 +1204,7 @@ export function buildCSettings(
   // which is relative to pkg.path. So we resolve: pkg.path + target.path + includeDir
   if (target.includeDirectories && target.includeDirectories.length > 0) {
     // Defence in depth: a target built from a checked-in Package.swift reaches this code with
-    // `path` already set to its absolute source root, so only a Mode A target can trip this.
+    // `path` already set to its absolute source root, so only a target built from spm.config.json can trip this.
     if (!target.path) {
       throw new Error(
         `Cannot resolve "includeDirectories" for product "${productName}", target ` +
