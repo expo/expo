@@ -7,12 +7,17 @@ struct DeviceAccountView: View {
   @Environment(\.dismiss) private var dismiss
   @EnvironmentObject var viewModel: HomeViewModel
   @StateObject private var loginViewModel = LoginViewModel()
+  @State private var isAddingAccount = false
+
+  private var showsLogin: Bool {
+    !viewModel.isAuthenticated || isAddingAccount
+  }
 
   var body: some View {
     NavigationStack {
       ZStack {
-        if viewModel.isAuthenticated {
-          AccountSelectorView()
+        if !showsLogin {
+          AccountSwitcherView(onAddAccount: startAddingAccount)
             .ignoresSafeArea(.keyboard)
             .padding(.horizontal, 16)
             .transition(.opacity)
@@ -23,9 +28,11 @@ struct DeviceAccountView: View {
               onLoginSuccess: handleLoginSuccess,
               onSSO: {
                 await viewModel.ssoLogin()
+                isAddingAccount = false
               },
               onSignUp: {
                 await viewModel.signUp()
+                isAddingAccount = false
               }
             )
             .padding(.horizontal, 16)
@@ -38,9 +45,7 @@ struct DeviceAccountView: View {
       .navigationBarTitleDisplayMode(.inline)
       .toolbar {
         ToolbarItem(placement: .topBarLeading) {
-          Button {
-            dismiss()
-          } label: {
+          Button(action: close) {
             Image(systemName: "xmark")
               .font(.system(size: 16, weight: .medium))
               .foregroundColor(.primary)
@@ -48,7 +53,7 @@ struct DeviceAccountView: View {
         }
       }
       .navigationDestination(isPresented: Binding(
-        get: { loginViewModel.phase == .twoFactor && !viewModel.isAuthenticated },
+        get: { loginViewModel.phase == .twoFactor && showsLogin },
         set: { if !$0 { loginViewModel.resetToCredentials() } }
       )) {
         ScrollView {
@@ -62,16 +67,26 @@ struct DeviceAccountView: View {
         .navigationTitle("Two-factor authentication")
       }
     }
-    .animation(.default, value: viewModel.isAuthenticated)
+    .animation(.default, value: showsLogin)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(Color.expoSystemBackground)
   }
 
-  private func handleLoginSuccess(_ sessionSecret: String) async {
-    await viewModel.authService.completeLogin(with: sessionSecret)
-    loginViewModel.resetToCredentials()
-    if let account = viewModel.selectedAccount {
-      viewModel.dataService.startPolling(accountName: account.name)
+  private func startAddingAccount() {
+    isAddingAccount = true
+  }
+
+  private func close() {
+    if isAddingAccount {
+      isAddingAccount = false
+    } else {
+      dismiss()
     }
+  }
+
+  private func handleLoginSuccess(_ sessionSecret: String) async {
+    await viewModel.completeLogin(with: sessionSecret)
+    loginViewModel.resetToCredentials()
+    isAddingAccount = false
   }
 }
