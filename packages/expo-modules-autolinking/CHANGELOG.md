@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Skip React Native libraries whose podspec does not declare the target platform when resolving `react-native-config` for `macos` and `tvos`. Codegen and Metro consume that config too, so libraries the Podfile was already filtering out no longer end up in the generated third-party components provider, where their missing classes crashed the app on first render. ([#50571](https://github.com/expo/expo/pull/50571) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 58.0.4 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- Skip React Native libraries whose podspec does not declare the target platform when resolving `react-native-config` for `macos` and `tvos`. Codegen and Metro consume that config too, so libraries the Podfile was already filtering out no longer end up in the generated third-party components provider, where their missing classes crashed the app on first render. ([#50571](https://github.com/expo/expo/pull/50571) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.3 — 2026-09-21
 

@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "58.0.3",
+  "version": "58.0.4",
   "description": "Get the prebuild config",
   "keywords": [
     "expo",
