@@ -6,7 +6,13 @@ import path from 'node:path';
 import { getPackagesDir } from '../Directories';
 import logger from '../Logger';
 import { isExternalPackage, type SPMPackageSource } from './ExternalPackage';
-import type { SPMPackageDependencyConfig, SPMProduct, SourceTarget } from './SPMConfig.types';
+import type {
+  SPMPackageDependencyConfig,
+  SPMProduct,
+  ObjcTarget,
+  SwiftTarget,
+  CppTarget,
+} from './SPMConfig.types';
 import { derivePackageNameFromUrl, normalizeGitUrl } from './SPMGitUrl';
 import { parseLinkedFrameworks } from './SPMIdentifier';
 import type { ResolvedTarget } from './SPMPackage.types';
@@ -499,7 +505,10 @@ async function readExpectedPackageName(root: string, error: ManifestError): Prom
   return name.startsWith('@') ? name.slice(1).replace('/', '-') : name;
 }
 
-function environmentForTarget(product: SPMProduct, targetName: string): SourceTarget | undefined {
+function environmentForTarget(
+  product: SPMProduct,
+  targetName: string
+): ObjcTarget | SwiftTarget | CppTarget | undefined {
   const target = product.targets.find((candidate) => candidate.name === targetName);
   return target?.type === 'framework' ? undefined : target;
 }
@@ -850,6 +859,14 @@ export async function resolveCheckedInManifestAsync(
       return { path: prefix(resource.path), rule: rule as 'copy' | 'process' };
     });
     const language = inferLanguage(product.name, target.name, files);
+    if (config && config.type !== language) {
+      throw manifestError(
+        product.name,
+        target.name,
+        `spm.config.json declares type "${config.type}", but the target's sources resolve to type "${language}" (C and Objective-C sources both resolve to "objc"). The settings in spm.config.json are applied by the resolved type, so settings for the declared type would be ignored.`,
+        `Set "type" to "${language}" for this target in spm.config.json.`
+      );
+    }
     const sources = prefixedSources ?? ['src'];
     const linkedFrameworks = parseLinkedFrameworks(config?.linkedFrameworks, target.name);
     if (language === 'swift' && (linkedFrameworks.length || siblingDependencies.length)) {
