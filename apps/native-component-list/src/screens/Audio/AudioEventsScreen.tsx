@@ -33,6 +33,7 @@ function AudioEvents() {
   const player = useAudioPlayer(localSource);
   const status = useAudioPlayerStatus(player);
   const [eventLog, setEventLog] = useState<EventLogEntry[]>([]);
+  const [finishCount, setFinishCount] = useState(0);
   const eventIdRef = useRef(0);
   const scrollViewRef = useRef<FlatList>(null);
   const prevStatusRef = useRef<AudioStatus | null>(null);
@@ -61,6 +62,9 @@ function AudioEvents() {
 
     const hasChanges = Object.keys(changes).length > 0;
     const isDidJustFinish = status.didJustFinish;
+    if (isDidJustFinish && !prevStatus?.didJustFinish) {
+      setFinishCount((count) => count + 1);
+    }
 
     if (hasChanges || isDidJustFinish) {
       const entry: EventLogEntry = {
@@ -114,6 +118,7 @@ function AudioEvents() {
           value={status.didJustFinish}
           highlight={status.didJustFinish}
         />
+        <StatusRow label="didJustFinishCount" value={finishCount} />
         <StatusRow label="isLoaded" value={status.isLoaded} />
         <StatusRow label="loop" value={status.loop} />
         <StatusRow label="currentTime" value={status.currentTime.toFixed(2)} />
@@ -169,10 +174,13 @@ function StatusRow({
   highlight?: boolean;
 }) {
   const displayValue = typeof value === 'boolean' ? (value ? 'true' : 'false') : String(value);
+  // One text node per row so e2e tests can match "label = value" as a single string.
   return (
     <View style={styles.statusRow}>
-      <Text style={styles.statusLabel}>{label}:</Text>
-      <Text style={[styles.statusValue, highlight && styles.highlightedText]}>{displayValue}</Text>
+      <Text style={[styles.statusValue, highlight && styles.highlightedText]}>
+        <Text style={styles.statusLabel}>{label}</Text>
+        {` = ${displayValue}`}
+      </Text>
     </View>
   );
 }
