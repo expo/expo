@@ -105,6 +105,27 @@ describe('analyzeDwarfPrefixMapping', () => {
     assert.equal(result.success, false);
   });
 
+  it('accepts a source SwiftPM derived into the remapped derived data directory', () => {
+    const result = analyzeDwarfPrefixMapping(
+      dwarfDump(STAGING_COMP_DIR, [
+        '/expo-src/generated/expo-device/ExpoDevice/DerivedData/Build/Intermediates.noindex/expo-device.build/Debug-iphonesimulator/ExpoDevice-t.build/DerivedSources/resource_bundle_accessor.swift',
+      ])
+    );
+
+    assert.equal(result.success, true);
+  });
+
+  it('fails when a source SwiftPM derived leaks its derived data path', () => {
+    const result = analyzeDwarfPrefixMapping(
+      dwarfDump(STAGING_COMP_DIR, [
+        '/expo-src/packages/precompile/.build/expo-device/output/debug/frameworks/ExpoDevice/Build/Intermediates.noindex/expo-device.build/Debug-iphonesimulator/ExpoDevice-t.build/DerivedSources/resource_bundle_accessor.swift',
+      ])
+    );
+
+    assert.equal(result.success, false);
+    assert.match(result.details ?? '', /resource_bundle_accessor\.swift/);
+  });
+
   it('fails when a source file name points into the SwiftPM staging directory', () => {
     const result = analyzeDwarfPrefixMapping(
       dwarfDump(STAGING_COMP_DIR, [
