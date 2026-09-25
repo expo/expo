@@ -332,7 +332,7 @@ const TARGET_KEYS: DumpedKeyRules = {
     what: declares(
       'but et prebuild does not read build settings from Package.swift, so they would be missing from the prebuilt framework.'
     ),
-    how: 'Remove cSettings, cxxSettings, swiftSettings, and linkerSettings from the target in Package.swift, and set the flags the build needs on the target in spm.config.json instead: compilerFlags for C, C++, and Objective-C, linkerFlags, and linkedFrameworks.',
+    how: 'Remove cSettings, cxxSettings, swiftSettings, and linkerSettings from the target in Package.swift. Swift compiler settings have no spm.config.json equivalent. Set the other flags on the target in spm.config.json instead: includeDirectories for header search paths, compilerFlags for C, C++, and Objective-C, linkerFlags, and linkedFrameworks.',
   },
   packageAccess: {
     default: true,
