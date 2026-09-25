@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Sized the screenshot and recording blockers from the window they protect rather than the device's main screen, so they still cover the content on a two-display device such as iPhone Duo. ([#50570](https://github.com/expo/expo/pull/50570) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 58.0.3 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [iOS] Sized the screenshot and recording blockers from the window they protect rather than the device's main screen, so they still cover the content on a two-display device such as iPhone Duo. ([#50570](https://github.com/expo/expo/pull/50570) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 58.0.2 — 2026-09-23
 
