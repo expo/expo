@@ -109,7 +109,7 @@ By default:
 - a `GET` or `HEAD` request is only cached by its URL
 - a `POST` request is only cached by its URL and request body
 
-However, you can use the `Vary` header to specify that the request should be using request headers as a cache key. For example, if an API route responds with `Vary: custom-header` , then the cached response will only be used if the request's `custom-header` header value matches the cached request's `custom-header` value.
+However, you can use the `Vary` header to specify that the request should be using request headers as a cache key. For example, if an API route responds with `Vary: custom-header`, then the cached response will only be used if the request's `custom-header` header value matches the cached request's `custom-header` value.
 
 ## CORS caching
 
