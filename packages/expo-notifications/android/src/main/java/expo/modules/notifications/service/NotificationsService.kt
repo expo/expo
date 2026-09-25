@@ -56,6 +56,7 @@ open class NotificationsService : BroadcastReceiver() {
     private const val GET_SCHEDULED_TYPE = "getScheduled"
     private const val REMOVE_SELECTED_TYPE = "removeSelected"
     private const val REMOVE_ALL_TYPE = "removeAll"
+    private const val GROUPED_NOTIFICATION_DELETED_TYPE = "groupedNotificationDeleted"
 
     // Messages parts
     const val SUCCESS_CODE = 0
@@ -439,6 +440,28 @@ open class NotificationsService : BroadcastReceiver() {
       )
     }
 
+    fun createGroupedNotificationDeletedIntent(context: Context, notification: Notification): PendingIntent {
+      // The identifier in the URI keeps FLAG_UPDATE_CURRENT from replacing one child's extras with another's.
+      val intent = Intent(
+        NOTIFICATION_EVENT_ACTION,
+        getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("groupedDeleted").build()
+      ).also { intent ->
+        findDesignatedBroadcastReceiver(context, intent)?.let {
+          intent.component = ComponentName(it.packageName, it.name)
+        }
+        intent.putExtra(EVENT_TYPE_KEY, GROUPED_NOTIFICATION_DELETED_TYPE)
+        intent.putExtra(NOTIFICATION_KEY, notification)
+        // Byte-array copy: Parcelable extras can come back null from a PendingIntent, see #38908
+        marshalObject(notification)?.let { intent.putExtra(NOTIFICATION_BYTES_KEY, it) }
+      }
+      return PendingIntent.getBroadcast(
+        context,
+        0,
+        intent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
+    }
+
     /**
      * Creates and returns a pending intent that will trigger [NotificationsService]'s "response received"
      * event.
@@ -686,6 +709,8 @@ open class NotificationsService : BroadcastReceiver() {
 
           TRIGGER_TYPE -> onNotificationTriggered(context, intent)
 
+          GROUPED_NOTIFICATION_DELETED_TYPE -> onGroupedNotificationDeleted(context, intent)
+
           else -> throw IllegalArgumentException("Received event of unrecognized type: $eventType. Ignoring.")
         }
 
@@ -745,10 +770,23 @@ open class NotificationsService : BroadcastReceiver() {
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
     val response = getNotificationResponseFromBroadcastIntent(intent)
     getHandlingDelegate(context).handleNotificationResponse(response)
+    // Auto-cancel on tap does not fire the delete intent. Action buttons do not dismiss.
+    val content = response.notification.notificationRequest.content
+    val isTap = response.actionIdentifier == NotificationResponse.DEFAULT_ACTION_IDENTIFIER
+    if (isTap && content.isAutoDismiss && content.group != null) {
+      getPresentationDelegate(context).removeOrphanedGroupSummaries(response.notification)
+    }
   }
 
   open fun onNotificationsDropped(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotificationsDropped()
+
+  open fun onGroupedNotificationDeleted(context: Context, intent: Intent) {
+    val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)
+      ?: unmarshalObject(Notification.CREATOR, intent.getByteArrayExtra(NOTIFICATION_BYTES_KEY))
+      ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
+    getPresentationDelegate(context).removeOrphanedGroupSummaries(notification)
+  }
 
   //endregion
 
