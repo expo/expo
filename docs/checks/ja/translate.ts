@@ -162,11 +162,7 @@ function writeSummary(synced: Synced[], skipped: Skipped[]): string {
     }
     lines.push('');
   }
-  lines.push(
-    '# Test Plan',
-    '',
-    '`pnpm ja:check` lists none of the updated pages as stale.'
-  );
+  lines.push('# Test Plan', '', '`pnpm ja:check` lists none of the updated pages as stale.');
   return `${lines.join('\n')}\n`;
 }
 
