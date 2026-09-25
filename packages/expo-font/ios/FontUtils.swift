@@ -145,7 +145,6 @@ internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: C
  Registers the given font to make it discoverable through font descriptor matching.
  Returns whether this URL owns a registration, rather than relying on a duplicate name at another URL.
  */
-@discardableResult
 internal func registerFont(fontUrl: CFURL, fontFamilyAlias: String) throws -> Bool {
   var error: Unmanaged<CFError>?
 

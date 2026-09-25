@@ -40,7 +40,9 @@ public final class FontLoaderModule: Module {
       FontFamilyAliasManager.setAlias(fontFamilyAlias, forPostScriptNames: aliasedNames, url: localUri)
 
       // A duplicate-name registration still depends on a previously registered URL. Do not
-      // unregister it when the incoming URL did not acquire its own registration.
+      // unregister it when the incoming URL did not acquire its own registration. The registry
+      // then records the incoming URL while CoreText serves the previous one, until the next
+      // cold launch registers the incoming URL first.
       if registeredFont {
         for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
           _ = try? unregisterFont(url: staleUrl as CFURL)
@@ -115,6 +117,9 @@ public final class FontLoaderModule: Module {
     }
     FontFamilyAliasManager.setFaces(faceEntries, alias: fontFamilyAlias)
 
+    // Deliberately coarse: one duplicate-name face keeps every stale URL registered, even
+    // faces unrelated to the collision. Leaving a registration behind is safe; removing one
+    // that still serves a name is not.
     if registeredAllFaces {
       for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
         _ = try? unregisterFont(url: staleUrl as CFURL)
