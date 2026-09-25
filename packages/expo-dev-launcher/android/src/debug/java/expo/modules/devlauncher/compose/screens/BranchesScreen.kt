@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.compose.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,14 +15,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,7 +31,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.composeunstyled.TextInput
+import com.composeunstyled.UnstyledButton
 import com.composeunstyled.UnstyledIcon
+import com.composeunstyled.UnstyledTextField
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.Branch
 import expo.modules.devlauncher.compose.Update
@@ -143,6 +148,9 @@ fun BranchesScreen(
   branches: List<Branch> = emptyList(),
   needToSignIn: Boolean = false,
   isLoading: Boolean = false,
+  isLoadingMore: Boolean = false,
+  hasMore: Boolean = false,
+  searchQuery: String = "",
   onProfileClick: () -> Unit = {},
   onAction: (BranchesAction) -> Unit = { _ -> }
 ) {
@@ -161,24 +169,70 @@ fun BranchesScreen(
     Spacer(NewAppTheme.spacing.`4`)
 
     Column {
+      var isSearching by remember { mutableStateOf(false) }
       val lazyListState = rememberLazyListState()
 
-      val reachedBottom: Boolean by remember {
-        derivedStateOf {
-          val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
-          val index = lastVisibleItem?.index ?: 0
-          index != 0 && index > lazyListState.layoutInfo.totalItemsCount - 5
+      Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+      ) {
+        NewText(
+          "BRANCHES",
+          style = NewAppTheme.font.sm,
+          color = NewAppTheme.colors.text.secondary
+        )
+
+        UnstyledButton(
+          onClick = {
+            isSearching = !isSearching
+            if (!isSearching) {
+              onAction(BranchesAction.Search(""))
+            }
+          }
+        ) {
+          LauncherIcons.PackageSearch(
+            size = 20.dp,
+            tint = NewAppTheme.colors.icon.tertiary
+          )
         }
       }
 
-      LaunchedEffect(reachedBottom) {
-        if (reachedBottom && !isLoading) {
-          onAction(BranchesAction.LoadMoreBranches)
+      if (isSearching) {
+        UnstyledTextField(
+          value = searchQuery,
+          onValueChange = { onAction(BranchesAction.Search(it)) },
+          textColor = NewAppTheme.colors.text.default,
+          textStyle = NewAppTheme.font.md,
+          singleLine = true,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = NewAppTheme.spacing.`2`)
+            .border(
+              width = 1.dp,
+              shape = RoundedCornerShape(NewAppTheme.borderRadius.xl),
+              color = NewAppTheme.colors.border.default
+            )
+            .clip(RoundedCornerShape(NewAppTheme.borderRadius.xl))
+            .background(NewAppTheme.colors.background.element)
+            .padding(NewAppTheme.spacing.`3`),
+          cursorBrush = SolidColor(NewAppTheme.colors.text.default.copy(alpha = 0.9f))
+        ) {
+          TextInput(
+            placeholder = {
+              NewText(
+                text = "Search branches",
+                style = NewAppTheme.font.md,
+                color = NewAppTheme.colors.text.secondary
+              )
+            }
+          )
         }
       }
 
       LazyColumn(
         state = lazyListState,
+        modifier = Modifier.padding(top = NewAppTheme.spacing.`2`),
         verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
       ) {
         items(items = branches) { branch ->
@@ -258,7 +312,7 @@ fun BranchesScreen(
                     )
 
                     NewText(
-                      "Published: $formatedTime",
+                      "Published $formatedTime",
                       style = NewAppTheme.font.sm,
                       color = NewAppTheme.colors.text.secondary
                     )
@@ -269,7 +323,7 @@ fun BranchesScreen(
           }
         }
 
-        if (isLoading) {
+        if (isLoading || isLoadingMore) {
           item {
             Row(
               modifier = Modifier
@@ -283,6 +337,31 @@ fun BranchesScreen(
               )
             }
           }
+        } else if (hasMore && branches.isNotEmpty()) {
+          item {
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = NewAppTheme.spacing.`2`),
+              horizontalArrangement = Arrangement.Center,
+              verticalAlignment = Alignment.CenterVertically
+            ) {
+              ActionButton(
+                "Load more branches",
+                foreground = NewAppTheme.colors.text.default,
+                background = NewAppTheme.colors.background.element,
+                fill = false,
+                textStyle = NewAppTheme.font.md.merge(
+                  fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.padding(
+                  horizontal = NewAppTheme.spacing.`3`,
+                  vertical = NewAppTheme.spacing.`2`
+                ),
+                onClick = { onAction(BranchesAction.LoadMoreBranches) }
+              )
+            }
+          }
         } else if (branches.isEmpty()) {
           item {
             Row(
@@ -293,7 +372,7 @@ fun BranchesScreen(
               verticalAlignment = Alignment.CenterVertically
             ) {
               NewText(
-                "No branches available.",
+                if (searchQuery.isBlank()) "No branches available." else "No matching branches.",
                 style = NewAppTheme.font.lg.merge(
                   textAlign = TextAlign.Center,
                   fontWeight = FontWeight.Medium

@@ -35,27 +35,37 @@ query Me {
 private const val GET_BRANCHES_WITH_COMPATIBLE_UPDATE_QUERY = """
 query getBranchesWithCompatibleUpdate(
   ${'$'}appId: String!
-  ${'$'}offset: Int!
-  ${'$'}limit: Int!
+  ${'$'}first: Int!
+  ${'$'}after: String
+  ${'$'}filter: BranchFilterInput
   ${'$'}runtimeVersion: String!
   ${'$'}platform: AppPlatform!
 ) {
   app {
     byId(appId: ${'$'}appId) {
-      updateBranches(offset: ${'$'}offset, limit: ${'$'}limit) {
-        id
-        name
+      branchesPaginated(first: ${'$'}first, after: ${'$'}after, filter: ${'$'}filter) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          cursor
+          node {
+            id
+            name
 
-        compatibleUpdates: updates(
-          offset: 0
-          limit: 1
-          filter: { runtimeVersions: [${'$'}runtimeVersion], platform: ${'$'}platform }
-        ) {
-          id
-          message
-          runtimeVersion
-          createdAt
-          manifestPermalink
+            compatibleUpdates: updates(
+              offset: 0
+              limit: 1
+              filter: { runtimeVersions: [${'$'}runtimeVersion], platform: ${'$'}platform }
+            ) {
+              id
+              message
+              runtimeVersion
+              createdAt
+              manifestPermalink
+            }
+          }
         }
       }
     }
@@ -66,15 +76,24 @@ query getBranchesWithCompatibleUpdate(
 private const val GET_BRANCHES_QUERY = """
 query getBranches(
   ${'$'}appId: String!
-  ${'$'}offset: Int!
-  ${'$'}limit: Int!
-  ${'$'}platform: AppPlatform!
+  ${'$'}first: Int!
+  ${'$'}after: String
+  ${'$'}filter: BranchFilterInput
 ) {
   app {
     byId(appId: ${'$'}appId) {
-      updateBranches(offset: ${'$'}offset, limit: ${'$'}limit) {
-        id
-        name
+      branchesPaginated(first: ${'$'}first, after: ${'$'}after, filter: ${'$'}filter) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          cursor
+          node {
+            id
+            name
+          }
+        }
       }
     }
   }
@@ -137,11 +156,26 @@ data class OwnerUserActor(val profilePhoto: String? = null)
 // branches (covers both getBranches and getBranchesWithCompatibleUpdate)
 data class BranchesData(val app: BranchesApp? = null) {
   val updateBranches: List<UpdateBranch>
-    get() = app?.byId?.updateBranches ?: emptyList()
+    get() = app?.byId?.branchesPaginated?.edges?.map { it.node } ?: emptyList()
+
+  val endCursor: String?
+    get() = app?.byId?.branchesPaginated?.pageInfo?.endCursor
+
+  val hasNextPage: Boolean
+    get() = app?.byId?.branchesPaginated?.pageInfo?.hasNextPage ?: false
 }
 
 data class BranchesApp(val byId: BranchesById? = null)
-data class BranchesById(val updateBranches: List<UpdateBranch> = emptyList())
+data class BranchesById(val branchesPaginated: BranchesConnection? = null)
+data class BranchesConnection(
+  val pageInfo: PageInfo = PageInfo(),
+  val edges: List<BranchEdge> = emptyList()
+)
+data class BranchEdge(val cursor: String, val node: UpdateBranch)
+data class PageInfo(
+  val hasNextPage: Boolean = false,
+  val endCursor: String? = null
+)
 data class UpdateBranch(
   val id: String,
   val name: String,
@@ -202,36 +236,44 @@ class GraphQLService(
     return execute(ME_QUERY, emptyMap())
   }
 
+  /**
+   * Fetches a page of branches, each with its newest update compatible with [runtimeVersion].
+   * Pass [searchTerm] to have the server filter branches by name.
+   */
   suspend fun fetchBranches(
     appId: String,
     runtimeVersion: String,
-    offset: Int = 0,
-    limit: Int = 50
+    first: Int = 20,
+    after: String? = null,
+    searchTerm: String? = null
   ): GraphQLResponse<BranchesData> {
     return execute(
       GET_BRANCHES_WITH_COMPATIBLE_UPDATE_QUERY,
       mapOf(
         "appId" to appId,
-        "offset" to offset,
-        "limit" to limit,
+        "first" to first,
+        "after" to after,
+        "filter" to searchTerm?.let { mapOf("searchTerm" to it) },
         "runtimeVersion" to runtimeVersion,
         "platform" to "ANDROID"
       )
     )
   }
 
+  /** Fetches a page of branches without update information. See [fetchBranches] above. */
   suspend fun fetchBranches(
     appId: String,
-    offset: Int = 0,
-    limit: Int = 50
+    first: Int = 20,
+    after: String? = null,
+    searchTerm: String? = null
   ): GraphQLResponse<BranchesData> {
     return execute(
       GET_BRANCHES_QUERY,
       mapOf(
         "appId" to appId,
-        "offset" to offset,
-        "limit" to limit,
-        "platform" to "ANDROID"
+        "first" to first,
+        "after" to after,
+        "filter" to searchTerm?.let { mapOf("searchTerm" to it) }
       )
     )
   }
@@ -240,7 +282,7 @@ class GraphQLService(
     appId: String,
     branchName: String,
     offset: Int = 0,
-    limit: Int = 50
+    limit: Int = 20
   ): GraphQLResponse<UpdatesData> {
     return execute(
       GET_UPDATES_WITH_FILTERS_QUERY,

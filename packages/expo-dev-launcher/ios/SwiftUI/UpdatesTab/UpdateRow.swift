@@ -3,19 +3,16 @@ import SwiftUI
 struct UpdateRow: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   let update: Update
-  let branchName: String
   let isCompatible: Bool
 
   var body: some View {
     VStack(alignment: .leading, spacing: 6) {
-      BranchIcon(branchName: branchName)
-
       HStack(alignment: .top) {
         Image("update-icon", bundle: getDevLauncherBundle())
           .resizable()
           .frame(width: 16, height: 16)
 
-        UpdateInfo(update: update)
+        UpdateInfo(update: update, isCompatible: isCompatible)
 
         Spacer()
 
@@ -31,23 +28,36 @@ struct UpdateRow: View {
     Button {
       launchUpdate(update)
     } label: {
-      Text("Open")
+      if isOpening {
+        ProgressView()
+          .controlSize(.small)
+      } else {
+        Text("Open")
+      }
     }
     .buttonStyle(.bordered)
     #if !os(tvOS)
     .controlSize(.small)
     #endif
-    .disabled(!isCompatible)
+    .disabled(!isCompatible || viewModel.isLoadingServer)
   }
 
   private func launchUpdate(_ update: Update) {
-    let updateUrl = formatUpdateUrl(update.manifestPermalink, update.message)
-    viewModel.openApp(url: updateUrl)
+    viewModel.openApp(url: updateURL)
+  }
+
+  private var updateURL: String {
+    formatUpdateUrl(update.manifestPermalink, update.message)
+  }
+
+  private var isOpening: Bool {
+    viewModel.loadingAppURL == updateURL
   }
 }
 
 struct UpdateInfo: View {
   let update: Update
+  let isCompatible: Bool
 
   var body: some View {
     VStack(alignment: .leading, spacing: 4) {
@@ -55,14 +65,20 @@ struct UpdateInfo: View {
         .font(.system(size: 15, weight: .semibold))
         .lineLimit(3)
 
-      Text("Published \(update.createdAt)")
+      Text("Published \(formattedUpdateDate(update.createdAt))")
         .font(.caption)
         .foregroundStyle(.secondary)
+
+      if !isCompatible {
+        Text("Incompatible update")
+          .font(.caption.weight(.medium))
+          .foregroundStyle(.orange)
+      }
     }
   }
 }
 
-struct BranchIcon: View {
+struct BranchBadge: View {
   let branchName: String
 
   var body: some View {
