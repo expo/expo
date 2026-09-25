@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Warn about incomplete `spmPackages` entries, which the `prebuilt-metadata` document leaves out. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.4 — 2026-09-25
 
 ### 🐛 Bug fixes

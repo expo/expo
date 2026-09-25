@@ -23,6 +23,8 @@
 - [iOS] Accept prebuilt-framework tarballs that bundle SwiftPM dependency XCFrameworks alongside the product in the SwiftPM plugin, instead of rejecting them. ([#50141](https://github.com/expo/expo/pull/50141) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Take module identity, deployment target and dependencies from `expo-modules-autolinking prebuilt-metadata` in the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix modules that use Expo Swift macros (`@Field`, `@Record`) failing to build from source with the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Declare each module's SwiftPM package dependencies and honour `autolinkWhen` conditions in the SwiftPM autolinking plugin. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fail the SwiftPM autolinking sync with a specific error for module setups the plugin cannot link correctly, instead of producing a broken build. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
