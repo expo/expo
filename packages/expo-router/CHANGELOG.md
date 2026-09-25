@@ -29,6 +29,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fix `baseUrl` being stripped as a string prefix instead of a path segment in production web builds. ([#50226](https://github.com/expo/expo/pull/50226) by [@mrljsh](https://github.com/mrljsh))
 - Derive browser history on web from router action results in reducer phase. ([#50105](https://github.com/expo/expo/pull/50105) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
