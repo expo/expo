@@ -1,9 +1,8 @@
-import { Platform } from 'expo';
 import { Image, ImageErrorEventData } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
+import { Alert, Dimensions, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { captureRef as takeSnapshotAsync, captureScreen } from 'react-native-view-shot';
 
 import Button from '../components/Button';
