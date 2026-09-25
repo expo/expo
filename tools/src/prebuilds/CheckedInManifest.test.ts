@@ -1976,7 +1976,8 @@ it('pilot resolves the real expo-haptics manifest against its real sources', asy
   const [target] = targets;
   assert.equal(target.type, 'swift');
   assert.equal(target.sourceRoot, path.join(packagePath, 'ios'));
-  assert.deepEqual(target.exclude, []);
+  // The podspec sits inside the target path; without the exclude SwiftPM warns that it is unhandled.
+  assert.deepEqual(target.exclude, ['src/ExpoHaptics.podspec']);
   // `src` is the read-only symlink Mode B stages over sourceRoot; the exports file is generated
   // beside it because the config links Foundation and UIKit.
   assert.deepEqual(target.sources, ['src', 'ExpoHaptics+Exports.swift']);
