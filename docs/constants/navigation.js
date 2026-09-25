@@ -399,6 +399,7 @@ export const general = [
       makePage('guides/using-firebase.mdx'),
       makePage('guides/using-supabase.mdx'),
     ]),
+    makeGroup('Deep linking', [makePage('guides/using-detour.mdx')]),
     makeGroup('Emails', [makePage('guides/using-resend.mdx')]),
     makeGroup('Feature flags', [makePage('guides/using-feature-flags.mdx')]),
     makeGroup('In-app purchases', [makePage('guides/in-app-purchases.mdx')]),
