@@ -30,7 +30,7 @@
     "expo-web-browser": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.1",
+    "react-native": "0.88.0-rc.2",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-reanimated": "4.7.0",
     "react-native-safe-area-context": "~5.9.1",

@@ -19,7 +19,7 @@
     "expo": "~58.0.0-preview.7",
     "expo-status-bar": "~58.0.1",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.1"
+    "react-native": "0.88.0-rc.2"
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
