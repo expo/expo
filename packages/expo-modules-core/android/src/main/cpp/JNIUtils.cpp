@@ -17,7 +17,13 @@ jsi::Value convertSharedObject(
 ) {
   int id = sharedObject->getId();
   if (id != 0) {
-    return jsi::Value(rt, *jsiContext->getSharedObject(id)->cthis()->get());
+    auto jsObject = jsiContext->getSharedObject(id);
+    if (jsObject == nullptr) {
+      // A weak JavaScript counterpart may already be gone. Dereferencing the null
+      // JNI object aborts the process before JavaScript can handle the failure.
+      throw jsi::JSError(rt, "Cannot return shared object: its JavaScript instance is no longer available.");
+    }
+    return jsi::Value(rt, *jsObject->cthis()->get());
   }
 
   auto jsClass = jsiContext->getJavascriptClass(sharedObject->getClass());
