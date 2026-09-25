@@ -60,7 +60,8 @@ final class KernelErrorView: UIView {
   }
 
   private func makeScreen() -> ErrorScreenView {
-    ErrorScreenView(
+    let mismatchUsername = error?.userInfo[EXAccountMismatchUsernameKey] as? String
+    return ErrorScreenView(
       content: content,
       onRetry: { [weak self] in
         guard let self else { return }
@@ -68,8 +69,23 @@ final class KernelErrorView: UIView {
       },
       onGoHome: {
         EXKernel.sharedInstance().browserController?.moveHomeToVisible()
+      },
+      accountActionTitle: mismatchUsername.flatMap { ExpoGoHomeBridge.shared.accountMismatchActionTitle(forUsername: $0) },
+      onAccountAction: { [weak self] in
+        guard let mismatchUsername else { return }
+        Task { @MainActor in
+          guard let self,
+                await ExpoGoHomeBridge.shared.resolveAccountMismatch(forUsername: mismatchUsername, from: self.presentingViewController) else {
+            return
+          }
+          self.delegate?.errorViewDidSelectRetry(self)
+        }
       }
     )
+  }
+
+  private var presentingViewController: UIViewController? {
+    sequence(first: self as UIResponder, next: { $0.next }).first { $0 is UIViewController } as? UIViewController
   }
 
   private func render() {

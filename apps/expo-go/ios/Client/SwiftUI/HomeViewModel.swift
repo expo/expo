@@ -94,41 +94,48 @@ class HomeViewModel: ObservableObject {
     serverService.stopDiscovery()
   }
 
-  func signIn() async {
+  @discardableResult
+  func signIn() async -> Bool {
     let hadSession = isAuthenticated
     do {
-      updateHomeAfterLogin(try await authService.signIn(), hadSession: hadSession)
+      return updateHomeAfterLogin(try await authService.signIn(), hadSession: hadSession)
     } catch {
       showError("Failed to sign in")
+      return false
     }
   }
 
-  func signUp() async {
+  @discardableResult
+  func signUp() async -> Bool {
     let hadSession = isAuthenticated
     do {
-      updateHomeAfterLogin(try await authService.signUp(), hadSession: hadSession)
+      return updateHomeAfterLogin(try await authService.signUp(), hadSession: hadSession)
     } catch {
       showError("Failed to sign up")
+      return false
     }
   }
 
-  func ssoLogin() async {
+  @discardableResult
+  func ssoLogin() async -> Bool {
     let hadSession = isAuthenticated
     do {
-      updateHomeAfterLogin(try await authService.ssoLogin(), hadSession: hadSession)
+      return updateHomeAfterLogin(try await authService.ssoLogin(), hadSession: hadSession)
     } catch {
       showError("Failed to sign in with SSO")
+      return false
     }
   }
 
-  func completeLogin(with sessionSecret: String) async {
+  @discardableResult
+  func completeLogin(with sessionSecret: String) async -> Bool {
     let hadSession = isAuthenticated
-    updateHomeAfterLogin(await authService.completeLogin(with: sessionSecret), hadSession: hadSession)
+    return updateHomeAfterLogin(await authService.completeLogin(with: sessionSecret), hadSession: hadSession)
   }
 
-  private func updateHomeAfterLogin(_ outcome: LoginOutcome?, hadSession: Bool) {
+  private func updateHomeAfterLogin(_ outcome: LoginOutcome?, hadSession: Bool) -> Bool {
     guard let outcome, outcome != .failed else {
-      return
+      return false
     }
     if case .alreadySignedIn(let username) = outcome {
       errorToShow = ErrorInfo(message: "You're already signed in as \(username).", title: "Already signed in")
@@ -138,6 +145,7 @@ class HomeViewModel: ObservableObject {
       dataService.clearData()
     }
     startPollingSelectedAccount()
+    return true
   }
 
   func signOut() {
@@ -167,6 +175,21 @@ class HomeViewModel: ObservableObject {
     clearRecentlyOpenedApps()
     startPollingSelectedAccount()
   }
+
+  func switchToSession(id: String) async {
+    guard let session = sessions.first(where: { $0.id == id }) else {
+      return
+    }
+    if let accountId = session.selectedAccountId ?? session.accounts.first?.id {
+      await selectAccount(accountId: accountId, sessionId: id)
+    } else {
+      dataService.clearData()
+      await authService.switchSession(id: id)
+      clearRecentlyOpenedApps()
+      startPollingSelectedAccount()
+    }
+  }
+
 
   func signOut(sessionId: String) {
     if sessionId == activeSessionId {
