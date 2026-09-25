@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a data race on reload that could crash the app or stop the delivery of `useUpdates()` state events. ([#49561](https://github.com/expo/expo/pull/49561) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-23
