@@ -6,6 +6,8 @@ struct ErrorScreenView: View {
   let content: ErrorScreenContent
   let onRetry: () -> Void
   let onGoHome: () -> Void
+  var accountActionTitle: String? = nil
+  var onAccountAction: () -> Void = {}
 
   var body: some View {
     ScrollView {
@@ -36,6 +38,10 @@ struct ErrorScreenView: View {
     }
     .safeAreaInset(edge: .bottom) {
       VStack(spacing: 8) {
+        if let accountActionTitle {
+          Button(accountActionTitle, action: onAccountAction)
+            .buttonStyle(ErrorScreenButtonStyle(background: Color(red: 0.0, green: 0.46, blue: 1.0), foreground: .white))
+        }
         if content.showsRetry {
           Button("Try again", action: onRetry)
             .buttonStyle(ErrorScreenButtonStyle(background: Color("buttonTertiaryBackground"), foreground: Color("buttonTertiaryText")))
