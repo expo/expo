@@ -1,6 +1,5 @@
 /**
  * Tests for SPMBuild helper functions:
- *  - derivePackageName
  *  - formatVersionRequirement
  *  - findFirstExisting
  *  - findXCFrameworkInDir
@@ -19,7 +18,6 @@ import {
   type CheckedInLayout,
   type CheckedInTargetLayout,
   buildXcodeBuildArgs,
-  derivePackageName,
   formatVersionRequirement,
   findFirstExisting,
   findXCFrameworkInDir,
@@ -34,30 +32,6 @@ import type { SPMProduct, SPMTarget } from './SPMConfig.types';
 describe('getBuildPlatformsFromProductPlatform', () => {
   it('expands iOS 16.4 to device and simulator build platforms', () => {
     assert.deepEqual(getBuildPlatformsFromProductPlatform('iOS("16.4")'), ['iOS', 'iOS Simulator']);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// derivePackageName
-// ---------------------------------------------------------------------------
-
-describe('derivePackageName', () => {
-  it('strips .git suffix and extracts last path segment', () => {
-    assert.equal(
-      derivePackageName('https://github.com/SDWebImage/SDWebImageWebPCoder.git'),
-      'SDWebImageWebPCoder'
-    );
-  });
-
-  it('works without .git suffix', () => {
-    assert.equal(derivePackageName('https://github.com/airbnb/lottie-spm'), 'lottie-spm');
-  });
-
-  it('handles scoped / deeply nested URLs', () => {
-    assert.equal(
-      derivePackageName('https://github.com/nicklockwood/libavif-Xcode.git'),
-      'libavif-Xcode'
-    );
   });
 });
 
