@@ -83,7 +83,9 @@ class GmsLocationProvider(
   }
 
   override fun watchPosition(): ProviderResult<WatchSession> {
-    if (!isServiceAvailable()) return ProviderResult.Unsupported
+    if (!isServiceAvailable()) {
+      return ProviderResult.Unsupported
+    }
     return ProviderResult.Success(GmsWatchSession(fusedLocationProvider))
   }
 
@@ -135,9 +137,12 @@ private class GmsWatchSession(
       .Builder(parameters.priority.toGmsPriority(), parameters.interval.inWholeMilliseconds)
       .setMaxUpdateDelayMillis(parameters.maxUpdateDelay.inWholeMilliseconds)
       .build()
-    val locationCallback = object: LocationCallback() {
+
+    val locationCallback = object : LocationCallback() {
       override fun onLocationResult(locationResult: LocationResult) {
-        if (callback != this) return
+        if (callback != this) {
+          return
+        }
         locationResult.lastLocation?.let {
           onUpdate(WatchUpdate.Fix(it.toPosition()))
           available = true
@@ -145,7 +150,9 @@ private class GmsWatchSession(
       }
 
       override fun onLocationAvailability(availability: LocationAvailability) {
-        if (callback != this) return
+        if (callback != this) {
+          return
+        }
         available = availability.isLocationAvailable
       }
     }
