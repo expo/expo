@@ -19,8 +19,6 @@ export interface BuildParameters {
   readonly computeSha1: boolean;
   readonly enableSymlinks: boolean;
   readonly extensions: readonly string[];
-  /** @deprecated */
-  readonly forceNodeFilesystemAPI?: boolean;
   readonly ignorePattern: RegExp | null;
   readonly plugins: readonly InputFileMapPlugin[];
   readonly retainAllFiles: boolean;
@@ -114,8 +112,6 @@ export interface CrawlerOptions {
   computeSha1: boolean;
   console: Console;
   extensions: readonly string[];
-  /** @deprecated */
-  forceNodeFilesystemAPI?: boolean;
   ignore: IgnoreMatcher;
   includeSymlinks: boolean;
   perfLogger?: PerfLogger | null | undefined;
