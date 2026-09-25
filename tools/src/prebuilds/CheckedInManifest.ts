@@ -365,7 +365,7 @@ function containsSources(directory: string): boolean {
 
 function resolveTargetPath(
   root: string,
-  target: DumpedTarget,
+  target: Pick<DumpedTarget, 'name' | 'path'>,
   regularCount: number
 ): string | null {
   if (target.path != null) return target.path;
@@ -379,6 +379,47 @@ function resolveTargetPath(
     }
   }
   return null;
+}
+
+/**
+ * The canonical source directory of a regular target in a dumped manifest, inferred the way
+ * SwiftPM infers it when the target omits `path`. `regularCount` is the number of regular
+ * targets the manifest declares. Throws when the directory does not exist or leaves `root`.
+ */
+export function resolveCheckedInTargetSourceRoot(
+  root: string,
+  productName: string,
+  target: Pick<DumpedTarget, 'name' | 'path'>,
+  regularCount: number
+): string {
+  const targetPath = resolveTargetPath(root, target, regularCount);
+  if (targetPath != null) prefixSourcePath(targetPath, productName, target.name, 'package root');
+  const lexicalSourceRoot = targetPath == null ? null : path.resolve(root, targetPath);
+  if (
+    lexicalSourceRoot == null ||
+    !fs.pathExistsSync(lexicalSourceRoot) ||
+    !fs.statSync(lexicalSourceRoot).isDirectory()
+  ) {
+    throw manifestError(
+      productName,
+      target.name,
+      `its source path ${JSON.stringify(targetPath)} does not resolve to a real directory.`,
+      "Set path in Package.swift to the directory containing this target's sources."
+    );
+  }
+  // The lexical check above cannot see a symbolic link inside the target path.
+  const sourceRoot = fs.realpathSync.native(lexicalSourceRoot);
+  const canonicalRoot = fs.realpathSync.native(root);
+  const fromRoot = path.relative(canonicalRoot, sourceRoot);
+  if (fromRoot === '..' || fromRoot.startsWith(`..${path.sep}`) || path.isAbsolute(fromRoot)) {
+    throw manifestError(
+      productName,
+      target.name,
+      `its source path ${JSON.stringify(targetPath)} resolves to ${sourceRoot}, which escapes the package root ${canonicalRoot} through a symbolic link.`,
+      'Keep the target path inside the package root, and replace the symbolic link with the directory it points to.'
+    );
+  }
+  return sourceRoot;
 }
 
 /** The single relative-path spelling this module compares and emits: POSIX separators, `.` and
@@ -764,35 +805,9 @@ export async function resolveCheckedInManifestAsync(
   const configSourceTargetNames = new Set(
     product.targets.filter((target) => target.type !== 'framework').map((target) => target.name)
   );
-  const canonicalRoot = fs.realpathSync.native(root);
   const result: CheckedInResolvedTarget[] = [];
   for (const target of regular.filter((candidate) => reachable.has(candidate.name))) {
-    const targetPath = resolveTargetPath(root, target, regular.length);
-    if (targetPath != null) prefixSourcePath(targetPath, product.name, target.name, 'package root');
-    const lexicalSourceRoot = targetPath == null ? null : path.resolve(root, targetPath);
-    if (
-      lexicalSourceRoot == null ||
-      !fs.pathExistsSync(lexicalSourceRoot) ||
-      !fs.statSync(lexicalSourceRoot).isDirectory()
-    ) {
-      throw manifestError(
-        product.name,
-        target.name,
-        `its source path ${JSON.stringify(targetPath)} does not resolve to a real directory.`,
-        "Set path in Package.swift to the directory containing this target's sources."
-      );
-    }
-    // The lexical check above cannot see a symbolic link inside the target path.
-    const sourceRoot = fs.realpathSync.native(lexicalSourceRoot);
-    const fromRoot = path.relative(canonicalRoot, sourceRoot);
-    if (fromRoot === '..' || fromRoot.startsWith(`..${path.sep}`) || path.isAbsolute(fromRoot)) {
-      throw manifestError(
-        product.name,
-        target.name,
-        `its source path ${JSON.stringify(targetPath)} resolves to ${sourceRoot}, which escapes the package root ${canonicalRoot} through a symbolic link.`,
-        'Keep the target path inside the package root, and replace the symbolic link with the directory it points to.'
-      );
-    }
+    const sourceRoot = resolveCheckedInTargetSourceRoot(root, product.name, target, regular.length);
     const prefix = (value: string) => prefixSourcePath(value, product.name, target.name);
     const excludes = target.exclude ?? [];
     const prefixedExcludes = excludes.map(prefix);
