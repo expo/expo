@@ -10,13 +10,17 @@ internal fun resolveKotlinVersion(kotlinGradlePluginVersion: String?, catalogVer
   return kotlinGradlePluginVersion ?: catalogVersion ?: defaultKotlinVersion
 }
 
+// The first Kotlin version that works with KSP releases that aren't tied to a specific Kotlin version.
+private val firstKotlinVersionWithLatestKsp = KotlinVersion(2, 3, 0)
+
 internal fun resolveKspVersion(kotlinVersion: String): String {
   KSPLookup[kotlinVersion]?.let { return it }
-  if (kotlinVersion >= "2.3.0") {
+  val parsedKotlinVersion = parseKotlinVersion(kotlinVersion)
+  if (parsedKotlinVersion != null && parsedKotlinVersion >= firstKotlinVersionWithLatestKsp) {
     return latestKspVersion
   }
 
-  val minSupported = KSPLookup.keys.min()
+  val minSupported = KSPLookup.keys.minWith(compareBy { parseKotlinVersion(it) })
   throw IllegalStateException(
     """
     Kotlin $kotlinVersion is not supported by Expo modules.
@@ -25,6 +29,21 @@ internal fun resolveKspVersion(kotlinVersion: String): String {
     Alternatively, you can set 'kspVersion' explicitly in build.gradle to bypass this check, but this is unsupported and may cause build failures.
     """.trimIndent()
   )
+}
+
+internal fun parseKotlinVersion(version: String): KotlinVersion? {
+  val components = version
+    .substringBefore('-')
+    .split('.')
+    .map { component ->
+      component.toIntOrNull()?.takeIf { it in 0..KotlinVersion.MAX_COMPONENT_VALUE } ?: return null
+    }
+
+  if (components.size > 3) {
+    return null
+  }
+
+  return KotlinVersion(components[0], components.getOrElse(1) { 0 }, components.getOrElse(2) { 0 })
 }
 
 /**
