@@ -28,7 +28,15 @@ struct StoredSession: Codable, Equatable, Identifiable {
 }
 
 final class SessionStore: @unchecked Sendable {
-  static let shared = SessionStore(keychain: KeychainItem(key: "host.exp.exponent.sessions", service: "app"))
+  static let shared: SessionStore = {
+    let store = SessionStore(keychain: KeychainItem(key: "host.exp.exponent.sessions", service: "app"))
+    SessionMigration.migrateIfNeeded(
+      into: store,
+      legacyKeychain: KeychainItem(key: "host.exp.exponent.session", service: "app"),
+      defaults: .standard
+    )
+    return store
+  }()
 
   private struct State: Codable {
     var sessions: [StoredSession] = []
