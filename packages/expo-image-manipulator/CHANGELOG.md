@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `renderAsync` failing with `ERR_IMAGE_CONTEXT_LOST` for 10-bit HDR images, such as HEIC screenshots. ([#50011](https://github.com/expo/expo/pull/50011) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Keep the full pixel resolution of images loaded with a scale factor greater than 1 instead of downscaling them to their point size. ([#50011](https://github.com/expo/expo/pull/50011) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-25
