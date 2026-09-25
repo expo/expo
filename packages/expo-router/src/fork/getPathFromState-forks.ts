@@ -1,7 +1,6 @@
-import * as queryString from 'query-string';
-
 import { matchDynamicName, matchGroupName } from '../matchers';
 import type { Route } from '../react-navigation/native';
+import { stringifyQuery } from '../utils/stringifyQuery';
 import type { State, StringifyConfig } from './getPathFromState';
 
 export type ExpoOptions = {
@@ -52,7 +51,7 @@ export function appendQueryAndHash(
   path: string,
   { '#': hash, ...focusedParams }: Record<string, any>
 ) {
-  const query = queryString.stringify(focusedParams, { sort: false });
+  const query = stringifyQuery(focusedParams);
 
   if (query) {
     path += `?${query}`;

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed navigation crashing with `queryString.stringify is not a function` when an ESM-only `query-string@9` is hoisted by another dependency, by removing the `query-string` dependency and inlining the one call it was used for. This also drops `decode-uri-component` (GHSA-vcc3-ghjq-m6fr) from the dependency tree; generated URLs are unchanged. ([#50629](https://github.com/expo/expo/pull/50629) by [@Meemli](https://github.com/Meemli))
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-25

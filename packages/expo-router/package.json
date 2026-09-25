@@ -300,7 +300,6 @@
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",
     "nanoid": "^3.3.18",
-    "query-string": "^7.1.3",
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.2",
