@@ -17,7 +17,9 @@ final class KernelErrorView: UIView {
   @objc var error: NSError? {
     didSet {
       render()
-      reportToDevServer()
+      if error !== oldValue {
+        reportToDevServer()
+      }
     }
   }
   @objc var appRecord: EXKernelAppRecord? {
