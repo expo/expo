@@ -22,6 +22,7 @@ import {
   SPMProduct,
 } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
+import { derivePackageNameFromUrl, normalizeGitUrl } from './SPMGitUrl';
 import { assertSafeSPMIdentifier } from './SPMIdentifier';
 import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
@@ -566,13 +567,6 @@ export const getBuildFolderPrefixForPlatform = (platform: BuildPlatform): string
 };
 
 /**
- * Normalizes a git URL for comparison (strips trailing .git and lowercases).
- */
-function normalizeGitUrl(url: string): string {
-  return url.replace(/\.git$/, '').toLowerCase();
-}
-
-/**
  * Detects which of the shared SPM dependencies are also dependencies of a given checkout.
  * Parses the checkout's Package.swift for `.package(url:)` entries and matches them
  * against the full set of shared deps by URL.
@@ -860,19 +854,6 @@ export async function findFirstExisting(paths: string[]): Promise<string | null>
 }
 
 /**
- * Derives the SPM package name from a URL.
- * e.g., "https://github.com/airbnb/lottie-spm.git" → "lottie-spm"
- */
-export function derivePackageName(url: string): string {
-  const lastSlash = url.lastIndexOf('/');
-  let name = url.substring(lastSlash + 1);
-  if (name.endsWith('.git')) {
-    name = name.slice(0, -4);
-  }
-  return name;
-}
-
-/**
  * Formats a version requirement for Package.swift.
  */
 export function formatVersionRequirement(version: SPMPackageDependencyConfig['version']): string {
@@ -888,8 +869,8 @@ export function formatVersionRequirement(version: SPMPackageDependencyConfig['ve
  */
 function generateStandaloneSPMPackageSwift(dep: SPMPackageDependencyConfig): string {
   assertSafeSPMIdentifier(dep.productName, 'productName');
-  // derivePackageName strips the last URL segment without sanitizing, so re-check.
-  const packageName = dep.packageName || derivePackageName(dep.url);
+  // derivePackageNameFromUrl strips the last URL segment without sanitizing, so re-check.
+  const packageName = dep.packageName || derivePackageNameFromUrl(dep.url);
   assertSafeSPMIdentifier(packageName, 'packageName');
   const versionReq = formatVersionRequirement(dep.version);
 
@@ -1015,7 +996,7 @@ export async function buildSharedSPMDependencyAsync(
   // about the workspace root when the checkout is nested inside another SPM workspace.
   const checkoutsDir = path.join(buildDir, '.build', 'checkouts');
   // Covers the URL-derived branch that bypasses the top-of-function check.
-  const packageName = dep.packageName || derivePackageName(dep.url);
+  const packageName = dep.packageName || derivePackageNameFromUrl(dep.url);
   assertSafeSPMIdentifier(packageName, 'packageName');
   const checkoutSource = path.join(checkoutsDir, packageName);
 

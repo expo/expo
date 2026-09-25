@@ -24,6 +24,7 @@ import { Frameworks } from './Frameworks';
 import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
+import { derivePackageNameFromUrl } from './SPMGitUrl';
 import { parseLinkedFrameworks } from './SPMIdentifier';
 import {
   ExternalDependencyConfig,
@@ -264,19 +265,6 @@ function formatSPMVersionRequirement(version: SPMPackageVersion): string {
     return `revision: "${version.revision}"`;
   }
   throw new Error(`Invalid SPM version specification: ${JSON.stringify(version)}`);
-}
-
-/**
- * Derives the package name from an SPM URL.
- * e.g., "https://github.com/airbnb/lottie-spm.git" -> "lottie-spm"
- */
-function derivePackageNameFromUrl(url: string): string {
-  const lastSlash = url.lastIndexOf('/');
-  let name = url.substring(lastSlash + 1);
-  if (name.endsWith('.git')) {
-    name = name.slice(0, -4);
-  }
-  return name;
 }
 
 const BUILD_VARIANT_KEYS = ['common', 'debug', 'release'] as const;

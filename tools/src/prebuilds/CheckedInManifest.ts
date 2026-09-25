@@ -7,6 +7,7 @@ import { getPackagesDir } from '../Directories';
 import logger from '../Logger';
 import { isExternalPackage, type SPMPackageSource } from './ExternalPackage';
 import type { SPMPackageDependencyConfig, SPMProduct, SourceTarget } from './SPMConfig.types';
+import { derivePackageNameFromUrl, normalizeGitUrl } from './SPMGitUrl';
 import { parseLinkedFrameworks } from './SPMIdentifier';
 import type { ResolvedTarget } from './SPMPackage.types';
 
@@ -186,18 +187,6 @@ function soleKey(record: Record<string, unknown>): string | null {
 
 function isPinnedKind(kind: string | null): kind is PinnedRequirement['kind'] {
   return PINNED_KINDS.some((pinned) => pinned === kind);
-}
-
-/** A copy of normalizeGitUrl in SPMBuild.ts, which imports this module; keep the two in step. */
-function normalizeGitUrl(url: string): string {
-  return url.replace(/\.git$/, '').toLowerCase();
-}
-
-/** A copy of derivePackageNameFromUrl in SPMPackage.ts, which imports this module; keep the two
- * in step. */
-function derivePackageNameFromUrl(url: string): string {
-  const name = url.substring(url.lastIndexOf('/') + 1);
-  return name.endsWith('.git') ? name.slice(0, -4) : name;
 }
 
 function describeRequirement({ kind, value }: PinnedRequirement): string {
