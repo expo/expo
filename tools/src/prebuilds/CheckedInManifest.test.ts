@@ -719,9 +719,17 @@ it('an explicit empty sources array does not mean all files', async () => {
   );
 });
 
-it('explicit sources do not waive the exclude requirement', async () => {
+it('accepts a Tests directory outside explicit sources', async () => {
+  const input = fixture('.target(name: "Main", path: "ios", sources: ["Main.swift"])', {
+    'ios/Main.swift': 'public let value = 1',
+    'ios/Tests/Bad.swift': 'INVALID SWIFT',
+  });
+  assert.equal((await resolve(input.root, input.product))[0].type, 'swift');
+});
+
+it('rejects a Tests directory inside explicit sources', async () => {
   await rejectsManifest(
-    fixture('.target(name: "Main", path: "ios", sources: ["Main.swift"])', {
+    fixture('.target(name: "Main", path: "ios", sources: ["Main.swift", "Tests"])', {
       'ios/Main.swift': 'public let value = 1',
       'ios/Tests/Bad.swift': 'INVALID SWIFT',
     }),
