@@ -89,8 +89,12 @@ class SessionStore(
       preferences.edit(commit = true) { remove(STATE_KEY) }
       return
     }
-    val encrypted = cipher.encrypt(gson.toJson(state).toByteArray(Charsets.UTF_8))
-    preferences.edit(commit = true) { putString(STATE_KEY, Base64.encodeToString(encrypted, Base64.NO_WRAP)) }
+    try {
+      val encrypted = cipher.encrypt(gson.toJson(state).toByteArray(Charsets.UTF_8))
+      preferences.edit(commit = true) { putString(STATE_KEY, Base64.encodeToString(encrypted, Base64.NO_WRAP)) }
+    } catch (e: Exception) {
+      Log.w(TAG, "Could not save sessions, keeping them in memory only", e)
+    }
   }
 
   private fun load(): SessionsState {

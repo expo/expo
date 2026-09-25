@@ -59,6 +59,16 @@ class SessionStoreTest {
   }
 
   @Test
+  fun encryptionFailureKeepsTheSessionInMemory() {
+    cipher.failsToEncrypt = true
+
+    val session = store.add("a")
+
+    assertEquals(session.id, store.activeSession?.id)
+    assertTrue(preferences.all.isEmpty())
+  }
+
+  @Test
   fun removeActiveFallsBackToTheFirstRemainingSession() {
     val first = store.add("a")
     val second = store.add("b")

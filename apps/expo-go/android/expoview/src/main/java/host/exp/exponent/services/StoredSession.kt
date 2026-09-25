@@ -1,26 +1,34 @@
 package host.exp.exponent.services
 
-enum class ActorType { User, Partner }
+import com.google.gson.annotations.SerializedName
+
+enum class ActorType {
+  @SerializedName("User")
+  User,
+
+  @SerializedName("Partner")
+  Partner
+}
 
 data class StoredAccount(
-  val id: String,
-  val name: String,
-  val ownerUserId: String?,
-  val ownerUsername: String?,
-  val ownerFullName: String?,
-  val ownerAvatarUrl: String?
+  @SerializedName("id") val id: String,
+  @SerializedName("name") val name: String,
+  @SerializedName("ownerUserId") val ownerUserId: String?,
+  @SerializedName("ownerUsername") val ownerUsername: String?,
+  @SerializedName("ownerFullName") val ownerFullName: String?,
+  @SerializedName("ownerAvatarUrl") val ownerAvatarUrl: String?
 )
 
 data class StoredSession(
-  val id: String,
-  val sessionSecret: String,
-  val userId: String? = null,
-  val username: String? = null,
-  val displayName: String? = null,
-  val avatarUrl: String? = null,
-  val actorType: ActorType = ActorType.User,
-  val selectedAccountId: String? = null,
-  val accounts: List<StoredAccount> = emptyList()
+  @SerializedName("id") val id: String,
+  @SerializedName("sessionSecret") val sessionSecret: String,
+  @SerializedName("userId") val userId: String? = null,
+  @SerializedName("username") val username: String? = null,
+  @SerializedName("displayName") val displayName: String? = null,
+  @SerializedName("avatarUrl") val avatarUrl: String? = null,
+  @SerializedName("actorType") val actorType: ActorType = ActorType.User,
+  @SerializedName("selectedAccountId") val selectedAccountId: String? = null,
+  @SerializedName("accounts") val accounts: List<StoredAccount> = emptyList()
 )
 
 data class SessionProfile(
@@ -33,8 +41,8 @@ data class SessionProfile(
 )
 
 data class SessionsState(
-  val sessions: List<StoredSession> = emptyList(),
-  val activeSessionId: String? = null
+  @SerializedName("sessions") val sessions: List<StoredSession> = emptyList(),
+  @SerializedName("activeSessionId") val activeSessionId: String? = null
 ) {
   val activeSession: StoredSession?
     get() = sessions.firstOrNull { it.id == activeSessionId }
