@@ -187,10 +187,10 @@ class LocationModuleNext : Module() {
       }
 
       Function("withInterval") { locationWatchHandle: PositionWatchHandle, intervalMs: Double ->
-        val interval = if (!(0.0 <= intervalMs && intervalMs < Long.MAX_VALUE)) {
-          0.0
-        } else {
+        val interval = if (0.0 <= intervalMs && intervalMs < Long.MAX_VALUE) {
           intervalMs
+        } else {
+          0.0
         }
         locationWatchHandle.session.withInterval(interval.milliseconds)
         locationWatchHandle

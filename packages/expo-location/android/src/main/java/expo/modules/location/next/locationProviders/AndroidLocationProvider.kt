@@ -119,7 +119,6 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
     return ProviderResult.Success(currentPosition)
   }
 
-
   override fun watchPosition(): ProviderResult<WatchSession> {
     if (locationManager.getProviders(true).isEmpty()) {
       return ProviderResult.Unavailable
@@ -144,33 +143,33 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
 
 private class AndroidWatchSession(
   private val context: Context,
-  private val locationManager: LocationManager,
+  private val locationManager: LocationManager
 ) : WatchSession, BroadcastReceiver() {
   private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchUpdate) -> Unit)
   private class SessionState(val listener: LocationListenerCompat, val provider: String)
 
-  private var mConfig: SessionConfig? = null
-  private var mState: SessionState? = null
+  private var config: SessionConfig? = null
+  private var state: SessionState? = null
 
   private fun clearConfig() {
-    if (mConfig != null) {
-      mConfig = null
+    if (config != null) {
+      config = null
       context.unregisterReceiver(this)
     }
   }
 
   @SuppressLint("MissingPermission")
   private fun clearState() {
-    val state = mState
-    if (state != null) {
-      mState = null
-      LocationManagerCompat.removeUpdates(locationManager, state.listener)
+    val oldState = state
+    if (oldState != null) {
+      state = null
+      LocationManagerCompat.removeUpdates(locationManager, oldState.listener)
     }
   }
 
   @SuppressLint("MissingPermission")
   private fun tryConfiguringListener(config: SessionConfig, provider: String, emitError: Boolean = false): LocationListenerCompat? {
-    return try {
+    return runCatching {
       val request = LocationRequestCompat.Builder(config.parameters.interval.inWholeMilliseconds)
         .setQuality(config.parameters.priority.toQuality())
         .setMaxUpdateDelayMillis(config.parameters.maxUpdateDelay.inWholeMilliseconds)
@@ -178,28 +177,28 @@ private class AndroidWatchSession(
       val listener = LocationListenerCompat { location -> config.onUpdate(WatchUpdate.Fix(location.toPosition())) }
       LocationManagerCompat.requestLocationUpdates(locationManager, provider, request, listener, Looper.getMainLooper())
       listener
-    } catch (cause: Throwable) {
+    }.onFailure {
       if (emitError) {
-        config.onUpdate(WatchUpdate.Failure(cause))
+        config.onUpdate(WatchUpdate.Failure(it))
       }
-      null
-    }
+    }.getOrNull()
   }
 
   @Synchronized
   override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean {
     clearConfig()
     clearState()
+
     val provider = resolveSystemProviderName(parameters.priority, context, locationManager)
     val desiredConfig = SessionConfig(parameters, onUpdate)
 
     val listener = provider?.let { tryConfiguringListener(desiredConfig, it) }
     if (listener != null) {
-      mState = SessionState(listener, provider)
+      state = SessionState(listener, provider)
     }
 
     ContextCompat.registerReceiver(context, this, IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION), ContextCompat.RECEIVER_NOT_EXPORTED)
-    mConfig = desiredConfig
+    config = desiredConfig
 
     return listener != null
   }
@@ -211,15 +210,17 @@ private class AndroidWatchSession(
     clearConfig()
   }
 
-  @Synchronized override fun isSubscribed(): Boolean = mConfig != null
-  @Synchronized override fun canDeliverUpdates(): Boolean = mState != null
+  @Synchronized override fun isSubscribed(): Boolean = config != null
 
-  @Synchronized @SuppressLint("MissingPermission")
+  @Synchronized override fun canDeliverUpdates(): Boolean = state != null
+
+  @Synchronized
+  @SuppressLint("MissingPermission")
   override fun onReceive(receiverContext: Context?, intent: Intent?) {
-    val config = mConfig ?: return
-    val state = mState
+    val config = config ?: return
+    val currentState = state
     val provider = resolveSystemProviderName(config.parameters.priority, context, locationManager)
-    if (state != null && state.provider == provider) {
+    if (currentState != null && currentState.provider == provider) {
       return
     }
 
@@ -227,7 +228,7 @@ private class AndroidWatchSession(
 
     val listener = provider?.let { tryConfiguringListener(config, it, emitError = true) }
     if (listener != null) {
-      mState = SessionState(listener, provider)
+      state = SessionState(listener, provider)
     }
   }
 }
