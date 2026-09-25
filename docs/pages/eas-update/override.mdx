@@ -51,7 +51,7 @@ Yes. Any other header you want to override at runtime must be declared in [`upda
 
 ## Override both update URL and request headers
 
-> **warning** The feature described in this section is available in Expo SDK 52 with the `expo-updates` version 0.27.0 and later. Using the `disableAntiBrickingMeasures` option is not recommended for production apps, it is currently primarily intended for preview environments.
+> **warning** The feature described in this section is available in Expo SDK 52 with the `expo-updates` version 0.27.0 and later. Use the `disableAntiBrickingMeasures` option in preview environments. Avoid it in production apps.
 
 Similar to [override request headers](#override-request-headers), if you want to further override the update URL to a specific update, you can use the [`Updates.setUpdateURLAndRequestHeadersOverride`](/versions/latest/sdk/updates/#updatessetupdateurlandrequestheadersoverrideconfigoverride) method. This allows you to load a specific update by ID, even if the update is published before the current build is created.
 
@@ -106,7 +106,7 @@ function overrideUpdateURLAndHeaders() {
       // We recommend only enabling this in preview builds.
       // You can use app.config.js to configure it dynamically.
       "disableAntiBrickingMeasures": true
-      // etc..
+      // etc.
     }
   }
 }

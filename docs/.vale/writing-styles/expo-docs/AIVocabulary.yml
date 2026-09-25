@@ -1,0 +1,17 @@
+extends: existence
+message: "Replace '%s' with a plain, specific word."
+level: error
+ignorecase: true
+tokens:
+  - delv(?:e|es|ed|ing)
+  - tapestr(?:y|ies)
+  - testaments?
+  - pivotal
+  - crucial(?:ly)?
+  - intricate(?:ly)?
+  - interplay
+  - garner(?:s|ed|ing)?
+  - foster(?:s|ed|ing)?
+  - enduring
+  - robust(?:ly|ness)?
+  - vibrant

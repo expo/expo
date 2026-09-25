@@ -1,0 +1,7 @@
+extends: existence
+message: "Remove the extra period."
+level: error
+scope: raw
+nonword: true
+tokens:
+  - '(?m)[A-Za-z)`][.][.](?:[ \t]|$)'

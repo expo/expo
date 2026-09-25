@@ -138,7 +138,14 @@ class AssetModernDelegate(
   override suspend fun setFavorite(isFavorite: Boolean): Unit = withContext(Dispatchers.IO) {
     mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(listOf(contentUri))
     val values = ContentValues().apply {
-      put(MediaStore.MediaColumns.IS_FAVORITE, if (isFavorite) 1 else 0)
+      put(
+        MediaStore.MediaColumns.IS_FAVORITE,
+        if (isFavorite) {
+          1
+        } else {
+          0
+        }
+      )
     }
     contentResolver.safeUpdate(contentUri, values)
   }
@@ -210,7 +217,7 @@ class AssetModernDelegate(
     val displayName = if (forceUniqueName) {
       buildUniqueDisplayName(getUri())
     } else {
-      getUri().toString()
+      getFilename()
     }
     val newAssetUri = contentResolver.insertPendingAsset(
       displayName,

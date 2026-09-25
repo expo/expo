@@ -1,6 +1,6 @@
 {
   "name": "expo-template-default",
-  "version": "58.0.6",
+  "version": "58.0.7",
   "license": "0BSD",
   "repository": {
     "type": "git",
@@ -17,15 +17,15 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@expo/ui": "~58.0.6",
-    "expo": "~58.0.0-preview.6",
-    "expo-constants": "~58.0.6",
+    "@expo/ui": "~58.0.7",
+    "expo": "~58.0.0-preview.7",
+    "expo-constants": "~58.0.7",
     "expo-device": "~58.0.2",
     "expo-font": "~58.0.2",
     "expo-glass-effect": "~58.0.2",
-    "expo-image": "~58.0.5",
-    "expo-linking": "~58.0.6",
-    "expo-router": "~58.0.7",
+    "expo-image": "~58.0.6",
+    "expo-linking": "~58.0.7",
+    "expo-router": "~58.0.8",
     "expo-splash-screen": "~58.0.1",
     "expo-status-bar": "~58.0.1",
     "expo-symbols": "~58.0.2",
@@ -33,13 +33,13 @@
     "expo-web-browser": "~58.0.2",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.1",
+    "react-native": "0.88.0-rc.2",
     "react-native-gesture-handler": "~3.2.1",
-    "react-native-reanimated": "4.6.0",
+    "react-native-reanimated": "4.7.0",
     "react-native-safe-area-context": "~5.9.1",
     "react-native-screens": "~4.28.0",
     "react-native-web": "~0.21.0",
-    "react-native-worklets": "0.12.2"
+    "react-native-worklets": "0.13.0"
   },
   "devDependencies": {
     "@types/react": "~19.3.0",

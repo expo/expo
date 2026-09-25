@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `prefetch` crashing with `PromiseAlreadySettledException` when Glide restarts a failed request after connectivity is restored, resolving the already-settled promise a second time. ([#49944](https://github.com/expo/expo/pull/49944) by [@riorafe](https://github.com/riorafe))
+- [Android] Fixed native crashes when decoding and clearing some animated GIFs. ([#49533](https://github.com/expo/expo/pull/49533) by [@MangelSpec](https://github.com/MangelSpec))
 
 ### 💡 Others
+
+## 58.0.6 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `prefetch` crashing with `PromiseAlreadySettledException` when Glide restarts a failed request after connectivity is restored, resolving the already-settled promise a second time. ([#49944](https://github.com/expo/expo/pull/49944) by [@riorafe](https://github.com/riorafe))
 
 ## 58.0.5 — 2026-09-23
 

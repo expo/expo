@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.7 — 2026-09-25
+
+### 🎉 New features
+
+- [iOS] Added `presentationCornerRadius` modifier. ([#50632](https://github.com/expo/expo/pull/50632) by [@shanelord01](https://github.com/shanelord01))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `onPress` on universal components such as `Row` and `Column` not firing when tapping empty space, such as a `Spacer`. ([#50599](https://github.com/expo/expo/pull/50599) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.6 — 2026-09-23
 
 ### 🛠 Breaking changes

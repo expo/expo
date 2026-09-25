@@ -160,6 +160,16 @@ internal struct PresentationDragIndicatorModifier: ViewModifier, Record {
   }
 }
 
+// MARK: - Presentation Corner Radius
+
+internal struct PresentationCornerRadiusModifier: ViewModifier, Record {
+  @Field var cornerRadius: Double?
+
+  func body(content: Content) -> some View {
+    content.presentationCornerRadius(cornerRadius.map { CGFloat($0) })
+  }
+}
+
 // MARK: - Presentation Background Interaction
 
 internal enum PresentationBackgroundInteractionTypeModifier: String, Enumerable {
