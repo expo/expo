@@ -6,18 +6,13 @@
 
 ### 🎉 New features
 
-- Publish a product's `autolinkWhen` condition in the prebuilt-metadata document, so consumers other than CocoaPods can apply the same gate. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Publish each product's `autolinkWhen` condition, `sourceOnly` flag, iOS deployment target and SwiftPM package dependencies in the `prebuilt-metadata` document. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
 - Skip React Native libraries whose podspec does not declare the target platform when resolving `react-native-config` for `macos` and `tvos`. Codegen and Metro consume that config too, so libraries the Podfile was already filtering out no longer end up in the generated third-party components provider, where their missing classes crashed the app on first render. ([#50571](https://github.com/expo/expo/pull/50571) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
-
-- [iOS] Mark source-only products with `sourceOnly` in the `prebuilt-metadata` document, so consumers can tell a product that never produces an XCFramework from one the prebuild pipeline can build. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Publish each product's iOS deployment floor as `iosDeploymentTarget` in the `prebuilt-metadata` document, so consumers outside CocoaPods can read it from the product's own config instead of its podspec. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Publish each product's SPM package dependencies as `spmDependencies` in the `prebuilt-metadata` document, so consumers can find the XCFrameworks that ship beside a precompiled product without reading its config. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Publish the full SwiftPM coordinates of each product's package dependencies as `spmPackages` in the `prebuilt-metadata` document, so a consumer that declares them itself has the URL, product name and version requirement. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.3 — 2026-09-21
 
