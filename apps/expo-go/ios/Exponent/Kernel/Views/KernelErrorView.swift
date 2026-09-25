@@ -28,6 +28,9 @@ final class KernelErrorView: UIView {
   @objc weak var delegate: ErrorViewDelegate?
 
   private var hostingController: UIHostingController<ErrorScreenView>?
+  private var isResolvingAccountAction = false {
+    didSet { render() }
+  }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -72,15 +75,20 @@ final class KernelErrorView: UIView {
       },
       accountActionTitle: mismatchUsername.flatMap { ExpoGoHomeBridge.shared.accountMismatchActionTitle(forUsername: $0) },
       onAccountAction: { [weak self] in
-        guard let mismatchUsername else { return }
+        guard let self, let mismatchUsername, !self.isResolvingAccountAction else { return }
+        self.isResolvingAccountAction = true
         Task { @MainActor in
-          guard let self,
-                await ExpoGoHomeBridge.shared.resolveAccountMismatch(forUsername: mismatchUsername, from: self.presentingViewController) else {
-            return
+          let resolved = await ExpoGoHomeBridge.shared.resolveAccountMismatch(
+            forUsername: mismatchUsername,
+            from: self.presentingViewController
+          )
+          self.isResolvingAccountAction = false
+          if resolved {
+            self.delegate?.errorViewDidSelectRetry(self)
           }
-          self.delegate?.errorViewDidSelectRetry(self)
         }
-      }
+      },
+      isAccountActionInProgress: isResolvingAccountAction
     )
   }
 

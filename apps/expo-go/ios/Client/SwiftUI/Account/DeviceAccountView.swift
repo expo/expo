@@ -101,6 +101,9 @@ struct DeviceAccountView: View {
   }
 
   private func finishSignIn(_ signedIn: Bool) {
+    guard signedIn || onSignedIn == nil else {
+      return
+    }
     isAddingAccount = false
     if signedIn {
       onSignedIn?()

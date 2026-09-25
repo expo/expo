@@ -323,7 +323,10 @@ import UIKit
     viewModel: HomeViewModel,
     from presenter: UIViewController
   ) async -> Bool {
-    await withCheckedContinuation { continuation in
+    guard presenter.presentedViewController == nil else {
+      return false
+    }
+    return await withCheckedContinuation { continuation in
       weak var presented: UIViewController?
       let signIn = AccountMismatchSignInView(
         username: username,

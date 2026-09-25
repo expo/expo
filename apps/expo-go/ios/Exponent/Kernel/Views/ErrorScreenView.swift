@@ -8,6 +8,7 @@ struct ErrorScreenView: View {
   let onGoHome: () -> Void
   var accountActionTitle: String? = nil
   var onAccountAction: () -> Void = {}
+  var isAccountActionInProgress = false
 
   var body: some View {
     ScrollView {
@@ -41,6 +42,8 @@ struct ErrorScreenView: View {
         if let accountActionTitle {
           Button(accountActionTitle, action: onAccountAction)
             .buttonStyle(ErrorScreenButtonStyle(background: Color(red: 0.0, green: 0.46, blue: 1.0), foreground: .white))
+            .disabled(isAccountActionInProgress)
+            .opacity(isAccountActionInProgress ? 0.55 : 1)
         }
         if content.showsRetry {
           Button("Try again", action: onRetry)
