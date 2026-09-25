@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [ios] Add `previewCornerRadius` to `Link.Trigger` so a lifted trigger can keep its own corners. ([#50669](https://github.com/expo/expo/pull/50669) by [@oscnord](https://github.com/oscnord))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

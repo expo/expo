@@ -793,6 +793,24 @@ describe('Preview', () => {
       __internal__PreviewKey: undefined,
     });
   });
+  it('passes the corner radius of Link.Trigger to the native preview', () => {
+    renderRouter({
+      index: () => {
+        return (
+          <Link href="/test">
+            <Link.Trigger previewCornerRadius={12}>
+              <Text>Trigger</Text>
+            </Link.Trigger>
+            <Link.Menu>
+              <Link.MenuAction title="Action" />
+            </Link.Menu>
+          </Link>
+        );
+      },
+      test: () => null,
+    });
+    expect(jest.mocked(NativeLinkPreview).mock.lastCall?.[0].previewCornerRadius).toBe(12);
+  });
   it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
     expect(() => {
       renderRouter({
