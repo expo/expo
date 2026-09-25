@@ -99,6 +99,8 @@ function assertManifestDiagnostic(error: Error, detail: RegExp, target: string) 
   assert.ok(error.message.startsWith(prefix), `Error must name target ${target}: ${error.message}`);
   assert.match(error.message, detail);
   assert.match(error.message.slice(prefix.length), NEXT_STEP);
+  // Mode A/B is pipeline vocabulary; the reader of this error has never seen it.
+  assert.doesNotMatch(error.message, /\bMode [AB]\b/);
 }
 
 /** The logged counterpart of assertManifestDiagnostic: the debug line carrying `detail` must close
@@ -382,7 +384,7 @@ for (const [label, version, url] of [
     const entry = { url, productName: 'Remote', version } as unknown as SPMPackageDependencyConfig;
     await rejectsManifest(
       withPackages(REMOTE_PACKAGE, [entry]),
-      /: spm\.config\.json declares an spmPackages entry that Mode B cannot read: /
+      /: spm\.config\.json declares an spmPackages entry that et prebuild cannot read: /
     );
   });
 }
@@ -407,14 +409,14 @@ it('packages: rejects a registry .package(id:) dependency', async () => {
 it('packages: rejects an empty branch the dump reports verbatim', async () => {
   await rejectsManifest(
     withPackages(`.package(url: "${REMOTE_URL}", branch: "")`, [remote({ branch: 'main' })]),
-    /: the dumped manifest declares a package dependency that Mode B cannot read: /
+    /: the dumped manifest declares a package dependency that et prebuild cannot read: /
   );
 });
 
 it('packages: rejects a local Git repository, which has no remote URL', async () => {
   await rejectsManifest(
     withPackages('.package(url: "/abs/remote", exact: "1.2.3")', []),
-    /: the dumped manifest declares a package dependency that Mode B cannot read: /
+    /: the dumped manifest declares a package dependency that et prebuild cannot read: /
   );
 });
 
@@ -459,7 +461,7 @@ for (const [label, dependency] of [
     await withSwiftOnPath(stubSwiftDump(input, {}, { dependencies: [dependency] }), () =>
       rejectsManifest(
         input,
-        /: the dumped manifest declares a package dependency that Mode B cannot read: /
+        /: the dumped manifest declares a package dependency that et prebuild cannot read: /
       )
     );
   });
@@ -470,7 +472,7 @@ it('packages: rejects a dumped dependency list that is not a list', async () => 
   await withSwiftOnPath(stubSwiftDump(input, {}, { dependencies: {} }), () =>
     rejectsManifest(
       input,
-      /: the dumped manifest declares a package dependency that Mode B cannot read: /
+      /: the dumped manifest declares a package dependency that et prebuild cannot read: /
     )
   );
 });
@@ -1171,6 +1173,20 @@ it('rejects resource localization rather than silently removing it', async () =>
       }
     ),
     /: resource "message\.txt" uses localization metadata that the generated target cannot represent\./
+  );
+});
+
+it('rejects a default localization rather than silently removing it', async () => {
+  const input = fixture();
+  const manifestPath = path.join(input.root, 'Package.swift');
+  const manifest = fs.readFileSync(manifestPath, 'utf8');
+  fs.writeFileSync(
+    manifestPath,
+    manifest.replace('name: "fixture",', 'name: "fixture",\n  defaultLocalization: "en",')
+  );
+  await rejectsManifest(
+    input,
+    /: the manifest declares default localization "en", which the generated target cannot represent\./
   );
 });
 

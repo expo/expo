@@ -227,7 +227,7 @@ function readDeclaredPackages(
 ): Map<string, DeclaredPackage> {
   const unreadable = (dependency: unknown) =>
     fail(
-      `the dumped manifest declares a package dependency that Mode B cannot read: ${JSON.stringify(dependency)}.`,
+      `the dumped manifest declares a package dependency that et prebuild cannot read: ${JSON.stringify(dependency)}.`,
       'Declare each package as .package(url:exact:), .package(url:branch:), or .package(url:revision:) with a remote URL and a non-empty value.'
     );
   const packages = new Map<string, DeclaredPackage>();
@@ -271,13 +271,13 @@ function readDeclaredPackages(
     if (traits.length === 0) {
       throw fail(
         `the manifest disables the default traits of ${url}, which the generated build manifest would silently re-enable.`,
-        'Remove the traits argument, or keep this product in Mode A.'
+        'Remove the traits argument, or remove Package.swift to build this product from spm.config.json instead.'
       );
     }
     if (traits.length !== 1 || traits[0] !== 'default') {
       throw fail(
         `the manifest enables traits ${JSON.stringify(traits)} on ${url} instead of the default traits, which the generated build manifest cannot carry.`,
-        'Remove the traits argument, or keep this product in Mode A.'
+        'Remove the traits argument, or remove Package.swift to build this product from spm.config.json instead.'
       );
     }
     const key = normalizeGitUrl(url);
@@ -302,13 +302,13 @@ function readConfiguredRequirement(
   const value = isRecord(version) && kind != null ? version[kind] : undefined;
   if (kind === 'from' && isNonEmptyString(entry.url) && isNonEmptyString(value)) {
     throw fail(
-      `spm.config.json declares ${entry.url} (product "${entry.productName}") with from: ${JSON.stringify(value)}, which a checked-in Package.swift can never match, because Mode B accepts only exact:, branch:, and revision: requirements there.`,
+      `spm.config.json declares ${entry.url} (product "${entry.productName}") with from: ${JSON.stringify(value)}, which a checked-in Package.swift can never match: et prebuild accepts only exact:, branch:, and revision: requirements in Package.swift.`,
       'Use exact: in spm.config.json and in Package.swift, so both pin the same version.'
     );
   }
   if (!isNonEmptyString(entry.url) || !isPinnedKind(kind) || !isNonEmptyString(value)) {
     throw fail(
-      `spm.config.json declares an spmPackages entry that Mode B cannot read: ${JSON.stringify(entry)}.`,
+      `spm.config.json declares an spmPackages entry that et prebuild cannot read: ${JSON.stringify(entry)}.`,
       "Set url to the package's Git URL, and version to exactly one of exact, branch, or revision with a non-empty value."
     );
   }
@@ -525,7 +525,7 @@ export async function resolveCheckedInManifestAsync(
       throw manifestError(
         product.name,
         target.name,
-        `spm.config.json declares ${field}, but Mode B cannot write generated layout files through its read-only source symlink.`,
+        `spm.config.json declares ${field}, but et prebuild uses the package sources read-only when it builds from Package.swift, so it cannot write the layout files that ${field} generates.`,
         `Remove ${field} and express that layout in Package.swift before adding the manifest.`
       );
     }
@@ -578,7 +578,7 @@ export async function resolveCheckedInManifestAsync(
       product.name,
       targetName,
       `the manifest declares default localization "${manifest.defaultLocalization}", which the generated target cannot represent.`,
-      'Remove the localization or move the localized resource handling out of Mode B.'
+      'Remove the localization, or remove Package.swift to build this product from spm.config.json instead.'
     );
   }
 
@@ -634,7 +634,7 @@ export async function resolveCheckedInManifestAsync(
           product.name,
           target.name,
           `dependency "${dependencyTargetName}" has a platform condition, but the generated dependency format cannot preserve it.`,
-          'Remove the condition only if the dependency applies to every platform, or keep this product in Mode A.'
+          'Remove the condition only if the dependency applies to every platform, or remove Package.swift to build this product from spm.config.json instead.'
         );
       }
       if (dependency.product?.[2] != null) {
@@ -642,7 +642,7 @@ export async function resolveCheckedInManifestAsync(
           product.name,
           target.name,
           `dependency "${dependencyTargetName}" declares moduleAliases, which the generated dependency format cannot preserve.`,
-          'Remove moduleAliases, or keep this product in Mode A.'
+          'Remove moduleAliases, or remove Package.swift to build this product from spm.config.json instead.'
         );
       }
       if (dependency.product) {
@@ -724,7 +724,7 @@ export async function resolveCheckedInManifestAsync(
           product.name,
           target.name,
           `dependency .product(name: "${productName}", package: "${packageName}") has the same name as regular target "${productName}", and the generated manifest refers to both by that one name, so it cannot tell them apart.`,
-          'Use a target name that differs from every product in spmPackages, or keep this product in Mode A.'
+          'Use a target name that differs from every product in spmPackages, or remove Package.swift to build this product from spm.config.json instead.'
         );
       }
     }
@@ -826,7 +826,7 @@ export async function resolveCheckedInManifestAsync(
           product.name,
           target.name,
           `resource "${resource.path}" uses localization metadata that the generated target cannot represent.`,
-          'Remove the localization or move the localized resource handling out of Mode B.'
+          'Remove the localization, or remove Package.swift to build this product from spm.config.json instead.'
         );
       }
       if (rule !== 'copy' && rule !== 'process') {
