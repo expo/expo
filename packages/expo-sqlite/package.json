@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.8.0",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",

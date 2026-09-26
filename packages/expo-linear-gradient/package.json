@@ -35,7 +35,7 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
