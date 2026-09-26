@@ -27,8 +27,8 @@ afterEach(() => {
 });
 
 describe(AppMetricsRoot, () => {
-  it('marks the first render and renders its children', () => {
-    render(
+  it('marks the first render and renders its children', async () => {
+    await render(
       <AppMetricsRoot>
         <Text testID="child">app</Text>
       </AppMetricsRoot>
@@ -38,8 +38,8 @@ describe(AppMetricsRoot, () => {
     expect(screen.getByTestId('child')).toBeVisible();
   });
 
-  it('mounts an error boundary that renders the fallback when given errorBoundaryFallback', () => {
-    render(
+  it('mounts an error boundary that renders the fallback when given errorBoundaryFallback', async () => {
+    await render(
       <AppMetricsRoot errorBoundaryFallback={<Text testID="fallback">crashed</Text>}>
         <Boom />
       </AppMetricsRoot>
@@ -49,28 +49,29 @@ describe(AppMetricsRoot, () => {
     expect(reportError).toHaveBeenCalledTimes(1);
   });
 
-  it('mounts a capture-only boundary when errorBoundaryFallback is explicitly null', () => {
+  it('mounts a capture-only boundary when errorBoundaryFallback is explicitly null', async () => {
     // Explicit `null` still mounts a boundary (rendering nothing), so the error is captured rather
     // than propagating; only omitting the prop leaves the tree unwrapped.
-    expect(() =>
+    await expect(
       render(
         <AppMetricsRoot errorBoundaryFallback={null}>
           <Boom />
         </AppMetricsRoot>
       )
-    ).not.toThrow();
+    ).resolves.not.toThrow();
     expect(reportError).toHaveBeenCalledTimes(1);
   });
 
-  it('mounts no boundary without a fallback, so a render error propagates unchanged', () => {
+  it('mounts no boundary without a fallback, so a render error propagates unchanged', async () => {
     // No boundary is mounted, so the error escapes the tree exactly as if AppMetricsRoot weren't
     // there (preserving React Native's default crash behavior for existing prop-less usage).
-    expect(() =>
-      render(
-        <AppMetricsRoot>
-          <Boom />
-        </AppMetricsRoot>
-      )
-    ).toThrow('render exploded');
+    await expect(
+      async () =>
+        await render(
+          <AppMetricsRoot>
+            <Boom />
+          </AppMetricsRoot>
+        )
+    ).rejects.toThrow('render exploded');
   });
 });

@@ -47,8 +47,8 @@ afterEach(() => {
 });
 
 describe(AppMetricsErrorBoundary, () => {
-  it('renders children unchanged when nothing throws', () => {
-    render(
+  it('renders children unchanged when nothing throws', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={null}>
         <Text testID="child">healthy</Text>
       </AppMetricsErrorBoundary>
@@ -58,8 +58,8 @@ describe(AppMetricsErrorBoundary, () => {
     expect(reportError).not.toHaveBeenCalled();
   });
 
-  it('does not render the fallback while the children are healthy', () => {
-    render(
+  it('does not render the fallback while the children are healthy', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={<Text testID="fallback">something broke</Text>}>
         <Text testID="child">healthy</Text>
       </AppMetricsErrorBoundary>
@@ -70,8 +70,8 @@ describe(AppMetricsErrorBoundary, () => {
     expect(reportError).not.toHaveBeenCalled();
   });
 
-  it('renders the fallback element in place of the failed subtree', () => {
-    render(
+  it('renders the fallback element in place of the failed subtree', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={<Text testID="fallback">something broke</Text>}>
         <Boom />
       </AppMetricsErrorBoundary>
@@ -80,8 +80,8 @@ describe(AppMetricsErrorBoundary, () => {
     expect(screen.getByTestId('fallback')).toBeVisible();
   });
 
-  it('renders nothing when the fallback is explicitly null', () => {
-    render(
+  it('renders nothing when the fallback is explicitly null', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={null}>
         <Boom />
         <Text testID="child">healthy</Text>
@@ -92,8 +92,8 @@ describe(AppMetricsErrorBoundary, () => {
     expect(screen.toJSON()).toBeNull();
   });
 
-  it('catches a falsy (non-Error) throw without looping, and renders the fallback', () => {
-    render(
+  it('catches a falsy (non-Error) throw without looping, and renders the fallback', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={<Text testID="fallback">caught</Text>}>
         <ThrowNull />
       </AppMetricsErrorBoundary>
@@ -105,8 +105,8 @@ describe(AppMetricsErrorBoundary, () => {
     expect(reportError).toHaveBeenCalledTimes(1);
   });
 
-  it('reports a caught error as a non-fatal errorBoundary exception', () => {
-    render(
+  it('reports a caught error as a non-fatal errorBoundary exception', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={null}>
         <Boom />
       </AppMetricsErrorBoundary>
@@ -123,8 +123,8 @@ describe(AppMetricsErrorBoundary, () => {
     );
   });
 
-  it('reports the same way when a fallback element is provided', () => {
-    render(
+  it('reports the same way when a fallback element is provided', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={<Text testID="fallback">something broke</Text>}>
         <Boom />
       </AppMetricsErrorBoundary>
@@ -142,7 +142,7 @@ describe(AppMetricsErrorBoundary, () => {
     );
   });
 
-  it('renders a fallback render function with the error and resets on retry', () => {
+  it('renders a fallback render function with the error and resets on retry', async () => {
     function App() {
       const [showError, setShowError] = useState(true);
       return (
@@ -162,22 +162,22 @@ describe(AppMetricsErrorBoundary, () => {
       );
     }
 
-    render(<App />);
+    await render(<App />);
 
     // The render function receives the caught error.
     expect(screen.getByTestId('fallback')).toHaveTextContent('caught: render exploded');
 
     // resetError clears the error and re-renders the (now healthy) children.
-    fireEvent.press(screen.getByTestId('fallback'));
+    await fireEvent.press(screen.getByTestId('fallback'));
     expect(screen.getByTestId('recovered')).toBeVisible();
     expect(screen.queryByTestId('fallback')).toBeNull();
   });
 
-  it('catches again after a reset if the children throw once more', () => {
+  it('catches again after a reset if the children throw once more', async () => {
     // `resetError` re-renders the children as they are; if they still throw, the boundary must catch
     // the new error rather than let it escape. Here the children keep throwing, so pressing retry
     // clears then immediately re-catches.
-    render(
+    await render(
       <AppMetricsErrorBoundary
         fallback={({ resetError }) => (
           <Text testID="fallback" onPress={resetError}>
@@ -191,15 +191,15 @@ describe(AppMetricsErrorBoundary, () => {
     expect(screen.getByTestId('fallback')).toBeVisible();
     expect(reportError).toHaveBeenCalledTimes(1);
 
-    fireEvent.press(screen.getByTestId('fallback'));
+    await fireEvent.press(screen.getByTestId('fallback'));
 
     // Still the fallback (re-caught), and the second catch reported another error.
     expect(screen.getByTestId('fallback')).toBeVisible();
     expect(reportError).toHaveBeenCalledTimes(2);
   });
 
-  it('reports the React component stack of the subtree that threw', () => {
-    render(
+  it('reports the React component stack of the subtree that threw', async () => {
+    await render(
       <AppMetricsErrorBoundary fallback={null}>
         <NestedBoom />
       </AppMetricsErrorBoundary>
@@ -211,18 +211,18 @@ describe(AppMetricsErrorBoundary, () => {
     expect(componentStack).toBe(componentStack.trim());
   });
 
-  it('does not let a failure inside reportError escape the boundary', () => {
+  it('does not let a failure inside reportError escape the boundary', async () => {
     reportError.mockImplementation(() => {
       throw new Error('native module blew up');
     });
 
-    expect(() =>
+    await expect(
       render(
         <AppMetricsErrorBoundary fallback={<Text testID="fallback">fallback</Text>}>
           <Boom />
         </AppMetricsErrorBoundary>
       )
-    ).not.toThrow();
+    ).resolves.not.toThrow();
     expect(screen.getByTestId('fallback')).toBeVisible();
   });
 });
