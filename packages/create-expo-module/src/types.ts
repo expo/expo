@@ -74,6 +74,8 @@ export type LocalSubstitutionData = {
     features: Feature[];
   };
   type: 'local';
+  /** Major version of the host project's `expo` dependency, or `null` when it can't be determined. */
+  sdkVersion?: number | null;
 };
 
 export type CustomPromptObject = PromptObject & {

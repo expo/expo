@@ -1,5 +1,12 @@
+<% const sdk = typeof compat === 'undefined' ? {} : compat; -%>
+<% if (sdk.modernExpoUI ?? true) { -%>
     ExpoUIView<<%- project.composeViewName %>Props>("<%- project.composeViewName %>") {
       Content { props ->
         <%- project.composeViewName %>Content(props)
       }
     }
+<% } else { -%>
+    ExpoUIView<<%- project.composeViewName %>Props>("<%- project.composeViewName %>") { props ->
+      <%- project.composeViewName %>Content(props)
+    }
+<% } -%>
