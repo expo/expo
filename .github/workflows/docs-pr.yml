@@ -33,7 +33,7 @@ jobs:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: 🏗️ Setup pnpm
-        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        uses: pnpm/setup@fbda4c85fc2e1e08721cd8763afea8f48d60f024 # v3.0.0
         with:
           install: false
       - name: ⬢ Setup Node
@@ -66,7 +66,7 @@ jobs:
         id: vale-version
         run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
-        uses: vale-cli/vale-action@85f9f7f2c5f449ac0ae5b66662961bae3f77ca6a # 2.1.2
+        uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # 3.0.0
         with:
           version: ${{ steps.vale-version.outputs.version }}
           reporter: github-pr-check
@@ -85,7 +85,7 @@ jobs:
       - name: 🚀 Deploy Docs website
         if: contains(github.event.pull_request.labels.*.name, 'preview')
         id: deploy
-        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4.0.0
+        uses: cloudflare/wrangler-action@25853364521e0d392ece9b0c1e97a4b37b638087 # v4.1.2
         with:
           apiToken: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
