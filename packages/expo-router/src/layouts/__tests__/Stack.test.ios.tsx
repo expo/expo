@@ -44,8 +44,8 @@ beforeEach(() => {
 afterEach(() => jest.useRealTimers());
 
 describe('native header user interface style', () => {
-  it('applies screenOptions, per-screen overrides, and the theme fallback independently', () => {
-    renderRouter(
+  it('applies screenOptions, per-screen overrides, and the theme fallback independently', async () => {
+    await renderRouter(
       {
         _layout: () => (
           <Stack
@@ -64,48 +64,48 @@ describe('native header user interface style', () => {
 
     expect(latestStackItemProps('a')?.headerConfig?.experimental_userInterfaceStyle).toBe('dark');
 
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
     expect(latestStackItemProps('b')?.headerConfig?.experimental_userInterfaceStyle).toBe('light');
 
-    act(() => router.push('/c'));
+    await act(() => router.push('/c'));
     expect(latestStackItemProps('c')?.headerConfig?.experimental_userInterfaceStyle).toBe('light');
     expect(latestStackItemProps('a')?.headerConfig?.experimental_userInterfaceStyle).toBe('dark');
   });
 });
 
 describe('native dismissal', () => {
-  it('pops one screen when the native header back button is clicked', () => {
-    renderRouter({
+  it('pops one screen when the native header back button is clicked', async () => {
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
     });
 
-    act(() => router.push('/second'));
+    await act(() => router.push('/second'));
     expect(screen).toHavePathname('/second');
 
     const props = latestStackItemProps('second');
     expect(props?.onHeaderBackButtonClicked).toBeDefined();
-    act(() => props!.onHeaderBackButtonClicked!());
+    await act(() => props!.onHeaderBackButtonClicked!());
 
     expect(screen).toHavePathname('/');
     expect(screen.getByTestId('index')).toBeVisible();
   });
 
-  it('pops `dismissCount` screens on native dismiss', () => {
-    renderRouter({
+  it('pops `dismissCount` screens on native dismiss', async () => {
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
       third: () => <View testID="third" />,
     });
 
-    act(() => router.push('/second'));
-    act(() => router.push('/third'));
+    await act(() => router.push('/second'));
+    await act(() => router.push('/third'));
     expect(screen).toHavePathname('/third');
 
     const props = latestStackItemProps('third');
-    act(() =>
+    await act(() =>
       props!.onDismissed!({
         nativeEvent: { dismissCount: 2 },
       } as Parameters<NonNullable<StackItemProps['onDismissed']>>[0])
@@ -115,17 +115,17 @@ describe('native dismissal', () => {
     expect(screen.getByTestId('index')).toBeVisible();
   });
 
-  it('pops the dismissed screen when a native dismiss is cancelled-then-completed', () => {
-    renderRouter({
+  it('pops the dismissed screen when a native dismiss is cancelled-then-completed', async () => {
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
     });
 
-    act(() => router.push('/second'));
+    await act(() => router.push('/second'));
 
     const props = latestStackItemProps('second');
-    act(() =>
+    await act(() =>
       props!.onNativeDismissCancelled!({
         nativeEvent: { dismissCount: 1 },
       } as Parameters<NonNullable<StackItemProps['onDismissed']>>[0])
@@ -136,7 +136,7 @@ describe('native dismissal', () => {
 });
 
 describe('screen lifecycle events', () => {
-  it('emits transition and sheet events targeted at the screen', () => {
+  it('emits transition and sheet events targeted at the screen', async () => {
     const events: { type: string; data?: unknown }[] = [];
 
     function Second() {
@@ -159,21 +159,21 @@ describe('screen lifecycle events', () => {
       return <View testID="second" />;
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <View testID="index" />,
       second: Second,
     });
 
-    act(() => router.push('/second'));
+    await act(() => router.push('/second'));
 
     const props = latestStackItemProps('second');
-    act(() => props!.onWillAppear!({} as never));
-    act(() => props!.onAppear!({} as never));
-    act(() => props!.onWillDisappear!({} as never));
-    act(() => props!.onDisappear!({} as never));
-    act(() => props!.onGestureCancel!({} as never));
-    act(() =>
+    await act(() => props!.onWillAppear!({} as never));
+    await act(() => props!.onAppear!({} as never));
+    await act(() => props!.onWillDisappear!({} as never));
+    await act(() => props!.onDisappear!({} as never));
+    await act(() => props!.onGestureCancel!({} as never));
+    await act(() =>
       props!.onSheetDetentChanged!({
         nativeEvent: { index: 1, isStable: true },
       } as Parameters<NonNullable<StackItemProps['onSheetDetentChanged']>>[0])
@@ -191,22 +191,22 @@ describe('screen lifecycle events', () => {
 });
 
 describe('preloaded screens', () => {
-  it('detaches a preloaded route until it is focused', () => {
-    renderRouter({
+  it('detaches a preloaded route until it is focused', async () => {
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
     });
 
-    act(() => router.prefetch('/second'));
+    await act(() => router.prefetch('/second'));
     expect(latestStackItemProps('second')?.activityState).toBe(0);
 
-    act(() => router.push('/second'));
+    await act(() => router.push('/second'));
     expect(latestStackItemProps('second')?.activityState).toBe(2);
   });
 
-  it('restores the animation of a prefetched route in the render that pushes it', () => {
-    renderRouter({
+  it('restores the animation of a prefetched route in the render that pushes it', async () => {
+    await renderRouter({
       _layout: () => (
         <Stack>
           <Stack.Screen name="second" options={{ animation: 'fade' }} />
@@ -216,14 +216,14 @@ describe('preloaded screens', () => {
       second: () => <View testID="second" />,
     });
 
-    act(() => router.prefetch('/second'));
+    await act(() => router.prefetch('/second'));
     expect(latestStackItemProps('second')).toMatchObject({
       activityState: 0,
       stackAnimation: 'none',
     });
 
     MockedScreenStackItem.mockClear();
-    act(() => router.push('/second'));
+    await act(() => router.push('/second'));
 
     // Native reads the animation when the screen becomes active, so both must change together
     const renders = MockedScreenStackItem.mock.calls
@@ -238,10 +238,10 @@ describe('preloaded screens', () => {
 });
 
 describe('tabPress', () => {
-  it('pops the stack to top when the focused tab is pressed again', () => {
+  it('pops the stack to top when the focused tab is pressed again', async () => {
     jest.useFakeTimers();
 
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => (
           <Tabs>
@@ -257,13 +257,13 @@ describe('tabPress', () => {
 
     expect(screen.getByTestId('a-index')).toBeVisible();
 
-    act(() => router.push('/a/b'));
+    await act(() => router.push('/a/b'));
     expect(screen).toHavePathname('/a/b');
 
-    // Press the already-focused tab (the tab bar item is the only button named "a");
+    // Press the already-focused tab (the tab bar item is the only button labelled "a, tab, 1 of 1");
     // the handler resets the stack on the next frame
-    fireEvent.press(screen.getByRole('button', { name: 'a' }));
-    act(() => {
+    await fireEvent.press(screen.getByRole('button', { name: 'a, tab, 1 of 1' }));
+    await act(() => {
       jest.runAllTimers();
     });
 

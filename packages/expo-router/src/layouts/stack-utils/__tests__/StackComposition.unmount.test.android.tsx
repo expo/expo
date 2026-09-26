@@ -28,7 +28,7 @@ const ScreenStackHeaderSearchBarView = _ScreenStackHeaderSearchBarView as jest.M
 >;
 
 describe('Stack composition component unmount resets options', () => {
-  it('unmounting Stack.Screen.Title resets title to route name', () => {
+  it('unmounting Stack.Screen.Title resets title to route name', async () => {
     function Index() {
       const [show, setShow] = useState(true);
       return (
@@ -40,7 +40,7 @@ describe('Stack composition component unmount resets options', () => {
       );
     }
 
-    renderRouter({ _layout: () => <Stack />, index: Index });
+    await renderRouter({ _layout: () => <Stack />, index: Index });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
     // [0] is initial layout render, [1] is composition registration
@@ -49,8 +49,8 @@ describe('Stack composition component unmount resets options', () => {
 
     jest.clearAllMocks();
 
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggle'));
     });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
@@ -59,7 +59,7 @@ describe('Stack composition component unmount resets options', () => {
     expect(finalProps.headerConfig?.title).toBe('index');
   });
 
-  it('unmounting Stack.Screen.BackButton resets back button options', () => {
+  it('unmounting Stack.Screen.BackButton resets back button options', async () => {
     function Index() {
       const [show, setShow] = useState(true);
       return (
@@ -71,7 +71,7 @@ describe('Stack composition component unmount resets options', () => {
       );
     }
 
-    renderRouter({ _layout: () => <Stack />, index: Index });
+    await renderRouter({ _layout: () => <Stack />, index: Index });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
     // [0] is initial layout render, [1] is composition registration
@@ -80,8 +80,8 @@ describe('Stack composition component unmount resets options', () => {
 
     jest.clearAllMocks();
 
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggle'));
     });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
@@ -90,7 +90,7 @@ describe('Stack composition component unmount resets options', () => {
     expect(finalProps.headerConfig?.backTitle).toBeUndefined();
   });
 
-  it('unmounting Stack.Header resets header styling options', () => {
+  it('unmounting Stack.Header resets header styling options', async () => {
     function Index() {
       const [show, setShow] = useState(true);
       return (
@@ -103,7 +103,10 @@ describe('Stack composition component unmount resets options', () => {
     }
 
     // Setting headerShown to false to also test that unmounting composition components can reset options that hide the header
-    renderRouter({ _layout: () => <Stack screenOptions={{ headerShown: false }} />, index: Index });
+    await renderRouter({
+      _layout: () => <Stack screenOptions={{ headerShown: false }} />,
+      index: Index,
+    });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
     // [0] is initial layout render, [1] is composition registration
@@ -113,8 +116,8 @@ describe('Stack composition component unmount resets options', () => {
 
     jest.clearAllMocks();
 
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggle'));
     });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
@@ -125,7 +128,7 @@ describe('Stack composition component unmount resets options', () => {
     expect(finalProps.headerConfig?.hidden).toBe(true);
   });
 
-  it('unmounting Stack.SearchBar resets search bar options', () => {
+  it('unmounting Stack.SearchBar resets search bar options', async () => {
     function Index() {
       const [show, setShow] = useState(true);
       return (
@@ -138,7 +141,10 @@ describe('Stack composition component unmount resets options', () => {
     }
 
     // Setting headerShown to false to also test that unmounting composition components can reset options that hide the header
-    renderRouter({ _layout: () => <Stack screenOptions={{ headerShown: false }} />, index: Index });
+    await renderRouter({
+      _layout: () => <Stack screenOptions={{ headerShown: false }} />,
+      index: Index,
+    });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
     // headerSearchBarOptions is rendered as a SearchBar child inside ScreenStackHeaderSearchBarView
@@ -149,8 +155,8 @@ describe('Stack composition component unmount resets options', () => {
 
     jest.clearAllMocks();
 
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggle'));
     });
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
