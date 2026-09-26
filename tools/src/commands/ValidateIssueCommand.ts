@@ -2,6 +2,7 @@ import { Command } from '@expo/commander';
 
 import {
   getIssueAsync,
+  labelNames,
   listAllOpenIssuesAsync,
   addIssueLabelsAsync,
   removeIssueLabelAsync,
@@ -82,9 +83,8 @@ async function validateIssueAsync(issueNumber: number) {
   }
 
   // Skip if we already applied some other label
-  for (const label of issue.labels) {
-    const labelName = typeof label === 'string' ? label : label.name;
-    if (labelName && labelName === 'needs validation') {
+  for (const labelName of labelNames(issue.labels)) {
+    if (labelName === 'needs validation') {
       // Remove the validation label since we've started validation
       console.log('found needs validation label, removing it.');
       try {
@@ -92,7 +92,7 @@ async function validateIssueAsync(issueNumber: number) {
       } catch (e) {
         console.log(e);
       }
-    } else if (labelName && SKIP_VALIDATION_LABELS.includes(labelName)) {
+    } else if (SKIP_VALIDATION_LABELS.includes(labelName)) {
       console.log(`Issue is labeled with ${labelName}, skipping validation.`);
       return;
     }
