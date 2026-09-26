@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Route React Native's public `AssetRegistry` through the same registry as bundled assets.
+
 ### 💡 Others
 
 - [Internal] Fix the `BundleOptions` import in `internal/unstable-expo-updates-exports.d.ts`, which pointed at a subpath `@expo/metro` doesn't ship. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
