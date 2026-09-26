@@ -10,11 +10,22 @@ const { runDumpPackage } = require('../cli');
 const {
   parseDumpedManifest,
   renderSourceManifest,
-  renderPureSwiftManifest,
+  pureSwiftManifest,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
   raiseFloor,
+  spmPackageIdentity,
+  documentedPackage,
+  packageDeclaration,
 } = require('../manifests');
+
+/** A pure-Swift module rendered the way `emitPureSwiftSourcePackage` renders it. */
+const renderPureSwift = ({ frameworkSearchPath, extraSwiftFlags, ...module }) =>
+  renderSourceManifest({
+    manifest: pureSwiftManifest(module),
+    frameworkSearchPath,
+    extraSwiftFlags,
+  });
 
 describe('parseDumpedManifest', () => {
   const dumped = JSON.stringify({
@@ -57,7 +68,7 @@ describe('parseDumpedManifest', () => {
         sources: [],
         resources: [],
         settings: [],
-        siblingDeps: ['ExpoFileSystemObjC'],
+        dependencies: ['ExpoFileSystemObjC'],
       },
       {
         name: 'ExpoFileSystemObjC',
@@ -67,7 +78,7 @@ describe('parseDumpedManifest', () => {
         sources: [],
         resources: [],
         settings: [],
-        siblingDeps: [],
+        dependencies: [],
       },
     ]);
   });
@@ -105,9 +116,9 @@ describe('parseDumpedManifest target dependencies', () => {
     ],
   });
 
-  it('accepts both the .target and .byName forms and ignores product dependencies', () => {
+  it('accepts both the .target and .byName forms and drops a product of an undeclared package', () => {
     const [main] = parseDumpedManifest(dumped).targets;
-    expect(main.siblingDeps).toEqual([
+    expect(main.dependencies).toEqual([
       'Helper',
       'Plain',
       { name: 'Conditioned', platforms: ['ios', 'macos'] },
@@ -125,13 +136,13 @@ describe('renderSourceManifest', () => {
         name: 'ExpoFileSystem',
         path: 'ios/ExpoFileSystem',
         publicHeadersPath: null,
-        siblingDeps: ['ExpoFileSystemObjC'],
+        dependencies: ['ExpoFileSystemObjC'],
       },
       {
         name: 'ExpoFileSystemObjC',
         path: 'ios/ExpoFileSystemObjC',
         publicHeadersPath: 'include',
-        siblingDeps: [],
+        dependencies: [],
       },
     ],
   };
@@ -170,8 +181,8 @@ describe('renderSourceManifest', () => {
   });
 });
 
-describe('renderPureSwiftManifest', () => {
-  const out = renderPureSwiftManifest({
+describe('a rendered pure-Swift manifest', () => {
+  const out = renderPureSwift({
     product: 'ExpoAsset',
     srcRel: 'ios',
     frameworkSearchPath: '/abs/interfaces',
@@ -206,8 +217,8 @@ describe('macro plugin flags', () => {
     '"-load-plugin-executable", "-Xfrontend", ' +
     '"/abs/macros/ExpoModulesMacros-tool#ExpoModulesMacros"])]';
 
-  describe('renderPureSwiftManifest', () => {
-    const out = renderPureSwiftManifest({
+  describe('a pure-Swift manifest', () => {
+    const out = renderPureSwift({
       product: 'ExpoCrypto',
       srcRel: 'ios',
       frameworkSearchPath: '/abs/interfaces',
@@ -229,7 +240,7 @@ describe('macro plugin flags', () => {
       manifest: {
         name: 'TestModule',
         products: [{ name: 'TestModule', targets: ['Main'] }],
-        targets: [{ name: 'Main', path: 'Main', publicHeadersPath: null, siblingDeps: [] }],
+        targets: [{ name: 'Main', path: 'Main', publicHeadersPath: null, dependencies: [] }],
       },
       frameworkSearchPath: '/abs/interfaces',
       extraSwiftFlags: MACRO_FLAGS,
@@ -266,8 +277,7 @@ describe('macro plugin flags', () => {
           targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [] }],
         })
       );
-      emitSourceManifestPackage({
-        moduleRoot,
+      emitSourceManifestPackage(moduleRoot, {
         frameworkSearchPath: '/abs/interfaces',
         outDir,
         macroFlags: MACRO_FLAGS,
@@ -279,13 +289,10 @@ describe('macro plugin flags', () => {
     });
 
     it('carries the flags through emitPureSwiftSourcePackage', () => {
-      emitPureSwiftSourcePackage({
-        moduleRoot,
-        product: 'ExpoCrypto',
-        frameworkSearchPath: '/abs/interfaces',
-        outDir,
-        macroFlags: MACRO_FLAGS,
-      });
+      emitPureSwiftSourcePackage(
+        { moduleRoot, product: 'ExpoCrypto' },
+        { frameworkSearchPath: '/abs/interfaces', outDir, macroFlags: MACRO_FLAGS }
+      );
 
       expect(
         fs.readFileSync(path.join(outDir, 'expo-source', 'ExpoCrypto', 'Package.swift'), 'utf8')
@@ -295,12 +302,12 @@ describe('macro plugin flags', () => {
 });
 
 describe('renderSourceManifest target dependency conditions', () => {
-  const render = (siblingDeps) =>
+  const render = (dependencies) =>
     renderSourceManifest({
       manifest: {
         name: 'TestModule',
         products: [{ name: 'TestModule', targets: ['Main'] }],
-        targets: [{ name: 'Main', path: 'Main', publicHeadersPath: null, siblingDeps }],
+        targets: [{ name: 'Main', path: 'Main', publicHeadersPath: null, dependencies }],
       },
       frameworkSearchPath: '/abs/interfaces',
     });
@@ -343,7 +350,7 @@ describe('implicit target source paths', () => {
   });
 
   const emit = () =>
-    emitSourceManifestPackage({ moduleRoot, frameworkSearchPath: '/abs/interfaces', outDir });
+    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir });
   const emittedManifest = () =>
     fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
 
@@ -355,7 +362,7 @@ describe('implicit target source paths', () => {
     fs.mkdirSync(path.join(moduleRoot, 'Sources', 'Example'), { recursive: true });
     runDumpPackage.mockReturnValue(dumpWithoutPath);
 
-    expect(emit().packageDep).toEqual({
+    expect(emit().ok.packageDep).toEqual({
       name: 'TestModule',
       path: path.join(outDir, 'expo-source', 'TestModule'),
     });
@@ -378,8 +385,11 @@ describe('implicit target source paths', () => {
     runDumpPackage.mockReturnValue(dumpWithoutPath);
     const result = emit();
 
-    expect(result.packageDep).toBeUndefined();
-    expect(result.unresolvedTargets).toEqual(['Example']);
+    expect(result.ok).toBeUndefined();
+    expect(result.refusal).toEqual({
+      reason: 'unresolvable-target-path',
+      targetNames: ['Example'],
+    });
     expect(fs.existsSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'))).toBe(
       false
     );
@@ -391,7 +401,7 @@ describe('implicit target source paths', () => {
         manifest: {
           name: 'TestModule',
           products: [{ name: 'TestModule', targets: ['Example'] }],
-          targets: [{ name: 'Example', path: null, publicHeadersPath: null, siblingDeps: [] }],
+          targets: [{ name: 'Example', path: null, publicHeadersPath: null, dependencies: [] }],
         },
         frameworkSearchPath: '/abs/interfaces',
       })
@@ -399,9 +409,9 @@ describe('implicit target source paths', () => {
   });
 });
 
-describe('renderPureSwiftManifest excludes', () => {
+describe('pure-Swift manifest excludes', () => {
   it('excludes the directories classification ignores, in the given order', () => {
-    const out = renderPureSwiftManifest({
+    const out = renderPureSwift({
       product: 'ExpoClipboard',
       srcRel: 'ios',
       frameworkSearchPath: '/abs/interfaces',
@@ -412,7 +422,7 @@ describe('renderPureSwiftManifest excludes', () => {
 
   it('emits no exclude key when nothing is ignored', () => {
     expect(
-      renderPureSwiftManifest({
+      renderPureSwift({
         product: 'ExpoAsset',
         srcRel: 'ios',
         frameworkSearchPath: '/abs/interfaces',
@@ -422,9 +432,9 @@ describe('renderPureSwiftManifest excludes', () => {
   });
 });
 
-describe('renderPureSwiftManifest privacy manifest', () => {
+describe('pure-Swift manifest privacy manifest', () => {
   it('copies the privacy manifest into the target resources, after the excludes', () => {
-    const out = renderPureSwiftManifest({
+    const out = renderPureSwift({
       product: 'ExpoDevice',
       srcRel: 'ios',
       frameworkSearchPath: '/abs/interfaces',
@@ -438,7 +448,7 @@ describe('renderPureSwiftManifest privacy manifest', () => {
 
   it('emits no resources key when the module ships no privacy manifest', () => {
     expect(
-      renderPureSwiftManifest({
+      renderPureSwift({
         product: 'ExpoAsset',
         srcRel: 'ios',
         frameworkSearchPath: '/abs/interfaces',
@@ -446,7 +456,7 @@ describe('renderPureSwiftManifest privacy manifest', () => {
       })
     ).not.toContain('resources:');
     expect(
-      renderPureSwiftManifest({
+      renderPureSwift({
         product: 'ExpoAsset',
         srcRel: 'ios',
         frameworkSearchPath: '/abs/interfaces',
@@ -464,12 +474,10 @@ describe('emitPureSwiftSourcePackage', () => {
     fs.mkdirSync(path.join(moduleRoot, 'ios', '__tests__'), { recursive: true });
     fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
 
-    emitPureSwiftSourcePackage({
-      moduleRoot,
-      product: 'ExpoAsset',
-      frameworkSearchPath: '/abs/interfaces',
-      outDir,
-    });
+    emitPureSwiftSourcePackage(
+      { moduleRoot, product: 'ExpoAsset' },
+      { frameworkSearchPath: '/abs/interfaces', outDir }
+    );
     const manifest = fs.readFileSync(
       path.join(outDir, 'expo-source', 'ExpoAsset', 'Package.swift'),
       'utf8'
@@ -487,12 +495,10 @@ describe('emitPureSwiftSourcePackage', () => {
       if (withPrivacyManifest) {
         fs.writeFileSync(path.join(moduleRoot, 'ios', 'PrivacyInfo.xcprivacy'), '<plist/>\n');
       }
-      emitPureSwiftSourcePackage({
-        moduleRoot,
-        product: 'ExpoDevice',
-        frameworkSearchPath: '/abs/interfaces',
-        outDir,
-      });
+      emitPureSwiftSourcePackage(
+        { moduleRoot, product: 'ExpoDevice' },
+        { frameworkSearchPath: '/abs/interfaces', outDir }
+      );
       return fs.readFileSync(
         path.join(outDir, 'expo-source', 'ExpoDevice', 'Package.swift'),
         'utf8'
@@ -534,13 +540,13 @@ describe('single-target packages with sources directly in a predefined directory
     fs.writeFileSync(target, content);
   };
   const emit = () =>
-    emitSourceManifestPackage({ moduleRoot, frameworkSearchPath: '/abs/interfaces', outDir });
+    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir });
 
   it('resolves the only target to the bare predefined directory holding its sources', () => {
     write('Sources/File.swift');
     runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().unresolvedTargets).toBeUndefined();
+    expect(emit().refusal).toBeUndefined();
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources"');
@@ -561,14 +567,14 @@ describe('single-target packages with sources directly in a predefined directory
     write('Sources/File.swift');
     runDumpPackage.mockReturnValue(dumpTargets(['A', 'B']));
 
-    expect(emit().unresolvedTargets).toEqual(['A', 'B']);
+    expect(emit().refusal).toEqual({ reason: 'unresolvable-target-path', targetNames: ['A', 'B'] });
   });
 
   it('accepts a predefined directory whose sources are nested below it', () => {
     write('Sources/Nested/File.swift');
     runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().unresolvedTargets).toBeUndefined();
+    expect(emit().refusal).toBeUndefined();
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources"');
@@ -578,7 +584,10 @@ describe('single-target packages with sources directly in a predefined directory
     write('Sources/Nested/README.md', '# docs\n');
     runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().unresolvedTargets).toEqual(['RootSrc']);
+    expect(emit().refusal).toEqual({
+      reason: 'unresolvable-target-path',
+      targetNames: ['RootSrc'],
+    });
   });
 });
 
@@ -605,7 +614,7 @@ describe('sibling dependencies on non-regular targets', () => {
         ],
       })
     ).targets;
-    expect(main.siblingDeps).toEqual(['Helper']);
+    expect(main.dependencies).toEqual(['Helper']);
   });
 });
 
@@ -621,7 +630,7 @@ describe('unsupported platform conditions', () => {
               name: 'Main',
               path: 'Main',
               publicHeadersPath: null,
-              siblingDeps: [{ name: 'Helper', platforms: ['freebsd'] }],
+              dependencies: [{ name: 'Helper', platforms: ['freebsd'] }],
             },
           ],
         },
@@ -989,9 +998,9 @@ describe('deployment target', () => {
     ).toContain('platforms: [.iOS(.v15)],');
   });
 
-  it('takes the pure-Swift floor the plugin read from the podspec', () => {
+  it('takes the pure-Swift floor the plugin read from the prebuilt-metadata document', () => {
     expect(
-      renderPureSwiftManifest({
+      renderPureSwift({
         product: 'ExpoAsset',
         srcRel: 'ios',
         frameworkSearchPath: '/abs/interfaces',
@@ -999,7 +1008,7 @@ describe('deployment target', () => {
       })
     ).toContain('platforms: [.iOS("16.4")],');
     expect(
-      renderPureSwiftManifest({
+      renderPureSwift({
         product: 'ExpoAsset',
         srcRel: 'ios',
         frameworkSearchPath: '/abs/interfaces',
@@ -1014,13 +1023,10 @@ describe('deployment target', () => {
     fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
     fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
 
-    emitPureSwiftSourcePackage({
-      moduleRoot,
-      product: 'ExpoAsset',
-      frameworkSearchPath: '/abs/interfaces',
-      outDir,
-      iosDeploymentTarget: '16.4',
-    });
+    emitPureSwiftSourcePackage(
+      { moduleRoot, product: 'ExpoAsset', iosDeploymentTarget: '16.4' },
+      { frameworkSearchPath: '/abs/interfaces', outDir }
+    );
     const manifest = fs.readFileSync(
       path.join(outDir, 'expo-source', 'ExpoAsset', 'Package.swift'),
       'utf8'
@@ -1084,8 +1090,7 @@ describe('the minimum floor a checked-in manifest is raised to', () => {
 
   const emitted = (declared, minimum) => {
     runDumpPackage.mockReturnValue(dumpWithIos(declared));
-    emitSourceManifestPackage({
-      moduleRoot,
+    emitSourceManifestPackage(moduleRoot, {
       frameworkSearchPath: '/abs/interfaces',
       outDir,
       minimumIosDeploymentTarget: minimum,
@@ -1184,10 +1189,12 @@ describe('dependencies on targets the generated package cannot declare', () => {
       })
     );
     expect(unsupportedTargetDeps).toEqual([]);
-    expect(targets[0].siblingDeps).toEqual(['EXConstantsObjC']);
+    expect(targets[0].dependencies).toEqual(['EXConstantsObjC']);
   });
 
-  it('says nothing about a name that is no target of this package — an external product', () => {
+  // SwiftPM resolves it against the products of the packages the module declares, and
+  // rendering it verbatim leaves that resolution where it belongs.
+  it('renders a name that is no target of this package — an external product — verbatim', () => {
     const { targets, unsupportedTargetDeps } = parseDumpedManifest(
       JSON.stringify({
         name: 'TestModule',
@@ -1203,7 +1210,7 @@ describe('dependencies on targets the generated package cannot declare', () => {
       })
     );
     expect(unsupportedTargetDeps).toEqual([]);
-    expect(targets[0].siblingDeps).toEqual([]);
+    expect(targets[0].dependencies).toEqual(['SomeUpstreamProduct']);
   });
 
   it('skips the module instead of emitting a target whose dependency was dropped', () => {
@@ -1213,18 +1220,770 @@ describe('dependencies on targets the generated package cannot declare', () => {
     fs.mkdirSync(path.join(moduleRoot, 'ios', 'Src'), { recursive: true });
     runDumpPackage.mockReturnValue(dumpWithBinaryTarget);
 
-    const result = emitSourceManifestPackage({
-      moduleRoot,
+    const result = emitSourceManifestPackage(moduleRoot, {
       frameworkSearchPath: '/abs/interfaces',
       outDir,
     });
 
-    expect(result.packageDep).toBeUndefined();
-    expect(result.unsupportedTargetDeps).toEqual([
-      { target: 'Src', dependsOn: 'Vendored', kind: 'binary' },
-    ]);
+    expect(result.ok).toBeUndefined();
+    expect(result.refusal).toEqual({
+      reason: 'unsupported-target-dependency',
+      dependencies: [{ target: 'Src', dependsOn: 'Vendored', kind: 'binary' }],
+    });
     expect(fs.existsSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'))).toBe(
       false
     );
+  });
+});
+
+// A pure-Swift module's SwiftPM dependencies come from its spm.config.json, the
+// same coordinates CocoaPods resolves through the podspec. Without them
+// `import SDWebImage` names a package the generated manifest never declared.
+describe('SwiftPM package coordinates', () => {
+  const sdWebImage = {
+    url: 'https://github.com/SDWebImage/SDWebImage.git',
+    productName: 'SDWebImage',
+    version: { exact: '5.21.6' },
+  };
+
+  describe('spmPackageIdentity', () => {
+    it("takes the URL's last path component, without the .git suffix", () => {
+      expect(spmPackageIdentity(sdWebImage)).toBe('SDWebImage');
+      expect(
+        spmPackageIdentity({ ...sdWebImage, url: 'https://github.com/SDWebImage/SDWebImage' })
+      ).toBe('SDWebImage');
+    });
+
+    // libavif-Xcode ships the `libavif` product: the identity SwiftPM resolves is
+    // the repository name, not the product name.
+    it('reads the repository name, not the product it ships', () => {
+      expect(
+        spmPackageIdentity({
+          url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+          productName: 'libavif',
+          version: { exact: '1.0.0' },
+        })
+      ).toBe('libavif-Xcode');
+    });
+
+    // A URL ending in a slash has an empty last component, which would render
+    // `package: ""` and fail the whole graph rather than the one declaration.
+    it('ignores a trailing slash', () => {
+      expect(
+        spmPackageIdentity({ ...sdWebImage, url: 'https://github.com/SDWebImage/SDWebImage/' })
+      ).toBe('SDWebImage');
+      expect(
+        spmPackageIdentity({ ...sdWebImage, url: 'https://github.com/SDWebImage/SDWebImage.git/' })
+      ).toBe('SDWebImage');
+    });
+  });
+
+  describe('packageDeclaration of a documented package', () => {
+    it('renders every version requirement PackageDescription declares', () => {
+      const withVersion = (version) =>
+        packageDeclaration(documentedPackage({ ...sdWebImage, version }));
+      expect(withVersion({ exact: '5.21.6' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6")'
+      );
+      expect(withVersion({ from: '5.21.6' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.21.6")'
+      );
+      expect(withVersion({ branch: 'main' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", branch: "main")'
+      );
+      expect(withVersion({ revision: 'c0ffee' })).toBe(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", revision: "c0ffee")'
+      );
+    });
+  });
+
+  describe('the target dependency on a documented package', () => {
+    const rendered = (spmPackage) =>
+      renderPureSwift({
+        product: 'ExpoImage',
+        srcRel: 'ios',
+        frameworkSearchPath: '/abs/interfaces',
+        packages: [documentedPackage(spmPackage)],
+      });
+
+    it('names the product, resolved against its package identity', () => {
+      expect(rendered(sdWebImage)).toContain('.product(name: "SDWebImage", package: "SDWebImage")');
+      expect(
+        rendered({
+          url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+          productName: 'libavif',
+          version: { exact: '1.0.0' },
+        })
+      ).toContain('.product(name: "libavif", package: "libavif-Xcode")');
+    });
+  });
+
+  describe('the emitted manifest', () => {
+    const emit = (spmPackages, react = null) => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-packages-emit-'));
+      const moduleRoot = path.join(tmp, 'module');
+      const outDir = path.join(tmp, 'out');
+      fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
+      fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
+      emitPureSwiftSourcePackage(
+        { moduleRoot, product: 'ExpoImage', iosDeploymentTarget: '16.4', spmPackages },
+        { react, frameworkSearchPath: '/abs/interfaces', outDir }
+      );
+      return fs.readFileSync(
+        path.join(outDir, 'expo-source', 'ExpoImage', 'Package.swift'),
+        'utf8'
+      );
+    };
+
+    it('declares each package and depends the target on its product', () => {
+      const manifest = emit([
+        sdWebImage,
+        {
+          url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+          productName: 'libavif',
+          version: { exact: '1.0.0' },
+        },
+      ]);
+      expect(manifest).toContain(
+        'dependencies: [\n' +
+          '        .package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),\n' +
+          '        .package(url: "https://github.com/SDWebImage/libavif-Xcode.git", exact: "1.0.0"),\n' +
+          '    ],'
+      );
+      expect(manifest).toContain(
+        'dependencies: [\n' +
+          '                .product(name: "SDWebImage", package: "SDWebImage"),\n' +
+          '                .product(name: "libavif", package: "libavif-Xcode"),\n' +
+          '            ],'
+      );
+    });
+
+    it('depends on its own package products before the React products', () => {
+      const react = {
+        packageRef: { name: 'ReactNative', path: '/abs/rn' },
+        products: [{ name: 'React', package: 'ReactNative' }],
+      };
+      expect(emit([sdWebImage], react)).toContain(
+        'dependencies: [\n' +
+          '                .product(name: "SDWebImage", package: "SDWebImage"),\n' +
+          '                .product(name: "React", package: "ReactNative"),\n' +
+          '            ],'
+      );
+    });
+
+    // A pure-Swift module renders in the format of a mirrored checked-in manifest:
+    // no trailing comma after the last product or target.
+    it('renders a module with no packages in the checked-in manifest format', () => {
+      const expected =
+        '// swift-tools-version: 6.0\n' +
+        '// AUTO-GENERATED by expo/scripts/spm/plugin.js \u2014 do not edit.\n' +
+        '// Pure-Swift source consumption package for "ExpoImage".\n' +
+        'import PackageDescription\n' +
+        '\n' +
+        'let package = Package(\n' +
+        '    name: "ExpoImage",\n' +
+        '    platforms: [.iOS("16.4")],\n' +
+        '    products: [\n' +
+        '        .library(name: "ExpoImage", targets: ["ExpoImage"])\n' +
+        '    ],\n' +
+        '    dependencies: [],\n' +
+        '    targets: [\n' +
+        '        .target(\n' +
+        '            name: "ExpoImage",\n' +
+        '            dependencies: [],\n' +
+        '            path: "root/ios",\n' +
+        '            cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],\n' +
+        '            cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],\n' +
+        '            swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],\n' +
+        '        )\n' +
+        '    ],\n' +
+        '    swiftLanguageModes: [.v5],\n' +
+        '    cxxLanguageStandard: .cxx20\n' +
+        ')\n';
+      expect(emit([])).toBe(expected);
+      expect(emit(undefined)).toBe(expected);
+    });
+  });
+});
+
+// A module that ships a checked-in Package.swift may declare third-party SwiftPM
+// packages of its own. The generated consumption package has to mirror them, or its
+// sources fail to compile with "no such module".
+describe('mirrored package dependencies', () => {
+  // Verbatim shapes from `swift package dump-package` (SwiftPM 6.0).
+  const remote = (identity, url, requirement, extra = {}) => ({
+    sourceControl: [
+      {
+        identity,
+        location: { remote: [{ urlString: url }] },
+        productFilter: null,
+        requirement,
+        traits: [{ name: 'default' }],
+        ...extra,
+      },
+    ],
+  });
+
+  const SDWEB_IMAGE = remote('sdwebimage', 'https://github.com/SDWebImage/SDWebImage.git', {
+    exact: ['5.21.6'],
+  });
+  // `.package(url:from:)` dumps as a range — the renderer never sees a `from` form.
+  const LIBAVIF = remote('libavif-xcode', 'https://github.com/SDWebImage/libavif-Xcode.git', {
+    range: [{ lowerBound: '0.11.0', upperBound: '1.0.0' }],
+  });
+  const ALL_REQUIREMENT_FORMS = [
+    SDWEB_IMAGE,
+    remote('branchy', 'https://github.com/acme/branchy.git', { branch: ['main'] }),
+    remote('pinned', 'https://github.com/acme/pinned.git', { revision: ['0123456789abcdef'] }),
+    LIBAVIF,
+  ];
+
+  const dumpWith = ({ dependencies = [], targetDeps = [] }) =>
+    JSON.stringify({
+      name: 'TestModule',
+      dependencies,
+      products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
+      targets: [
+        { name: 'Main', type: 'regular', path: 'ios/Main', dependencies: targetDeps },
+        { name: 'Helper', type: 'regular', path: 'ios/Helper', dependencies: [] },
+      ],
+    });
+
+  const render = (dump, injectedNames = []) =>
+    renderSourceManifest({
+      manifest: parseDumpedManifest(dump, injectedNames),
+      pkgDeps: ['.package(name: "ReactNative", path: "/abs/rn")'],
+      injectedTargetDeps: ['.product(name: "React", package: "ReactNative")'],
+      frameworkSearchPath: '/abs/interfaces',
+    });
+
+  const unsupported = (dependencies, targetDeps) =>
+    parseDumpedManifest(dumpWith({ dependencies, targetDeps })).unsupportedPackageDeps;
+
+  it('parses every requirement form the generated package can declare', () => {
+    const { packageDeps, unsupportedPackageDeps } = parseDumpedManifest(
+      dumpWith({ dependencies: ALL_REQUIREMENT_FORMS })
+    );
+    expect(unsupportedPackageDeps).toEqual([]);
+    expect(packageDeps).toEqual([
+      {
+        identity: 'sdwebimage',
+        url: 'https://github.com/SDWebImage/SDWebImage.git',
+        requirement: { kind: 'exact', value: '5.21.6' },
+      },
+      {
+        identity: 'branchy',
+        url: 'https://github.com/acme/branchy.git',
+        requirement: { kind: 'branch', value: 'main' },
+      },
+      {
+        identity: 'pinned',
+        url: 'https://github.com/acme/pinned.git',
+        requirement: { kind: 'revision', value: '0123456789abcdef' },
+      },
+      {
+        identity: 'libavif-xcode',
+        url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+        requirement: { kind: 'range', lowerBound: '0.11.0', upperBound: '1.0.0' },
+      },
+    ]);
+  });
+
+  it('declares each requirement form the way PackageDescription spells it', () => {
+    const out = render(dumpWith({ dependencies: ALL_REQUIREMENT_FORMS }));
+    expect(out).toContain(
+      '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
+    );
+    expect(out).toContain('.package(url: "https://github.com/acme/branchy.git", branch: "main"),');
+    expect(out).toContain(
+      '.package(url: "https://github.com/acme/pinned.git", revision: "0123456789abcdef"),'
+    );
+    expect(out).toContain(
+      '.package(url: "https://github.com/SDWebImage/libavif-Xcode.git", "0.11.0"..<"1.0.0"),'
+    );
+  });
+
+  it('declares the mirrored packages after the injected ones', () => {
+    expect(render(dumpWith({ dependencies: [SDWEB_IMAGE] }))).toContain(
+      'dependencies: [\n' +
+        '        .package(name: "ReactNative", path: "/abs/rn"),\n' +
+        '        .package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),\n' +
+        '    ],'
+    );
+  });
+
+  it('keeps target dependencies in their declared order, siblings and products alike', () => {
+    const dump = dumpWith({
+      dependencies: [SDWEB_IMAGE, LIBAVIF],
+      targetDeps: [
+        { product: ['SDWebImage', 'SDWebImage', null, null] },
+        { byName: ['Helper', null] },
+        { product: ['SDWebImageAVIFCoder', 'libavif-Xcode', null, { platformNames: ['ios'] }] },
+      ],
+    });
+    expect(parseDumpedManifest(dump).targets[0].dependencies).toEqual([
+      { product: 'SDWebImage', package: 'SDWebImage', platforms: [] },
+      'Helper',
+      { product: 'SDWebImageAVIFCoder', package: 'libavif-Xcode', platforms: ['ios'] },
+    ]);
+    expect(render(dump)).toContain(
+      [
+        '                .product(name: "SDWebImage", package: "SDWebImage"),',
+        '                "Helper",',
+        '                .product(name: "SDWebImageAVIFCoder", package: "libavif-Xcode", condition: .when(platforms: [.iOS])),',
+        '                .product(name: "React", package: "ReactNative"),',
+      ].join('\n')
+    );
+  });
+
+  it('keeps a byName dependency that names a declared package', () => {
+    const dump = dumpWith({
+      dependencies: [
+        remote('branchy', 'https://github.com/acme/branchy.git', { branch: ['main'] }),
+      ],
+      targetDeps: [
+        { byName: ['branchy', null] },
+        { byName: ['Branchy', { platformNames: ['ios'] }] },
+      ],
+    });
+    const { targets, unsupportedPackageDeps } = parseDumpedManifest(dump);
+    expect(unsupportedPackageDeps).toEqual([]);
+    expect(targets[0].dependencies).toEqual(['branchy', { byName: 'Branchy', platforms: ['ios'] }]);
+    expect(render(dump)).toContain(
+      '                "branchy",\n' +
+        '                .byName(name: "Branchy", condition: .when(platforms: [.iOS])),'
+    );
+  });
+
+  const vendored = { fileSystem: [{ identity: 'vendored', path: '/abs/vendored' }] };
+  const SDWEB_PRODUCT = ['SDWebImage', 'SDWebImage'];
+
+  it.each([
+    {
+      title: 'reports a local path dependency instead of dropping it',
+      dependencies: [
+        { fileSystem: [{ identity: 'local-thing', path: '/abs/path', productFilter: null }] },
+      ],
+      expected: [{ form: 'local-path', identity: 'local-thing', target: null }],
+    },
+    {
+      title: 'reports a registry dependency',
+      dependencies: [
+        { registry: [{ identity: 'acme.widgets', requirement: { exact: ['1.0.0'] } }] },
+      ],
+      expected: [{ form: 'registry', identity: 'acme.widgets', target: null }],
+    },
+    {
+      title: 'reports a source-control dependency that is not a remote URL',
+      dependencies: [
+        {
+          sourceControl: [
+            {
+              identity: 'local-scm',
+              location: { local: [{ path: '/abs/checkout' }] },
+              requirement: { branch: ['main'] },
+            },
+          ],
+        },
+      ],
+      expected: [{ form: 'unsupported-location', identity: 'local-scm', target: null }],
+    },
+    {
+      title: 'reports a requirement form it cannot render',
+      dependencies: [
+        remote('futured', 'https://github.com/acme/futured.git', { upToNextMajor: ['1.0.0'] }),
+      ],
+      expected: [{ form: 'unsupported-requirement', identity: 'futured', target: null }],
+    },
+    {
+      title: 'reports a dependency form it does not recognize',
+      dependencies: [{ sourceArchive: [{ identity: 'zipped' }] }],
+      expected: [{ form: 'unknown-form', identity: 'zipped', target: null }],
+    },
+    {
+      title: 'reports a product whose package the manifest never declared, naming the target',
+      targetDeps: [{ product: [...SDWEB_PRODUCT, null, null] }],
+      expected: [{ form: 'undeclared-package', identity: 'SDWebImage', target: 'Main' }],
+    },
+    {
+      title: 'reports a product that names no package at all',
+      targetDeps: [{ product: ['Vendored', null, null, null] }],
+      expected: [{ form: 'undeclared-package', identity: null, target: 'Main' }],
+    },
+    {
+      title: 'does not also call a product of an unmirrorable, declared package undeclared',
+      dependencies: [vendored],
+      targetDeps: [{ product: ['Vendored', 'vendored', null, null] }],
+      expected: [{ form: 'local-path', identity: 'vendored', target: 'Main' }],
+    },
+    {
+      title: 'attributes a product to an unmirrorable package declared under another name',
+      dependencies: [
+        {
+          fileSystem: [
+            {
+              identity: 'libavif-xcode',
+              nameForTargetDependencyResolutionOnly: 'Avif',
+              path: '/abs/libavif-Xcode',
+            },
+          ],
+        },
+      ],
+      targetDeps: [{ product: ['Avif', 'Avif', null, null] }],
+      expected: [{ form: 'local-path', identity: 'libavif-xcode', target: 'Main' }],
+    },
+    {
+      title: 'still reports a product whose package nothing declares',
+      dependencies: [vendored],
+      targetDeps: [{ product: ['Elsewhere', 'elsewhere', null, null] }],
+      expected: [
+        { form: 'local-path', identity: 'vendored', target: null },
+        { form: 'undeclared-package', identity: 'elsewhere', target: 'Main' },
+      ],
+    },
+    {
+      title: 'reports two declared packages that answer to one name',
+      dependencies: [
+        remote('libavif', 'https://github.com/acme/libavif.git', { exact: ['2.0.0'] }),
+        remote(
+          'libavif-xcode',
+          'https://github.com/SDWebImage/libavif-Xcode.git',
+          { exact: ['1.0.0'] },
+          { nameForTargetDependencyResolutionOnly: 'libavif' }
+        ),
+      ],
+      expected: [{ form: 'ambiguous-package-name', identity: 'libavif', target: null }],
+    },
+    {
+      title: 'reports a product dependency that renames modules with moduleAliases',
+      dependencies: [SDWEB_IMAGE],
+      targetDeps: [{ product: [...SDWEB_PRODUCT, { SD: 'SDWeb' }, null] }],
+      expected: [{ form: 'module-aliases', identity: 'SDWebImage', target: 'Main' }],
+    },
+    {
+      title: 'says nothing about an empty moduleAliases map',
+      dependencies: [SDWEB_IMAGE],
+      targetDeps: [{ product: [...SDWEB_PRODUCT, {}, null] }],
+      expected: [],
+    },
+    {
+      title: 'reports a product dependency conditioned on something other than platforms',
+      dependencies: [SDWEB_IMAGE],
+      targetDeps: [
+        { product: [...SDWEB_PRODUCT, null, { platformNames: ['ios'], traits: ['x'] }] },
+      ],
+      expected: [{ form: 'unsupported-condition', identity: 'SDWebImage', target: 'Main' }],
+    },
+    {
+      title: 'reports a sibling dependency so conditioned as a dependency, not a package',
+      targetDeps: [{ byName: ['Helper', { traits: ['x'] }] }],
+      expected: [{ form: 'unsupported-target-condition', identity: 'Helper', target: 'Main' }],
+    },
+    {
+      title: 'says nothing about a condition whose only set key is the platform list',
+      dependencies: [SDWEB_IMAGE],
+      targetDeps: [
+        {
+          product: [...SDWEB_PRODUCT, null, { platformNames: ['ios'], traits: null, config: null }],
+        },
+      ],
+      expected: [],
+    },
+    {
+      title: 'reports a package declared with a trait set that is not the default',
+      dependencies: [
+        remote(
+          'traited',
+          'https://github.com/acme/traited.git',
+          { exact: ['1.0.0'] },
+          { traits: [{ name: 'default' }, { name: 'extras' }] }
+        ),
+      ],
+      expected: [{ form: 'unsupported-traits', identity: 'traited', target: null }],
+    },
+  ])('$title', ({ dependencies = [], targetDeps = [], expected }) => {
+    expect(unsupported(dependencies, targetDeps)).toEqual(expected);
+  });
+
+  it('reports a package whose identity collides with one the injected set occupies', () => {
+    const { unsupportedPackageDeps } = parseDumpedManifest(
+      dumpWith({
+        dependencies: [
+          remote('reactnative', 'https://github.com/acme/ReactNative.git', {
+            exact: ['1.0.0'],
+          }),
+        ],
+      }),
+      ['ReactNative', 'React-GeneratedCode']
+    );
+    expect(unsupportedPackageDeps).toEqual([
+      { form: 'collides-with-injected', identity: 'reactnative', target: null },
+    ]);
+  });
+
+  it('renders a manifest without dependencies byte for byte', () => {
+    const dump = JSON.stringify({
+      name: 'expo-constants',
+      dependencies: [],
+      platforms: [{ platformName: 'ios', version: '15.1' }],
+      products: [
+        {
+          name: 'EXConstants',
+          type: { library: ['automatic'] },
+          targets: ['EXConstants', 'EXConstantsObjC'],
+        },
+      ],
+      targets: [
+        {
+          name: 'EXConstants',
+          type: 'regular',
+          path: 'ios/EXConstants',
+          dependencies: [{ byName: ['EXConstantsObjC', null] }],
+        },
+        {
+          name: 'EXConstantsObjC',
+          type: 'regular',
+          path: 'ios/EXConstantsObjC',
+          publicHeadersPath: 'include',
+          dependencies: [],
+        },
+      ],
+    });
+    expect(render(dump)).toBe(`// swift-tools-version: 6.0
+// AUTO-GENERATED by expo/scripts/spm/plugin.js — do not edit.
+// Source consumption package for "expo-constants": mirrors the module's checked-in
+// Package.swift targets and injects invariant React compile dependencies.
+import PackageDescription
+
+let package = Package(
+    name: "expo-constants",
+    platforms: [.iOS("15.1")],
+    products: [
+        .library(name: "EXConstants", targets: ["EXConstants", "EXConstantsObjC"])
+    ],
+    dependencies: [
+        .package(name: "ReactNative", path: "/abs/rn"),
+    ],
+    targets: [
+        .target(
+            name: "EXConstants",
+            dependencies: [
+                "EXConstantsObjC",
+                .product(name: "React", package: "ReactNative"),
+            ],
+            path: "root/ios/EXConstants",
+            cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],
+            cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],
+            swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],
+        ),
+        .target(
+            name: "EXConstantsObjC",
+            dependencies: [
+                .product(name: "React", package: "ReactNative"),
+            ],
+            path: "root/ios/EXConstantsObjC",
+            publicHeadersPath: "include",
+            cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],
+            cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],
+            swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],
+        )
+    ],
+    swiftLanguageModes: [.v5],
+    cxxLanguageStandard: .cxx20
+)
+`);
+  });
+
+  // SwiftPM resolves a `.byName` that is no target of this package against the products
+  // of the packages it declares, which a dumped manifest does not enumerate.
+  it('renders a byName that names no target verbatim rather than dropping it', () => {
+    const dump = dumpWith({
+      dependencies: [LIBAVIF],
+      targetDeps: [
+        { byName: ['libavif', null] },
+        { byName: ['SVGKit', { platformNames: ['ios'] }] },
+      ],
+    });
+    const { targets, unsupportedPackageDeps } = parseDumpedManifest(dump);
+    expect(unsupportedPackageDeps).toEqual([]);
+    expect(targets[0].dependencies).toEqual(['libavif', { byName: 'SVGKit', platforms: ['ios'] }]);
+    expect(render(dump)).toContain(
+      '                "libavif",\n' +
+        '                .byName(name: "SVGKit", condition: .when(platforms: [.iOS])),'
+    );
+  });
+
+  // `.package(name:url:)` is deprecated but legal, and the manifest then names the
+  // package by that name rather than by the identity SwiftPM derives from the URL.
+  it('matches a product against the name the manifest gave the package', () => {
+    const named = remote(
+      'libavif-xcode',
+      'https://github.com/SDWebImage/libavif-Xcode.git',
+      { range: [{ lowerBound: '1.0.0', upperBound: '2.0.0' }] },
+      { nameForTargetDependencyResolutionOnly: 'libavif' }
+    );
+    const dump = dumpWith({
+      dependencies: [named],
+      targetDeps: [{ product: ['libavif', 'libavif', null, null] }],
+    });
+    expect(parseDumpedManifest(dump).unsupportedPackageDeps).toEqual([]);
+    // The mirrored declaration carries no `name:`, so the product has to name the identity.
+    expect(render(dump)).toContain('.product(name: "libavif", package: "libavif-xcode"),');
+  });
+
+  it('escapes a conditioned sibling target name like every other dependency', () => {
+    const out = renderSourceManifest({
+      manifest: {
+        name: 'TestModule',
+        products: [{ name: 'TestModule', targets: ['Main'] }],
+        targets: [
+          {
+            name: 'Main',
+            path: 'Main',
+            publicHeadersPath: null,
+            dependencies: [{ name: 'We"ird', platforms: ['ios'] }],
+          },
+        ],
+      },
+      frameworkSearchPath: '/abs/interfaces',
+    });
+    expect(out).toContain('.target(name: "We\\"ird", condition: .when(platforms: [.iOS]))');
+  });
+
+  describe('emitting a module that declares packages', () => {
+    let moduleRoot;
+    let outDir;
+
+    beforeEach(() => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-pkg-deps-'));
+      moduleRoot = path.join(tmp, 'module');
+      outDir = path.join(tmp, 'out');
+      fs.mkdirSync(path.join(moduleRoot, 'ios', 'Main'), { recursive: true });
+      fs.mkdirSync(path.join(moduleRoot, 'ios', 'Helper'), { recursive: true });
+    });
+
+    const emittedManifestPath = () =>
+      path.join(outDir, 'expo-source', 'TestModule', 'Package.swift');
+    const emittedManifest = () => fs.readFileSync(emittedManifestPath(), 'utf8');
+    const emit = (dump, react) => {
+      runDumpPackage.mockReturnValue(dump);
+      return emitSourceManifestPackage(moduleRoot, {
+        react,
+        frameworkSearchPath: '/abs/interfaces',
+        outDir,
+      });
+    };
+
+    it('carries the module packages and their products into the emitted manifest', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE],
+          targetDeps: [{ product: ['SDWebImage', 'SDWebImage', null, null] }],
+        })
+      );
+
+      expect(result.refusal).toBeUndefined();
+      expect(emittedManifest()).toContain(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
+      );
+      expect(emittedManifest()).toContain('.product(name: "SDWebImage", package: "SDWebImage"),');
+    });
+
+    it('skips the module instead of emitting a manifest missing a package it declares', () => {
+      const result = emit(
+        dumpWith({ dependencies: [{ fileSystem: [{ identity: 'local-thing', path: '/abs' }] }] })
+      );
+
+      expect(result.ok).toBeUndefined();
+      expect(result.refusal).toEqual({
+        reason: 'unsupported-package-dependency',
+        dependencies: [{ form: 'local-path', identity: 'local-thing', target: null }],
+      });
+      expect(fs.existsSync(emittedManifestPath())).toBe(false);
+    });
+
+    // `unmappedPodDependencies` subtracts these from the pods the module's podspec
+    // names, matching a pod against the PRODUCT name, not the package identity.
+    it('names the third-party products it mirrored, and no sibling target', () => {
+      const result = emit(
+        JSON.stringify({
+          name: 'TestModule',
+          dependencies: [
+            SDWEB_IMAGE,
+            LIBAVIF,
+            remote('branchy', 'https://github.com/acme/branchy.git', { branch: ['main'] }),
+          ],
+          products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
+          targets: [
+            {
+              name: 'Main',
+              type: 'regular',
+              path: 'ios/Main',
+              dependencies: [
+                { byName: ['Helper', null] },
+                { product: ['SDWebImage', 'SDWebImage', null, null] },
+                { byName: ['branchy', null] },
+              ],
+            },
+            {
+              name: 'Helper',
+              type: 'regular',
+              path: 'ios/Helper',
+              dependencies: [
+                { product: ['libavif', 'libavif-Xcode', null, { platformNames: ['ios'] }] },
+                { product: ['SDWebImage', 'SDWebImage', null, null] },
+              ],
+            },
+          ],
+        })
+      );
+
+      expect(result.ok.spmProductNames).toEqual(['SDWebImage', 'branchy', 'libavif']);
+    });
+
+    it('counts a byName that names no target as a product it mirrored', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [LIBAVIF],
+          targetDeps: [{ byName: ['Helper', null] }, { byName: ['libavif', null] }],
+        })
+      );
+
+      expect(result.ok.spmProductNames).toEqual(['libavif']);
+    });
+
+    // A path package's SwiftPM identity is its directory name, whatever `name:` calls it.
+    it('occupies the identity of a path-based React package, not only its name', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [remote('rn', 'https://github.com/acme/rn.git', { exact: ['1.0.0'] })],
+        }),
+        { packageRef: { name: 'ReactNative', path: '/abs/checkout/rn' }, products: [] }
+      );
+
+      expect(result.refusal).toEqual({
+        reason: 'unsupported-package-dependency',
+        dependencies: [{ form: 'collides-with-injected', identity: 'rn', target: null }],
+      });
+    });
+
+    it('takes the identities the injected set occupies from the React descriptor', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [
+            remote('reactnative', 'https://github.com/acme/ReactNative.git', { exact: ['1.0.0'] }),
+          ],
+        }),
+        {
+          packageRef: { name: 'ReactNative', path: '/abs/rn' },
+          products: [{ name: 'React', package: 'ReactNative' }],
+        }
+      );
+
+      expect(result.refusal).toEqual({
+        reason: 'unsupported-package-dependency',
+        dependencies: [{ form: 'collides-with-injected', identity: 'reactnative', target: null }],
+      });
+    });
   });
 });

@@ -18,6 +18,8 @@ const xcode = require(
   require.resolve('xcode', { paths: [path.dirname(require.resolve('@expo/config-plugins'))] })
 );
 
+const { pluginError } = require('./diagnostics');
+
 /** Written by RN's SwiftPM injector into the .xcodeproj it modified. */
 const INJECTION_MARKER = '.spm-injected.json';
 
@@ -205,4 +207,43 @@ function resolveAppTarget(appRoot) {
   };
 }
 
-module.exports = { resolveAppTarget };
+/**
+ * Podfile.properties.json (as precompiled_modules.rb#read_podfile_properties). Missing → {};
+ * present but unusable → throw, since every gate would silently fall to its default.
+ */
+function readPodfileProperties(propertiesPath) {
+  if (typeof propertiesPath !== 'string' || propertiesPath.length === 0) return {};
+  let properties;
+  try {
+    properties = JSON.parse(fs.readFileSync(propertiesPath, 'utf8'));
+  } catch (error) {
+    if (error.code === 'ENOENT') return {};
+    throw unusablePropertiesError(propertiesPath, error.message, { cause: error });
+  }
+  if (properties == null || typeof properties !== 'object' || Array.isArray(properties)) {
+    throw unusablePropertiesError(
+      propertiesPath,
+      `it holds ${describeType(properties)}, not an object`
+    );
+  }
+  return properties;
+}
+
+/** Type only: JSON.stringify can overflow on a deep payload. */
+function describeType(payload) {
+  if (payload === null) return 'null';
+  return Array.isArray(payload) ? 'an array' : `a ${typeof payload}`;
+}
+
+function unusablePropertiesError(propertiesPath, reason, options) {
+  return pluginError(
+    {
+      what: `${propertiesPath} could not be read as Podfile properties (${reason}), so the plugin cannot tell which products this app links.`,
+      why: "Carrying on would read every property as unset and leave each gated product to its own default instead of the app's configuration, which only shows up at runtime, so the sync stops here.",
+      how: 'Restore the file to a JSON object of properties, then re-run `npx react-native spm update`.',
+    },
+    options
+  );
+}
+
+module.exports = { readPodfileProperties, resolveAppTarget };

@@ -825,6 +825,9 @@ importers:
       expo-crypto:
         specifier: workspace:*
         version: link:../../packages/expo-crypto
+      expo-image:
+        specifier: workspace:*
+        version: link:../../packages/expo-image
       react:
         specifier: 19.3.0
         version: 19.3.0
