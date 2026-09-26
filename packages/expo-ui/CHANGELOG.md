@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `contentDescription` to the `semantics` modifier, so TalkBack can announce a label other than the visible content. ([#50688](https://github.com/expo/expo/pull/50688) by [@enavermate](https://github.com/enavermate))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

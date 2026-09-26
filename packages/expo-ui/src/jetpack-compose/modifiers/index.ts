@@ -457,7 +457,15 @@ export const testID = (tag: string) => createModifier('testID', { testID: tag })
 /**
  * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
  */
-export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
+export const semantics = (params: {
+  contentType?: string;
+  /**
+   * What accessibility services such as TalkBack announce for the element. Use it when the visible
+   * content does not read well aloud — an abbreviation, a glyph, or a composite such as a button
+   * whose child is a progress indicator.
+   */
+  contentDescription?: string;
+}) => createModifier('semantics', params);
 
 // =============================================================================
 // Clip Modifier & Shapes
