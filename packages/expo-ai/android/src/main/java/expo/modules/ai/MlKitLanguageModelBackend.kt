@@ -33,7 +33,13 @@ internal class MlKitLanguageModelBackend(
       when (status) {
         is DownloadStatus.DownloadStarted -> {
           totalBytes = status.bytesToDownload.takeIf { it > 0 }
-          onProgress(if (totalBytes == null) null else 0.0)
+          onProgress(
+            if (totalBytes == null) {
+              null
+            } else {
+              0.0
+            }
+          )
         }
         is DownloadStatus.DownloadProgress -> onProgress(
           totalBytes?.let { (status.totalBytesDownloaded.toDouble() / it).coerceIn(0.0, 1.0) }
@@ -45,7 +51,9 @@ internal class MlKitLanguageModelBackend(
         is DownloadStatus.DownloadFailed -> throw LanguageModelException.from(status.e, "ERR_PREPARATION_FAILED")
       }
     }
-    if (!completed) throw LanguageModelException("ERR_PREPARATION_FAILED", "The model download ended without completion.")
+    if (!completed) {
+      throw LanguageModelException("ERR_PREPARATION_FAILED", "The model download ended without completion.")
+    }
   }
 
   override suspend fun generate(
@@ -66,7 +74,9 @@ internal class MlKitLanguageModelBackend(
       prompt
     }
     val request = GenerateContentRequest.Builder(TextPart(input)).apply {
-      if (nativeInstructions) systemInstruction = SystemInstruction(requireNotNull(instructions))
+      if (nativeInstructions) {
+        systemInstruction = SystemInstruction(requireNotNull(instructions))
+      }
       options.maximumOutputTokens?.let { maxOutputTokens = it }
       candidateCount = 1
     }.build()
@@ -85,7 +95,9 @@ internal class MlKitLanguageModelBackend(
         onText(text.toString())
       }
     }
-    if (!hasCandidate) throw LanguageModelException("ERR_RESPONSE_INVALID", "The model returned no text candidate.")
+    if (!hasCandidate) {
+      throw LanguageModelException("ERR_RESPONSE_INVALID", "The model returned no text candidate.")
+    }
     return text.toString()
   }
 

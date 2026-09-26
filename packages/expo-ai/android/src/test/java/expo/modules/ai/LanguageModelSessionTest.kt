@@ -225,7 +225,9 @@ class LanguageModelSessionTest {
     val backend = TestBackend()
     var foreground = true
     val controller = LanguageModelSessionController(backend, LanguageModelSessionOptions(null), this, {
-      if (!foreground) throw LanguageModelException.background()
+      if (!foreground) {
+        throw LanguageModelException.background()
+      }
     }) { _, _ -> }
     controller.generate("accepted", "Remember pear", "{}", TestPromise())
     runCurrent()
@@ -292,7 +294,9 @@ class LanguageModelSessionTest {
     val backend = TestBackend()
     var foreground = true
     val controller = LanguageModelSessionController(backend, LanguageModelSessionOptions(null), this, {
-      if (!foreground) throw LanguageModelException.background()
+      if (!foreground) {
+        throw LanguageModelException.background()
+      }
     }) { _, _ -> }
     val completed = TestPromise()
     controller.generate("completed", "Remember pear", "{}", completed)
