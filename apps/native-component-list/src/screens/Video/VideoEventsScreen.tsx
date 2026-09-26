@@ -49,6 +49,13 @@ export default function VideoEventsScreen() {
     }
   }, [player, currentSource]);
 
+  // Seeks while the new source is still loading, which has to take effect once it has loaded.
+  const reloadAndSeek = useCallback(() => {
+    player.replaceAsync(originalSource);
+    player.seekBy(10);
+    setCurrentSource(originalSource);
+  }, [player]);
+
   const triggerError = useCallback(() => {
     player.replaceAsync('https://example.com/invalid.mp4');
   }, [player]);
@@ -102,6 +109,9 @@ export default function VideoEventsScreen() {
         <View style={styles.row}>
           <Button style={styles.button} title="Toggle mute" onPress={toggleMute} />
           <Button style={styles.button} title="Change Volume" onPress={toggleVolume} />
+        </View>
+        <View style={styles.row}>
+          <Button style={styles.button} title="Reload and seek by 10s" onPress={reloadAndSeek} />
         </View>
 
         <E2EKeyValueBox
