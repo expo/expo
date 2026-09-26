@@ -785,12 +785,24 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       suspendCancellableCoroutine { continuation ->
-        Geocoder(mContext, Locale.getDefault()).getFromLocationName(address, 1) { addresses ->
-          val results = addresses
-            .filterNotNull()
-            .mapNotNull { address -> address.toGeocodeResponse() }
-          continuation.resume(results)
-        }
+        Geocoder(mContext, Locale.getDefault()).getFromLocationName(
+          address,
+          1,
+          object : Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<Address?>) {
+              val results = addresses
+                .filterNotNull()
+                .mapNotNull { address -> address.toGeocodeResponse() }
+              continuation.resume(results)
+            }
+
+            // The default `onError` is a no-op, so without this override the promise never settles
+            // when the geocoder fails (for example, when the device is offline).
+            override fun onError(errorMessage: String?) {
+              continuation.resumeWithException(GeocodeException(errorMessage))
+            }
+          }
+        )
       }
     } else {
       withContext(Dispatchers.IO) {
@@ -829,14 +841,26 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       suspendCancellableCoroutine { continuation ->
-        Geocoder(mContext, Locale.getDefault()).getFromLocation(androidLocation.latitude, androidLocation.longitude, 1) { addresses ->
-          val results = addresses.mapNotNull { address ->
-            address?.let {
-              ReverseGeocodeResponse(address)
+        Geocoder(mContext, Locale.getDefault()).getFromLocation(
+          androidLocation.latitude,
+          androidLocation.longitude,
+          1,
+          object : Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<Address?>) {
+              val results = addresses.mapNotNull { address ->
+                address?.let {
+                  ReverseGeocodeResponse(address)
+                }
+              }
+              continuation.resume(results)
+            }
+
+            // See the comment in `geocode`.
+            override fun onError(errorMessage: String?) {
+              continuation.resumeWithException(GeocodeException(errorMessage))
             }
           }
-          continuation.resume(results)
-        }
+        )
       }
     } else {
       withContext(Dispatchers.IO) {
