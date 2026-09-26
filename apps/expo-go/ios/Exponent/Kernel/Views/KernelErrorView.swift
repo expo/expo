@@ -28,6 +28,9 @@ final class KernelErrorView: UIView {
   @objc weak var delegate: ErrorViewDelegate?
 
   private var hostingController: UIHostingController<ErrorScreenView>?
+  private var isResolvingAccountAction = false {
+    didSet { render() }
+  }
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -60,7 +63,8 @@ final class KernelErrorView: UIView {
   }
 
   private func makeScreen() -> ErrorScreenView {
-    ErrorScreenView(
+    let mismatchUsername = error?.userInfo[EXAccountMismatchUsernameKey] as? String
+    return ErrorScreenView(
       content: content,
       onRetry: { [weak self] in
         guard let self else { return }
@@ -68,8 +72,28 @@ final class KernelErrorView: UIView {
       },
       onGoHome: {
         EXKernel.sharedInstance().browserController?.moveHomeToVisible()
-      }
+      },
+      accountActionTitle: mismatchUsername.flatMap { ExpoGoHomeBridge.shared.accountMismatchActionTitle(forUsername: $0) },
+      onAccountAction: { [weak self] in
+        guard let self, let mismatchUsername, !self.isResolvingAccountAction else { return }
+        self.isResolvingAccountAction = true
+        Task { @MainActor in
+          let resolved = await ExpoGoHomeBridge.shared.resolveAccountMismatch(
+            forUsername: mismatchUsername,
+            from: self.presentingViewController
+          )
+          self.isResolvingAccountAction = false
+          if resolved {
+            self.delegate?.errorViewDidSelectRetry(self)
+          }
+        }
+      },
+      isAccountActionInProgress: isResolvingAccountAction
     )
+  }
+
+  private var presentingViewController: UIViewController? {
+    sequence(first: self as UIResponder, next: { $0.next }).first { $0 is UIViewController } as? UIViewController
   }
 
   private func render() {

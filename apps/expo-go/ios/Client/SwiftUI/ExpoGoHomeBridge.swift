@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import SwiftUI
 import UIKit
 
 @objc public class ExpoGoHomeBridge: NSObject {
@@ -287,6 +288,60 @@ import UIKit
 
   @objc public func isAuthenticated() -> Bool {
     AuthenticationService.currentUsername != nil
+  }
+
+  func accountMismatchActionTitle(forUsername username: String) -> String? {
+    let store = SessionStore.shared
+    return AccountMismatchAction
+      .resolve(username: username, sessions: store.sessions, activeSessionId: store.activeSession?.id)?
+      .title(for: username)
+  }
+
+  @MainActor
+  func resolveAccountMismatch(forUsername username: String, from presenter: UIViewController?) async -> Bool {
+    guard let homeViewModel else {
+      return false
+    }
+    let store = SessionStore.shared
+    switch AccountMismatchAction.resolve(username: username, sessions: store.sessions, activeSessionId: store.activeSession?.id) {
+    case .switchTo(let sessionId):
+      await homeViewModel.switchToSession(id: sessionId)
+      return true
+    case .signIn:
+      guard let presenter else {
+        return false
+      }
+      return await presentAccountMismatchSignIn(username: username, viewModel: homeViewModel, from: presenter)
+    case nil:
+      return false
+    }
+  }
+
+  @MainActor
+  private func presentAccountMismatchSignIn(
+    username: String,
+    viewModel: HomeViewModel,
+    from presenter: UIViewController
+  ) async -> Bool {
+    guard presenter.presentedViewController == nil else {
+      return false
+    }
+    return await withCheckedContinuation { continuation in
+      weak var presented: UIViewController?
+      let signIn = AccountMismatchSignInView(
+        username: username,
+        viewModel: viewModel,
+        completion: DeviceLoginCompletion { signedIn in
+          continuation.resume(returning: signedIn)
+        },
+        onFinish: {
+          presented?.dismiss(animated: true)
+        }
+      )
+      let controller = UIHostingController(rootView: signIn)
+      presented = controller
+      presenter.present(controller, animated: true)
+    }
   }
 
   @objc public func authenticatedUsername() -> String? {
