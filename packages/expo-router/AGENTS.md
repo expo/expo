@@ -157,8 +157,8 @@ import { router } from '../imperative-api';
 import Stack from '../layouts/StackClient';
 import { act } from '@testing-library/react-native';
 
-it('can navigate between routes', () => {
-  renderRouter({
+it('can navigate between routes', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
     'profile/[id]': () => <Text testID="profile">Profile</Text>,
@@ -166,17 +166,20 @@ it('can navigate between routes', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
 
-  act(() => router.push('/profile/123'));
+  await act(() => router.push('/profile/123'));
 
   expect(screen.getByTestId('profile')).toBeVisible();
   expect(screen).toHavePathname('/profile/123');
 });
 ```
 
+`@testing-library/react-native` v14 is fully async: `renderRouter`, `render`, `renderHook`, `act`, `fireEvent`, `rerender` and `unmount` all return promises, so every test that uses them must be `async` and `await` each call. Use `await expect(renderRouter(...)).rejects.toThrow()` to assert on render errors.
+
 **Key testing utilities:**
 
-- `renderRouter(routes, options)` - Render router with mock route configuration
-- `renderHook(callback, options)` - Test hooks with router context (re-exported from @testing-library/react-native)
+- `renderRouter(routes, options)` - Render router with mock route configuration (async)
+- `renderHook(callback, options)` - Test hooks with router context (re-exported from @testing-library/react-native, async)
+- `testRouter.navigate/push/replace/back()` - Imperative navigation helpers that also assert the resulting pathname (async)
 - `screen.getPathname()` - Get current pathname
 - `screen.getSegments()` - Get route segments array
 - `screen.getSearchParams()` - Get search parameters
