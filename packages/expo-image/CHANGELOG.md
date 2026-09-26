@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Upgrade `@testing-library/react-native` to v14 and migrate tests to its async API. (by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.6 — 2026-09-25
 
 ### 🐛 Bug fixes

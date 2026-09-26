@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Upgrade `@testing-library/react-native` to v14. (by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.7 — 2026-09-25
 
 ### 🎉 New features
