@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Load app config and `.env` files in the native build's mode when generating Updates resources: development for iOS configurations containing `Debug` and Android debuggable variants, production otherwise. ([#49452](https://github.com/expo/expo/pull/49452) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
