@@ -1857,14 +1857,17 @@ internal enum ToolbarTitleDisplayModeType: String, Enumerable {
   case large
 
   @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
-  var value: SwiftUI.ToolbarTitleDisplayMode {
+  var value: SwiftUI.ToolbarTitleDisplayMode? {
     switch self {
     case .automatic:
       return .automatic
     case .inline:
       return .inline
     case .inlineLarge:
-      return .inlineLarge
+      if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
+        return .inlineLarge
+      }
+      return nil
     case .large:
       return .large
     }
@@ -1877,7 +1880,11 @@ internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
   @ViewBuilder
   func body(content: Content) -> some View {
     if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
-      content.toolbarTitleDisplayMode(mode.value)
+      if let value = mode.value {
+        content.toolbarTitleDisplayMode(value)
+      } else {
+        content
+      }
     } else {
       content
     }
