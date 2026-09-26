@@ -157,7 +157,9 @@ function FrameSizeListenerWeb({ onChange }: { onChange: (frame: Frame) => void }
   const elementRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
-    if (elementRef.current == null) {
+    // Test renderers hand out host instances without DOM measurement APIs, so treat them like a
+    // missing element instead of crashing.
+    if (typeof elementRef.current?.getBoundingClientRect !== 'function') {
       return;
     }
 
