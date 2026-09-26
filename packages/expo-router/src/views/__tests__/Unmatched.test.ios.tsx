@@ -1,4 +1,4 @@
-import { act, fireEvent, screen } from '@testing-library/react-native';
+import { fireEvent, screen } from '@testing-library/react-native';
 import { Pressable, View } from 'react-native';
 
 import { useRouter } from '../../hooks';
@@ -7,8 +7,8 @@ import { Link } from '../../link/Link';
 import { renderRouter } from '../../testing-library';
 
 describe('Unmatched', () => {
-  it('can create a link to the unmatched route', () => {
-    expect(() =>
+  it('can create a link to the unmatched route', async () => {
+    await expect(
       renderRouter({
         _layout: () => <Stack />,
         index: () => (
@@ -17,12 +17,12 @@ describe('Unmatched', () => {
           </View>
         ),
       })
-    ).not.toThrow();
+    ).resolves.not.toThrow();
     expect(screen.getByTestId('unmatched-link')).toBeVisible();
   });
 
-  it('can create a prefetch link to the unmatched route', () => {
-    expect(() =>
+  it('can create a prefetch link to the unmatched route', async () => {
+    await expect(
       renderRouter({
         _layout: () => <Stack />,
         index: () => (
@@ -31,12 +31,12 @@ describe('Unmatched', () => {
           </View>
         ),
       })
-    ).not.toThrow();
+    ).resolves.not.toThrow();
     expect(screen.getByTestId('unmatched-link')).toBeVisible();
   });
 
-  it('can run router prefetch to the unmatched route', () => {
-    renderRouter({
+  it('can run router prefetch to the unmatched route', async () => {
+    await renderRouter({
       _layout: () => <Stack />,
       index: function Index() {
         const router = useRouter();
@@ -47,6 +47,6 @@ describe('Unmatched', () => {
         );
       },
     });
-    expect(() => act(() => fireEvent.press(screen.getByTestId('router-prefetch')))).not.toThrow();
+    await expect(fireEvent.press(screen.getByTestId('router-prefetch'))).resolves.not.toThrow();
   });
 });

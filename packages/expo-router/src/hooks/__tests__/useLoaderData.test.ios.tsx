@@ -1,4 +1,4 @@
-import { act, fireEvent, render, renderAsync, screen } from '@testing-library/react-native';
+import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
 import { type ReactNode, StrictMode, Suspense, use, useLayoutEffect, useState } from 'react';
 import { Text } from 'react-native';
@@ -15,9 +15,9 @@ import { LoaderRouteLifecycle } from '../../loaders/LoaderRouteLifecycle';
 import { ServerDataLoaderContext } from '../../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../../loaders/readLoaderData';
 import { fetchLoader } from '../../loaders/utils';
-import { renderRouterAsync } from '../../testing-library';
+import { renderRouter } from '../../testing-library';
 import { useLoaderData } from '../useLoaderData';
-import { renderHookAsync } from './renderHook';
+import { renderHook } from './renderHook';
 
 jest.mock('../../loaders/utils', () => ({
   fetchLoader: jest.fn(),
@@ -66,7 +66,7 @@ describe(useLoaderData, () => {
       [expectedPath]: { correct: true },
     };
 
-    const { result } = await renderHookAsync(() => useLoaderData(), [route], {
+    const { result } = await renderHook(() => useLoaderData(), [route], {
       initialUrl,
     });
 
@@ -80,7 +80,7 @@ describe(useLoaderData, () => {
 
     let loaderResult: any;
 
-    await renderRouterAsync(
+    await renderRouter(
       {
         'nested/_layout': () => <Slot />,
         'nested/index': function NestedIndex() {
@@ -99,7 +99,7 @@ describe(useLoaderData, () => {
       '/request?foo=bar': { correct: true },
     };
 
-    const { result } = await renderHookAsync(() => useLoaderData(), ['request'], {
+    const { result } = await renderHook(() => useLoaderData(), ['request'], {
       initialUrl: '/request?foo=bar',
     });
 
@@ -115,7 +115,7 @@ describe(useLoaderData, () => {
 
     const { ctx, LoaderWrapper } = createLoaderTestContext();
 
-    const firstMount = await renderHookAsync(() => useLoaderData(), ['index'], {
+    const firstMount = await renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -123,12 +123,12 @@ describe(useLoaderData, () => {
     expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).not.toHaveProperty('/index');
     expect(fetchLoaderMock).not.toHaveBeenCalled();
 
-    await firstMount.unmountAsync();
+    await firstMount.unmount();
     await act(async () => {});
     expect(ctx.store.get('/index')).toBeUndefined();
 
-    // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
-    await renderHookAsync(() => useLoaderData(), ['index'], {
+    // TODO: Remove `renderHook` when we migrate to RNTL v14.
+    await renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -149,8 +149,8 @@ describe(useLoaderData, () => {
 
     const { ctx, LoaderWrapper } = createLoaderTestContext();
 
-    // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
-    await renderHookAsync(() => useLoaderData(), ['users/[id]'], {
+    // TODO: Remove `renderHook` when we migrate to RNTL v14.
+    await renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
       wrapper: LoaderWrapper,
     });
@@ -177,8 +177,8 @@ describe(useLoaderData, () => {
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.set('/users/123', { data: { fromStore: true } });
 
-    // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
-    const { result } = await renderHookAsync(() => useLoaderData(), ['users/[id]'], {
+    // TODO: Remove `renderHook` when we migrate to RNTL v14.
+    const { result } = await renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
       wrapper: LoaderWrapper,
     });
@@ -206,7 +206,7 @@ describe(useLoaderData, () => {
       return <Reader key={key} />;
     }
 
-    await renderRouterAsync({ index: Screen }, { wrapper: LoaderWrapper });
+    await renderRouter({ index: Screen }, { wrapper: LoaderWrapper });
     jest.useRealTimers();
     await act(async () => remount());
 
@@ -237,7 +237,7 @@ describe(useLoaderData, () => {
       );
     }
 
-    const root = await renderRouterAsync(
+    const root = await renderRouter(
       {
         index: SiblingReaders,
       },
@@ -247,7 +247,7 @@ describe(useLoaderData, () => {
 
     expect(screen.getByTestId('first-reader')).toHaveTextContent('{"shared":true}');
     await act(async () => {
-      fireEvent.press(screen.getByText('Remove first'));
+      await fireEvent.press(screen.getByText('Remove first'));
     });
 
     expect(screen.queryByTestId('first-reader')).toBeNull();
@@ -256,29 +256,36 @@ describe(useLoaderData, () => {
       data: { shared: true },
     });
 
-    await root.unmountAsync();
+    await root.unmount();
     expect(ctx.store.get('/index')).toBeUndefined();
   });
 
   it('refreshes a live entry in place during HMR coordination', async () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
-    fetchLoaderMock.mockResolvedValueOnce({ version: 2 });
+    // Keep the fetch pending so the live entry is observable before the refresh lands.
+    let resolveFetch!: (value: Record<string, unknown>) => void;
+    fetchLoaderMock.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      })
+    );
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/index': { version: 1 },
     };
-    const hook = await renderHookAsync(() => useLoaderData(), ['index'], {
+    const hook = await renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
 
-    act(() => {
+    await act(() => {
       const { client, store } = ctx;
       store.retain(client.revalidate());
     });
 
     expect(hook.result.current).toEqual({ version: 1 });
     await act(async () => {
+      resolveFetch({ version: 2 });
       await fetchLoaderMock.mock.results[0]!.value;
     });
     expect(hook.result.current).toEqual({ version: 2 });
@@ -302,7 +309,7 @@ describe(useLoaderData, () => {
         <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
       </ServerDataLoaderContext>
     );
-    const hook = await renderHookAsync(() => useLoaderData(), ['index'], {
+    const hook = await renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -310,7 +317,7 @@ describe(useLoaderData, () => {
     expect(hook.result.current).toEqual({ source: 'server' });
 
     serverData = null;
-    await hook.rerenderAsync(undefined);
+    await hook.rerender(undefined);
     expect(hook.result.current).toEqual({ version: 1 });
 
     await act(async () => {
@@ -330,7 +337,7 @@ describe(useLoaderData, () => {
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.seed('/index', { live: true });
     ctx.store.seed('/inactive', { stale: true });
-    await renderHookAsync(() => useLoaderData(), ['index'], {
+    await renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -358,7 +365,7 @@ describe(useLoaderData, () => {
     let profileRenders = 0;
     let indexResult: unknown;
     let profileResult: unknown;
-    await renderRouterAsync(
+    await renderRouter(
       {
         _layout: () => (
           <Tabs>
@@ -412,7 +419,7 @@ describe(useLoaderData, () => {
       return null;
     }
 
-    await renderRouterAsync({
+    await renderRouter({
       index: () => (
         <>
           <Reader index={0} />
@@ -435,7 +442,7 @@ describe(useLoaderData, () => {
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.seed('/index', { version: 1 });
 
-    const { result } = await renderHookAsync(
+    const { result } = await renderHook(
       () => {
         const data = useLoaderData();
         useLayoutEffect(() => {
@@ -455,7 +462,7 @@ describe(useLoaderData, () => {
     ctx.store.seed('/index', { version: 1 });
     const oldFetch = createDeferred<{ version: number }>();
     let renders = 0;
-    const hook = await renderHookAsync(
+    const hook = await renderHook(
       () => {
         renders++;
         return useLoaderData();
@@ -470,7 +477,7 @@ describe(useLoaderData, () => {
       committed: true,
     });
     ctx.store.set('/index', { data: { version: 2 } });
-    await hook.rerenderAsync(undefined);
+    await hook.rerender(undefined);
     const rendersBeforeOldSettle = renders;
 
     await act(async () => {
@@ -494,7 +501,7 @@ describe(useLoaderData, () => {
     let renders = 0;
     let latestData: unknown;
 
-    await renderRouterAsync(
+    await renderRouter(
       {
         'users/[id]': function User() {
           const data = useLoaderData() as { id: number };
@@ -538,7 +545,7 @@ describe(useLoaderData, () => {
       });
     });
 
-    await renderRouterAsync({
+    await renderRouter({
       _layout: {
         default: () => <Slot />,
         SuspenseFallback: () => <Text>Loading</Text>,
@@ -611,13 +618,13 @@ describe(useLoaderData, () => {
         );
       }
 
-      const route = await renderAsync(
+      const route = await render(
         <LoaderContext value={ctx}>
           <UserRouteShell path={oldPath} />
         </LoaderContext>
       );
 
-      await route.rerenderAsync(
+      await route.rerender(
         <LoaderContext value={ctx}>
           <UserRouteShell path={newPath} />
         </LoaderContext>
@@ -638,7 +645,7 @@ describe(useLoaderData, () => {
       return new Promise(() => {});
     });
 
-    const lifecycle = render(
+    const lifecycle = await render(
       <StrictMode>
         <LoaderContext value={ctx}>
           <LoaderRouteLifecycle path="/slow" />
@@ -650,7 +657,7 @@ describe(useLoaderData, () => {
     expect(signal.aborted).toBe(false);
     expect(ctx.store.get('/slow')).toBeDefined();
 
-    lifecycle.unmount();
+    await lifecycle.unmount();
     await act(async () => {});
     expect(signal.aborted).toBe(true);
     expect(ctx.store.get('/slow')).toBeUndefined();
@@ -682,7 +689,7 @@ describe(useLoaderData, () => {
       return <Text>Loading</Text>;
     }
 
-    await renderRouterAsync({
+    await renderRouter({
       _layout: {
         default: () => <Slot />,
         SuspenseFallback: LoadingFallback,
@@ -728,12 +735,12 @@ describe(useLoaderData, () => {
       committed: true,
     });
 
-    const lifecycle = render(
+    const lifecycle = await render(
       <LoaderContext value={ctx}>
         <LoaderRouteLifecycle path="/slow" />
       </LoaderContext>
     );
-    lifecycle.unmount();
+    await lifecycle.unmount();
     await act(async () => {});
 
     expect(signal.aborted).toBe(false);
@@ -752,7 +759,7 @@ describe(useLoaderData, () => {
       '/index': { user: { id: 1, name: 'async user' }, timestamp: 123456789 },
     };
 
-    const { result } = await renderHookAsync(() => useLoaderData<typeof asyncLoader>(), ['index'], {
+    const { result } = await renderHook(() => useLoaderData<typeof asyncLoader>(), ['index'], {
       initialUrl: '/',
     });
 

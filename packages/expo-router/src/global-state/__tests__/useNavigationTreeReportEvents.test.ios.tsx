@@ -29,7 +29,7 @@ function wrapper({ children }: PropsWithChildren) {
   return <RemovalPreventionProvider>{children}</RemovalPreventionProvider>;
 }
 
-test('emits and consumes only new report events', () => {
+test('emits and consumes only new report events', async () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
   const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
@@ -42,13 +42,13 @@ test('emits and consumes only new report events', () => {
     state,
   };
   const report: NavigationTreeReport = { events: [firstEvent] };
-  const result = renderHook(
+  const result = await renderHook(
     ({ report }: { report: NavigationTreeReport }) =>
       useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
     { wrapper, initialProps: { report } }
   );
 
-  result.rerender({
+  await result.rerender({
     report: {
       events: [firstEvent, { id: 1, type: 'action-dispatched', action: { type: 'SECOND' }, state }],
     },
@@ -60,7 +60,7 @@ test('emits and consumes only new report events', () => {
   unsubscribe();
 });
 
-test('emits removePrevented and removed to the registered route emitters', () => {
+test('emits removePrevented and removed to the registered route emitters', async () => {
   const emitRemovalEvent = jest.fn();
   const consumeReportEvents = jest.fn();
   const action = { type: 'POP' };
@@ -71,7 +71,7 @@ test('emits removePrevented and removed to the registered route emitters', () =>
     ],
   };
 
-  const result = renderHook(
+  const result = await renderHook(
     ({ report }: { report: NavigationTreeReport | undefined }) =>
       useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
     {
@@ -85,7 +85,7 @@ test('emits removePrevented and removed to the registered route emitters', () =>
       ),
     }
   );
-  result.rerender({ report });
+  await result.rerender({ report });
 
   expect(emitRemovalEvent).toHaveBeenNthCalledWith(1, 'a', 'removePrevented', action);
   expect(emitRemovalEvent).toHaveBeenNthCalledWith(2, 'a', 'removed', action);
@@ -103,7 +103,7 @@ describe('unhandled action warnings', () => {
     error.mockRestore();
   });
 
-  test('warns about an unhandled action', () => {
+  test('warns about an unhandled action', async () => {
     const action = { type: 'NAVIGATE', payload: { name: 'missing' } };
     const consumeReportEvents = jest.fn();
     const report: NavigationTreeReport = {
@@ -113,9 +113,12 @@ describe('unhandled action warnings', () => {
       ],
     };
 
-    renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
-      wrapper,
-    });
+    await renderHook(
+      () => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
+      {
+        wrapper,
+      }
+    );
 
     expect(error).toHaveBeenCalledTimes(1);
     expect(error).toHaveBeenCalledWith(
@@ -127,7 +130,7 @@ describe('unhandled action warnings', () => {
   });
 });
 
-test('does not emit twice in StrictMode', () => {
+test('does not emit twice in StrictMode', async () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
   const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
@@ -137,20 +140,23 @@ test('does not emit twice in StrictMode', () => {
     events: [{ id: 0, type: 'action-dispatched', action: { type: 'FIRST' }, state }],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
-    wrapper: ({ children }: PropsWithChildren) => (
-      <React.StrictMode>
-        <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
-      </React.StrictMode>
-    ),
-  });
+  await renderHook(
+    () => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
+    {
+      wrapper: ({ children }: PropsWithChildren) => (
+        <React.StrictMode>
+          <RemovalPreventionProvider>{children}</RemovalPreventionProvider>
+        </React.StrictMode>
+      ),
+    }
+  );
 
   expect(actions).toEqual(['FIRST']);
   expect(consumeReportEvents).toHaveBeenCalledTimes(1);
   unsubscribe();
 });
 
-test('keeps emitting the remaining events when a listener throws', () => {
+test('keeps emitting the remaining events when a listener throws', async () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
@@ -167,9 +173,12 @@ test('keeps emitting the remaining events when a listener throws', () => {
     ],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
-    wrapper,
-  });
+  await renderHook(
+    () => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
+    {
+      wrapper,
+    }
+  );
 
   expect(actions).toEqual(['FIRST', 'SECOND']);
   expect(warn).toHaveBeenCalledTimes(1);
@@ -178,7 +187,7 @@ test('keeps emitting the remaining events when a listener throws', () => {
   warn.mockRestore();
 });
 
-test('runs browser history events through the adapter', () => {
+test('runs browser history events through the adapter', async () => {
   const consumeReportEvents = jest.fn();
   const report: NavigationTreeReport = {
     events: [
@@ -187,17 +196,20 @@ test('runs browser history events through the adapter', () => {
     ],
   };
 
-  renderHook(() => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory), {
-    wrapper,
-  });
+  await renderHook(
+    () => useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory),
+    {
+      wrapper,
+    }
+  );
 
   expect(browserHistory.apply.mock.calls).toEqual([[report.events[0]], [report.events[1]]]);
   expect(consumeReportEvents).toHaveBeenCalledWith([0, 1]);
 });
 
-test('prefetch emits the preloaded stack route and state with the preview id', () => {
+test('prefetch emits the preloaded stack route and state with the preview id', async () => {
   const events: { routeKey: string; state: NavigationState }[] = [];
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text>Index</Text>,
     details: () => <Text>Details</Text>,
@@ -206,7 +218,7 @@ test('prefetch emits the preloaded stack route and state with the preview id', (
     events.push(event)
   );
 
-  act(() => router.prefetch('/details', { __internal__previewId: 'preview' }));
+  await act(() => router.prefetch('/details', { __internal__previewId: 'preview' }));
 
   expect(events).toHaveLength(1);
   const event = events[0]!;
@@ -217,9 +229,9 @@ test('prefetch emits the preloaded stack route and state with the preview id', (
   unsubscribe();
 });
 
-test('prefetch emits the tab route while navigate emits no preload event', () => {
+test('prefetch emits the tab route while navigate emits no preload event', async () => {
   const routeKeys: string[] = [];
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -233,11 +245,11 @@ test('prefetch emits the tab route while navigate emits no preload event', () =>
     routeKeys.push(routeKey)
   );
 
-  act(() => router.prefetch('/second'));
+  await act(() => router.prefetch('/second'));
   expect(routeKeys).toHaveLength(1);
   expect(routeKeys[0]).toMatch(/^second:/);
 
-  act(() => router.navigate('/second'));
+  await act(() => router.navigate('/second'));
   expect(routeKeys).toHaveLength(1);
   unsubscribe();
 });

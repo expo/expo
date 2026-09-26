@@ -44,7 +44,7 @@ afterEach(() => {
 });
 
 describe('Stack.Toolbar dynamic placement changes', () => {
-  it('left to right: clears headerLeftBarButtonItems and populates headerRightBarButtonItems', () => {
+  it('left to right: clears headerLeftBarButtonItems and populates headerRightBarButtonItems', async () => {
     let setPlacement: Dispatch<SetStateAction<'left' | 'right'>>;
 
     function TestScreen() {
@@ -60,7 +60,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: TestScreen,
     });
@@ -82,7 +82,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     jest.clearAllMocks();
 
-    act(() => setPlacement!('right'));
+    await act(() => setPlacement!('right'));
 
     // Render sequence after placement change:
     // Composition cleanup removes left items, right toolbar registers new items
@@ -99,7 +99,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     });
   });
 
-  it('left to bottom: clears headerLeftBarButtonItems and uses RouterToolbarHost', () => {
+  it('left to bottom: clears headerLeftBarButtonItems and uses RouterToolbarHost', async () => {
     let setPlacement: Dispatch<SetStateAction<'left' | 'bottom'>>;
 
     function TestScreen() {
@@ -115,7 +115,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: TestScreen,
     });
@@ -135,7 +135,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     jest.clearAllMocks();
 
-    act(() => setPlacement!('bottom'));
+    await act(() => setPlacement!('bottom'));
 
     // Bottom toolbar renders via RouterToolbarHost
     expect(MockedRouterToolbarHost).toHaveBeenCalledTimes(1);
@@ -152,7 +152,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     ).toBeUndefined();
   });
 
-  it('bottom to right: stops using RouterToolbarHost and populates headerRightBarButtonItems', () => {
+  it('bottom to right: stops using RouterToolbarHost and populates headerRightBarButtonItems', async () => {
     let setPlacement: Dispatch<SetStateAction<'bottom' | 'right'>>;
 
     function TestScreen() {
@@ -168,7 +168,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: TestScreen,
     });
@@ -194,7 +194,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     jest.clearAllMocks();
 
-    act(() => setPlacement!('right'));
+    await act(() => setPlacement!('right'));
 
     // Render sequence after placement change:
     // [0] Right toolbar sets headerRightBarButtonItems
@@ -212,7 +212,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
     expect(MockedRouterToolbarHost).not.toHaveBeenCalled();
   });
 
-  it('cycles correctly through left -> right -> bottom -> left', () => {
+  it('cycles correctly through left -> right -> bottom -> left', async () => {
     let setPlacement: Dispatch<SetStateAction<'left' | 'right' | 'bottom'>>;
 
     function TestScreen() {
@@ -228,7 +228,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: TestScreen,
     });
@@ -245,7 +245,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     // Change to right
     jest.clearAllMocks();
-    act(() => setPlacement!('right'));
+    await act(() => setPlacement!('right'));
 
     // Composition cleanup clears left + right toolbar sets items
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
@@ -259,7 +259,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     // Change to bottom
     jest.clearAllMocks();
-    act(() => setPlacement!('bottom'));
+    await act(() => setPlacement!('bottom'));
 
     // Composition cleanup removes right items
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
@@ -274,7 +274,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 
     // Change back to left
     jest.clearAllMocks();
-    act(() => setPlacement!('left'));
+    await act(() => setPlacement!('left'));
 
     // [0] Left toolbar sets items (no cleanup needed from bottom)
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
@@ -286,7 +286,7 @@ describe('Stack.Toolbar dynamic placement changes', () => {
 });
 
 describe('Stack.Toolbar with navigation', () => {
-  it('applies toolbar options after navigation', () => {
+  it('applies toolbar options after navigation', async () => {
     function IndexScreen() {
       return <Text testID="index">Index</Text>;
     }
@@ -302,7 +302,7 @@ describe('Stack.Toolbar with navigation', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: IndexScreen,
       detail: DetailScreen,
@@ -312,7 +312,7 @@ describe('Stack.Toolbar with navigation', () => {
 
     jest.clearAllMocks();
 
-    act(() => {
+    await act(() => {
       router.push('/detail');
     });
 
@@ -331,7 +331,7 @@ describe('Stack.Toolbar with navigation', () => {
     ).toEqual({ type: 'sfSymbol', name: 'star' });
   });
 
-  it('updates toolbar placement after navigation', () => {
+  it('updates toolbar placement after navigation', async () => {
     let setPlacement: Dispatch<SetStateAction<'left' | 'right'>>;
 
     function IndexScreen() {
@@ -351,7 +351,7 @@ describe('Stack.Toolbar with navigation', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: IndexScreen,
       detail: DetailScreen,
@@ -359,7 +359,7 @@ describe('Stack.Toolbar with navigation', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
 
-    act(() => {
+    await act(() => {
       router.push('/detail');
     });
 
@@ -374,7 +374,7 @@ describe('Stack.Toolbar with navigation', () => {
 
     jest.clearAllMocks();
 
-    act(() => setPlacement!('right'));
+    await act(() => setPlacement!('right'));
 
     // After placement change, two renders occur
     // [0] For index
@@ -392,7 +392,7 @@ describe('Stack.Toolbar with navigation', () => {
   });
 });
 
-it('updates multiple toolbars correctly when one changes placement', () => {
+it('updates multiple toolbars correctly when one changes placement', async () => {
   let setRightToolbarPlacement: Dispatch<SetStateAction<'right' | 'bottom'>>;
 
   function TestScreen() {
@@ -413,7 +413,7 @@ it('updates multiple toolbars correctly when one changes placement', () => {
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: TestScreen,
   });
@@ -446,7 +446,7 @@ it('updates multiple toolbars correctly when one changes placement', () => {
 
   jest.clearAllMocks();
 
-  act(() => setRightToolbarPlacement!('bottom'));
+  await act(() => setRightToolbarPlacement!('bottom'));
 
   // RouterToolbarHost called for bottom toolbar
   expect(MockedRouterToolbarHost).toHaveBeenCalledTimes(1);
@@ -473,7 +473,7 @@ it('updates multiple toolbars correctly when one changes placement', () => {
   });
 });
 
-it('batched placement changes: ends up in correct final state', () => {
+it('batched placement changes: ends up in correct final state', async () => {
   let setPlacement: Dispatch<SetStateAction<'left' | 'right' | 'bottom'>>;
 
   function TestScreen() {
@@ -489,7 +489,7 @@ it('batched placement changes: ends up in correct final state', () => {
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: TestScreen,
   });
@@ -500,7 +500,7 @@ it('batched placement changes: ends up in correct final state', () => {
 
   // Rapid changes within single act: left -> right -> bottom -> right
   // React batches these, so only the final state matters
-  act(() => {
+  await act(() => {
     setPlacement!('right');
     setPlacement!('bottom');
     setPlacement!('right');

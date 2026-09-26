@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 
 import type { SuspenseFallbackProps } from '../exports';
 import { Slot } from '../exports';
-import { renderRouterAsync } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 const renderFallback = (route: string, testID = 'custom-fallback') => (
   <View testID={testID}>
@@ -24,7 +24,7 @@ it('inherits `<SuspenseFallback>` from the nearest layout in sync mode', async (
     renderFallback(route, 'layout-fallback')
   );
 
-  await renderRouterAsync(
+  await renderRouter(
     {
       '(app)/_layout': {
         default: () => <Slot />,
@@ -54,7 +54,7 @@ it('uses the nearest layout `<SuspenseFallback>` in sync mode', async () => {
   const NestedFallback = ({ route }: SuspenseFallbackProps) =>
     renderFallback(route, 'nested-layout-fallback');
 
-  await renderRouterAsync(
+  await renderRouter(
     {
       _layout: {
         default: () => <Slot />,
@@ -91,7 +91,7 @@ it('passes route params to layout-level `<SuspenseFallback>`', async () => {
     </View>
   ));
 
-  await renderRouterAsync(
+  await renderRouter(
     {
       '(app)/_layout': {
         default: () => <Slot />,
@@ -124,7 +124,7 @@ it('renders default `<SuspenseFallback>` when one is not available', async () =>
     return <Text testID="route-content">{value}</Text>;
   }
 
-  await renderRouterAsync({
+  await renderRouter({
     index: SuspendingRoute,
   });
 

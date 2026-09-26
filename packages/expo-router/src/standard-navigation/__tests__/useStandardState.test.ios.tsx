@@ -30,7 +30,7 @@ beforeEach(() => {
 });
 
 describe('useStandardState', () => {
-  it('maps index and each route to { href, key, name, params }', () => {
+  it('maps index and each route to { href, key, name, params }', async () => {
     const builderState = makeBuilderState(
       [
         { key: 'feed-1', name: 'feed', params: { tab: 'a' } },
@@ -39,7 +39,7 @@ describe('useStandardState', () => {
       1
     );
 
-    const { result } = renderHook(() => useStandardState(builderState));
+    const { result } = await renderHook(() => useStandardState(builderState));
 
     expect(result.current).toEqual({
       index: 1,
@@ -50,19 +50,19 @@ describe('useStandardState', () => {
     });
   });
 
-  it('handles an empty route list', () => {
-    const { result } = renderHook(() => useStandardState(makeBuilderState([], 0)));
+  it('handles an empty route list', async () => {
+    const { result } = await renderHook(() => useStandardState(makeBuilderState([], 0)));
 
     expect(result.current).toEqual({ index: 0, routes: [] });
   });
 
-  it('preserves route state needed to restore cancelled transitions', () => {
+  it('preserves route state needed to restore cancelled transitions', async () => {
     const childState = makeBuilderState([{ key: 'child-1', name: 'child' }]);
     const builderState = makeBuilderState([
       { key: 'parent-1', name: 'parent', path: '/parent', state: childState },
     ]);
 
-    const { result } = renderHook(() => useStandardState(builderState));
+    const { result } = await renderHook(() => useStandardState(builderState));
 
     expect(result.current.routes[0]).toMatchObject({
       key: 'parent-1',
@@ -72,11 +72,11 @@ describe('useStandardState', () => {
     });
   });
 
-  it('builds the href via buildHref once per route', () => {
+  it('builds the href via buildHref once per route', async () => {
     const buildHref = jest.fn(byName);
     mockedUseBuildHref.mockReturnValue(buildHref);
 
-    renderHook(() =>
+    await renderHook(() =>
       useStandardState(
         makeBuilderState([
           { key: 'feed-1', name: 'feed' },
@@ -90,19 +90,19 @@ describe('useStandardState', () => {
     expect(buildHref).toHaveBeenCalledWith(expect.objectContaining({ name: 'profile' }));
   });
 
-  it('returns a stable reference when neither builderState nor buildHref change', () => {
+  it('returns a stable reference when neither builderState nor buildHref change', async () => {
     const builderState = makeBuilderState([{ key: 'feed-1', name: 'feed' }]);
 
-    const { result, rerender } = renderHook(() => useStandardState(builderState));
+    const { result, rerender } = await renderHook(() => useStandardState(builderState));
     const first = result.current;
 
-    rerender({});
+    await rerender({});
 
     expect(result.current).toBe(first);
   });
 
-  it('recomputes when builderState reference changes', () => {
-    const { result, rerender } = renderHook(
+  it('recomputes when builderState reference changes', async () => {
+    const { result, rerender } = await renderHook(
       ({ s }: { s: NavigationState }) => useStandardState(s),
       {
         initialProps: { s: makeBuilderState([{ key: 'feed-1', name: 'feed' }]) },
@@ -110,12 +110,12 @@ describe('useStandardState', () => {
     );
     const first = result.current;
 
-    rerender({ s: makeBuilderState([{ key: 'feed-1', name: 'feed' }]) });
+    await rerender({ s: makeBuilderState([{ key: 'feed-1', name: 'feed' }]) });
 
     expect(result.current).not.toBe(first);
   });
 
-  it('appends preloaded routes after the focused route, keeping index unchanged', () => {
+  it('appends preloaded routes after the focused route, keeping index unchanged', async () => {
     const builderState = {
       ...makeBuilderState(
         [
@@ -128,7 +128,7 @@ describe('useStandardState', () => {
       type: 'stack',
     } as unknown as NavigationState;
 
-    const { result } = renderHook(() => useStandardState(builderState));
+    const { result } = await renderHook(() => useStandardState(builderState));
 
     expect(result.current).toEqual({
       index: 1,
@@ -145,15 +145,15 @@ describe('useStandardState', () => {
     });
   });
 
-  it('recomputes when buildHref identity changes even if builderState is stable', () => {
+  it('recomputes when buildHref identity changes even if builderState is stable', async () => {
     const builderState = makeBuilderState([{ key: 'feed-1', name: 'feed' }]);
     mockedUseBuildHref.mockReturnValue((route) => `/v1/${route.name}`);
 
-    const { result, rerender } = renderHook(() => useStandardState(builderState));
+    const { result, rerender } = await renderHook(() => useStandardState(builderState));
     const first = result.current;
 
     mockedUseBuildHref.mockReturnValue((route) => `/v2/${route.name}`);
-    rerender({});
+    await rerender({});
 
     expect(result.current).not.toBe(first);
     expect(result.current.routes[0]!.href).toBe('/v2/feed');

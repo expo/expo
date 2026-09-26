@@ -26,13 +26,13 @@ function RouterBridge() {
   );
 }
 
-it('does not install the module-level router from the provider', () => {
-  render(<RoutingQueueProvider />);
+it('does not install the module-level router from the provider', async () => {
+  await render(<RoutingQueueProvider />);
 
   expect(() => router.push('/test')).toThrow('first render');
 });
 
-it('installs the module-level router after the bridge commits', () => {
+it('installs the module-level router after the bridge commits', async () => {
   let pending: RoutingIntent[] = [];
 
   function Consumer() {
@@ -42,13 +42,13 @@ it('installs the module-level router after the bridge commits', () => {
 
   expect(() => router.push('/test')).toThrow('first render');
 
-  render(
+  await render(
     <RoutingQueueProvider>
       <Consumer />
       <RouterBridge />
     </RoutingQueueProvider>
   );
-  act(() => router.push('/test'));
+  await act(() => router.push('/test'));
 
   expect(pending).toEqual([
     {
@@ -58,53 +58,53 @@ it('installs the module-level router after the bridge commits', () => {
   ]);
 });
 
-it('updates the global transition mode from useRouterActions', () => {
+it('updates the global transition mode from useRouterActions', async () => {
   const wrapper = ({ children }: PropsWithChildren) => (
     <RoutingQueueProvider>{children}</RoutingQueueProvider>
   );
-  const { result } = renderHook(
+  const { result } = await renderHook(
     () => ({ api: use(RoutingQueueApiContext)!, router: useRouterActions() }),
     { wrapper }
   );
   expect(result.current.api.transitionMode).toBe('preload-only');
 
-  act(() => result.current.router.setTransitionMode('never'));
+  await act(() => result.current.router.setTransitionMode('never'));
 
   expect(result.current.api.transitionMode).toBe('never');
 });
 
-it('uses a transition mode set before the router binds', () => {
+it('uses a transition mode set before the router binds', async () => {
   router.setTransitionMode('never');
 
-  const { result } = renderHook(() => use(RoutingQueueApiContext)!, {
+  const { result } = await renderHook(() => use(RoutingQueueApiContext)!, {
     wrapper: RoutingQueueProvider,
   });
 
   expect(result.current.transitionMode).toBe('never');
 });
 
-it('restores the throwing router after the provider unmounts', () => {
-  const { unmount } = render(
+it('restores the throwing router after the provider unmounts', async () => {
+  const { unmount } = await render(
     <RoutingQueueProvider>
       <RouterBridge />
     </RoutingQueueProvider>
   );
 
-  expect(() => act(() => router.push('/test'))).not.toThrow();
-  unmount();
+  await act(() => router.push('/test'));
+  await unmount();
 
   expect(() => router.push('/test')).toThrow('first render');
 });
 
-it('warns when a second root binds the imperative router', () => {
+it('warns when a second root binds the imperative router', async () => {
   const error = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  const firstRoot = render(
+  const firstRoot = await render(
     <RoutingQueueProvider>
       <RouterBridge />
     </RoutingQueueProvider>
   );
-  const secondRoot = render(
+  const secondRoot = await render(
     <RoutingQueueProvider>
       <RouterBridge />
     </RoutingQueueProvider>
@@ -113,12 +113,12 @@ it('warns when a second root binds the imperative router', () => {
   expect(error).toHaveBeenCalledTimes(1);
   expect(error).toHaveBeenCalledWith(expect.stringContaining('multiple'));
 
-  secondRoot.unmount();
-  firstRoot.unmount();
+  await secondRoot.unmount();
+  await firstRoot.unmount();
   error.mockRestore();
 });
 
-it('preserves enqueue order and drains on the following render', () => {
+it('preserves enqueue order and drains on the following render', async () => {
   const snapshots: RoutingIntent[][] = [];
   const pendingSnapshots: boolean[] = [];
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
@@ -130,13 +130,13 @@ it('preserves enqueue order and drains on the following render', () => {
     return null;
   }
 
-  render(
+  await render(
     <RoutingQueueProvider>
       <Consumer />
     </RoutingQueueProvider>
   );
 
-  act(() => {
+  await act(() => {
     enqueue(actionIntent('FIRST'));
     enqueue(actionIntent('SECOND'));
   });
@@ -145,7 +145,7 @@ it('preserves enqueue order and drains on the following render', () => {
   expect(pendingSnapshots).toEqual([false, true]);
 });
 
-it('keeps intents added while a batch is being dequeued', () => {
+it('keeps intents added while a batch is being dequeued', async () => {
   let api: NonNullable<ContextType<typeof RoutingQueueApiContext>>;
   let pending: RoutingIntent[] = [];
 
@@ -155,15 +155,15 @@ it('keeps intents added while a batch is being dequeued', () => {
     return null;
   }
 
-  render(
+  await render(
     <RoutingQueueProvider>
       <Consumer />
     </RoutingQueueProvider>
   );
-  act(() => api.enqueue(actionIntent('FIRST')));
+  await act(() => api.enqueue(actionIntent('FIRST')));
   const processed = pending;
 
-  act(() => {
+  await act(() => {
     api.enqueue(actionIntent('SECOND'));
     api.dequeue(processed);
   });
@@ -171,7 +171,7 @@ it('keeps intents added while a batch is being dequeued', () => {
   expect(pending).toEqual([actionIntent('SECOND')]);
 });
 
-it('keeps providers isolated', () => {
+it('keeps providers isolated', async () => {
   const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   const queues: RoutingIntent[][] = [[], []];
   const enqueues: ((intent: RoutingIntent) => void)[] = [];
@@ -182,7 +182,7 @@ it('keeps providers isolated', () => {
     return null;
   }
 
-  render(
+  await render(
     <>
       <RoutingQueueProvider>
         <Consumer index={0} />
@@ -192,13 +192,13 @@ it('keeps providers isolated', () => {
       </RoutingQueueProvider>
     </>
   );
-  act(() => enqueues[0]!(actionIntent('FIRST')));
+  await act(() => enqueues[0]!(actionIntent('FIRST')));
 
   expect(queues).toEqual([[actionIntent('FIRST')], []]);
   error.mockRestore();
 });
 
-it('does not re-render producers when the queue changes', () => {
+it('does not re-render producers when the queue changes', async () => {
   const producerRender = jest.fn();
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
@@ -208,17 +208,17 @@ it('does not re-render producers when the queue changes', () => {
     return null;
   }
 
-  render(
+  await render(
     <RoutingQueueProvider>
       <Producer />
     </RoutingQueueProvider>
   );
-  act(() => enqueue(actionIntent('TEST')));
+  await act(() => enqueue(actionIntent('TEST')));
 
   expect(producerRender).toHaveBeenCalledTimes(1);
 });
 
-it('throws when enqueue is called without a provider', () => {
+it('throws when enqueue is called without a provider', async () => {
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
   function Consumer() {
@@ -226,6 +226,6 @@ it('throws when enqueue is called without a provider', () => {
     return null;
   }
 
-  expect(() => render(<Consumer />)).not.toThrow();
+  await expect(render(<Consumer />)).resolves.not.toThrow();
   expect(() => enqueue(actionIntent('TEST'))).toThrow('ExpoRoot');
 });

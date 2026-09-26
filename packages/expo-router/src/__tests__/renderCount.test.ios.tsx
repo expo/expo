@@ -17,12 +17,12 @@ describe('Tabs render counts', () => {
   // noop = no hook
   it.each([noop, useNavigation, useRouter])(
     'when %p hook is used, screens are only rerendered on focus',
-    (hook) => {
+    async (hook) => {
       const layoutRender = jest.fn();
       const indexRender = jest.fn();
       const twoRender = jest.fn();
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           layoutRender();
           hook();
@@ -53,7 +53,7 @@ describe('Tabs render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.push('/two'));
+      await act(() => router.push('/two'));
 
       expect(screen.getByTestId('two')).toBeVisible();
 
@@ -63,7 +63,7 @@ describe('Tabs render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.push('/'));
+      await act(() => router.push('/'));
 
       expect(screen.getByTestId('index')).toBeVisible();
 
@@ -73,12 +73,12 @@ describe('Tabs render counts', () => {
     }
   );
 
-  it('screens are always rerendered when pathname changes', () => {
+  it('screens are always rerendered when pathname changes', async () => {
     const layoutRender = jest.fn();
     const indexRender = jest.fn();
     const twoRender = jest.fn();
 
-    renderRouter({
+    await renderRouter({
       _layout: function Layout() {
         layoutRender();
         usePathname();
@@ -109,7 +109,7 @@ describe('Tabs render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/two'));
+    await act(() => router.push('/two'));
 
     expect(screen.getByTestId('two')).toBeVisible();
 
@@ -119,7 +119,7 @@ describe('Tabs render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/'));
+    await act(() => router.push('/'));
 
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -133,7 +133,7 @@ describe('Stack render counts', () => {
   // noop = no hook
   it.each([noop, useNavigation, useRouter])(
     'when %p hook is used, screens are only rerendered on push',
-    (hook) => {
+    async (hook) => {
       const layoutRender = jest.fn();
       const indexRender = jest.fn();
       const twoRender = jest.fn();
@@ -144,7 +144,7 @@ describe('Stack render counts', () => {
         expect(twoRender).not.toHaveBeenCalled();
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           layoutRender();
           hook();
@@ -170,7 +170,7 @@ describe('Stack render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.push('/two'));
+      await act(() => router.push('/two'));
 
       expect(screen.getByTestId('two')).toBeVisible();
 
@@ -180,7 +180,7 @@ describe('Stack render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.push('/'));
+      await act(() => router.push('/'));
 
       expect(screen.getByTestId('index')).toBeVisible();
 
@@ -190,7 +190,7 @@ describe('Stack render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.back());
+      await act(() => router.back());
 
       expect(screen.getByTestId('two')).toBeVisible();
 
@@ -198,7 +198,7 @@ describe('Stack render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.back());
+      await act(() => router.back());
 
       expect(screen.getByTestId('index')).toBeVisible();
 
@@ -206,12 +206,12 @@ describe('Stack render counts', () => {
     }
   );
 
-  it('screens are always rerendered when pathname changes', () => {
+  it('screens are always rerendered when pathname changes', async () => {
     const layoutRender = jest.fn();
     const indexRender = jest.fn();
     const twoRender = jest.fn();
 
-    renderRouter({
+    await renderRouter({
       _layout: function Layout() {
         layoutRender();
         usePathname();
@@ -237,7 +237,7 @@ describe('Stack render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/two'));
+    await act(() => router.push('/two'));
 
     expect(screen.getByTestId('two')).toBeVisible();
 
@@ -247,7 +247,7 @@ describe('Stack render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/'));
+    await act(() => router.push('/'));
 
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -257,7 +257,7 @@ describe('Stack render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.back());
+    await act(() => router.back());
 
     expect(screen.getByTestId('two')).toBeVisible();
 
@@ -267,7 +267,7 @@ describe('Stack render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.back());
+    await act(() => router.back());
 
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -280,7 +280,7 @@ describe('Stack render counts', () => {
 describe('Stack nested in Tabs render counts', () => {
   it.each([noop, useNavigation, useRouter])(
     'when %p hook is used, nested stack screens are only rerendered on push',
-    (hook) => {
+    async (hook) => {
       const layoutRender = jest.fn();
       const homeTabRender = jest.fn();
       const indexRender = jest.fn();
@@ -297,7 +297,7 @@ describe('Stack nested in Tabs render counts', () => {
         expect(otherRender).not.toHaveBeenCalled();
       }
 
-      renderRouter({
+      await renderRouter({
         _layout: function Layout() {
           layoutRender();
           hook();
@@ -344,7 +344,7 @@ describe('Stack nested in Tabs render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.push('/two'));
+      await act(() => router.push('/two'));
 
       expect(screen.getByTestId('two')).toBeVisible();
 
@@ -357,7 +357,7 @@ describe('Stack nested in Tabs render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.push('/other'));
+      await act(() => router.push('/other'));
 
       expect(screen.getByTestId('other')).toBeVisible();
 
@@ -370,7 +370,7 @@ describe('Stack nested in Tabs render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.push('/'));
+      await act(() => router.push('/'));
 
       expect(screen.getByTestId('index')).toBeVisible();
 
@@ -384,7 +384,7 @@ describe('Stack nested in Tabs render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.back());
+      await act(() => router.back());
 
       expect(screen.getByTestId('two')).toBeVisible();
       expectNoRerenders();
@@ -392,7 +392,7 @@ describe('Stack nested in Tabs render counts', () => {
 
       jest.clearAllMocks();
 
-      act(() => router.back());
+      await act(() => router.back());
 
       expect(screen.getByTestId('index')).toBeVisible();
 
@@ -401,7 +401,7 @@ describe('Stack nested in Tabs render counts', () => {
     }
   );
 
-  it('nested stack screens are always rerendered when pathname changes', () => {
+  it('nested stack screens are always rerendered when pathname changes', async () => {
     const layoutRender = jest.fn();
     const homeTabRender = jest.fn();
     const indexRender = jest.fn();
@@ -409,7 +409,7 @@ describe('Stack nested in Tabs render counts', () => {
     const twoRender = jest.fn();
     const otherRender = jest.fn();
 
-    renderRouter({
+    await renderRouter({
       _layout: function Layout() {
         layoutRender();
         usePathname();
@@ -456,7 +456,7 @@ describe('Stack nested in Tabs render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/two'));
+    await act(() => router.push('/two'));
 
     expect(screen.getByTestId('two')).toBeVisible();
 
@@ -469,7 +469,7 @@ describe('Stack nested in Tabs render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/other'));
+    await act(() => router.push('/other'));
 
     expect(screen.getByTestId('other')).toBeVisible();
 
@@ -482,7 +482,7 @@ describe('Stack nested in Tabs render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/'));
+    await act(() => router.push('/'));
 
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -496,7 +496,7 @@ describe('Stack nested in Tabs render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.back());
+    await act(() => router.back());
 
     expect(screen.getByTestId('two')).toBeVisible();
     expect(layoutRender).toHaveBeenCalledTimes(1);
@@ -509,7 +509,7 @@ describe('Stack nested in Tabs render counts', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.back());
+    await act(() => router.back());
 
     expect(screen.getByTestId('index')).toBeVisible();
 

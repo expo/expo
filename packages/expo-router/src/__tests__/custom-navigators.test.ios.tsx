@@ -30,14 +30,14 @@ function renderProcessedScreens(
   });
 }
 
-it('can render a custom navigator', () => {
+it('can render a custom navigator', async () => {
   // The default <Stack /> doesn't have any routerOptions, so we use TabRouter
   // to check that the routerOption types are correct
   const customRouter = jest.fn((options: TabRouterOptions) => {
     return TabRouter(options);
   });
 
-  renderRouter({
+  await renderRouter({
     '(app)/_layout': {
       unstable_settings: {
         initialRouteName: 'two',
@@ -71,8 +71,8 @@ it.each([
     'JS Stack',
     () => <JSStack {...({ initialRouteName: 'index' } as ComponentProps<typeof JSStack>)} />,
   ],
-])('%s uses the configured anchor instead of a stale JavaScript prop', (_, Layout) => {
-  renderRouter({
+])('%s uses the configured anchor instead of a stale JavaScript prop', async (_, Layout) => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -88,13 +88,13 @@ it.each([
     'inner/two': () => <Text testID="two" />,
   });
 
-  act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
+  await act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
 
   expect(screen.getByTestId('two')).toBeVisible();
 });
 
-it('honors the configured anchor when screens are explicitly declared', () => {
-  renderRouter({
+it('honors the configured anchor when screens are explicitly declared', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -116,32 +116,33 @@ it('honors the configured anchor when screens are explicitly declared', () => {
     'inner/two': () => <Text testID="two" />,
   });
 
-  act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
+  await act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
 
   expect(screen.getByTestId('two')).toBeVisible();
 });
 
-it('throws for an invalid configured anchor', () => {
-  expect(() =>
-    renderRouter(
-      {
-        _layout: () => (
-          <Tabs>
-            <Tabs.Screen name="index" />
-            <Tabs.Screen name="inner" />
-          </Tabs>
-        ),
-        index: () => <Text testID="root-index" />,
-        'inner/_layout': {
-          unstable_settings: { initialRouteName: 'missing' },
-          default: () => <Navigator />,
+it('throws for an invalid configured anchor', async () => {
+  await expect(
+    async () =>
+      await renderRouter(
+        {
+          _layout: () => (
+            <Tabs>
+              <Tabs.Screen name="index" />
+              <Tabs.Screen name="inner" />
+            </Tabs>
+          ),
+          index: () => <Text testID="root-index" />,
+          'inner/_layout': {
+            unstable_settings: { initialRouteName: 'missing' },
+            default: () => <Navigator />,
+          },
+          'inner/index': () => <Text testID="index" />,
+          'inner/two': () => <Text testID="two" />,
         },
-        'inner/index': () => <Text testID="index" />,
-        'inner/two': () => <Text testID="two" />,
-      },
-      { initialUrl: '/inner' }
-    )
-  ).toThrow(
+        { initialUrl: '/inner' }
+      )
+  ).rejects.toThrow(
     'The initial route name "missing" was not found in the layout at "./inner/_layout.js". Available routes are: "index", "two". Set `unstable_settings.anchor` to the name of a route in this layout.'
   );
 });
@@ -154,15 +155,15 @@ it.each([
   ['adds a duplicate screen', (screens) => [screens[0]!, screens[0]!, screens[1]!]],
 ] satisfies [string, NonNullable<Parameters<typeof withLayoutContext>[1]>][])(
   '%s',
-  (_, processScreens) => {
-    expect(() => renderProcessedScreens(processScreens)).toThrow(
+  async (_, processScreens) => {
+    await expect(async () => renderProcessedScreens(processScreens)).rejects.toThrow(
       '`processScreens` must not add, remove, rename, or duplicate screens.'
     );
   }
 );
 
-it('allows processScreens to update screen options', () => {
-  expect(() =>
+it('allows processScreens to update screen options', async () => {
+  await expect(
     renderProcessedScreens((screens) =>
       screens.map((screen) => {
         if (
@@ -175,13 +176,13 @@ it('allows processScreens to update screen options', () => {
         return { ...screen, options: { customOption: true } };
       })
     )
-  ).not.toThrow();
+  ).resolves.not.toThrow();
 });
 
-it('allows processScreens to reorder screens', () => {
-  expect(() => renderProcessedScreens((screens) => [...screens].reverse())).not.toThrow();
+it('allows processScreens to reorder screens', async () => {
+  await expect(renderProcessedScreens((screens) => [...screens].reverse())).resolves.not.toThrow();
 });
 
-it('preserves the fallback for a nullish processScreens result', () => {
-  expect(() => renderProcessedScreens(() => undefined as never)).not.toThrow();
+it('preserves the fallback for a nullish processScreens result', async () => {
+  await expect(renderProcessedScreens(() => undefined as never)).resolves.not.toThrow();
 });

@@ -51,49 +51,53 @@ describe('useAwaitedScreensIcon', () => {
     console.error = jest.fn();
   });
 
-  it('returns undefined when icon is undefined', () => {
-    const { result } = renderHook(() => useAwaitedScreensIcon(undefined));
+  it('returns undefined when icon is undefined', async () => {
+    const { result } = await renderHook(() => useAwaitedScreensIcon(undefined));
     expect(result.current).toBeUndefined();
   });
 
   describe('non-promise source', () => {
-    it('returns sf immediately when sf is provided', () => {
-      const { result } = renderHook(() => useAwaitedScreensIcon({ sf: 'square.fill' }));
+    it('returns sf immediately when sf is provided', async () => {
+      const { result } = await renderHook(() => useAwaitedScreensIcon({ sf: 'square.fill' }));
       expect(result.current).toEqual({ sf: 'square.fill' });
     });
 
-    it('returns src immediately when src is an object', () => {
+    it('returns src immediately when src is an object', async () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const { result } = renderHook(() => useAwaitedScreensIcon({ src }));
+      const { result } = await renderHook(() => useAwaitedScreensIcon({ src }));
       expect(result.current).toEqual({ src });
     });
 
-    it('returns src immediately when src is a numeric resource identifier', () => {
+    it('returns src immediately when src is a numeric resource identifier', async () => {
       const src = 123;
-      const { result } = renderHook(() => useAwaitedScreensIcon({ src }));
+      const { result } = await renderHook(() => useAwaitedScreensIcon({ src }));
       expect(result.current).toEqual({ src });
     });
 
-    it('returns src with renderingMode immediately when both are provided', () => {
+    it('returns src with renderingMode immediately when both are provided', async () => {
       const src = { uri: 'https://example.com/icon.png' };
       const icon = { src, renderingMode: 'template' as const };
-      const { result } = renderHook(() => useAwaitedScreensIcon(icon));
+      const { result } = await renderHook(() => useAwaitedScreensIcon(icon));
       expect(result.current).toEqual({ src, renderingMode: 'template' });
     });
 
-    it('returns drawable immediately when drawable is provided', () => {
+    it('returns drawable immediately when drawable is provided', async () => {
       const drawableOnly = { drawable: 'ic_launcher' } as const;
-      const { result } = renderHook(() => useAwaitedScreensIcon(drawableOnly));
+      const { result } = await renderHook(() => useAwaitedScreensIcon(drawableOnly));
       expect(result.current).toEqual(drawableOnly);
     });
   });
 
   describe('promise source', () => {
     it('returns undefined initially and resolves when src is an async function', async () => {
-      const asyncSrc = Promise.resolve({ uri: 'https://async.example/icon.png' });
-      const { result } = renderHook(() => useAwaitedScreensIcon({ src: asyncSrc }));
+      let resolveSrc!: (value: { uri: string }) => void;
+      const asyncSrc = new Promise<{ uri: string }>((resolve) => {
+        resolveSrc = resolve;
+      });
+      const { result } = await renderHook(() => useAwaitedScreensIcon({ src: asyncSrc }));
       expect(result.current).toBeUndefined();
       await act(async () => {
+        resolveSrc({ uri: 'https://async.example/icon.png' });
         await asyncSrc;
       });
       expect(result.current).toEqual({ src: { uri: 'https://async.example/icon.png' } });
@@ -105,9 +109,9 @@ describe('useAwaitedScreensIcon', () => {
         resolve = res;
       });
       const asyncSrc = promise as unknown as ImageSourcePropType;
-      const { result, unmount } = renderHook(() => useAwaitedScreensIcon({ src: asyncSrc }));
+      const { result, unmount } = await renderHook(() => useAwaitedScreensIcon({ src: asyncSrc }));
       expect(result.current).toBeUndefined();
-      unmount();
+      await unmount();
       // Resolve after unmount; ensure no exception and no state update
       await act(async () => {
         resolve({ uri: 'https://late.example/icon.png' });
@@ -117,12 +121,16 @@ describe('useAwaitedScreensIcon', () => {
     });
 
     it('preserves renderingMode when resolving a promise src', async () => {
-      const asyncSrc = Promise.resolve({ uri: 'https://async.example/icon.png' });
-      const { result } = renderHook(() =>
+      let resolveSrc!: (value: { uri: string }) => void;
+      const asyncSrc = new Promise<{ uri: string }>((resolve) => {
+        resolveSrc = resolve;
+      });
+      const { result } = await renderHook(() =>
         useAwaitedScreensIcon({ src: asyncSrc, renderingMode: 'template' })
       );
       expect(result.current).toBeUndefined();
       await act(async () => {
+        resolveSrc({ uri: 'https://async.example/icon.png' });
         await asyncSrc;
       });
       expect(result.current).toEqual({
@@ -133,7 +141,7 @@ describe('useAwaitedScreensIcon', () => {
 
     it('preserves renderingMode "original" when resolving a promise src', async () => {
       const asyncSrc = Promise.resolve({ uri: 'https://async.example/icon.png' });
-      const { result } = renderHook(() =>
+      const { result } = await renderHook(() =>
         useAwaitedScreensIcon({ src: asyncSrc, renderingMode: 'original' })
       );
       await act(async () => {
@@ -151,7 +159,7 @@ describe('useAwaitedScreensIcon', () => {
         resolveFirst = res;
       });
       const firstSrc = firstPromise as unknown as ImageSourcePropType;
-      const { result, rerender } = renderHook(
+      const { result, rerender } = await renderHook(
         ({ icon }: { icon: SymbolOrImageSource }) => useAwaitedScreensIcon(icon),
         {
           initialProps: { icon: { src: firstSrc } },
@@ -163,7 +171,7 @@ describe('useAwaitedScreensIcon', () => {
 
       // update to a synchronous source
       const nowSrc = { uri: 'https://now.example/icon.png' };
-      rerender({ icon: { src: nowSrc } });
+      await rerender({ icon: { src: nowSrc } });
       expect(result.current).toEqual({ src: nowSrc });
 
       // resolve the first promise now; the hook should not overwrite the current value

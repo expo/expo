@@ -1,6 +1,6 @@
 import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
-import { use } from 'react';
+import { act as reactAct, use, useState } from 'react';
 
 import { IsPreloadedContext } from '../../react-navigation/core/IsPreloadedContext';
 import {
@@ -11,7 +11,7 @@ import {
   ScreenRemovalPreventionSetterContext,
 } from '../removalPrevention';
 
-test('aggregates prevention across routes', () => {
+test('aggregates prevention across routes', async () => {
   const setters = new Map<string, (id: string, isPrevented: boolean) => void>();
   const routes: ReadonlySet<string>[] = [];
   function Capture({ routeKey }: { routeKey: string }) {
@@ -22,7 +22,7 @@ test('aggregates prevention across routes', () => {
     routes.push(use(GlobalRoutesWithRemovalPreventedContext)!);
     return null;
   }
-  render(
+  await render(
     <RemovalPreventionProvider>
       <PreventRemovalProvider routeKey="a">
         <Capture routeKey="a" />
@@ -34,20 +34,20 @@ test('aggregates prevention across routes', () => {
     </RemovalPreventionProvider>
   );
 
-  act(() => {
+  await act(() => {
     setters.get('a')!('first', true);
     setters.get('b')!('first', true);
   });
   expect(routes.at(-1)).toEqual(new Set(['a', 'b']));
 
-  act(() => setters.get('a')!('first', false));
+  await act(() => setters.get('a')!('first', false));
   expect(routes.at(-1)).toEqual(new Set(['b']));
 
-  act(() => setters.get('b')!('first', false));
+  await act(() => setters.get('b')!('first', false));
   expect(routes.at(-1)).toEqual(new Set());
 });
 
-test('propagates prevention from a child route to its parent route', () => {
+test('propagates prevention from a child route to its parent route', async () => {
   const wrapper = ({ children }: React.PropsWithChildren) => (
     <RemovalPreventionProvider>
       <PreventRemovalProvider routeKey="parent">
@@ -56,7 +56,7 @@ test('propagates prevention from a child route to its parent route', () => {
     </RemovalPreventionProvider>
   );
 
-  const { result } = renderHook(
+  const { result } = await renderHook(
     () => ({
       setPrevented: use(ScreenRemovalPreventionSetterContext)!,
       preventedRoutes: use(GlobalRoutesWithRemovalPreventedContext)!,
@@ -64,14 +64,14 @@ test('propagates prevention from a child route to its parent route', () => {
     { wrapper }
   );
 
-  act(() => result.current.setPrevented('guard', true));
+  await act(() => result.current.setPrevented('guard', true));
   expect(result.current.preventedRoutes).toEqual(new Set(['child', 'parent']));
 
-  act(() => result.current.setPrevented('guard', false));
+  await act(() => result.current.setPrevented('guard', false));
   expect(result.current.preventedRoutes).toEqual(new Set());
 });
 
-test('updates prevention when a child route becomes active or preloaded', () => {
+test('updates prevention when a child route becomes active or preloaded', async () => {
   const routes: ReadonlySet<string>[] = [];
   function Guard() {
     const setPrevented = use(ScreenRemovalPreventionSetterContext)!;
@@ -100,17 +100,17 @@ test('updates prevention when a child route becomes active or preloaded', () => 
     );
   }
 
-  const result = render(<Tree isPreloaded />);
+  const result = await render(<Tree isPreloaded />);
   expect(routes.at(-1)).toEqual(new Set());
 
-  result.rerender(<Tree isPreloaded={false} />);
+  await result.rerender(<Tree isPreloaded={false} />);
   expect(routes.at(-1)).toEqual(new Set(['child', 'parent']));
 
-  result.rerender(<Tree isPreloaded />);
+  await result.rerender(<Tree isPreloaded />);
   expect(routes.at(-1)).toEqual(new Set());
 });
 
-test('keeps a parent prevented while either child prevents removal with the same id', () => {
+test('keeps a parent prevented while either child prevents removal with the same id', async () => {
   const setters = new Map<string, (id: string, isPrevented: boolean) => void>();
   function Capture({ routeKey }: { routeKey: string }) {
     setters.set(routeKey, use(ScreenRemovalPreventionSetterContext)!);
@@ -129,18 +129,20 @@ test('keeps a parent prevented while either child prevents removal with the same
       {children}
     </RemovalPreventionProvider>
   );
-  const { result } = renderHook(() => use(GlobalRoutesWithRemovalPreventedContext)!, { wrapper });
+  const { result } = await renderHook(() => use(GlobalRoutesWithRemovalPreventedContext)!, {
+    wrapper,
+  });
 
-  act(() => {
+  await act(() => {
     setters.get('child-a')!('guard', true);
     setters.get('child-b')!('guard', true);
   });
-  act(() => setters.get('child-a')!('guard', false));
+  await act(() => setters.get('child-a')!('guard', false));
 
   expect(result.current).toEqual(new Set(['child-b', 'parent']));
 });
 
-test('propagates prevention through every ancestor route', () => {
+test('propagates prevention through every ancestor route', async () => {
   const wrapper = ({ children }: React.PropsWithChildren) => (
     <RemovalPreventionProvider>
       <PreventRemovalProvider routeKey="grandparent">
@@ -150,7 +152,7 @@ test('propagates prevention through every ancestor route', () => {
       </PreventRemovalProvider>
     </RemovalPreventionProvider>
   );
-  const { result } = renderHook(
+  const { result } = await renderHook(
     () => ({
       setPrevented: use(ScreenRemovalPreventionSetterContext)!,
       preventedRoutes: use(GlobalRoutesWithRemovalPreventedContext)!,
@@ -158,12 +160,12 @@ test('propagates prevention through every ancestor route', () => {
     { wrapper }
   );
 
-  act(() => result.current.setPrevented('guard', true));
+  await act(() => result.current.setPrevented('guard', true));
 
   expect(result.current.preventedRoutes).toEqual(new Set(['child', 'parent', 'grandparent']));
 });
 
-test('registers prevention for a preloaded child route when requested', () => {
+test('registers prevention for a preloaded child route when requested', async () => {
   const wrapper = ({ children }: React.PropsWithChildren) => (
     <RemovalPreventionProvider>
       <PreventRemovalProvider routeKey="parent">
@@ -173,7 +175,7 @@ test('registers prevention for a preloaded child route when requested', () => {
       </PreventRemovalProvider>
     </RemovalPreventionProvider>
   );
-  const { result } = renderHook(
+  const { result } = await renderHook(
     () => ({
       setPrevented: use(ScreenRemovalPreventionSetterContext)!,
       preventedRoutes: use(GlobalRoutesWithRemovalPreventedContext)!,
@@ -181,7 +183,7 @@ test('registers prevention for a preloaded child route when requested', () => {
     { wrapper }
   );
 
-  act(() => result.current.setPrevented('guard', true, true));
+  await act(() => result.current.setPrevented('guard', true, true));
 
   expect(result.current.preventedRoutes).toEqual(new Set(['child', 'parent']));
 });
@@ -190,11 +192,14 @@ test('keeps a route emitter until the end of the task after its provider unmount
   const action = { type: 'POP' };
   const emitRemovalEvent = jest.fn();
   let registry = null as React.ContextType<typeof GlobalRemovalEventEmitterRegistryContext>;
+  let setMounted!: (mounted: boolean) => void;
   function CaptureRegistry() {
     registry = use(GlobalRemovalEventEmitterRegistryContext);
     return null;
   }
-  function Tree({ mounted }: { mounted: boolean }) {
+  function Tree() {
+    const [mounted, setMountedState] = useState(true);
+    setMounted = setMountedState;
     return (
       <RemovalPreventionProvider>
         <CaptureRegistry />
@@ -202,9 +207,10 @@ test('keeps a route emitter until the end of the task after its provider unmount
       </RemovalPreventionProvider>
     );
   }
-  const result = render(<Tree mounted />);
+  await render(<Tree />);
 
-  result.rerender(<Tree mounted={false} />);
+  // Unmount synchronously so the emitter can be observed before the microtask that drops it runs.
+  reactAct(() => setMounted(false));
   registry!.emitRemovalEvent('x', 'removed', action);
   expect(emitRemovalEvent).toHaveBeenCalledWith('x', 'removed', action);
 

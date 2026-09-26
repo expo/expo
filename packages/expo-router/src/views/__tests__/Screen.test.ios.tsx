@@ -11,29 +11,31 @@ type HeaderTitleFunction = Extract<
 >;
 
 describe('Screen', () => {
-  it('should throw an error when name is set outside of a Layout', () => {
-    expect(() =>
-      renderRouter({
-        _layout: () => <Stack />,
-        index: () => <Stack.Screen name="index" />,
-      })
-    ).toThrow(
+  it('should throw an error when name is set outside of a Layout', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          _layout: () => <Stack />,
+          index: () => <Stack.Screen name="index" />,
+        })
+    ).rejects.toThrow(
       `The name prop on the Screen component may only be used when it is inside a Layout route`
     );
   });
-  it('should throw an error when name is set outside of a Layout, even when options are provided', () => {
-    expect(() =>
-      renderRouter({
-        _layout: () => <Stack />,
-        index: () => <Stack.Screen name="index" options={{ title: 'Test Title' }} />,
-      })
-    ).toThrow(
+  it('should throw an error when name is set outside of a Layout, even when options are provided', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          _layout: () => <Stack />,
+          index: () => <Stack.Screen name="index" options={{ title: 'Test Title' }} />,
+        })
+    ).rejects.toThrow(
       `The name prop on the Screen component may only be used when it is inside a Layout route`
     );
   });
 
-  it('should not throw an error when name is set inside a Layout', () => {
-    expect(() =>
+  it('should not throw an error when name is set inside a Layout', async () => {
+    await expect(
       renderRouter({
         _layout: () => (
           <Stack>
@@ -42,11 +44,11 @@ describe('Screen', () => {
         ),
         index: () => <View />,
       })
-    ).not.toThrow();
+    ).resolves.not.toThrow();
   });
 
-  it('should not throw an error when name is set inside a protected route with a true guard', () => {
-    expect(() =>
+  it('should not throw an error when name is set inside a protected route with a true guard', async () => {
+    await expect(
       renderRouter({
         _layout: () => (
           <Stack>
@@ -57,13 +59,13 @@ describe('Screen', () => {
         ),
         index: () => <View testID="index" />,
       })
-    ).not.toThrow();
+    ).resolves.not.toThrow();
 
     expect(screen.getByTestId('index')).toBeVisible();
   });
 
-  it('should not throw an error when name is set inside a protected route with a false guard', () => {
-    expect(() =>
+  it('should not throw an error when name is set inside a protected route with a false guard', async () => {
+    await expect(
       renderRouter({
         _layout: () => (
           <Stack>
@@ -75,14 +77,14 @@ describe('Screen', () => {
         index: () => <View testID="index" />,
         _sitemap: () => <View testID="sitemap" />,
       })
-    ).not.toThrow();
+    ).resolves.not.toThrow();
 
     expect(screen.getByTestId('sitemap')).toBeVisible();
   });
 
-  it('should set options when used inside a Layout', () => {
+  it('should set options when used inside a Layout', async () => {
     const headerTitle = jest.fn((...args: Parameters<HeaderTitleFunction>) => null);
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <Stack screenOptions={{ headerTitle }}>
           <Stack.Screen name="index" options={{ title: 'Test Title' }} />
@@ -98,9 +100,9 @@ describe('Screen', () => {
       })
     );
   });
-  it('should set options when used inside a Screen', () => {
+  it('should set options when used inside a Screen', async () => {
     const headerTitle = jest.fn((...args: Parameters<HeaderTitleFunction>) => null);
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack screenOptions={{ headerTitle }} />,
       index: () => <Stack.Screen options={{ title: 'Test Title' }} />,
     });

@@ -14,16 +14,16 @@ afterEach(() => {
   error.mockRestore();
 });
 
-it('returns the navigation container for its own router root', () => {
+it('returns the navigation container for its own router root', async () => {
   let rerenderFirstRoot: () => void = () => {};
-  const first = renderHook(() => {
+  const first = await renderHook(() => {
     const [, setRenderCount] = useState(0);
     rerenderFirstRoot = () => setRenderCount((count) => count + 1);
     return useRootNavigation();
   });
-  const second = renderHook(() => useRootNavigation());
+  const second = await renderHook(() => useRootNavigation());
 
-  act(rerenderFirstRoot);
+  await act(rerenderFirstRoot);
 
   expect(first.result.current).not.toBeNull();
   expect(first.result.current).not.toBe(second.result.current);

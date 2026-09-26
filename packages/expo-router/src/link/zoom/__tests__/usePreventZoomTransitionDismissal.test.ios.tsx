@@ -87,9 +87,9 @@ describe('usePreventZoomTransitionDismissal', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('warns when used on a modal screen', () => {
+  it('warns when used on a modal screen', async () => {
     const setDismissalBoundsRect = jest.fn();
-    renderPreventDismissal({
+    await renderPreventDismissal({
       descriptors: makeDescriptors('route-1', { presentation: 'modal' }),
       targetContext: makeTargetContext({ setDismissalBoundsRect }),
     });
@@ -100,16 +100,16 @@ describe('usePreventZoomTransitionDismissal', () => {
     expect(setDismissalBoundsRect).not.toHaveBeenCalled();
   });
 
-  it('does not warn on non-modal screen', () => {
-    renderPreventDismissal({
+  it('does not warn on non-modal screen', async () => {
+    await renderPreventDismissal({
       descriptors: makeDescriptors('route-1'),
     });
 
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it('warns when minX >= maxX', () => {
-    renderPreventDismissal({
+  it('warns when minX >= maxX', async () => {
+    await renderPreventDismissal({
       options: {
         unstable_dismissalBoundsRect: { minX: 100, maxX: 50 },
       },
@@ -120,8 +120,8 @@ describe('usePreventZoomTransitionDismissal', () => {
     );
   });
 
-  it('warns when minX equals maxX', () => {
-    renderPreventDismissal({
+  it('warns when minX equals maxX', async () => {
+    await renderPreventDismissal({
       options: {
         unstable_dismissalBoundsRect: { minX: 50, maxX: 50 },
       },
@@ -132,8 +132,8 @@ describe('usePreventZoomTransitionDismissal', () => {
     );
   });
 
-  it('warns when minY >= maxY', () => {
-    renderPreventDismissal({
+  it('warns when minY >= maxY', async () => {
+    await renderPreventDismissal({
       options: {
         unstable_dismissalBoundsRect: { minY: 200, maxY: 100 },
       },
@@ -144,9 +144,9 @@ describe('usePreventZoomTransitionDismissal', () => {
     );
   });
 
-  it('does not warn with valid rect', () => {
+  it('does not warn with valid rect', async () => {
     const setDismissalBoundsRect = jest.fn();
-    renderPreventDismissal({
+    await renderPreventDismissal({
       targetContext: makeTargetContext({ setDismissalBoundsRect }),
       options: {
         unstable_dismissalBoundsRect: { minX: 10, maxX: 200, minY: 10, maxY: 400 },
@@ -162,9 +162,9 @@ describe('usePreventZoomTransitionDismissal', () => {
     });
   });
 
-  it('does not call setDismissalBoundsRect and setOptions when hasEnabler is false', () => {
+  it('does not call setDismissalBoundsRect and setOptions when hasEnabler is false', async () => {
     const setDismissalBoundsRect = jest.fn();
-    renderPreventDismissal({
+    await renderPreventDismissal({
       targetContext: makeTargetContext({ hasEnabler: false, setDismissalBoundsRect }),
       options: {
         unstable_dismissalBoundsRect: { minX: 10, maxX: 200, minY: 10, maxY: 400 },
@@ -175,8 +175,8 @@ describe('usePreventZoomTransitionDismissal', () => {
     expect(mockSetOptions).not.toHaveBeenCalled();
   });
 
-  it('calls setOptions with `internal_gestureEnabled: false` when rect is provided', () => {
-    renderPreventDismissal({
+  it('calls setOptions with `internal_gestureEnabled: false` when rect is provided', async () => {
+    await renderPreventDismissal({
       options: {
         unstable_dismissalBoundsRect: { minX: 10, maxX: 200, minY: 10, maxY: 400 },
       },
@@ -187,27 +187,27 @@ describe('usePreventZoomTransitionDismissal', () => {
     });
   });
 
-  it('calls setOptions with `internal_gestureEnabled: undefined` when no rect and gesture enabled', () => {
-    renderPreventDismissal();
+  it('calls setOptions with `internal_gestureEnabled: undefined` when no rect and gesture enabled', async () => {
+    await renderPreventDismissal();
 
     expect(mockSetOptions).toHaveBeenCalledWith({
       [INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]: undefined,
     });
   });
 
-  it('does not update options for an unfocused preloaded route', () => {
+  it('does not update options for an unfocused preloaded route', async () => {
     mockRoute.isPreloaded = true;
     mockIsFocused.mockReturnValue(false);
 
-    renderPreventDismissal();
+    await renderPreventDismissal();
 
     expect(mockSetOptions).not.toHaveBeenCalled();
   });
 
   // maxX: 0, maxY: 0 is an impossible rect that effectively blocks all gestures
-  it('calls setDismissalBoundsRect with { maxX: 0, maxY: 0 } when gestureEnabled is false without explicit rect', () => {
+  it('calls setDismissalBoundsRect with { maxX: 0, maxY: 0 } when gestureEnabled is false without explicit rect', async () => {
     const setDismissalBoundsRect = jest.fn();
-    renderPreventDismissal({
+    await renderPreventDismissal({
       descriptors: makeDescriptors('route-1', { gestureEnabled: false }),
       targetContext: makeTargetContext({ setDismissalBoundsRect }),
     });
@@ -215,9 +215,9 @@ describe('usePreventZoomTransitionDismissal', () => {
     expect(setDismissalBoundsRect).toHaveBeenCalledWith({ maxX: 0, maxY: 0 });
   });
 
-  it('accepts partial rect with only X bounds defined', () => {
+  it('accepts partial rect with only X bounds defined', async () => {
     const setDismissalBoundsRect = jest.fn();
-    renderPreventDismissal({
+    await renderPreventDismissal({
       targetContext: makeTargetContext({ setDismissalBoundsRect }),
       options: {
         unstable_dismissalBoundsRect: { minX: 10, maxX: 200 },
@@ -228,9 +228,9 @@ describe('usePreventZoomTransitionDismissal', () => {
     expect(setDismissalBoundsRect).toHaveBeenCalledWith({ minX: 10, maxX: 200 });
   });
 
-  it('calls setDismissalBoundsRect with null on unmount', () => {
+  it('calls setDismissalBoundsRect with null on unmount', async () => {
     const setDismissalBoundsRect = jest.fn();
-    const { unmount } = renderPreventDismissal({
+    const { unmount } = await renderPreventDismissal({
       targetContext: makeTargetContext({ setDismissalBoundsRect }),
       options: {
         unstable_dismissalBoundsRect: { minX: 10, maxX: 200, minY: 10, maxY: 400 },
@@ -246,7 +246,7 @@ describe('usePreventZoomTransitionDismissal', () => {
     });
 
     setDismissalBoundsRect.mockClear();
-    unmount();
+    await unmount();
 
     expect(setDismissalBoundsRect).toHaveBeenCalledWith(null);
   });

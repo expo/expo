@@ -17,7 +17,7 @@ test('isReady returns false before the container mounts', () => {
   expect(ref.isReady()).toBe(false);
 });
 
-test('adds the listener even if container is mounted later', () => {
+test('adds the listener even if container is mounted later', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   const listener = jest.fn();
 
@@ -52,7 +52,7 @@ test('adds the listener even if container is mounted later', () => {
     </BaseNavigationContainer>
   );
 
-  render(element).update(element);
+  await (await render(element)).rerender(element);
 
   expect(listener).toHaveBeenCalledTimes(1);
 });

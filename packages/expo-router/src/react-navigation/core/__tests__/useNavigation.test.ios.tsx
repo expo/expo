@@ -10,7 +10,7 @@ beforeEach(() => {
   MockRouterKey.current = 0;
 });
 
-test('gets navigation prop from context', () => {
+test('gets navigation prop from context', async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -31,7 +31,7 @@ test('gets navigation prop from context', () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="foo" component={Test} />
@@ -40,7 +40,7 @@ test('gets navigation prop from context', () => {
   );
 });
 
-test("gets navigation's parent from context", () => {
+test("gets navigation's parent from context", async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -61,7 +61,7 @@ test("gets navigation's parent from context", () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="foo">
@@ -76,7 +76,7 @@ test("gets navigation's parent from context", () => {
   );
 });
 
-test("gets navigation's parent's parent from context", () => {
+test("gets navigation's parent's parent from context", async () => {
   expect.assertions(2);
 
   const TestNavigator = (props: any): any => {
@@ -99,7 +99,7 @@ test("gets navigation's parent's parent from context", () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="foo">
@@ -120,7 +120,7 @@ test("gets navigation's parent's parent from context", () => {
   );
 });
 
-test('throws when inside a container but outside any navigator', () => {
+test('throws when inside a container but outside any navigator', async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -142,7 +142,7 @@ test('throws when inside a container but outside any navigator', () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <Test />
       <TestNavigator>
@@ -152,7 +152,7 @@ test('throws when inside a container but outside any navigator', () => {
   );
 });
 
-test('throws when outside the navigation container', () => {
+test('throws when outside the navigation container', async () => {
   expect.assertions(1);
 
   const Test = () => {
@@ -164,5 +164,5 @@ test('throws when outside the navigation container', () => {
     return null;
   };
 
-  render(<Test />);
+  await render(<Test />);
 });

@@ -74,13 +74,13 @@ beforeEach(() => {
 // ─── tintColor ──────────────────────────────────────────────────────────────────
 
 describe('tintColor', () => {
-  test('defaults to colors.primary on iOS', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('defaults to colors.primary on iOS', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.color).toBe(DEFAULT_COLORS.primary);
   });
 
-  test('custom headerTintColor overrides default', () => {
-    const { result } = renderHook(() =>
+  test('custom headerTintColor overrides default', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTintColor: 'red' }))
     );
     expect(result.current.color).toBe('red');
@@ -90,29 +90,29 @@ describe('tintColor', () => {
 // ─── title ──────────────────────────────────────────────────────────────────────
 
 describe('title', () => {
-  test('uses route.name as fallback', () => {
-    const { result } = renderHook(() =>
+  test('uses route.name as fallback', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ route: { name: 'XYZ' } }))
     );
     expect(result.current.title).toBe('XYZ');
   });
 
-  test('title prop overrides route.name', () => {
-    const { result } = renderHook(() =>
+  test('title prop overrides route.name', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ title: 'Custom Title' }))
     );
     expect(result.current.title).toBe('Custom Title');
   });
 
-  test('headerTitle string overrides title prop', () => {
-    const { result } = renderHook(() =>
+  test('headerTitle string overrides title prop', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ title: 'Title', headerTitle: 'Header Title' }))
     );
     expect(result.current.title).toBe('Header Title');
   });
 
-  test('headerTitle function does not override title text', () => {
-    const { result } = renderHook(() =>
+  test('headerTitle function does not override title text', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ title: 'Title', headerTitle: () => <View /> }))
     );
     expect(result.current.title).toBe('Title');
@@ -122,20 +122,20 @@ describe('title', () => {
 // ─── titleColor ─────────────────────────────────────────────────────────────────
 
 describe('titleColor', () => {
-  test('defaults to colors.text when no headerTitleStyle.color or headerTintColor', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('defaults to colors.text when no headerTitleStyle.color or headerTintColor', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.titleColor).toBe(DEFAULT_COLORS.text);
   });
 
-  test('uses headerTintColor when no headerTitleStyle.color', () => {
-    const { result } = renderHook(() =>
+  test('uses headerTintColor when no headerTitleStyle.color', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTintColor: 'purple' }))
     );
     expect(result.current.titleColor).toBe('purple');
   });
 
-  test('headerTitleStyle.color overrides headerTintColor', () => {
-    const { result } = renderHook(() =>
+  test('headerTitleStyle.color overrides headerTintColor', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({ headerTintColor: 'purple', headerTitleStyle: { color: 'orange' } })
       )
@@ -147,13 +147,13 @@ describe('titleColor', () => {
 // ─── backgroundColor ────────────────────────────────────────────────────────────
 
 describe('backgroundColor', () => {
-  test('defaults to colors.card', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('defaults to colors.card', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.backgroundColor).toBe(DEFAULT_COLORS.card);
   });
 
-  test('headerStyle.backgroundColor overrides all', () => {
-    const { result } = renderHook(() =>
+  test('headerStyle.backgroundColor overrides all', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           headerStyle: { backgroundColor: 'pink' },
@@ -165,22 +165,22 @@ describe('backgroundColor', () => {
     expect(result.current.backgroundColor).toBe('pink');
   });
 
-  test('transparent when headerBackground is set', () => {
-    const { result } = renderHook(() =>
+  test('transparent when headerBackground is set', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackground: () => <View /> }))
     );
     expect(result.current.backgroundColor).toBe('transparent');
   });
 
-  test('transparent when headerTransparent is true', () => {
-    const { result } = renderHook(() =>
+  test('transparent when headerTransparent is true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true }))
     );
     expect(result.current.backgroundColor).toBe('transparent');
   });
 
-  test('transparent when headerLargeTitleEnabled on iOS', () => {
-    const { result } = renderHook(() =>
+  test('transparent when headerLargeTitleEnabled on iOS', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitleEnabled: true }))
     );
     expect(result.current.backgroundColor).toBe('transparent');
@@ -190,25 +190,29 @@ describe('backgroundColor', () => {
 // ─── hidden and visibility ──────────────────────────────────────────────────────
 
 describe('hidden and visibility', () => {
-  test('hidden is true when headerShown is false', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps({ headerShown: false })));
+  test('hidden is true when headerShown is false', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerShown: false }))
+    );
     expect(result.current.hidden).toBe(true);
   });
 
-  test('hidden is falsy when headerShown is true', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps({ headerShown: true })));
+  test('hidden is falsy when headerShown is true', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerShown: true }))
+    );
     expect(result.current.hidden).toBeFalsy();
   });
 
-  test('hideBackButton is true when headerBackVisible is false', () => {
-    const { result } = renderHook(() =>
+  test('hideBackButton is true when headerBackVisible is false', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackVisible: false }))
     );
     expect(result.current.hideBackButton).toBe(true);
   });
 
-  test('hideBackButton is falsy when headerBackVisible is not false', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('hideBackButton is falsy when headerBackVisible is not false', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.hideBackButton).toBeFalsy();
   });
 });
@@ -216,9 +220,9 @@ describe('hidden and visibility', () => {
 // ─── headerLeft/headerRight callbacks ───────────────────────────────────────────
 
 describe('headerLeft/headerRight callbacks', () => {
-  test('headerLeft receives canGoBack=true when headerBack is set', () => {
+  test('headerLeft receives canGoBack=true when headerBack is set', async () => {
     const headerLeft = jest.fn(() => null);
-    renderHook(() =>
+    await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           headerBack: { title: 'Back', href: undefined },
@@ -231,9 +235,9 @@ describe('headerLeft/headerRight callbacks', () => {
     );
   });
 
-  test('headerLeft receives canGoBack=false when headerBack is undefined', () => {
+  test('headerLeft receives canGoBack=false when headerBack is undefined', async () => {
     const headerLeft = jest.fn(() => null);
-    renderHook(() =>
+    await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBack: undefined, headerLeft: headerLeft as any }))
     );
     expect(headerLeft).toHaveBeenCalledWith(
@@ -241,9 +245,9 @@ describe('headerLeft/headerRight callbacks', () => {
     );
   });
 
-  test('headerRight receives tintColor and canGoBack', () => {
+  test('headerRight receives tintColor and canGoBack', async () => {
     const headerRight = jest.fn(() => null);
-    renderHook(() =>
+    await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           headerBack: { title: 'Back', href: undefined },
@@ -259,9 +263,9 @@ describe('headerLeft/headerRight callbacks', () => {
     );
   });
 
-  test('headerLeft label uses headerBackTitle over headerBack.title', () => {
+  test('headerLeft label uses headerBackTitle over headerBack.title', async () => {
     const headerLeft = jest.fn(() => null);
-    renderHook(() =>
+    await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           headerBack: { title: 'Back', href: undefined },
@@ -277,8 +281,8 @@ describe('headerLeft/headerRight callbacks', () => {
 // ─── hideShadow ─────────────────────────────────────────────────────────────────
 
 describe('hideShadow', () => {
-  test('true when headerShadowVisible is false', () => {
-    const { result } = renderHook(() =>
+  test('true when headerShadowVisible is false', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerShadowVisible: false }))
     );
     expect(result.current.hideShadow).toBe(true);
@@ -286,8 +290,8 @@ describe('hideShadow', () => {
 
   test.each([false, true])(
     'true when headerBackground is set and headerShadowVisible is %s',
-    (headerShadowVisible) => {
-      const { result } = renderHook(() =>
+    async (headerShadowVisible) => {
+      const { result } = await renderHook(() =>
         useHeaderConfigProps(
           defaultProps({ headerBackground: () => <View />, headerShadowVisible })
         )
@@ -296,22 +300,22 @@ describe('hideShadow', () => {
     }
   );
 
-  test('true when headerTransparent is true and headerShadowVisible is not true', () => {
-    const { result } = renderHook(() =>
+  test('true when headerTransparent is true and headerShadowVisible is not true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true }))
     );
     expect(result.current.hideShadow).toBe(true);
   });
 
-  test('false when headerTransparent is true but headerShadowVisible is true', () => {
-    const { result } = renderHook(() =>
+  test('false when headerTransparent is true but headerShadowVisible is true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true, headerShadowVisible: true }))
     );
     expect(result.current.hideShadow).toBe(false);
   });
 
-  test('false by default', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('false by default', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.hideShadow).toBeFalsy();
   });
 });
@@ -319,15 +323,15 @@ describe('hideShadow', () => {
 // ─── translucent ────────────────────────────────────────────────────────────────
 
 describe('translucent', () => {
-  test('true when headerBackground is set', () => {
-    const { result } = renderHook(() =>
+  test('true when headerBackground is set', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackground: () => <View /> }))
     );
     expect(result.current.translucent).toBe(true);
   });
 
-  test('true when headerTransparent is true', () => {
-    const { result } = renderHook(() =>
+  test('true when headerTransparent is true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTransparent: true }))
     );
     expect(result.current.translucent).toBe(true);
@@ -339,8 +343,8 @@ describe('translucent', () => {
     { headerTransparent: false, expected: false },
   ])(
     'with large title enabled and headerTransparent=$headerTransparent, translucent is $expected',
-    ({ headerTransparent, expected }) => {
-      const { result } = renderHook(() =>
+    async ({ headerTransparent, expected }) => {
+      const { result } = await renderHook(() =>
         useHeaderConfigProps(defaultProps({ headerLargeTitleEnabled: true, headerTransparent }))
       );
       expect(result.current.translucent).toBe(expected);
@@ -353,16 +357,16 @@ describe('translucent', () => {
     { headerTransparent: false, expected: false },
   ])(
     'with search bar and headerTransparent=$headerTransparent, translucent is $expected',
-    ({ headerTransparent, expected }) => {
-      const { result } = renderHook(() =>
+    async ({ headerTransparent, expected }) => {
+      const { result } = await renderHook(() =>
         useHeaderConfigProps(defaultProps({ headerSearchBarOptions: {}, headerTransparent }))
       );
       expect(result.current.translucent).toBe(expected);
     }
   );
 
-  test('false by default', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('false by default', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.translucent).toBe(false);
   });
 });
@@ -374,8 +378,8 @@ describe('backButtonDisplayMode', () => {
     jest.spyOn(Platform, 'Version', 'get').mockReturnValue('14');
   });
 
-  test('uses headerBackButtonDisplayMode on iOS 14+', () => {
-    const { result } = renderHook(() =>
+  test('uses headerBackButtonDisplayMode on iOS 14+', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackButtonDisplayMode: 'minimal' }))
     );
     expect(result.current.backButtonDisplayMode).toBe('minimal');
@@ -383,39 +387,39 @@ describe('backButtonDisplayMode', () => {
   });
 
   // TODO(@ubax): Remove fallback since we only support iOS 16+
-  test('falls back to backTitleVisible on iOS < 14', () => {
+  test('falls back to backTitleVisible on iOS < 14', async () => {
     jest.spyOn(Platform, 'Version', 'get').mockReturnValue('13');
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackButtonDisplayMode: 'minimal' }))
     );
     expect(result.current.backButtonDisplayMode).toBeUndefined();
     expect(result.current.backTitleVisible).toBe(false);
   });
 
-  test('falls back when custom backTitleFontFamily is set', () => {
-    const { result } = renderHook(() =>
+  test('falls back when custom backTitleFontFamily is set', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackTitleStyle: { fontFamily: 'CustomFont' } }))
     );
     expect(result.current.backButtonDisplayMode).toBeUndefined();
   });
 
-  test('falls back when custom backTitleFontSize is set', () => {
-    const { result } = renderHook(() =>
+  test('falls back when custom backTitleFontSize is set', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackTitleStyle: { fontSize: 18 } }))
     );
     expect(result.current.backButtonDisplayMode).toBeUndefined();
   });
 
-  test('falls back when headerBackButtonMenuEnabled is false', () => {
-    const { result } = renderHook(() =>
+  test('falls back when headerBackButtonMenuEnabled is false', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackButtonMenuEnabled: false }))
     );
     expect(result.current.backButtonDisplayMode).toBeUndefined();
   });
 
-  test('backTitleVisible is true when headerBackButtonDisplayMode is default on iOS < 14', () => {
+  test('backTitleVisible is true when headerBackButtonDisplayMode is default on iOS < 14', async () => {
     jest.spyOn(Platform, 'Version', 'get').mockReturnValue('13');
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackButtonDisplayMode: 'default' }))
     );
     expect(result.current.backTitleVisible).toBe(true);
@@ -425,15 +429,15 @@ describe('backButtonDisplayMode', () => {
 // ─── backButtonInCustomView ─────────────────────────────────────────────────────
 
 describe('backButtonInCustomView', () => {
-  test('true when headerBackVisible is true', () => {
-    const { result } = renderHook(() =>
+  test('true when headerBackVisible is true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackVisible: true }))
     );
     expect(result.current.backButtonInCustomView).toBe(true);
   });
 
-  test('false on iOS when headerTitle is a function and no headerLeft', () => {
-    const { result } = renderHook(() =>
+  test('false on iOS when headerTitle is a function and no headerLeft', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitle: () => <View /> }))
     );
     expect(result.current.backButtonInCustomView).toBeFalsy();
@@ -443,15 +447,15 @@ describe('backButtonInCustomView', () => {
 // ─── disableBackButtonMenu ──────────────────────────────────────────────────────
 
 describe('disableBackButtonMenu', () => {
-  test('true when headerBackButtonMenuEnabled is false', () => {
-    const { result } = renderHook(() =>
+  test('true when headerBackButtonMenuEnabled is false', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackButtonMenuEnabled: false }))
     );
     expect(result.current.disableBackButtonMenu).toBe(true);
   });
 
-  test('false by default', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('false by default', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.disableBackButtonMenu).toBe(false);
   });
 });
@@ -459,9 +463,9 @@ describe('disableBackButtonMenu', () => {
 // ─── direction ──────────────────────────────────────────────────────────────────
 
 describe('direction', () => {
-  test.each(['rtl', 'ltr'] as const)('uses direction from useLocale %s', (direction) => {
+  test.each(['rtl', 'ltr'] as const)('uses direction from useLocale %s', async (direction) => {
     mockedUseLocale.mockReturnValue({ direction });
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.direction).toBe(direction);
   });
 });
@@ -469,23 +473,23 @@ describe('direction', () => {
 // ─── experimental_userInterfaceStyle ────────────────────────────────────────────
 
 describe('experimental_userInterfaceStyle', () => {
-  test('returns dark when theme is dark', () => {
+  test('returns dark when theme is dark', async () => {
     mockedUseTheme.mockReturnValue({
       dark: true,
       colors: DEFAULT_COLORS,
       fonts: DEFAULT_FONTS,
     } as any);
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.experimental_userInterfaceStyle).toBe('dark');
   });
 
-  test('returns light when theme is not dark', () => {
+  test('returns light when theme is not dark', async () => {
     mockedUseTheme.mockReturnValue({
       dark: false,
       colors: DEFAULT_COLORS,
       fonts: DEFAULT_FONTS,
     } as any);
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.experimental_userInterfaceStyle).toBe('light');
   });
 });
@@ -493,15 +497,15 @@ describe('experimental_userInterfaceStyle', () => {
 // ─── largeTitleHideShadow ───────────────────────────────────────────────────────
 
 describe('largeTitleHideShadow', () => {
-  test('true when headerLargeTitleShadowVisible is false', () => {
-    const { result } = renderHook(() =>
+  test('true when headerLargeTitleShadowVisible is false', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitleShadowVisible: false }))
     );
     expect(result.current.largeTitleHideShadow).toBe(true);
   });
 
-  test('falsy when headerLargeTitleShadowVisible is not false', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('falsy when headerLargeTitleShadowVisible is not false', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.largeTitleHideShadow).toBeFalsy();
   });
 });
@@ -509,50 +513,50 @@ describe('largeTitleHideShadow', () => {
 // ─── font properties ────────────────────────────────────────────────────────────
 
 describe('font properties', () => {
-  test('titleFontSize from headerTitleStyle', () => {
-    const { result } = renderHook(() =>
+  test('titleFontSize from headerTitleStyle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitleStyle: { fontSize: 20 } }))
     );
     expect(result.current.titleFontSize).toBe(20);
   });
 
-  test('titleFontWeight from headerTitleStyle', () => {
-    const { result } = renderHook(() =>
+  test('titleFontWeight from headerTitleStyle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitleStyle: { fontWeight: 'bold' } }))
     );
     expect(result.current.titleFontWeight).toBe('bold');
   });
 
-  test('largeTitleFontSize from headerLargeTitleStyle', () => {
-    const { result } = renderHook(() =>
+  test('largeTitleFontSize from headerLargeTitleStyle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitleStyle: { fontSize: 34 } }))
     );
     expect(result.current.largeTitleFontSize).toBe(34);
   });
 
-  test('largeTitleColor from headerLargeTitleStyle', () => {
-    const { result } = renderHook(() =>
+  test('largeTitleColor from headerLargeTitleStyle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitleStyle: { color: 'red' } }))
     );
     expect(result.current.largeTitleColor).toBe('red');
   });
 
-  test('largeTitleBackgroundColor from headerLargeStyle', () => {
-    const { result } = renderHook(() =>
+  test('largeTitleBackgroundColor from headerLargeStyle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeStyle: { backgroundColor: 'blue' } }))
     );
     expect(result.current.largeTitleBackgroundColor).toBe('blue');
   });
 
-  test('backTitleFontSize from headerBackTitleStyle', () => {
-    const { result } = renderHook(() =>
+  test('backTitleFontSize from headerBackTitleStyle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackTitleStyle: { fontSize: 14 } }))
     );
     expect(result.current.backTitleFontSize).toBe(14);
   });
 
-  test('backTitleFontSize is undefined when not set', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('backTitleFontSize is undefined when not set', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     expect(result.current.backTitleFontSize).toBeUndefined();
   });
 });
@@ -562,8 +566,8 @@ describe('font properties', () => {
 describe('blurEffect', () => {
   test.each(['dark', 'light', 'systemChromeMaterial'] as const)(
     'passes through headerBlurEffect %s',
-    (blurEffect) => {
-      const { result } = renderHook(() =>
+    async (blurEffect) => {
+      const { result } = await renderHook(() =>
         useHeaderConfigProps(defaultProps({ headerBlurEffect: blurEffect }))
       );
       expect(result.current.blurEffect).toBe(blurEffect);
@@ -574,15 +578,15 @@ describe('blurEffect', () => {
 // ─── deprecated headerLargeTitle ────────────────────────────────────────────────
 
 describe('deprecated headerLargeTitle', () => {
-  test('headerLargeTitle is used as fallback for headerLargeTitleEnabled', () => {
-    const { result } = renderHook(() =>
+  test('headerLargeTitle is used as fallback for headerLargeTitleEnabled', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitle: true }))
     );
     expect(result.current.largeTitle).toBe(true);
   });
 
-  test('headerLargeTitleEnabled overrides headerLargeTitle', () => {
-    const { result } = renderHook(() =>
+  test('headerLargeTitleEnabled overrides headerLargeTitle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLargeTitle: true, headerLargeTitleEnabled: false }))
     );
     expect(result.current.largeTitle).toBe(false);
@@ -592,8 +596,8 @@ describe('deprecated headerLargeTitle', () => {
 // ─── processBarButtonItems ──────────────────────────────────────────────────────
 // TODO(@ubax): Consider refactoring processBarButtonItems to be a separate function that can be tested in isolation instead of testing it indirectly via headerLeft items
 describe('processBarButtonItems', () => {
-  test('custom type items are filtered out', () => {
-    const { result } = renderHook(() =>
+  test('custom type items are filtered out', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -604,8 +608,8 @@ describe('processBarButtonItems', () => {
     expect(result.current.headerLeftBarButtonItems).toEqual([]);
   });
 
-  test('spacing type passes through', () => {
-    const { result } = renderHook(() =>
+  test('spacing type passes through', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -616,9 +620,9 @@ describe('processBarButtonItems', () => {
     expect(result.current.headerLeftBarButtonItems).toEqual([{ type: 'spacing', spacing: 10 }]);
   });
 
-  test('spacing type throws when spacing prop is missing', () => {
-    expect(() => {
-      renderHook(() =>
+  test('spacing type throws when spacing prop is missing', async () => {
+    await expect(async () => {
+      await renderHook(() =>
         useHeaderConfigProps(
           defaultProps({
             unstable_headerLeftItems: () =>
@@ -626,12 +630,12 @@ describe('processBarButtonItems', () => {
           })
         )
       );
-    }).toThrow("Spacing item must have a 'spacing' property");
+    }).rejects.toThrow("Spacing item must have a 'spacing' property");
   });
 
-  test('button type transforms label to title and adds index', () => {
+  test('button type transforms label to title and adds index', async () => {
     const onPress = jest.fn();
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -651,8 +655,8 @@ describe('processBarButtonItems', () => {
     expect((item as any).label).toBeUndefined();
   });
 
-  test('button icon: image type with tinted (default) transforms to templateSource', () => {
-    const { result } = renderHook(() =>
+  test('button icon: image type with tinted (default) transforms to templateSource', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -671,8 +675,8 @@ describe('processBarButtonItems', () => {
     expect(item.icon).toEqual({ type: 'templateSource', templateSource: { uri: 'icon.png' } });
   });
 
-  test('button icon: image type with tinted=false transforms to imageSource', () => {
-    const { result } = renderHook(() =>
+  test('button icon: image type with tinted=false transforms to imageSource', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -691,9 +695,9 @@ describe('processBarButtonItems', () => {
     expect(item.icon).toEqual({ type: 'imageSource', imageSource: { uri: 'icon.png' } });
   });
 
-  test('button icon: non-image type passes through', () => {
+  test('button icon: non-image type passes through', async () => {
     const icon = { type: 'sfSymbol' as const, name: 'star' };
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -705,9 +709,9 @@ describe('processBarButtonItems', () => {
     expect(item.icon).toEqual(icon);
   });
 
-  test('menu type transforms menu properties', () => {
+  test('menu type transforms menu properties', async () => {
     const onPress = jest.fn();
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -732,9 +736,9 @@ describe('processBarButtonItems', () => {
     expect(item.menu.items[0].title).toBe('Delete');
   });
 
-  test('menu type throws when menu prop is missing', () => {
-    expect(() => {
-      renderHook(() =>
+  test('menu type throws when menu prop is missing', async () => {
+    await expect(async () => {
+      await renderHook(() =>
         useHeaderConfigProps(
           defaultProps({
             unstable_headerLeftItems: () =>
@@ -742,12 +746,12 @@ describe('processBarButtonItems', () => {
           })
         )
       );
-    }).toThrow("Menu item must have a 'menu' property");
+    }).rejects.toThrow("Menu item must have a 'menu' property");
   });
 
-  test('invalid type throws', () => {
-    expect(() => {
-      renderHook(() =>
+  test('invalid type throws', async () => {
+    await expect(async () => {
+      await renderHook(() =>
         useHeaderConfigProps(
           defaultProps({
             unstable_headerLeftItems: () =>
@@ -755,11 +759,11 @@ describe('processBarButtonItems', () => {
           })
         )
       );
-    }).toThrow('Invalid item type');
+    }).rejects.toThrow('Invalid item type');
   });
 
-  test('badge value is stringified', () => {
-    const { result } = renderHook(() =>
+  test('badge value is stringified', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -773,8 +777,8 @@ describe('processBarButtonItems', () => {
     expect(item.badge.value).toBe('5');
   });
 
-  test('badge backgroundColor defaults to colors.notification', () => {
-    const { result } = renderHook(() =>
+  test('badge backgroundColor defaults to colors.notification', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -788,8 +792,8 @@ describe('processBarButtonItems', () => {
     expect(item.badge.style.backgroundColor).toBe(DEFAULT_COLORS.notification);
   });
 
-  test('badge backgroundColor uses badge.style.backgroundColor when provided', () => {
-    const { result } = renderHook(() =>
+  test('badge backgroundColor uses badge.style.backgroundColor when provided', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -808,8 +812,8 @@ describe('processBarButtonItems', () => {
     expect(item.badge.style.backgroundColor).toBe('yellow');
   });
 
-  test('badge text color is black for light backgrounds', () => {
-    const { result } = renderHook(() =>
+  test('badge text color is black for light backgrounds', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -828,8 +832,8 @@ describe('processBarButtonItems', () => {
     expect(item.badge.style.color).toBe('black');
   });
 
-  test('badge text color is white for dark backgrounds', () => {
-    const { result } = renderHook(() =>
+  test('badge text color is white for dark backgrounds', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -848,8 +852,8 @@ describe('processBarButtonItems', () => {
     expect(item.badge.style.color).toBe('white');
   });
 
-  test('multiselectable undefined produces singleSelection true', () => {
-    const { result } = renderHook(() =>
+  test('multiselectable undefined produces singleSelection true', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -870,8 +874,8 @@ describe('processBarButtonItems', () => {
     expect(item.menu.singleSelection).toBe(true);
   });
 
-  test('labelStyle is merged onto titleStyle', () => {
-    const { result } = renderHook(() =>
+  test('labelStyle is merged onto titleStyle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -895,9 +899,9 @@ describe('processBarButtonItems', () => {
 // ─── getMenuItem (via menu items) ───────────────────────────────────────────────
 // TODO(@ubax): Consider refactoring getMenuItem to be a separate function that can be tested in isolation instead of testing it indirectly via headerLeft items
 describe('getMenuItem', () => {
-  test('action item transforms label, description, and icon', () => {
+  test('action item transforms label, description, and icon', async () => {
     const onPress = jest.fn();
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -930,8 +934,8 @@ describe('getMenuItem', () => {
     expect(menuItem.description).toBeUndefined();
   });
 
-  test('submenu transforms label, inline, multiselectable, layout', () => {
-    const { result } = renderHook(() =>
+  test('submenu transforms label, inline, multiselectable, layout', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -964,8 +968,8 @@ describe('getMenuItem', () => {
     expect(submenu.displayAsPalette).toBe(true);
   });
 
-  test('submenu recursively processes nested items', () => {
-    const { result } = renderHook(() =>
+  test('submenu recursively processes nested items', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -1002,8 +1006,8 @@ describe('getMenuItem', () => {
     expect(leaf.title).toBe('Leaf');
   });
 
-  test('submenu icon is transformed via transformIcon', () => {
-    const { result } = renderHook(() =>
+  test('submenu icon is transformed via transformIcon', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -1035,8 +1039,8 @@ describe('getMenuItem', () => {
 // ─── rightItems ─────────────────────────────────────────────────────────────────
 
 describe('rightItems', () => {
-  test('reversed in headerRightBarButtonItems', () => {
-    const { result } = renderHook(() =>
+  test('reversed in headerRightBarButtonItems', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerRightItems: () =>
@@ -1052,13 +1056,13 @@ describe('rightItems', () => {
     expect((items[1] as any).title).toBe('First');
   });
 
-  test('original array is not mutated by reversal', () => {
+  test('original array is not mutated by reversal', async () => {
     const items: NativeStackHeaderItem[] = [
       { type: 'button', label: 'First', onPress: jest.fn() } as NativeStackHeaderItem,
       { type: 'button', label: 'Second', onPress: jest.fn() } as NativeStackHeaderItem,
     ];
     const itemsCopy = [...items];
-    renderHook(() =>
+    await renderHook(() =>
       useHeaderConfigProps(defaultProps({ unstable_headerRightItems: () => items }))
     );
     expect(items[0]).toBe(itemsCopy[0]);
@@ -1069,8 +1073,8 @@ describe('rightItems', () => {
 // ─── children rendering (iOS) ───────────────────────────────────────────────────
 
 describe('children rendering', () => {
-  test('leftItems custom items render in ScreenStackHeaderLeftView', () => {
-    const { result } = renderHook(() =>
+  test('leftItems custom items render in ScreenStackHeaderLeftView', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -1078,31 +1082,31 @@ describe('children rendering', () => {
         })
       )
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const leftView = getByTestId('ScreenStackHeaderLeftView');
     expect(within(leftView).getByTestId('left-custom')).toBeTruthy();
   });
 
-  test('falls back to headerLeftElement when no leftItems', () => {
-    const { result } = renderHook(() =>
+  test('falls back to headerLeftElement when no leftItems', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerLeft: () => <View testID="header-left" /> }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const leftView = getByTestId('ScreenStackHeaderLeftView');
     expect(within(leftView).getByTestId('header-left')).toBeTruthy();
   });
 
-  test('headerTitle function renders in ScreenStackHeaderCenterView', () => {
-    const { result } = renderHook(() =>
+  test('headerTitle function renders in ScreenStackHeaderCenterView', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitle: () => <View testID="custom-title" /> }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const centerView = getByTestId('ScreenStackHeaderCenterView');
     expect(within(centerView).getByTestId('custom-title')).toBeTruthy();
   });
 
-  test('rightItems custom items render in ScreenStackHeaderRightView', () => {
-    const { result } = renderHook(() =>
+  test('rightItems custom items render in ScreenStackHeaderRightView', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerRightItems: () =>
@@ -1112,13 +1116,13 @@ describe('children rendering', () => {
         })
       )
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const rightView = getByTestId('ScreenStackHeaderRightView');
     expect(within(rightView).getByTestId('right-custom')).toBeTruthy();
   });
 
-  test('non-custom leftItems render nothing in children', () => {
-    const { result } = renderHook(() =>
+  test('non-custom leftItems render nothing in children', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           unstable_headerLeftItems: () =>
@@ -1126,49 +1130,49 @@ describe('children rendering', () => {
         })
       )
     );
-    const { queryByTestId } = render(<View>{result.current.children}</View>);
+    const { queryByTestId } = await render(<View>{result.current.children}</View>);
     expect(queryByTestId('ScreenStackHeaderLeftView')).toBeNull();
   });
 
-  test('search bar rendered when options provided', () => {
-    const { result } = renderHook(() =>
+  test('search bar rendered when options provided', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerSearchBarOptions: { placeholder: 'Search' } }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     const searchBarView = getByTestId('ScreenStackHeaderSearchBarView');
     expect(within(searchBarView).getByTestId('SearchBar')).toBeTruthy();
   });
 
-  test('search bar not rendered when options not provided', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
-    const { queryByTestId } = render(<View>{result.current.children}</View>);
+  test('search bar not rendered when options not provided', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    const { queryByTestId } = await render(<View>{result.current.children}</View>);
     expect(queryByTestId('ScreenStackHeaderSearchBarView')).toBeNull();
   });
 
-  test('headerBackIcon renders ScreenStackHeaderBackButtonImage', () => {
-    const { result } = renderHook(() =>
+  test('headerBackIcon renders ScreenStackHeaderBackButtonImage', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackIcon: { source: { uri: 'back.png' } } as any }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
     expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'back.png',
     });
   });
 
-  test('headerBackImageSource renders ScreenStackHeaderBackButtonImage', () => {
-    const { result } = renderHook(() =>
+  test('headerBackImageSource renders ScreenStackHeaderBackButtonImage', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackImageSource: { uri: 'back2.png' } as any }))
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
     expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'back2.png',
     });
   });
 
-  test('headerBackIcon.source takes precedence over headerBackImageSource', () => {
-    const { result } = renderHook(() =>
+  test('headerBackIcon.source takes precedence over headerBackImageSource', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(
         defaultProps({
           headerBackIcon: { source: { uri: 'icon.png' } } as any,
@@ -1176,7 +1180,7 @@ describe('children rendering', () => {
         })
       )
     );
-    const { getByTestId } = render(<>{result.current.children}</>);
+    const { getByTestId } = await render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
     expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'icon.png',
@@ -1187,15 +1191,15 @@ describe('children rendering', () => {
 // ─── titleFontWeight stringification ────────────────────────────────────────────
 
 describe('titleFontWeight stringification', () => {
-  test('titleFontWeight is stringified', () => {
-    const { result } = renderHook(() =>
+  test('titleFontWeight is stringified', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTitleStyle: { fontWeight: '700' } }))
     );
     expect(result.current.titleFontWeight).toBe('700');
   });
 
-  test('titleFontWeight defaults to theme font weight (stringified)', () => {
-    const { result } = renderHook(() => useHeaderConfigProps(defaultProps()));
+  test('titleFontWeight defaults to theme font weight (stringified)', async () => {
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
     // On iOS, default title font is 'bold' with fontWeight from DEFAULT_FONTS
     expect(result.current.titleFontWeight).toBe(DEFAULT_FONTS.bold.fontWeight);
   });
@@ -1204,8 +1208,8 @@ describe('titleFontWeight stringification', () => {
 // ─── topInsetEnabled ────────────────────────────────────────────────────────────
 
 describe('topInsetEnabled', () => {
-  test('passes through headerTopInsetEnabled', () => {
-    const { result } = renderHook(() =>
+  test('passes through headerTopInsetEnabled', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerTopInsetEnabled: false }))
     );
     expect(result.current.topInsetEnabled).toBe(false);
@@ -1215,8 +1219,8 @@ describe('topInsetEnabled', () => {
 // ─── backTitle ──────────────────────────────────────────────────────────────────
 
 describe('backTitle', () => {
-  test('passes through headerBackTitle', () => {
-    const { result } = renderHook(() =>
+  test('passes through headerBackTitle', async () => {
+    const { result } = await renderHook(() =>
       useHeaderConfigProps(defaultProps({ headerBackTitle: 'Go Back' }))
     );
     expect(result.current.backTitle).toBe('Go Back');

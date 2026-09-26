@@ -1,6 +1,6 @@
 import { render, renderHook } from '@testing-library/react-native';
 import { isValidElement } from 'react';
-import { View } from 'react-native';
+import { Text } from 'react-native';
 
 import { NativeTabs } from '../../NativeTabs';
 import { NativeTabsBottomAccessory } from '../../common/elements';
@@ -8,16 +8,18 @@ import { BottomAccessoryPlacementContext } from '../../hooks';
 import { useBottomAccessoryFunctionFromBottomAccessories } from '../bottomAccessory';
 
 describe('useBottomAccessoryFunctionFromBottomAccessories', () => {
-  it('returns undefined when given undefined', () => {
-    const { result } = renderHook(() => useBottomAccessoryFunctionFromBottomAccessories(undefined));
+  it('returns undefined when given undefined', async () => {
+    const { result } = await renderHook(() =>
+      useBottomAccessoryFunctionFromBottomAccessories(undefined)
+    );
 
     expect(result.current).toBeUndefined();
   });
 
-  it('returns a function that wraps the accessory children in BottomAccessoryPlacementContext with correct value', () => {
+  it('returns a function that wraps the accessory children in BottomAccessoryPlacementContext with correct value', async () => {
     function TestContent() {
       const value = NativeTabs.BottomAccessory.usePlacement();
-      return <View testID={`test-accessory-${value}`}>{value}</View>;
+      return <Text testID={`test-accessory-${value}`}>{value}</Text>;
     }
     const accessory = (
       <NativeTabsBottomAccessory>
@@ -25,7 +27,9 @@ describe('useBottomAccessoryFunctionFromBottomAccessories', () => {
       </NativeTabsBottomAccessory>
     );
 
-    const { result } = renderHook(() => useBottomAccessoryFunctionFromBottomAccessories(accessory));
+    const { result } = await renderHook(() =>
+      useBottomAccessoryFunctionFromBottomAccessories(accessory)
+    );
 
     expect(result.current).toBeDefined();
     const bottomAccessoryFn = result.current!;
@@ -47,19 +51,19 @@ describe('useBottomAccessoryFunctionFromBottomAccessories', () => {
     expect(inlineResult.type).toBe(BottomAccessoryPlacementContext);
     if (inlineResult.type !== BottomAccessoryPlacementContext) throw new Error();
 
-    const { getByTestId: getByTestIdRegular } = render(regularResult);
-    const { getByTestId: getByTestIdInline } = render(inlineResult);
+    const { getByTestId: getByTestIdRegular } = await render(regularResult);
+    const { getByTestId: getByTestIdInline } = await render(inlineResult);
 
     expect(getByTestIdRegular('test-accessory-regular')).toBeDefined();
     expect(getByTestIdInline('test-accessory-inline')).toBeDefined();
   });
 
   // Test memoization
-  it('memoizes the result and only recalculates when accessory changes', () => {
-    const firstContent = <View>First</View>;
+  it('memoizes the result and only recalculates when accessory changes', async () => {
+    const firstContent = <Text>First</Text>;
     const accessory = <NativeTabsBottomAccessory>{firstContent}</NativeTabsBottomAccessory>;
 
-    const { result, rerender } = renderHook(
+    const { result, rerender } = await renderHook(
       ({ acc }: { acc: typeof accessory }) => useBottomAccessoryFunctionFromBottomAccessories(acc),
       { initialProps: { acc: accessory } }
     );
@@ -67,21 +71,21 @@ describe('useBottomAccessoryFunctionFromBottomAccessories', () => {
     const firstResult = result.current;
 
     // Rerender with same accessory
-    rerender({ acc: accessory });
+    await rerender({ acc: accessory });
     expect(result.current).toBe(firstResult);
 
     // Rerender with different accessory
     const newAccessory = (
       <NativeTabsBottomAccessory>
-        <View>New</View>
+        <Text>New</Text>
       </NativeTabsBottomAccessory>
     );
-    rerender({ acc: newAccessory });
+    await rerender({ acc: newAccessory });
     expect(result.current).not.toBe(firstResult);
 
     // Rerender with undefined
     // Intentionally passing undefined to test the hook behavior
-    rerender({ acc: undefined as unknown as typeof accessory });
+    await rerender({ acc: undefined as unknown as typeof accessory });
     expect(result.current).toBeUndefined();
   });
 });

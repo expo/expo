@@ -5,7 +5,7 @@ import { BackHandler } from 'react-native';
 import type { NavigationContainerRef, ParamListBase } from '../../react-navigation/native';
 import { useBackButton } from '../useBackButton';
 
-test('a second hardware back press observes the first synchronous pop', () => {
+test('a second hardware back press observes the first synchronous pop', async () => {
   let onBackPress: (() => boolean | null | undefined) | undefined;
   const remove = jest.fn();
   jest.spyOn(BackHandler, 'addEventListener').mockImplementation((_, listener) => {
@@ -26,12 +26,12 @@ test('a second hardware back press observes the first synchronous pop', () => {
     } as unknown as NavigationContainerRef<ParamListBase>,
   } as RefObject<NavigationContainerRef<ParamListBase>>;
 
-  const { unmount } = renderHook(() => useBackButton(ref));
+  const { unmount } = await renderHook(() => useBackButton(ref));
 
   expect(onBackPress?.()).toBe(true);
   expect(onBackPress?.()).toBe(false);
   expect(dispatchSync).toHaveBeenCalledTimes(1);
 
-  unmount();
+  await unmount();
   expect(remove).toHaveBeenCalledTimes(1);
 });

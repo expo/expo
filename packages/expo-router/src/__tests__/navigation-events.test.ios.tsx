@@ -32,7 +32,7 @@ describe('AnalyticsListeners event timing', () => {
     return events;
   }
 
-  it('emits pagePreloaded after the preloaded screen content has committed', () => {
+  it('emits pagePreloaded after the preloaded screen content has committed', async () => {
     const order: string[] = [];
     const cleanup = unstable_navigationEvents.addListener('pagePreloaded', () =>
       order.push('pagePreloaded')
@@ -46,13 +46,13 @@ describe('AnalyticsListeners event timing', () => {
       return <Text testID="details-content">Details</Text>;
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <Text testID="home-content">Home</Text>,
       details: DetailsScreen,
     });
 
-    act(() => router.prefetch('/details'));
+    await act(() => router.prefetch('/details'));
 
     const preloadIdx = order.indexOf('pagePreloaded');
     const commitIdx = order.indexOf('details-committed');
@@ -60,7 +60,7 @@ describe('AnalyticsListeners event timing', () => {
     expect(preloadIdx).toBeGreaterThan(commitIdx);
   });
 
-  it('emits pageFocused after the focused screen content has committed', () => {
+  it('emits pageFocused after the focused screen content has committed', async () => {
     const order: string[] = [];
     listenForPageFocused(() => order.push('pageFocused'));
 
@@ -71,7 +71,7 @@ describe('AnalyticsListeners event timing', () => {
       return <Text testID="home-content">Home</Text>;
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: HomeScreen,
     });
@@ -83,10 +83,10 @@ describe('AnalyticsListeners event timing', () => {
     expect(focusIdx).toBeGreaterThan(commitIdx);
   });
 
-  it('does not re-emit pageFocused on plain re-renders of the focused screen', () => {
+  it('does not re-emit pageFocused on plain re-renders of the focused screen', async () => {
     const events = listenForPageFocused();
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <Text testID="home-content">Home</Text>,
     });
@@ -95,16 +95,16 @@ describe('AnalyticsListeners event timing', () => {
     expect(events.at(0)?.pathname).toBe('/');
 
     // Force a re-render via a no-op setParams (same focused screen, fresh render pass)
-    act(() => router.setParams({ ping: '1' }));
-    act(() => router.setParams({ ping: '2' }));
+    await act(() => router.setParams({ ping: '1' }));
+    await act(() => router.setParams({ ping: '2' }));
 
     expect(events).toHaveLength(1);
   });
 
-  it('re-emits pageFocused when the screen is re-focused after a push/pop', () => {
+  it('re-emits pageFocused when the screen is re-focused after a push/pop', async () => {
     const events = listenForPageFocused();
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => <Text testID="home-content">Home</Text>,
       details: () => <Text testID="details-content">Details</Text>,
@@ -113,12 +113,12 @@ describe('AnalyticsListeners event timing', () => {
     expect(events).toHaveLength(1);
     expect(events.at(0)?.pathname).toBe('/');
 
-    act(() => router.push('/details'));
+    await act(() => router.push('/details'));
     expect(screen.getByTestId('details-content')).toBeVisible();
     expect(events).toHaveLength(2);
     expect(events.at(1)?.pathname).toBe('/details');
 
-    act(() => router.back());
+    await act(() => router.back());
     expect(screen.getByTestId('home-content')).toBeVisible();
     expect(events).toHaveLength(3);
     expect(events.at(2)?.pathname).toBe('/');

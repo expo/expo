@@ -7,8 +7,8 @@ import { useSearchParams } from '../useSearchParams';
 import { renderHook } from './renderHook';
 
 describe(useSearchParams, () => {
-  it(`return params of deeply nested routes`, () => {
-    const { result } = renderHook(() => useSearchParams(), ['[fruit]/[shape]/[...veg?]'], {
+  it(`return params of deeply nested routes`, async () => {
+    const { result } = await renderHook(() => useSearchParams(), ['[fruit]/[shape]/[...veg?]'], {
       initialUrl: '/apple/square',
     });
 
@@ -17,7 +17,7 @@ describe(useSearchParams, () => {
       ['shape', 'square'],
     ]);
 
-    act(() => router.push('/banana/circle/carrot'));
+    await act(() => router.push('/banana/circle/carrot'));
 
     expect([...result.current.entries()]).toEqual([
       ['fruit', 'banana'],
@@ -26,8 +26,8 @@ describe(useSearchParams, () => {
     ]);
   });
 
-  it(`has a getAll function`, () => {
-    const { result } = renderHook(() => useSearchParams(), ['index'], {
+  it(`has a getAll function`, async () => {
+    const { result } = await renderHook(() => useSearchParams(), ['index'], {
       initialUrl: '/?test=1&test=2',
     });
 
@@ -38,9 +38,9 @@ describe(useSearchParams, () => {
     expect(result.current.getAll('test')).toEqual(['1', '2']);
   });
 
-  it('includes screen and params in global search params', () => {
+  it('includes screen and params in global search params', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { result } = renderHook(() => useSearchParams({ global: true }), ['index'], {
+    const { result } = await renderHook(() => useSearchParams({ global: true }), ['index'], {
       initialUrl: '/?screen=feed&params=value',
     });
 
@@ -52,19 +52,19 @@ describe(useSearchParams, () => {
     warn.mockRestore();
   });
 
-  it(`cannot set params`, () => {
-    const { result } = renderHook(() => useSearchParams(), ['index'], {
+  it(`cannot set params`, async () => {
+    const { result } = await renderHook(() => useSearchParams(), ['index'], {
       initialUrl: '/?test=1&test=2',
     });
 
     expect(() => result.current.set('test', '3')).toThrow();
   });
 
-  it('is local by default', () => {
+  it('is local by default', async () => {
     const results1: [string, string][] = [];
     const results2: [string, string][] = [];
 
-    renderRouter(
+    await renderRouter(
       {
         index: () => null,
         '[id]/_layout': () => <Slot />,
@@ -84,13 +84,13 @@ describe(useSearchParams, () => {
     );
 
     expect(results1).toEqual([['id', '1']]);
-    act(() => router.push('/2'));
+    await act(() => router.push('/2'));
     expect(results1).toEqual([
       ['id', '1'],
       ['id', '2'],
     ]);
 
-    act(() => router.push('/3/apple'));
+    await act(() => router.push('/3/apple'));
     // The first screen has not rerendered
     expect(results1).toEqual([
       ['id', '1'],
@@ -102,13 +102,13 @@ describe(useSearchParams, () => {
     ]);
   });
 
-  it('cannot change between local and global between renders', () => {
+  it('cannot change between local and global between renders', async () => {
     const warn = console.warn;
     console.warn = jest.fn();
     const error = console.error;
     console.error = jest.fn();
 
-    renderRouter(
+    await renderRouter(
       {
         '[global]': function Index() {
           const [global, setGlobal] = React.useState(true);

@@ -40,10 +40,10 @@ const persistedState = {
   ],
 };
 
-test('accepts a complete persisted state for a typeless router', () => {
+test('accepts a complete persisted state for a typeless router', async () => {
   const navigation = createNavigationContainerRef<ParamListBase>();
 
-  render(
+  await render(
     <BaseNavigationContainer ref={navigation} initialState={persistedState}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>

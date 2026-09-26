@@ -79,9 +79,9 @@ describe('ZoomTransitionEnabler', () => {
     mockUseIsPreview.mockReturnValue(false);
   });
 
-  it('passes { maxX: 0, maxY: 0 } when gestureEnabled is false and no hook-set rect', () => {
+  it('passes { maxX: 0, maxY: 0 } when gestureEnabled is false and no hook-set rect', async () => {
     const routeKey = 'route-1';
-    renderEnabler({
+    await renderEnabler({
       routeKey,
       descriptors: makeDescriptors(routeKey, { gestureEnabled: false }),
     });
@@ -92,9 +92,9 @@ describe('ZoomTransitionEnabler', () => {
     expect(props.zoomTransitionSourceIdentifier).toBe('source-123');
   });
 
-  it('passes null when gestureEnabled is true', () => {
+  it('passes null when gestureEnabled is true', async () => {
     const routeKey = 'route-1';
-    renderEnabler({
+    await renderEnabler({
       routeKey,
       descriptors: makeDescriptors(routeKey, { gestureEnabled: true }),
     });
@@ -104,9 +104,9 @@ describe('ZoomTransitionEnabler', () => {
     expect(props.dismissalBoundsRect).toBeNull();
   });
 
-  it('passes null when gestureEnabled is undefined', () => {
+  it('passes null when gestureEnabled is undefined', async () => {
     const routeKey = 'route-1';
-    renderEnabler({
+    await renderEnabler({
       routeKey,
       descriptors: makeDescriptors(routeKey),
     });
@@ -116,10 +116,10 @@ describe('ZoomTransitionEnabler', () => {
     expect(props.dismissalBoundsRect).toBeNull();
   });
 
-  it('hook-set rect takes priority over gestureEnabled: false', () => {
+  it('hook-set rect takes priority over gestureEnabled: false', async () => {
     const routeKey = 'route-1';
     const customRect = { minX: 10, maxX: 200, minY: 20, maxY: 400 };
-    renderEnabler({
+    await renderEnabler({
       routeKey,
       descriptors: makeDescriptors(routeKey, { gestureEnabled: false }),
       dismissalBoundsRect: customRect,
@@ -130,9 +130,9 @@ describe('ZoomTransitionEnabler', () => {
     expect(props.dismissalBoundsRect).toEqual(customRect);
   });
 
-  it('passes null when no descriptor exists for route key', () => {
+  it('passes null when no descriptor exists for route key', async () => {
     const routeKey = 'route-1';
-    renderEnabler({
+    await renderEnabler({
       routeKey,
       descriptors: {}, // no descriptor for route-1
     });
@@ -142,12 +142,12 @@ describe('ZoomTransitionEnabler', () => {
     expect(props.dismissalBoundsRect).toBeNull();
   });
 
-  it('calls addEnabler on mount and removeEnabler on unmount', () => {
+  it('calls addEnabler on mount and removeEnabler on unmount', async () => {
     const addEnabler = jest.fn();
     const removeEnabler = jest.fn();
     const routeKey = 'route-1';
 
-    const { unmount } = renderEnabler({
+    const { unmount } = await renderEnabler({
       routeKey,
       descriptors: makeDescriptors(routeKey),
       addEnabler,
@@ -158,7 +158,7 @@ describe('ZoomTransitionEnabler', () => {
     expect(removeEnabler).not.toHaveBeenCalled();
 
     jest.clearAllMocks();
-    unmount();
+    await unmount();
 
     expect(removeEnabler).toHaveBeenCalledTimes(1);
     expect(addEnabler).not.toHaveBeenCalled();

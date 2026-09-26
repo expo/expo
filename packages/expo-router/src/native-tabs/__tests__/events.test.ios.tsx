@@ -81,10 +81,10 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-it('emits tabPress event onNativeFocusChange', () => {
+it('emits tabPress event onNativeFocusChange', async () => {
   const indexTabPressHandler = jest.fn();
   const secondTabPressHandler = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -127,7 +127,7 @@ it('emits tabPress event onNativeFocusChange', () => {
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: indexTabKey,
       provenance: 0,
@@ -137,14 +137,14 @@ it('emits tabPress event onNativeFocusChange', () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(1);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: secondTabKey,
       provenance: 0,
@@ -154,14 +154,14 @@ it('emits tabPress event onNativeFocusChange', () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: secondTabKey,
       provenance: 0,
@@ -171,7 +171,7 @@ it('emits tabPress event onNativeFocusChange', () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
@@ -182,7 +182,7 @@ it('does not pop stack on repeated tab press', async () => {
   const indexTabPressHandler = jest.fn();
   const aIndexTabPressHandler = jest.fn();
   const aBTabPressHandler = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -237,7 +237,7 @@ it('does not pop stack on repeated tab press', async () => {
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aBTabPressHandler).toHaveBeenCalledTimes(0);
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: indexTabKey,
       provenance: 0,
@@ -247,14 +247,14 @@ it('does not pop stack on repeated tab press', async () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(1);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: aTabKey,
       provenance: 0,
@@ -264,14 +264,14 @@ it('does not pop stack on repeated tab press', async () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   // The events are only emitted in tabs, so they are not propagated to stack children
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aBTabPressHandler).toHaveBeenCalledTimes(0);
 
-  act(() => {
+  await act(() => {
     router.push('/a/b');
   });
 
@@ -279,7 +279,7 @@ it('does not pop stack on repeated tab press', async () => {
 
   jest.clearAllMocks();
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: aTabKey,
       provenance: 0,
@@ -289,7 +289,7 @@ it('does not pop stack on repeated tab press', async () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);
@@ -298,10 +298,10 @@ it('does not pop stack on repeated tab press', async () => {
   expect(screen).toHavePathname('/a/b');
 });
 
-it('emits tabPress with isPrevented and does not navigate when a disabled tab is tapped', () => {
+it('emits tabPress with isPrevented and does not navigate when a disabled tab is tapped', async () => {
   const indexTabPressHandler = jest.fn();
   const secondTabPressHandler = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -341,7 +341,7 @@ it('emits tabPress with isPrevented and does not navigate when a disabled tab is
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
 
-  triggerTabSelectionPrevented({
+  await triggerTabSelectionPrevented({
     nativeEvent: {
       // `selectedScreenKey` is the still-active tab; `preventedScreenKey` is the disabled tab tapped.
       selectedScreenKey: indexTabKey,
@@ -350,7 +350,7 @@ it('emits tabPress with isPrevented and does not navigate when a disabled tab is
     },
   } as TabSelectionPreventedNativeEvent);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   // The prevented (disabled) tab's listener fires; the focused tab's does not (target isolation).
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
@@ -364,9 +364,9 @@ it('emits tabPress with isPrevented and does not navigate when a disabled tab is
   expect(screen).toHavePathname('/');
 });
 
-it('emits tabPress with isPrevented false on a normal native selection', () => {
+it('emits tabPress with isPrevented false on a normal native selection', async () => {
   const secondTabPressHandler = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -388,7 +388,7 @@ it('emits tabPress with isPrevented false on a normal native selection', () => {
 
   const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
 
-  triggerNativeFocusChange({
+  await triggerNativeFocusChange({
     nativeEvent: {
       selectedScreenKey: secondTabKey,
       provenance: 0,
@@ -398,7 +398,7 @@ it('emits tabPress with isPrevented false on a normal native selection', () => {
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
 
   expect(secondTabPressHandler).toHaveBeenCalledTimes(1);
   expect(secondTabPressHandler.mock.calls[0][0].data).toEqual({

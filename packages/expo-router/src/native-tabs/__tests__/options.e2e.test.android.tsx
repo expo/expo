@@ -66,7 +66,7 @@ jest.mock('expo-symbols', () => ({
 
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
-it('can pass props via unstable_nativeProps', () => {
+it('can pass props via unstable_nativeProps', async () => {
   const indexOptions = {
     title: 'Test Title',
     iconColor: 'blue',
@@ -75,7 +75,7 @@ it('can pass props via unstable_nativeProps', () => {
     title: 'Second Title',
     iconColor: 'red',
   };
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" unstable_nativeProps={{ ...indexOptions }} />
@@ -97,8 +97,8 @@ it('can pass props via unstable_nativeProps', () => {
   });
 });
 
-it('can pass options via elements', () => {
-  renderRouter({
+it('can pass options via elements', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index">
@@ -120,8 +120,8 @@ it('can pass options via elements', () => {
   } as TabsScreenProps);
 });
 
-it('when no options are passed, default ones are used', () => {
-  renderRouter({
+it('when no options are passed, default ones are used', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -144,8 +144,8 @@ it('when no options are passed, default ones are used', () => {
 describe('disabled', () => {
   it.each([true, false] as const)(
     'forwards disabled=%p to Tabs.Screen as preventNativeSelection',
-    (value) => {
-      renderRouter({
+    async (value) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disabled={value} />
@@ -162,8 +162,8 @@ describe('disabled', () => {
     }
   );
 
-  it('does not forward preventNativeSelection when disabled is not set', () => {
-    renderRouter({
+  it('does not forward preventNativeSelection when disabled is not set', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -179,8 +179,8 @@ describe('disabled', () => {
 });
 
 describe('testID and accessibilityLabel', () => {
-  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', () => {
-    renderRouter({
+  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
@@ -204,8 +204,8 @@ describe('Icons', () => {
     consoleWarnMock = jest.fn();
     console.warn = consoleWarnMock;
   });
-  it('when using Icon with drawable prop, it is passed as drawable', () => {
-    renderRouter({
+  it('when using Icon with drawable prop, it is passed as drawable', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -224,8 +224,8 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('when using Icon sf on Android, no value is passed', () => {
-    renderRouter({
+  it('when using Icon sf on Android, no value is passed', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -243,8 +243,8 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('uses last Icon drawable value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon drawable value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -268,8 +268,8 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('when selectedIconColor is provided, it is passed to screen', () => {
-    renderRouter({
+  it('when selectedIconColor is provided, it is passed to screen', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index" />
@@ -291,8 +291,8 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('when selectedIconColor is provided in container and tab, the tab should use the tab color', () => {
-    renderRouter({
+  it('when selectedIconColor is provided in container and tab, the tab should use the tab color', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index">
@@ -327,8 +327,8 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('when drawable={{default, selected}} is provided, both icons are passed', () => {
-    renderRouter({
+  it('when drawable={{default, selected}} is provided, both icons are passed', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -352,8 +352,8 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('when drawable={{selected}} only is provided, icon is undefined and selectedIcon is passed', () => {
-    renderRouter({
+  it('when drawable={{selected}} only is provided, icon is undefined and selectedIcon is passed', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -374,10 +374,10 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('when src={{default, selected}} is provided, both icons are passed', () => {
+  it('when src={{default, selected}} is provided, both icons are passed', async () => {
     const defaultSrc = { uri: 'default-icon' };
     const selectedSrc = { uri: 'selected-icon' };
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -400,7 +400,7 @@ describe('Icons', () => {
   });
 
   it('when md={{default, selected}} is provided, both icons are loaded asynchronously', async () => {
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -427,7 +427,7 @@ describe('Icons', () => {
   });
 
   it('when md={{selected}} only is provided, icon is undefined and selectedIcon is loaded asynchronously', async () => {
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -483,8 +483,8 @@ describe('Icons', () => {
       expectedIcon: NonNullable<NonNullable<TabsScreenProps['android']>['icon']>;
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
-    ({ sf, src, drawable, expectedIcon }) => {
-      renderRouter({
+    async ({ sf, src, drawable, expectedIcon }) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -513,7 +513,7 @@ describe('Icons', () => {
   ] as (MaterialIcon & SrcIcon & SFSymbolIcon)[])(
     'For <Icon sf="$sf" src="$src" md="$md">, icon will render a md icon',
     async ({ sf, src, md }) => {
-      renderRouter({
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -561,7 +561,7 @@ describe('Icons', () => {
     })[])(
     'For <Icon md="$md" drawable="$drawable">, icon will be $expectedIcon during first render and tabs will render $numberOfRenders time(s)',
     async ({ md, drawable, numberOfRenders, expectedIcon }) => {
-      renderRouter({
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -592,8 +592,8 @@ describe('Icons', () => {
 });
 
 describe('Badge', () => {
-  it('passes badge value via Badge element', () => {
-    renderRouter({
+  it('passes badge value via Badge element', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -611,8 +611,8 @@ describe('Badge', () => {
     } as TabsScreenProps);
   });
 
-  it('passes badge value as string', () => {
-    renderRouter({
+  it('passes badge value as string', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -630,8 +630,8 @@ describe('Badge', () => {
     } as TabsScreenProps);
   });
 
-  it('does not pass badge when Badge is not used', () => {
-    renderRouter({
+  it('does not pass badge when Badge is not used', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -645,8 +645,8 @@ describe('Badge', () => {
     expect(TabsScreen.mock.calls[0][0]).not.toHaveProperty('badgeValue');
   });
 
-  it('uses last Badge value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Badge value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -666,8 +666,8 @@ describe('Badge', () => {
     } as TabsScreenProps);
   });
 
-  it('when empty Badge is used, passes space to badgeValue', () => {
-    renderRouter({
+  it('when empty Badge is used, passes space to badgeValue', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -683,8 +683,8 @@ describe('Badge', () => {
     expect(TabsScreen.mock.calls[0][0].badgeValue).toBe(' '); // Space is used to show empty badge
   });
 
-  it('when empty Badge is used with hidden, passes undefined to badgeValue', () => {
-    renderRouter({
+  it('when empty Badge is used with hidden, passes undefined to badgeValue', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -702,8 +702,8 @@ describe('Badge', () => {
 });
 
 describe('Label', () => {
-  it('passes title via Label element', () => {
-    renderRouter({
+  it('passes title via Label element', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -721,8 +721,8 @@ describe('Label', () => {
     } as TabsScreenProps);
   });
 
-  it('when title is not set, uses the route name', () => {
-    renderRouter({
+  it('when title is not set, uses the route name', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -740,8 +740,8 @@ describe('Label', () => {
     expect(TabsScreen.mock.calls[3][0].title).toBe('one');
   });
 
-  it('uses last Label value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Label value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -761,8 +761,8 @@ describe('Label', () => {
     } as TabsScreenProps);
   });
 
-  it('when empty Label is used, passes route name to title', () => {
-    renderRouter({
+  it('when empty Label is used, passes route name to title', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -778,8 +778,8 @@ describe('Label', () => {
     expect(TabsScreen.mock.calls[0][0].title).toBe('index'); // Route name is used as title when Label is empty
   });
 
-  it('when Label with hidden is used, passes empty string to title', () => {
-    renderRouter({
+  it('when Label with hidden is used, passes empty string to title', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -795,8 +795,8 @@ describe('Label', () => {
     expect(TabsScreen.mock.calls[0][0].title).toBe(''); // Route name is used as title when Label is empty
   });
 
-  it('when selectedLabelStyle is provided, it is passed to screen', () => {
-    renderRouter({
+  it('when selectedLabelStyle is provided, it is passed to screen', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index" />
@@ -819,8 +819,8 @@ describe('Label', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', () => {
-    renderRouter({
+  it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index">
@@ -861,8 +861,8 @@ describe('Label', () => {
 
 describe('Tab options', () => {
   describe('disablePopToTop', () => {
-    it('When disablePopToTop is true, popToRoot is false', () => {
-      renderRouter({
+    it('When disablePopToTop is true, popToRoot is false', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disablePopToTop>
@@ -884,8 +884,8 @@ describe('Tab options', () => {
       } as TabsScreenProps);
     });
 
-    it('When disablePopToTop is not set or false, popToRoot is true', () => {
-      renderRouter({
+    it('When disablePopToTop is not set or false, popToRoot is true', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -922,8 +922,8 @@ describe('Tab options', () => {
   });
 
   describe('disableScrollToTop', () => {
-    it('When disableScrollToTop is true, scrollToTop is false', () => {
-      renderRouter({
+    it('When disableScrollToTop is true, scrollToTop is false', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disableScrollToTop>
@@ -945,8 +945,8 @@ describe('Tab options', () => {
       } as TabsScreenProps);
     });
 
-    it('When disableScrollToTop is not set or false, scrollToTop is true', () => {
-      renderRouter({
+    it('When disableScrollToTop is not set or false, scrollToTop is true', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -984,8 +984,8 @@ describe('Tab options', () => {
 
   it.each([false, undefined])(
     'When disableAutomaticContentInsets is %p, the content of the screen is wrapped with SafeAreaView',
-    (value) => {
-      renderRouter({
+    async (value) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
@@ -1007,8 +1007,8 @@ describe('Tab options', () => {
       });
     }
   );
-  it('When disableAutomaticContentInsets is true, the content of the screen is not wrapped with SafeAreaView', () => {
-    renderRouter({
+  it('When disableAutomaticContentInsets is true, the content of the screen is not wrapped with SafeAreaView', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" disableAutomaticContentInsets />
@@ -1027,8 +1027,8 @@ describe('Tab options', () => {
     expect(children.type).not.toBe(SafeAreaView);
   });
 
-  it('does not wrap the screen content with SafeAreaView when the tab bar is hidden', () => {
-    renderRouter({
+  it('does not wrap the screen content with SafeAreaView when the tab bar is hidden', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs hidden>
           <NativeTabs.Trigger name="index" />
@@ -1047,8 +1047,8 @@ describe('Tab options', () => {
 });
 
 describe('Dynamic options', () => {
-  it('updates nativeProps dynamically', () => {
-    renderRouter({
+  it('updates nativeProps dynamically', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
@@ -1080,8 +1080,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('unstable_nativeProps override dynamic options configuration', () => {
-    renderRouter({
+  it('unstable_nativeProps override dynamic options configuration', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
@@ -1126,8 +1126,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can override component children from _layout with unstable_nativeProps', () => {
-    renderRouter({
+  it('can override component children from _layout with unstable_nativeProps', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1182,8 +1182,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can override component children from _layout with dynamic children', () => {
-    renderRouter({
+  it('can override component children from _layout with dynamic children', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1233,8 +1233,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can dynamically update options with state update', () => {
-    renderRouter({
+  it('can dynamically update options with state update', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1259,16 +1259,16 @@ describe('Dynamic options', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(2);
     expect(TabsScreen.mock.calls[0][0].title).toBe('Initial Title');
     expect(TabsScreen.mock.calls[1][0].title).toBe('Updated Title 0');
-    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    await act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(TabsScreen).toHaveBeenCalledTimes(3);
     expect(TabsScreen.mock.calls[2][0].title).toBe('Updated Title 1');
-    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    await act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
   });
 
-  it('can be used in preview', () => {
-    renderRouter({
+  it('can be used in preview', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1317,8 +1317,8 @@ describe('Dynamic options', () => {
 });
 
 describe('Material Design 3 dynamic color defaults', () => {
-  it('applies Material Design 3 dynamic color defaults when no custom colors are provided', () => {
-    renderRouter({
+  it('applies Material Design 3 dynamic color defaults when no custom colors are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -1348,8 +1348,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('uses custom tintColor when provided, overriding Material defaults for active states', () => {
-    renderRouter({
+  it('uses custom tintColor when provided, overriding Material defaults for active states', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs tintColor="red">
           <NativeTabs.Trigger name="index" />
@@ -1378,8 +1378,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('uses custom rippleColor when provided, overriding Material default', () => {
-    renderRouter({
+  it('uses custom rippleColor when provided, overriding Material default', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs rippleColor="blue">
           <NativeTabs.Trigger name="index" />
@@ -1400,8 +1400,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('uses appearance options when provided, overriding Material defaults', () => {
-    renderRouter({
+  it('uses appearance options when provided, overriding Material defaults', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs
           iconColor={{ default: 'green', selected: 'yellow' }}
@@ -1432,8 +1432,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('uses container indicatorColor when provided, overriding Material default', () => {
-    renderRouter({
+  it('uses container indicatorColor when provided, overriding Material default', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs indicatorColor="cyan">
           <NativeTabs.Trigger name="index" />
@@ -1454,8 +1454,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('uses per-trigger indicatorColor when provided, overriding navigator indicatorColor', () => {
-    renderRouter({
+  it('uses per-trigger indicatorColor when provided, overriding navigator indicatorColor', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs indicatorColor="cyan">
           <NativeTabs.Trigger name="index" indicatorColor="magenta" />
@@ -1475,8 +1475,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('uses per-trigger rippleColor when provided, overriding navigator rippleColor', () => {
-    renderRouter({
+  it('uses per-trigger rippleColor when provided, overriding navigator rippleColor', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs rippleColor="blue">
           <NativeTabs.Trigger name="index" rippleColor="green" />
@@ -1496,8 +1496,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('uses per-trigger disableIndicator when provided, overriding navigator disableIndicator', () => {
-    renderRouter({
+  it('uses per-trigger disableIndicator when provided, overriding navigator disableIndicator', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs disableIndicator>
           <NativeTabs.Trigger name="index" disableIndicator={false} />
@@ -1519,8 +1519,8 @@ describe('Material Design 3 dynamic color defaults', () => {
 
   it.each(SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES)(
     'supports %s label visibility mode at the navigator level',
-    (labelVisibilityMode) => {
-      renderRouter({
+    async (labelVisibilityMode) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs labelVisibilityMode={labelVisibilityMode}>
             <NativeTabs.Trigger name="index" />
@@ -1550,8 +1550,8 @@ describe('Material Design 3 dynamic color defaults', () => {
       'test',
       'wrongValue',
       ...SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES.map((x) => x.toUpperCase()),
-    ])('warns when unsupported %s label visibility mode is used', (labelVisibilityMode) => {
-      renderRouter({
+    ])('warns when unsupported %s label visibility mode is used', async (labelVisibilityMode) => {
+      await renderRouter({
         _layout: () => (
           // @ts-expect-error
           <NativeTabs labelVisibilityMode={labelVisibilityMode}>
@@ -1569,8 +1569,8 @@ describe('Material Design 3 dynamic color defaults', () => {
       ).toBeUndefined();
     });
 
-    it('warns when unsupported per-trigger labelVisibilityMode is used', () => {
-      renderRouter({
+    it('warns when unsupported per-trigger labelVisibilityMode is used', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             {/* @ts-expect-error */}
@@ -1588,8 +1588,8 @@ describe('Material Design 3 dynamic color defaults', () => {
     });
   });
 
-  it('uses per-trigger labelVisibilityMode when provided, overriding navigator labelVisibilityMode', () => {
-    renderRouter({
+  it('uses per-trigger labelVisibilityMode when provided, overriding navigator labelVisibilityMode', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs labelVisibilityMode="labeled">
           <NativeTabs.Trigger name="index" labelVisibilityMode="unlabeled" />

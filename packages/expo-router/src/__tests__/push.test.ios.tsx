@@ -9,8 +9,8 @@ import Tabs from '../layouts/Tabs';
 import { renderRouter, testRouter } from '../testing-library';
 import { Slot } from '../views/Navigator';
 
-it('stacks should always push a new route', () => {
-  renderRouter({
+it('stacks should always push a new route', async () => {
+  await renderRouter({
     index: () => null,
     '(group)/_layout': () => <Stack />,
     '(group)/user/[id]/_layout': () => <Stack />,
@@ -48,11 +48,11 @@ it('stacks should always push a new route', () => {
    * Need to push separately so a new state is generated every time, otherwise they are batched
    * Every `push` event should create a new history frame
    */
-  act(() => router.push('/post/1'));
-  act(() => router.push('/user/1'));
-  act(() => router.push('/post/2'));
-  act(() => router.push('/user/1'));
-  act(() => router.push('/user/2'));
+  await act(() => router.push('/post/1'));
+  await act(() => router.push('/user/1'));
+  await act(() => router.push('/post/2'));
+  await act(() => router.push('/user/1'));
+  await act(() => router.push('/user/2'));
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -212,25 +212,25 @@ it('stacks should always push a new route', () => {
 });
 
 it('can push & replace with nested Slots', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => <Slot />,
     index: () => <Text testID="index" />,
     'one/_layout': () => <Slot />,
     'one/index': () => <Text testID="one" />,
   });
 
-  act(() => router.push('/one'));
+  await act(() => router.push('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
   // Correctly targets the `root` slot (sets target: <root layout key>)
-  act(() => router.push('/'));
+  await act(() => router.push('/'));
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
 it('should navigate as expected when nested Stacks & Tabs', async () => {
-  renderRouter({
+  await renderRouter({
     index: () => <Text testID="index" />,
     'apple/_layout': () => <Stack />,
     'apple/index': () => <Text testID="apple" />,
@@ -244,34 +244,34 @@ it('should navigate as expected when nested Stacks & Tabs', async () => {
     'apple/[type]/taste': () => <Text testID="taste" />,
   });
 
-  act(() => router.push('/apple')); // Push to the root Stack
+  await act(() => router.push('/apple')); // Push to the root Stack
   expect(screen).toHavePathname('/apple');
   expect(screen.getByTestId('apple')).toBeOnTheScreen();
 
-  act(() => router.push('/apple/1/color')); // Push to the apple/layout
+  await act(() => router.push('/apple/1/color')); // Push to the apple/layout
   expect(screen).toHavePathname('/apple/1/color');
 
-  act(() => router.push('/apple/1/taste')); // Tabs don't push, so this doesn't affect the history
+  await act(() => router.push('/apple/1/taste')); // Tabs don't push, so this doesn't affect the history
   expect(screen).toHavePathname('/apple/1/taste');
 
-  act(() => router.push('/apple/2/taste')); // [type] is outside of the tabs, so it pushed to apple/_layout
+  await act(() => router.push('/apple/2/taste')); // [type] is outside of the tabs, so it pushed to apple/_layout
   expect(screen).toHavePathname('/apple/2/taste');
 
-  act(() => router.push('/apple/2/color')); // Tabs don't push, so this doesn't affect the history
+  await act(() => router.push('/apple/2/color')); // Tabs don't push, so this doesn't affect the history
   expect(screen).toHavePathname('/apple/2/color');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/apple/1/taste');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/apple/1/color');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/apple');
 });
 
-it('works in a nested layout Stack->Tab->Stack', () => {
-  renderRouter({
+it('works in a nested layout Stack->Tab->Stack', async () => {
+  await renderRouter({
     index: () => null,
     _layout: () => <Stack />,
     '(tabs)/_layout': () => (
@@ -289,18 +289,18 @@ it('works in a nested layout Stack->Tab->Stack', () => {
     d: () => null,
   });
 
-  testRouter.push('/a');
+  await testRouter.push('/a');
   expect(screen.getByTestId('a')).toBeOnTheScreen();
-  testRouter.push('/b');
+  await testRouter.push('/b');
   expect(screen.getByTestId('b')).toBeOnTheScreen();
-  testRouter.push('/c/one');
+  await testRouter.push('/c/one');
   expect(screen.getByTestId('c/one')).toBeOnTheScreen();
-  testRouter.push('/c/two');
+  await testRouter.push('/c/two');
   expect(screen.getByTestId('c/two')).toBeOnTheScreen();
-  testRouter.push('/c/two');
+  await testRouter.push('/c/two');
   expect(screen.getByTestId('c/two')).toBeOnTheScreen();
 
-  testRouter.push('/d');
+  await testRouter.push('/d');
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -409,8 +409,8 @@ it('works in a nested layout Stack->Tab->Stack', () => {
   });
 });
 
-it('targets the correct Stack when pushing to a nested layout', () => {
-  renderRouter(
+it('targets the correct Stack when pushing to a nested layout', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       a: () => null,
@@ -427,21 +427,21 @@ it('targets the correct Stack when pushing to a nested layout', () => {
     }
   );
 
-  act(() => router.push('/b')); // Should be at index 1 on the root stack
+  await act(() => router.push('/b')); // Should be at index 1 on the root stack
 
-  act(() => router.push('/one')); // Should be at index 2 on the root stack
+  await act(() => router.push('/one')); // Should be at index 2 on the root stack
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
-  act(() => router.push('/one/page')); // Should be at index 1, nested inside index 2 on the root stack
+  await act(() => router.push('/one/page')); // Should be at index 1, nested inside index 2 on the root stack
   expect(screen.getByTestId('one/page')).toBeOnTheScreen();
 
-  act(() => router.push('/one/two')); // Should be at index 2, nested inside index 2 on the root stack
+  await act(() => router.push('/one/two')); // Should be at index 2, nested inside index 2 on the root stack
   expect(screen.getByTestId('one/two')).toBeOnTheScreen();
 
-  act(() => router.push('/one/two/page')); // Should be at index 1, nested inside index 2, inside index 2 on the root stack
+  await act(() => router.push('/one/two/page')); // Should be at index 1, nested inside index 2, inside index 2 on the root stack
   expect(screen.getByTestId('one/two/page')).toBeOnTheScreen();
 
-  act(() => router.push('/a')); // Should push to the root stack
+  await act(() => router.push('/a')); // Should push to the root stack
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -542,8 +542,8 @@ it('targets the correct Stack when pushing to a nested layout', () => {
   });
 });
 
-it('push should also add anchor routes', () => {
-  renderRouter({
+it('push should also add anchor routes', async () => {
+  await renderRouter({
     index: () => null,
     '(group)/_layout': {
       default: () => <Stack />,
@@ -585,7 +585,7 @@ it('push should also add anchor routes', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => router.push('/orange', { withAnchor: true }));
+  await act(() => router.push('/orange', { withAnchor: true }));
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -644,8 +644,8 @@ it('push should also add anchor routes', () => {
 });
 
 describe('singular', () => {
-  test('can dynamically route using singular', () => {
-    renderRouter(
+  test('can dynamically route using singular', async () => {
+    await renderRouter(
       {
         '[slug]': () => null,
       },
@@ -654,9 +654,9 @@ describe('singular', () => {
       }
     );
 
-    act(() => router.push('/apple'));
-    act(() => router.push('/apple'));
-    act(() => router.push('/banana'));
+    await act(() => router.push('/apple'));
+    await act(() => router.push('/apple'));
+    await act(() => router.push('/banana'));
 
     expect(screen).toHaveRouterState({
       index: 0,
@@ -719,7 +719,7 @@ describe('singular', () => {
     });
 
     // Should push /apple and remove all previous instances of /apple
-    act(() => router.push('/apple', { dangerouslySingular: true }));
+    await act(() => router.push('/apple', { dangerouslySingular: true }));
 
     expect(screen).toHaveRouterState({
       index: 0,
@@ -766,8 +766,8 @@ describe('singular', () => {
     });
   });
 
-  test('can dynamically route using singular function', () => {
-    renderRouter(
+  test('can dynamically route using singular function', async () => {
+    await renderRouter(
       {
         '[slug]': () => null,
       },
@@ -776,10 +776,10 @@ describe('singular', () => {
       }
     );
 
-    act(() => router.push('/apple?id=1'));
-    act(() => router.push('/apple?id=1'));
-    act(() => router.push('/apple?id=2'));
-    act(() => router.push('/banana'));
+    await act(() => router.push('/apple?id=1'));
+    await act(() => router.push('/apple?id=1'));
+    await act(() => router.push('/apple?id=2'));
+    await act(() => router.push('/banana'));
 
     expect(screen).toHaveRouterState({
       index: 0,
@@ -853,7 +853,7 @@ describe('singular', () => {
     });
 
     // Should push /apple and remove all previous instances of /apple
-    act(() => {
+    await act(() => {
       return router.push('/apple', {
         dangerouslySingular: (_, params) => params.slug?.toString(),
       });

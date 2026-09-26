@@ -24,7 +24,7 @@ function actionType(intent: RoutingIntent): string {
   return intent.payload.action.type;
 }
 
-function renderDrainer(processIntent: (intent: RoutingIntent) => void) {
+async function renderDrainer(processIntent: (intent: RoutingIntent) => void) {
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
   function CaptureEnqueue() {
@@ -32,7 +32,7 @@ function renderDrainer(processIntent: (intent: RoutingIntent) => void) {
     return null;
   }
 
-  const result = render(
+  const result = await render(
     <RoutingQueueProvider>
       <CaptureEnqueue />
       <RoutingQueueDrainer processIntent={processIntent} />
@@ -42,7 +42,7 @@ function renderDrainer(processIntent: (intent: RoutingIntent) => void) {
   return { ...result, enqueue: (intent: RoutingIntent) => enqueue(intent) };
 }
 
-it('isolates queue notifications from its parent', () => {
+it('isolates queue notifications from its parent', async () => {
   const parentRender = jest.fn();
   const processIntent = jest.fn();
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
@@ -61,19 +61,19 @@ it('isolates queue notifications from its parent', () => {
     );
   }
 
-  render(<Parent />);
-  act(() => enqueue(actionIntent('TEST')));
+  await render(<Parent />);
+  await act(() => enqueue(actionIntent('TEST')));
 
   expect(parentRender).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
 });
 
-it('processes a queued batch in FIFO order', () => {
+it('processes a queued batch in FIFO order', async () => {
   const calls: string[] = [];
   const processIntent = jest.fn((intent: RoutingIntent) => calls.push(actionType(intent)));
-  const result = renderDrainer(processIntent);
+  const result = await renderDrainer(processIntent);
 
-  act(() => {
+  await act(() => {
     result.enqueue(actionIntent('FIRST'));
     result.enqueue(actionIntent('SECOND'));
     result.enqueue(actionIntent('THIRD'));
@@ -82,7 +82,7 @@ it('processes a queued batch in FIFO order', () => {
   expect(calls).toEqual(['FIRST', 'SECOND', 'THIRD']);
 });
 
-it('does not process a batch twice in Strict Mode', () => {
+it('does not process a batch twice in Strict Mode', async () => {
   const processIntent = jest.fn();
   let enqueue: ReturnType<typeof useEnqueueRoutingIntent>;
 
@@ -91,15 +91,15 @@ it('does not process a batch twice in Strict Mode', () => {
     return null;
   }
 
-  const result = render(
+  const result = await render(
     <React.StrictMode>
       <RoutingQueueProvider>
         <CaptureEnqueue />
       </RoutingQueueProvider>
     </React.StrictMode>
   );
-  act(() => enqueue(actionIntent('TEST')));
-  result.rerender(
+  await act(() => enqueue(actionIntent('TEST')));
+  await result.rerender(
     <React.StrictMode>
       <RoutingQueueProvider>
         <CaptureEnqueue />
@@ -111,7 +111,7 @@ it('does not process a batch twice in Strict Mode', () => {
   expect(processIntent).toHaveBeenCalledTimes(1);
 });
 
-it('processes intents added while draining in a later batch', () => {
+it('processes intents added while draining in a later batch', async () => {
   const processed: string[] = [];
   let enqueue: (intent: RoutingIntent) => void;
   const processIntent = jest.fn((intent: RoutingIntent) => {
@@ -120,24 +120,24 @@ it('processes intents added while draining in a later batch', () => {
       enqueue(actionIntent('SECOND'));
     }
   });
-  const result = renderDrainer(processIntent);
+  const result = await renderDrainer(processIntent);
   enqueue = result.enqueue;
 
-  act(() => enqueue(actionIntent('FIRST')));
+  await act(() => enqueue(actionIntent('FIRST')));
 
   expect(processed).toEqual(['FIRST', 'SECOND']);
 });
 
-it('continues after processIntent throws synchronously', () => {
+it('continues after processIntent throws synchronously', async () => {
   const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const processIntent = jest.fn((intent: RoutingIntent) => {
     if (actionType(intent) === 'FIRST') {
       throw new Error('failed');
     }
   });
-  const result = renderDrainer(processIntent);
+  const result = await renderDrainer(processIntent);
 
-  act(() => {
+  await act(() => {
     result.enqueue(actionIntent('FIRST'));
     result.enqueue(actionIntent('SECOND'));
   });

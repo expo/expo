@@ -40,7 +40,7 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
-it('supports push, back, and replace through useRouter', () => {
+it('supports push, back, and replace through useRouter', async () => {
   function Index() {
     const navigation = useRouter();
     return <Button title="Push" onPress={() => navigation.push('/second')} />;
@@ -56,7 +56,7 @@ it('supports push, back, and replace through useRouter', () => {
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <JSStack />,
     index: Index,
     second: Second,
@@ -64,28 +64,28 @@ it('supports push, back, and replace through useRouter', () => {
   });
 
   expect(screen.queryByRole('button', { name: 'Go back' })).toBeNull();
-  fireEvent.press(screen.getByText('Push'));
+  await fireEvent.press(screen.getByText('Push'));
   expect(screen).toHavePathname('/second');
   expect(screen.getByTestId('second')).toBeVisible();
   expect(screen.getByRole('button', { name: 'index, back' })).not.toBeNull();
 
-  fireEvent.press(screen.getAllByTestId('back').at(-1)!);
-  act(() => jest.runAllTimers());
+  await fireEvent.press(screen.getAllByTestId('back').at(-1)!);
+  await act(() => jest.runAllTimers());
   expect(screen).toHavePathname('/');
 
-  fireEvent.press(screen.getByText('Push'));
-  fireEvent.press(screen.getByText('Replace'));
-  act(() => jest.runAllTimers());
+  await fireEvent.press(screen.getByText('Push'));
+  await fireEvent.press(screen.getByText('Replace'));
+  await act(() => jest.runAllTimers());
   expect(screen).toHavePathname('/third');
   expect(screen.getByTestId('third')).toBeVisible();
 });
 
-it('does not rerender the layout or screens after stack state changes', () => {
+it('does not rerender the layout or screens after stack state changes', async () => {
   const layoutRender = jest.fn();
   const indexRender = jest.fn();
   const secondRender = jest.fn();
 
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
       layoutRender();
       return <JSStack />;
@@ -104,19 +104,19 @@ it('does not rerender the layout or screens after stack state changes', () => {
   expect(indexRender).toHaveBeenCalledTimes(1);
   expect(secondRender).not.toHaveBeenCalled();
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
   expect(layoutRender).toHaveBeenCalledTimes(1);
   expect(indexRender).toHaveBeenCalledTimes(1);
   expect(secondRender).toHaveBeenCalledTimes(1);
 
-  act(() => router.back());
-  act(() => jest.runAllTimers());
+  await act(() => router.back());
+  await act(() => jest.runAllTimers());
   expect(layoutRender).toHaveBeenCalledTimes(1);
   expect(indexRender).toHaveBeenCalledTimes(1);
   expect(secondRender).toHaveBeenCalledTimes(1);
 });
 
-it('emits transition events when opening and closing a route', () => {
+it('emits transition events when opening and closing a route', async () => {
   const events: { type: string; closing: boolean }[] = [];
 
   function Second() {
@@ -135,28 +135,28 @@ it('emits transition events when opening and closing a route', () => {
     return <Button testID="back" title="Back" onPress={() => router.back()} />;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <JSStack />,
     index: () => <Button title="Push" onPress={() => router.push('/second')} />,
     second: Second,
   });
 
-  fireEvent.press(screen.getByText('Push'));
-  act(() => jest.advanceTimersByTime(1));
+  await fireEvent.press(screen.getByText('Push'));
+  await act(() => jest.advanceTimersByTime(1));
   expect(events).toEqual([{ type: 'start', closing: false }]);
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
   expect(events).toEqual([
     { type: 'start', closing: false },
     { type: 'end', closing: false },
   ]);
 
-  fireEvent.press(screen.getAllByTestId('back').at(-1)!);
+  await fireEvent.press(screen.getAllByTestId('back').at(-1)!);
   expect(events.at(-1)).toEqual({ type: 'start', closing: true });
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
   expect(events.at(-1)).toEqual({ type: 'end', closing: true });
 });
 
-it('renders preloaded routes without focusing them', () => {
+it('renders preloaded routes without focusing them', async () => {
   const focusEffect = jest.fn();
   const focusCleanup = jest.fn();
 
@@ -171,28 +171,28 @@ it('renders preloaded routes without focusing them', () => {
     return <Text testID="focus-state">{focused ? 'focused' : 'unfocused'}</Text>;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <JSStack />,
     index: () => <View testID="index" />,
     second: Second,
   });
 
-  act(() => router.prefetch('/second'));
+  await act(() => router.prefetch('/second'));
   expect(screen.getByTestId('focus-state', { includeHiddenElements: true })).toHaveTextContent(
     'unfocused'
   );
   expect(focusEffect).not.toHaveBeenCalled();
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
   expect(screen.getByTestId('focus-state')).toHaveTextContent('focused');
   expect(focusEffect).toHaveBeenCalledTimes(1);
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(focusCleanup).toHaveBeenCalledTimes(1);
 });
 
-it('renders a back button in a nested JS stack', () => {
-  renderRouter(
+it('renders a back button in a nested JS stack', async () => {
+  await renderRouter(
     {
       _layout: () => <JSStack screenOptions={{ headerShown: false }} />,
       'nested/_layout': () => <JSStack />,
@@ -203,12 +203,12 @@ it('renders a back button in a nested JS stack', () => {
   );
 
   expect(screen.queryByRole('button', { name: 'Go back' })).toBeNull();
-  fireEvent.press(screen.getByText('Push'));
+  await fireEvent.press(screen.getByText('Push'));
   expect(screen.getByRole('button', { name: 'index, back' })).not.toBeNull();
 });
 
-it('pops to top when the focused JS tab is pressed again', () => {
-  renderRouter(
+it('pops to top when the focused JS tab is pressed again', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -222,14 +222,14 @@ it('pops to top when the focused JS tab is pressed again', () => {
     { initialUrl: '/home' }
   );
 
-  act(() => router.push('/home/second'));
-  fireEvent.press(screen.getByRole('button', { name: 'home' }));
-  act(() => jest.runAllTimers());
+  await act(() => router.push('/home/second'));
+  await fireEvent.press(screen.getByRole('button', { name: 'home, tab, 1 of 1' }));
+  await act(() => jest.runAllTimers());
   expect(screen).toHavePathname('/home');
 });
 
-it('does not pop to top for native tabPress events', () => {
-  renderRouter(
+it('does not pop to top for native tabPress events', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <NativeTabs>
@@ -243,14 +243,14 @@ it('does not pop to top for native tabPress events', () => {
     { initialUrl: '/home' }
   );
 
-  act(() => router.push('/home/second'));
+  await act(() => router.push('/home/second'));
   const screens = (
     jest.requireMock('react-native-screens') as typeof import('react-native-screens') & {
       __triggerTabSelected: (event: NativeSyntheticEvent<TabSelectedEvent>) => void;
     }
   ).Tabs.Screen as jest.MockedFunction<typeof import('react-native-screens').Tabs.Screen>;
   const homeTabKey = screens.mock.calls.at(-1)![0].screenKey!;
-  act(() =>
+  await act(() =>
     (
       jest.requireMock('react-native-screens') as {
         __triggerTabSelected: (event: NativeSyntheticEvent<TabSelectedEvent>) => void;
@@ -265,6 +265,6 @@ it('does not pop to top for native tabPress events', () => {
       },
     } as NativeSyntheticEvent<TabSelectedEvent>)
   );
-  act(() => jest.runAllTimers());
+  await act(() => jest.runAllTimers());
   expect(screen).toHavePathname('/home/second');
 });

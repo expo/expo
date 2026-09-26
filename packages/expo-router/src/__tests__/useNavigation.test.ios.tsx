@@ -7,10 +7,10 @@ type Navigation =
   | ReturnType<typeof useNavigation<NavigationProp<ReactNavigation.RootParamList>>>
   | undefined;
 
-it('can resolve the base navigator', () => {
+it('can resolve the base navigator', async () => {
   let navigation: Navigation;
 
-  renderRouter({
+  await renderRouter({
     index: function Index() {
       navigation = useNavigation();
 
@@ -23,10 +23,10 @@ it('can resolve the base navigator', () => {
   expect(navigation?.getId()).toBe('/expo-router/build/views/Navigator');
 });
 
-it('can resolve the parent of a nested navigator', () => {
+it('can resolve the parent of a nested navigator', async () => {
   let navigation: Navigation;
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     '(app)/_layout': () => <Stack />,
     '(app)/index': function Index() {
@@ -42,10 +42,10 @@ it('can resolve the parent of a nested navigator', () => {
   expect(navigation.getId()).toBe('/(app)');
 });
 
-it('can resolve the root navigator', () => {
+it('can resolve the root navigator', async () => {
   let navigation: Navigation;
 
-  renderRouter({
+  await renderRouter({
     index: function Index() {
       navigation = useNavigation();
 
@@ -59,10 +59,10 @@ it('can resolve the root navigator', () => {
   expect(navigation?.getId()).toBe('');
 });
 
-it('can resolve the root navigator via "/"', () => {
+it('can resolve the root navigator via "/"', async () => {
   let navigation: Navigation;
 
-  renderRouter({
+  await renderRouter({
     index: function Index() {
       navigation = useNavigation('/');
 
@@ -76,10 +76,10 @@ it('can resolve the root navigator via "/"', () => {
   expect(navigation?.getId()).toBe('');
 });
 
-it('can resolve the root navigator via "/" when nested', () => {
+it('can resolve the root navigator via "/" when nested', async () => {
   let navigation: Navigation;
 
-  renderRouter({
+  await renderRouter({
     '(a)/_layout': () => <Stack />,
     '(a)/(b)/_layout': () => <Stack />,
     '(a)/(b)/index': function Index() {
@@ -95,10 +95,10 @@ it('can resolve the root navigator via "/" when nested', () => {
   expect(navigation?.getId()).toBe('');
 });
 
-it('can resolve a parent navigator via relative paths', () => {
+it('can resolve a parent navigator via relative paths', async () => {
   let navigation: Navigation;
 
-  renderRouter({
+  await renderRouter({
     '(a)/_layout': () => <Stack />,
     '(a)/(b)/_layout': () => <Stack />,
     '(a)/(b)/index': function Index() {
@@ -114,10 +114,10 @@ it('can resolve a parent navigator via relative paths', () => {
   expect(navigation?.getId()).toBe('/(a)');
 });
 
-it('can resolve a parent navigator via missing groups', () => {
+it('can resolve a parent navigator via missing groups', async () => {
   let navigation: Navigation;
 
-  renderRouter(
+  await renderRouter(
     {
       '(a)/_layout': () => <Stack />,
       '(a)/target/_layout': () => <Stack />,
@@ -139,10 +139,10 @@ it('can resolve a parent navigator via missing groups', () => {
   expect(navigation?.getId()).toBe('/(a)/target');
 });
 
-it('works with hoisted routes and relative hrefs', () => {
+it('works with hoisted routes and relative hrefs', async () => {
   let navigation: Navigation;
 
-  renderRouter(
+  await renderRouter(
     {
       '(a)/_layout': () => <Stack />,
       '(a)/hoisted/(b)/_layout': () => <Stack />,

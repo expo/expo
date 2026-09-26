@@ -37,8 +37,8 @@ describe('useBuildHref (unit)', () => {
     >);
   });
 
-  it('returns the pathnameWithParams from getRouteInfoFromState', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('returns the pathnameWithParams from getRouteInfoFromState', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState({
         routes: [{ name: '__root', state: { routes: [{ name: 'group' }] } }],
       }),
@@ -47,16 +47,16 @@ describe('useBuildHref (unit)', () => {
     expect(result.current(route('feed'))).toBe('/resolved');
   });
 
-  it('accepts a route without a key', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('accepts a route without a key', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState(undefined),
     });
 
     expect(result.current({ name: 'feed' })).toBe('/resolved');
   });
 
-  it('grafts the route as the deepest focused route', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('grafts the route as the deepest focused route', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState({
         routes: [{ name: '__root', state: { routes: [{ name: 'group' }] } }],
       }),
@@ -76,8 +76,8 @@ describe('useBuildHref (unit)', () => {
     });
   });
 
-  it('grafts under multi-level focused state', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('grafts under multi-level focused state', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState({
         routes: [
           {
@@ -107,8 +107,8 @@ describe('useBuildHref (unit)', () => {
     });
   });
 
-  it('grafts the route as the sole state when there is no focused state', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('grafts the route as the sole state when there is no focused state', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState(undefined),
     });
 
@@ -118,8 +118,8 @@ describe('useBuildHref (unit)', () => {
     });
   });
 
-  it('caches the href per route object', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('caches the href per route object', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState({ routes: [{ name: '__root' }] }),
     });
     const feed = route('feed', { q: '1' });
@@ -130,8 +130,8 @@ describe('useBuildHref (unit)', () => {
     expect(mockedGetRouteInfoFromState).toHaveBeenCalledTimes(1);
   });
 
-  it('computes each route object separately', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('computes each route object separately', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState({ routes: [{ name: '__root' }] }),
     });
 
@@ -141,8 +141,8 @@ describe('useBuildHref (unit)', () => {
     expect(mockedGetRouteInfoFromState).toHaveBeenCalledTimes(2);
   });
 
-  it('recomputes when a route object is replaced with new params', () => {
-    const { result } = renderHook(() => useBuildHref(), {
+  it('recomputes when a route object is replaced with new params', async () => {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState({ routes: [{ name: '__root' }] }),
     });
 
@@ -154,21 +154,21 @@ describe('useBuildHref (unit)', () => {
     expect(mockedGetRouteInfoFromState).toHaveBeenCalledTimes(2);
   });
 
-  it('resets the cache when the focused state changes', () => {
+  it('resets the cache when the focused state changes', async () => {
     let providedState: FocusedRouteState | undefined = { routes: [{ name: '__root' }] };
     const wrapper = ({ children }: { children: ReactNode }) => (
       <NavigationFocusedRouteStateContext.Provider value={providedState}>
         {children}
       </NavigationFocusedRouteStateContext.Provider>
     );
-    const { result, rerender } = renderHook(() => useBuildHref(), { wrapper });
+    const { result, rerender } = await renderHook(() => useBuildHref(), { wrapper });
     const feed = route('feed');
 
     result.current(feed);
     expect(mockedGetRouteInfoFromState).toHaveBeenCalledTimes(1);
 
     providedState = { routes: [{ name: '__root', state: { routes: [{ name: 'group' }] } }] };
-    rerender(undefined);
+    await rerender(undefined);
 
     result.current(feed);
     expect(mockedGetRouteInfoFromState).toHaveBeenCalledTimes(2);
@@ -176,25 +176,25 @@ describe('useBuildHref (unit)', () => {
 
   // useStandardState depends on the buildHref identity in its useMemo deps, so the identity
   // must be stable across unrelated rerenders and change exactly when the focused state changes.
-  it('keeps the buildHref identity stable until the focused state changes', () => {
+  it('keeps the buildHref identity stable until the focused state changes', async () => {
     let providedState: FocusedRouteState | undefined = { routes: [{ name: '__root' }] };
     const wrapper = ({ children }: { children: ReactNode }) => (
       <NavigationFocusedRouteStateContext.Provider value={providedState}>
         {children}
       </NavigationFocusedRouteStateContext.Provider>
     );
-    const { result, rerender } = renderHook(() => useBuildHref(), { wrapper });
+    const { result, rerender } = await renderHook(() => useBuildHref(), { wrapper });
     const first = result.current;
 
-    rerender(undefined);
+    await rerender(undefined);
     expect(result.current).toBe(first);
 
     providedState = { routes: [{ name: '__root', state: { routes: [{ name: 'group' }] } }] };
-    rerender(undefined);
+    await rerender(undefined);
     expect(result.current).not.toBe(first);
   });
 
-  it('does not mutate the current focused state or the input route params', () => {
+  it('does not mutate the current focused state or the input route params', async () => {
     const currentState: FocusedRouteState = {
       routes: [
         { name: '__root', state: { routes: [{ name: 'group', params: { team: 'acme' } }] } },
@@ -204,7 +204,7 @@ describe('useBuildHref (unit)', () => {
     const params = { sort: 'asc' };
     const input = route('feed', params);
 
-    const { result } = renderHook(() => useBuildHref(), {
+    const { result } = await renderHook(() => useBuildHref(), {
       wrapper: withFocusedState(currentState),
     });
     result.current(input);

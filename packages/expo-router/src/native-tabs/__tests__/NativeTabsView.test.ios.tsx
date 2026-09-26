@@ -26,7 +26,7 @@ jest.mock('react-native-screens', () => {
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
-it('uses a navigator error boundary for an individual tab screen', () => {
+it('uses a navigator error boundary for an individual tab screen', async () => {
   function ThrowingRoute(): never {
     throw new Error('Expected route error');
   }
@@ -34,7 +34,7 @@ it('uses a navigator error boundary for an individual tab screen', () => {
     return <Text testID="error-boundary">{error.message}</Text>;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs unstable_screenErrorBoundary={ErrorBoundary}>
         <NativeTabs.Trigger name="index" />
@@ -53,8 +53,8 @@ it.each([
 ] as {
   value: NativeTabsProps['sidebarAdaptable'];
   expected: NonNullable<TabsHostProps['ios']>['tabBarControllerMode'];
-}[])('when sidebarAdaptable is $value, then ', ({ value, expected }) => {
-  renderRouter({
+}[])('when sidebarAdaptable is $value, then ', async ({ value, expected }) => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs sidebarAdaptable={value}>
         <NativeTabs.Trigger name="index" />
@@ -68,8 +68,8 @@ it.each([
   expect(TabsHost.mock.calls[0][0].ios?.tabBarControllerMode).toBe(expected);
 });
 
-it('uses shadowColor when it is passed to NativeTabs', () => {
-  renderRouter({
+it('uses shadowColor when it is passed to NativeTabs', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs shadowColor="red">
         <NativeTabs.Trigger name="index" />
@@ -86,8 +86,8 @@ it('uses shadowColor when it is passed to NativeTabs', () => {
   );
 });
 
-it('uses shadowColor when it is passed to NativeTabs in both standardAppearance and scrollEdgeAppearance when disableTransparentOnScrollEdge is true', () => {
-  renderRouter({
+it('uses shadowColor when it is passed to NativeTabs in both standardAppearance and scrollEdgeAppearance when disableTransparentOnScrollEdge is true', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs shadowColor="red" disableTransparentOnScrollEdge>
         <NativeTabs.Trigger name="index" />
@@ -103,8 +103,8 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
 });
 
 describe('unstable_nativeProps', () => {
-  it('forwards top-level raw props to Tabs.Host', () => {
-    renderRouter({
+  it('forwards top-level raw props to Tabs.Host', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs unstable_nativeProps={{ colorScheme: 'dark', direction: 'rtl' }}>
           <NativeTabs.Trigger name="index" />
@@ -119,9 +119,9 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost.mock.calls[0][0].direction).toBe('rtl');
   });
 
-  it('merges ios raw props with expo-router-managed ios props', () => {
+  it('merges ios raw props with expo-router-managed ios props', async () => {
     const onMoreTabSelected = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs tintColor="red" unstable_nativeProps={{ ios: { onMoreTabSelected } }}>
           <NativeTabs.Trigger name="index" />
@@ -138,8 +138,8 @@ describe('unstable_nativeProps', () => {
     });
   });
 
-  it('lets ios raw props override expo-router-managed ios props', () => {
-    renderRouter({
+  it('lets ios raw props override expo-router-managed ios props', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs tintColor="red" unstable_nativeProps={{ ios: { tabBarTintColor: 'blue' } }}>
           <NativeTabs.Trigger name="index" />
@@ -153,8 +153,8 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost.mock.calls[0][0].ios?.tabBarTintColor).toBe('blue');
   });
 
-  it('lets top-level raw props override expo-router-managed props', () => {
-    renderRouter({
+  it('lets top-level raw props override expo-router-managed props', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs hidden unstable_nativeProps={{ tabBarHidden: false }}>
           <NativeTabs.Trigger name="index" />
@@ -168,7 +168,7 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(false);
   });
 
-  it('does not let raw props override navStateRequest or onTabSelected', () => {
+  it('does not let raw props override navStateRequest or onTabSelected', async () => {
     const userOnTabSelected = jest.fn();
     // Cast to bypass the type — navStateRequest/onTabSelected are intentionally
     // excluded from NativeTabsHostNativeProps, but a user could still pass them
@@ -177,7 +177,7 @@ describe('unstable_nativeProps', () => {
       navStateRequest: { selectedScreenKey: 'foo', baseProvenance: 999 },
       onTabSelected: userOnTabSelected,
     } as unknown as NativeTabsProps['unstable_nativeProps'];
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs unstable_nativeProps={rawProps}>
           <NativeTabs.Trigger name="index" />
@@ -198,8 +198,8 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost.mock.calls[0][0].onTabSelected).toBeInstanceOf(Function);
   });
 
-  it('drops android-only raw props on iOS so they do not leak onto Tabs.Host', () => {
-    renderRouter({
+  it('drops android-only raw props on iOS so they do not leak onto Tabs.Host', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs
           unstable_nativeProps={{ android: { tabBarRespectsIMEInsets: true }, direction: 'ltr' }}>
@@ -216,10 +216,10 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost.mock.calls[0][0].direction).toBe('ltr');
   });
 
-  it('warns in dev when ios.bottomAccessory raw prop collides with <NativeTabs.BottomAccessory> child', () => {
+  it('warns in dev when ios.bottomAccessory raw prop collides with <NativeTabs.BottomAccessory> child', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     try {
-      renderRouter({
+      await renderRouter({
         _layout: () => (
           <NativeTabs unstable_nativeProps={{ ios: { bottomAccessory: () => null } }}>
             <NativeTabs.Trigger name="index" />
@@ -239,7 +239,7 @@ describe('unstable_nativeProps', () => {
     }
   });
 
-  it('forwards updated raw props to Tabs.Host on re-render', () => {
+  it('forwards updated raw props to Tabs.Host on re-render', async () => {
     function Layout() {
       const [direction, setDirection] = React.useState<'ltr' | 'rtl'>('ltr');
       return (
@@ -252,15 +252,15 @@ describe('unstable_nativeProps', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: Layout,
       index: () => <View testID="index" />,
     });
 
     expect(TabsHost.mock.calls.at(-1)![0].direction).toBe('ltr');
 
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggle'));
     });
 
     expect(TabsHost.mock.calls.at(-1)![0].direction).toBe('rtl');
@@ -270,8 +270,8 @@ describe('unstable_nativeProps', () => {
 // TODO: drop this describe block once react-native-screens honors its documented
 // fallback where `icon` is reused when `selectedIcon` is not provided.
 describe('selectedIcon fallback', () => {
-  it('mirrors sf icon onto selectedIcon when no selected variant is provided', () => {
-    renderRouter({
+  it('mirrors sf icon onto selectedIcon when no selected variant is provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -291,9 +291,9 @@ describe('selectedIcon fallback', () => {
     });
   });
 
-  it('mirrors src icon onto selectedIcon when no selected variant is provided', () => {
+  it('mirrors src icon onto selectedIcon when no selected variant is provided', async () => {
     const src = { uri: 'https://example.com/icon.png' };
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -311,8 +311,8 @@ describe('selectedIcon fallback', () => {
     expect(ios?.selectedIcon).toEqual({ type: 'imageSource', imageSource: src });
   });
 
-  it('does not override an explicitly provided selectedIcon', () => {
-    renderRouter({
+  it('does not override an explicitly provided selectedIcon', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">

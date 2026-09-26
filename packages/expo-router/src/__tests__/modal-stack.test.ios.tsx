@@ -10,8 +10,8 @@ import { renderRouter } from '../testing-library';
  * should behave the same on native (iOS) as any regular stack. We verify that
  * pushing the modal route updates the pathname and enables `canDismiss()`.
  */
-it('native stack handles mixed modal + normal screens', () => {
-  renderRouter({
+it('native stack handles mixed modal + normal screens', async () => {
+  await renderRouter({
     _layout: () => (
       <Stack id={undefined}>
         <Stack.Screen name="index" />
@@ -27,7 +27,7 @@ it('native stack handles mixed modal + normal screens', () => {
   expect(router.canDismiss()).toBe(false);
 
   // Push the modal route and ensure navigation works.
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   expect(screen).toHavePathname('/second');
   expect(router.canDismiss()).toBe(true);

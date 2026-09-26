@@ -33,7 +33,7 @@ jest.mock('react-native-screens', () => {
 
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
-it('can pass props via unstable_nativeProps', () => {
+it('can pass props via unstable_nativeProps', async () => {
   const indexOptions = {
     title: 'Test Title',
     iconColor: 'blue',
@@ -42,7 +42,7 @@ it('can pass props via unstable_nativeProps', () => {
     title: 'Second Title',
     iconColor: 'red',
   };
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" unstable_nativeProps={{ ...indexOptions }} />
@@ -64,8 +64,8 @@ it('can pass props via unstable_nativeProps', () => {
   });
 });
 
-it('can pass options via elements', () => {
-  renderRouter({
+it('can pass options via elements', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index">
@@ -87,8 +87,8 @@ it('can pass options via elements', () => {
   } as TabsScreenProps);
 });
 
-it('when no options are passed, default ones are used', () => {
-  renderRouter({
+it('when no options are passed, default ones are used', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -110,8 +110,8 @@ it('when no options are passed, default ones are used', () => {
 describe('disabled', () => {
   it.each([true, false] as const)(
     'forwards disabled=%p to Tabs.Screen as preventNativeSelection',
-    (value) => {
-      renderRouter({
+    async (value) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disabled={value} />
@@ -128,8 +128,8 @@ describe('disabled', () => {
     }
   );
 
-  it('does not forward preventNativeSelection when disabled is not set', () => {
-    renderRouter({
+  it('does not forward preventNativeSelection when disabled is not set', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -143,8 +143,8 @@ describe('disabled', () => {
     expect(TabsScreen.mock.calls.at(-1)![0].preventNativeSelection).toBeUndefined();
   });
 
-  it('lets unstable_nativeProps.preventNativeSelection override disabled', () => {
-    renderRouter({
+  it('lets unstable_nativeProps.preventNativeSelection override disabled', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger
@@ -164,8 +164,8 @@ describe('disabled', () => {
 });
 
 describe('testID and accessibilityLabel', () => {
-  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', () => {
-    renderRouter({
+  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
@@ -184,8 +184,8 @@ describe('testID and accessibilityLabel', () => {
 });
 
 describe('Icons', () => {
-  it('when using Icon with sf prop, it is passed as sfSymbolName', () => {
-    renderRouter({
+  it('when using Icon with sf prop, it is passed as sfSymbolName', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -203,8 +203,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', () => {
-    renderRouter({
+  it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -222,8 +222,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('when using Icon with sf object, values are passed correctly', () => {
-    renderRouter({
+  it('when using Icon with sf object, values are passed correctly', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -244,8 +244,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('when using Icon drawable on iOS, no value is passed', () => {
-    renderRouter({
+  it('when using Icon drawable on iOS, no value is passed', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -262,8 +262,8 @@ describe('Icons', () => {
     expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
   });
 
-  it('uses last Icon sf value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -286,8 +286,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('uses last Icon sf selected when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf selected when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -306,8 +306,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('uses last Icon sf for each type when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf for each type when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -333,8 +333,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('uses last Icon sf for each type when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf for each type when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -356,8 +356,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('when selectedIconColor is provided, it is passed to screen', () => {
-    renderRouter({
+  it('when selectedIconColor is provided, it is passed to screen', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index" />
@@ -380,8 +380,8 @@ describe('Icons', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('when selectedIconColor is provided in container and tab, the tab should use the tab color', () => {
-    renderRouter({
+  it('when selectedIconColor is provided in container and tab, the tab should use the tab color', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index">
@@ -460,8 +460,8 @@ describe('Icons', () => {
       expectedIcon: NonNullable<NonNullable<TabsScreenProps['ios']>['icon']> | undefined;
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
-    ({ sf, src, drawable, md, expectedIcon }) => {
-      renderRouter({
+    async ({ sf, src, drawable, md, expectedIcon }) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -519,8 +519,8 @@ describe('Icons', () => {
       },
     ])(
       'icon and selectedIcon are $expectedType when $name',
-      ({ iconColor, expectedType, expectsWarning }) => {
-        renderRouter({
+      async ({ iconColor, expectedType, expectsWarning }) => {
+        await renderRouter({
           _layout: () => (
             <NativeTabs iconColor={iconColor}>
               <NativeTabs.Trigger name="index">
@@ -554,8 +554,8 @@ describe('Icons', () => {
 });
 
 describe('Badge', () => {
-  it('passes badge value via Badge element', () => {
-    renderRouter({
+  it('passes badge value via Badge element', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -573,8 +573,8 @@ describe('Badge', () => {
     } as TabsScreenProps);
   });
 
-  it('passes badge value as string', () => {
-    renderRouter({
+  it('passes badge value as string', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -592,8 +592,8 @@ describe('Badge', () => {
     } as TabsScreenProps);
   });
 
-  it('does not pass badge when Badge is not used', () => {
-    renderRouter({
+  it('does not pass badge when Badge is not used', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -607,8 +607,8 @@ describe('Badge', () => {
     expect(TabsScreen.mock.calls[0][0]).not.toHaveProperty('badgeValue');
   });
 
-  it('uses last Badge value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Badge value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -628,8 +628,8 @@ describe('Badge', () => {
     } as TabsScreenProps);
   });
 
-  it('when empty Badge is used, passes space to badgeValue', () => {
-    renderRouter({
+  it('when empty Badge is used, passes space to badgeValue', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -645,8 +645,8 @@ describe('Badge', () => {
     expect(TabsScreen.mock.calls[0][0].badgeValue).toBe(' '); // Space is used to show empty badge
   });
 
-  it('when empty Badge is used with hidden, passes undefined to badgeValue', () => {
-    renderRouter({
+  it('when empty Badge is used with hidden, passes undefined to badgeValue', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -664,8 +664,8 @@ describe('Badge', () => {
 });
 
 describe('Label', () => {
-  it('passes title via Label element', () => {
-    renderRouter({
+  it('passes title via Label element', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -683,8 +683,8 @@ describe('Label', () => {
     } as TabsScreenProps);
   });
 
-  it('when title is not set, uses the route name', () => {
-    renderRouter({
+  it('when title is not set, uses the route name', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -702,8 +702,8 @@ describe('Label', () => {
     expect(TabsScreen.mock.calls[3][0].title).toBe('one');
   });
 
-  it('uses last Label value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Label value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -723,8 +723,8 @@ describe('Label', () => {
     } as TabsScreenProps);
   });
 
-  it('when empty Label is used, passes route name to title', () => {
-    renderRouter({
+  it('when empty Label is used, passes route name to title', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -740,8 +740,8 @@ describe('Label', () => {
     expect(TabsScreen.mock.calls[0][0].title).toBe('index'); // Route name is used as title when Label is empty
   });
 
-  it('when Label with hidden is used, passes empty string to title', () => {
-    renderRouter({
+  it('when Label with hidden is used, passes empty string to title', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -757,8 +757,8 @@ describe('Label', () => {
     expect(TabsScreen.mock.calls[0][0].title).toBe(''); // Route name is used as title when Label is empty
   });
 
-  it('when selectedLabelStyle is provided, it is passed to screen', () => {
-    renderRouter({
+  it('when selectedLabelStyle is provided, it is passed to screen', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index" />
@@ -782,8 +782,8 @@ describe('Label', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', () => {
-    renderRouter({
+  it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index">
@@ -826,8 +826,8 @@ describe('Label', () => {
 
 describe('Tab options', () => {
   describe('disablePopToTop', () => {
-    it('When disablePopToTop is true, popToRoot is false', () => {
-      renderRouter({
+    it('When disablePopToTop is true, popToRoot is false', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disablePopToTop>
@@ -849,8 +849,8 @@ describe('Tab options', () => {
       } as TabsScreenProps);
     });
 
-    it('When disablePopToTop is not set or false, popToRoot is true', () => {
-      renderRouter({
+    it('When disablePopToTop is not set or false, popToRoot is true', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -887,8 +887,8 @@ describe('Tab options', () => {
   });
 
   describe('disableScrollToTop', () => {
-    it('When disableScrollToTop is true, scrollToTop is false', () => {
-      renderRouter({
+    it('When disableScrollToTop is true, scrollToTop is false', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disableScrollToTop>
@@ -910,8 +910,8 @@ describe('Tab options', () => {
       } as TabsScreenProps);
     });
 
-    it('When disableScrollToTop is not set or false, scrollToTop is true', () => {
-      renderRouter({
+    it('When disableScrollToTop is not set or false, scrollToTop is true', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -948,8 +948,8 @@ describe('Tab options', () => {
 
     it.each([true, false, undefined])(
       'When disableAutomaticContentInsets is %p, overrideScrollViewContentInsetAdjustmentBehavior is the opposite',
-      (value) => {
-        renderRouter({
+      async (value) => {
+        await renderRouter({
           _layout: () => (
             <NativeTabs>
               <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
@@ -971,8 +971,8 @@ describe('Tab options', () => {
 });
 
 describe('Dynamic options', () => {
-  it('updates nativeProps dynamically', () => {
-    renderRouter({
+  it('updates nativeProps dynamically', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
@@ -1010,8 +1010,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('unstable_nativeProps override dynamic options configuration', () => {
-    renderRouter({
+  it('unstable_nativeProps override dynamic options configuration', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
@@ -1059,8 +1059,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can override component children from _layout with unstable_nativeProps', () => {
-    renderRouter({
+  it('can override component children from _layout with unstable_nativeProps', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1115,8 +1115,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can override component children from _layout with dynamic children', () => {
-    renderRouter({
+  it('can override component children from _layout with dynamic children', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1166,8 +1166,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can dynamically update options with state update', () => {
-    renderRouter({
+  it('can dynamically update options with state update', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1192,16 +1192,16 @@ describe('Dynamic options', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(2);
     expect(TabsScreen.mock.calls[0][0].title).toBe('Initial Title');
     expect(TabsScreen.mock.calls[1][0].title).toBe('Updated Title 0');
-    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    await act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(TabsScreen).toHaveBeenCalledTimes(3);
     expect(TabsScreen.mock.calls[2][0].title).toBe('Updated Title 1');
-    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    await act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(TabsScreen).toHaveBeenCalledTimes(4);
     expect(TabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
   });
 
-  it('can be used in preview', () => {
-    renderRouter({
+  it('can be used in preview', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">

@@ -20,32 +20,34 @@ type TestEventMap = {
 
 // --- Unit: useStandardEmitter in isolation against a mock emit ---
 describe('useStandardEmitter (unit)', () => {
-  function setup(emitReturn: object = {}) {
+  async function setup(emitReturn: object = {}) {
     const emit = jest.fn().mockReturnValue(emitReturn);
     const navigation = { emit } as unknown as EventEmitter<TestEventMap>;
-    const { result, rerender } = renderHook(() => useStandardEmitter<TestEventMap>(navigation));
+    const { result, rerender } = await renderHook(() =>
+      useStandardEmitter<TestEventMap>(navigation)
+    );
     return { emit, navigation, result, rerender };
   }
 
-  it('forwards the options to navigation.emit', () => {
-    const { emit, result } = setup();
+  it('forwards the options to navigation.emit', async () => {
+    const { emit, result } = await setup();
 
     result.current.emit({ type: 'plain', target: 'k', data: { value: 1 } });
 
     expect(emit).toHaveBeenCalledWith({ type: 'plain', target: 'k', data: { value: 1 } });
   });
 
-  it('returns a base event built from the input options', () => {
-    const { result } = setup();
+  it('returns a base event built from the input options', async () => {
+    const { result } = await setup();
 
     const event = result.current.emit({ type: 'plain', target: 'k', data: { value: 1 } });
 
     expect(event).toEqual({ type: 'plain', target: 'k', data: { value: 1 } });
   });
 
-  it('includes defaultPrevented/preventDefault when the emit result has them', () => {
+  it('includes defaultPrevented/preventDefault when the emit result has them', async () => {
     const preventDefault = jest.fn();
-    const { result } = setup({ defaultPrevented: true, preventDefault });
+    const { result } = await setup({ defaultPrevented: true, preventDefault });
 
     const event = result.current.emit({ type: 'cancelable', target: 'k', canPreventDefault: true });
 
@@ -56,8 +58,8 @@ describe('useStandardEmitter (unit)', () => {
     );
   });
 
-  it('omits defaultPrevented/preventDefault when the emit result lacks them', () => {
-    const { result } = setup({});
+  it('omits defaultPrevented/preventDefault when the emit result lacks them', async () => {
+    const { result } = await setup({});
 
     const event = result.current.emit({ type: 'plain', data: { value: 1 } });
 
@@ -65,11 +67,11 @@ describe('useStandardEmitter (unit)', () => {
     expect('preventDefault' in event).toBe(false);
   });
 
-  it('reflects preventDefault called after emit returns', () => {
+  it('reflects preventDefault called after emit returns', async () => {
     // Mirrors the real emitter (useEventEmitter): `defaultPrevented` is a live getter over a
     // closure flag that `preventDefault` mutates.
     let prevented = false;
-    const { result } = setup({
+    const { result } = await setup({
       get defaultPrevented() {
         return prevented;
       },
@@ -87,25 +89,27 @@ describe('useStandardEmitter (unit)', () => {
     expect(event.defaultPrevented).toBe(true);
   });
 
-  it('returns a stable reference while navigation is unchanged', () => {
+  it('returns a stable reference while navigation is unchanged', async () => {
     const navigation = { emit: jest.fn() } as unknown as EventEmitter<TestEventMap>;
-    const { result, rerender } = renderHook(() => useStandardEmitter<TestEventMap>(navigation));
+    const { result, rerender } = await renderHook(() =>
+      useStandardEmitter<TestEventMap>(navigation)
+    );
     const first = result.current;
 
-    rerender({});
+    await rerender({});
 
     expect(result.current).toBe(first);
   });
 
-  it('returns a new reference when navigation changes', () => {
-    const { result, rerender } = renderHook(
+  it('returns a new reference when navigation changes', async () => {
+    const { result, rerender } = await renderHook(
       ({ navigation }: { navigation: EventEmitter<TestEventMap> }) =>
         useStandardEmitter<TestEventMap>(navigation),
       { initialProps: { navigation: { emit: jest.fn() } as unknown as EventEmitter<TestEventMap> } }
     );
     const first = result.current;
 
-    rerender({ navigation: { emit: jest.fn() } as unknown as EventEmitter<TestEventMap> });
+    await rerender({ navigation: { emit: jest.fn() } as unknown as EventEmitter<TestEventMap> });
 
     expect(result.current).not.toBe(first);
   });
@@ -136,9 +140,9 @@ describe('useStandardEmitter (integration)', () => {
     TabRouterOptions
   >(NavigatorContent, TabRouter);
 
-  it('delivers an emitted event to the targeted screen listener', () => {
+  it('delivers an emitted event to the targeted screen listener', async () => {
     const ping = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <StandardTabs screenListeners={{ ping: (e: { data?: unknown }) => ping(e.data) }}>
           <StandardTabs.Screen name="index" />
@@ -149,7 +153,7 @@ describe('useStandardEmitter (integration)', () => {
     const lastArgs = () =>
       contentSpy.mock.calls.at(-1)![0] as NavigatorArgs<Record<string, never>, IntegrationEventMap>;
 
-    act(() => {
+    await act(() => {
       lastArgs().emitter.emit({
         type: 'ping',
         target: lastArgs().state.routes[0]!.key,

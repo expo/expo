@@ -36,10 +36,10 @@ function Registrant({ entry }: { entry: RouterRegistryEntry }) {
   return null;
 }
 
-it('warns when registering outside the container', () => {
+it('warns when registering outside the container', async () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  render(<Registrant entry={firstEntry} />);
+  await render(<Registrant entry={firstEntry} />);
 
   expect(warn).toHaveBeenCalledWith(
     'Router registry is unavailable. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
@@ -47,7 +47,7 @@ it('warns when registering outside the container', () => {
   warn.mockRestore();
 });
 
-it('replaces entries and ignores stale-owner cleanup', () => {
+it('replaces entries and ignores stale-owner cleanup', async () => {
   const ref = { current: null } as RefObject<NavigationContainerRef<ParamListBase> | null>;
   const firstReduce = jest.fn(() => null);
   const secondReduce = jest.fn((state: NavigationState) => ({
@@ -64,7 +64,7 @@ it('replaces entries and ignores stale-owner cleanup', () => {
     return null;
   }
 
-  render(
+  await render(
     <BaseNavigationContainer
       ref={ref}
       initialState={{
@@ -82,13 +82,13 @@ it('replaces entries and ignores stale-owner cleanup', () => {
     </BaseNavigationContainer>
   );
 
-  act(() => {
+  await act(() => {
     setters!.register('root', first);
     setters!.register('root', first);
     setters!.register('root', second);
     setters!.unregister('root', first);
   });
-  act(() => ref.current!.dispatchSync({ type: 'TEST' }));
+  await act(() => ref.current!.dispatchSync({ type: 'TEST' }));
 
   expect(firstReduce).not.toHaveBeenCalled();
   expect(secondReduce).toHaveBeenCalledTimes(1);
@@ -98,7 +98,7 @@ it('replaces entries and ignores stale-owner cleanup', () => {
   ]);
 });
 
-it('does not rerender descendants when the registry changes', () => {
+it('does not rerender descendants when the registry changes', async () => {
   let setters = undefined as ContextType<typeof RouterRegistrySettersContext>;
   const renders = jest.fn();
   const child = <Probe />;
@@ -109,15 +109,15 @@ it('does not rerender descendants when the registry changes', () => {
     return null;
   }
 
-  render(<BaseNavigationContainer>{child}</BaseNavigationContainer>);
+  await render(<BaseNavigationContainer>{child}</BaseNavigationContainer>);
   const initialRenders = renders.mock.calls.length;
 
-  act(() => setters!.register('root', firstEntry));
+  await act(() => setters!.register('root', firstEntry));
 
   expect(renders).toHaveBeenCalledTimes(initialRenders);
 });
 
-it('keeps committed keys and screen instances stable across a StrictMode rerender', () => {
+it('keeps committed keys and screen instances stable across a StrictMode rerender', async () => {
   let rerenderLayout: () => void;
   let mounts = 0;
   function Layout() {
@@ -133,7 +133,7 @@ it('keeps committed keys and screen instances stable across a StrictMode rerende
   }
   const context = getMockContext({ _layout: Layout, index: Screen });
 
-  render(
+  await render(
     <StrictMode>
       <ExpoRoot context={context} location="/" />
     </StrictMode>
@@ -141,13 +141,13 @@ it('keeps committed keys and screen instances stable across a StrictMode rerende
   const initialKeys = collectStateKeys(navigationRef.current!.getRootState());
   const initialMounts = mounts;
 
-  act(() => rerenderLayout());
+  await act(() => rerenderLayout());
 
   expect(collectStateKeys(navigationRef.current!.getRootState())).toEqual(initialKeys);
   expect(mounts).toBe(initialMounts);
 });
 
-it('uses the latest screen config when screens change', () => {
+it('uses the latest screen config when screens change', async () => {
   const routes: Record<string, () => ReactNode> = {
     _layout: () => <Stack />,
     index: () => <Text testID="index" />,
@@ -157,11 +157,11 @@ it('uses the latest screen config when screens change', () => {
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
 
   try {
-    const result = render(<ExpoRoot context={context} location="/" />);
+    const result = await render(<ExpoRoot context={context} location="/" />);
     routes.second = () => <Text testID="second" />;
-    result.rerender(<ExpoRoot context={context} location="/" />);
+    await result.rerender(<ExpoRoot context={context} location="/" />);
 
-    act(() => router.push('/second'));
+    await act(() => router.push('/second'));
 
     expect(collectRouteNames(navigationRef.current!.getRootState())).toContain('second');
   } finally {
