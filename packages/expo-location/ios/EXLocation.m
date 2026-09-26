@@ -19,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"speed": @(location.speed),
         },
     @"timestamp": @([location.timestamp timeIntervalSince1970] * 1000),
+    @"mocked": @(location.sourceInformation.isSimulatedBySoftware),
     };
 }
 
