@@ -68,7 +68,7 @@ describe(useAppIntents, () => {
     const handler = jest.fn().mockImplementationOnce(() => {
       throw new Error('handler failed');
     });
-    renderHook(() => useAppIntents(handler));
+    await renderHook(() => useAppIntents(handler));
 
     await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
     expect(handler).toHaveBeenCalledWith([cold], null);
@@ -88,7 +88,7 @@ describe(useAppIntents, () => {
       .mockImplementation(async () => [cold, live]);
 
     const handler = jest.fn();
-    renderHook(() => useAppIntents(handler));
+    await renderHook(() => useAppIntents(handler));
 
     emitIntent(live);
     // Let the live invocation's delivery run as far as it can before the initial read resolves.
@@ -118,7 +118,7 @@ describe(useAppIntents, () => {
     const handler = jest.fn((_pending, newIntent) =>
       newIntent?.id === first.id ? firstDelivery.promise : undefined
     );
-    renderHook(() => useAppIntents(handler));
+    await renderHook(() => useAppIntents(handler));
     await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
 
     emitIntent(first);
@@ -142,7 +142,7 @@ describe(useAppIntents, () => {
     getPendingMock.mockImplementation(async () => [live]);
 
     const handler = jest.fn();
-    renderHook(() => useAppIntents(handler));
+    await renderHook(() => useAppIntents(handler));
     await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
 
     emitIntent(live);
