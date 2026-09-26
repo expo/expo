@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Keep a style function on the child of `<Link asChild>` instead of dropping it. ([#50673](https://github.com/expo/expo/pull/50673) by [@TheSeydiCharyyev](https://github.com/TheSeydiCharyyev))
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-25
