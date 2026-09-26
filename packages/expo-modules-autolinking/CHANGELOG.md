@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix precompiled modules falling back to source builds on Ruby 2.6 (macOS system Ruby) by polyfilling `Enumerable#filter_map`.
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-25
