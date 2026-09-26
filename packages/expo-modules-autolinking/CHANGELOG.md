@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Publish each product's `autolinkWhen` condition, `sourceOnly` flag, iOS deployment target and SwiftPM package dependencies in the `prebuilt-metadata` document. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
