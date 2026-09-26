@@ -17,19 +17,27 @@ describe('useAssets', () => {
   const loadAsyncSpy = jest.spyOn(Asset, 'loadAsync').mockResolvedValue(STUB_ASSETS);
 
   it('loads assets when mounted', async () => {
-    const { result } = renderHook(useAssets, { initialProps: STUB_MODULES });
+    // Keep loading pending so the initial state is observable after the async render.
+    let resolveAssets!: (assets: Asset[]) => void;
+    loadAsyncSpy.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveAssets = resolve;
+      })
+    );
+    const { result } = await renderHook(useAssets, { initialProps: STUB_MODULES });
 
     // Ensure the hook returns undefined when no assets are loaded
     expect(result.current[RESULT_ASSETS]).toBeUndefined();
 
     // Ensure the hook returns the loaded assets once resolved
+    resolveAssets(STUB_ASSETS);
     await waitFor(() => {
       expect(result.current[RESULT_ASSETS]).toBe(STUB_ASSETS);
     });
   });
 
   it('skips new asset list when rerendered', async () => {
-    const { result, rerender } = renderHook(useAssets, { initialProps: STUB_MODULES });
+    const { result, rerender } = await renderHook(useAssets, { initialProps: STUB_MODULES });
 
     // Wait for the assets to load
     await waitFor(() => {
@@ -37,7 +45,7 @@ describe('useAssets', () => {
     });
 
     // Rerender the hook with new modules
-    rerender([9999]);
+    await rerender([9999]);
 
     // Ensure the assets are not reloaded
     expect(loadAsyncSpy).not.toHaveBeenCalledWith([9999]);
@@ -48,7 +56,7 @@ describe('useAssets', () => {
   });
 
   it('keeps assets loaded when unmounted', async () => {
-    const { result, unmount } = renderHook(useAssets, { initialProps: STUB_MODULES });
+    const { result, unmount } = await renderHook(useAssets, { initialProps: STUB_MODULES });
 
     // Wait for the assets to load
     await waitFor(() => {
@@ -56,7 +64,7 @@ describe('useAssets', () => {
     });
 
     // Unmount the hook
-    unmount();
+    await unmount();
 
     // Ensure the assets are still the same
     await waitFor(() => {
@@ -69,7 +77,7 @@ describe('useAssets', () => {
     const error = new Error('test');
     loadAsyncSpy.mockRejectedValue(error);
 
-    const { result } = renderHook(useAssets, { initialProps: STUB_MODULES });
+    const { result } = await renderHook(useAssets, { initialProps: STUB_MODULES });
 
     // Ensure the hook returns the error
     await waitFor(() => {
