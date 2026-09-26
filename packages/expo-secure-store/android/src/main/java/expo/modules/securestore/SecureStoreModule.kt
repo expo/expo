@@ -229,22 +229,6 @@ open class SecureStoreModule : Module() {
     }
   }
 
-  private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, requireAuthentication: Boolean, keychainService: String): Boolean {
-    // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
-    encryptedItem.put(USES_KEYSTORE_SUFFIX_PROPERTY, true)
-    // In order to be able to have the same keys under different keychains
-    // we need a way to recognize what is the keychain of the item when we read it
-    encryptedItem.put(KEYSTORE_ALIAS_PROPERTY, keychainService)
-    encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
-
-    val encryptedItemString = encryptedItem.toString()
-    if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
-      throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
-    }
-
-    return prefs.edit().putString(key, encryptedItemString).commit()
-  }
-
   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
     val success = removeItem(
       getSharedPreferences(),
@@ -375,7 +359,7 @@ open class SecureStoreModule : Module() {
     private const val SHARED_PREFERENCES_NAME = "SecureStore"
     private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
     private const val SCHEME_PROPERTY = "scheme"
-    private const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
+    internal const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
     const val USES_KEYSTORE_SUFFIX_PROPERTY = "usesKeystoreSuffix"
     const val DEFAULT_KEYSTORE_ALIAS = "key_v1"
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
@@ -392,4 +376,60 @@ internal fun removeItem(
   val removedFromPrefs = prefs.edit().remove(keychainAwareKey).remove(key).commit()
   val removedFromLegacyPrefs = legacyPrefs.edit().remove(key).commit()
   return removedFromPrefs && removedFromLegacyPrefs
+}
+
+/**
+ * Writes an encrypted item to shared preferences, throwing if it could not be persisted.
+ *
+ * [SharedPreferences.Editor.commit] returns `false` when the write never reached disk — AOSP takes
+ * that path when it can't rename the backing file, for instance. The in-memory map is still updated,
+ * so reads in the same process keep succeeding and the failure is invisible until the process dies.
+ * Reporting it as a [WriteException] keeps a resolved `setItemAsync` meaning "persisted".
+ *
+ * Throwing alone isn't enough: `SharedPreferencesImpl` mutates the in-memory map *before* it tries
+ * the disk write, so a rejected write would otherwise leave the new value readable for the rest of
+ * the process lifetime while the disk still holds the old one. We therefore roll the in-memory map
+ * back to what was there before rethrowing, so a read after a rejected write returns the value that
+ * is actually persisted.
+ */
+internal fun saveEncryptedItem(
+  encryptedItem: JSONObject,
+  prefs: SharedPreferences,
+  key: String,
+  requireAuthentication: Boolean,
+  keychainService: String
+) {
+  // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
+  encryptedItem.put(SecureStoreModule.USES_KEYSTORE_SUFFIX_PROPERTY, true)
+  // In order to be able to have the same keys under different keychains
+  // we need a way to recognize what is the keychain of the item when we read it
+  encryptedItem.put(SecureStoreModule.KEYSTORE_ALIAS_PROPERTY, keychainService)
+  encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
+
+  val encryptedItemString = encryptedItem.toString()
+  if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
+    throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
+  }
+
+  // Read the currently persisted value first so we can put it back if the write is rejected.
+  // This is racy in the sense that another thread writing the same key between this read and the
+  // rollback below would have its value overwritten by the old one. Concurrent writes to the same
+  // key are already last-writer-wins here, and losing a write that itself never reached disk is
+  // preferable to leaving the in-memory map claiming a value that isn't persisted.
+  val previousItemString = prefs.getString(key, null)
+
+  if (!prefs.edit().putString(key, encryptedItemString).commit()) {
+    // `commit()` already mutated the in-memory map, so restore the previous entry before throwing.
+    // This restoring commit reports `false` too — the disk is still broken — and that is fine and
+    // expected: we only need its in-memory effect, which is applied regardless of the disk write.
+    val rollback = prefs.edit()
+    if (previousItemString != null) {
+      rollback.putString(key, previousItemString)
+    } else {
+      rollback.remove(key)
+    }
+    rollback.commit()
+
+    throw WriteException("Could not write the encrypted item to SecureStore", key, keychainService)
+  }
 }
