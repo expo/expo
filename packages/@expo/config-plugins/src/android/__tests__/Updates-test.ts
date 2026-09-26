@@ -197,7 +197,7 @@ describe('Android Updates config', () => {
       } as any;
       await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
-        '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
+        '<resources>\n  <string name="expo_runtime_version" translatable="false">1.10</string>\n</resources>'
       );
 
       const config2 = {

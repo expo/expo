@@ -103,7 +103,13 @@ export async function applyRuntimeVersionFromConfigForProjectRootAsync(
   const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'android');
   if (runtimeVersion) {
     return setStringItem(
-      [buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })],
+      [
+        buildResourceItem({
+          name: 'expo_runtime_version',
+          value: runtimeVersion,
+          translatable: false,
+        }),
+      ],
       stringsJSON
     );
   }

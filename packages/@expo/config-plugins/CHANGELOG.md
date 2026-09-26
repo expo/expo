@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Mark the generated `expo_runtime_version` Android string as `translatable="false"` so translation tools (including Google Play's automatic app-string translation) cannot localise the runtime version and cut devices off from updates. ([#PR](https://github.com/expo/expo/pull/PR) by [@uen](https://github.com/uen))
 - Replace, instead of duplicate, the generated section in files with CRLF line endings. ([#50381](https://github.com/expo/expo/pull/50381) by [@tahakocal](https://github.com/tahakocal))
 
 ### 💡 Others
