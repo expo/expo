@@ -9,7 +9,7 @@ private let MEMORY_DB_NAME = ":memory:"
 private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
 
 // `@unchecked Sendable`: the `@JS(.concurrent)` members send the module off the JavaScript thread, which
-// Swift 6 mode allows only for a `Sendable` module. The mutable state is either guarded by `lockQueue` or
+// Swift 6 mode allows only for a `Sendable` module. The mutable state is either guarded by `cacheLock` or
 // only read off the JavaScript thread (`hasListeners`).
 @ExpoModule("ExpoSQLite")
 public final class SQLiteModule: Module, @unchecked Sendable {
@@ -17,7 +17,8 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   // will release the pair when `closeDatabase` is called.
   private var contextPairs = [Unmanaged<AnyObject>]()
 
-  private static let lockQueue = DispatchQueue(label: "expo.modules.sqlite.lockQueue")
+  // Closing a cached connection also releases its update-hook context under this lock.
+  private static let cacheLock = NSRecursiveLock()
   private var cachedDatabases = [NativeDatabase]()
   private(set) var hasListeners = false
 
@@ -154,10 +155,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       }
 
       AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        try maybeThrowForClosedDatabase(database)
-        if let db = removeCachedDatabase(of: database) {
-          try closeDatabase(db)
-        }
+        try closeDatabaseIfNeeded(database)
       }.runOnQueue(moduleQueue)
       // Interrupt must reach SQLite immediately, without waiting for the running query's queue.
       Function("interruptSync") { (database: NativeDatabase) in
@@ -170,10 +168,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
         exsqlite3_interrupt(database.pointer)
       }
       Function("closeSync") { (database: NativeDatabase) in
-        try maybeThrowForClosedDatabase(database)
-        if let db = removeCachedDatabase(of: database) {
-          try closeDatabase(db)
-        }
+        try closeDatabaseIfNeeded(database)
       }
     }
 
@@ -264,12 +259,12 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   // swiftlint:disable line_length
 
   private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: any AnyArrayBuffer], shouldPassAsArray: Bool) throws -> [String: Any] {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
     // The statement with parameter bindings is stateful,
     // we have to guard with a critical section for thread safety.
     return try statement.lock.withLock { _ -> [String: Any] in
+      try maybeThrowForFinalizedStatement(statement)
+      try maybeThrowForClosedDatabase(database)
+
       exsqlite3_reset(statement.pointer)
       exsqlite3_clear_bindings(statement.pointer)
       for (key, param) in bindParams {
@@ -301,11 +296,11 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   // swiftlint:enable line_length
 
   private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
     // Guard the stateful statement, see `run` above.
     return try statement.lock.withLock { _ -> SQLiteColumnValues? in
+      try maybeThrowForFinalizedStatement(statement)
+      try maybeThrowForClosedDatabase(database)
+
       let ret = exsqlite3_step(statement.pointer)
       if ret == SQLITE_ROW {
         return try getColumnValues(statement: statement)
@@ -318,11 +313,11 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   }
 
   private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
-    try maybeThrowForClosedDatabase(database)
-    try maybeThrowForFinalizedStatement(statement)
-
     // Guard the stateful statement, see `run` above.
     return try statement.lock.withLock { _ -> [SQLiteColumnValues] in
+      try maybeThrowForFinalizedStatement(statement)
+      try maybeThrowForClosedDatabase(database)
+
       var columnValuesList: [SQLiteColumnValues] = []
       while true {
         let ret = exsqlite3_step(statement.pointer)
@@ -343,16 +338,24 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     return db.lastErrorMessage()
   }
 
-  private func closeDatabase(_ db: NativeDatabase) throws {
+  func closeDatabase(_ db: NativeDatabase) throws {
+    Self.cacheLock.lock()
+    defer { Self.cacheLock.unlock() }
     db.closeLock.lock()
     defer { db.closeLock.unlock() }
-    try maybeThrowForClosedDatabase(db)
+    db.statementLifecycleLock.lock()
+    defer { db.statementLifecycleLock.unlock() }
+    try db.ensureOpen()
     try maybeFinalizeAllStatements(db)
 
     let ret = exsqlite3_close(db.pointer)
+    // SQLITE_BUSY leaves the connection open, including its update hook.
+    if ret != SQLITE_OK {
+      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
+    }
     db.isClosed = true
 
-    Self.lockQueue.sync {
+    Self.cacheLock.withLock {
       if let index = contextPairs.firstIndex(where: {
         guard let pair = $0.takeUnretainedValue() as? (SQLiteModule, NativeDatabase) else {
           return false
@@ -365,10 +368,6 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       }) {
         contextPairs.remove(at: index)
       }
-    }
-
-    if ret != SQLITE_OK {
-      throw SQLiteErrorException(convertSqlLiteErrorToString(db))
     }
   }
 
@@ -412,7 +411,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
 
   private func addUpdateHook(_ database: NativeDatabase) {
     let contextPair = Unmanaged.passRetained(((self, database) as AnyObject))
-    Self.lockQueue.sync {
+    Self.cacheLock.withLock {
       contextPairs.append(contextPair)
     }
     // swiftlint:disable:next multiline_arguments
@@ -525,27 +524,32 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   // MARK: - cachedDatabases managements
 
   private func addCachedDatabase(_ database: NativeDatabase) {
-    Self.lockQueue.sync {
+    Self.cacheLock.withLock {
       cachedDatabases.append(database)
     }
   }
 
-  @discardableResult
-  private func removeCachedDatabase(of database: NativeDatabase) -> NativeDatabase? {
-    return Self.lockQueue.sync {
+  private func closeDatabaseIfNeeded(_ database: NativeDatabase) throws {
+    try Self.cacheLock.withLock {
+      try maybeThrowForClosedDatabase(database)
       if let index = cachedDatabases.firstIndex(of: database) {
         let db = cachedDatabases[index]
         if db.release() == 0 {
+          do {
+            try closeDatabase(db)
+          } catch {
+            // Keep the connection cached and owned so callers can clean up and retry.
+            db.addRef()
+            throw error
+          }
           cachedDatabases.remove(at: index)
-          return db
         }
       }
-      return nil
     }
   }
 
   private func findCachedDatabase(where predicate: (NativeDatabase) -> Bool) -> NativeDatabase? {
-    return Self.lockQueue.sync {
+    return Self.cacheLock.withLock {
       if let database = cachedDatabases.first(where: predicate) {
         return database
       }
@@ -554,7 +558,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
   }
 
   private func removeAllCachedDatabases() -> [NativeDatabase] {
-    return Self.lockQueue.sync {
+    return Self.cacheLock.withLock {
       let databases = cachedDatabases
       cachedDatabases.removeAll()
       return databases
@@ -566,17 +570,14 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     guard database.openOptions.finalizeUnusedStatementsBeforeClosing else {
       return
     }
-    var stmt: OpaquePointer? = exsqlite3_next_stmt(database.pointer, nil)
-    if stmt == nil {
-      return
-    }
-    while let currentStmt = stmt {
-      let nextStmt = exsqlite3_next_stmt(database.pointer, currentStmt)
-      let ret = exsqlite3_finalize(currentStmt)
-      if ret != SQLITE_OK {
-        ExpoModulesCore.log.warn("exsqlite3_finalize failed: \(convertSqlLiteErrorToString(database))")
+    // Finalize through the wrappers so even a failed close leaves them invalidated.
+    // Do not destroy SQLite-internal statements owned by concurrent exec/backup operations.
+    for statement in database.statements {
+      do {
+        try statement.finalize(database: database)
+      } catch {
+        ExpoModulesCore.log.warn("Finalizing a statement during close failed: \(error)")
       }
-      stmt = nextStmt
     }
   }
 }
