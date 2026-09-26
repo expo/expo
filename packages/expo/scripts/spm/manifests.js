@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { collectIgnoredDirs } = require('./classify');
+const { appleSourceDir, collectIgnoredDirs } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
 const { runDumpPackage } = require('./cli');
 
@@ -304,7 +304,12 @@ function renderFileRules(target) {
 }
 
 /** Source-with-manifest: mirror the parsed targets/products, inject the given deps. */
-function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) {
+function renderSourceManifest({
+  manifest,
+  pkgDeps = [],
+  injectedTargetDeps = [],
+  frameworkSearchPath,
+}) {
   const targetsSwift = manifest.targets
     .map((t) => {
       if (t.path == null) {
@@ -314,7 +319,7 @@ function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) 
             'would point at nothing. Resolve target paths with resolveTargetPaths before rendering.'
         );
       }
-      const deps = [...t.siblingDeps.map(renderSiblingDependency), ...injected];
+      const deps = [...t.siblingDeps.map(renderSiblingDependency), ...injectedTargetDeps];
       const depsSwift = deps.length
         ? `\n${deps.map((dep) => `                ${dep},`).join('\n')}\n            `
         : '';
@@ -347,7 +352,7 @@ import PackageDescription
 
 let package = Package(
     name: "${manifest.name}",
-    platforms: ${renderPlatforms(manifest.iosDeploymentTarget ?? null)},
+    platforms: ${renderPlatforms(manifest.iosDeploymentTarget)},
     products: [
 ${productsSwift}
     ],
@@ -368,16 +373,16 @@ const PRIVACY_MANIFEST = 'PrivacyInfo.xcprivacy';
  * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources, on
  * the deployment floor the plugin read from the module's podspec.
  */
-function renderPureSwiftManifest(
+function renderPureSwiftManifest({
   product,
   srcRel,
-  pkgDeps,
-  targetDeps,
+  pkgDeps = [],
+  targetDeps = [],
   frameworkSearchPath,
   excludes = [],
   iosDeploymentTarget = null,
-  hasPrivacyManifest = false
-) {
+  hasPrivacyManifest = false,
+}) {
   const packageDepsSwift = pkgDeps.length
     ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
     : '';
@@ -523,15 +528,15 @@ function linkRoot(pkgDir, moduleRoot) {
  * ExpoModulesCore loads its Clang module map, which declares `use React`.
  */
 function sourceDependencies(react, codegenPkgPath) {
-  const wireReact = react != null;
+  if (react == null) return { targetDeps: [], pkgDeps: [] };
   return {
-    targetDeps: wireReact ? reactProductDependencies(react) : [],
-    pkgDeps: wireReact ? reactPackageDeclarations(react, codegenPkgPath) : [],
+    targetDeps: reactProductDependencies(react),
+    pkgDeps: reactPackageDeclarations(react, codegenPkgPath),
   };
 }
 
 /**
- * Option A: emit a CONSUMPTION Package.swift for a source module that ships a
+ * Emit a CONSUMPTION Package.swift for a source module that ships a
  * checked-in Package.swift. Re-declares its library targets against the real source
  * (via a `root` symlink), injects RN's invariant React product set, and points
  * compilation at Expo's binary-free framework interface tree. RN owns the merge;
@@ -542,7 +547,13 @@ function sourceDependencies(react, codegenPkgPath) {
  * sources cannot be located — the module is then skipped and diagnosed rather than
  * emitted broken.
  */
-function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDir, codegenPkgPath) {
+function emitSourceManifestPackage({
+  moduleRoot,
+  react = null,
+  frameworkSearchPath,
+  outDir,
+  codegenPkgPath = null,
+}) {
   const { unsupportedTargetDeps, ...dumped } = parseDumpedManifest(runDumpPackage(moduleRoot));
   if (unsupportedTargetDeps.length) return { unsupportedTargetDeps };
   const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
@@ -555,7 +566,12 @@ function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDi
   const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
   fs.writeFileSync(
     path.join(pkgDir, 'Package.swift'),
-    renderSourceManifest(manifest, pkgDeps, targetDeps, frameworkSearchPath)
+    renderSourceManifest({
+      manifest,
+      pkgDeps,
+      injectedTargetDeps: targetDeps,
+      frameworkSearchPath,
+    })
   );
 
   return {
@@ -567,21 +583,19 @@ function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDi
 /**
  * Emit a source consumption package for a module WITHOUT a checked-in Package.swift,
  * from its resolved descriptor. Pure-Swift modules only (single Swift target over the
- * module's `ios` sources). It compiles against Expo's invariant interface tree,
+ * module's `ios` or `apple` sources). It compiles against Expo's invariant interface tree,
  * plus RN's invariant React products.
  */
-function emitPureSwiftSourcePackage(
+function emitPureSwiftSourcePackage({
   moduleRoot,
   product,
-  react,
+  react = null,
   frameworkSearchPath,
   outDir,
-  codegenPkgPath,
-  iosDeploymentTarget = null
-) {
-  const srcDir = ['ios', 'apple']
-    .map((s) => path.join(moduleRoot, s))
-    .find((d) => fs.existsSync(d));
+  codegenPkgPath = null,
+  iosDeploymentTarget = null,
+}) {
+  const srcDir = appleSourceDir(moduleRoot);
   if (srcDir == null) return null;
   const srcRel = path.relative(moduleRoot, srcDir); // e.g. "ios"
   const pkgDir = path.join(outDir, 'expo-source', product);
@@ -591,16 +605,16 @@ function emitPureSwiftSourcePackage(
   const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
   fs.writeFileSync(
     path.join(pkgDir, 'Package.swift'),
-    renderPureSwiftManifest(
+    renderPureSwiftManifest({
       product,
       srcRel,
       pkgDeps,
       targetDeps,
       frameworkSearchPath,
-      collectIgnoredDirs(srcDir),
+      excludes: collectIgnoredDirs(srcDir),
       iosDeploymentTarget,
-      fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST))
-    )
+      hasPrivacyManifest: fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST)),
+    })
   );
 
   return {

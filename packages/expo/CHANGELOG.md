@@ -27,6 +27,7 @@
 - [iOS] Bring the `Package.swift` the SwiftPM autolinking plugin generates up to what CocoaPods already carries: a module's build settings, its declared iOS deployment floor and its `PrivacyInfo.xcprivacy`, plus `RCT_NEW_ARCH_ENABLED` for the `ExpoObjC` target. Modules the plugin cannot place are now reported with the reason and the fix, including one whose `Package.swift` depends on a target the generated package cannot declare. The podspec reader no longer mistakes a `test_spec`'s linkage for the module's own. ([#49823](https://github.com/expo/expo/pull/49823) by [@chrfalch](https://github.com/chrfalch))
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+- [iOS] Simplify the SwiftPM autolinking plugin's internals: pass manifest arguments as named options, and share the helpers its Apple source lookups, diagnostics, temporary-directory swaps and tests repeated. The generated packages are unchanged. ([#50547](https://github.com/expo/expo/pull/50547) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.0-preview.0 — 2026-09-10
 
