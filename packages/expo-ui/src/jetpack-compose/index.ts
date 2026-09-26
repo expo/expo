@@ -17,7 +17,6 @@ export * from './ExposedDropdownMenuBox';
 export * from './Divider';
 export * from './Host';
 export * from './LazyColumn';
-export { type LazyItemsProps } from './LazyItems';
 export * from './LazyRow';
 export * from './ListItem';
 export * from './RNHostView';
