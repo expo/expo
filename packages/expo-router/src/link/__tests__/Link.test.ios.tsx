@@ -124,6 +124,19 @@ it('renders a Link with a slot and array style', () => {
   );
 });
 
+it('renders a Link with a style function on the child when using asChild', () => {
+  const { getByTestId } = render(
+    <Link asChild testID="link" href="/foo" style={{ color: 'red' }}>
+      <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
+        <Text>Foo</Text>
+      </Pressable>
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node).toBeDefined();
+  expect(node.props.style).toStrictEqual([{ color: 'red' }, { opacity: 1 }]);
+});
+
 xit('renders a Link with a slot', () => {
   const { getByText, getByTestId } = render(
     <Link asChild href="/foo">

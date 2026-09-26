@@ -22,23 +22,51 @@ import { StyleSheet, type ViewProps } from 'react-native';
  * @returns
  */
 function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
-  return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
+  return forwardRef(function RNSlotHOC({ style, children, ...props }, ref) {
     const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
+    const childStyle =
+      React.isValidElement(children) &&
+      typeof children.props === 'object' &&
+      children.props !== null
+        ? (children.props as { style?: unknown }).style
+        : undefined;
+
     if (process.env.NODE_ENV !== 'production') {
-      if (React.isValidElement(props.children)) {
-        if (
-          typeof props.children.props === 'object' &&
-          props.children.props !== null &&
-          'style' in props.children.props &&
-          Array.isArray(props.children.props.style)
-        ) {
-          throw new Error(
-            `[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.`
-          );
-        }
+      if (Array.isArray(childStyle)) {
+        throw new Error(
+          `[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.`
+        );
       }
     }
-    return <Component ref={ref} {...props} style={flattenedStyle} />;
+
+    // Radix merges `style` with an object spread, so a style function on the child
+    // turns into an empty object. Move the function onto the <Slot /> itself and drop
+    // it from the child, so `mergeProps` never enters its `style` branch.
+    const composedStyle = useMemo(() => {
+      if (typeof childStyle !== 'function') {
+        return flattenedStyle;
+      }
+      return (state: unknown) =>
+        flattenedStyle ? [flattenedStyle, childStyle(state)] : childStyle(state);
+    }, [flattenedStyle, childStyle]);
+
+    const slotChildren = useMemo(() => {
+      if (typeof childStyle !== 'function' || !React.isValidElement(children)) {
+        return children;
+      }
+      const { style: _omitted, ...rest } = children.props as Record<string, unknown>;
+      return React.createElement(children.type, { ...rest, key: children.key });
+    }, [children, childStyle]);
+
+    return (
+      <Component
+        ref={ref}
+        {...props}
+        // Radix types `style` as `CSSProperties`; React Native also accepts a function.
+        style={composedStyle as unknown as React.CSSProperties}>
+        {slotChildren}
+      </Component>
+    );
   });
 }
 
