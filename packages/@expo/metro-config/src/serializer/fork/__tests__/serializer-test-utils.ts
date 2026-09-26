@@ -81,6 +81,8 @@ export async function serializeSplitAsync(
 export async function serializeShakingAsync(
   fs: Record<string, string>,
   options: {
+    legacyTraverseWeakDependencies?: boolean;
+    chunkingStrategy?: 'bitset' | 'legacy';
     isReactServer?: boolean;
     treeshake?: boolean;
     optimize?: boolean;
@@ -96,6 +98,8 @@ export async function serializeShakingAsync(
 export async function serializeOptimizeAsync(
   fs: Record<string, string>,
   options: {
+    legacyTraverseWeakDependencies?: boolean;
+    chunkingStrategy?: 'bitset' | 'legacy';
     isReactServer?: boolean;
     treeshake?: boolean;
     optimize?: boolean;
