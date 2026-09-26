@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Inline `NODE_ENV` as `development` in development server bundles. ([#50522](https://github.com/expo/expo/pull/50522) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-21
