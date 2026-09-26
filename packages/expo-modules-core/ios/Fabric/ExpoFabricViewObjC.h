@@ -45,12 +45,26 @@
 // We use the protocol for AppContext to allow proper Swift type bridging
 @protocol EXAppContextProtocol;
 
+// Swift class (`@objc(EXDecodedViewProps)`) holding view-prop values decoded on the JS thread.
+// The method below types this parameter as `id` rather than `EXDecodedViewProps *`: in the
+// precompiled-xcframework build the Swift target imports this header as an external Clang module,
+// where a forward-declared Swift class does not unify with the local Swift definition, so an
+// `EXDecodedViewProps *` parameter would make the Swift override fail to match. `ExpoFabricView`
+// downcasts to `DecodedViewProps` internally.
+@class EXDecodedViewProps;
+
 // Addition to the interface that is visible in both Swift and Objective-C
 @interface ExpoFabricViewObjC (ExpoFabricViewInterface)
 
 - (void)dispatchEvent:(nonnull NSString *)eventName payload:(nullable id)payload;
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props;
+
+/**
+ Applies view props that were decoded straight from their JavaScript values on the JS thread.
+ Implemented in `ExpoFabricView.swift`. No-op in the base class.
+ */
+- (void)applyDecodedProps:(nonnull id)decodedProps NS_SWIFT_UI_ACTOR;
 
 - (void)viewDidUpdateProps NS_SWIFT_UI_ACTOR;
 
@@ -59,6 +73,14 @@
 - (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height NS_SWIFT_UI_ACTOR;
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
+
+/**
+ Whether this view class decodes its props from their JavaScript values on the JS thread, which
+ selects `ExpoViewJSIComponentDescriptor` in `+componentDescriptorProvider`. `NO` in the base
+ class; `ExpoFabricView.makeViewClass` replaces it on each dynamic view class with the answer
+ resolved from the view definition (see `ExpoFabricView.receivesDecodedProps`).
+ */
++ (BOOL)viewReceivesDecodedProps;
 
 // MARK: - Derived from RCTComponentViewProtocol
 

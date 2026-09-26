@@ -5,7 +5,7 @@
 
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
-#import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
+#import <ExpoModulesCore/ExpoViewJSIComponentDescriptor.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 
 #import <React/RCTAssert.h>
@@ -165,10 +165,18 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const expo::ExpoViewProps>();
+    static const auto defaultProps = std::make_shared<const expo::ExpoJSIViewProps>();
     _props = defaultProps;
   }
   return self;
+}
+
+#pragma mark - Props decoding
+
++ (BOOL)viewReceivesDecodedProps
+{
+  // Replaced per dynamic view class by `ExpoFabricView.makeViewClass`.
+  return NO;
 }
 
 #pragma mark - RCTComponentViewProtocol
@@ -188,11 +196,20 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   react::ComponentName componentName = react::ComponentName { flavor->c_str() };
   react::ComponentHandle componentHandle = reinterpret_cast<react::ComponentHandle>(componentName);
 
+  // Pick between the JSI decode-on-the-JS-thread path and the legacy folly::dynamic /
+  // NSDictionary path per view class. Only classes whose view opts in (see
+  // `ExpoFabricView.receivesDecodedProps`) get the JSI descriptor; every other view keeps the
+  // legacy descriptor and props class, exactly as before this path existed. `finalizeUpdates:`
+  // handles both.
+  react::ComponentDescriptorConstructor *constructor = [self viewReceivesDecodedProps]
+    ? &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewJSIComponentDescriptor<>>
+    : &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor<>>;
+
   return react::ComponentDescriptorProvider {
     componentHandle,
     componentName,
     flavor,
-    &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor<>>
+    constructor
   };
 }
 
@@ -202,18 +219,37 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 
   if (updateMask & RNComponentViewUpdateMaskProps) {
     const auto &newProps = static_cast<const ExpoViewProps &>(*_props);
-    NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
 
-    for (const auto &item : newProps.propsMap) {
-      NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
-
-      // Ignore props inherited from the base view and Yoga.
-      if ([self supportsPropWithName:propName]) {
-        propsMap[propName] = convertFollyDynamicToId(item.second);
+    // JSI path (`ExpoViewJSIComponentDescriptor`): props are decoded straight from their
+    // JavaScript values on the JS thread and applied directly here; `propsMap` is empty, so the
+    // dictionary path below is skipped. The `dynamic_cast` is what makes the descriptor choice a
+    // clean toggle: under the legacy descriptor the props are a plain `ExpoViewProps` and this is
+    // null, so only the dictionary path runs.
+    if (const auto *jsiProps = dynamic_cast<const ExpoJSIViewProps *>(&newProps)) {
+      if (jsiProps->decodedProps) {
+        EXDecodedViewProps *decodedProps = (__bridge EXDecodedViewProps *)jsiProps->decodedProps.get();
+        [self applyDecodedProps:decodedProps];
       }
     }
 
-    [self updateProps:propsMap];
+    // Legacy path (`ExpoViewComponentDescriptor`): props were lowered to `folly::dynamic` in
+    // `propsMap`; re-materialize them into an `NSDictionary` and apply on the main thread. Empty
+    // on the JSI path, so this allocates and runs only when the legacy descriptor is in use.
+    if (!newProps.propsMap.empty()) {
+      NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
+
+      for (const auto &item : newProps.propsMap) {
+        NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
+
+        // Ignore props inherited from the base view and Yoga.
+        if ([self supportsPropWithName:propName]) {
+          propsMap[propName] = convertFollyDynamicToId(item.second);
+        }
+      }
+
+      [self updateProps:propsMap];
+    }
+
     [self viewDidUpdateProps];
   }
 }
@@ -235,6 +271,11 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 #pragma mark - Methods to override in Swift
 
 - (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props
+{
+  // Implemented in `ExpoFabricView.swift`
+}
+
+- (void)applyDecodedProps:(nonnull id)decodedProps
 {
   // Implemented in `ExpoFabricView.swift`
 }
