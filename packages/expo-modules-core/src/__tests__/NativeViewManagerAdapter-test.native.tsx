@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import { Children, type ElementType } from 'react';
+import { Children } from 'react';
 
 import { requireNativeViewManager } from '../NativeViewManagerAdapter';
 
@@ -29,16 +29,18 @@ describe('requireNativeViewManager', () => {
     expect(TestView.displayName).toBe('ExpoTestView');
   });
 
-  it(`partitions props into React Native and custom props`, () => {
+  it(`partitions props into React Native and custom props`, async () => {
     const TestView = requireNativeViewManager('ExpoTestView');
-    const { root } = render(
+    const { container } = await render(
       <TestView testID="test" custom="hello">
         <TestView />
       </TestView>
     );
 
     // NOTE: update this test if the naming scheme of the native adapter components changes
-    const testNativeComponent = root.findByType('ViewManagerAdapter_ExpoTestView' as ElementType);
+    const testNativeComponent = container.queryAll(
+      (node) => node.type === 'ViewManagerAdapter_ExpoTestView'
+    )[0]!;
     expect(testNativeComponent).toBeDefined();
 
     // React Native props
