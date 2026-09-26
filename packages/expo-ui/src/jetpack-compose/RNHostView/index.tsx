@@ -11,10 +11,12 @@ export interface RNHostProps extends PrimitiveBaseProps {
   /**
    * When `true`, the RNHost will update its size in the Jetpack Compose view tree to match the children's size.
    * When `false`, the RNHost will use the size of the parent Jetpack Compose View.
+   * Pass an object to choose per axis. For example, `{ vertical: true }` takes the width from the
+   * parent and the height from the children, so text wraps and grows vertically.
    * Can be only set once on mount.
    * @default false
    */
-  matchContents?: boolean;
+  matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
   /**
    * Called on mount and whenever this view's layout in the React Native view tree changes.
    * With `matchContents`, the reported size is the one measured from the hosted view.
@@ -30,8 +32,10 @@ export interface RNHostProps extends PrimitiveBaseProps {
   modifiers?: ModifierConfig[];
 }
 
-type NativeRNHostProps = RNHostProps & {
+type NativeRNHostProps = Omit<RNHostProps, 'matchContents'> & {
   layoutRoot: boolean;
+  matchContentsHorizontal: boolean;
+  matchContentsVertical: boolean;
   /**
    * Internal. Drives the shadow node's content measurement, see
    * `ExpoViewShadowNode::sizesToContent`.
@@ -44,13 +48,19 @@ const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
 );
 
 function transformProps(props: RNHostProps, layoutRoot: boolean): NativeRNHostProps {
-  const { modifiers, ...restProps } = props;
+  const { modifiers, matchContents, ...restProps } = props;
+  const matchContentsHorizontal =
+    (typeof matchContents === 'object' ? matchContents.horizontal : matchContents) ?? false;
+  const matchContentsVertical =
+    (typeof matchContents === 'object' ? matchContents.vertical : matchContents) ?? false;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     layoutRoot,
-    expoInternalSizeFromChildren: props.matchContents,
+    matchContentsHorizontal,
+    matchContentsVertical,
+    expoInternalSizeFromChildren: matchContentsHorizontal || matchContentsVertical,
   };
 }
 
@@ -61,12 +71,14 @@ export function RNHostView(props: RNHostProps) {
   // is what makes a `Pressable` drop its press on the first finger movement.
   const layoutRoot = useIsPresentedInOwnWindow();
 
+  const nativeProps = transformProps(props, layoutRoot);
+
   return (
     <NativeRNHostView
-      {...transformProps(props, layoutRoot)}
+      {...nativeProps}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
-      key={props.matchContents ? 'matchContents' : 'noMatchContents'}>
+      key={`${nativeProps.matchContentsHorizontal}-${nativeProps.matchContentsVertical}`}>
       {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
       <PresentedContentContext.Provider value={false}>
         {props.children}
