@@ -48,5 +48,6 @@ fi
 # Debug builds only, by the same configuration test expo-updates uses. The `|| echo` keeps a
 # release build from tripping `set -e`.
 EMBED_FINGERPRINT=$([[ "$CONFIGURATION" == *Debug* ]] && echo true || echo false)
+CONFIG_MODE=$([[ "$CONFIGURATION" == *Debug* ]] && echo development || echo production)
 
-"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST" "ios" "$EMBED_FINGERPRINT"
+"${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT" "$RESOURCE_DEST" "ios" "$EMBED_FINGERPRINT" "$CONFIG_MODE"
