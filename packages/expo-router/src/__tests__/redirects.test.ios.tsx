@@ -278,6 +278,59 @@ it('can redirect from single to catch all', () => {
   });
 });
 
+it('can redirect from catch all to catch all', () => {
+  mockRedirects.mockReturnValue([
+    {
+      source: '/foo/[...slug]',
+      destination: 'bar/[...slug]',
+    } as RedirectConfig,
+  ]);
+
+  renderRouter(
+    {
+      index: () => null,
+      'bar/[...slug]': () => <Text testID="bar" />,
+    },
+    {
+      initialUrl: '/foo/2026/hello',
+    }
+  );
+
+  expectCompleteStateToMatch(navigationRef.getRootState(), {
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        params: {
+          slug: ['2026', 'hello'],
+        },
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'bar/[...slug]', 'foo/[...slug]'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'bar/[...slug]',
+              params: {
+                slug: ['2026', 'hello'],
+              },
+            },
+          ],
+          stale: false,
+          type: 'stack',
+          routeKeySeq: expect.any(Number),
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+  });
+});
+
 it('can push to a redirect', () => {
   mockRedirects.mockReturnValue([
     {
