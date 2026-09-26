@@ -19,32 +19,40 @@ extension Task where Failure == any Error {
     }
   }
 
-  /// Starts a task that prefers the JavaScript runtime's executor when executor preferences are
-  /// available, synchronously on the caller context when the platform supports `Task.immediate`.
+  /// Starts a task that returns to the JavaScript runtime's executor after suspension points.
+  /// Uses a task executor preference when available and a runtime-specific actor executor on older
+  /// systems. Starts synchronously on the caller context when the platform supports `Task.immediate`.
   @discardableResult
   internal static func immediate_polyfill(
     name: String? = nil,
     priority: TaskPriority? = nil,
     executorPreference runtimeExecutor: JavaScriptRuntimeExecutor,
-    @_inheritActorContext @_implicitSelfCapture operation: sending @escaping @isolated(any) () async throws -> Success
+    @_inheritActorContext @_implicitSelfCapture operation: @escaping @isolated(any) @Sendable () async throws -> Success
   ) -> Task<Success, any Error> {
-    if #available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, visionOS 26.0, *) {
-      return Task.immediate(
-        name: name,
-        priority: priority,
-        executorPreference: runtimeExecutor,
-        operation: operation
-      )
-    } else if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
-      // In the polyfill always use the highest priority and hope it executes earlier.
-      return Task(
-        name: name,
-        executorPreference: runtimeExecutor,
-        priority: .high,
-        operation: operation
-      )
-    } else {
-      return Task(name: name, priority: .high, operation: operation)
+    // Gated on the executor rather than `#available` so a test can take the compatibility path for
+    // one runtime. The `#available` checks stay because the compiler still needs them to reference
+    // the newer initializers.
+    if runtimeExecutor.usesTaskExecutorPreference {
+      if #available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, visionOS 26.0, *) {
+        return Task.immediate(
+          name: name,
+          priority: priority,
+          executorPreference: runtimeExecutor,
+          operation: operation
+        )
+      }
+      if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
+        // In the polyfill always use the highest priority and hope it executes earlier.
+        return Task(
+          name: name,
+          executorPreference: runtimeExecutor,
+          priority: .high,
+          operation: operation
+        )
+      }
+    }
+    return JavaScriptRuntimeExecutorContext.$executor.withValue(runtimeExecutor) {
+      Task(name: name, priority: .high, operation: operation)
     }
   }
 }
