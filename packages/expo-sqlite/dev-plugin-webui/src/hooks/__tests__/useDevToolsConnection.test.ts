@@ -56,18 +56,18 @@ beforeEach(() => {
 });
 
 describe('useDevToolsConnection - Connection State', () => {
-  test('should return connected when client exists', () => {
+  test('should return connected when client exists', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     expect(result.current.isConnected).toBe(true);
   });
 
-  test('should return not connected when client is null', () => {
+  test('should return not connected when client is null', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(null);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     expect(result.current.isConnected).toBe(false);
   });
@@ -77,7 +77,7 @@ describe('useDevToolsConnection - listDatabases', () => {
   test('should successfully list databases', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     const mockDatabases = [
       { name: 'test.db', path: '/data/test.db' },
@@ -85,7 +85,7 @@ describe('useDevToolsConnection - listDatabases', () => {
     ];
 
     let promise: Promise<any>;
-    act(() => {
+    await act(() => {
       promise = result.current.listDatabases();
     });
 
@@ -115,10 +115,10 @@ describe('useDevToolsConnection - listDatabases', () => {
   test('should handle error response', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     let promise: Promise<any>;
-    act(() => {
+    await act(() => {
       promise = result.current.listDatabases();
     });
 
@@ -144,7 +144,7 @@ describe('useDevToolsConnection - listDatabases', () => {
   test('should throw error when client not connected', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(null);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     await expect(result.current.listDatabases()).rejects.toThrow('DevTools client not connected');
   });
@@ -154,12 +154,12 @@ describe('useDevToolsConnection - getDatabase', () => {
   test('should successfully get database data', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     const mockData = new Uint8Array([1, 2, 3, 255]);
 
     let promise: Promise<any>;
-    act(() => {
+    await act(() => {
       promise = result.current.getDatabase('test.db');
     });
 
@@ -189,10 +189,10 @@ describe('useDevToolsConnection - getDatabase', () => {
   test('should handle error response', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     let promise: Promise<any>;
-    act(() => {
+    await act(() => {
       promise = result.current.getDatabase('nonexistent.db');
     });
 
@@ -220,7 +220,7 @@ describe('useDevToolsConnection - getDatabase', () => {
   test('should throw error when client not connected', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(null);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     await expect(result.current.getDatabase('test.db')).rejects.toThrow(
       'DevTools client not connected'
@@ -229,37 +229,37 @@ describe('useDevToolsConnection - getDatabase', () => {
 });
 
 describe('useDevToolsConnection - useEffect cleanup', () => {
-  test('should not register global message listener on mount', () => {
+  test('should not register global message listener on mount', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    renderHook(() => useDevToolsConnection());
+    await renderHook(() => useDevToolsConnection());
 
     // With the new pattern, no global 'response' listener is registered
     // Each request registers its own listener with method:requestId pattern
     expect(mockClient.addMessageListener).not.toHaveBeenCalled();
   });
 
-  test('should clean up pending requests on unmount', () => {
+  test('should clean up pending requests on unmount', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { unmount } = renderHook(() => useDevToolsConnection());
+    const { unmount } = await renderHook(() => useDevToolsConnection());
 
     // Start a request but don't resolve it
-    const { result } = renderHook(() => useDevToolsConnection());
-    act(() => {
+    const { result } = await renderHook(() => useDevToolsConnection());
+    await act(() => {
       result.current.listDatabases().catch(() => {});
     });
 
-    unmount();
+    await unmount();
 
     // After unmount, any pending requests should be cancelled
     // This is tested implicitly through the clearAll() call in the cleanup
   });
 
-  test('should not register listener when client is null', () => {
+  test('should not register listener when client is null', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(null);
 
-    renderHook(() => useDevToolsConnection());
+    await renderHook(() => useDevToolsConnection());
 
     // addMessageListener should not exist on null client
     expect(mockClient.addMessageListener).not.toHaveBeenCalled();
@@ -270,17 +270,17 @@ describe('useDevToolsConnection - Response callback management', () => {
   test('should handle multiple concurrent requests independently', async () => {
     (useDevToolsPluginClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { result } = renderHook(() => useDevToolsConnection());
+    const { result } = await renderHook(() => useDevToolsConnection());
 
     // Make first request
     let promise1: Promise<any>;
-    act(() => {
+    await act(() => {
       promise1 = result.current.listDatabases();
     });
 
     // Make second request - should work independently
     let promise2: Promise<any>;
-    act(() => {
+    await act(() => {
       promise2 = result.current.listDatabases();
     });
 
