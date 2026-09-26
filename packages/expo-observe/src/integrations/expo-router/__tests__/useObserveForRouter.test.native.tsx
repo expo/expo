@@ -92,7 +92,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -127,7 +127,9 @@ describe('useObserveForRouter', () => {
       storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
       jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-      const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+      const { result } = await renderHook(() => useObserveForRouter(), {
+        wrapper: wrapper(storage),
+      });
       await act(async () => {
         await result.current!();
       });
@@ -151,7 +153,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: true };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -170,7 +172,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -193,7 +195,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -214,7 +216,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -232,7 +234,7 @@ describe('useObserveForRouter', () => {
 
   it('calls AppMetrics.markInteractive when the screen is focused', async () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     const arg = { params: { x: 'payload' } };
     await act(async () => {
       await result.current!({ ...arg });
@@ -246,7 +248,7 @@ describe('useObserveForRouter', () => {
   it('drops caller-provided URL from markInteractive params when a route param is filtered', async () => {
     initModule.getRouterIntegrationConfig.mockReturnValue({ filteredParams: ['x'] });
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
 
     await act(async () => {
       await result.current!({ params: { url: '/unsafe', custom: 'value' } });
@@ -262,7 +264,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     const nowSpy = jest.spyOn(performance, 'now');
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
 
     nowSpy.mockReturnValue(1300);
     await act(async () => {
@@ -280,7 +282,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     const nowSpy = jest.spyOn(performance, 'now');
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
 
     nowSpy.mockReturnValue(1300);
     await act(async () => {
@@ -308,7 +310,7 @@ describe('useObserveForRouter', () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000, isAppLaunch: false };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -323,7 +325,7 @@ describe('useObserveForRouter', () => {
     // markInteractive runs before the pageFocused handler has seeded dispatchTime.
     jest.spyOn(performance, 'now').mockReturnValue(1234);
 
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -336,7 +338,7 @@ describe('useObserveForRouter', () => {
 
   it('skips TTI calculation silently when no dispatchTime is recorded for the screen', async () => {
     const warnSpy = jest.spyOn(console, 'warn');
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -346,11 +348,11 @@ describe('useObserveForRouter', () => {
 
   it('warns and skips when called on an unmounted screen', async () => {
     const warnSpy = jest.spyOn(console, 'warn');
-    const { result, unmount } = renderHook(() => useObserveForRouter(), {
+    const { result, unmount } = await renderHook(() => useObserveForRouter(), {
       wrapper: wrapper(storage),
     });
     const fn = result.current!;
-    unmount();
+    await unmount();
     await act(async () => {
       await fn();
     });
@@ -363,7 +365,7 @@ describe('useObserveForRouter', () => {
   it('warns when there is no screenId on the route', async () => {
     mockUseRoute.mockReturnValue({ key: undefined });
     const warnSpy = jest.spyOn(console, 'warn');
-    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { result } = await renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
     await act(async () => {
       await result.current!();
     });
@@ -373,20 +375,22 @@ describe('useObserveForRouter', () => {
     expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
   });
 
-  it('warns when the screen ID changes between renders', () => {
+  it('warns when the screen ID changes between renders', async () => {
     const warnSpy = jest.spyOn(console, 'warn');
     mockUseRoute.mockReturnValue({ key: 'screen-a' });
-    const { rerender } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { rerender } = await renderHook(() => useObserveForRouter(), {
+      wrapper: wrapper(storage),
+    });
 
     mockUseRoute.mockReturnValue({ key: 'screen-b' });
-    rerender(undefined);
+    await rerender(undefined);
 
     expect(warnSpy).toHaveBeenCalledWith(
       '[expo-observe] Screen ID changed between renders. This is most likely an expo-router bug.'
     );
   });
 
-  it('throws when isInitialized() flips mid-lifetime', () => {
+  it('throws when isInitialized() flips mid-lifetime', async () => {
     const init = require('../init') as typeof import('../init');
     const isInitMock = init.isInitialized as jest.Mock;
     isInitMock.mockReturnValue(false);
@@ -394,10 +398,12 @@ describe('useObserveForRouter', () => {
     // test output stays focused on the assertion.
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { rerender } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    const { rerender } = await renderHook(() => useObserveForRouter(), {
+      wrapper: wrapper(storage),
+    });
 
     isInitMock.mockReturnValue(true);
-    expect(() => rerender(undefined)).toThrow(
+    await expect(async () => await rerender(undefined)).rejects.toThrow(
       "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
     );
   });

@@ -18,22 +18,22 @@ beforeEach(() => {
 });
 
 describe(ObserveInteractiveMarker, () => {
-  it('calls markInteractive exactly once on first render with the given params', () => {
-    render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+  it('calls markInteractive exactly once on first render with the given params', async () => {
+    await render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
 
     expect(markInteractive).toHaveBeenCalledTimes(1);
     expect(markInteractive).toHaveBeenCalledWith({ params: { cacheHit: true } });
   });
 
-  it('passes undefined params through when none are provided', () => {
-    render(<ObserveInteractiveMarker />);
+  it('passes undefined params through when none are provided', async () => {
+    await render(<ObserveInteractiveMarker />);
 
     expect(markInteractive).toHaveBeenCalledTimes(1);
     expect(markInteractive).toHaveBeenCalledWith({ params: undefined });
   });
 
-  it('calls markInteractive twice under StrictMode double-invoke', () => {
-    render(
+  it('calls markInteractive twice under StrictMode double-invoke', async () => {
+    await render(
       <StrictMode>
         <ObserveInteractiveMarker params={{ cacheHit: true }} />
       </StrictMode>
@@ -42,35 +42,35 @@ describe(ObserveInteractiveMarker, () => {
     expect(markInteractive).toHaveBeenCalledTimes(2);
   });
 
-  it('renders null', () => {
-    const { toJSON } = render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+  it('renders null', async () => {
+    const { toJSON } = await render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
 
     expect(toJSON()).toBeNull();
   });
 
-  it('does not call markInteractive again when re-rendered with a fresh but equal params object', () => {
-    const { rerender } = render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
-    rerender(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+  it('does not call markInteractive again when re-rendered with a fresh but equal params object', async () => {
+    const { rerender } = await render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+    await rerender(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
 
     expect(markInteractive).toHaveBeenCalledTimes(1);
   });
 
-  it('does not call markInteractive again when params change after the first render', () => {
+  it('does not call markInteractive again when params change after the first render', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { rerender } = render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
-    rerender(<ObserveInteractiveMarker params={{ cacheHit: false }} />);
+    const { rerender } = await render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+    await rerender(<ObserveInteractiveMarker params={{ cacheHit: false }} />);
 
     expect(markInteractive).toHaveBeenCalledTimes(1);
     expect(markInteractive).toHaveBeenCalledWith({ params: { cacheHit: true } });
     warnSpy.mockRestore();
   });
 
-  it('warns once when params change after the first render', () => {
+  it('warns once when params change after the first render', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { rerender } = render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+    const { rerender } = await render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
 
-    rerender(<ObserveInteractiveMarker params={{ cacheHit: false }} />);
-    rerender(<ObserveInteractiveMarker params={{ cacheHit: 'other' }} />);
+    await rerender(<ObserveInteractiveMarker params={{ cacheHit: false }} />);
+    await rerender(<ObserveInteractiveMarker params={{ cacheHit: 'other' }} />);
 
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0]![0]).toEqual(
@@ -79,23 +79,23 @@ describe(ObserveInteractiveMarker, () => {
     warnSpy.mockRestore();
   });
 
-  it('does not warn when re-rendered with a fresh but equal params object', () => {
+  it('does not warn when re-rendered with a fresh but equal params object', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    const { rerender } = render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+    const { rerender } = await render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
 
-    rerender(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+    await rerender(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
 
     expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
   });
 
-  it('fires again on remount without warning, since the warning is scoped to one lifetime', () => {
+  it('fires again on remount without warning, since the warning is scoped to one lifetime', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    const first = render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
-    first.unmount();
+    const first = await render(<ObserveInteractiveMarker params={{ cacheHit: true }} />);
+    await first.unmount();
 
-    render(<ObserveInteractiveMarker params={{ cacheHit: false }} />);
+    await render(<ObserveInteractiveMarker params={{ cacheHit: false }} />);
 
     expect(markInteractive).toHaveBeenCalledTimes(2);
     expect(markInteractive).toHaveBeenNthCalledWith(1, { params: { cacheHit: true } });

@@ -58,9 +58,9 @@ beforeEach(() => {
 });
 
 describe('ObserveRouterIntegrationProvider', () => {
-  it('exposes a non-null storage on first render when isInitialized() is true at mount', () => {
+  it('exposes a non-null storage on first render when isInitialized() is true at mount', async () => {
     const reads: unknown[] = [];
-    render(
+    await render(
       <ObserveRouterIntegrationProvider>
         <StorageProbe onRead={(s) => reads.push(s)} />
       </ObserveRouterIntegrationProvider>
@@ -71,10 +71,10 @@ describe('ObserveRouterIntegrationProvider', () => {
     ).toBeInstanceOf(Set);
   });
 
-  it('keeps storage null and does not attach listeners when isInitialized() is false at mount', () => {
+  it('keeps storage null and does not attach listeners when isInitialized() is false at mount', async () => {
     mockIsInitialized.mockReturnValue(false);
     const reads: unknown[] = [];
-    render(
+    await render(
       <ObserveRouterIntegrationProvider>
         <StorageProbe onRead={(s) => reads.push(s)} />
       </ObserveRouterIntegrationProvider>
@@ -83,8 +83,8 @@ describe('ObserveRouterIntegrationProvider', () => {
     expect(mockInitListeners).not.toHaveBeenCalled();
   });
 
-  it('calls initListeners with storage in useEffect and runs cleanup on unmount', () => {
-    const { unmount } = render(
+  it('calls initListeners with storage in useEffect and runs cleanup on unmount', async () => {
+    const { unmount } = await render(
       <ObserveRouterIntegrationProvider>
         <Text>child</Text>
       </ObserveRouterIntegrationProvider>
@@ -96,35 +96,36 @@ describe('ObserveRouterIntegrationProvider', () => {
     ).toBeInstanceOf(Set);
 
     expect(mockInitListenersCleanup).not.toHaveBeenCalled();
-    unmount();
+    await unmount();
     expect(mockInitListenersCleanup).toHaveBeenCalledTimes(1);
   });
 
-  it('throws when isInitialized() flips during the provider lifetime', () => {
+  it('throws when isInitialized() flips during the provider lifetime', async () => {
     mockIsInitialized.mockReturnValue(false);
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { rerender } = render(
+    const { rerender } = await render(
       <ObserveRouterIntegrationProvider>
         <Text>child</Text>
       </ObserveRouterIntegrationProvider>
     );
 
     mockIsInitialized.mockReturnValue(true);
-    expect(() =>
-      rerender(
-        <ObserveRouterIntegrationProvider>
-          <Text>child</Text>
-        </ObserveRouterIntegrationProvider>
-      )
-    ).toThrow(
+    await expect(
+      async () =>
+        await rerender(
+          <ObserveRouterIntegrationProvider>
+            <Text>child</Text>
+          </ObserveRouterIntegrationProvider>
+        )
+    ).rejects.toThrow(
       '[expo-observe] Router integration was enabled after application mounted. Call Observe.configure() before mounting AppMetricsRoot.'
     );
   });
 
-  it('renders children when storage is null (router not installed scenario)', () => {
+  it('renders children when storage is null (router not installed scenario)', async () => {
     mockIsInitialized.mockReturnValue(false);
-    const { getByText } = render(
+    const { getByText } = await render(
       <ObserveRouterIntegrationProvider>
         <Text>visible</Text>
       </ObserveRouterIntegrationProvider>
