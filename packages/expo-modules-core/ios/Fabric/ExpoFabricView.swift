@@ -158,6 +158,37 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   internal static var viewClassesRegistry = [String: AnyClass]()
 
   /**
+   App contexts that have registered their modules, oldest first. On reload the previous context can deallocate
+   before its replacement re-registers the native views (that step is deferred to the main actor), and Fabric may
+   instantiate a cached view class in between. The initializer then falls back to the newest live context in here.
+   */
+  private nonisolated static let appContextsWithModules = Mutex<[WeakAppContext]>([])
+
+  internal nonisolated static func appContextDidRegisterModules(_ appContext: AppContext) {
+    appContextsWithModules.withLock { contexts in
+      contexts.removeAll { $0.appContext == nil || $0.appContext === appContext }
+      contexts.append(WeakAppContext(appContext))
+    }
+  }
+
+  /**
+   Returns the given app context and its holder of the module, or, when the context is gone or lacks the module,
+   the newest live app context that has registered it.
+   */
+  internal nonisolated static func resolveModuleHolder(_ appContext: AppContext?, moduleName: String) -> (AppContext, ModuleHolder)? {
+    if let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) {
+      return (appContext, moduleHolder)
+    }
+    let candidates = appContextsWithModules.withLock { $0.compactMap(\.appContext) }
+    for candidate in candidates.reversed() {
+      if let moduleHolder = candidate.moduleRegistry.get(moduleHolderForName: moduleName) {
+        return (candidate, moduleHolder)
+      }
+    }
+    return nil
+  }
+
+  /**
    Dynamically creates a subclass of the `ExpoFabricView` class with injected app context and name of the associated module.
    The new subclass is saved in the registry, so when asked for the next time, it's returned from cache with the updated app context.
    - Note: Apple's documentation says that classes created with `objc_allocateClassPair` should then be registered using `objc_registerClassPair`,
@@ -193,9 +224,10 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   internal static func injectInitializer(appContext: AppContext, moduleName: String, viewName: String, toViewClass viewClass: AnyClass) {
     // The default initializer for native views. It will be called by Fabric.
     let newBlock: @convention(block) () -> Any = {[weak appContext] in
-      guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
+      guard let resolved = ExpoFabricView.resolveModuleHolder(appContext, moduleName: moduleName) else {
         fatalError(Exceptions.AppContextLost().reason)
       }
+      let (appContext, moduleHolder) = resolved
       guard let view = moduleHolder.definition.views[viewName]?.createView(appContext: appContext) else {
         fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)'")
       }
@@ -220,4 +252,12 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     fatalError("The AppContext must be injected in the 'ExpoFabricView' class")
   }
   // swiftlint:enable unavailable_function
+}
+
+private struct WeakAppContext {
+  weak var appContext: AppContext?
+
+  init(_ appContext: AppContext) {
+    self.appContext = appContext
+  }
 }
