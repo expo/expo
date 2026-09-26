@@ -128,7 +128,7 @@ export default function Index() {
           quality: 1,
         });
 
-        await MediaLibrary.saveToLibraryAsync(localUri);
+        await MediaLibrary.Asset.create(localUri);
         if (localUri) {
           alert('Saved!');
         }
