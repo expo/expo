@@ -56,6 +56,10 @@ describe('expo-camera source selection', () => {
       !(target.exclude ?? []).includes('Tests/**'),
       'this regression test is pointless once the config excludes tests itself'
     );
+    assert.ok(
+      target.path,
+      'expo-camera builds from spm.config.json, so its Swift target must declare a path'
+    );
 
     const files = await glob(target.pattern ?? '**/*.swift', {
       cwd: path.join(packagePath, target.path),
@@ -78,6 +82,7 @@ describe('expo-sqlite source selection', () => {
     assert.ok(product, 'expo-sqlite must declare an ExpoSQLite product');
     const target = product.targets.find((candidate) => candidate.type === 'swift');
     assert.ok(target, 'expo-sqlite must declare a Swift target');
+    assert.ok(target.path, 'expo-sqlite Swift target must declare a path');
 
     const files = await glob(target.pattern ?? '**/*.swift', {
       cwd: path.join(packagePath, target.path),

@@ -6,6 +6,11 @@ import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import logger from '../Logger';
+import {
+  type CheckedInResolvedTarget,
+  resolveCheckedInManifestAsync,
+  resolveCheckedInManifestRoot,
+} from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { usesPackageLocalBuildPath } from './PackageLocalBuild';
@@ -17,6 +22,7 @@ import {
   SPMProduct,
 } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
+import { derivePackageNameFromUrl, normalizeGitUrl } from './SPMGitUrl';
 import { assertSafeSPMIdentifier } from './SPMIdentifier';
 import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
@@ -60,6 +66,15 @@ export const SPMBuild = {
       );
     }
 
+    // Resolved here rather than per platform: the layout is the same for every platform.
+    const checkedInRoot = resolveCheckedInManifestRoot(pkg);
+    const checkedIn = checkedInRoot
+      ? {
+          root: checkedInRoot,
+          targets: await resolveCheckedInManifestAsync(checkedInRoot, product),
+        }
+      : undefined;
+
     // Build for each platform
     for (const buildPlatform of buildPlatforms) {
       await buildForPlatformAsync(
@@ -68,6 +83,7 @@ export const SPMBuild = {
         buildType,
         buildPlatform,
         packageSwiftPath,
+        checkedIn,
         hermesIncludeDirs
       );
     }
@@ -199,12 +215,29 @@ export const getBuildPlatformsForProduct = (
   return platform ? allPlatforms.filter((p) => p === platform) : allPlatforms;
 };
 
+/** What a checked-in `Package.swift` contributes here: where a target's sources really live, and
+ * the language the resolver inferred from them. */
+export type CheckedInTargetLayout = Pick<CheckedInResolvedTarget, 'name' | 'sourceRoot' | 'type'>;
+
+/**
+ * A package layout read from a checked-in `Package.swift`. `root` is the canonical package
+ * directory `resolveCheckedInManifestRoot` returned and every `sourceRoot` was resolved against,
+ * so the two are comparable: `pkg.path` is not canonicalised anywhere and can spell the same
+ * directory differently.
+ */
+export type CheckedInLayout = {
+  root: string;
+  targets: readonly CheckedInTargetLayout[];
+};
+
 /**
  * Builds the xcodebuild arguments for a platform build.
  * @param pkg Package
  * @param product Product
  * @param buildType Build flavor
  * @param buildPlatform Target platform
+ * @param checkedIn Layout resolved from a checked-in Package.swift; absent without one
+ * @param hermesIncludeDirs Optional hermes include directories to pass via xcodebuild flags
  * @returns Array of xcodebuild arguments
  */
 export const buildXcodeBuildArgs = (
@@ -212,10 +245,13 @@ export const buildXcodeBuildArgs = (
   product: SPMProduct,
   buildType: BuildFlavor,
   buildPlatform: BuildPlatform,
+  checkedIn?: CheckedInLayout,
   hermesIncludeDirs?: string[]
 ): string[] => {
   const derivedDataPath = SPMBuild.getPackageBuildPath(pkg, product, buildType);
-  const containsSwiftTargets = product.targets.some((target) => target?.type === 'swift');
+  const containsSwiftTargets = (checkedIn?.targets ?? product.targets).some(
+    (target) => target.type === 'swift'
+  );
 
   // Remap absolute build paths to a canonical /expo-src prefix in DWARF debug info.
   // This ensures dSYMs are portable across machines — the canonical prefix is resolved
@@ -226,37 +262,89 @@ export const buildXcodeBuildArgs = (
   const repoRoot = getExpoRepositoryRootDir();
 
   // Per-target debug prefix maps: remap staging directory paths to canonical source paths.
-  // During the SPM build, source files are symlinked into a staging directory:
-  //   <buildPath>/generated/<productName>/<targetName>/
-  // The compiler records this staging path (not the symlink target) as DW_AT_comp_dir.
-  // These maps ensure DWARF records the canonical /expo-src/<pkgPath>/<target.path>/
-  // prefix instead, so the resolve-dsym-sourcemaps.js script can map them to the
-  // consumer's local package paths.
+  // Every target is built out of a staging directory, <buildPath>/generated/<productName>/
+  // <targetName>/, holding either copies of its sources or a read-only `src` link to them, and
+  // the compiler records that staging path rather than where the sources really are. These maps
+  // make DWARF record the canonical /expo-src/packages/<package>/<source dir>/ prefix instead,
+  // so the resolve-dsym-sourcemaps.js script can map it to the consumer's local package path.
+  // Sources generated during the build have no checkout path, so their staging directory maps to
+  // /expo-src/generated/<package>/<product>/<target>/ instead, which the dSYM check knows to
+  // expect. So do the sources SwiftPM derives itself, such as resource_bundle_accessor.swift,
+  // under the derived data directory's Build/Intermediates.noindex/; they map to
+  // …/<product>/DerivedData/Build/Intermediates.noindex/, beside the target directories. Only that
+  // subdirectory is mapped: SourcePackages/checkouts/ beside it holds third-party sources, which
+  // are not generated and must stay flagged when they leak. The derived data directory is a
+  // sibling of the staging directory under pkg.buildPath in both build path layouts, so its map
+  // never overlaps a per-target one.
   const stagingBase = path.resolve(pkg.buildPath, 'generated', product.name);
-  const cTargetPrefixMaps: string[] = [];
-  const swiftTargetPrefixMaps: string[] = [];
-  for (const target of product.targets) {
-    // Skip binary framework targets (no source files to compile)
-    if (target.type === 'framework') continue;
-    // Skip targets with generated source in .build/ (not from actual package source)
-    if (target.path.startsWith('.build/')) continue;
+  // posix.join rather than interpolation: an empty source directory — a target whose source
+  // root is the package root — must not leave a doubled separator that matches nothing.
+  const sourcePath = (sourceDirectory: string) =>
+    path.posix.join(`/expo-src/packages/${pkg.packageName}`, sourceDirectory);
+  const generatedPath = (targetName: string) =>
+    path.posix.join('/expo-src/generated', pkg.packageName, product.name, targetName);
+  // Ordered from the least to the most specific prefix, which matters where one target maps both
+  // its staging directory and the `src` link inside it.
+  const targetPrefixMaps: { from: string; to: string }[] = [
+    {
+      from: path.join(path.resolve(derivedDataPath), 'Build', 'Intermediates.noindex'),
+      to: path.posix.join(generatedPath('DerivedData'), 'Build', 'Intermediates.noindex'),
+    },
+  ];
+  if (checkedIn) {
+    // The manifest alone decides which targets are built, and every one is reached through the
+    // `src` link rather than copied, so its target directory holds only generated files such as
+    // <Product>+Exports.swift.
+    for (const target of checkedIn.targets) {
+      // Relative to the manifest root rather than to pkg.path: only the manifest root is
+      // canonicalised, and the two can spell one directory two ways.
+      const sourceDirectory = path.relative(checkedIn.root, target.sourceRoot);
+      if (sourceDirectory === '..' || sourceDirectory.startsWith(`..${path.sep}`)) {
+        throw new Error(
+          `Cannot remap debug info for ${product.name}/${target.name}: its source root ` +
+            `${target.sourceRoot} is outside the manifest root ${checkedIn.root}, so it has no ` +
+            `canonical /expo-src/packages/${pkg.packageName}/… path to record. A correct build ` +
+            `cannot reach this, because the manifest reader resolves every source root against ` +
+            `that same root. Find how the two roots came to differ; the package itself is fine.`
+        );
+      }
+      const stagingTargetPath = path.join(stagingBase, target.name);
+      targetPrefixMaps.push(
+        { from: stagingTargetPath, to: generatedPath(target.name) },
+        { from: path.join(stagingTargetPath, 'src'), to: sourcePath(sourceDirectory) }
+      );
+    }
+  } else {
+    for (const target of product.targets) {
+      // Skip binary framework targets (no source files to compile)
+      if (target.type === 'framework') continue;
 
-    const stagingTargetPath = path.join(stagingBase, target.name);
-    const canonicalPath = `/expo-src/packages/${pkg.packageName}/${target.path}`;
-
-    // Trailing '/' ensures directory-boundary matching — without it, a target named
-    // "ExpoModulesCore" would also match "ExpoModulesCore_ios_objc" as a string prefix.
-    cTargetPrefixMaps.push(`-fdebug-prefix-map=${stagingTargetPath}/=${canonicalPath}/`);
-    swiftTargetPrefixMaps.push(`-debug-prefix-map ${stagingTargetPath}/=${canonicalPath}/`);
+      const stagingTargetPath = path.join(stagingBase, target.name);
+      if (target.path?.startsWith('.build/')) {
+        targetPrefixMaps.push({ from: stagingTargetPath, to: generatedPath(target.name) });
+      } else if (target.path) {
+        targetPrefixMaps.push({ from: stagingTargetPath, to: sourcePath(target.path) });
+      }
+      // A target with no path is an error SPMGenerator reports before anything is built.
+    }
   }
+
+  // Trailing '/' ensures directory-boundary matching — without it, a target named
+  // "ExpoModulesCore" would also match "ExpoModulesCore_ios_objc" as a string prefix.
+  const cTargetPrefixMaps = targetPrefixMaps.map(
+    ({ from, to }) => `-fdebug-prefix-map=${from}/=${to}/`
+  );
+  const swiftTargetPrefixMaps = [...targetPrefixMaps]
+    .reverse()
+    .map(({ from, to }) => `-debug-prefix-map ${from}/=${to}/`);
 
   // General repo root map as catch-all
   const debugPrefixMap = `-fdebug-prefix-map=${repoRoot}=/expo-src`;
   const swiftDebugPrefixMap = `-debug-prefix-map ${repoRoot}=/expo-src`;
 
-  // The per-target map must beat the general catch-all: clang applies the last matching flag,
-  // while swiftc applies the first. The catch-all therefore leads the two clang-facing lists
-  // but trails the Swift list.
+  // The more specific map must win: clang applies the last matching flag, while swiftc applies
+  // the first. The catch-all therefore leads the two clang-facing lists but trails the Swift
+  // list, and the per-target maps run in opposite orders for the same reason.
   const allCPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].join(' ');
   const allSwiftPrefixMaps = [...swiftTargetPrefixMaps, swiftDebugPrefixMap].join(' ');
   const allXccPrefixMaps = [debugPrefixMap, ...cTargetPrefixMaps].map((m) => `-Xcc ${m}`).join(' ');
@@ -306,6 +394,7 @@ export const buildXcodeBuildArgs = (
  * @param buildType Build flavor
  * @param buildPlatform Target platform
  * @param packageSwiftPath Path to Package.swift
+ * @param checkedIn Layout resolved from a checked-in Package.swift; absent without one
  */
 const buildForPlatformAsync = async (
   pkg: SPMPackageSource,
@@ -313,9 +402,17 @@ const buildForPlatformAsync = async (
   buildType: BuildFlavor,
   buildPlatform: BuildPlatform,
   packageSwiftPath: string,
+  checkedIn: CheckedInLayout | undefined,
   hermesIncludeDirs?: string[]
 ): Promise<void> => {
-  const args = buildXcodeBuildArgs(pkg, product, buildType, buildPlatform, hermesIncludeDirs);
+  const args = buildXcodeBuildArgs(
+    pkg,
+    product,
+    buildType,
+    buildPlatform,
+    checkedIn,
+    hermesIncludeDirs
+  );
 
   const { code, error: buildError } = await spawnXcodeBuildWithSpinner(
     args,
@@ -479,13 +576,6 @@ export const getBuildFolderPrefixForPlatform = (platform: BuildPlatform): string
       return '';
   }
 };
-
-/**
- * Normalizes a git URL for comparison (strips trailing .git and lowercases).
- */
-function normalizeGitUrl(url: string): string {
-  return url.replace(/\.git$/, '').toLowerCase();
-}
 
 /**
  * Detects which of the shared SPM dependencies are also dependencies of a given checkout.
@@ -775,19 +865,6 @@ export async function findFirstExisting(paths: string[]): Promise<string | null>
 }
 
 /**
- * Derives the SPM package name from a URL.
- * e.g., "https://github.com/airbnb/lottie-spm.git" → "lottie-spm"
- */
-export function derivePackageName(url: string): string {
-  const lastSlash = url.lastIndexOf('/');
-  let name = url.substring(lastSlash + 1);
-  if (name.endsWith('.git')) {
-    name = name.slice(0, -4);
-  }
-  return name;
-}
-
-/**
  * Formats a version requirement for Package.swift.
  */
 export function formatVersionRequirement(version: SPMPackageDependencyConfig['version']): string {
@@ -803,8 +880,8 @@ export function formatVersionRequirement(version: SPMPackageDependencyConfig['ve
  */
 function generateStandaloneSPMPackageSwift(dep: SPMPackageDependencyConfig): string {
   assertSafeSPMIdentifier(dep.productName, 'productName');
-  // derivePackageName strips the last URL segment without sanitizing, so re-check.
-  const packageName = dep.packageName || derivePackageName(dep.url);
+  // derivePackageNameFromUrl strips the last URL segment without sanitizing, so re-check.
+  const packageName = dep.packageName || derivePackageNameFromUrl(dep.url);
   assertSafeSPMIdentifier(packageName, 'packageName');
   const versionReq = formatVersionRequirement(dep.version);
 
@@ -930,7 +1007,7 @@ export async function buildSharedSPMDependencyAsync(
   // about the workspace root when the checkout is nested inside another SPM workspace.
   const checkoutsDir = path.join(buildDir, '.build', 'checkouts');
   // Covers the URL-derived branch that bypasses the top-of-function check.
-  const packageName = dep.packageName || derivePackageName(dep.url);
+  const packageName = dep.packageName || derivePackageNameFromUrl(dep.url);
   assertSafeSPMIdentifier(packageName, 'packageName');
   const checkoutSource = path.join(checkoutsDir, packageName);
 
