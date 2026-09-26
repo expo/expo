@@ -19,16 +19,29 @@ function resolveAutolinkingBin() {
   });
 }
 
-/** `expo-modules-autolinking resolve --platform apple --json` from the app root. */
+function runAutolinking(appRoot, args) {
+  return JSON.parse(
+    execFileSync(process.execPath, [resolveAutolinkingBin(), ...args], {
+      cwd: appRoot,
+      encoding: 'utf8',
+      maxBuffer: MAX_BUFFER,
+    })
+  );
+}
+
+/**
+ * `resolve --platform apple --json`: {modules, extraDependencies}, both always arrays
+ * (older CLIs return the bare array).
+ */
 function resolveExpoModules(appRoot) {
-  const bin = resolveAutolinkingBin();
-  const stdout = execFileSync(process.execPath, [bin, 'resolve', '--platform', 'apple', '--json'], {
-    cwd: appRoot,
-    encoding: 'utf8',
-    maxBuffer: MAX_BUFFER,
-  });
-  const parsed = JSON.parse(stdout);
-  return Array.isArray(parsed) ? parsed : (parsed.modules ?? []);
+  const parsed = runAutolinking(appRoot, ['resolve', '--platform', 'apple', '--json']);
+  if (Array.isArray(parsed)) return { modules: parsed, extraDependencies: [] };
+  return { modules: parsed.modules ?? [], extraDependencies: parsed.extraDependencies ?? [] };
+}
+
+/** `prebuilt-metadata --json`: the same pod → package → product document `pod install` reads. */
+function prebuiltMetadata(appRoot) {
+  return runAutolinking(appRoot, ['prebuilt-metadata', '--json']);
 }
 
 /**
@@ -96,6 +109,7 @@ function runDumpPackage(moduleRoot) {
 module.exports = {
   resolveAutolinkingBin,
   resolveExpoModules,
+  prebuiltMetadata,
   generateModulesProvider,
   runDumpPackage,
 };

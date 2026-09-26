@@ -21,6 +21,8 @@
 - [iOS] Import `Foundation` in `ResponseSink`, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
 - [Web] Stub `requestAnimationFrame` in server bundles, where `react-native-worklets` 0.12 calls it unguarded when Reanimated is imported, crashing server rendering and `expo export`. ([#50507](https://github.com/expo/expo/pull/50507) by [@robhogan](https://github.com/robhogan))
 - [iOS] Accept prebuilt-framework tarballs that bundle SwiftPM dependency XCFrameworks alongside the product in the SwiftPM plugin, instead of rejecting them. ([#50141](https://github.com/expo/expo/pull/50141) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Take module identity, deployment target and dependencies from `expo-modules-autolinking prebuilt-metadata` in the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix modules that use Expo Swift macros (`@Field`, `@Record`) failing to build from source with the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 

@@ -39,30 +39,136 @@ const fs = require('fs');
 const path = require('path');
 
 const { resolveAppTarget } = require('./app-target');
-const { resolveExpoModules, generateModulesProvider } = require('./cli');
+const { resolveExpoModules, prebuiltMetadata, generateModulesProvider } = require('./cli');
 const {
   APPLE_SOURCE_DIRS,
   appleSourceDir,
   collectWatchPaths,
+  documentedPackageRoot,
   findModuleRoot,
   moduleNeedsReact,
   isPureSwift,
 } = require('./classify');
 const {
   classifyUnsupported,
+  collectRootConflicts,
   collectUnmappedDependencies,
+  renderExtraPodsWarning,
+  renderRootConflictWarning,
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
   reportUnsupported,
-  spmConfigProduct,
 } = require('./diagnostics');
-const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
-const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
-const { PodspecSyntaxError, readPodspecs } = require('./podspec');
+const {
+  assertDistinctFlavoredFrameworks,
+  byteOrder,
+  prepareCompileInterfaces,
+  resolveFlavoredFramework,
+  resolveSpmDependencyFrameworks,
+} = require('./flavored-frameworks');
+const {
+  emitSourceManifestPackage,
+  emitPureSwiftSourcePackage,
+  raiseFloor,
+} = require('./manifests');
+const { readPodspecs } = require('./podspec');
 const { scriptPhasesForModules } = require('./script-phases');
 
+/**
+ * The module roots React Native resolved, keyed by npm package name, from the
+ * autolinking.json it passes as `context.autolinking`. React Native passes `{}`
+ * when it has no autolinking data, and a root it recorded can be gone after a
+ * reinstall, so only roots that are on disk are kept.
+ */
+function collectAutolinkedRoots(autolinking) {
+  const roots = new Map();
+  for (const [packageName, dependency] of Object.entries(autolinking?.dependencies ?? {})) {
+    if (dependency?.root != null && fs.existsSync(dependency.root)) {
+      roots.set(packageName, dependency.root);
+    }
+  }
+  return roots;
+}
+
+/**
+ * A pod's identity — where its npm package lives, what its product is called,
+ * and whether the Expo prebuild pipeline can build it into an XCFramework.
+ *
+ * The document covers only packages that ship an spm.config.json; React Native's
+ * autolinked root answers for the rest, and the filesystem walk stays as the
+ * fallback for a sync that gets no autolinking data. A documented root that is
+ * gone falls back too — a stale entry is not identity — but its product name
+ * still holds.
+ *
+ * The pod name is NOT the product name — react-native-skia ships RNSkia — so
+ * the product is what artifacts and prebuild diagnostics are named after.
+ */
+function podIdentity(entry, pod, packageName, autolinkedRoot) {
+  const documentedRoot = documentedPackageRoot(entry);
+  return {
+    entry,
+    packageName,
+    documentedRoot,
+    autolinkedRoot,
+    moduleRoot: documentedRoot ?? autolinkedRoot ?? findModuleRoot(pod.podspecDir),
+    productName: entry?.productName ?? pod.podName,
+    prebuildProduct:
+      entry != null ? { name: entry.productName, sourceOnly: entry.sourceOnly === true } : null,
+  };
+}
+
+/** Every pod's identity, keyed by the pod, resolved once so every pass agrees on it. */
+function resolvePodIdentities(modules, metadata, autolinkedRoots) {
+  const identities = new Map();
+  for (const mod of modules) {
+    for (const pod of mod.pods ?? []) {
+      identities.set(
+        pod,
+        podIdentity(
+          metadata[pod.podName],
+          pod,
+          mod.packageName,
+          autolinkedRoots.get(mod.packageName)
+        )
+      );
+    }
+  }
+  return identities;
+}
+
+// Expo modules use Swift macros (@Field, @Record, @OptimizedFunction). A macro expands
+// only when the compiler is handed the macro plugin executable, which ships prebuilt and
+// declares no SwiftPM products — so it travels as a compiler flag, not a dependency.
+// CocoaPods resolves the same binary the same way in
+// `expo-modules-autolinking/scripts/ios/project_integrator.rb#resolve_macros_plugin_dir`.
+function macroPluginFlags(coreModuleRoot) {
+  let pkgJsonPath;
+  try {
+    pkgJsonPath = require.resolve('@expo/expo-modules-macros-plugin/package.json', {
+      paths: [coreModuleRoot],
+    });
+  } catch {
+    throw new Error(
+      `[expo-spm-plugin] Could not resolve "@expo/expo-modules-macros-plugin" from ${coreModuleRoot}. ` +
+        'Expo modules are compiled from source here, and their Swift macros cannot expand without ' +
+        'this plugin — the build would fail with "external macro implementation could not be found". ' +
+        'Reinstall your JavaScript dependencies and build again.'
+    );
+  }
+  const tool = path.join(path.dirname(pkgJsonPath), 'apple', 'ExpoModulesMacros-tool');
+  if (!fs.existsSync(tool)) {
+    throw new Error(
+      `[expo-spm-plugin] The Expo Swift macro plugin is missing its executable at ${tool}. ` +
+        'Expo modules are compiled from source here, and their Swift macros cannot expand without ' +
+        'it — the build would fail with "external macro implementation could not be found". ' +
+        'Reinstall your JavaScript dependencies and build again.'
+    );
+  }
+  return ['-Xfrontend', '-load-plugin-executable', '-Xfrontend', `${tool}#ExpoModulesMacros`];
+}
+
 module.exports = function expoSpmPlugin(context) {
-  const { react, outputDir } = context;
+  const { autolinking, react, outputDir } = context;
   // `context.appRoot` is the Xcode project dir (`<app>/ios`); the autolinking
   // CLI's --app-root must be the app PACKAGE root, because
   // `generate-modules-provider` filters modules against that dir's package.json
@@ -70,7 +176,10 @@ module.exports = function expoSpmPlugin(context) {
   // provider, with no Expo modules registering at runtime. RN's contract hands
   // us that root directly.
   const appRoot = context.projectRoot;
-  const modules = resolveExpoModules(appRoot);
+  const { modules, extraDependencies } = resolveExpoModules(appRoot);
+  const metadata = prebuiltMetadata(appRoot);
+  const autolinkedRoots = collectAutolinkedRoots(autolinking);
+  const identities = resolvePodIdentities(modules, metadata, autolinkedRoots);
   const outDir = path.join(outputDir, 'expo');
   // The old contract generated mutable binaryTarget packages here. They are
   // invalid under automatic configuration selection and must never survive a
@@ -94,7 +203,6 @@ module.exports = function expoSpmPlugin(context) {
   const xcconfigLinkage = []; // emitted pods whose podspec xcconfig sets linker flags
   const unresolvedTargets = new Map(); // module root → manifest targets with no sources on disk
   const unsupportedTargetDeps = new Map(); // module root → deps the generated package cannot declare
-  const podspecErrors = new Map(); // module root → podspec line the reader refused
   const podspecLinkage = new Map(); // module root → podspec line declaring native linkage
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
@@ -102,26 +210,54 @@ module.exports = function expoSpmPlugin(context) {
   // receives the plugin result. No runtime binary enters the SwiftPM graph.
   const precompiledFrameworks = new Map();
   const flavoredFrameworks = [];
+  const precompiledPods = [];
+  let coreModuleRoot = null;
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
-      const moduleRoot = findModuleRoot(pod.podspecDir);
+      const { entry, moduleRoot, productName } = identities.get(pod);
+      if (pod.podName === 'ExpoModulesCore') coreModuleRoot = moduleRoot;
       const needsReact = moduleNeedsReact(pod.podName, moduleRoot);
       const framework = resolveFlavoredFramework({
         packageName: mod.packageName,
         moduleRoot,
-        frameworkName: pod.podName,
+        frameworkName: productName,
         cacheDir: artifactCacheDir,
       });
       if (framework != null) {
         precompiledFrameworks.set(pod.podName, framework);
         flavoredFrameworks.push(framework);
+        precompiledPods.push({
+          packageName: mod.packageName,
+          podName: pod.podName,
+          podspecDir: pod.podspecDir,
+          moduleRoot,
+          spmDependencies: entry?.spmDependencies,
+        });
         emitted.add(pod.podName);
         if (needsReact) reactWired.push(pod.podName);
       }
     }
   }
-  flavoredFrameworks.sort((a, b) => a.id.localeCompare(b.id));
+  // The SwiftPM packages those modules link ship as their own XCFrameworks, and
+  // RN takes them in the same flat array. They join before the interface tree is
+  // built, so source modules compile against their headers too.
+  const dependencyFrameworks = resolveSpmDependencyFrameworks(precompiledPods);
+  flavoredFrameworks.push(...dependencyFrameworks);
+  flavoredFrameworks.sort((a, b) => byteOrder(a.id, b.id));
+  assertDistinctFlavoredFrameworks(flavoredFrameworks);
+
+  // Pass 2 reports this for the modules it emits, which a precompiled pod reaches
+  // only when a sibling pod of its package is not precompiled — so the report for
+  // precompiled pods belongs here. What the resolved dependencies already carry is
+  // not uncovered, their subspecs included.
+  const satisfiedDependencies = new Set(dependencyFrameworks.map((f) => f.frameworkName));
+  for (const { packageName, podName, podspecDir } of precompiledPods) {
+    const unmapped = collectUnmappedDependencies(podspecDir, satisfiedDependencies);
+    if (unmapped.length > 0) {
+      unmappedDeps.push({ packageName, podName, pods: unmapped });
+    }
+  }
   const frameworkSearchPath =
     precompiledFrameworks.size > 0
       ? prepareCompileInterfaces(flavoredFrameworks, path.join(outDir, 'compile-interfaces'))
@@ -130,12 +266,21 @@ module.exports = function expoSpmPlugin(context) {
   // Pass 2 — invariant source modules. They compile against the generated
   // headers/module-interface tree and leave runtime linking entirely to RN.
   const coreAvailable = precompiledFrameworks.has('ExpoModulesCore') && frameworkSearchPath != null;
+  // Every module imports ExpoModulesCore, so none may be built below its floor —
+  // the CocoaPods installer raises them the same way, after install.
+  const coreDeploymentTarget = metadata['ExpoModulesCore']?.iosDeploymentTarget ?? null;
   if (coreAvailable) {
+    // Every emitted source target compiles against the same ExpoModulesCore interface tree,
+    // so every one of them may use the macros — the set CocoaPods reaches through its
+    // "is core or depends on core" gate. Resolved on first use so an install that emits
+    // no source package at all does not need the macro plugin present.
+    let resolvedMacroFlags = null;
+    const macroFlags = () => (resolvedMacroFlags ??= macroPluginFlags(coreModuleRoot));
     for (const mod of modules) {
       const pods = mod.pods ?? [];
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
       const pod = pods[0];
-      const moduleRoot = findModuleRoot(pod.podspecDir);
+      const { entry, moduleRoot } = identities.get(pod);
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
         // Module ships a checked-in Package.swift → mirror its targets + inject deps.
@@ -145,6 +290,8 @@ module.exports = function expoSpmPlugin(context) {
           frameworkSearchPath,
           outDir,
           codegenPkgPath,
+          minimumIosDeploymentTarget: coreDeploymentTarget,
+          macroFlags: macroFlags(),
         });
         if (e.unsupportedTargetDeps != null) {
           unsupportedTargetDeps.set(moduleRoot, e.unsupportedTargetDeps);
@@ -158,26 +305,20 @@ module.exports = function expoSpmPlugin(context) {
           if (react != null) reactWired.push(pod.podName);
         }
       } else if (isPureSwift(moduleRoot)) {
-        // Pure-Swift module → single Swift target over its ios sources. Its podspec
-        // supplies nothing but the deployment floor: a module whose linkage only the
-        // podspec declares is skipped and diagnosed, never emitted half-linked.
-        let podspecs = null;
-        try {
-          podspecs = readPodspecs(
-            pod.podName,
-            [
-              pod.podspecDir,
-              ...APPLE_SOURCE_DIRS.map((dir) => path.join(moduleRoot, dir)),
-              moduleRoot,
-            ].filter(Boolean)
-          );
-        } catch (error) {
-          if (!(error instanceof PodspecSyntaxError)) throw error;
-          podspecErrors.set(moduleRoot, error);
-        }
-        if (podspecs?.linkage != null) podspecLinkage.set(moduleRoot, podspecs.linkage);
+        // Pure-Swift module → single Swift target over its ios sources. Its podspec is
+        // only read for what would make the emission wrong: a module whose linkage only
+        // the podspec declares is skipped and diagnosed, never emitted half-linked.
+        const podspecs = readPodspecs(
+          pod.podName,
+          [
+            pod.podspecDir,
+            ...APPLE_SOURCE_DIRS.map((dir) => path.join(moduleRoot, dir)),
+            moduleRoot,
+          ].filter(Boolean)
+        );
+        if (podspecs.linkage != null) podspecLinkage.set(moduleRoot, podspecs.linkage);
         const e =
-          podspecs == null || podspecs.linkage != null
+          podspecs.linkage != null
             ? null
             : emitPureSwiftSourcePackage({
                 moduleRoot,
@@ -186,7 +327,8 @@ module.exports = function expoSpmPlugin(context) {
                 frameworkSearchPath,
                 outDir,
                 codegenPkgPath,
-                iosDeploymentTarget: podspecs.iosDeploymentTarget,
+                iosDeploymentTarget: raiseFloor(entry?.iosDeploymentTarget, coreDeploymentTarget),
+                macroFlags: macroFlags(),
               });
         if (e != null) {
           packageDependencies.push(e.packageDep);
@@ -204,8 +346,11 @@ module.exports = function expoSpmPlugin(context) {
         }
       }
 
-      if (emitted.has(pod.podName)) {
-        const unmapped = collectUnmappedDependencies(pod.podspecDir);
+      // A precompiled pod was already diagnosed in pass 1. It still reaches here
+      // when a sibling pod of the same package is not precompiled, and warning
+      // again would print the identical block twice.
+      if (emitted.has(pod.podName) && !precompiledFrameworks.has(pod.podName)) {
+        const unmapped = collectUnmappedDependencies(pod.podspecDir, satisfiedDependencies);
         if (unmapped.length > 0) {
           unmappedDeps.push({
             packageName: mod.packageName,
@@ -225,7 +370,7 @@ module.exports = function expoSpmPlugin(context) {
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
       if (emitted.has(pod.podName)) continue;
-      const moduleRoot = findModuleRoot(pod.podspecDir);
+      const { moduleRoot, prebuildProduct } = identities.get(pod);
       pending.push({
         podName: pod.podName,
         packageName: mod.packageName,
@@ -234,9 +379,8 @@ module.exports = function expoSpmPlugin(context) {
         hasSources: appleSourceDir(moduleRoot) != null,
         unsupportedTargetDeps: unsupportedTargetDeps.get(moduleRoot) ?? null,
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
-        podspecError: podspecErrors.get(moduleRoot) ?? null,
         podspecLinkage: podspecLinkage.get(moduleRoot) ?? null,
-        prebuildProduct: spmConfigProduct(moduleRoot, pod.podName),
+        prebuildProduct,
       });
     }
   }
@@ -261,6 +405,13 @@ module.exports = function expoSpmPlugin(context) {
   }
   if (xcconfigLinkage.length > 0) {
     console.warn(renderXcconfigLinkerWarning(xcconfigLinkage));
+  }
+  const rootConflicts = collectRootConflicts(identities);
+  if (rootConflicts.length > 0) {
+    console.warn(renderRootConflictWarning(rootConflicts));
+  }
+  if (extraDependencies.length > 0) {
+    console.warn(renderExtraPodsWarning(extraDependencies));
   }
   if (react == null) {
     console.warn(
@@ -327,12 +478,7 @@ module.exports = function expoSpmPlugin(context) {
   // Package.swift and expo-module.config.json. Editing either must trip RN's
   // in-build re-sync — the manifests drive the generated wrapper packages, the
   // configs drive module resolution.
-  const moduleRoots = new Set();
-  for (const mod of modules) {
-    for (const pod of mod.pods ?? []) {
-      moduleRoots.add(findModuleRoot(pod.podspecDir));
-    }
-  }
+  const moduleRoots = new Set([...identities.values()].map((identity) => identity.moduleRoot));
   // The registry's other inputs: app groups come from the entitlements file and
   // inline-module registration from Podfile.properties.json, so editing either
   // must trip the re-sync as well. Known gap: repointing CODE_SIGN_ENTITLEMENTS
@@ -359,3 +505,5 @@ module.exports = function expoSpmPlugin(context) {
     scriptPhases,
   };
 };
+
+module.exports.resolvePodIdentities = resolvePodIdentities;

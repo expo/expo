@@ -309,6 +309,7 @@ function renderSourceManifest({
   pkgDeps = [],
   injectedTargetDeps = [],
   frameworkSearchPath,
+  extraSwiftFlags = [],
 }) {
   const targetsSwift = manifest.targets
     .map((t) => {
@@ -329,7 +330,7 @@ function renderSourceManifest({
       return `        .target(
             name: "${t.name}",
             dependencies: [${depsSwift}],
-            path: "root/${t.path}",${renderFileRules(t)}${headers}${renderTargetSettings(frameworkSearchPath, t.settings, t.name)}
+            path: "root/${t.path}",${renderFileRules(t)}${headers}${renderTargetSettings(frameworkSearchPath, t.settings, t.name, extraSwiftFlags)}
         )`;
     })
     .join(',\n');
@@ -382,6 +383,7 @@ function renderPureSwiftManifest({
   excludes = [],
   iosDeploymentTarget = null,
   hasPrivacyManifest = false,
+  extraSwiftFlags = [],
 }) {
   const packageDepsSwift = pkgDeps.length
     ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
@@ -414,7 +416,7 @@ let package = Package(
         .target(
             name: "${product}",
             dependencies: [${targetDepsSwift}],
-            path: "root/${srcRel}",${excludeSwift}${resourcesSwift}${renderTargetSettings(frameworkSearchPath, [], product)}
+            path: "root/${srcRel}",${excludeSwift}${resourcesSwift}${renderTargetSettings(frameworkSearchPath, [], product, extraSwiftFlags)}
         ),
     ],
     swiftLanguageModes: [.v5],
@@ -431,8 +433,12 @@ function escapeSwiftString(value) {
  * A target's `*Settings:` arguments: Expo's binary-free interface tree first, then
  * whatever the module itself declared, in its own order.
  */
-function renderTargetSettings(frameworkSearchPath, settings, targetName) {
-  const interfaceFlags = `.unsafeFlags(["-F", "${escapeSwiftString(frameworkSearchPath)}"])`;
+function renderTargetSettings(frameworkSearchPath, settings, targetName, extraSwiftFlags = []) {
+  const unsafeFlags = (flags) =>
+    `.unsafeFlags([${flags.map((f) => `"${escapeSwiftString(f)}"`).join(', ')}])`;
+  const interfaceFlags = unsafeFlags(['-F', frameworkSearchPath]);
+  // `-Xfrontend` is a Swift driver flag; clang rejects it, so it stays out of c/cxxSettings.
+  const swiftInterfaceFlags = unsafeFlags(['-F', frameworkSearchPath, ...extraSwiftFlags]);
   for (const setting of settings ?? []) {
     if (!SETTING_TOOLS.has(setting.tool)) {
       throw new Error(
@@ -447,7 +453,8 @@ function renderTargetSettings(frameworkSearchPath, settings, targetName) {
     const own = (settings ?? [])
       .filter((s) => s.tool === tool)
       .map((s) => renderSetting(s, targetName));
-    const values = tool === 'linker' ? own : [interfaceFlags, ...own];
+    const injected = tool === 'swift' ? swiftInterfaceFlags : interfaceFlags;
+    const values = tool === 'linker' ? own : [injected, ...own];
     return values.length ? `\n            ${label}: [${values.join(', ')}],` : '';
   }).join('');
 }
@@ -455,6 +462,26 @@ function renderTargetSettings(frameworkSearchPath, settings, targetName) {
 /** Only iOS is mirrored: React Native's Swift Package Manager support is iOS-only. */
 function renderPlatforms(iosDeploymentTarget) {
   return iosDeploymentTarget != null ? `[.iOS("${iosDeploymentTarget}")]` : '[.iOS(.v15)]';
+}
+
+/**
+ * The higher of two iOS floors, or null when neither side declares one.
+ *
+ * CocoaPods raises every Expo pod to ExpoModulesCore's deployment target after
+ * install (`reconcile_expo_module_deployment_targets`). Under SwiftPM the
+ * generated manifest is the only place to do that, because importing a module
+ * built for a higher floor than the importer is a compile error.
+ */
+function raiseFloor(declared, minimum) {
+  if (declared == null) return minimum ?? null;
+  if (minimum == null) return declared;
+  const components = (version) => version.split('.').map(Number);
+  const [left, right] = [components(declared), components(minimum)];
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const delta = (left[i] ?? 0) - (right[i] ?? 0);
+    if (delta !== 0) return delta > 0 ? declared : minimum;
+  }
+  return declared;
 }
 
 // ---------------------------------------------------------------------------
@@ -553,12 +580,18 @@ function emitSourceManifestPackage({
   frameworkSearchPath,
   outDir,
   codegenPkgPath = null,
+  minimumIosDeploymentTarget = null,
+  macroFlags = [],
 }) {
   const { unsupportedTargetDeps, ...dumped } = parseDumpedManifest(runDumpPackage(moduleRoot));
   if (unsupportedTargetDeps.length) return { unsupportedTargetDeps };
   const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
   if (unresolvedTargets.length) return { unresolvedTargets };
-  const manifest = { ...dumped, targets };
+  const manifest = {
+    ...dumped,
+    targets,
+    iosDeploymentTarget: raiseFloor(dumped.iosDeploymentTarget, minimumIosDeploymentTarget),
+  };
   const pkgDir = path.join(outDir, 'expo-source', manifest.name);
   fs.mkdirSync(pkgDir, { recursive: true });
   linkRoot(pkgDir, moduleRoot);
@@ -571,6 +604,7 @@ function emitSourceManifestPackage({
       pkgDeps,
       injectedTargetDeps: targetDeps,
       frameworkSearchPath,
+      extraSwiftFlags: macroFlags,
     })
   );
 
@@ -594,6 +628,7 @@ function emitPureSwiftSourcePackage({
   outDir,
   codegenPkgPath = null,
   iosDeploymentTarget = null,
+  macroFlags = [],
 }) {
   const srcDir = appleSourceDir(moduleRoot);
   if (srcDir == null) return null;
@@ -614,6 +649,7 @@ function emitPureSwiftSourcePackage({
       excludes: collectIgnoredDirs(srcDir),
       iosDeploymentTarget,
       hasPrivacyManifest: fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST)),
+      extraSwiftFlags: macroFlags,
     })
   );
 
@@ -628,6 +664,7 @@ module.exports = {
   resolveTargetPaths,
   renderSourceManifest,
   renderPureSwiftManifest,
+  raiseFloor,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
 };
