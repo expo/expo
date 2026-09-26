@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed unmounting a `NavigationBar` component with `hidden` not restoring the navigation bar. ([#49715](https://github.com/expo/expo/pull/49715) by [@harshasiddartha](https://github.com/harshasiddartha))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-21
