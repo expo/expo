@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added conversions between JavaScript values and free-form `Any`, `[Any]` and `[String: Any]` values. ([#50660](https://github.com/expo/expo/pull/50660) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

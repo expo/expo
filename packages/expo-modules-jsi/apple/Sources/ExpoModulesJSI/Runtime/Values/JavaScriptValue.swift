@@ -715,9 +715,11 @@ extension JavaScriptValue: JSIRepresentable {
 extension JavaScriptValue {
   public struct TypeError: Error, CustomStringConvertible {
     let type: any ~Copyable.Type
+    /// A specific explanation that replaces the generic message, when the failure needs one.
+    var reason: String? = nil
 
     public var description: String {
-      return "TypeError: Value cannot be represented as \(type)"
+      return "TypeError: \(reason ?? "Value cannot be represented as \(type)")"
     }
   }
 }
