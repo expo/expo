@@ -21,6 +21,7 @@ import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOption
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { compileDeferredHermesArtifactsAsync } from './compileDeferredHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
@@ -276,6 +277,14 @@ export async function exportAppAsync(
               ];
             })
           );
+
+          // Compile the bytecode the serializer deferred for chunks that reference DOM
+          // components, now that the html renames are applied to their serialized JS.
+          await compileDeferredHermesArtifactsAsync({
+            projectRoot,
+            artifacts: bundle.artifacts,
+            files,
+          });
 
           if (platform === 'web') {
             const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
