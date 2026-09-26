@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Narrowed `UniversalStyle` dimension props (`width`, `height`) to `number | undefined`. String values such as `"100%"` are no longer accepted by the TypeScript type and produce a dev-mode `console.warn` at runtime. Use the `modifiers` prop with `fillMaxWidth()` / `fillMaxHeight()` for percentage sizing. ([#50094](https://github.com/expo/expo/pull/50094) by [@benjaminkomen](https://github.com/benjaminkomen))
+
 ### 💡 Others
 
 ## 58.0.7 — 2026-09-25
