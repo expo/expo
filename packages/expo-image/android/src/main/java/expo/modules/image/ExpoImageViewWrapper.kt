@@ -78,6 +78,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal val onError by EventDispatcher<ImageErrorEvent>()
   internal val onLoad by EventDispatcher<ImageLoadEvent>()
   internal val onDisplay by EventDispatcher<Unit>()
+  internal val onPlaceholderDisplay by EventDispatcher<Unit>()
 
   internal var sources: List<Source> = emptyList()
   private val bestSource: Source?
@@ -317,7 +318,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           configureView(newView, target, resource, isPlaceholder)
 
           // Dispatch "onDisplay" event only for the main source (no placeholder).
-          if (target.hasSource) {
+          // A placeholder reaching this branch is rendered as the main image, so it gets
+          // "onPlaceholderDisplay" instead.
+          if (isPlaceholder) {
+            onPlaceholderDisplay.invoke(Unit)
+          } else if (target.hasSource) {
             onDisplay.invoke(Unit)
           }
 
@@ -384,6 +389,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             }
 
           configureView(firstView, target, resource, isPlaceholder)
+          onPlaceholderDisplay.invoke(Unit)
           val transitionDuration = (transition?.duration ?: 0).toLong()
           if (transitionDuration > 0) {
             firstView.bringToFront()

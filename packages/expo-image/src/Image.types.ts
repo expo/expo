@@ -383,6 +383,11 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    */
   onDisplay?: () => void;
 
+  /**
+   * Called when the image view successfully rendered a placeholder image.
+   */
+  onPlaceholderDisplay?: () => void;
+
   // DEPRECATED
 
   /**
