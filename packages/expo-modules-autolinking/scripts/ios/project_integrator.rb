@@ -143,7 +143,7 @@ module Expo
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
-          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
         end
 
         target.pod_targets.each do |pod_target|
@@ -187,13 +187,13 @@ module Expo
     end
 
     def self.resolve_macros_plugin_dir(core_src_root)
-      js = "require.resolve('@expo/expo-modules-macros-plugin/package.json', { paths: #{[core_src_root].to_json} })"
+      js = "require.resolve('expo-modules-macros/package.json', { paths: #{[core_src_root].to_json} })"
       stdout, stderr, status = Open3.capture3('node', '--print', js)
       pkg_json_path = stdout.strip
 
       if !status.success? || pkg_json_path.empty?
         node_error = stderr.lines.find { |line| line.start_with?('Error:') }&.strip
-        raise "[Expo] Could not resolve `@expo/expo-modules-macros-plugin` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} Reinstall your JavaScript dependencies and rerun `pod install`."
+        raise "[Expo] Could not resolve `expo-modules-macros` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} Reinstall your JavaScript dependencies and rerun `pod install`."
       end
 
       File.join(File.dirname(pkg_json_path), 'apple')

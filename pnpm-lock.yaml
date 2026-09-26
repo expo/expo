@@ -5366,12 +5366,12 @@ importers:
 
   packages/expo-modules-core:
     dependencies:
-      '@expo/expo-modules-macros-plugin':
-        specifier: 0.12.0
-        version: 0.12.0
       expo-modules-jsi:
         specifier: workspace:~
         version: link:../expo-modules-jsi
+      expo-modules-macros:
+        specifier: 0.14.0
+        version: 0.14.0
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -8001,9 +8001,6 @@ packages:
 
   '@expo/devcert@1.2.1':
     resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
-
-  '@expo/expo-modules-macros-plugin@0.12.0':
-    resolution: {integrity: sha512-5oKf2sj/cqiVJdZraEaEfsHENCtzIsbIjyo3cw8zN3djbevMq3EZqXjmYuPiWzvF4xv2UDXgeAwEJ6XwbXLFfQ==}
 
   '@expo/material-symbols@0.1.1':
     resolution: {integrity: sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg==}
@@ -11787,6 +11784,9 @@ packages:
     hasBin: true
     peerDependencies:
       expo: '*'
+
+  expo-modules-macros@0.14.0:
+    resolution: {integrity: sha512-R6ODnfK0Za+pSZZjv0SuOTV2YkxczeavvrsLv40gueH3U7QJ8H5OlD3kkFqyT68UzDLRJhwF52D884egtNH7Rw==}
 
   expo-three@7.0.1:
     resolution: {integrity: sha512-B8OyGwjQZ+NbGBMT3zqe2ngV7mI147yJL8eR56y9SQLrsEkv8+DiMpm3f88r7/LJoFXKGg8mmMrK09hMvRqGHg==}
@@ -16819,8 +16819,6 @@ snapshots:
       '@expo/sudo-prompt': 9.3.2
       debug: 3.2.7
 
-  '@expo/expo-modules-macros-plugin@0.12.0': {}
-
   '@expo/material-symbols@0.1.1': {}
 
   '@expo/mcp-tunnel@0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))':
@@ -20844,6 +20842,8 @@ snapshots:
       open: 8.4.2
       serve-static: 1.16.3
       stream-json: 1.9.1
+
+  expo-modules-macros@0.14.0: {}
 
   expo-three@7.0.1(expo-asset@packages+expo-asset)(expo-file-system@packages+expo-file-system)(expo-font@packages+expo-font)(expo-modules-core@packages+expo-modules-core)(react-native@0.88.0-rc.2(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(three@0.137.5):
     dependencies:
