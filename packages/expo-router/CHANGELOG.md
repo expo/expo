@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo-source` resolution for published package entry points and deep `build/*` imports.
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-25
