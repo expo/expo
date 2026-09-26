@@ -1,6 +1,6 @@
 import { Picker, type PickerProps, type PickerRef } from '@expo/ui/community/picker';
 import React, { useRef, useState } from 'react';
-import { Button, Platform } from 'react-native';
+import { Button, Platform, useColorScheme } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
 import { ScrollPage, Section } from '../../components/Page';
@@ -15,6 +15,7 @@ const sansSerif = Platform.select({
 const cursive = Platform.select({ ios: 'Snell Roundhand', android: 'cursive', default: 'cursive' });
 
 export default function CommunityPickerScreen() {
+  const isDark = useColorScheme() === 'dark';
   return (
     <ScrollPage>
       <Section title="Standard">
@@ -22,7 +23,9 @@ export default function CommunityPickerScreen() {
       </Section>
 
       <Section title="Styled (backgroundColor, borderRadius)">
-        <GenericPicker style={{ backgroundColor: '#e0e7ff', borderRadius: 12 }} />
+        <GenericPicker
+          style={{ backgroundColor: isDark ? '#37304a' : '#e0e7ff', borderRadius: 12 }}
+        />
       </Section>
 
       <Section title="Per-item styling and state">
