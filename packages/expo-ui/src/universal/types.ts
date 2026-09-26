@@ -111,3 +111,30 @@ export interface UniversalBaseProps {
  * @docsInline
  */
 export type UniversalAlignment = 'start' | 'center' | 'end';
+
+/**
+ * Observable state created with `useNativeState`.
+ *
+ * On iOS and Android, the value is shared with native views. A write from the JavaScript thread
+ * is applied on the UI thread asynchronously, so a read right after it may still return the
+ * previous value. Writes don't re-render the component that created the state.
+ *
+ * On web, the value is backed by React state. A write is readable immediately and re-renders the
+ * component that created the state.
+ */
+export type ObservableState<T> = {
+  /**
+   * The current value.
+   */
+  value: T;
+
+  /**
+   * Reads the current value. A React Compiler-compliant alternative to reading `.value`.
+   */
+  get(): T;
+
+  /**
+   * Writes a new value. A React Compiler-compliant alternative to assigning `.value`.
+   */
+  set(value: T): void;
+};
