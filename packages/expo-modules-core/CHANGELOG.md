@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] `@Record` now accepts properties that hold free-form `Any` values, such as `[String: Any]?` or `[Any]`. ([#50676](https://github.com/expo/expo/pull/50676) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
