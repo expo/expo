@@ -42,12 +42,14 @@
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "generate-types": "expo-modules generate-types"
   },
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "expo-modules-cli": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
