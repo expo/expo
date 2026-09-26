@@ -169,8 +169,17 @@ private fun evictCacheEntry(url: String, storageKey: String) {
   }
 }
 
-fun buildMediaSourceFactory(context: Context, dataSourceFactory: DataSource.Factory): MediaSource.Factory {
-  return DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory)
+@OptIn(UnstableApi::class)
+fun buildMediaSourceFactory(
+  context: Context,
+  dataSourceFactory: DataSource.Factory,
+  fallbackOnTransportError: Boolean = false
+): MediaSource.Factory {
+  val factory = DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory)
+  if (fallbackOnTransportError) {
+    factory.setLoadErrorHandlingPolicy(TransportFallbackLoadErrorHandlingPolicy())
+  }
+  return factory
 }
 
 @OptIn(UnstableApi::class)
@@ -183,7 +192,13 @@ fun buildExpoVideoMediaSource(
   } else {
     buildBaseDataSourceFactory(context, videoSource)
   }
-  val mediaSourceFactory = buildMediaSourceFactory(context, dataSourceFactory)
+  // With caching on, some renditions may be servable from the cache while the network is gone.
+  // Let a rendition that cannot be reached fall back to another one instead of failing playback.
+  val mediaSourceFactory = buildMediaSourceFactory(
+    context,
+    dataSourceFactory,
+    fallbackOnTransportError = videoSource.useCaching
+  )
   val mediaItem = videoSource.toMediaItem(context)
   return mediaSourceFactory.createMediaSource(mediaItem)
 }
