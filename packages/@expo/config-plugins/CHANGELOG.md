@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Keep `\n`, `\t`, `\uXXXX` and double-quoted values intact when prebuild reads and rewrites an existing Android `strings.xml` (`Line one\nLine two` was written back as `Line onenLine two`).
+- Keep `\n`, `\t`, `\uXXXX` and double-quoted values intact when prebuild reads and rewrites an existing Android `strings.xml` (`Line one\nLine two` was written back as `Line onenLine two`). ([#50671](https://github.com/expo/expo/pull/50671) by [@breken-ai](https://github.com/breken-ai))
 - Replace, instead of duplicate, the generated section in files with CRLF line endings. ([#50381](https://github.com/expo/expo/pull/50381) by [@tahakocal](https://github.com/tahakocal))
 
 ### 💡 Others
