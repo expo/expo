@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `runtimeversion:resolve` and `configuration:syncnative` load `.env` files before reading app config, in production mode unless the calling tool passes a mode. ([#49508](https://github.com/expo/expo/pull/49508) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
