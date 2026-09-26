@@ -20,6 +20,7 @@ const Icons: { [key: string]: any } = {
   LinearGradient: () => require('../../assets/icons/api/LinearGradient.png'),
   LocalAuthentication: () => require('../../assets/icons/api/LocalAuthentication.png'),
   Location: () => require('../../assets/icons/api/Location.png'),
+  'Location@Next': () => require('../../assets/icons/api/Location.png'),
   Lottie: () => require('../../assets/icons/api/Lottie.png'),
   Maps: () => require('../../assets/icons/api/Maps.png'),
   ExpoMaps: () => require('../../assets/icons/api/Maps.png'),
