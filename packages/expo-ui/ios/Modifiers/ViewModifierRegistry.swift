@@ -1819,6 +1819,71 @@ internal struct NavigationTitleModifier: ViewModifier, Record {
   }
 }
 
+internal enum NavigationBarTitleDisplayMode: String, Enumerable {
+  case automatic
+  case inline
+  case large
+
+#if os(iOS)
+  var value: NavigationBarItem.TitleDisplayMode {
+    switch self {
+    case .automatic:
+      return .automatic
+    case .inline:
+      return .inline
+    case .large:
+      return .large
+    }
+  }
+#endif
+}
+
+internal struct NavigationBarTitleDisplayModeModifier: ViewModifier, Record {
+  @Field var displayMode: NavigationBarTitleDisplayMode = .automatic
+
+  func body(content: Content) -> some View {
+#if os(iOS)
+    content.navigationBarTitleDisplayMode(displayMode.value)
+#else
+    content
+#endif
+  }
+}
+
+internal enum ToolbarTitleDisplayModeType: String, Enumerable {
+  case automatic
+  case inline
+  case inlineLarge
+  case large
+
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
+  var value: SwiftUI.ToolbarTitleDisplayMode {
+    switch self {
+    case .automatic:
+      return .automatic
+    case .inline:
+      return .inline
+    case .inlineLarge:
+      return .inlineLarge
+    case .large:
+      return .large
+    }
+  }
+}
+
+internal struct ToolbarTitleDisplayModeModifier: ViewModifier, Record {
+  @Field var mode: ToolbarTitleDisplayModeType = .automatic
+
+  @ViewBuilder
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      content.toolbarTitleDisplayMode(mode.value)
+    } else {
+      content
+    }
+  }
+}
+
 // MARK: - Built-in Modifier Registration
 
 // swiftlint:disable:next no_grouping_extension
@@ -1993,6 +2058,14 @@ extension ViewModifierRegistry {
 
     register("navigationTitle") { params, appContext, _ in
       return try NavigationTitleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationBarTitleDisplayMode") { params, appContext, _ in
+      return try NavigationBarTitleDisplayModeModifier(from: params, appContext: appContext)
+    }
+
+    register("toolbarTitleDisplayMode") { params, appContext, _ in
+      return try ToolbarTitleDisplayModeModifier(from: params, appContext: appContext)
     }
 
     register("navigationSplitViewStyle") { params, appContext, _ in

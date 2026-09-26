@@ -1762,6 +1762,30 @@ export const resizable = (
  */
 export const navigationTitle = (title: string) => createModifier('navigationTitle', { title });
 
+export type NavigationBarTitleDisplayMode = 'automatic' | 'inline' | 'large';
+
+/**
+ * Configures the title display mode for a navigation bar.
+ * @param displayMode - The style to use for displaying the navigation bar title.
+ * @platform ios 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationbartitledisplaymode(_:)).
+ */
+export const navigationBarTitleDisplayMode = (displayMode: NavigationBarTitleDisplayMode) =>
+  createModifier('navigationBarTitleDisplayMode', { displayMode });
+
+export type ToolbarTitleDisplayMode = 'automatic' | 'inline' | 'inlineLarge' | 'large';
+
+/**
+ * Configures the title display mode for a toolbar.
+ * @param mode - The style to use for displaying the toolbar title.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/toolbartitledisplaymode(_:)).
+ */
+export const toolbarTitleDisplayMode = (mode: ToolbarTitleDisplayMode) =>
+  createModifier('toolbarTitleDisplayMode', { mode });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -1908,7 +1932,9 @@ export type BuiltInModifier =
   | ReturnType<typeof widgetURL>
   | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>
-  | ReturnType<typeof navigationTitle>;
+  | ReturnType<typeof navigationTitle>
+  | ReturnType<typeof navigationBarTitleDisplayMode>
+  | ReturnType<typeof toolbarTitleDisplayMode>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
