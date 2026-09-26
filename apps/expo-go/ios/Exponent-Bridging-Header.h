@@ -29,6 +29,8 @@
 #import "EXUtil.h"
 #import "EXReactAppManager.h"
 #import "EXAbstractLoader.h"
+#import "EXKernelAppRecord.h"
+#import "EXManifestResource.h"
 #import "EXProgressHUD.h"
 #import "EXConstantsBinding.h"
 #import "EXOnDeviceTransformer.h"
