@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Report `mocked` on `LocationObject` using `CLLocationSourceInformation.isSimulatedBySoftware`. ([#PR](https://github.com/expo/expo/pull/PR) by [@JagjeevanAK](https://github.com/JagjeevanAK))
+- [iOS] Report `mocked` on `LocationObject` using `CLLocationSourceInformation.isSimulatedBySoftware`. ([#50683](https://github.com/expo/expo/pull/50683) by [@JagjeevanAK](https://github.com/JagjeevanAK))
 
 ### 🐛 Bug fixes
 
