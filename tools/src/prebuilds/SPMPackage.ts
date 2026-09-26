@@ -151,17 +151,16 @@ function getExpoModulesMacroPluginFlags(): string[] {
     throw new Error(
       `Could not locate the "expo-modules-core" package while generating Package.swift. ` +
         `The ExpoModules macros plugin executable (used to expand @OptimizedFunction etc.) ships ` +
-        `under "expo-modules-core/node_modules/@expo/expo-modules-macros-plugin/apple". ` +
+        `under "expo-modules-core/node_modules/expo-modules-macros/apple". ` +
         `Ensure expo-modules-core is installed in the workspace before running the prebuild.`
     );
   }
   const macrosToolPath = path.join(
     corePkg.path,
     'node_modules',
-    '@expo',
-    'expo-modules-macros-plugin',
+    'expo-modules-macros',
     'apple',
-    'ExpoModulesMacros-tool'
+    'ExpoModulesMacros'
   );
   _macroPluginFlagsCache = [
     '-Xfrontend',
