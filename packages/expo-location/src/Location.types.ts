@@ -265,8 +265,9 @@ export type LocationObject = {
    */
   timestamp: number;
   /**
-   * Whether the location coordinates is mocked or not.
-   * @platform android
+   * Whether the location coordinates is mocked or not. On Android, this is `true` when the location
+   * comes from a mock provider. On iOS, it is `true` when the location is simulated by software
+   * (for example, by Xcode or a location-spoofing tool).
    */
   mocked?: boolean;
 };
