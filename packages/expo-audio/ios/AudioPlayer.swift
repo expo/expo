@@ -119,6 +119,22 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
+  func setPlaybackRate(_ rate: Double, pitchCorrectionQuality: AVAudioTimePitchAlgorithm) {
+    let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
+    currentRate = playerRate
+
+    if isPlaying {
+      ref.rate = playerRate
+    }
+
+    if shouldCorrectPitch {
+      self.pitchCorrectionQuality = pitchCorrectionQuality
+      ref.currentItem?.audioTimePitchAlgorithm = pitchCorrectionQuality
+    } else {
+      ref.currentItem?.audioTimePitchAlgorithm = .varispeed
+    }
+  }
+
   func setSamplingEnabled(enabled: Bool) {
     if samplingEnabled == enabled {
       return
