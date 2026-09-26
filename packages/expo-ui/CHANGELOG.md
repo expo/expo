@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `get()` and `set()` to the universal `ObservableState` type and to the web implementation of `useNativeState`, as React Compiler-compliant alternatives to `.value`. ([#50684](https://github.com/expo/expo/pull/50684) by [@Den1Marshall](https://github.com/Den1Marshall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
