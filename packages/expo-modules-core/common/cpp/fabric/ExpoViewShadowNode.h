@@ -163,6 +163,21 @@ private:
   }
 
   react::LayoutConstraints hostedContentConstraints(const react::ShadowNode &content) const {
+    auto constraints = contentStyleConstraints(content);
+
+    // An axis that `RNHostView` does not match gets its size from the native parent through
+    // `setViewSize`, which `adopt` writes as a definite dimension. Lay the content out at exactly
+    // that size, so text wraps at the parent width while the other axis still hugs the content.
+    auto const &ownStyle = this->yogaNode_.style();
+    pinToPoints(ownStyle.dimension(facebook::yoga::Dimension::Width),
+                constraints.minimumSize.width, constraints.maximumSize.width);
+    pinToPoints(ownStyle.dimension(facebook::yoga::Dimension::Height),
+                constraints.minimumSize.height, constraints.maximumSize.height);
+
+    return constraints;
+  }
+
+  react::LayoutConstraints contentStyleConstraints(const react::ShadowNode &content) const {
     react::LayoutConstraints constraints{};
     constraints.layoutDirection = resolvedLayoutDirection();
 
@@ -184,6 +199,14 @@ private:
                       constraints.maximumSize.height);
 
     return constraints;
+  }
+
+  static void pinToPoints(facebook::yoga::StyleSizeLength length,
+                          react::Float &minimum,
+                          react::Float &maximum) {
+    if (length.isPoints() && length.value().isDefined()) {
+      minimum = maximum = std::max<react::Float>(0, length.value().unwrap());
+    }
   }
 
   static void constrainToPoints(facebook::yoga::StyleSizeLength length, react::Float &constraint) {

@@ -62,6 +62,22 @@ public:
     const auto snode = dynamic_cast<ShadowNodeType *>(&shadowNode);
     const auto state = snode->getStateData();
 
+    // Runs first: `updateYogaProps()` resets the Yoga style from props, so running it after
+    // `setSize` below would drop the size the native parent reported for an unmatched axis.
+    if (isRNHostView(snode->getProps())) {
+      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
+        snode->getProps());
+      auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
+
+      // If RNHostView has align self set to auto or stretch, we should override it to flex-start so that the node can size itself to its content
+      auto const alignSelf = style.alignSelf();
+
+      if (alignSelf == facebook::yoga::Align::Auto || alignSelf == facebook::yoga::Align::Stretch) {
+        style.setAlignSelf(facebook::yoga::Align::FlexStart);
+        snode->updateYogaProps();
+      }
+    }
+
     auto width = state._width;
     auto height = state._height;
 
@@ -106,20 +122,6 @@ public:
 
       // Updates yoga style from props and sets the node dirty
       snode->updateYogaProps();
-    }
-
-    if (isRNHostView(snode->getProps())) {
-      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
-        snode->getProps());
-      auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
-
-      // If RNHostView has align self set to auto or stretch, we should override it to flex-start so that the node can size itself to its content
-      auto const alignSelf = style.alignSelf();
-
-      if (alignSelf == facebook::yoga::Align::Auto || alignSelf == facebook::yoga::Align::Stretch) {
-        style.setAlignSelf(facebook::yoga::Align::FlexStart);
-        snode->updateYogaProps();
-      }
     }
 
     facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::adopt(shadowNode);
