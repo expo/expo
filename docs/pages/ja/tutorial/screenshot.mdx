@@ -118,7 +118,7 @@ export default function Index() {
 
 `onSaveImageAsync()` 関数の中で `react-native-view-shot` の `captureRef()` メソッドを呼び出すことで、ビューのスクリーンショットを撮影できます。このメソッドは省略可能な引数を受け取り、スクリーンショットを撮影する領域の `width` と `height` を渡せます。利用可能なオプションの詳細については、[ライブラリのドキュメント](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api) を参照してください。
 
-また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.saveToLibraryAsync()`](/versions/v57.0.0/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) のパラメータとして渡し、デバイスのメディアライブラリにスクリーンショットを保存します。
+また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.Asset.create()`](/versions/v57.0.0/sdk/media-library/#createfilepath-album) のパラメータとして渡し、デバイスのメディアライブラリにスクリーンショットを保存します。
 
 **src/app/(tabs)/index.tsx** の中で、`onSaveImageAsync()` 関数を次のコードに更新します。
 
@@ -195,7 +195,7 @@ export default function Index() {
         quality: 1,
       });
 
-      await MediaLibrary.saveToLibraryAsync(localUri);
+      await MediaLibrary.Asset.create(localUri);
       if (localUri) {
         alert('Saved!');
       }

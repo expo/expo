@@ -118,7 +118,7 @@ In the above snippet, the `collapsable` prop is set to `false`. This allows the 
 
 We can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function. It accepts an optional argument where we can pass the `width` and `height` of the screenshot capturing area. We can read more about available options in [the library's documentation](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api).
 
-The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`MediaLibrary.saveToLibraryAsync()`](/versions/v57.0.0/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) and save the screenshot to the device's media library.
+The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`MediaLibrary.Asset.create()`](/versions/v57.0.0/sdk/media-library/#createfilepath-album) and save the screenshot to the device's media library.
 
 Inside **src/app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
 
@@ -195,7 +195,7 @@ export default function Index() {
         quality: 1,
       });
 
-      await MediaLibrary.saveToLibraryAsync(localUri);
+      await MediaLibrary.Asset.create(localUri);
       if (localUri) {
         alert('Saved!');
       }
