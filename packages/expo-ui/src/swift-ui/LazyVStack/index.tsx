@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 
+import { createLazyStackForEach } from '../LazyStackForEach';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -30,3 +31,5 @@ export function LazyVStack(props: LazyVStackProps) {
     />
   );
 }
+
+LazyVStack.ForEach = createLazyStackForEach('LazyVStack.ForEach', 'vertical');
