@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Notify about changes to `metro.config.{cjs,mjs,ts,cts,mts}` and `.config/metro.*`, not just `metro.config.js` and `metro.config.json`. ([#50406](https://github.com/expo/expo/pull/50406) by [@AlexErrant](https://github.com/AlexErrant))
+
 ### 💡 Others
 
 - [Internal] Fix the `BundleOptions` import in `internal/unstable-expo-updates-exports.d.ts`, which pointed at a subpath `@expo/metro` doesn't ship. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))

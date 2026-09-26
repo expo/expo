@@ -1763,7 +1763,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   protected getConfigModuleIds(): string[] {
-    return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
+    // Keep in sync with `configExtensions` in `@expo/metro-config/src/config/resolveMetroUserConfig.ts`.
+    const extensions = ['.js', '.cjs', '.mjs', '.json', '.ts', '.cts', '.mts'];
+    return ['./metro.config', './.config/metro'].flatMap((name) =>
+      extensions.map((extension) => name + extension)
+    );
   }
 
   // API Routes
