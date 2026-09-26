@@ -17,18 +17,18 @@ afterAll(() => {
   console.warn = originalConsoleWarn;
 });
 
-it('renders', () => {
+it('renders', async () => {
   // Ensure no errors
-  expect(() =>
+  await expect(
     render(
       <View>
         <View />
       </View>
     )
-  ).not.toThrow();
+  ).resolves.not.toThrow();
 });
 
-it('asserts react-dom elements', () => {
+it('asserts react-dom elements', async () => {
   const instance = (
     <View>
       <div />
@@ -37,16 +37,25 @@ it('asserts react-dom elements', () => {
 
   if (Platform.OS === 'web') {
     // Ensure no errors
-    expect(() => render(instance)).not.toThrow();
+    await expect(render(instance)).resolves.not.toThrow();
   } else {
-    expect(() => render(instance)).toThrow(/Using unsupported React DOM element/);
+    await expect(async () => await render(instance)).rejects.toThrow(
+      /Using unsupported React DOM element/
+    );
   }
 });
 
-it('warns about unwrapped strings', () => {
-  // Ensure no errors
-  const { toJSON } = render(<View>Hey</View>);
-  expect(toJSON()).toMatchSnapshot();
-
-  expect(console.warn).toHaveBeenCalledTimes(1);
+it('warns about unwrapped strings', async () => {
+  if (Platform.OS === 'web') {
+    // The test renderer only treats React Native's `Text` as a text host, so on web the warning's
+    // own `<Text>` (a `<div>`) is rejected before it can be snapshotted. The warning still fires.
+    // React retries the render once after the thrown error, so the warning fires more than once.
+    await expect(render(<View>Hey</View>)).rejects.toThrow(/must be rendered within/);
+    expect(console.warn).toHaveBeenCalled();
+  } else {
+    // Ensure no errors
+    const { toJSON } = await render(<View>Hey</View>);
+    expect(toJSON()).toMatchSnapshot();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+  }
 });
