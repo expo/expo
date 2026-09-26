@@ -14,6 +14,7 @@ import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {
   type CheckedInResolvedTarget,
+  getSiblingProductNames,
   isCheckedInResolvedTarget,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
@@ -1539,7 +1540,11 @@ async function buildPackageSwiftContext(
   let spinner = createAsyncSpinner(`Build Package Swift context`, pkg, product);
   const checkedInRoot = resolveCheckedInManifestRoot(pkg);
   const checkedInTargets = checkedInRoot
-    ? await resolveCheckedInManifestAsync(checkedInRoot, product)
+    ? await resolveCheckedInManifestAsync(
+        checkedInRoot,
+        product,
+        getSiblingProductNames(pkg, product)
+      )
     : null;
 
   // Get root directory for the Package.swift file
