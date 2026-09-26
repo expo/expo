@@ -507,6 +507,14 @@ class HomeAppViewModel(
     clearRecents()
   }
 
+  fun logout(sessionId: String) {
+    if (sessionId == sessionStore.activeSession?.id) {
+      logout()
+    } else {
+      removeSession(sessionId)
+    }
+  }
+
   fun switchSession(id: String) {
     clearRecents()
     sessionStore.activate(id)
