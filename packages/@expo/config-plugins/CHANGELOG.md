@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Match argument labels in `findSwiftFunctionCodeBlock` and `insertContentsInsideSwiftFunctionBlock`, which used the first function with the same name and parameter count (for example, code for `application(_:didRegisterForRemoteNotificationsWithDeviceToken:)` was inserted into `application(_:didFinishLaunchingWithOptions:)`). ([#50672](https://github.com/expo/expo/pull/50672) by [@breken-ai](https://github.com/breken-ai))
 - Replace, instead of duplicate, the generated section in files with CRLF line endings. ([#50381](https://github.com/expo/expo/pull/50381) by [@tahakocal](https://github.com/tahakocal))
 
 ### 💡 Others
