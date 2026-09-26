@@ -17,22 +17,22 @@ afterEach(() => jest.resetAllMocks());
 it('releases the loaded image on unmount', async () => {
   const load = createImageLoad();
   jest.mocked(Image.loadAsync).mockReturnValueOnce(load.promise);
-  const { result, unmount } = renderHook(() => useImage('first.jpg'));
+  const { result, unmount } = await renderHook(() => useImage('first.jpg'));
 
   await act(async () => load.finish());
   expect(result.current).toBe(load.image);
   expect(load.image.release).not.toHaveBeenCalled();
 
-  unmount();
+  await unmount();
   expect(load.image.release).toHaveBeenCalledTimes(1);
 });
 
 it('releases an image that finishes loading after unmount', async () => {
   const load = createImageLoad();
   jest.mocked(Image.loadAsync).mockReturnValueOnce(load.promise);
-  const { unmount } = renderHook(() => useImage('first.jpg'));
+  const { unmount } = await renderHook(() => useImage('first.jpg'));
 
-  unmount();
+  await unmount();
   expect(load.image.release).not.toHaveBeenCalled();
   await act(async () => load.finish());
   expect(load.image.release).toHaveBeenCalledTimes(1);
@@ -45,7 +45,7 @@ it('releases each loaded image when its source is replaced or unmounted', async 
     .mocked(Image.loadAsync)
     .mockReturnValueOnce(first.promise)
     .mockReturnValueOnce(second.promise);
-  const { result, rerender, unmount } = renderHook<ImageRef | null, { uri: string }>(
+  const { result, rerender, unmount } = await renderHook<ImageRef | null, { uri: string }>(
     ({ uri }) => useImage(uri),
     {
       initialProps: { uri: 'first.jpg' },
@@ -53,13 +53,13 @@ it('releases each loaded image when its source is replaced or unmounted', async 
   );
 
   await act(async () => first.finish());
-  rerender({ uri: 'second.jpg' });
+  await rerender({ uri: 'second.jpg' });
   expect(first.image.release).toHaveBeenCalledTimes(1);
 
   await act(async () => second.finish());
   expect(result.current).toBe(second.image);
   expect(second.image.release).not.toHaveBeenCalled();
-  unmount();
+  await unmount();
   expect(first.image.release).toHaveBeenCalledTimes(1);
   expect(second.image.release).toHaveBeenCalledTimes(1);
 });
@@ -71,19 +71,19 @@ it('releases a stale load without replacing the current image', async () => {
     .mocked(Image.loadAsync)
     .mockReturnValueOnce(first.promise)
     .mockReturnValueOnce(second.promise);
-  const { result, rerender, unmount } = renderHook<ImageRef | null, { uri: string }>(
+  const { result, rerender, unmount } = await renderHook<ImageRef | null, { uri: string }>(
     ({ uri }) => useImage(uri),
     {
       initialProps: { uri: 'first.jpg' },
     }
   );
 
-  rerender({ uri: 'second.jpg' });
+  await rerender({ uri: 'second.jpg' });
   await act(async () => second.finish());
   await act(async () => first.finish());
   expect(result.current).toBe(second.image);
   expect(first.image.release).toHaveBeenCalledTimes(1);
   expect(second.image.release).not.toHaveBeenCalled();
-  unmount();
+  await unmount();
   expect(second.image.release).toHaveBeenCalledTimes(1);
 });
