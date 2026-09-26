@@ -255,12 +255,24 @@ export interface IntentLauncherParams {
    */
   flags?: number;
   /**
-   * Package name used as an identifier of ComponentName. Set this only if you want to explicitly
-   * set the component to handle the intent.
+   * Package name of the app that should handle the intent. Without `className`,
+   * `Intent.setPackage` limits the intent to that package, so the system doesn't show a chooser or
+   * open another app. If that app can't handle the intent, the returned promise is rejected.
+   *
+   * With `className`, it's the package of the exact component to launch.
+   * @example
+   * ```ts
+   * // Opens the listing in the Google Play Store app, not in a chooser or a browser.
+   * startActivityAsync('android.intent.action.VIEW', {
+   *   data: 'https://play.google.com/store/apps/details?id=com.example.app',
+   *   packageName: 'com.android.vending',
+   * });
+   * ```
    */
   packageName?: string;
   /**
-   * Class name of the ComponentName.
+   * Class name of the component to launch. Uses `packageName` as the component's package when it's
+   * set, otherwise the current app's package.
    */
   className?: string;
 }
