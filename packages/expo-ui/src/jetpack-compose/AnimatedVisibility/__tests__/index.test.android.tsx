@@ -133,8 +133,8 @@ describe('plus() chaining', () => {
 });
 
 describe('AnimatedVisibility', () => {
-  it('passes undefined transitions when not specified', () => {
-    render(<AnimatedVisibility visible />);
+  it('passes undefined transitions when not specified', async () => {
+    await render(<AnimatedVisibility visible />);
 
     const props = mockNativeViewFn.mock.calls[0][0];
     expect(props.visible).toBe(true);
@@ -142,8 +142,8 @@ describe('AnimatedVisibility', () => {
     expect(props.exitTransition).toBeUndefined();
   });
 
-  it('serializes enter and exit transitions to native props', () => {
-    render(
+  it('serializes enter and exit transitions to native props', async () => {
+    await render(
       <AnimatedVisibility
         visible={false}
         enterTransition={EnterTransition.fadeIn({ initialAlpha: 0.5 })}
@@ -156,8 +156,8 @@ describe('AnimatedVisibility', () => {
     expect(props.exitTransition).toEqual([{ type: 'fadeOut' }]);
   });
 
-  it('serializes combined transitions', () => {
-    render(
+  it('serializes combined transitions', async () => {
+    await render(
       <AnimatedVisibility
         visible
         enterTransition={EnterTransition.fadeIn().plus(EnterTransition.expandIn())}
@@ -170,8 +170,8 @@ describe('AnimatedVisibility', () => {
     expect(props.exitTransition).toEqual([{ type: 'fadeOut' }, { type: 'shrinkOut' }]);
   });
 
-  it('passes children through to native view', () => {
-    const { getByTestId } = render(
+  it('passes children through to native view', async () => {
+    const { getByTestId } = await render(
       <AnimatedVisibility visible>
         <View testID="mock-child" />
       </AnimatedVisibility>

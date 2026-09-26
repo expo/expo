@@ -89,9 +89,9 @@ beforeEach(() => {
 });
 
 describe('a hosted text field', () => {
-  it('registers its host with React Native while it is mounted', () => {
+  it('registers its host with React Native while it is mounted', async () => {
     const hostView = createHostView();
-    const view = render(
+    const view = await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={createField()} />
       </FakeHost>
@@ -99,36 +99,36 @@ describe('a hosted text field', () => {
 
     expect(TextInputState.isTextInput(hostView)).toBe(true);
 
-    view.unmount();
+    await view.unmount();
     expect(TextInputState.isTextInput(hostView)).toBe(false);
   });
 
-  it('does nothing when it has no surrounding host', () => {
+  it('does nothing when it has no surrounding host', async () => {
     const field = createField();
-    expect(() => render(<FakeTextField field={field} />)).not.toThrow();
-    act(() => field.reportFocus(true));
+    await expect(render(<FakeTextField field={field} />)).resolves.not.toThrow();
+    await act(() => field.reportFocus(true));
     expect(TextInputState.currentlyFocusedInput()).toBeNull();
   });
 
-  it('makes its host the focused input while it holds focus', () => {
+  it('makes its host the focused input while it holds focus', async () => {
     const hostView = createHostView();
     const field = createField();
-    render(
+    await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={field} />
       </FakeHost>
     );
 
-    act(() => field.reportFocus(true));
+    await act(() => field.reportFocus(true));
     expect(TextInputState.currentlyFocusedInput()).toBe(hostView);
 
-    act(() => field.reportFocus(false));
+    await act(() => field.reportFocus(false));
     expect(TextInputState.currentlyFocusedInput()).toBeNull();
   });
 
-  it('reports focus that arrives before it is registered', () => {
+  it('reports focus that arrives before it is registered', async () => {
     const hostView = createHostView();
-    render(
+    await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={createField()} autoFocus />
       </FakeHost>
@@ -137,23 +137,23 @@ describe('a hosted text field', () => {
     expect(TextInputState.currentlyFocusedInput()).toBe(hostView);
   });
 
-  it("still calls the app's own focus handler", () => {
+  it("still calls the app's own focus handler", async () => {
     const onFocusChange = jest.fn();
     const field = createField();
-    render(
+    await render(
       <FakeHost hostView={createHostView()}>
         <FakeTextField field={field} onFocusChange={onFocusChange} />
       </FakeHost>
     );
 
-    act(() => field.reportFocus(true));
+    await act(() => field.reportFocus(true));
     expect(onFocusChange).toHaveBeenCalledWith(true);
   });
 
-  it("still forwards the app's own ref", () => {
+  it("still forwards the app's own ref", async () => {
     const appRef = createRef<FakeField>();
     const field = createField();
-    render(
+    await render(
       <FakeHost hostView={createHostView()}>
         <FakeTextField field={field} ref={appRef} />
       </FakeHost>
@@ -164,11 +164,11 @@ describe('a hosted text field', () => {
 });
 
 describe('two fields in one host', () => {
-  function renderTwoFields() {
+  async function renderTwoFields() {
     const hostView = createHostView();
     const first = createField();
     const second = createField();
-    const view = render(
+    const view = await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={first} />
         <FakeTextField field={second} />
@@ -177,11 +177,11 @@ describe('two fields in one host', () => {
     return { hostView, first, second, view };
   }
 
-  it('keeps the host focused when focus moves and the blur event arrives first', () => {
-    const { hostView, first, second } = renderTwoFields();
+  it('keeps the host focused when focus moves and the blur event arrives first', async () => {
+    const { hostView, first, second } = await renderTwoFields();
 
-    act(() => first.reportFocus(true));
-    act(() => {
+    await act(() => first.reportFocus(true));
+    await act(() => {
       first.reportFocus(false);
       second.reportFocus(true);
     });
@@ -189,11 +189,11 @@ describe('two fields in one host', () => {
     expect(TextInputState.currentlyFocusedInput()).toBe(hostView);
   });
 
-  it('keeps the host focused when focus moves and the focus event arrives first', () => {
-    const { hostView, first, second } = renderTwoFields();
+  it('keeps the host focused when focus moves and the focus event arrives first', async () => {
+    const { hostView, first, second } = await renderTwoFields();
 
-    act(() => first.reportFocus(true));
-    act(() => {
+    await act(() => first.reportFocus(true));
+    await act(() => {
       second.reportFocus(true);
       first.reportFocus(false);
     });
@@ -201,22 +201,22 @@ describe('two fields in one host', () => {
     expect(TextInputState.currentlyFocusedInput()).toBe(hostView);
   });
 
-  it('clears the focused input when a field unmounts while it holds focus', () => {
+  it('clears the focused input when a field unmounts while it holds focus', async () => {
     const hostView = createHostView();
     const field = createField();
-    const view = render(
+    const view = await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={field} />
       </FakeHost>
     );
 
-    act(() => field.reportFocus(true));
-    view.unmount();
+    await act(() => field.reportFocus(true));
+    await view.unmount();
 
     expect(TextInputState.currentlyFocusedInput()).toBeNull();
   });
 
-  it('keeps the host registered until its last field unmounts', () => {
+  it('keeps the host registered until its last field unmounts', async () => {
     const hostView = createHostView();
     const first = createField();
     const second = createField();
@@ -230,20 +230,20 @@ describe('two fields in one host', () => {
       );
     }
 
-    const view = render(<Fields showSecond />);
-    view.update(<Fields showSecond={false} />);
+    const view = await render(<Fields showSecond />);
+    await view.rerender(<Fields showSecond={false} />);
     expect(TextInputState.isTextInput(hostView)).toBe(true);
 
-    view.unmount();
+    await view.unmount();
     expect(TextInputState.isTextInput(hostView)).toBe(false);
   });
 });
 
 describe('React Native asking a host to blur', () => {
-  function renderHostedField() {
+  async function renderHostedField() {
     const hostView = createHostView();
     const field = createField();
-    const view = render(
+    const view = await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={field} />
       </FakeHost>
@@ -251,79 +251,79 @@ describe('React Native asking a host to blur', () => {
     return { hostView, field, view };
   }
 
-  it('blurs the field that holds focus', () => {
-    const { hostView, field } = renderHostedField();
-    act(() => field.reportFocus(true));
+  it('blurs the field that holds focus', async () => {
+    const { hostView, field } = await renderHostedField();
+    await act(() => field.reportFocus(true));
 
-    act(() => TextInputState.blurTextInput(hostView));
+    await act(() => TextInputState.blurTextInput(hostView));
 
     expect(field.blur).toHaveBeenCalled();
     expect(TextInputState.currentlyFocusedInput()).toBeNull();
   });
 
-  it('does nothing when a different input holds focus', () => {
-    const { hostView, field } = renderHostedField();
-    act(() => field.reportFocus(true));
+  it('does nothing when a different input holds focus', async () => {
+    const { hostView, field } = await renderHostedField();
+    await act(() => field.reportFocus(true));
     // A plain `TextInput` takes focus, which makes the host stale.
     TextInputState.focusInput(createHostView());
 
-    act(() => TextInputState.blurTextInput(hostView));
+    await act(() => TextInputState.blurTextInput(hostView));
 
     expect(field.blur).not.toHaveBeenCalled();
   });
 
-  it('passes an input React Native owns through untouched', () => {
-    renderHostedField();
+  it('passes an input React Native owns through untouched', async () => {
+    await renderHostedField();
     const plainTextInput = createHostView();
     TextInputState.focusInput(plainTextInput);
 
-    act(() => TextInputState.blurTextInput(plainTextInput));
+    await act(() => TextInputState.blurTextInput(plainTextInput));
 
     expect(passedThroughBlurTextInput).toHaveBeenCalledWith(plainTextInput);
   });
 
-  it('passes the host through once its last field has unmounted', () => {
-    const { hostView, view } = renderHostedField();
-    view.unmount();
+  it('passes the host through once its last field has unmounted', async () => {
+    const { hostView, view } = await renderHostedField();
+    await view.unmount();
 
-    act(() => TextInputState.blurTextInput(hostView));
+    await act(() => TextInputState.blurTextInput(hostView));
 
     expect(passedThroughBlurTextInput).toHaveBeenCalledWith(hostView);
   });
 });
 
 describe('React Native asking a host to focus', () => {
-  it('refocuses the field that held focus last', () => {
+  it('refocuses the field that held focus last', async () => {
     const hostView = createHostView();
     const first = createField();
     const second = createField();
-    render(
+    await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={first} />
         <FakeTextField field={second} />
       </FakeHost>
     );
 
-    act(() => second.reportFocus(true));
-    act(() => second.reportFocus(false));
-    act(() => TextInputState.focusTextInput(hostView));
+    await act(() => second.reportFocus(true));
+    await act(() => second.reportFocus(false));
+    await act(() => TextInputState.focusTextInput(hostView));
 
     expect(second.focus).toHaveBeenCalled();
     expect(first.focus).not.toHaveBeenCalled();
   });
 
-  it('leaves the focused input alone until the field reports focus', () => {
+  it('leaves the focused input alone until the field reports focus', async () => {
     const hostView = createHostView();
     const field = createField();
-    render(
+    await render(
       <FakeHost hostView={hostView}>
         <FakeTextField field={field} />
       </FakeHost>
     );
 
-    act(() => field.reportFocus(true));
-    act(() => field.reportFocus(false));
-    act(() => TextInputState.focusTextInput(hostView));
+    await act(() => field.reportFocus(true));
+    await act(() => field.reportFocus(false));
+    await act(() => TextInputState.focusTextInput(hostView));
 
     expect(TextInputState.currentlyFocusedInput()).toBeNull();
     expect(passedThroughFocusTextInput).not.toHaveBeenCalled();
@@ -331,45 +331,45 @@ describe('React Native asking a host to focus', () => {
 });
 
 describe('blurring a field when it unmounts', () => {
-  it('blurs a field that holds focus', () => {
+  it('blurs a field that holds focus', async () => {
     const field = createField();
-    const view = render(
+    const view = await render(
       <FakeHost hostView={createHostView()}>
         <FakeTextField field={field} options={{ blurOnUnmount: true }} />
       </FakeHost>
     );
 
-    act(() => field.reportFocus(true));
-    view.unmount();
+    await act(() => field.reportFocus(true));
+    await view.unmount();
 
     // The native views are still attached while a layout-effect cleanup runs, so the
     // field can be blurred before the row holding it goes away.
     expect(field.blur).toHaveBeenCalled();
   });
 
-  it('leaves a field that does not hold focus alone', () => {
+  it('leaves a field that does not hold focus alone', async () => {
     const field = createField();
-    const view = render(
+    const view = await render(
       <FakeHost hostView={createHostView()}>
         <FakeTextField field={field} options={{ blurOnUnmount: true }} />
       </FakeHost>
     );
 
-    view.unmount();
+    await view.unmount();
 
     expect(field.blur).not.toHaveBeenCalled();
   });
 
-  it('leaves a focused field alone without the option', () => {
+  it('leaves a focused field alone without the option', async () => {
     const field = createField();
-    const view = render(
+    const view = await render(
       <FakeHost hostView={createHostView()}>
         <FakeTextField field={field} />
       </FakeHost>
     );
 
-    act(() => field.reportFocus(true));
-    view.unmount();
+    await act(() => field.reportFocus(true));
+    await view.unmount();
 
     // Compose binds `blur` to the host's focus manager, which clears focus for whichever
     // component holds it, so the behaviour stays opt-in.

@@ -17,8 +17,8 @@ function hostedViewStyle() {
 }
 
 describe('BottomSheet', () => {
-  it('gives the hosted content the sheet width when the sheet sizes to its content', () => {
-    render(
+  it('gives the hosted content the sheet width when the sheet sizes to its content', async () => {
+    await render(
       <BottomSheet index={0}>
         <View />
       </BottomSheet>
@@ -28,8 +28,8 @@ describe('BottomSheet', () => {
     expect(hostedViewStyle()?.width).toBe(Dimensions.get('window').width);
   });
 
-  it('fills the snap point height when snap points are set', () => {
-    render(
+  it('fills the snap point height when snap points are set', async () => {
+    await render(
       <BottomSheet index={0} snapPoints={['50%']}>
         <View />
       </BottomSheet>
