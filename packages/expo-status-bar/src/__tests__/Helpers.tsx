@@ -17,21 +17,37 @@ export function mockProperty<T, K extends keyof T>(
   }
 }
 
-export function mockAppearance(colorScheme: ColorSchemeName, fn: any) {
+export async function mockAppearance(colorScheme: ColorSchemeName, fn: () => Promise<void>) {
   const mockUseColorScheme = jest
     .spyOn(ReactNative, 'useColorScheme')
     .mockImplementationOnce(() => colorScheme);
   try {
-    fn();
+    await fn();
   } finally {
+    mockUseColorScheme.mockRestore();
   }
-  mockUseColorScheme.mockRestore();
 }
 
-export function renderedPropValue(element: any, prop: string) {
-  const result = render(element);
-  // @ts-ignore: brentvatne: I'm not sure how else to read the props off of a
-  // component that renders null in testing-library, so I'm using this fairly
-  // brittle internal API.
-  return result.UNSAFE_root._fiber.return.child.child.pendingProps[prop];
+/**
+ * Renders `element` and returns the given prop of the React Native `StatusBar` it renders.
+ * React Native's `StatusBar` renders nothing, so `mockNativeStatusBar` must be called first to
+ * replace it with a host element that carries its props.
+ */
+export async function renderedPropValue(element: React.ReactElement, prop: string) {
+  const result = await render(element);
+  return result.root?.props[prop];
+}
+
+/**
+ * Replaces React Native's `StatusBar` component with a host element that exposes its props.
+ * Call this at the top level of a test file, before the component under test is rendered.
+ */
+export function mockNativeStatusBar() {
+  jest.mock('react-native/Libraries/Components/StatusBar/StatusBar', () => {
+    const React = require('react') as typeof import('react');
+    return {
+      __esModule: true,
+      default: (props: Record<string, unknown>) => React.createElement('StatusBar', props),
+    };
+  });
 }
