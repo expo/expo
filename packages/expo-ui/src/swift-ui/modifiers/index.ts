@@ -1762,6 +1762,10 @@ export const resizable = (
  */
 export const navigationTitle = (title: string) => createModifier('navigationTitle', { title });
 
+/**
+ * Title display modes for the `navigationBarTitleDisplayMode` modifier.
+ * @platform ios
+ */
 export type NavigationBarTitleDisplayMode = 'automatic' | 'inline' | 'large';
 
 /**
@@ -1773,6 +1777,13 @@ export type NavigationBarTitleDisplayMode = 'automatic' | 'inline' | 'large';
 export const navigationBarTitleDisplayMode = (displayMode: NavigationBarTitleDisplayMode) =>
   createModifier('navigationBarTitleDisplayMode', { displayMode });
 
+/**
+ * Title display modes for the `toolbarTitleDisplayMode` modifier. On tvOS, `large` and
+ * `inlineLarge` have no effect. On macOS, `large` has no effect.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ */
 export type ToolbarTitleDisplayMode = 'automatic' | 'inline' | 'inlineLarge' | 'large';
 
 /**
