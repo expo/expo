@@ -115,7 +115,7 @@ export type UniversalAlignment = 'start' | 'center' | 'end';
 /**
  * Observable state created with `useNativeState`.
  *
- * On iOS and Android, the value is shared with native views. A write from the JavaScript thread
+ * On Android and iOS, the value is shared with native views. A write from the JavaScript thread
  * is applied on the UI thread asynchronously, so a read right after it may still return the
  * previous value. Writes don't re-render the component that created the state.
  *
