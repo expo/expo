@@ -1771,7 +1771,7 @@ export type NavigationBarTitleDisplayMode = 'automatic' | 'inline' | 'large';
 /**
  * Configures the title display mode for a navigation bar.
  * @param displayMode - The style to use for displaying the navigation bar title.
- * @platform ios 14.0+
+ * @platform ios
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationbartitledisplaymode(_:)).
  */
 export const navigationBarTitleDisplayMode = (displayMode: NavigationBarTitleDisplayMode) =>
