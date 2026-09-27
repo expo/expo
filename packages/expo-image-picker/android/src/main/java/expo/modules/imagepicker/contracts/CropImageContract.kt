@@ -12,6 +12,7 @@ import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import expo.modules.imagepicker.CropShape
 import expo.modules.imagepicker.ExpoCropImageActivity
+import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.copyExifData
@@ -27,6 +28,8 @@ internal class CropImageContract(
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, ExpoCropImageActivity::class.java).apply {
     val outputUri = input.outputFile.getContentUri(context)
+
+    putExtra(ImagePickerConstants.CROP_OUTPUT_FILE_PATH_EXTRA, input.outputFile.absolutePath)
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
@@ -61,13 +64,35 @@ internal class CropImageContract(
       @Suppress("DEPRECATION")
       intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT)
     }
-    if (resultCode == Activity.RESULT_CANCELED || result == null) {
-      return ImagePickerContractResult.Cancelled
-    }
-    val targetUri = requireNotNull(result.uriContent)
+    mapCropImageParseResult(resultCode, result)?.let { return it }
+    val targetUri = requireNotNull(result?.uriContent)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
     runBlocking { copyExifData(input.sourceUri.toUri(), input.outputFile, contentResolver) }
     return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
+  }
+}
+
+/**
+ * Maps a crop activity result to cancellation or error. Returns `null` when cropping succeeded
+ * and [CropImage.ActivityResult.uriContent] is present.
+ */
+internal fun mapCropImageParseResult(
+  resultCode: Int,
+  result: CropImage.ActivityResult?
+): ImagePickerContractResult? {
+  return when (
+    mapCropImageParseKind(
+      resultCode = resultCode,
+      resultIsPresent = result != null,
+      uriContentIsNull = result?.uriContent == null,
+      hasError = result?.error != null,
+      cancelledCode = Activity.RESULT_CANCELED,
+      errorCode = CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE
+    )
+  ) {
+    CropImageParseKind.CANCELLED -> ImagePickerContractResult.Cancelled
+    CropImageParseKind.ERROR -> ImagePickerContractResult.Error
+    CropImageParseKind.SUCCESS -> null
   }
 }
 
