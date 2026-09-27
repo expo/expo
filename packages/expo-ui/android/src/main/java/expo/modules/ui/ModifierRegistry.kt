@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
@@ -131,6 +132,16 @@ data class FillMaxHeightParams(
 @OptimizedRecord
 data class WidthParams(
   @Field val width: Int = 0
+) : Record
+
+internal enum class IntrinsicSizeType(val value: String) : Enumerable {
+  MIN("min"),
+  MAX("max")
+}
+
+@OptimizedRecord
+internal data class IntrinsicWidthParams(
+  @Field val size: IntrinsicSizeType = IntrinsicSizeType.MAX
 ) : Record
 
 @OptimizedRecord
@@ -477,6 +488,16 @@ object ModifierRegistry {
     register("width") { map, _, appContext, _ ->
       val params = recordFromMap<WidthParams>(map, appContext)
       Modifier.width(params.width.dp)
+    }
+
+    register("intrinsicWidth") { map, _, appContext, _ ->
+      val params = recordFromMap<IntrinsicWidthParams>(map, appContext)
+      Modifier.width(
+        when (params.size) {
+          IntrinsicSizeType.MIN -> IntrinsicSize.Min
+          IntrinsicSizeType.MAX -> IntrinsicSize.Max
+        }
+      )
     }
 
     register("height") { map, _, appContext, _ ->

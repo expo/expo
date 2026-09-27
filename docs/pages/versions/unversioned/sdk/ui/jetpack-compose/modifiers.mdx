@@ -159,6 +159,14 @@ Sets an exact width.
 | --------- | -------- | ------------ |
 | `value`   | `number` | Width in dp. |
 
+### `intrinsicWidth(size)`
+
+Sets the width to the minimum or maximum intrinsic width of the content. Unlike `weight`, it gives children a width to share when the incoming width is unbounded, such as inside a `Host` with `matchContents`.
+
+| Parameter | Type               | Description                   |
+| --------- | ------------------ | ----------------------------- |
+| `size`    | `'min'` \| `'max'` | Which intrinsic width to use. |
+
 ### `height(value)`
 
 Sets an exact height.

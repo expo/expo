@@ -85,6 +85,14 @@ export const fillMaxHeight = (fraction?: number) => createModifier('fillMaxHeigh
 export const width = (value: number) => createModifier('width', { width: value });
 
 /**
+ * Sets the width of the view to the minimum or maximum intrinsic width of its content.
+ * Unlike `weight`, this gives the view a width when the incoming width is unbounded, such as inside a `Host` with `matchContents`.
+ * @param size - Which intrinsic width to use: `'min'` or `'max'`.
+ * @see [Compose `width(IntrinsicSize)` modifier](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#(androidx.compose.ui.Modifier).width(androidx.compose.foundation.layout.IntrinsicSize))
+ */
+export const intrinsicWidth = (size: 'min' | 'max') => createModifier('intrinsicWidth', { size });
+
+/**
  * Sets the exact height of the view.
  * @param value - Height in dp.
  */
