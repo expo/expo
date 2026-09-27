@@ -661,7 +661,9 @@ Sets semantic properties that accessibility and autofill services read.
 import { semantics } from '@expo/ui/jetpack-compose/modifiers';
 
 // The visible label is an abbreviation; TalkBack reads the full phrase.
-<Text modifiers={[semantics({ contentDescription: '1 week' })]}>1W</Text>;
+<Text modifiers={[semantics({ contentDescription: '1 week' })]}>
+  1W
+</Text>;
 ```
 
 ## API
