@@ -46,6 +46,7 @@
         }
       ],
       ["./plugins/withCrashOnLaunch", { "android": false, "ios": false }],
+      ["expo-observe", { "ios": { "crashReporter": true } }],
       [
         "expo-build-properties",
         {

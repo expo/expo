@@ -23,6 +23,9 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
     ".": {
       "types": {
@@ -42,7 +45,9 @@
     }
   },
   "scripts": {
-    "build": "expo-build src",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
@@ -51,15 +56,17 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
+    "@expo/plist": "workspace:^",
     "expo-app-metrics": "workspace:~",
     "expo-eas-client": "workspace:~"
   },
   "devDependencies": {
     "@react-navigation/native": "^7.1.33",
     "@testing-library/react-native": "^13.3.0",
+    "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
