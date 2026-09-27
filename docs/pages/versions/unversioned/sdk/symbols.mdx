@@ -99,6 +99,21 @@ import bold from 'expo-symbols/androidWeights/bold';
 
 Available weight imports: `bold`, `semiBold`, `medium`, `regular`, `light`, `extraLight`, `thin`.
 
+### Filled symbols
+
+Material Symbols draw outlined by default. On Android, each weight also has a filled variant, imported the same way with a `Filled` suffix. Use it where iOS uses a `.fill` symbol:
+
+```jsx
+import regularFilled from 'expo-symbols/androidWeights/regularFilled';
+
+<SymbolView
+  name={{ ios: 'star.fill', android: 'star', web: 'star' }}
+  weight={{ ios: 'regular', android: regularFilled }}
+/>;
+```
+
+Available filled weight imports: `boldFilled`, `semiBoldFilled`, `mediumFilled`, `regularFilled`, `lightFilled`, `extraLightFilled`, `thinFilled`. Each one adds its font to your app only when you import it.
+
 ## API
 
 ```js
