@@ -1,12 +1,7 @@
 #!/usr/bin/env node
 
-// Checks that a change to one package's SwiftPM config does not alter any OTHER package's generated
-// Package.swift. Each comparison varies one input:
-// - Package check (fails on any difference): the current tools/src generates manifests from the
-//   baseline packages/ and from the current packages/.
-// - Tooling report (never fails): when tools/src differs from the baseline, the baseline and the
-//   current tools/src each generate from the current packages/, and the altered manifests are
-//   listed (and appended to $GITHUB_STEP_SUMMARY when set).
+// Fails when the current tools/src generates a different manifest for an unchanged product from the
+// baseline packages/ than from the current ones. Changes caused by tools/src itself are only reported.
 // Run: node tools/scripts/check-spm-manifest-collateral.cjs --base "$(git merge-base origin/main HEAD)"
 // Additional exclusions: --exclude <npm-package>/<product> (repeatable).
 // Another checkout: --repo <dir> (default: the checkout holding this script).
@@ -28,8 +23,8 @@ const { values } = parseArgs({
     include: { type: 'string', multiple: true, default: [] },
     'only-comparable': { type: 'boolean', default: false },
     worker: { type: 'string' },
-    packages: { type: 'string' },
     tooling: { type: 'string' },
+    packages: { type: 'string' },
     scratch: { type: 'string' },
   },
 });
@@ -171,10 +166,7 @@ function checkInventory() {
   const comparison = classifyInventory(ids.before, ids.after, new Set([...excluded, ...changed]));
   const additionMessage = formatInventoryAdditions(comparison.additions);
   if (additionMessage) console.log(additionMessage);
-  return {
-    comparable: comparison.comparable,
-    current: ids.after.filter((id) => !excluded.has(id)),
-  };
+  return comparison.comparable;
 }
 
 function compile(source, destination) {
@@ -204,9 +196,9 @@ function compile(source, destination) {
 
 async function generate() {
   const scratch = values.scratch;
-  const fixtureRoot = path.join(scratch, 'packages', values.packages);
+  const fixtureRoot = path.join(scratch, values.packages, 'repo');
   process.env.EXPO_ROOT_DIR = fixtureRoot;
-  const build = path.join(scratch, 'tooling', values.tooling, 'build');
+  const build = path.join(scratch, values.tooling, 'build');
   const { SPMPackage } = require(path.join(build, 'prebuilds/SPMPackage.js'));
   const { Frameworks } = require(path.join(build, 'prebuilds/Frameworks.js'));
   const { resolvePackagePath } = require(path.join(build, 'prebuilds/resolvePackage.js'));
@@ -343,14 +335,14 @@ function copyCurrentPackageInputs(destination) {
   }
 }
 
-function prepareFixture(scratch, side) {
-  const fixtureRoot = path.join(scratch, 'packages', side);
+function prepareFixture(scratch, label) {
+  const fixtureRoot = path.join(scratch, label, 'repo');
   fs.mkdirSync(path.join(fixtureRoot, 'packages/precompile'), { recursive: true });
   for (const entry of fs.readdirSync(repo)) {
     if (entry !== 'packages' && entry !== '.git')
       fs.symlinkSync(path.join(repo, entry), path.join(fixtureRoot, entry));
   }
-  if (side === 'base') {
+  if (label === 'before') {
     execFileSync('tar', ['-xf', '-', '-C', fixtureRoot], {
       input: git('archive', values.base, 'packages'),
     });
@@ -358,176 +350,6 @@ function prepareFixture(scratch, side) {
     copyCurrentPackageInputs(fixtureRoot);
   }
   fs.mkdirSync(path.join(fixtureRoot, 'packages/precompile'), { recursive: true });
-}
-
-function prepareTooling(scratch, side) {
-  let source = path.join(repo, 'tools/src');
-  if (side === 'base') {
-    const baselineSource = path.join(scratch, 'base-source');
-    fs.mkdirSync(baselineSource);
-    execFileSync('tar', ['-xf', '-', '-C', baselineSource], {
-      input: git('archive', values.base, 'tools/src'),
-    });
-    source = path.join(baselineSource, 'tools/src');
-  }
-  const destination = path.join(scratch, 'tooling', side);
-  compile(source, path.join(destination, 'build'));
-  fs.symlinkSync(path.join(repo, 'tools/node_modules'), path.join(destination, 'node_modules'));
-}
-
-/** Whether tools/src differs from the baseline's, counting uncommitted and untracked files. */
-function toolingChanged() {
-  try {
-    git('diff', '--quiet', values.base, '--', 'tools/src');
-  } catch (error) {
-    if (error.status === 1) return true;
-    throw error;
-  }
-  return git('ls-files', '--others', '--exclude-standard', '--', 'tools/src').length > 0;
-}
-
-/** Generates the `include` products with one side's tooling from one side's packages. */
-function runWorker(scratch, name, { tooling, packages }, include) {
-  const args = [
-    __filename,
-    '--worker',
-    name,
-    '--tooling',
-    tooling,
-    '--packages',
-    packages,
-    '--scratch',
-    scratch,
-    '--base',
-    values.base,
-    '--repo',
-    repo,
-    '--only-comparable',
-  ];
-  for (const id of values.exclude) args.push('--exclude', id);
-  for (const id of include) args.push('--include', id);
-  try {
-    const output = execFileSync(process.execPath, args, {
-      cwd: repo,
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'pipe'],
-      maxBuffer: 16 * 1024 * 1024,
-    });
-    return { status: 0, stdout: output, stderr: '' };
-  } catch (error) {
-    return { status: error.status, stdout: error.stdout ?? '', stderr: error.stderr ?? '' };
-  }
-}
-
-function readSnapshots(scratch, name) {
-  return JSON.parse(fs.readFileSync(path.join(scratch, `${name}.json`), 'utf8'));
-}
-
-function writeWorkerOutput(result) {
-  process.stderr.write(result.stdout);
-  process.stderr.write(result.stderr);
-}
-
-function firstLine(text) {
-  return text.trim().split('\n')[0];
-}
-
-function reportToolingChanges(scratch, current) {
-  prepareTooling(scratch, 'base');
-  const snapshots = {};
-  for (const [tooling, label, consequence] of [
-    ['base', 'baseline', 'the package check is unaffected'],
-    ['current', 'current', 'the package check reports the error if it affects a compared product'],
-  ]) {
-    const result = runWorker(
-      scratch,
-      `${tooling}-tooling`,
-      { tooling, packages: 'current' },
-      current
-    );
-    if (result.status !== 0) {
-      console.log(
-        `INFO: Tooling report skipped: the ${label} tooling failed to generate manifests from the current packages (exit ${result.status}); ${consequence}. Generator error: ${firstLine(result.stderr || result.stdout)}`
-      );
-      return;
-    }
-    snapshots[tooling] = readSnapshots(scratch, `${tooling}-tooling`);
-  }
-  const ids = Object.keys(snapshots.current);
-  const changed = ids.filter((id) => snapshots.base[id] !== snapshots.current[id]);
-  for (const id of changed) console.log(`INFO: Tooling report: ${id} changed`);
-  const summary = `the tools/src changes since ${values.base} alter ${changed.length} of ${ids.length} generated manifests`;
-  console.log(`INFO: Tooling report: ${summary}. The report never fails this check.`);
-  if (process.env.GITHUB_STEP_SUMMARY && changed.length > 0) {
-    fs.appendFileSync(
-      process.env.GITHUB_STEP_SUMMARY,
-      [
-        '',
-        '### SwiftPM manifests changed by tooling',
-        '',
-        `Informational: ${summary}. The collateral check does not fail on tooling changes.`,
-        '',
-        ...changed.map((id) => `- \`${id}\``),
-        '',
-      ].join('\n')
-    );
-  }
-}
-
-function checkPackages(scratch, comparable, toolingDiffers) {
-  const current = runWorker(
-    scratch,
-    'current-packages',
-    { tooling: 'current', packages: 'current' },
-    comparable
-  );
-  if (current.status !== 0) {
-    writeWorkerOutput(current);
-    const error = new Error(
-      `Unable to generate SwiftPM manifests from the current packages (exit ${current.status}).\n` +
-        "Why: the current tools/src generator failed on the working tree's spm.config.json files; its output is printed above.\n" +
-        'How to fix: fix the error in that generator output, then run this check again.'
-    );
-    error.stack = error.message;
-    throw error;
-  }
-  console.log(`current packages: ${current.stdout.trim().split('\n').at(-1)}`);
-
-  const baseline = runWorker(
-    scratch,
-    'base-packages',
-    { tooling: 'current', packages: 'base' },
-    comparable
-  );
-  if (baseline.status !== 0) {
-    writeWorkerOutput(baseline);
-    if (!toolingDiffers) {
-      const error = new Error(
-        `Unable to generate SwiftPM manifests from the baseline ${values.base} packages (exit ${baseline.status}).\n` +
-          "Why: tools/src is unchanged since the baseline, so the generator that handles the current packages is the baseline's own, and it fails on the baseline's spm.config.json files.\n" +
-          'How to fix: read the generator output above. If the baseline itself is broken, land the fix on the base branch first; CI picks the baseline itself, so this check passes again once the fix is there.'
-      );
-      error.stack = error.message;
-      throw error;
-    }
-    console.log(
-      `SKIP: The package check did not run: the current tooling failed to generate manifests from the baseline ${values.base} packages (exit ${baseline.status}).\n` +
-        'Why: the tooling and the spm.config.json format likely changed together, so the baseline configs are no longer valid input for the current generator.\n' +
-        'How to fix: nothing is required if that format change is intended; the check runs again once the baseline has the new format. Otherwise, fix the generator error printed with this message.'
-    );
-    return;
-  }
-  console.log(`baseline packages: ${baseline.stdout.trim().split('\n').at(-1)}`);
-
-  const before = readSnapshots(scratch, 'base-packages');
-  const after = readSnapshots(scratch, 'current-packages');
-  assert.deepEqual(Object.keys(after), Object.keys(before), 'Product/flavor coverage changed');
-  const changed = Object.keys(before).filter((id) => before[id] !== after[id]);
-  for (const id of changed) console.error(`DIFF: ${id}`);
-  assert.equal(changed.length, 0, 'Collateral manifest changes');
-  console.log(
-    `PASS: ${Object.keys(before).length} byte-identical manifests across ${Object.keys(before).length / 2} products (Debug + Release), generated by the current tooling from the baseline ${values.base} packages and from the current packages.`
-  );
 }
 
 async function main() {
@@ -542,15 +364,134 @@ async function main() {
   }
   if (values.worker) return generate();
   ensureBaselineReachable();
-  const { comparable, current } = checkInventory();
+  const comparable = checkInventory();
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-manifest-collateral-'));
   try {
-    prepareFixture(scratch, 'base');
-    prepareFixture(scratch, 'current');
-    prepareTooling(scratch, 'current');
-    const toolingDiffers = toolingChanged();
-    if (toolingDiffers) reportToolingChanges(scratch, current);
-    checkPackages(scratch, comparable, toolingDiffers);
+    prepareFixture(scratch, 'before');
+    prepareFixture(scratch, 'after');
+    const toolingChanged =
+      git('diff', '--name-only', values.base, '--', 'tools/src').length > 0 ||
+      git('ls-files', '--others', '--exclude-standard', '--', 'tools/src').length > 0;
+    const baselineSource = path.join(scratch, 'base-source');
+    if (toolingChanged) {
+      fs.mkdirSync(baselineSource);
+      execFileSync('tar', ['-xf', '-', '-C', baselineSource], {
+        input: git('archive', values.base, 'tools/src'),
+      });
+    }
+    for (const [label, source] of [
+      ...(toolingChanged ? [['before', path.join(baselineSource, 'tools/src')]] : []),
+      ['after', path.join(repo, 'tools/src')],
+    ]) {
+      const destination = path.join(scratch, label);
+      compile(source, path.join(destination, 'build'));
+      fs.symlinkSync(path.join(repo, 'tools/node_modules'), path.join(destination, 'node_modules'));
+    }
+
+    function runWorker(label, tooling, packages) {
+      const args = [
+        __filename,
+        '--worker',
+        label,
+        '--tooling',
+        tooling,
+        '--packages',
+        packages,
+        '--scratch',
+        scratch,
+        '--base',
+        values.base,
+        '--repo',
+        repo,
+      ];
+      args.push('--only-comparable');
+      for (const id of values.exclude) args.push('--exclude', id);
+      for (const id of comparable) args.push('--include', id);
+      try {
+        const output = execFileSync(process.execPath, args, {
+          cwd: repo,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: 16 * 1024 * 1024,
+        });
+        return { status: 0, stdout: output, stderr: '' };
+      } catch (error) {
+        return { status: error.status, stdout: error.stdout ?? '', stderr: error.stderr ?? '' };
+      }
+    }
+
+    function requireWorkerSuccess(label, result, why, how) {
+      if (result.status !== 0) {
+        process.stderr.write(result.stdout);
+        process.stderr.write(result.stderr);
+        const error = new Error(
+          `Unable to check SwiftPM manifest collateral: the ${label} generator failed (exit ${result.status}).\nWhy: ${why}\nHow to fix: ${how}`
+        );
+        error.stack = error.message;
+        throw error;
+      }
+      console.log(`${label}: ${result.stdout.trim().split('\n').at(-1)}`);
+    }
+
+    function compareSnapshots() {
+      const before = JSON.parse(fs.readFileSync(path.join(scratch, 'before.json'), 'utf8'));
+      const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
+      assert.deepEqual(Object.keys(after), Object.keys(before), 'Product/flavor coverage changed');
+      const changed = Object.keys(before).filter((id) => before[id] !== after[id]);
+      for (const id of changed) console.error(`DIFF: ${id}`);
+      assert.equal(changed.length, 0, 'Collateral manifest changes');
+      console.log(
+        `PASS: ${Object.keys(before).length} byte-identical manifests across ${Object.keys(before).length / 2} products (Debug + Release), baseline ${values.base} packages, current tooling.`
+      );
+    }
+
+    function reportToolingChanges() {
+      const result = runWorker('report', 'before', 'after');
+      if (result.status !== 0) {
+        console.log(
+          `INFO: Tooling report skipped: the baseline tooling failed on the current packages (exit ${result.status}): ${(result.stderr || result.stdout).trim().split('\n')[0]}`
+        );
+        return;
+      }
+      const before = JSON.parse(fs.readFileSync(path.join(scratch, 'report.json'), 'utf8'));
+      const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
+      const changed = Object.keys(after).filter((id) => before[id] !== after[id]);
+      for (const id of changed) console.log(`INFO: Tooling report: ${id} changed`);
+      const summary = `the tools/src changes since ${values.base} alter ${changed.length} of ${Object.keys(after).length} generated manifests`;
+      console.log(`INFO: Tooling report: ${summary}. The report never fails this check.`);
+      if (process.env.GITHUB_STEP_SUMMARY && changed.length > 0) {
+        fs.appendFileSync(
+          process.env.GITHUB_STEP_SUMMARY,
+          `\n### SwiftPM manifests changed by tooling\n\nInformational: ${summary}.\n\n${changed.map((id) => `- \`${id}\``).join('\n')}\n`
+        );
+      }
+    }
+
+    requireWorkerSuccess(
+      'after',
+      runWorker('after', 'after', 'after'),
+      'the current tools/src failed on the current spm.config.json files.',
+      'fix the error in the generator output above, then run this check again.'
+    );
+    if (toolingChanged) reportToolingChanges();
+    const before = runWorker('before', 'after', 'before');
+    if (before.status !== 0 && toolingChanged) {
+      process.stderr.write(before.stdout);
+      process.stderr.write(before.stderr);
+      console.log(
+        `SKIP: The package check did not run: the current tooling failed on the baseline ${values.base} packages (exit ${before.status}).\n` +
+          'Why: tools/src changed too, likely with the spm.config.json format, so the baseline configs are no longer valid generator input.\n' +
+          'How to fix: nothing, if that format change is intended. Otherwise, fix the generator error printed above.'
+      );
+      return;
+    }
+    requireWorkerSuccess(
+      'before',
+      before,
+      `tools/src is unchanged, so the baseline ${values.base} packages fail with their own generator.`,
+      'read the generator output above; if the baseline packages are broken, land their fix on the base branch first.'
+    );
+    compareSnapshots();
   } finally {
     fs.rmSync(scratch, { recursive: true, force: true });
   }

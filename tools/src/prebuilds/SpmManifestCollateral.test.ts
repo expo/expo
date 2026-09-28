@@ -115,14 +115,10 @@ function writePackages(root: string, packages: Packages): void {
 type FixtureOptions = {
   base?: Packages;
   editHead?: (packages: Packages) => void;
-  /** Edits the base commit's copy of `tools/src`, given its path; the head restores it. */
-  editBaseTools?: (toolsSrc: string) => void;
   /** Edits the head commit's copy of `tools/src`, given its path. */
   editHeadTools?: (toolsSrc: string) => void;
   /** Packages given a root `Package.swift` in the head commit, which opts them in. */
   optInAtHead?: string[];
-  /** Extra files in the head commit, keyed by their path relative to the repository root. */
-  headFiles?: Record<string, string>;
   /** Edits the working tree after the head commit, given the repository root; left uncommitted. */
   editWorkingTree?: (root: string) => void;
 };
@@ -136,17 +132,13 @@ type FixtureOptions = {
 function fixtureRepo({
   base = basePackages(),
   editHead = () => {},
-  editBaseTools = () => {},
   editHeadTools = () => {},
   optInAtHead = [],
-  headFiles = {},
   editWorkingTree = () => {},
 }: FixtureOptions = {}): { root: string; baseCommit: string } {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-fixture-')));
   fixtureRoots.push(root);
-  const toolsSrc = path.join(root, 'tools/src');
-  fs.cpSync(path.join(toolsDir, 'src'), toolsSrc, { recursive: true });
-  editBaseTools(toolsSrc);
+  fs.cpSync(path.join(toolsDir, 'src'), path.join(root, 'tools/src'), { recursive: true });
   fs.symlinkSync(path.join(toolsDir, 'node_modules'), path.join(root, 'tools/node_modules'));
   fs.writeFileSync(path.join(root, '.gitignore'), 'node_modules\n');
   writePackages(root, base);
@@ -155,8 +147,7 @@ function fixtureRepo({
   git(root, 'commit', '--quiet', '--message', 'base');
   const baseCommit = git(root, 'rev-parse', 'HEAD');
 
-  fs.cpSync(path.join(toolsDir, 'src'), toolsSrc, { recursive: true });
-  editHeadTools(toolsSrc);
+  editHeadTools(path.join(root, 'tools/src'));
   const head = structuredClone(base);
   editHead(head);
   fs.rmSync(path.join(root, 'packages'), { recursive: true, force: true });
@@ -166,9 +157,6 @@ function fixtureRepo({
       path.join(root, 'packages', directory, 'Package.swift'),
       '// swift-tools-version: 5.9\n'
     );
-  }
-  for (const [relative, content] of Object.entries(headFiles)) {
-    fs.writeFileSync(path.join(root, relative), content);
   }
   git(root, 'add', '--all');
   git(root, 'commit', '--quiet', '--allow-empty', '--message', 'head');
@@ -228,11 +216,11 @@ function comparedManifests(result: SpawnSyncReturns<string>): number {
 }
 
 /**
- * Runs the collateral gate, which regenerates every product's `Package.swift` with the current
- * tooling from the baseline packages and from the working tree's, and requires the two to be
- * byte-identical. It is half the acceptance criterion of every SwiftPM migration step: the packages
- * *not* being migrated must emit exactly what they emitted before. Tooling changes are reported,
- * not failed.
+ * Runs the collateral gate, which regenerates every product's `Package.swift` at the baseline
+ * commit and on the working tree and requires the two to be byte-identical. It is half the
+ * acceptance criterion of every SwiftPM migration step: the packages *not* being migrated must
+ * emit exactly what they emitted before. Both sides use the current tooling; tooling changes are
+ * reported, not failed.
  */
 describe('check-spm-manifest-collateral', () => {
   it('passes when nothing changed, having compared every product', () => {
@@ -339,9 +327,11 @@ describe('check-spm-manifest-collateral', () => {
           'const content = await generatePackageSwiftAsync(',
           "if (!fs.existsSync(path.join(pkg.path, 'spm.format'))) throw new Error('spm.format is required');\n    const content = await generatePackageSwiftAsync("
         ),
-      headFiles: Object.fromEntries(
-        Object.keys(basePackages()).map((directory) => [`packages/${directory}/spm.format`, '2'])
-      ),
+      editWorkingTree: (root) => {
+        for (const directory of Object.keys(basePackages())) {
+          fs.writeFileSync(path.join(root, 'packages', directory, 'spm.format'), '2');
+        }
+      },
     });
     const result = runGate(root, baseCommit);
 
@@ -351,22 +341,6 @@ describe('check-spm-manifest-collateral', () => {
     assert.match(output(result), /How to fix:/);
     assert.match(output(result), /spm\.format is required/);
     assert.doesNotMatch(result.stdout, /PASS:/);
-  });
-
-  it('notes, without failing, a baseline tooling that cannot generate the current packages', () => {
-    const { root, baseCommit } = fixtureRepo({
-      editBaseTools: (toolsSrc) =>
-        editGenerator(
-          toolsSrc,
-          'const content = await generatePackageSwiftAsync(',
-          "throw new Error('baseline generator is broken');\n    const content = await generatePackageSwiftAsync("
-        ),
-    });
-    const result = runGate(root, baseCommit);
-
-    assert.equal(result.status, 0, output(result));
-    assert.match(result.stdout, /INFO: Tooling report skipped: .*baseline tooling/);
-    assert.equal(comparedManifests(result), 3);
   });
 
   it('fails when the baseline packages cannot be generated and the tooling did not change', () => {
@@ -388,27 +362,17 @@ describe('check-spm-manifest-collateral', () => {
     assert.match(result.stderr, /How to fix:/);
   });
 
-  const workingTreeToolingChanges: [string, (root: string) => void][] = [
-    [
-      'an untracked file',
-      (root) => fs.writeFileSync(path.join(root, 'tools/src/Untracked.ts'), 'export {};\n'),
-    ],
-    [
-      'an uncommitted edit',
-      (root) =>
-        fs.appendFileSync(path.join(root, 'tools/src/prebuilds/SPMPackage.ts'), '\n// edited\n'),
-    ],
-  ];
-  for (const [change, editWorkingTree] of workingTreeToolingChanges) {
-    it(`reports on the tooling when tools/src has ${change}`, () => {
-      const { root, baseCommit } = fixtureRepo({ editWorkingTree });
-      const result = runGate(root, baseCommit);
-
-      assert.equal(result.status, 0, output(result));
-      assert.match(result.stdout, /INFO: Tooling report: .* alter 0 of 6 generated manifests/);
-      assert.equal(comparedManifests(result), 3);
+  it('reports on the tooling when tools/src has an untracked file', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editWorkingTree: (root) =>
+        fs.writeFileSync(path.join(root, 'tools/src/Untracked.ts'), 'export {};\n'),
     });
-  }
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(result.stdout, /INFO: Tooling report: .* alter 0 of 6 generated manifests/);
+    assert.equal(comparedManifests(result), 3);
+  });
 
   it('fails loudly when two config entries claim the same product', () => {
     const { root, baseCommit } = fixtureRepo({
