@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -114,6 +115,13 @@ fun AppNavHost(
 ) {
   val selectedAccount by viewModel.selectedAccount.collectAsStateWithLifecycle()
 
+  fun goBack(backStackEntry: NavBackStackEntry) {
+    // Ignore callbacks from outgoing screens and never pop the last destination.
+    if (navController.currentBackStackEntry == backStackEntry && navController.previousBackStackEntry != null) {
+      navController.popBackStack()
+    }
+  }
+
   @Composable
   fun NavAccountHeaderAction() {
     AccountHeaderAction(
@@ -163,10 +171,10 @@ fun AppNavHost(
       )
     }
 
-    composable<Destination.Projects> {
+    composable<Destination.Projects> { backStackEntry ->
       ProjectsScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         bottomBar = {
           BottomBar(
             navController = navController,
@@ -179,10 +187,10 @@ fun AppNavHost(
       )
     }
 
-    composable<Destination.Snacks> {
+    composable<Destination.Snacks> { backStackEntry ->
       SnacksScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         bottomBar = {
           BottomBar(
             navController = navController,
@@ -192,17 +200,17 @@ fun AppNavHost(
       )
     }
 
-    composable<Destination.Feedback> {
+    composable<Destination.Feedback> { backStackEntry ->
       FeedbackScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() }
+        onGoBack = { goBack(backStackEntry) }
       )
     }
 
-    composable<Destination.Account> {
+    composable<Destination.Account> { backStackEntry ->
       AccountScreen(
         viewModel = viewModel,
-        goBack = { navController.popBackStack() }
+        goBack = { goBack(backStackEntry) }
       )
     }
 
@@ -211,7 +219,7 @@ fun AppNavHost(
       val appFlow = remember { viewModel.app(args.appId) }
       ProjectDetailsScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         appFlow = appFlow,
         onBranchClick = { branchName ->
           navController.navigate(
@@ -232,7 +240,7 @@ fun AppNavHost(
 
       BranchesScreen(
         viewModel = viewModel,
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         appId = args.appId,
         navigateToBranchDetails = { appId, branchName ->
           navController.navigate(Destination.BranchDetails(branchName, appId))
@@ -253,7 +261,7 @@ fun AppNavHost(
       }
 
       BranchDetailsScreen(
-        onGoBack = { navController.popBackStack() },
+        onGoBack = { goBack(backStackEntry) },
         branchRefreshableFlow = branchRefreshableFlow,
         bottomBar = {
           BottomBar(
