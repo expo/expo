@@ -49,7 +49,7 @@ class GmsLocationProvider(
   override val name = "GMS"
 
   @SuppressLint("MissingPermission")
-  private suspend fun getCurrentLocation(options: GetCurrentPositionOptions): Location? {
+  private suspend fun getCachedOrCurrentLocation(options: GetCurrentPositionOptions): Location? {
     val request = CurrentLocationRequest
       .Builder()
       .setPriority(options.priority.toGmsPriority())
@@ -65,16 +65,16 @@ class GmsLocationProvider(
       return ProviderResult.Unsupported
     }
 
-    val currentLocation: Location? = if (options.timeout > Duration.ZERO) {
-      getCurrentLocation(options)
+    val recentLocation: Location? = if (options.timeout > Duration.ZERO) {
+      getCachedOrCurrentLocation(options)
     } else {
       null
     }
 
-    val resultLocation = currentLocation ?: fusedLocationProvider.lastLocation.awaitOrNull()
+    val resultLocation = recentLocation ?: fusedLocationProvider.lastLocation.awaitOrNull()
 
     return resultLocation?.let {
-      ProviderResult.Success(it.toPosition())
+      ProviderResult.Available(it.toPosition())
     } ?: ProviderResult.Unavailable
   }
 
@@ -96,7 +96,7 @@ class GmsLocationProvider(
           .addOnFailureListener { continuation.resumeWithException(it) }
           .addOnCanceledListener { continuation.cancel() }
       }
-      return ProviderResult.Success(enableServicesResult)
+      return ProviderResult.Available(enableServicesResult)
     } catch (resolvable: ResolvableApiException) {
       val enableServicesResult = runCatching {
         resolvable.startResolutionForResult(activity, SETTINGS_REQUEST_CODE)
@@ -104,7 +104,7 @@ class GmsLocationProvider(
         onSuccess = { EnableLocationServicesResult.ResolutionPending },
         onFailure = { EnableLocationServicesResult.Disabled }
       )
-      return ProviderResult.Success(enableServicesResult)
+      return ProviderResult.Available(enableServicesResult)
     } catch (e: CancellationException) {
       throw e
     } catch (_: Throwable) {

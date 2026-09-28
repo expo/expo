@@ -19,18 +19,18 @@ data class GetCurrentPositionOptions(
 )
 
 sealed interface ProviderResult<out T> {
-  data class Success<T>(val value: T) : ProviderResult<T>
+  data class Available<T>(val value: T) : ProviderResult<T>
   object Unavailable : ProviderResult<Nothing>
   object Unsupported : ProviderResult<Nothing>
 
   fun getOrThrow(operationName: String): T = when (this) {
-    is Success -> value
+    is Available -> value
     Unavailable -> throw OperationUnavailableException(operationName)
     Unsupported -> throw LocationOperationUnsupportedException(operationName)
   }
 
   fun getOrNull(operationName: String): T? = when (this) {
-    is Success -> value
+    is Available -> value
     Unavailable -> null
     Unsupported -> throw LocationOperationUnsupportedException(operationName)
   }

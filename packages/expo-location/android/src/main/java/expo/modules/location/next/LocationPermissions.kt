@@ -21,6 +21,9 @@ class ForegroundLocationPermissionsNotGrantedException :
 class BackgroundLocationPermissionsNotGrantedException :
   CodedException("Background location permissions are not granted. Call requestBackgroundPermissions() after foreground location has been granted.")
 
+class RequestingBackgroundPermissionsWithoutForegroundGrantException :
+  CodedException("Need to have foreground permissions granted, before asking for background permissions. Call requestForegroundPermissions() first and make sure the foreground location is granted.")
+
 private val FOREGROUND_PERMISSIONS = arrayOf(
   Manifest.permission.ACCESS_COARSE_LOCATION,
   Manifest.permission.ACCESS_FINE_LOCATION

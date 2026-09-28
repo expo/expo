@@ -7,7 +7,6 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
 import expo.modules.interfaces.permissions.Permissions
-import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -20,28 +19,26 @@ import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.next.locationProviders.LocationProvider
 import kotlinx.coroutines.CompletableDeferred
 
-class RequestingBackgroundPermissionsWithoutForegroundGrantException :
-  CodedException("Need to have foreground permissions granted, before asking for background permissions! Call requestForegroundPermissions() first and make sure the foreground location is granted.")
-
 class LocationModuleNext : Module() {
-  lateinit var mContext: Context
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw NoPermissionsModuleException()
 
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
-    val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
+    val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(context)
 
     val gmsLocationProvider = GmsLocationProvider(
       fusedLocationProvider,
-      LocationServices.getSettingsClient(mContext)
-    ) { GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(mContext) == ConnectionResult.SUCCESS }
+      LocationServices.getSettingsClient(context)
+    ) { GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS }
 
     SharedRef(gmsLocationProvider)
   }
 
   val androidLocationProviderInstance: SharedRef<LocationProvider> by lazy {
-    SharedRef(AndroidLocationProvider(mContext))
+    SharedRef(AndroidLocationProvider(context))
   }
 
   lateinit var currentLocationProvider: LocationProvider
@@ -55,11 +52,10 @@ class LocationModuleNext : Module() {
     Name("LocationModuleNext")
 
     OnCreate {
-      mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
       currentLocationProvider = FallbackLocationProvider(
         listOf(fusedLocationProviderInstance.ref, androidLocationProviderInstance.ref)
       )
-      locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+      locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     }
 
     // Permissions
@@ -108,7 +104,7 @@ class LocationModuleNext : Module() {
       return@Coroutine currentLocationProvider.getPosition(providerOptions).getOrNull("getPosition")
     }
 
-    Function<Boolean>("hasLocationServicesEnabled") { ->
+    Function("hasLocationServicesEnabled") { ->
       hasLocationServicesEnabled()
     }
 

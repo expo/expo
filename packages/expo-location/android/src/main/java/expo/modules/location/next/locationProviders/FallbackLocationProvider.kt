@@ -15,12 +15,12 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : 
     return firstAvailable { it.enableLocationServices(activity) }
   }
 
-  inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {
+  private inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {
     var outcome: ProviderResult<T> = ProviderResult.Unsupported
     for (locationProvider in locationProviders) {
       val thisOutcome = providerOperation(locationProvider)
       when (thisOutcome) {
-        is ProviderResult.Success -> return thisOutcome
+        is ProviderResult.Available -> return thisOutcome
         ProviderResult.Unavailable -> outcome = ProviderResult.Unavailable
         // Note that the operation is only unsupported if it is unsupported for all of the providers
         ProviderResult.Unsupported -> continue

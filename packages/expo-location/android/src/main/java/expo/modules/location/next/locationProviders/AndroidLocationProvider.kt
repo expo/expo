@@ -22,7 +22,23 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 import kotlin.time.Duration
 
-fun resolveSystemProviderName(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? {
+private fun getValidSystemProviders(context: Context, locationManager: LocationManager): List<String> {
+  val fineGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+  val enabledProviders = locationManager.getProviders(true)
+  // Avoid GPS_PROVIDER, when only coarse permissions are given.
+  return enabledProviders.filter {
+    it != LocationManager.GPS_PROVIDER || fineGranted
+  }
+}
+
+private fun downgradeSystemProvider(provider: String) = when (provider) {
+  LocationManager.FUSED_PROVIDER -> LocationManager.GPS_PROVIDER
+  LocationManager.GPS_PROVIDER -> LocationManager.NETWORK_PROVIDER
+  LocationManager.NETWORK_PROVIDER -> LocationManager.PASSIVE_PROVIDER
+  else -> null
+}
+
+private fun resolveSystemProviderName(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? {
   // Pick the desired provider based on LocationPriority options
   val desiredProvider = when (locationPriority) {
     LocationPriority.HIGH_ACCURACY, LocationPriority.BALANCED_POWER_ACCURACY -> {
@@ -35,25 +51,13 @@ fun resolveSystemProviderName(locationPriority: LocationPriority, context: Conte
     LocationPriority.LOW_POWER -> LocationManager.NETWORK_PROVIDER
     LocationPriority.PASSIVE -> LocationManager.PASSIVE_PROVIDER
   }
-
-  // Avoid GPS_PROVIDER, when only coarse permissions are given.
-  val fineGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-  val enabledProviders = locationManager.getProviders(true)
-  val validProviders = enabledProviders.filter {
-    it != LocationManager.GPS_PROVIDER || fineGranted
-  }
+  val validProviders = getValidSystemProviders(context, locationManager)
 
   // Downgrade provider if it is not valid.
   var provider: String? = desiredProvider
   while (provider != null && provider !in validProviders) {
-    provider = when (provider) {
-      LocationManager.FUSED_PROVIDER -> LocationManager.GPS_PROVIDER
-      LocationManager.GPS_PROVIDER -> LocationManager.NETWORK_PROVIDER
-      LocationManager.NETWORK_PROVIDER -> LocationManager.PASSIVE_PROVIDER
-      else -> null
-    }
+    provider = downgradeSystemProvider(provider)
   }
-
   return provider
 }
 
@@ -64,16 +68,8 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
 
   @SuppressLint("MissingPermission")
   private fun getLastKnownLocation(): Location? {
-    val fineGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    val enabledProviders = locationManager.getProviders(true)
-    return enabledProviders
-      .mapNotNull {
-        if (it == LocationManager.GPS_PROVIDER && !fineGranted) {
-          null
-        } else {
-          locationManager.getLastKnownLocation(it)
-        }
-      }
+    return getValidSystemProviders(context, locationManager)
+      .mapNotNull { locationManager.getLastKnownLocation(it) }
       .maxByOrNull { it.elapsedRealtimeNanos }
   }
 
@@ -93,7 +89,7 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
   override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
     val lastLocation = getLastKnownLocation()
     val lastPositionResult = lastLocation
-      ?.let { ProviderResult.Success(it.toPosition()) }
+      ?.let { ProviderResult.Available(it.toPosition()) }
       ?: ProviderResult.Unavailable
     val validCachedResult = lastLocation !== null && SystemClock.elapsedRealtimeNanos() - lastLocation.elapsedRealtimeNanos < options.maxCachedAge.inWholeNanoseconds
     if (validCachedResult || options.timeout == Duration.ZERO) {
@@ -103,7 +99,7 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
     val provider = resolveSystemProviderName(options.priority, context, locationManager) ?: return lastPositionResult
     val currentLocation = getCurrentLocationWithTimeout(provider, options.timeout)
     val currentPosition = currentLocation?.toPosition() ?: return lastPositionResult
-    return ProviderResult.Success(currentPosition)
+    return ProviderResult.Available(currentPosition)
   }
 
   // On plain android we can only move user to settings.
@@ -117,6 +113,6 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
       onSuccess = { EnableLocationServicesResult.ResolutionPending },
       onFailure = { EnableLocationServicesResult.Disabled }
     )
-    return ProviderResult.Success(enableServicesResult)
+    return ProviderResult.Available(enableServicesResult)
   }
 }

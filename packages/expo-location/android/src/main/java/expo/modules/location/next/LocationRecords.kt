@@ -79,9 +79,9 @@ class GetPositionOptions(
   @Field val timeout: Double? = null,
   @Field val profile: LocationProfile = LocationProfile.DEFAULT
 ) : Record {
-  fun toProviderOptions(): GetCurrentPositionOptions = GetCurrentPositionOptions(
+  fun toProviderOptions() = GetCurrentPositionOptions(
     maxCachedAge = (maxCachedAge ?: 0.0).seconds,
-    timeout = (timeout ?: 90.0).seconds,
+    timeout = (timeout ?: 30.0).seconds,
     priority = profile.priority()
   )
 }
