@@ -371,7 +371,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           }
         }
       });
-    }, [navigation]);
+    }, [navigation, route?.params]);
 
     useEffect(() => {
       if (__DEV__ && isFocused && isGuarded && redirectHref == null) {
