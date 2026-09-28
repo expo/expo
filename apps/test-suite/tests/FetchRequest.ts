@@ -11,7 +11,7 @@ import { Platform } from 'react-native';
 
 import type { JasmineInterface } from '../types';
 
-export const name = 'Request';
+export const name = 'FetchRequest';
 
 const URL = 'https://example.test/';
 
