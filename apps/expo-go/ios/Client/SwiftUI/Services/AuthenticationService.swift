@@ -226,6 +226,11 @@ class AuthenticationService: ObservableObject {
     NotificationCenter.default.post(name: .expoSessionDidChange, object: nil)
   }
 
+  /// A stored secret can belong to the browser's expo.dev session, and signing in as another user there ends it.
+  nonisolated static func usesEphemeralBrowserSession(storedSessions: [StoredSession]) -> Bool {
+    !storedSessions.isEmpty
+  }
+
   nonisolated static func removeDeviceLoginGrants(forUsername username: String) {
     let grants = UserDefaults.standard.dictionary(forKey: deviceLoginGrantsKey) as? [String: String] ?? [:]
     UserDefaults.standard.set(grants.filter { $0.value != username }, forKey: deviceLoginGrantsKey)
@@ -249,6 +254,7 @@ class AuthenticationService: ObservableObject {
 
   private func performAuthentication(path: String) async throws -> String? {
     let scheme = try getURLScheme()
+    let ephemeral = Self.usesEphemeralBrowserSession(storedSessions: store.sessions)
     let websiteOrigin = APIClient.shared.websiteOrigin
 
     return try await withCheckedThrowingContinuation { continuation in
@@ -280,7 +286,7 @@ class AuthenticationService: ObservableObject {
       }
 
       session.presentationContextProvider = presentationContext
-      session.prefersEphemeralWebBrowserSession = false
+      session.prefersEphemeralWebBrowserSession = ephemeral
       session.start()
     }
   }
