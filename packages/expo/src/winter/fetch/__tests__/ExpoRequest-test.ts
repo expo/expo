@@ -2,7 +2,7 @@
 
 /** @jest-environment node */
 
-import { Request } from '../Request';
+import { Request } from '../ExpoRequest';
 
 globalThis.ReadableStream = require('node:stream/web').ReadableStream;
 globalThis.TextDecoder = require('node:util').TextDecoder;
