@@ -46,16 +46,18 @@ export function fixCurrentParams(
   return currentParams;
 }
 
-export function stringifySearchParams(params: Record<string, string | string[]>): string {
+export function stringifySearchParams(params: Record<string, unknown>): string {
   const searchParams = new URLSearchParams();
 
   for (const [name, value] of Object.entries(params)) {
     if (Array.isArray(value)) {
       for (const item of value) {
-        searchParams.append(name, item);
+        if (item !== undefined) {
+          searchParams.append(name, item === null ? '' : String(item));
+        }
       }
-    } else {
-      searchParams.append(name, value);
+    } else if (value !== undefined) {
+      searchParams.append(name, value === null ? '' : String(value));
     }
   }
 
