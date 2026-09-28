@@ -6,7 +6,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.WatchPositionParameters
-import expo.modules.location.next.locationProviders.WatchSession
+import expo.modules.location.next.locationProviders.PositionUpdatesSession
 import expo.modules.location.next.locationProviders.WatchUpdate
 import kotlin.time.Duration
 
@@ -32,13 +32,11 @@ class PositionWatchStatus(
 
 class PausableWatchSession(
   initialParameters: WatchPositionParameters,
-  private val session: WatchSession
+  private val session: PositionUpdatesSession
 ) {
 
-  var activeParameters: WatchPositionParameters = initialParameters
-    private set
-  var stagedParameters: WatchPositionParameters = initialParameters
-    private set
+  private var activeParameters: WatchPositionParameters = initialParameters
+  private var stagedParameters: WatchPositionParameters = initialParameters
 
   var isPaused: Boolean = false
   var isStarted: Boolean = false
@@ -165,4 +163,6 @@ class PositionWatchHandle(
 }
 
 class PositionWatchSubscriptionException : CodedException("Could not subscribe to location updates")
-class PositionWatchHandleCreationException : CodedException("PositionWatchHandle cannot be created from JavaScript!")
+class PositionWatchHandleCreationException : CodedException("PositionWatchHandle cannot be created from JavaScript")
+class InvalidWatchIntervalException(interval: Duration) :
+  CodedException("Location update interval must be finite and non-negative, but received $interval. Pass a number of seconds greater than or equal to 0.")

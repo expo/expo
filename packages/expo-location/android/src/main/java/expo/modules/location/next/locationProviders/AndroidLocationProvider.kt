@@ -115,11 +115,11 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
     return ProviderResult.Available(currentPosition)
   }
 
-  override fun watchPosition(): ProviderResult<WatchSession> {
-    if (locationManager.getProviders(true).isEmpty()) {
+  override fun watchPosition(): ProviderResult<PositionUpdatesSession> {
+    if (getValidSystemProviders(context, locationManager).isEmpty()) {
       return ProviderResult.Unavailable
     }
-    return ProviderResult.Success(AndroidWatchSession(context, locationManager))
+    return ProviderResult.Available(AndroidPositionUpdatesSession(context, locationManager))
   }
 
   // On plain android we can only move user to settings.
@@ -137,10 +137,10 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
   }
 }
 
-private class AndroidWatchSession(
+private class AndroidPositionUpdatesSession(
   private val context: Context,
   private val locationManager: LocationManager
-) : WatchSession, BroadcastReceiver() {
+) : PositionUpdatesSession, BroadcastReceiver() {
   private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchUpdate) -> Unit)
   private class SessionState(val listener: LocationListenerCompat, val provider: String)
 

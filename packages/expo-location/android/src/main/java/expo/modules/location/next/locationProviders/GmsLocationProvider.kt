@@ -82,11 +82,11 @@ class GmsLocationProvider(
     } ?: ProviderResult.Unavailable
   }
 
-  override fun watchPosition(): ProviderResult<WatchSession> {
+  override fun watchPosition(): ProviderResult<PositionUpdatesSession> {
     if (!isServiceAvailable()) {
       return ProviderResult.Unsupported
     }
-    return ProviderResult.Success(GmsWatchSession(fusedLocationProvider))
+    return ProviderResult.Available(GmsPositionUpdatesSession(fusedLocationProvider))
   }
 
   override suspend fun enableLocationServices(activity: Activity): ProviderResult<EnableLocationServicesResult> {
@@ -123,9 +123,9 @@ class GmsLocationProvider(
   }
 }
 
-private class GmsWatchSession(
+private class GmsPositionUpdatesSession(
   private val fusedLocationProvider: FusedLocationProviderClient
-) : WatchSession {
+) : PositionUpdatesSession {
   @Volatile
   private var callback: LocationCallback? = null
 

@@ -19,9 +19,9 @@ import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.next.locationProviders.LocationProvider
 import kotlinx.coroutines.CompletableDeferred
 import expo.modules.location.next.locationProviders.WatchPositionParameters
-import expo.modules.location.next.locationProviders.WatchSession
+import expo.modules.location.next.locationProviders.PositionUpdatesSession
 import java.lang.ref.WeakReference
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration
 
 class LocationModuleNext : Module() {
   private val context: Context
@@ -30,7 +30,6 @@ class LocationModuleNext : Module() {
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw NoPermissionsModuleException()
 
-  val sessionsLock = Any()
   val watchSessions: MutableList<WeakReference<PausableWatchSession>> = mutableListOf()
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(context)
@@ -54,7 +53,7 @@ class LocationModuleNext : Module() {
   @Volatile
   private var locationServicesPrompt: CompletableDeferred<Boolean>? = null
 
-  fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: WatchSession): PositionWatchHandle = synchronized(sessionsLock) {
+  fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: PositionUpdatesSession): PositionWatchHandle = synchronized(watchSessions) {
     val pausableSession = PausableWatchSession(initialParameters, session)
     watchSessions.add(WeakReference(pausableSession))
     return@synchronized PositionWatchHandle(pausableSession)
@@ -163,7 +162,7 @@ class LocationModuleNext : Module() {
     }
 
     Class(PositionWatchHandle::class) {
-      Constructor { ->
+      Constructor {
         throw PositionWatchHandleCreationException()
       }
 
@@ -182,13 +181,11 @@ class LocationModuleNext : Module() {
         locationWatchHandle
       }
 
-      Function("withInterval") { locationWatchHandle: PositionWatchHandle, intervalMs: Double ->
-        val interval = if (0.0 <= intervalMs && intervalMs < Long.MAX_VALUE) {
-          intervalMs
-        } else {
-          0.0
+      Function("withInterval") { locationWatchHandle: PositionWatchHandle, interval: Duration ->
+        if (interval < Duration.ZERO || interval == Duration.INFINITE) {
+          throw InvalidWatchIntervalException(interval)
         }
-        locationWatchHandle.session.withInterval(interval.milliseconds)
+        locationWatchHandle.session.withInterval(interval)
         locationWatchHandle
       }
 
@@ -202,7 +199,7 @@ class LocationModuleNext : Module() {
     }
 
     OnDestroy {
-      synchronized(sessionsLock) {
+      synchronized(watchSessions) {
         for (session in watchSessions) {
           session.get()?.release()
         }
@@ -210,7 +207,7 @@ class LocationModuleNext : Module() {
     }
 
     OnActivityEntersForeground {
-      synchronized(sessionsLock) {
+      synchronized(watchSessions) {
         for (session in watchSessions) {
           session.get()?.onLifecycleChange(true)
         }
@@ -218,7 +215,7 @@ class LocationModuleNext : Module() {
     }
 
     OnActivityEntersBackground {
-      synchronized(sessionsLock) {
+      synchronized(watchSessions) {
         watchSessions.removeIf { it.get() == null }
         for (session in watchSessions) {
           session.get()?.onLifecycleChange(false)

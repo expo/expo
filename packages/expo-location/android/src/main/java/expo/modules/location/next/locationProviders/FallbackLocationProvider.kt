@@ -15,7 +15,7 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : 
     return firstAvailable { it.enableLocationServices(activity) }
   }
 
-  override fun watchPosition(): ProviderResult<WatchSession> {
+  override fun watchPosition(): ProviderResult<PositionUpdatesSession> {
     return firstAvailable { it.watchPosition() }
   }
 

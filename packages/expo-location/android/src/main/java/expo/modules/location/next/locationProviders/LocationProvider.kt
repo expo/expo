@@ -53,7 +53,7 @@ sealed interface EnableLocationServicesResult {
   object ResolutionPending : EnableLocationServicesResult
 }
 
-interface WatchSession {
+interface PositionUpdatesSession {
   fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean
   fun stopUpdates()
   fun isSubscribed(): Boolean
@@ -63,7 +63,7 @@ interface WatchSession {
 interface LocationProvider {
   val name: String
   suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position>
-  fun watchPosition(): ProviderResult<WatchSession>
+  fun watchPosition(): ProviderResult<PositionUpdatesSession>
 
   // Prompt user to enable location services.
   // The caller guarantees the location services are turned off, so there is no reason to check the
