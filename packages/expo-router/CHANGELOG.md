@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Fix a `Link.Trigger` child disappearing when it remounts inside a `Link` with `Link.Menu` or `Link.Preview`. ([#PR_NUMBER](https://github.com/expo/expo/pull/PR_NUMBER) by [@oscnord](https://github.com/oscnord))
+- [ios] Fix a `Link.Trigger` child disappearing when it remounts inside a `Link` with `Link.Menu` or `Link.Preview`. ([#50736](https://github.com/expo/expo/pull/50736) by [@oscnord](https://github.com/oscnord))
 - Ignore the reserved `__expo_*` launch URL params on Expo Go and development build launch URLs, so they no longer become route search params. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
