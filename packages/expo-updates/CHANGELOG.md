@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Reuse an embedded asset from the app binary instead of re-downloading it when an update requires the same asset key. ([#49650](https://github.com/expo/expo/pull/49650) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 55.0.32 — 2026-09-28
+
+### 🐛 Bug fixes
+
+- [iOS] Reuse an embedded asset from the app binary instead of re-downloading it when an update requires the same asset key. ([#49650](https://github.com/expo/expo/pull/49650) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.31 — 2026-09-17
 
