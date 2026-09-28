@@ -303,11 +303,23 @@ export declare const onGloballyPositioned: (handler: (layout: {
  */
 export declare const testID: (tag: string) => import("./createModifier").ModifierConfig;
 /**
+ * Options for the `semantics` modifier.
+ */
+export type SemanticsConfig = {
+    /**
+     * An autofill hint, such as `'email'` or `'password'`.
+     */
+    contentType?: string;
+    /**
+     * What accessibility services such as TalkBack announce for the element. Useful when the visible
+     * content does not read well aloud, as with an abbreviation or a glyph.
+     */
+    contentDescription?: string;
+};
+/**
  * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
  */
-export declare const semantics: (params: {
-    contentType?: string;
-}) => import("./createModifier").ModifierConfig;
+export declare const semantics: (params: SemanticsConfig) => import("./createModifier").ModifierConfig;
 type MaterialShapeName = 'cookie4Sided' | 'cookie6Sided' | 'cookie7Sided' | 'cookie9Sided' | 'cookie12Sided' | 'clover4Leaf' | 'clover8Leaf' | 'softBurst' | 'boom' | 'oval' | 'pill' | 'triangle' | 'diamond' | 'pentagon' | 'sunny' | 'verySunny' | 'fan' | 'pixelCircle' | 'pixelTriangle' | 'ghostish' | 'bun' | 'heart' | 'arch' | 'slanted' | 'puffy' | 'puffyDiamond';
 type CornerRadii = {
     topStart?: number;

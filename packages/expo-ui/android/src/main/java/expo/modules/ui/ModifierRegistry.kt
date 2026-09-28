@@ -63,6 +63,7 @@ import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
@@ -657,9 +658,16 @@ object ModifierRegistry {
 
     register("semantics") { map, _, _, _ ->
       val params = recordFromMap<SemanticsParams>(map)
-      params.contentType.toContentType()?.let { ct ->
-        Modifier.semantics { contentType = ct }
-      } ?: Modifier
+      val type = params.contentType.toContentType()
+      val description = params.contentDescription
+      if (type == null && description == null) {
+        Modifier
+      } else {
+        Modifier.semantics {
+          type?.let { contentType = it }
+          description?.let { contentDescription = it }
+        }
+      }
     }
 
     register("clip") { map, _, _, _ ->

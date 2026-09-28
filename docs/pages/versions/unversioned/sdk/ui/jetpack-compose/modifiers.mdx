@@ -571,6 +571,24 @@ import { testID } from '@expo/ui/jetpack-compose/modifiers';
 <Button modifiers={[testID('submit-button')]}>Submit</Button>;
 ```
 
+### `semantics(params)`
+
+Sets semantic properties that accessibility and autofill services read.
+
+| Parameter                   | Type     | Description                                                                                 |
+| --------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `params.contentDescription` | `string` | What TalkBack announces for the element, in place of content that does not read well aloud. |
+| `params.contentType`        | `string` | An autofill hint, such as `'email'` or `'password'`.                                        |
+
+```tsx
+import { semantics } from '@expo/ui/jetpack-compose/modifiers';
+
+// The visible label is an abbreviation; TalkBack reads the full phrase.
+<Text modifiers={[semantics({ contentDescription: '1 week' })]}>
+  1W
+</Text>;
+```
+
 ## API
 
 {/* prettier-ignore */}

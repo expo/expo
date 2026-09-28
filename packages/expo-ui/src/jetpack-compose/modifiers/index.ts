@@ -444,9 +444,24 @@ export const onGloballyPositioned = (
 export const testID = (tag: string) => createModifier('testID', { testID: tag });
 
 /**
+ * Options for the `semantics` modifier.
+ */
+export type SemanticsConfig = {
+  /**
+   * An autofill hint, such as `'email'` or `'password'`.
+   */
+  contentType?: string;
+  /**
+   * What accessibility services such as TalkBack announce for the element. Useful when the visible
+   * content does not read well aloud, as with an abbreviation or a glyph.
+   */
+  contentDescription?: string;
+};
+
+/**
  * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
  */
-export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
+export const semantics = (params: SemanticsConfig) => createModifier('semantics', params);
 
 // =============================================================================
 // Clip Modifier & Shapes
