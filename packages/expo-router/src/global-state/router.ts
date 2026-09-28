@@ -239,7 +239,7 @@ export type ImperativeRouter = {
   navigate: (href: Href, options?: NavigationOptions) => void;
   /**
    * Navigates to route without appending to the history. Can be used with
-   * [`useFocusEffect`](#usefocuseffecteffect-do_not_pass_a_second_prop)
+   * [`useFocusEffect`](#usefocuseffecteffect)
    * to redirect imperatively to a new screen.
    *
    * @see [Using `useRouter()` hook](/router/reference/redirects/) to redirect.

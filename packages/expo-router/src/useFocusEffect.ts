@@ -46,13 +46,13 @@ export type EffectCallback = () => undefined | void | (() => void);
  *```
  *
  * @param effect Memoized callback containing the effect, should optionally return a cleanup function.
- * @param do_not_pass_a_second_prop
  */
-export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop?: never) {
+export function useFocusEffect(effect: EffectCallback) {
   const optionalNavigation = useOptionalNavigation();
   const navigation = useNavigation();
 
-  if (do_not_pass_a_second_prop !== undefined) {
+  // eslint-disable-next-line prefer-rest-params
+  if (arguments[1] !== undefined) {
     const message =
       "You passed a second argument to 'useFocusEffect', but it only accepts one argument. " +
       "If you want to pass a dependency array, you can use 'React.useCallback':\n\n" +
@@ -61,7 +61,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
       '    // Your code here\n' +
       '  }, [depA, depB])\n' +
       ');\n\n' +
-      'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop';
+      'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect';
 
     console.error(message);
   }
@@ -103,7 +103,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
             '    fetchData();\n' +
             '  }, [someId])\n' +
             ');\n\n' +
-            'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop';
+            'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect';
         } else {
           message += ` You returned '${JSON.stringify(destroy)}'.`;
         }
