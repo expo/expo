@@ -16,31 +16,41 @@ export function SymbolView(props: SymbolViewProps): JSX.Element {
     typeof props.name === 'object'
       ? props.name[Platform.OS === 'android' ? 'android' : 'web']
       : null;
-  const [loaded, setLoaded] = useState(false);
+  // Until the font of a new weight loads, the symbol keeps the previous weight's font instead of
+  // disappearing.
+  const [loadedFontName, setLoadedFontName] = useState<string | null>(null);
   useEffect(() => {
+    let isCurrentFont = true;
     loadAsync({
       [font.name]: {
         uri: font.font,
       } as FontSource,
     })
-      .then(() => setLoaded(true))
+      .then(() => {
+        if (isCurrentFont) {
+          setLoadedFontName(font.name);
+        }
+      })
       .catch(() => {
         /* noop */
       });
-  }, []);
+    return () => {
+      isCurrentFont = false;
+    };
+  }, [font.name, font.font]);
   if (!name) {
     return <>{props.fallback}</>;
   }
   const size = props.size ?? 24;
   const style = [{ width: size, height: size }, props.style];
-  if (!loaded) {
+  if (!loadedFontName) {
     return <View style={style} />;
   }
   return (
     <View style={style}>
       <Text
         style={{
-          fontFamily: font.name,
+          fontFamily: loadedFontName,
           color: props.tintColor ?? DEFAULT_SYMBOL_COLOR,
           fontSize: size,
           lineHeight: size,
