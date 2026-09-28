@@ -72,7 +72,7 @@ public final class WidgetsModule: Module {
         widget.reload()
       }
 
-      AsyncFunction("isInstalled") { (widget: WidgetObject) async throws -> Bool in
+      AsyncFunction("isInstalledAsync") { (widget: WidgetObject) async throws -> Bool in
         let name = widget.name
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
           WidgetCenter.shared.getCurrentConfigurations { result in
