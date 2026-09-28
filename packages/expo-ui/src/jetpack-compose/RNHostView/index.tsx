@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { NativeLayoutContext, requireNativeView } from 'expo';
 import type { ReactElement, ComponentType } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 
@@ -62,15 +62,18 @@ export function RNHostView(props: RNHostProps) {
   const layoutRoot = useIsPresentedInOwnWindow();
 
   return (
-    <NativeRNHostView
-      {...transformProps(props, layoutRoot)}
-      // `matchContents` can only be used once on mount
-      // So we force unmount when it changes to prevent unexpected layout
-      key={props.matchContents ? 'matchContents' : 'noMatchContents'}>
-      {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
-      <PresentedContentContext.Provider value={false}>
-        {props.children}
-      </PresentedContentContext.Provider>
-    </NativeRNHostView>
+    // React Native lays out this view and its hosted content, so both keep their Yoga boxes.
+    <NativeLayoutContext.Provider value={false}>
+      <NativeRNHostView
+        {...transformProps(props, layoutRoot)}
+        // `matchContents` can only be used once on mount
+        // So we force unmount when it changes to prevent unexpected layout
+        key={props.matchContents ? 'matchContents' : 'noMatchContents'}>
+        {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
+        <PresentedContentContext.Provider value={false}>
+          {props.children}
+        </PresentedContentContext.Provider>
+      </NativeRNHostView>
+    </NativeLayoutContext.Provider>
   );
 }

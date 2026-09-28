@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { NativeLayoutContext, requireNativeView } from 'expo';
 import { useMemo, type Ref } from 'react';
 import {
   type ColorSchemeName,
@@ -93,6 +93,7 @@ export function Host(props: HostProps) {
     colorScheme,
     seedColor,
     ref,
+    children,
     ...restProps
   } = props;
   const schemeString = colorScheme === 'light' || colorScheme === 'dark' ? colorScheme : undefined;
@@ -124,8 +125,9 @@ export function Host(props: HostProps) {
           layoutDirection={
             layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
           }
-          ref={mergedRef}
-        />
+          ref={mergedRef}>
+          <NativeLayoutContext.Provider value>{children}</NativeLayoutContext.Provider>
+        </HostNativeView>
       </TextInputHostProvider>
     </HostPaletteContext.Provider>
   );
