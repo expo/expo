@@ -54,7 +54,7 @@ export type { StackToolbarButtonProps, NativeToolbarButtonProps } from './types'
  * @platform android
  * @platform ios
  */
-export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => {
+export const StackToolbarButton = (props: StackToolbarButtonProps) => {
   const placement = useToolbarPlacement();
 
   const validChildren = useMemo(
