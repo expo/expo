@@ -310,7 +310,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
-  // Spec conformance of `Request` is covered by the WPT port in `Request.ts`. These tests cover how
+  // Spec conformance of `Request` is covered by the WPT port in `FetchRequest.ts`. These tests cover how
   // `fetch()` and the native runtime handle `Request` objects.
   describe('Request', () => {
     const itNative = Platform.OS !== 'web' ? it : t.xit;
