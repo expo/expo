@@ -184,6 +184,22 @@ describe('BitSet chunk emission', () => {
     ]);
   });
 
+  it('gives empty facades with the same basename distinct filenames', async () => {
+    const artifacts = await serializeBitSetAsync({
+      'index.js': `import('./a/index'); import('./b/index'); import('./x'); import('./y');`,
+      'a/index.js': `console.log('a');`,
+      'b/index.js': `console.log('b');`,
+      'x.js': `import './a/index';`,
+      'y.js': `import './b/index';`,
+    });
+    const a = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/a/index.js'))!;
+    const b = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/b/index.js'))!;
+    expect(a.metadata.modulePaths).toEqual([]);
+    expect(b.metadata.modulePaths).toEqual([]);
+    expect(a.metadata.requires).not.toEqual(b.metadata.requires);
+    expect(a.filename).not.toBe(b.filename);
+  });
+
   it('skips fully initial-owned facades and records their aliases', async () => {
     const artifacts = await serializeBitSetAsync({
       'index.js': `import './a'; import('./a');`,
