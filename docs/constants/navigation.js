@@ -762,7 +762,6 @@ const preview = [
       ],
       { expanded: true }
     ),
-    makeGroup('Expo Router', [makePage('preview/singular.mdx'), { expanded: true }]),
   ]),
 ];
 
