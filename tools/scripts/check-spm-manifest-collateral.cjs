@@ -438,7 +438,11 @@ async function main() {
       const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
       assert.deepEqual(Object.keys(after), Object.keys(before), 'Product/flavor coverage changed');
       const changed = Object.keys(before).filter((id) => before[id] !== after[id]);
-      for (const id of changed) console.error(`DIFF: ${id}`);
+      for (const id of changed) {
+        const [a, b] = [before[id].split('\n'), after[id].split('\n')];
+        const line = a.findIndex((text, index) => text !== b[index]);
+        console.error(`DIFF: ${id}\n  line ${line + 1}\n  - ${a[line]}\n  + ${b[line]}`);
+      }
       assert.equal(changed.length, 0, 'Collateral manifest changes');
       console.log(
         `PASS: ${Object.keys(before).length} byte-identical manifests across ${Object.keys(before).length / 2} products (Debug + Release), baseline ${values.base} packages, current tooling.`
