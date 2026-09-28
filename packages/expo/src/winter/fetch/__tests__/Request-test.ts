@@ -248,6 +248,13 @@ describe('Request', () => {
       expect(() => new Request(original)).toThrow(TypeError);
     });
 
+    it('does not consume the source body when construction fails', () => {
+      const original = new Request('https://example.test/', { method: 'POST', body: 'payload' });
+      expect(() => new Request(original, { method: 'GET' })).toThrow(TypeError);
+      expect(() => new Request(original, { method: 'CONNECT' })).toThrow(TypeError);
+      expect(original.bodyUsed).toBe(false);
+    });
+
     it('lets the init override the source body without consuming it', () => {
       const original = new Request('https://example.test/', {
         method: 'POST',
