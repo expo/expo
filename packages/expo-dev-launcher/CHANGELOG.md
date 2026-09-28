@@ -6,6 +6,12 @@
 
 ### 🎉 New features
 
+- [iOS] Added a branch details screen to the updates tab, so updates are browsed per branch instead of in one flat list.
+- Added branch search to the updates tab, filtered by the server so it matches branches that have not been loaded yet.
+- Replaced the fixed-size branch and update lists with paginated lists and a "Load more" button.
+- Updates published within the last week now show a relative published time, such as "2 hr. ago", and older updates show an absolute date.
+- Added a loading indicator to the update that is being opened.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

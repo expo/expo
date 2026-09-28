@@ -34,11 +34,11 @@ struct MeUserActorData: Codable {
 struct Branch: Codable {
   let id: String
   let name: String
-  let compatibleUpdates: [CompatibleUpdate]
-}
+  let compatibleUpdates: [Update]
 
-struct CompatibleUpdate: Codable {
-  let id: String
+  var compatibleUpdate: Update? {
+    compatibleUpdates.first
+  }
 }
 
 struct BranchesResponse: Codable {
@@ -54,7 +54,26 @@ struct AppWithBranches: Codable {
 }
 
 struct ProjectWithBranches: Codable {
-  let updateBranches: [Branch]
+  let branchesPaginated: BranchesConnection
+}
+
+struct BranchesConnection: Codable {
+  let pageInfo: PageInfo
+  let edges: [BranchEdge]
+
+  var branches: [Branch] {
+    edges.map(\.node)
+  }
+}
+
+struct BranchEdge: Codable {
+  let cursor: String
+  let node: Branch
+}
+
+struct PageInfo: Codable {
+  let hasNextPage: Bool
+  let endCursor: String?
 }
 
 struct Channel: Codable {

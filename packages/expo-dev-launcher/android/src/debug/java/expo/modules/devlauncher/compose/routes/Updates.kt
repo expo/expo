@@ -68,6 +68,8 @@ private fun Branch(route: Routes.Updates.Branch, updatesNavController: NavHostCo
     branchName = route.name,
     updates = state.updates,
     isLoading = state.isLoading,
+    hasMore = state.hasMore,
+    loadingUpdateId = state.loadingUpdateId,
     goBack = { updatesNavController.navigateUp() },
     onAction = viewModel::onAction
   )
@@ -83,6 +85,9 @@ private fun Branches(onProfileClick: () -> Unit, updatesNavController: NavHostCo
     BranchesScreen(
       branches = state.branches,
       isLoading = state.isLoading,
+      isLoadingMore = state.isLoadingMore,
+      hasMore = state.hasMore,
+      searchQuery = state.searchQuery,
       needToSignIn = state.needToSignIn,
       onProfileClick = onProfileClick,
       onAction = { action ->

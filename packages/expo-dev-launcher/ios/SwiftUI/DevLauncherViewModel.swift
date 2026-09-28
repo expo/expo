@@ -67,7 +67,8 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
   @Published var selectedAccountId: String?
-  @Published var isLoadingServer: Bool = false
+  /// The URL of the app currently being loaded, or `nil` when no load is in flight.
+  @Published var loadingAppURL: String?
   @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
 
@@ -220,24 +221,28 @@ class DevLauncherViewModel: ObservableObject {
     self.recentlyOpenedApps = appsByKey.values.sorted { $0.timestamp > $1.timestamp }
   }
 
+  var isLoadingServer: Bool {
+    loadingAppURL != nil
+  }
+
   func openApp(url: String) {
-    guard let bundleUrl = URL(string: url) else {
+    guard !isLoadingServer, let bundleUrl = URL(string: url) else {
       return
     }
 
-    isLoadingServer = true
+    loadingAppURL = url
 
     EXDevLauncherController.sharedInstance().loadApp(
       bundleUrl,
       onSuccess: { [weak self] in
         DispatchQueue.main.async {
-          self?.isLoadingServer = false
+          self?.loadingAppURL = nil
         }
       },
       onError: { [weak self] error in
         let message = DevLauncherLoadErrorMessage.message(for: error as NSError, url: url)
         DispatchQueue.main.async {
-          self?.isLoadingServer = false
+          self?.loadingAppURL = nil
           self?.showErrorAlert(message)
         }
       })

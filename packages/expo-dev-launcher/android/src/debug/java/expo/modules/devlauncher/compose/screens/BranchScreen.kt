@@ -13,10 +13,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +25,7 @@ import com.composeunstyled.UnstyledButton
 import expo.modules.devlauncher.compose.Update
 import expo.modules.devlauncher.compose.models.BranchAction
 import expo.modules.devlauncher.compose.primitives.CircularProgressBar
+import expo.modules.devlauncher.compose.ui.ActionButton
 import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.ui.LauncherIcons
 import expo.modules.devlauncher.compose.utils.DateFormat
@@ -43,6 +40,8 @@ fun BranchScreen(
   branchName: String,
   updates: List<Update>,
   isLoading: Boolean,
+  hasMore: Boolean = false,
+  loadingUpdateId: String? = null,
   goBack: () -> Unit = {},
   onAction: (BranchAction) -> Unit = {}
 ) {
@@ -87,20 +86,6 @@ fun BranchScreen(
     ) {
       val lazyListState = rememberLazyListState()
 
-      val reachedBottom: Boolean by remember {
-        derivedStateOf {
-          val lastVisibleItem = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
-          val index = lastVisibleItem?.index ?: 0
-          index != 0 && index > lazyListState.layoutInfo.totalItemsCount - 5
-        }
-      }
-
-      LaunchedEffect(reachedBottom, isLoading) {
-        if (reachedBottom && !isLoading) {
-          onAction(BranchAction.LoadMoreUpdates)
-        }
-      }
-
       RoundedSurface(
         color = NewAppTheme.colors.background.subtle
       ) {
@@ -116,6 +101,7 @@ fun BranchScreen(
                   NewAppTheme.colors.background.subtle,
                   shape = RoundedCornerShape(NewAppTheme.borderRadius.xl)
                 ),
+              enabled = loadingUpdateId == null,
               onClick = {
                 onAction(BranchAction.OpenUpdate(update))
               }
@@ -146,7 +132,7 @@ fun BranchScreen(
                   )
 
                   NewText(
-                    "Published: $formatedTime",
+                    "Published $formatedTime",
                     style = NewAppTheme.font.sm,
                     color = NewAppTheme.colors.text.secondary
                   )
@@ -162,10 +148,14 @@ fun BranchScreen(
                   }
                 }
 
-                LauncherIcons.Chevron(
-                  size = 16.dp,
-                  tint = NewAppTheme.colors.icon.tertiary
-                )
+                if (loadingUpdateId == update.id) {
+                  CircularProgressBar(size = 20.dp)
+                } else {
+                  LauncherIcons.Chevron(
+                    size = 16.dp,
+                    tint = NewAppTheme.colors.icon.tertiary
+                  )
+                }
               }
             }
 
@@ -188,6 +178,31 @@ fun BranchScreen(
               ) {
                 CircularProgressBar(
                   size = 44.dp
+                )
+              }
+            }
+          } else if (hasMore && updates.isNotEmpty()) {
+            item {
+              Row(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(vertical = NewAppTheme.spacing.`2`),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+              ) {
+                ActionButton(
+                  "Load more updates",
+                  foreground = NewAppTheme.colors.text.default,
+                  background = NewAppTheme.colors.background.element,
+                  fill = false,
+                  textStyle = NewAppTheme.font.md.merge(
+                    fontWeight = FontWeight.Medium
+                  ),
+                  modifier = Modifier.padding(
+                    horizontal = NewAppTheme.spacing.`3`,
+                    vertical = NewAppTheme.spacing.`2`
+                  ),
+                  onClick = { onAction(BranchAction.LoadMoreUpdates) }
                 )
               }
             }

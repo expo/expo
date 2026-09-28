@@ -9,15 +9,13 @@ struct UpdatesTabView: View {
     VStack(spacing: 0) {
       DevLauncherNavigationHeader()
 
-      ScrollView {
-        if !viewModel.isLoggedIn {
-          NotSignedInView()
-            .padding()
-        } else if !viewModel.structuredBuildInfo.usesEASUpdates {
-          NotUsingUpdatesView()
-        } else {
-          UpdatesListView()
-        }
+      if !viewModel.isLoggedIn {
+        NotSignedInView()
+          .padding()
+      } else if !viewModel.structuredBuildInfo.usesEASUpdates {
+        NotUsingUpdatesView()
+      } else {
+        BranchesListView()
       }
     }
     #if os(tvOS)
