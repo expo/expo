@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the package failing to compile with the open-source Swift 6.4 toolchain (swift.org), which rejects the `public` `message` member of the `expo.CppError: Error` extension in a library-evolution module; `message` is now internal (it's only used inside the package). ([#PR](https://github.com/expo/expo/pull/PR) by [@cesardev31](https://github.com/cesardev31))
+
 ### 💡 Others
 
 ## 58.0.4 — 2026-09-25
