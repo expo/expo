@@ -605,6 +605,12 @@ const styles = StyleSheet.create({
 });
 ```
 
+<Collapsible summary="What are modifiers?">
+
+Modifiers customize the appearance and behavior of Expo UI components, such as their style, size, and colors. Import them from `@expo/ui/jetpack-compose/modifiers` for Jetpack Compose and from `@expo/ui/swift-ui/modifiers` for SwiftUI. Then, pass them in an array to the `modifiers` prop of a component, as **button.ios.tsx** does. For more information, see modifiers for [Jetpack Compose](/versions/latest/sdk/ui/jetpack-compose/modifiers/) and [SwiftUI](/versions/latest/sdk/ui/swift-ui/modifiers/).
+
+</Collapsible>
+
 Both files keep the same props as **button.tsx**, so **src/app/(tabs)/index.tsx** doesn't change. The **src/components** directory now contains three versions of the button:
 
 <FileTree
