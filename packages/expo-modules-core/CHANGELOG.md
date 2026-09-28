@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Throw a JavaScript error instead of aborting when returning a shared object whose JavaScript instance is no longer available.
+- [Android] Throw a JavaScript error instead of aborting when returning a shared object whose JavaScript instance is no longer available. ([#50667](https://github.com/expo/expo/pull/50667) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
