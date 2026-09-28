@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Added `LazyVStack.ForEach` and `LazyHStack.ForEach`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large stacks only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50579](https://github.com/expo/expo/pull/50579) by [@nishan](https://github.com/intergalacticspacehighway))
-- [universal] Automatically wrap standalone universal components in `Host` and recommend grouping adjacent universal components in one `Host` for better performance.
+- [universal] Automatically wrap standalone universal components in `Host` and recommend grouping adjacent universal components in one `Host` for better performance. ([#46549](https://github.com/expo/expo/pull/46549) by [@chrfalch](https://github.com/chrfalch))
 
 ### 🐛 Bug fixes
 
