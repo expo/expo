@@ -187,8 +187,8 @@ await src.write(await response.bytes());
 
 <Collapsible summary="Previewing files">
 
-Use `File.preview()` to open local files in the native viewer. iOS uses Quick Look;
-Android opens an installed app that supports the file's MIME type.
+Use `File.preview()` to open local files in the native viewer. Android opens an installed
+app that supports the file's MIME type. iOS uses Quick Look.
 
 `File.preview()` and `File.canPreview()` accept a `File` or an ordered `File[]`.
 For one file, you can also call `file.preview()` and `file.canPreview()` directly.
@@ -209,7 +209,7 @@ if (await File.canPreview(file)) {
 **Multiple files are supported on iOS only.** This example opens the notes first
 and lets the user navigate to the PDF:
 
-```ts
+```ts example.ts
 const notes = new File(Paths.cache, 'notes.txt');
 await notes.write('Notes about the PDF');
 const files = [file, notes];
@@ -220,17 +220,21 @@ if (await File.canPreview(files)) {
 ```
 
 `initialIndex` is zero-based and defaults to `0`. An array with one file works on
-both platforms. On Android, passing multiple files makes `canPreview()` return
-`false` and `preview()` reject.
+both platforms. On Android, passing multiple files makes `File.canPreview()`
+resolve to `false` and `File.preview()` reject.
 
-The `title` and `mimeType` options apply only to single-file previews. `mimeType`
-defaults to the file's `type`; pass it explicitly if the extension does not identify
-the type, particularly on Android.
+`File.preview()` rejects if you pass `title` or `mimeType` with multiple files.
+`File.canPreview()` rejects if you pass `mimeType` with multiple files.
+For a single file, `mimeType` defaults to the file's `type`. Pass it explicitly
+if the extension does not identify the type, particularly on Android.
 
-`canPreview()` returns `false` if any file is missing or unsupported. Invalid or
-unreadable files reject. `preview()` rejects if any file cannot be previewed.
-Empty arrays and invalid indices also reject. Keep files available until the
-viewer closes: `preview()` resolves at presentation or handoff to another app.
+`File.canPreview()` resolves to `false` when previewing is unsupported or a checked
+file is missing or unsupported. It rejects if it encounters an invalid or
+unreadable file. `File.preview()` rejects if any file cannot be previewed or
+`initialIndex` is invalid. Both methods reject empty arrays.
+
+Keep files available until the viewer closes. `File.preview()` resolves when the
+preview is presented or handed off to another app.
 
 If a share sheet is useful in your app, you can compose this with [`expo-sharing`](./sharing/) when previewing fails:
 

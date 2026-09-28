@@ -45,11 +45,17 @@ import { FileSystemReadableStreamSource, FileSystemWritableSink } from './intern
 export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   /**
    * Checks whether every supplied local file can be previewed.
-   * Multiple files are supported on iOS only; Android returns `false` for them.
+   * Android resolves to `false` for more than one file. Only iOS previews multiple files.
    * An array with one file behaves like a single `File`.
    * Rejects empty arrays and invalid arguments.
    * @platform ios
    * @platform android
+   *
+   * @example
+   * ```ts
+   * const files = [new File(Paths.cache, 'report.pdf'), new File(Paths.cache, 'notes.txt')];
+   * const canPreviewAll = await File.canPreview(files);
+   * ```
    */
   static async canPreview(input: File | File[], options?: FileCanPreviewOptions): Promise<boolean> {
     const files = normalizePreviewFiles(input);
@@ -68,12 +74,22 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
 
   /**
    * Previews local files in the supplied order, starting at `initialIndex` (default `0`).
-   * Multiple files are supported on iOS only; Android rejects them.
+   * Android rejects more than one file. Only iOS previews multiple files.
    * An array with one file behaves like a single `File`.
-   * The `title` and `mimeType` options apply only to single-file previews.
+   * Rejects if you pass `title` or `mimeType` with more than one file.
+   * Also rejects empty arrays, an invalid `initialIndex`, and files that cannot be previewed.
    * Resolves at presentation or handoff to another app, not when the viewer closes.
    * @platform ios
    * @platform android
+   *
+   * @example
+   * ```ts
+   * // The files must exist before previewing.
+   * const files = [new File(Paths.cache, 'report.pdf'), new File(Paths.cache, 'notes.txt')];
+   * if (await File.canPreview(files)) {
+   *   await File.preview(files, { initialIndex: 1 });
+   * }
+   * ```
    */
   static async preview(
     input: File | File[],
