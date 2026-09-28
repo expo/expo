@@ -43,7 +43,7 @@ class AudioPlaylist(
   override var isActiveForLockScreen = false
   override var metadata: Metadata? = null
   override var lockScreenOptions: AudioLockScreenOptions? = null
-  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
+  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
   override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
   override val supportsNextTrack = true
   override val supportsPreviousTrack = true
@@ -192,7 +192,7 @@ class AudioPlaylist(
 
   override fun assignBasicMediaSession() {
     mediaSession.release()
-    mediaSession = buildBasicMediaSession(appContext?.reactContext ?: return, ref)
+    mediaSession = buildBasicMediaSession(appContext?.reactContext ?: return, ref) { requestPlay() }
   }
 
   override fun currentStatus(): Map<String, Any?> {

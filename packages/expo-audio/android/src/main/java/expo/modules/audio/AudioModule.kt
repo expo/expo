@@ -292,6 +292,36 @@ class AudioModule : Module() {
     focusAcquired = false
   }
 
+  // Called on the main thread, from JS and from outside it (see `Playable.onPlayRequest`).
+  private fun playWithAudioFocus(player: AudioPlayer) {
+    if (!audioEnabled) {
+      Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+      return
+    }
+    if (!shouldPlayInSilentMode()) {
+      return
+    }
+    if (requestAudioFocus() == AudioFocusResult.FAILED) {
+      return
+    }
+    registerAudioSessionActivityKeeper(player)
+    player.ref.play()
+  }
+
+  private fun playWithAudioFocus(playlist: AudioPlaylist) {
+    if (!audioEnabled) {
+      Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+      return
+    }
+    if (!shouldPlayInSilentMode()) {
+      return
+    }
+    if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+      return
+    }
+    playlist.ref.play()
+  }
+
   private fun registerAudioSessionActivityKeeper(player: AudioPlayer) {
     if (player.keepAudioSessionActive) {
       audioSessionActivityKeepers.add(player.id)
@@ -547,6 +577,7 @@ class AudioModule : Module() {
               releaseAudioFocusIfUnused()
             }
           }
+          player.onPlayRequest = { playWithAudioFocus(player) }
           players[player.id] = player
           player
         }
@@ -645,19 +676,8 @@ class AudioModule : Module() {
       }
 
       Function("play") { player: AudioPlayer ->
-        if (!audioEnabled) {
-          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
-          return@Function
-        }
-        if (!shouldPlayInSilentMode()) {
-          return@Function
-        }
         runOnMain {
-          if (requestAudioFocus() == AudioFocusResult.FAILED) {
-            return@runOnMain
-          }
-          registerAudioSessionActivityKeeper(player)
-          player.ref.play()
+          playWithAudioFocus(player)
         }
       }
 
@@ -909,6 +929,7 @@ class AudioModule : Module() {
               releaseAudioFocusIfUnused()
             }
           }
+          playlist.onPlayRequest = { playWithAudioFocus(playlist) }
           playlists[playlist.id] = playlist
           playlist
         }
@@ -1005,18 +1026,8 @@ class AudioModule : Module() {
       }
 
       Function("play") { playlist: AudioPlaylist ->
-        if (!audioEnabled) {
-          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
-          return@Function
-        }
-        if (!shouldPlayInSilentMode()) {
-          return@Function
-        }
         runOnMain {
-          if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
-            return@runOnMain
-          }
-          playlist.ref.play()
+          playWithAudioFocus(playlist)
         }
       }
 

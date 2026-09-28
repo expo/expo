@@ -66,7 +66,7 @@ class AudioPlayer(
   override var isActiveForLockScreen = false
   override var metadata: Metadata? = null
   override var lockScreenOptions: AudioLockScreenOptions? = null
-  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
+  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
   override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
 
   override val isLive: Boolean
@@ -182,7 +182,7 @@ class AudioPlayer(
 
   override fun assignBasicMediaSession() {
     mediaSession.release()
-    mediaSession = buildBasicMediaSession(context, ref)
+    mediaSession = buildBasicMediaSession(context, ref) { requestPlay() }
   }
 
   private fun sendAudioSampleUpdate(sample: List<Float>) {

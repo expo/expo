@@ -26,6 +26,7 @@ import androidx.media3.session.SessionCommand
 import expo.modules.audio.AudioLockScreenOptions
 import expo.modules.audio.LockScreenPlayable
 import expo.modules.audio.Metadata
+import expo.modules.audio.PlayRequestingPlayer
 import expo.modules.audio.getPlaybackServiceErrorMessage
 import expo.modules.kotlin.AppContext
 import kotlinx.coroutines.CoroutineScope
@@ -66,9 +67,10 @@ class AudioControlsService : MediaSessionService() {
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     ensureForegroundNotification()
 
-    val currentPlayer = currentPlayable?.player
+    val playable = currentPlayable
+    val currentPlayer = playable?.player
     val context = appContext
-    if (currentPlayer == null || context == null) {
+    if (playable == null || currentPlayer == null || context == null) {
       stopForeground(STOP_FOREGROUND_REMOVE)
       return super.onStartCommand(intent, flags, startId)
     }
@@ -77,7 +79,7 @@ class AudioControlsService : MediaSessionService() {
       when (intent?.action) {
         ACTION_PLAY -> {
           if (shouldPlayInSilentMode()) {
-            currentPlayer.play()
+            playable.requestPlay()
           }
         }
         ACTION_PAUSE -> currentPlayer.pause()
@@ -85,7 +87,7 @@ class AudioControlsService : MediaSessionService() {
           if (currentPlayer.isPlaying) {
             currentPlayer.pause()
           } else if (shouldPlayInSilentMode()) {
-            currentPlayer.play()
+            playable.requestPlay()
           }
 
         ACTION_SEEK_FORWARD -> seekForward()
@@ -359,12 +361,13 @@ class AudioControlsService : MediaSessionService() {
   }
 
   private fun resolveSessionPlayer(playable: LockScreenPlayable, options: AudioLockScreenOptions?): Player {
+    val player = PlayRequestingPlayer(playable.player) { playable.requestPlay() }
     val isLive = options?.isLiveStream ?: playable.isLive
     if (!isLive) {
-      return playable.player
+      return player
     }
 
-    return object : ForwardingPlayer(playable.player) {
+    return object : ForwardingPlayer(player) {
       override fun getAvailableCommands(): Player.Commands {
         return super.getAvailableCommands().buildUpon()
           .remove(Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM)
