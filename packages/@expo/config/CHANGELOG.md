@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Detect supported platforms from the project's own dependencies only. The lookups fell through to Node's native resolution, which consults `NODE_PATH` — and pnpm's bin shims set it to the virtual store, so a project with no `react-dom` could report `web` depending on which bin launched the process. ([#50142](https://github.com/expo/expo/pull/50142) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

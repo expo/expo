@@ -7,7 +7,8 @@ it(`reads server constants without throwing`, () => {
   expect(Constants.expoConfig).toEqual(
     expect.objectContaining({
       name: 'expo-constants',
-      platforms: ['ios', 'android', 'web'],
+      // No `react-dom` in this package's own node_modules, so `web` is not detected.
+      platforms: ['ios', 'android'],
       slug: 'expo-constants',
     })
   );
