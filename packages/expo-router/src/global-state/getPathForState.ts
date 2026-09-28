@@ -5,7 +5,7 @@ import { appendBaseUrl, getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationState } from '../react-navigation/routers';
-import { getRouteInfoFromState } from './getRouteInfoFromState';
+import { getRouteSegmentsFromState } from './getRouteSegmentsFromState';
 
 export type PathLinking = Pick<
   ExpoLinkingOptions,
@@ -30,7 +30,7 @@ export function getPathForState(state: NavigationState, linking: PathLinking | u
     const stateForPath = getStateFromPath(
       route.path,
       linking?.config,
-      getRouteInfoFromState(state).segments
+      getRouteSegmentsFromState(state)
     );
     const focusedRoute = stateForPath ? findFocusedRoute(stateForPath) : undefined;
     if (

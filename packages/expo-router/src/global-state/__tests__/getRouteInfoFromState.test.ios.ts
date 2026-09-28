@@ -5,6 +5,114 @@ import {
 } from '../getRouteInfoFromState';
 
 describe('getRouteInfoFromState', () => {
+  it('preserves merged query order, filtering, encoding, and source params', () => {
+    const parentParams = Object.freeze({
+      q: 'parent',
+      id: 'old',
+      before: 'first',
+    });
+    const childParams = Object.freeze({
+      id: 'hello%20world',
+      q: Object.freeze(['a%2Fb', { ignored: true }, null, undefined, false, 0, '']),
+      nil: null,
+      missing: undefined,
+      no: false,
+      zero: 0,
+      empty: '',
+      encoded: 'a%26b%3Dc%20d',
+    });
+    const state = {
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: '(group)',
+                params: parentParams,
+                state: { routes: [{ name: '[id]', params: childParams }] },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    const result = getRouteInfoFromState(state);
+
+    expect(result.pathname).toBe('/hello world');
+    expect(result.searchParams.toString()).toBe(
+      'q=a%2Fb&q=null&q=undefined&q=false&q=0&q=&before=first&nil=null&missing=undefined&no=false&zero=0&empty=&encoded=a%26b%3Dc+d'
+    );
+    expect(result.params).toEqual({
+      ...parentParams,
+      ...childParams,
+      id: 'hello world',
+      q: ['a/b', { ignored: true }, null, undefined, false, 0, ''],
+      encoded: 'a&b=c d',
+    });
+    expect(parentParams).toEqual({ q: 'parent', id: 'old', before: 'first' });
+    expect(childParams.id).toBe('hello%20world');
+    expect(childParams.q[0]).toBe('a%2Fb');
+  });
+
+  it('skips array holes while preserving explicit undefined query values', () => {
+    const values: (string | undefined)[] = ['first'];
+    values.length = 2;
+    values.push(undefined, 'last');
+    const result = getRouteInfoFromState({
+      routes: [{ name: '__root', state: { routes: [{ name: 'page', params: { q: values } }] } }],
+    });
+
+    expect(result.searchParams.toString()).toBe('q=first&q=undefined&q=last');
+    expect(1 in values).toBe(false);
+  });
+
+  it.each([
+    [['first%20section', 'second'], '/page?q=value#first section'],
+    [['', 'second'], '/page?q=value'],
+    [[], '/page?q=value'],
+  ])('extracts only the first hash value from %j', (hashes, expected) => {
+    const result = getRouteInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [{ name: 'page', params: { '#': hashes, q: 'value' } }],
+          },
+        },
+      ],
+    });
+
+    expect(result.pathnameWithParams).toBe(expected);
+    expect(result.searchParams.toString()).toBe('q=value');
+  });
+
+  it('applies the base URL after serializing query params and hash', () => {
+    const previousBaseUrl = process.env.EXPO_BASE_URL;
+    const previousNodeEnv = process.env.NODE_ENV;
+    process.env.EXPO_BASE_URL = '/base';
+    process.env.NODE_ENV = 'production';
+    try {
+      const result = getRouteInfoFromState({
+        routes: [
+          {
+            name: '__root',
+            state: {
+              routes: [{ name: 'page', params: { q: 'a%20b', '#': 'section' } }],
+            },
+          },
+        ],
+      });
+      expect(result.pathnameWithParams).toBe('/page?q=a+b#section');
+      expect(result.unstable_globalHref).toBe('/base/page?q=a+b#section');
+    } finally {
+      if (previousBaseUrl === undefined) delete process.env.EXPO_BASE_URL;
+      else process.env.EXPO_BASE_URL = previousBaseUrl;
+      process.env.NODE_ENV = previousNodeEnv;
+    }
+  });
+
   it('returns defaultRouteInfo when state is undefined', () => {
     expect(getRouteInfoFromState(undefined)).toBe(defaultRouteInfo);
   });
