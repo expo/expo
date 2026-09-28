@@ -634,6 +634,10 @@ class AudioModule : Module() {
         runOnMain {
           player.ref.playbackParameters.speed
         }
+      }.set { player: AudioPlayer, rate: Float ->
+        appContext.mainQueue.launch {
+          player.setPlaybackRate(rate)
+        }
       }
 
       Property("volume") { player ->

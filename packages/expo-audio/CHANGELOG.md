@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Make `AudioPlayer.playbackRate` writable, as documented. Assigning to it used to throw because the native property only had a getter. ([#50659](https://github.com/expo/expo/pull/50659) by [@ramen2020](https://github.com/ramen2020))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-22

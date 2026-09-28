@@ -209,6 +209,9 @@ public class AudioModule: Module {
         } else {
           player.currentRate
         }
+      }.set { (player, rate: Double) in
+        // Keep the pitch correction quality from the last `setPlaybackRate` call.
+        player.setPlaybackRate(rate, pitchCorrectionQuality: player.pitchCorrectionQuality)
       }
 
       Property("paused") { player in
@@ -235,19 +238,7 @@ public class AudioModule: Module {
       }
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
-        let playerRate = rate < 0 ? 0.0 : Float(min(rate, 2.0))
-        player.currentRate = playerRate
-
-        if player.isPlaying {
-          player.ref.rate = playerRate
-        }
-
-        if player.shouldCorrectPitch {
-          player.pitchCorrectionQuality = pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain
-          player.ref.currentItem?.audioTimePitchAlgorithm = player.pitchCorrectionQuality
-        } else {
-          player.ref.currentItem?.audioTimePitchAlgorithm = .varispeed
-        }
+        player.setPlaybackRate(rate, pitchCorrectionQuality: pitchCorrectionQuality?.toPitchAlgorithm() ?? .timeDomain)
       }
 
       Function("replace") { (player, source: AudioSource?) in
