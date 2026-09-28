@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone.
+- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone. ([#50455](https://github.com/expo/expo/pull/50455) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
