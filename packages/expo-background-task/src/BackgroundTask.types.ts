@@ -4,13 +4,21 @@
  */
 export enum BackgroundTaskStatus {
   /**
-   * Background tasks are unavailable.
+   * Background tasks are unavailable to the app and the user cannot turn them on — on iOS this
+   * means a device policy such as parental controls or MDM forbids background activity, or the
+   * app is running on a simulator.
    */
   Restricted = 1,
   /**
    * Background tasks are available for the app.
    */
   Available = 2,
+  /**
+   * The user has turned **Background App Refresh** off, either for this app specifically or for
+   * the whole system. Unlike `Restricted`, this can be undone by the user in the system settings.
+   * @platform ios
+   */
+  Denied = 3,
 }
 
 // @needsAudit
