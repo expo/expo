@@ -1,7 +1,8 @@
 import { BottomSheet, Host, HStack, RNHostView, VStack } from '@expo/ui/swift-ui';
-import { padding } from '@expo/ui/swift-ui/modifiers';
+import { onGeometryChange, padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { Modal, ScrollView, View } from 'react-native';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // React Native types `View` as a function component, so the instance type is its ref type.
 type ViewRef = React.ComponentRef<typeof View>;
@@ -64,6 +65,149 @@ async function measureWhenPresented(
     await delay(50);
   }
   throw new Error(`Timed out waiting for ${label} to be presented and laid out`);
+}
+
+/**
+ * Measures until the result stops changing. SwiftUI publishes where it drew a hosted view after it
+ * lays it out, so a single measure right after a state change can read the previous frame.
+ */
+async function measureSettled(
+  ref: React.RefObject<ViewRef | null>,
+  label: string,
+  timeoutMs = 3000
+): Promise<Measurement> {
+  const started = Date.now();
+  let last = await measureAsync(ref, label);
+  let stableReads = 0;
+  while (Date.now() - started < timeoutMs) {
+    await delay(100);
+    const next = await measureAsync(ref, label);
+    stableReads = next.pageX === last.pageX && next.pageY === last.pageY ? stableReads + 1 : 0;
+    last = next;
+    if (stableReads >= 3) {
+      return last;
+    }
+  }
+  return last;
+}
+
+type WindowFrame = { x: number; y: number; width: number; height: number };
+
+function measureInWindowAsync(ref: React.RefObject<ViewRef | null>): Promise<WindowFrame> {
+  return new Promise((resolve, reject) => {
+    if (!ref.current) {
+      reject(new Error('Cannot measure the view in the window: it is not mounted'));
+      return;
+    }
+    ref.current.measureInWindow((x, y, width, height) => resolve({ x, y, width, height }));
+  });
+}
+
+type InsetGeometry = { insetTop: number; wrapperTop: number };
+
+// A fill `Host` that starts halfway down the status bar of a full-screen modal.
+function InsetHost({
+  safeArea,
+  hostWrapperRef,
+  hostedRef,
+  drawnRef,
+  geometryRef,
+}: {
+  safeArea: boolean;
+  hostWrapperRef: React.RefObject<ViewRef | null>;
+  hostedRef: React.RefObject<ViewRef | null>;
+  drawnRef: { current: WindowFrame | null };
+  geometryRef: { current: InsetGeometry | null };
+}) {
+  const insets = useSafeAreaInsets();
+  const wrapperTop = Math.round(insets.top / 2);
+  geometryRef.current = { insetTop: insets.top, wrapperTop };
+  return (
+    <View
+      ref={hostWrapperRef}
+      collapsable={false}
+      style={{ position: 'absolute', top: wrapperTop, left: 0, right: 0, height: 120 }}>
+      <Host style={{ flex: 1 }} ignoreSafeArea={safeArea ? undefined : 'container'}>
+        <VStack modifiers={[onGeometryChange((frame) => (drawnRef.current = frame))]}>
+          <RNHostView matchContents>
+            <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+          </RNHostView>
+        </VStack>
+      </Host>
+    </View>
+  );
+}
+
+async function mountInsetHost(setPortalChild: any, safeArea: boolean) {
+  const hostWrapperRef = React.createRef<ViewRef>();
+  const hostedRef = React.createRef<ViewRef>();
+  const drawnRef: { current: WindowFrame | null } = { current: null };
+  const geometryRef: { current: InsetGeometry | null } = { current: null };
+
+  setPortalChild(
+    <Modal visible presentationStyle="fullScreen" animationType="none">
+      <SafeAreaProvider>
+        <InsetHost
+          safeArea={safeArea}
+          hostWrapperRef={hostWrapperRef}
+          hostedRef={hostedRef}
+          drawnRef={drawnRef}
+          geometryRef={geometryRef}
+        />
+      </SafeAreaProvider>
+    </Modal>
+  );
+
+  await measureWhenPresented(hostedRef, 'the hosted box');
+  let result: { host: WindowFrame; hosted: WindowFrame; drawn: WindowFrame } & InsetGeometry;
+  for (let attempt = 0; ; attempt++) {
+    const drawn = drawnRef.current;
+    if (drawn && geometryRef.current) {
+      const host = await measureInWindowAsync(hostWrapperRef);
+      const hosted = await measureInWindowAsync(hostedRef);
+      result = { host, hosted, drawn, ...geometryRef.current };
+      if (Math.abs(hosted.y - drawn.y) < 0.5 || attempt >= 40) {
+        return result;
+      }
+    } else if (attempt >= 40) {
+      throw new Error('SwiftUI never reported where it drew the hosted view');
+    }
+    await delay(50);
+  }
+}
+
+function ScrolledHostProbe({
+  scrollRef,
+  viewportRef,
+  hostWrapperRef,
+  hostedRef,
+  setSizeRef,
+}: {
+  scrollRef: React.RefObject<ScrollViewRef | null>;
+  viewportRef: React.RefObject<ViewRef | null>;
+  hostWrapperRef: React.RefObject<ViewRef | null>;
+  hostedRef: React.RefObject<ViewRef | null>;
+  setSizeRef: { current: ((size: number) => void) | null };
+}) {
+  const [size, setSize] = React.useState(BOX);
+  setSizeRef.current = setSize;
+  return (
+    <View ref={viewportRef} collapsable={false} style={{ flex: 1 }}>
+      <ScrollView ref={scrollRef} contentInsetAdjustmentBehavior="never">
+        <View style={{ height: SCROLL_LEAD }} />
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <VStack modifiers={[padding({ all: PADDING })]}>
+              <RNHostView matchContents>
+                <View ref={hostedRef} style={{ width: size, height: size }} />
+              </RNHostView>
+            </VStack>
+          </Host>
+        </View>
+        <View style={{ height: SCROLL_TAIL }} />
+      </ScrollView>
+    </View>
+  );
 }
 
 export async function test(
@@ -339,7 +483,70 @@ export async function test(
       expect(hostedAfter.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
     });
 
+    it('measures a hosted view where SwiftUI drew it when the Host is inset by the safe area', async () => {
+      const { host, hosted, drawn, insetTop, wrapperTop } = await mountInsetHost(
+        setPortalChild,
+        true
+      );
+      if (insetTop === 0) {
+        return;
+      }
+      // Proves that SwiftUI inset the content by the part of the status bar the Host is under.
+      expect(drawn.y - host.y).toBeCloseTo(insetTop - wrapperTop, 0);
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
+    });
+
+    it('measures a hosted view where SwiftUI drew it when the Host ignores the safe area', async () => {
+      const { host, hosted, drawn } = await mountInsetHost(setPortalChild, false);
+      expect(drawn.y - host.y).toBeCloseTo(0, 0);
+      expect(hosted.x).toBeCloseTo(drawn.x, 0);
+      expect(hosted.y).toBeCloseTo(drawn.y, 0);
+    });
+
     // A sheet content uses RootNodeKind trait so measurement happens relative to the RNHostView and not the RN's root surface.
+    it('measures a hosted view after a SwiftUI layout that follows a scroll', async () => {
+      const scrollRef = React.createRef<ScrollViewRef>();
+      const viewportRef = React.createRef<ViewRef>();
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const hostedRef = React.createRef<ViewRef>();
+      const setSizeRef: { current: ((size: number) => void) | null } = { current: null };
+
+      setPortalChild(
+        <ScrolledHostProbe
+          scrollRef={scrollRef}
+          viewportRef={viewportRef}
+          hostWrapperRef={hostWrapperRef}
+          hostedRef={hostedRef}
+          setSizeRef={setSizeRef}
+        />
+      );
+      await measureWhenPresented(hostedRef, 'the hosted box');
+      const viewport = await measureSettled(viewportRef, 'the scroll viewport');
+      const hostBefore = await measureSettled(hostWrapperRef, 'the Host wrapper');
+
+      scrollRef.current?.scrollTo({ y: SCROLL_BY, animated: false });
+      let hostAfter = hostBefore;
+      for (let attempt = 0; attempt < 40; attempt++) {
+        hostAfter = await measureAsync(hostWrapperRef);
+        if (Math.abs(hostBefore.pageY - hostAfter.pageY - SCROLL_BY) < 0.5) {
+          break;
+        }
+        await delay(50);
+      }
+      expect(hostBefore.pageY - hostAfter.pageY).toBeCloseTo(SCROLL_BY, 0);
+
+      // Forces a SwiftUI layout pass after UIKit moved the Host.
+      setSizeRef.current?.(BOX * 2);
+      await delay(300);
+      const hosted = await measureSettled(hostedRef, 'the hosted box');
+      const host = await measureAsync(hostWrapperRef);
+
+      expect(hosted.width).toBeCloseTo(BOX * 2, 0);
+      expect(hosted.pageY - host.pageY).toBe(PADDING);
+      expect(hosted.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
+    });
+
     it('measures a hosted view in a sheet relative to itself', async () => {
       const hostedRef = React.createRef<ViewRef>();
 

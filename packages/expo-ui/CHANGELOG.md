@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `measure()` of views hosted in `RNHostView` when a SwiftUI or Jetpack Compose container above it is not the first child, such as in a `NavigationSplitView` detail column. ([#50694](https://github.com/expo/expo/issues/50694) by [@swood09](https://github.com/swood09), [#50715](https://github.com/expo/expo/pull/50715) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed `measure()` of views hosted in `RNHostView` when SwiftUI insets the `Host`'s content, for example by the safe area. ([#50727](https://github.com/expo/expo/pull/50727) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

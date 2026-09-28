@@ -97,14 +97,17 @@ struct RNHostView: ExpoSwiftUI.View {
 private struct PublishContentOriginModifier: ViewModifier {
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   let isEnabled: Bool
+  @Environment(\.expoHostingView) private var hostingView
 
   func body(content: Content) -> some View {
     if isEnabled {
       content
-        .onGeometryChange(for: CGRect.self) { proxy in
-          proxy.frame(in: .named(expoHostCoordinateSpace))
-        } action: { frame in
-          shadowNodeProxy.setContentOrigin?(frame.origin)
+        .onGeometryChange(for: CGPoint?.self) { proxy in
+          originInHost(proxy)
+        } action: { origin in
+          if let origin {
+            shadowNodeProxy.setContentOrigin?(origin)
+          }
         }
         .onDisappear {
           shadowNodeProxy.clearContentOrigin?()
@@ -112,6 +115,18 @@ private struct PublishContentOriginModifier: ViewModifier {
     } else {
       content
     }
+  }
+
+  // Relative to the `Host`'s UIKit view, which Yoga laid out, so a safe-area inset is included.
+  private func originInHost(_ proxy: GeometryProxy) -> CGPoint? {
+    #if os(macOS)
+    return proxy.frame(in: .named(expoHostCoordinateSpace)).origin
+    #else
+    guard let hostView = hostingView?.view, let window = hostView.window else {
+      return nil
+    }
+    return hostView.convert(proxy.frame(in: .global).origin, from: window)
+    #endif
   }
 }
 
