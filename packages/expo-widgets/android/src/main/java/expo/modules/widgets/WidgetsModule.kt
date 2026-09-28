@@ -52,7 +52,7 @@ class WidgetsModule : Module() {
         widget.reload()
       }
 
-      AsyncFunction("isInstalled") { widget: WidgetObject ->
+      AsyncFunction("isInstalledAsync") { widget: WidgetObject ->
         AppWidgetManager.getInstance(context)
           .getAppWidgetIds(widgetProviderComponentName(context, widget.name))
           .isNotEmpty()

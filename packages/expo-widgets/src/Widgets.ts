@@ -49,8 +49,8 @@ export class Widget<
   /**
    * Returns whether at least one instance of this widget is installed on the device.
    */
-  isInstalled(): Promise<boolean> {
-    return this.nativeWidgetObject.isInstalled();
+  isInstalledAsync(): Promise<boolean> {
+    return this.nativeWidgetObject.isInstalledAsync();
   }
 
   /**

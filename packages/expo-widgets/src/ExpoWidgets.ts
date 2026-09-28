@@ -15,7 +15,7 @@ class WidgetStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_name: string, _layout: string, _initialProps?: Record<string, any>) {}
   reload(): void {}
-  async isInstalled(): Promise<boolean> {
+  async isInstalledAsync(): Promise<boolean> {
     return false;
   }
   updateSnapshot(_props: Record<string, any>): void {}

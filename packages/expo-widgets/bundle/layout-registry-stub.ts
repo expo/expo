@@ -6,7 +6,7 @@ type WidgetRegistryEntry = {
 const widgets: Record<string, WidgetRegistryEntry> = {};
 const noopWidget = {
   reload() {},
-  isInstalled() {
+  isInstalledAsync() {
     return Promise.resolve(false);
   },
   updateTimeline() {},
