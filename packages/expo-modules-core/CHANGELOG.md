@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Native views inside a native layout host, such as an `@expo/ui` `Host`, no longer get a Yoga box of their own. ([#50694](https://github.com/expo/expo/issues/50694) by [@swood09](https://github.com/swood09), [#50715](https://github.com/expo/expo/pull/50715) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 - [iOS] Depend on `expo-modules-macros`, the new name of the `@expo/expo-modules-macros-plugin` package. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))

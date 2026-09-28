@@ -225,6 +225,42 @@ export async function test(
       expect(second.pageY - first.pageY).toBeCloseTo(SHORT, 0);
     });
 
+    it('measures a hosted view inside a column that is not the first child', async () => {
+      const hostWrapperRef = React.createRef<ViewRef>();
+      const firstRef = React.createRef<ViewRef>();
+      const secondRef = React.createRef<ViewRef>();
+
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <Column modifiers={[paddingAll(PADDING)]}>
+              <Column>
+                <RNHostView matchContents>
+                  <View ref={firstRef} style={{ width: WIDE, height: SHORT }} />
+                </RNHostView>
+              </Column>
+              <Column>
+                <RNHostView matchContents>
+                  <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+              </Column>
+            </Column>
+          </Host>
+        </View>
+      );
+
+      const { host, first, second } = await measureWhenSettled({
+        host: hostWrapperRef,
+        first: firstRef,
+        second: secondRef,
+      });
+
+      expect(first.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(first.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+      expect(second.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(second.pageY - first.pageY).toBeCloseTo(SHORT, 0);
+    });
+
     it('measures a hosted view in a row, beside a Compose-only sibling', async () => {
       const hostWrapperRef = React.createRef<ViewRef>();
       const hostedRef = React.createRef<ViewRef>();

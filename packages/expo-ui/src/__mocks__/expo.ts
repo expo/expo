@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createContext, createElement } from 'react';
 import { View } from 'react-native';
 
 // Records a `(viewName, props)` call for every render of a view returned by
@@ -9,6 +9,8 @@ export function findNativeViewProps(viewName: string) {
   const call = renderedNativeViews.mock.calls.find(([name]) => name === viewName);
   return call?.[1];
 }
+
+export const NativeLayoutContext = createContext(false);
 
 export const requireNativeModule = jest.fn(() => ({
   // The Android `Host` reads the Material palette on render.
