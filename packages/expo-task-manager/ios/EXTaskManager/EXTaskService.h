@@ -1,8 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXTaskServiceInterface.h>
 #import <ExpoTaskManager/EXTask.h>
 #import <ExpoTaskManager/EXTaskExecutionRequest.h>
+
+@import ExpoModulesCore;
 
 @interface EXTaskService : NSObject <EXTaskServiceInterface, EXTaskDelegate>
 
