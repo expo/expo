@@ -6,8 +6,19 @@ import UIKit
 struct DeviceAccountView: View {
   @Environment(\.dismiss) private var dismiss
   @EnvironmentObject var viewModel: HomeViewModel
-  @StateObject private var loginViewModel = LoginViewModel()
-  @State private var isAddingAccount = false
+  @StateObject private var loginViewModel: LoginViewModel
+  @State private var isAddingAccount: Bool
+  private let onSignedIn: (() -> Void)?
+
+  init(prefilledUsername: String? = nil, onSignedIn: (() -> Void)? = nil) {
+    let loginViewModel = LoginViewModel()
+    if let prefilledUsername {
+      loginViewModel.username = prefilledUsername
+    }
+    _loginViewModel = StateObject(wrappedValue: loginViewModel)
+    _isAddingAccount = State(initialValue: prefilledUsername != nil)
+    self.onSignedIn = onSignedIn
+  }
 
   private var showsLogin: Bool {
     !viewModel.hasStoredSessions || isAddingAccount
@@ -26,12 +37,10 @@ struct DeviceAccountView: View {
               loginViewModel: loginViewModel,
               onLoginSuccess: handleLoginSuccess,
               onSSO: {
-                await viewModel.ssoLogin()
-                isAddingAccount = false
+                finishSignIn(await viewModel.ssoLogin())
               },
               onSignUp: {
-                await viewModel.signUp()
-                isAddingAccount = false
+                finishSignIn(await viewModel.signUp())
               }
             )
             .padding(.horizontal, 16)
@@ -78,7 +87,7 @@ struct DeviceAccountView: View {
   }
 
   private func close() {
-    if isAddingAccount {
+    if isAddingAccount && onSignedIn == nil {
       isAddingAccount = false
     } else {
       dismiss()
@@ -86,8 +95,18 @@ struct DeviceAccountView: View {
   }
 
   private func handleLoginSuccess(_ sessionSecret: String) async {
-    await viewModel.completeLogin(with: sessionSecret)
+    let signedIn = await viewModel.completeLogin(with: sessionSecret)
     loginViewModel.resetToCredentials()
+    finishSignIn(signedIn)
+  }
+
+  private func finishSignIn(_ signedIn: Bool) {
+    guard signedIn || onSignedIn == nil else {
+      return
+    }
     isAddingAccount = false
+    if signedIn {
+      onSignedIn?()
+    }
   }
 }

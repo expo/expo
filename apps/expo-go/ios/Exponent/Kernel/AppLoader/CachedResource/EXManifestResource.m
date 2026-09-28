@@ -17,6 +17,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
 NSString * const EXFixInstructionsKey = @"fixInstructions";
 NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
+NSString * const EXAccountMismatchUsernameKey = @"accountMismatchUsername";
 
 @interface EXManifestResource ()
 
