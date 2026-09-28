@@ -58,7 +58,6 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      // See React Navigation documentation for more information on available screenOptions: https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -187,8 +186,6 @@ The `Stack` navigator supports comprehensive header configuration options. Below
 
 <ReactNavigationOptions category="header" />
 
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
-
 ### Header buttons
 
 You can add buttons to the header by using the `headerLeft` and `headerRight` options or `<Stack.Toolbar>` component. These options accept a React component that renders in the header.
@@ -287,8 +284,6 @@ const styles = StyleSheet.create({
 For a complete list of all available other screen options including animations, gestures, and other configurations:
 
 <ReactNavigationOptions excludeCategories={['header']} />
-
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
 
 ## Custom push behavior
 
@@ -405,7 +400,7 @@ export default function Settings() {
 
 ### `dismissAll` action
 
-To return to the first screen in the closest stack. This is similar to [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
+The `dismissAll` action dismisses every screen above the first screen in the closest stack, returning to that first screen.
 
 For example, the `home` route is the first screen, and the `settings` is the last. To go from `settings` to `home` route you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
 

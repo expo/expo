@@ -2796,7 +2796,7 @@ test('throws when invalid properties are specified in the config', () => {
 
     If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
-    See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
+    Expo Router generates its linking configuration from files in the app directory."
   `);
 
   expect(() =>
@@ -2828,7 +2828,7 @@ test('throws when invalid properties are specified in the config', () => {
 
     If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
-    See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
+    Expo Router generates its linking configuration from files in the app directory."
   `);
 
   expect(() =>

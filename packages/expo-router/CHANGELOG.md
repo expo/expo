@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update Expo Router navigation guidance in API comments and diagnostics to point to Expo documentation.
+
 ## 58.0.9 — 2026-09-28
 
 _This version does not introduce any user-facing changes._
