@@ -17,6 +17,8 @@ export const MODEL_CONTEXT_ENDPOINT = '/_expo/model-context';
 
 let nextConnectionId = 1;
 
+const LOOPBACK_HOSTNAMES = new Set(['localhost', '127.0.0.1', '[::1]']);
+
 /**
  * WebSocket endpoint apps use to register runtime tools. Messages use the same envelope as the
  * `/message` socket and every payload is validated with Zod before it reaches the registry.
@@ -24,16 +26,19 @@ let nextConnectionId = 1;
 export function createModelContextWebsocketEndpoint({
   registry,
   serverBaseUrl,
+  getTunnelUrl,
 }: {
   registry: ModelContextRegistry;
   serverBaseUrl: string;
+  /** Read on each connection, because the tunnel can start after Metro. */
+  getTunnelUrl?: () => string | null;
 }): Record<string, WebSocketServer> {
   const wss = new WebSocketServer({ noServer: true, maxPayload: LIMITS.messageBytes });
 
   wss.on('connection', (socket: WebSocket, request: IncomingMessage) => {
     // Native apps send no origin, so devices on the LAN still connect.
     // This only stops other websites open in the developer's browser.
-    if (!isMatchingOrigin(request, serverBaseUrl)) {
+    if (!isAllowedOrigin(request, serverBaseUrl, getTunnelUrl?.() ?? null)) {
       socket.close(1008, 'Origin does not match the dev server.');
       return;
     }
@@ -95,4 +100,33 @@ export function createModelContextWebsocketEndpoint({
   });
 
   return { [MODEL_CONTEXT_ENDPOINT]: wss };
+}
+
+/**
+ * Same-origin check for web apps.
+ * A page can open on any loopback name for the dev server's port, or on the tunnel host.
+ */
+function isAllowedOrigin(
+  request: IncomingMessage,
+  serverBaseUrl: string,
+  tunnelUrl: string | null
+): boolean {
+  if (isMatchingOrigin(request, serverBaseUrl)) {
+    return true;
+  }
+  let origin: URL;
+  try {
+    origin = new URL(`${request.headers.origin}`);
+  } catch {
+    return false;
+  }
+  const server = new URL(serverBaseUrl);
+  if (
+    LOOPBACK_HOSTNAMES.has(origin.hostname) &&
+    LOOPBACK_HOSTNAMES.has(server.hostname) &&
+    origin.port === server.port
+  ) {
+    return true;
+  }
+  return tunnelUrl != null && origin.host === new URL(tunnelUrl).host;
 }

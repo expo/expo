@@ -30,10 +30,20 @@ export const InputSchemaSchema = z
         message: `inputSchema is ${json.length} bytes; max is ${LIMITS.inputSchemaBytes}.`,
       });
     }
-    if (json.includes('"$ref"')) {
+    if (hasRefKey(schema)) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'inputSchema must not use "$ref".' });
     }
   });
+
+function hasRefKey(value: unknown): boolean {
+  if (Array.isArray(value)) {
+    return value.some(hasRefKey);
+  }
+  if (value != null && typeof value === 'object') {
+    return Object.entries(value).some(([key, child]) => key === '$ref' || hasRefKey(child));
+  }
+  return false;
+}
 
 export const ToolDescriptorSchema = z
   .object({

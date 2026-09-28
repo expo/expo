@@ -448,6 +448,7 @@ export async function instantiateMetroAsync(
         createModelContextWebsocketEndpoint({
           registry: devToolsPluginManager.modelContextRegistry,
           serverBaseUrl,
+          getTunnelUrl: () => metroBundler.getTunnelUrl(),
         })
       );
     }

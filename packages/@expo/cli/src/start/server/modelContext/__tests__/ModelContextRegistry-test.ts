@@ -124,11 +124,15 @@ describe(createModelContextWebsocketEndpoint, () => {
    * Drives the endpoint through `wss.emit('connection', …)` with an in-memory socket, so the
    * tests do not depend on ports or on how loaded the machine is.
    */
-  function createHarness() {
+  function createHarness({
+    serverBaseUrl = 'http://localhost:8081',
+    tunnelUrl = null,
+  }: { serverBaseUrl?: string; tunnelUrl?: string | null } = {}) {
     const registry = new ModelContextRegistry();
     const wss = createModelContextWebsocketEndpoint({
       registry,
-      serverBaseUrl: 'http://localhost:8081',
+      serverBaseUrl,
+      getTunnelUrl: () => tunnelUrl,
     })[MODEL_CONTEXT_ENDPOINT]!;
 
     function connectSocket({
@@ -189,6 +193,44 @@ describe(createModelContextWebsocketEndpoint, () => {
       result: { name: 'add-todo' },
     });
     expect(registry.listTools()).toHaveLength(1);
+  });
+
+  it('should accept a web app opened on another loopback name', () => {
+    const { registry, connectSocket } = createHarness({ serverBaseUrl: 'http://127.0.0.1:8081' });
+    for (const origin of ['http://localhost:8081', 'http://[::1]:8081']) {
+      const client = connectSocket({ origin });
+      expect(client.socket.close).not.toHaveBeenCalled();
+      expect(client.call('modelContext/registerTool', TODO_TOOL)).toMatchObject({
+        result: { name: 'add-todo' },
+      });
+    }
+    expect(registry.listTools()).toHaveLength(1);
+  });
+
+  it('should accept a web app opened on the tunnel host', () => {
+    const { registry, connectSocket } = createHarness({ tunnelUrl: 'https://abc.exp.direct' });
+    const client = connectSocket({ origin: 'https://abc.exp.direct' });
+    expect(client.call('modelContext/registerTool', TODO_TOOL)).toMatchObject({
+      result: { name: 'add-todo' },
+    });
+    expect(registry.listTools()).toHaveLength(1);
+  });
+
+  it('should close a loopback origin on another port', () => {
+    const { connectSocket } = createHarness({ serverBaseUrl: 'http://127.0.0.1:8081' });
+    const client = connectSocket({ origin: 'http://localhost:3000' });
+    expect(client.socket.close).toHaveBeenCalledWith(1008, expect.any(String));
+  });
+
+  it('should accept "$ref" as a value but not as a key', () => {
+    const { connectSocket } = createHarness();
+    const client = connectSocket();
+    expect(
+      client.call('modelContext/registerTool', {
+        ...TODO_TOOL,
+        inputSchema: { type: 'object', properties: { kind: { const: '$ref' } } },
+      })
+    ).toMatchObject({ result: { name: 'add-todo' } });
   });
 
   it('should remove the tools of a socket when it closes', () => {
