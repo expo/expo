@@ -190,7 +190,6 @@ class HomeViewModel: ObservableObject {
     }
   }
 
-
   func signOut(sessionId: String) {
     if sessionId == activeSessionId {
       signOut()

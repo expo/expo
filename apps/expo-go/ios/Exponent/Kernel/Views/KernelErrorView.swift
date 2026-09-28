@@ -77,11 +77,10 @@ final class KernelErrorView: UIView {
       onAccountAction: { [weak self] in
         guard let self, let mismatchUsername, !self.isResolvingAccountAction else { return }
         self.isResolvingAccountAction = true
-        Task { @MainActor in
-          let resolved = await ExpoGoHomeBridge.shared.resolveAccountMismatch(
-            forUsername: mismatchUsername,
-            from: self.presentingViewController
-          )
+        let presenter = self.presentingViewController
+        Task { @MainActor [weak self] in
+          let resolved = await ExpoGoHomeBridge.shared.resolveAccountMismatch(forUsername: mismatchUsername, from: presenter)
+          guard let self else { return }
           self.isResolvingAccountAction = false
           if resolved {
             self.delegate?.errorViewDidSelectRetry(self)
