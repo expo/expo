@@ -289,9 +289,9 @@ Right now, the bottom tab navigator doesn't match the style of our app. For exam
 
 Modify the **src/app/(tabs)/\_layout.tsx** file to add tab bar icons:
 
-1. Add a `NativeTabs.Trigger.Icon` component inside each `NativeTabs.Trigger`. The `sf` prop takes an [SF Symbols](https://developer.apple.com/sf-symbols/) name for iOS, and the `md` prop takes a [Material Symbols](https://fonts.google.com/icons) name for Android. SF Symbols are part of iOS, and the default template includes `expo-symbols`, which provides Material Symbols on Android. There is nothing to install.
+1. Add a `NativeTabs.Trigger.Icon` component inside each `NativeTabs.Trigger`. The `md` prop takes a [Material Symbols](https://fonts.google.com/icons) name for Android. The `sf` prop takes an [SF Symbols](https://developer.apple.com/sf-symbols/) name for iOS.
 2. Pass an object with `default` and `selected` keys to the `sf` prop. iOS displays the `selected` icon when the tab is active.
-3. Add the `tintColor` prop to the `NativeTabs` component and set its value to `#ffd33d`. This will change the color of the icon and label of the active tab.
+3. Add the `tintColor` prop to the `NativeTabs` component and set its value to `#ffd33d`. This changes the color of the icon and label of the active tab.
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/_layout.tsx
@@ -306,7 +306,7 @@ export default function TabLayout() {
     >
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        /* @tutinfo The `sf` prop sets the icon on iOS, and the `md` prop sets the icon on Android. */
+        /* @tutinfo The `md` prop sets the icon on Android, and the `sf` prop sets the icon on iOS. */
         <NativeTabs.Trigger.Icon
           sf={{ default: 'house', selected: 'house.fill' }}
           md="home"
@@ -327,7 +327,7 @@ export default function TabLayout() {
 }
 ```
 
-On web, the tabs display only their labels.
+The icons need no install step. On Android, the `expo-symbols` library from the default template provides Material Symbols. On iOS, SF Symbols are part of the system. On web, the tabs display only their labels.
 
 Let's also change the background color of the tab bar using the `backgroundColor` prop:
 
@@ -335,7 +335,7 @@ Let's also change the background color of the tab bar using the `backgroundColor
 <NativeTabs tintColor="#ffd33d" backgroundColor="#25292e">
 ```
 
-The `backgroundColor` prop applies `#25292e` to the tab bar on Android and web. On iOS 26 and later, the tab bar uses Liquid Glass, and `backgroundColor` has no effect. The tab bar follows the device's light or dark appearance instead.
+The `backgroundColor` prop applies `#25292e` to the tab bar on Android and web. On iOS 26 and later, `backgroundColor` has no effect. The tab bar uses Liquid Glass, which follows the device's light or dark appearance.
 
 Our app now has a custom bottom tabs navigator:
 
@@ -351,7 +351,7 @@ Our app now has a custom bottom tabs navigator:
 
 ## Update the ripple and indicator colors for Android
 
-On Android, the tab bar still uses two colors from the default Material 3 theme. Pressing a tab displays a ripple effect, and the active tab displays an indicator behind its icon. Neither color matches our app's color palette.
+On Android, the tab bar still uses two colors from the default Material 3 theme. Pressing a tab displays a ripple effect. The active tab displays an indicator behind its icon. Neither color matches our app's color palette.
 
 Add the `indicatorColor` and `rippleColor` props to the `NativeTabs` component in **src/app/(tabs)/\_layout.tsx**:
 
