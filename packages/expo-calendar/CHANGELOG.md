@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.4 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fix the sign of alarm `relativeOffset` in the `next` API so that negative values fire before the event start, matching iOS and the legacy API.
+
 ## 58.0.2 — 2026-09-16
 
 ### 🐛 Bug fixes

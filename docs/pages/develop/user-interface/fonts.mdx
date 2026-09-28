@@ -32,7 +32,20 @@ Expo SDK officially supports OTF and TTF font formats across Android, iOS and we
 
 ### Variable fonts
 
-Variable fonts, including variable font implementations in OTF and TTF, do not have support across all platforms. For full platform support, use static fonts. Alternatively, use a utility such as [fontTools](https://fonttools.readthedocs.io/en/latest/varLib/mutator.html) to extract the specific axis configuration you want to use from the variable font and save it as a separate font file.
+A variable font holds many faces in one file. Instead of shipping one file per weight, you ship one file and select a face with the `fontWeight` and `fontStyle` style props. Both the [config plugin](#with-expo-font-config-plugin) and the [`useFonts` hook](#with-usefonts-hook) accept variable fonts.
+
+> **info** Android and iOS support variable fonts in SDK 58 and later. On earlier versions, use static font files.
+
+Each platform decides which faces a file offers in a different way, so check the file before you rely on it:
+
+- **Android** reads the `wght` axis and draws each weight `fontWeight` can name from it, limited to the range the axis declares. This needs Android 10 or later. On earlier versions the font renders at its default weight, and Android creates the bold by thickening the letters.
+- **iOS** reads the _named instances_ the file declares. A named instance is a face the font designer gave a name and a fixed position on each axis, such as "Bold" or "Condensed Light". React Native selects the named instance whose weight is closest to the one you request. A weight that no named instance covers is out of reach. If the file declares no named instances, only its default face renders.
+
+For `fontStyle: 'italic'`, Android applies the font's `ital` axis on Android 15 and later. On earlier versions, Android creates the italic by slanting the upright letters. iOS uses the italic named instances in the file.
+
+On React Native 0.88 (Expo SDK 58) and later, you can also set any axis directly on a component with the [`fontVariationSettings`](https://reactnative.dev/docs/text-style-props) style prop, such as `fontVariationSettings: "'wght' 650, 'wdth' 90"`. It works on `<Text>` and `<TextInput>` on both platforms (Android 8 and newer), and the axes you set there take precedence over `fontWeight` and `fontStyle`.
+
+Inspect a file's axes and named instances with a utility such as [fontTools](https://fonttools.readthedocs.io/). If a face you need is out of reach on a platform, use fontTools to [extract that axis configuration](https://fonttools.readthedocs.io/en/latest/varLib/instancer.html) and save it as a separate static font file.
 
 ### How to choose between OTF and TTF
 
@@ -94,6 +107,8 @@ If you plan to refer to fonts using just the `fontFamily`, provide an array of f
 
 If you want to refer to fonts using a combination of `fontFamily`, `weight`, and `style`, provide an array of objects (see `Inter` below).
 
+For a [variable font](#variable-fonts) on Android, declare the file path in each `fontDefinitions` entry, or once next to `fontFamily` to avoid repeating it. Each definition needs a `weight` and `style` pair that no other definition in the same family uses, because Android resolves a family by that pair.
+
 ```json app.json
 {
   "expo": {
@@ -123,11 +138,28 @@ If you want to refer to fonts using a combination of `fontFamily`, `weight`, and
                     "weight": 700
                   }
                 ]
+              },
+              {
+                "fontFamily": "Roboto Flex",
+                /* @info One variable font file backs every definition below. */
+                "path": "./assets/fonts/RobotoFlex.ttf",
+                /* @end */
+                "fontDefinitions": [
+                  { "weight": 400 },
+                  { "weight": 700 },
+                  /* @info Refer to this font using fontFamily: 'Roboto Flex', fontWeight: '400', fontStyle: 'italic' */
+                  { "weight": 400, "style": "italic", "axes": { "slnt": -10 } }
+                  /* @end */
+                ]
               }
             ]
           },
           "ios": {
-            "fonts": ["./assets/fonts/Inter-Bold.ttf", "./assets/fonts/Inter-BoldItalic.ttf"]
+            "fonts": [
+              "./assets/fonts/Inter-Bold.ttf",
+              "./assets/fonts/Inter-BoldItalic.ttf",
+              "./assets/fonts/RobotoFlex.ttf"
+            ]
           }
         }
       ]
@@ -135,6 +167,12 @@ If you want to refer to fonts using a combination of `fontFamily`, `weight`, and
   }
 }
 ```
+
+`style` selects the face that `fontStyle` matches, but it does not slant the glyphs. To get an italic out of an upright file, set a slant axis in `axes`, such as `slnt` or `ital`.
+
+`axes` accepts any [variation axis](https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg) the font declares, such as `wdth` for a condensed face. Tags are four characters long and case sensitive. The registered axes (`ital`, `opsz`, `slnt`, `wdth`, `wght`) are lowercase, and a font's own axes are uppercase, such as `GRAD`. `weight` sets `wght` unless you override it in `axes`.
+
+On iOS, `path` and `axes` do not apply. List the variable font file in `ios.fonts` as you would a static font. The faces you can select are the [named instances](#variable-fonts) the file declares. To reach other positions on an axis, use the [`fontVariationSettings`](#variable-fonts) style prop on React Native 0.88 and later.
 
 </Step>
 
@@ -148,6 +186,7 @@ You can use the font with `<Text>` by specifying the `fontFamily` style prop. Th
 <Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
 <Text style={{ fontFamily: 'Inter', fontWeight: '700', fontStyle: 'italic' }}>Inter Bold Italic</Text>
 <Text style={{ fontFamily: 'FiraSans-MediumItalic' }}>Fira Sans Medium Italic</Text>
+<Text style={{ fontFamily: 'Roboto Flex', fontWeight: '400', fontStyle: 'italic' }}>Roboto Flex Italic</Text>
 ```
 
 </Step>
@@ -220,6 +259,7 @@ export default function RootLayout() {
   /* @info Map the font file using `useFonts` hook. */
   const [loaded, error] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+    'Roboto Flex': require('./assets/fonts/RobotoFlex.ttf'),
   });
   /* @end */
 
@@ -251,7 +291,52 @@ Use the font on the `<Text>` by using `fontFamily` style prop in a React compone
 <Text style={{ fontFamily: 'Inter-Black' }}>Inter Black</Text>
 ```
 
+If the file you mapped is a [variable font](#variable-fonts), select a face with the `fontWeight` and `fontStyle` style props:
+
+```tsx
+<Text style={{ fontFamily: 'Roboto Flex', fontWeight: '300' }}>Roboto Flex Light</Text>
+<Text style={{ fontFamily: 'Roboto Flex', fontWeight: '700' }}>Roboto Flex Bold</Text>
+```
+
+`useFonts` reads the weight axis only. To set another axis, such as `wdth` or `slnt`, embed the font with the [config plugin](#with-expo-font-config-plugin) on Android, or set the [`fontVariationSettings`](#variable-fonts) style prop on React Native 0.88 and later.
+
 </Step>
+
+#### Loading multiple weights and styles for one font family
+
+> **info** Loading several font files under one family name is available in SDK 58 and later.
+
+The map syntax above treats each key as a separate font family. To load several font files (for example regular, bold, and italic cuts) under one `fontFamily` name, pass `useFonts` an array of [`FontFamilyDefinition`](/versions/unversioned/sdk/font/#fontfamilydefinition)s instead of a map:
+
+```tsx src/app/_layout.tsx
+const [loaded, error] = useFonts([
+  {
+    fontFamily: 'Inter',
+    fontDefinitions: [
+      { path: require('./assets/fonts/Inter-Regular.otf'), weight: 400 },
+      { path: require('./assets/fonts/Inter-Italic.otf'), weight: 400, style: 'italic' },
+      { path: require('./assets/fonts/Inter-Bold.otf'), weight: 700 },
+    ],
+  },
+]);
+```
+
+Then select a face with the `fontWeight` and `fontStyle` style props:
+
+```tsx
+<Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
+<Text style={{ fontFamily: 'Inter', fontWeight: '400', fontStyle: 'italic' }}>Inter Italic</Text>
+```
+
+Declare every face of a family in one call. A `fontFamily` loads once, so a later `loadAsync` or `useFonts` call for a name that is already loaded adds no faces to it. This also applies across the two call styles: after `useFonts({ Inter: require('./assets/fonts/Inter-Regular.otf') })`, passing an array for `Inter` loads nothing more.
+
+Declare `weight` and `style` on every face of a multi-face family. Web needs both values, and explicit values keep the three platforms in agreement. A single variable font file is the exception: leave its `style` unset, and leave its `weight` unset or declare a weight range such as `'100 900'`. Android then instances the font's `wght` axis for every `fontWeight` instead of pinning it to one weight.
+
+Platform notes:
+
+- **Android** uses the declared `weight` and `style` values, and falls back to the values in the font file when not declared. A declared `weight` pins a variable font face to that one weight, and Android synthesizes the others. Below API 29 (Android 10), only the default face loads, chosen by the declared values (closest to weight 400, upright). Fonts embedded with the [config plugin](#with-expo-font-config-plugin) use Android's XML font resources and do not have this limit.
+- **iOS** matches faces by the weight and style metadata embedded in the font files. It uses the declared `weight` and `style` values only to pick the family's default face when a file carries no readable metadata.
+- **Web** generates one CSS `@font-face` rule per face, with the declared `weight` and `style` values. CSS cannot read the metadata inside a font file, so a face that declares no `style` renders as upright. Two faces of one family that leave the same values undeclared produce the same CSS rule, and the browser renders the last one.
 
 ## Use Google Fonts
 

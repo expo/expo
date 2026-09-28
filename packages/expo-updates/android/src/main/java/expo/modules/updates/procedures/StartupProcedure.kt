@@ -2,6 +2,7 @@ package expo.modules.updates.procedures
 
 import android.content.Context
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.UpdatesDatabase
@@ -164,18 +165,18 @@ class StartupProcedure(
               UpdatesStateValue.Idle -> {
                 procedureContext.processStateEvent(UpdatesStateEvent.Download())
                 procedureContext.processStateEvent(
-                  UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  UpdatesStateEvent.DownloadError(exception.localizedMessageWithCauseLocalizedMessage())
                 )
               }
               UpdatesStateValue.Checking -> {
                 procedureContext.processStateEvent(
-                  UpdatesStateEvent.CheckError(exception.message ?: "")
+                  UpdatesStateEvent.CheckError(exception.localizedMessageWithCauseLocalizedMessage())
                 )
               }
               else -> {
                 // .downloading
                 procedureContext.processStateEvent(
-                  UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  UpdatesStateEvent.DownloadError(exception.localizedMessageWithCauseLocalizedMessage())
                 )
               }
             }

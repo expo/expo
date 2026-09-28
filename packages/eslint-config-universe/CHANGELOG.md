@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 16.1.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
 ## 16.1.0 — 2026-09-10
 
 ### 💡 Others

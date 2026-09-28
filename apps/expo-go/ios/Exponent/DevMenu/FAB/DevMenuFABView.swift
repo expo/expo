@@ -24,6 +24,14 @@ enum FABConstants {
   )
 }
 
+struct FABPillHeightKey: PreferenceKey {
+  static let defaultValue: CGFloat = FABConstants.iconSize
+
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = nextValue()
+  }
+}
+
 struct FabPill: View {
   @Binding var isPressed: Bool
   @Binding var isDragging: Bool
@@ -70,6 +78,11 @@ struct FabPill: View {
         .accessibilityHint("Opens the source code editor")
       }
     }
+    .background(
+      GeometryReader { proxy in
+        Color.clear.preference(key: FABPillHeightKey.self, value: proxy.size.height)
+      }
+    )
   }
 
   @ViewBuilder
@@ -143,6 +156,18 @@ struct DevMenuFABView: View {
   let onFrameChange: (CGRect) -> Void
 
   private let fabSize = CGSize(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize + 50)
+
+  /// Top-aligned in the touch frame, so its height grows downwards with the edit button.
+  private var drawnFrame: CGRect {
+    let ring = FABPlacement.ringOverhang
+    let width = FABConstants.iconSize + ring * 2
+    return CGRect(
+      x: (fabSize.width - width) / 2,
+      y: -ring,
+      width: width,
+      height: pillHeight + ring * 2
+    )
+  }
   private let panelVerticalOffset: CGFloat = 10  // How much panel is shifted down from gear
   private let screenEdgeMargin: CGFloat = 12
 
@@ -171,6 +196,7 @@ struct DevMenuFABView: View {
   @State private var position: CGPoint = .zero
   @State private var isDragging = false
   @State private var isDraggingPanel = false
+  @State private var pillHeight: CGFloat = FABConstants.iconSize
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
   @State private var screenWidth: CGFloat = 0
@@ -297,6 +323,22 @@ struct DevMenuFABView: View {
             onOpenSourceExplorer: onOpenSourceExplorer
           )
             .frame(width: FABConstants.touchTargetSize, height: fabSize.height, alignment: .top)
+            .onPreferenceChange(FABPillHeightKey.self) { height in
+              pillHeight = height
+              guard isPositioned else { return }
+              let ranges = placementRanges(bounds: geometry.size, safeArea: safeArea)
+              let clamped = CGPoint(
+                x: position.x.clamped(to: ranges.x),
+                y: position.y.clamped(to: ranges.y)
+              )
+              guard clamped != position else { return }
+              var transaction = Transaction()
+              transaction.disablesAnimations = true
+              withTransaction(transaction) {
+                position = clamped
+              }
+              onFrameChange(hitTestFrame(edge: currentEdge))
+            }
             .position(
               x: buttonCenterX,
               y: position.y + fabSize.height / 2
@@ -342,16 +384,10 @@ struct DevMenuFABView: View {
         if showsPanel {
           initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
         } else if let storedPos = Self.loadStoredPosition() {
-          // Clamp stored position to valid bounds
-          let margin = FABConstants.margin
-          let minX = margin / 2
-          let maxX = geometry.size.width - fabSize.width - margin / 2
-          let minY = safeArea.top + FABConstants.verticalPadding
-          let maxY = geometry.size.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-
+          let ranges = placementRanges(bounds: geometry.size, safeArea: safeArea)
           initialPos = CGPoint(
-            x: storedPos.x.clamped(to: minX...maxX),
-            y: storedPos.y.clamped(to: minY...maxY)
+            x: storedPos.x.clamped(to: ranges.x),
+            y: storedPos.y.clamped(to: ranges.y)
           )
         } else {
           initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
@@ -525,11 +561,27 @@ struct DevMenuFABView: View {
       }
   }
 
-  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
-    return CGPoint(
-      x: bounds.width - fabSize.width - FABConstants.margin / 2,
-      y: safeArea.top + FABConstants.verticalPadding
+  private func placementRanges(
+    bounds: CGSize,
+    safeArea: EdgeInsets
+  ) -> (x: ClosedRange<CGFloat>, y: ClosedRange<CGFloat>) {
+    let ranges = FABPlacement.ranges(
+      bounds: bounds,
+      safeArea: FABInsets(
+        top: safeArea.top,
+        leading: safeArea.leading,
+        bottom: safeArea.bottom,
+        trailing: safeArea.trailing
+      ),
+      drawnFrame: drawnFrame,
+      inset: FABConstants.margin
     )
+    return (ranges.x, ranges.y)
+  }
+
+  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
+    let ranges = placementRanges(bounds: bounds, safeArea: safeArea)
+    return CGPoint(x: ranges.x.upperBound, y: ranges.y.lowerBound)
   }
 
   private func snapToEdge(
@@ -538,25 +590,18 @@ struct DevMenuFABView: View {
     bounds: CGSize,
     safeArea: EdgeInsets
   ) -> CGPoint {
-    let margin = FABConstants.margin
-    let edgeMargin = margin / 2  // Closer to screen edge when snapped
     let momentumX = velocity.x * FABConstants.momentumFactor
     let momentumY = velocity.y * FABConstants.momentumFactor
+    let ranges = placementRanges(bounds: bounds, safeArea: safeArea)
 
     let estimatedCenterX = point.x + self.fabSize.width / 2 + momentumX
-    let targetX: CGFloat = estimatedCenterX < bounds.width / 2
-      ? edgeMargin
-    : bounds.width - self.fabSize.width - edgeMargin
+    let targetX = estimatedCenterX < bounds.width / 2 ? ranges.x.lowerBound : ranges.x.upperBound
 
-    let minY = safeArea.top + FABConstants.verticalPadding
-    let maxY: CGFloat
-    if showsPanel {
-      // Panel bottom should sit just above the safe area
-      maxY = bounds.height - safeArea.bottom - panelHeight - panelVerticalOffset
-    } else {
-      maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-    }
-    let targetY = (point.y + momentumY).clamped(to: minY...maxY)
+    // The panel hangs below the gear, so it sets the lower limit when shown.
+    let maxY = showsPanel
+      ? bounds.height - max(safeArea.bottom, FABConstants.margin) - panelHeight - panelVerticalOffset
+      : ranges.y.upperBound
+    let targetY = (point.y + momentumY).clamped(to: min(ranges.y.lowerBound, maxY)...maxY)
 
     return CGPoint(x: targetX, y: targetY)
   }

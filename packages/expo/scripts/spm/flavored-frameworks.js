@@ -57,6 +57,12 @@ function artifactBaseDirs(packageName, moduleRoot) {
   return Array.from(new Set(bases));
 }
 
+/**
+ * A flavor tarball holds one xcframework root per product the prebuild packed:
+ * the module itself plus any SwiftPM dependency bundled with it (for example
+ * Lottie.xcframework inside lottie-react-native). Anything else is either an
+ * unrelated archive or an extraction escape.
+ */
 function validateTarEntries(tarballPath, frameworkName) {
   const expectedRoot = `${frameworkName}.xcframework`;
   const listing = execFileSync('tar', ['-tzf', tarballPath], {
@@ -70,13 +76,33 @@ function validateTarEntries(tarballPath, frameworkName) {
   if (entries.length === 0) {
     throw new Error(`[expo-spm-plugin] ${tarballPath} is empty`);
   }
+  const roots = new Set();
   for (const entry of entries) {
     const parts = entry.split('/');
-    if (path.isAbsolute(entry) || parts.includes('..') || parts[0] !== expectedRoot) {
+    if (path.isAbsolute(entry) || parts.includes('..')) {
       throw new Error(
-        `[expo-spm-plugin] ${tarballPath} must contain only ${expectedRoot}, found '${entry}'`
+        `[expo-spm-plugin] ${tarballPath} holds the unsafe path '${entry}'. Extracting it would ` +
+          'write outside the plugin cache, so the archive is not a precompiled Expo artifact. ' +
+          'Delete it and rebuild or re-download the precompiled module.'
       );
     }
+    if (!/.+\.xcframework$/.test(parts[0])) {
+      throw new Error(
+        `[expo-spm-plugin] in ${tarballPath}, '${entry}' is not part of an .xcframework. ` +
+          'A flavor tarball holds only XCFramework directories, so this archive was packed by ' +
+          'something other than the Expo prebuild pipeline. Delete it and rebuild or ' +
+          're-download the precompiled module.'
+      );
+    }
+    roots.add(parts[0]);
+  }
+  if (!roots.has(expectedRoot)) {
+    throw new Error(
+      `[expo-spm-plugin] ${tarballPath} does not contain ${expectedRoot}; it holds ` +
+        `${Array.from(roots).sort().join(', ')}. The tarball belongs to a different product or ` +
+        'the prebuild for this one did not finish. Rebuild the module with the Expo prebuild ' +
+        'pipeline, or re-download its precompiled artifacts.'
+    );
   }
 }
 

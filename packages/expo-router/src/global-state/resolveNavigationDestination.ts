@@ -20,6 +20,7 @@ import type { RouterRegistry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
   payload: {
+    __internal__PreviewKey?: string;
     name?: string;
     params?: object;
     path?: string;
@@ -169,6 +170,7 @@ function createResolvedAction({
     withAnchor,
     internalParams,
     parentChain,
+    previewKey: action.payload.__internal__PreviewKey,
   });
 
   return {
@@ -188,6 +190,7 @@ function resolveState({
   withAnchor,
   internalParams,
   parentChain,
+  previewKey,
 }: {
   targetState: PartialState<NavigationState>;
   navigationState: NavigationState | PartialState<NavigationState> | undefined;
@@ -196,6 +199,7 @@ function resolveState({
   withAnchor: boolean;
   internalParams: InternalExpoRouterParams;
   parentChain: string;
+  previewKey?: string;
 }): NavigationState {
   if (navigationState?.stale !== false || !registry.has(navigationState.key)) {
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
@@ -211,7 +215,10 @@ function resolveState({
     navigationState,
     routeNode,
     registry,
-    action: { type: 'NAVIGATE', payload: {} },
+    action: {
+      type: 'NAVIGATE',
+      payload: { __internal__PreviewKey: previewKey },
+    },
     withAnchor,
     internalParams,
   });

@@ -22,6 +22,7 @@ type Handler = {
   nextSlice: NavigationState;
   shouldFocus: boolean;
   browserHistory?: RouterBrowserHistoryAction;
+  affectedRouteKey: string | undefined;
 };
 
 export type NavigationTreeReduction =
@@ -30,6 +31,7 @@ export type NavigationTreeReduction =
       handled: true;
       nextState: NavigationState;
       browserHistory?: RouterBrowserHistoryAction;
+      affectedRouteKey: string | undefined;
     };
 
 export function indexNavigationTree(root: NavigationState): NavigationTreeIndex {
@@ -112,6 +114,7 @@ function findActionHandler(
       nextSlice,
       browserHistory: result?.browserHistory,
       shouldFocus: entry.shouldActionChangeFocus?.(action) ?? false,
+      affectedRouteKey: result?.affectedRouteKey,
     };
     return true;
   };
@@ -180,6 +183,7 @@ export function reduceNavigationTree(
   return {
     handled: true,
     ...rebuildTreeWithSlice(handler, registry),
+    affectedRouteKey: handler.affectedRouteKey,
   };
 }
 

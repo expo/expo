@@ -82,11 +82,17 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
+      - name: Setup ccache
+        uses: ./.github/actions/setup-ccache
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          ccache: 'true'
+          ccache-variant: 'macos-app'
           bare-expo-macos-pods: 'true'
+      - name: Reset ccache stats
+        run: ccache -z
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
         env:
@@ -102,8 +108,10 @@ jobs:
       - name: 🖥️ Run bare-expo macos setup script
         run: ./scripts/setup-macos-project.sh
         working-directory: apps/bare-expo/
+      # Always run pod install (the restored Pods cache only speeds it up) — it generates
+      # files outside the Pods dir that the cache doesn't carry, e.g. ReactCodegen sources
+      # in `macos/build/generated`.
       - name: 🥥 Install pods in apps/bare-expo/macos
-        if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
         run: pod install
         working-directory: apps/bare-expo/macos
       - name: 🏗️ Build macOS project
@@ -115,6 +123,9 @@ jobs:
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
+      - name: Show ccache stats
+        if: always()
+        run: ccache -s -v
       - name: 📄 Upload xcodebuild log
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

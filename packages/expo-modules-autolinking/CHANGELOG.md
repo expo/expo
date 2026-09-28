@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+- [iOS] Load the Swift macros plugin from `expo-modules-macros` and its renamed `ExpoModulesMacros` binary. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.5 — 2026-09-28
+
+### 🎉 New features
+
+- [iOS] Publish each product's `autolinkWhen` condition, `sourceOnly` flag, iOS deployment target and SwiftPM package dependencies in the `prebuilt-metadata` document. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
+
+### 🐛 Bug fixes
+
+- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone. ([#50455](https://github.com/expo/expo/pull/50455) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.4 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- Skip React Native libraries whose podspec does not declare the target platform when resolving `react-native-config` for `macos` and `tvos`. Codegen and Metro consume that config too, so libraries the Podfile was already filtering out no longer end up in the generated third-party components provider, where their missing classes crashed the app on first render. ([#50571](https://github.com/expo/expo/pull/50571) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.3 — 2026-09-21
+
+### 💡 Others
+
 - [Android] Enforce `ndkVersion` for Android library projects. ([#50240](https://github.com/expo/expo/pull/50240) by [@kudo](https://github.com/kudo))
 
 ## 58.0.2 — 2026-09-15

@@ -4,13 +4,38 @@
 
 ### 🛠 Breaking changes
 
-### 🎉 New features
+- [iOS] Load app config and `.env` files in the build's mode: development for configurations containing `Debug`, production otherwise. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
 
-- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
+### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [iOS] Generate the embedded `app.config` in apps built with SwiftPM instead of CocoaPods, fixing the "Unable to find the embedded app config" warning there. The generator no longer requires the Pods project, can be pointed at another destination, and creates `EXConstants.bundle` itself rather than relying on CocoaPods' `resource_bundles`. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. ([#49905](https://github.com/expo/expo/pull/49905) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.3 — 2026-09-16
 

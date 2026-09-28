@@ -6,11 +6,15 @@ const os = require('os');
 const path = require('path');
 
 const {
+  FLAVORS,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   stableFrameworkId,
   validateFlavoredFramework,
 } = require('../flavored-frameworks');
+
+// GNU tar reads the `C:` in a Windows path as a remote hostname and fails to connect.
+const itNotWindows = process.platform === 'win32' ? it.skip : it;
 
 function makeXcframework(root, frameworkName, flavor, contents = flavor) {
   const xcframework = path.join(root, flavor, `${frameworkName}.xcframework`);
@@ -31,6 +35,13 @@ function makeXcframework(root, frameworkName, flavor, contents = flavor) {
     contents
   );
   return xcframework;
+}
+
+function packTarball(sourceDir, tarballPath, entries, { preservePaths = false } = {}) {
+  fs.mkdirSync(path.dirname(tarballPath), { recursive: true });
+  const flags = preservePaths ? ['-czPf'] : ['-czf'];
+  execFileSync('tar', [...flags, tarballPath, '-C', sourceDir, ...entries]);
+  return tarballPath;
 }
 
 function declaration(frameworkName, debug, release, overrides = {}) {
@@ -131,21 +142,16 @@ describe('artifact preparation', () => {
     ).toThrow('missing release');
   });
 
-  it('expands both bundled tarballs before returning absolute flavor paths', () => {
+  itNotWindows('expands both bundled tarballs before returning absolute flavor paths', () => {
     const output = path.join(root, 'test-package', 'output');
     for (const flavor of ['debug', 'release']) {
       const source = path.join(root, `source-${flavor}`);
       makeXcframework(source, 'ExpoPair', flavor);
-      const sourceDir = path.join(source, flavor);
-      const tarballDir = path.join(output, flavor, 'xcframeworks');
-      fs.mkdirSync(tarballDir, { recursive: true });
-      execFileSync('tar', [
-        '-czf',
-        path.join(tarballDir, 'ExpoPair.tar.gz'),
-        '-C',
-        sourceDir,
-        'ExpoPair.xcframework',
-      ]);
+      packTarball(
+        path.join(source, flavor),
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        ['ExpoPair.xcframework']
+      );
     }
 
     const result = resolveFlavoredFramework({
@@ -165,6 +171,150 @@ describe('artifact preparation', () => {
     });
     expect(fs.existsSync(path.join(result.flavors.debug, 'Info.plist'))).toBe(true);
     expect(fs.existsSync(path.join(result.flavors.release, 'Info.plist'))).toBe(true);
+  });
+
+  it('accepts a tarball that also bundles a SwiftPM dependency xcframework', () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      const source = path.join(root, `source-${flavor}`);
+      makeXcframework(source, 'ExpoPair', flavor);
+      makeXcframework(source, 'Lottie', flavor);
+      packTarball(
+        path.join(source, flavor),
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        ['ExpoPair.xcframework', 'Lottie.xcframework']
+      );
+    }
+
+    const result = resolveFlavoredFramework({
+      packageName: 'test-package',
+      moduleRoot: path.join(root, 'module'),
+      frameworkName: 'ExpoPair',
+      cacheDir: path.join(root, 'cache'),
+    });
+    expect(result.flavors).toEqual({
+      debug: path.join(root, 'cache', 'expo-pair', 'debug', 'ExpoPair.xcframework'),
+      release: path.join(root, 'cache', 'expo-pair', 'release', 'ExpoPair.xcframework'),
+    });
+    expect(fs.existsSync(path.join(result.flavors.debug, 'Info.plist'))).toBe(true);
+    expect(
+      fs.existsSync(path.join(root, 'cache', 'expo-pair', 'debug', 'Lottie.xcframework'))
+    ).toBe(true);
+  });
+
+  it('rejects a tarball holding an entry outside an xcframework root', () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      const source = path.join(root, `source-${flavor}`);
+      makeXcframework(source, 'ExpoPair', flavor);
+      fs.writeFileSync(path.join(source, flavor, 'README.md'), 'stray');
+      packTarball(
+        path.join(source, flavor),
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        ['ExpoPair.xcframework', 'README.md']
+      );
+    }
+
+    expect(() =>
+      resolveFlavoredFramework({
+        packageName: 'test-package',
+        moduleRoot: path.join(root, 'module'),
+        frameworkName: 'ExpoPair',
+        cacheDir: path.join(root, 'cache'),
+      })
+    ).toThrow("'README.md' is not part of an .xcframework");
+  });
+
+  it('rejects a tarball that never contains the requested framework', () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      const source = path.join(root, `source-${flavor}`);
+      makeXcframework(source, 'Lottie', flavor);
+      packTarball(
+        path.join(source, flavor),
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        ['Lottie.xcframework']
+      );
+    }
+
+    expect(() =>
+      resolveFlavoredFramework({
+        packageName: 'test-package',
+        moduleRoot: path.join(root, 'module'),
+        frameworkName: 'ExpoPair',
+        cacheDir: path.join(root, 'cache'),
+      })
+    ).toThrow('does not contain ExpoPair.xcframework');
+  });
+
+  it('rejects a tarball whose member escapes through an absolute path', () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      const source = path.join(root, `source-${flavor}`);
+      const xcframework = makeXcframework(source, 'ExpoPair', flavor);
+      packTarball(
+        path.join(source, flavor),
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        [xcframework],
+        { preservePaths: true }
+      );
+    }
+
+    expect(() =>
+      resolveFlavoredFramework({
+        packageName: 'test-package',
+        moduleRoot: path.join(root, 'module'),
+        frameworkName: 'ExpoPair',
+        cacheDir: path.join(root, 'cache'),
+      })
+    ).toThrow(/holds the unsafe path '\/.*ExpoPair\.xcframework/);
+  });
+
+  it("rejects a tarball whose member escapes through '..'", () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      const source = path.join(root, `source-${flavor}`);
+      const xcframework = makeXcframework(source, 'ExpoPair', flavor);
+      packTarball(
+        xcframework,
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        ['../ExpoPair.xcframework'],
+        { preservePaths: true }
+      );
+    }
+
+    expect(() =>
+      resolveFlavoredFramework({
+        packageName: 'test-package',
+        moduleRoot: path.join(root, 'module'),
+        frameworkName: 'ExpoPair',
+        cacheDir: path.join(root, 'cache'),
+      })
+    ).toThrow("holds the unsafe path '../ExpoPair.xcframework");
+  });
+
+  it('rejects a root named only .xcframework', () => {
+    const output = path.join(root, 'test-package', 'output');
+    for (const flavor of FLAVORS) {
+      const source = path.join(root, `source-${flavor}`);
+      makeXcframework(source, 'ExpoPair', flavor);
+      fs.mkdirSync(path.join(source, flavor, '.xcframework'), { recursive: true });
+      fs.writeFileSync(path.join(source, flavor, '.xcframework', 'Info.plist'), '<plist/>');
+      packTarball(
+        path.join(source, flavor),
+        path.join(output, flavor, 'xcframeworks', 'ExpoPair.tar.gz'),
+        ['ExpoPair.xcframework', '.xcframework']
+      );
+    }
+
+    expect(() =>
+      resolveFlavoredFramework({
+        packageName: 'test-package',
+        moduleRoot: path.join(root, 'module'),
+        frameworkName: 'ExpoPair',
+        cacheDir: path.join(root, 'cache'),
+      })
+    ).toThrow('is not part of an .xcframework');
   });
 
   it('produces byte-identical compile interfaces regardless of declaration order', () => {

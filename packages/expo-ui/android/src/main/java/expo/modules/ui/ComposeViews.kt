@@ -65,7 +65,13 @@ internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
     verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
     modifier = ModifierRegistry
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
-      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+      .then(
+        if (scrollBehavior != null) {
+          Modifier.nestedScroll(scrollBehavior)
+        } else {
+          Modifier
+        }
+      )
   ) {
     Children(UIComposableScope(rowScope = this@Row, nestedScrollConnection = scrollBehavior))
   }
@@ -95,7 +101,13 @@ internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
     horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
     modifier = ModifierRegistry
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
-      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+      .then(
+        if (scrollBehavior != null) {
+          Modifier.nestedScroll(scrollBehavior)
+        } else {
+          Modifier
+        }
+      )
   ) {
     Children(UIComposableScope(columnScope = this@Column, nestedScrollConnection = scrollBehavior))
   }
@@ -112,7 +124,13 @@ fun FunctionalComposableScope.BoxContent(props: LayoutProps) {
     contentAlignment = props.contentAlignment?.toComposeAlignment() ?: Alignment.TopStart,
     modifier = ModifierRegistry
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
-      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+      .then(
+        if (scrollBehavior != null) {
+          Modifier.nestedScroll(scrollBehavior)
+        } else {
+          Modifier
+        }
+      )
   ) {
     Children(UIComposableScope(boxScope = this@Box, nestedScrollConnection = scrollBehavior))
   }

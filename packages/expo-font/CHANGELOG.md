@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Import `UIKit` in the `UIFont` extension, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 58.0.3 — 2026-09-28
+
+### 🐛 Bug fixes
+
+- [iOS] Keep the previously registered font when a font loaded from a new path has the same PostScript name, instead of unregistering it and crashing on render. ([#50561](https://github.com/expo/expo/pull/50561) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 58.0.2 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Import `UIKit` in the `UIFont` extension, which relied on another file in the module importing it. ([#50277](https://github.com/expo/expo/pull/50277) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.1 — 2026-09-15
 

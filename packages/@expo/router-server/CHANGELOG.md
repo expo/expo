@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 58.0.3 — 2026-09-21
+
+### 💡 Others
+
 - [Internal] Use a relative import in `node/render.js` instead of a self-reference. ([#50238](https://github.com/expo/expo/pull/50238) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.2 — 2026-09-15

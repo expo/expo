@@ -1,9 +1,9 @@
 'use client';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 import type { NavigatorDescriptor } from 'standard-navigation';
 
+import { StackV5 as ScreensStackV5 } from '../../optional-libraries/react-native-screens';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
   ExperimentalStackNavigationOptions,

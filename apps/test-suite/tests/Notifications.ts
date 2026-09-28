@@ -25,6 +25,10 @@ import { waitFor } from './helpers';
 
 export const name = 'Notifications';
 
+const notificationTesterSlug = 'notification-tester';
+
+const notificationPresentationDelay = 2000;
+
 const behaviorEnableAll: NotificationBehavior = {
   shouldShowList: true,
   shouldShowBanner: true,
@@ -43,6 +47,14 @@ export async function test(t: JasmineInterface) {
     : t.xdescribe;
 
   t.describe('Notifications', () => {
+    t.it('runs in the notification-tester app', () => {
+      t.expect(Constants.expoConfig?.slug)
+        .withContext(
+          'These tests only pass in the notification-tester app, because it is the app that carries their notification configuration. Run them from the "run" screen of apps/notification-tester instead of this app.'
+        )
+        .toBe(notificationTesterSlug);
+    });
+
     // Keep this block first. Its first spec covers the behavior that applies until something
     // calls `setNotificationHandler`, and nothing puts the module back into that state.
     describeForegroundBehavior('foreground notification behavior', () => {
@@ -70,7 +82,10 @@ export async function test(t: JasmineInterface) {
           const identifier = 'test-default-foreground-behavior';
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: { title: 'Default behavior', body: 'Shown without a notification handler' },
+            content: {
+              title: 'Default behavior',
+              body: 'Shown without a notification handler',
+            },
             trigger: null,
           });
 
@@ -98,7 +113,10 @@ export async function test(t: JasmineInterface) {
           t.expect(await presentedIdentifiers()).not.toContain(identifier);
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: { title: 'Slow handler', body: 'Shown after the handler times out' },
+            content: {
+              title: 'Slow handler',
+              body: 'Shown after the handler times out',
+            },
             trigger: null,
           });
           // The handler answers after 4 seconds, so the 3 second timeout of the native
@@ -119,7 +137,10 @@ export async function test(t: JasmineInterface) {
           const identifier = 'test-removed-handler';
           await Notifications.scheduleNotificationAsync({
             identifier,
-            content: { title: 'No handler', body: 'Not shown by expo-notifications' },
+            content: {
+              title: 'No handler',
+              body: 'Not shown by expo-notifications',
+            },
             trigger: null,
           });
 
@@ -134,7 +155,9 @@ export async function test(t: JasmineInterface) {
       t.it('resolves with a token equal to the one from addPushTokenListener()', async () => {
         // Held in an object so the assignment from the listener is visible to
         // the assertion below; a plain `let` stays narrowed to `null`.
-        const received: { token: Notifications.DevicePushToken | null } = { token: null };
+        const received: { token: Notifications.DevicePushToken | null } = {
+          token: null,
+        };
         const subscription = Notifications.addPushTokenListener((newEvent) => {
           received.token = newEvent;
         });
@@ -385,7 +408,10 @@ export async function test(t: JasmineInterface) {
 
           t.it('creates a channel', async () => {
             const preChannels = await Notifications.getNotificationChannelsAsync();
-            const channelSpec = t.jasmine.objectContaining({ ...testChannel, id: testChannelId });
+            const channelSpec = t.jasmine.objectContaining({
+              ...testChannel,
+              id: testChannelId,
+            });
             t.expect(preChannels).not.toContain(channelSpec);
             await Notifications.setNotificationChannelAsync(testChannelId, testChannel);
             const postChannels = await Notifications.getNotificationChannelsAsync();
@@ -433,7 +459,9 @@ export async function test(t: JasmineInterface) {
           t.it('assigns a channel to a group', async () => {
             const groupId = 'test-group-id';
             try {
-              await Notifications.setNotificationChannelGroupAsync(groupId, { name: 'Test group' });
+              await Notifications.setNotificationChannelGroupAsync(groupId, {
+                name: 'Test group',
+              });
               const channel = await Notifications.setNotificationChannelAsync(testChannelId, {
                 ...testChannel,
                 groupId,
@@ -482,7 +510,10 @@ export async function test(t: JasmineInterface) {
         if (Platform.OS === 'android' && (Device.platformApiLevel ?? 0) >= 26) {
           t.it('deletes a channel', async () => {
             const preChannels = await Notifications.getNotificationChannelsAsync();
-            const channelSpec = t.jasmine.objectContaining({ ...testChannel, id: testChannelId });
+            const channelSpec = t.jasmine.objectContaining({
+              ...testChannel,
+              id: testChannelId,
+            });
             t.expect(preChannels).not.toContain(channelSpec);
             await Notifications.setNotificationChannelAsync(testChannelId, testChannel);
             const postChannels = await Notifications.getNotificationChannelsAsync();
@@ -559,7 +590,10 @@ export async function test(t: JasmineInterface) {
               testChannelGroup
             );
             t.expect(group).toEqual(
-              t.jasmine.objectContaining({ ...testChannelGroup, id: testChannelGroupId })
+              t.jasmine.objectContaining({
+                ...testChannelGroup,
+                id: testChannelGroupId,
+              })
             );
           });
 
@@ -597,7 +631,10 @@ export async function test(t: JasmineInterface) {
               delete groupSpec.description;
             }
             t.expect(channelGroup).toEqual(
-              t.jasmine.objectContaining({ ...groupSpec, id: testChannelGroupId })
+              t.jasmine.objectContaining({
+                ...groupSpec,
+                id: testChannelGroupId,
+              })
             );
           });
 
@@ -1083,7 +1120,10 @@ export async function test(t: JasmineInterface) {
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notificationContent,
-              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+              trigger: {
+                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: 5,
+              },
             });
 
             await waitFor(6000);
@@ -1147,8 +1187,12 @@ export async function test(t: JasmineInterface) {
               await Notifications.scheduleNotificationAsync({
                 identifier,
                 content: notificationContent,
-                // @ts-expect-error
-                trigger: { type: SchedulableTriggerInputTypes.YEARLY, hour: 2, seconds: 5 },
+                trigger: {
+                  type: SchedulableTriggerInputTypes.YEARLY,
+                  hour: 2,
+                  // @ts-expect-error - deliberately wrong param
+                  seconds: 5,
+                },
               });
             } catch (err) {
               error = err;
@@ -1171,7 +1215,10 @@ export async function test(t: JasmineInterface) {
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notificationContent,
-              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+              trigger: {
+                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: 5,
+              },
             });
             await waitFor(6000);
             t.expect(notificationFromEvent).toBeDefined();
@@ -1196,7 +1243,10 @@ export async function test(t: JasmineInterface) {
                 ...notificationContent,
                 sound: 'no-such-file.wav',
               },
-              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+              trigger: {
+                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: 5,
+              },
             });
             await waitFor(6000);
             t.expect(notificationFromEvent).toBeDefined();
@@ -1368,6 +1418,7 @@ export async function test(t: JasmineInterface) {
               if (Platform.OS === 'android') {
                 t.expect(result[0].trigger).toEqual({
                   channelId: null,
+                  delivery: 'bestEffort',
                   ...trigger,
                 } as Notifications.NotificationTrigger);
               } else if (Platform.OS === 'ios') {
@@ -1415,6 +1466,7 @@ export async function test(t: JasmineInterface) {
               if (Platform.OS === 'android') {
                 t.expect(result[0].trigger).toEqual({
                   channelId: null,
+                  delivery: 'bestEffort',
                   ...trigger,
                 } as Notifications.NotificationTrigger);
               } else if (Platform.OS === 'ios') {
@@ -1461,6 +1513,7 @@ export async function test(t: JasmineInterface) {
               if (Platform.OS === 'android') {
                 t.expect(result[0].trigger).toEqual({
                   channelId: null,
+                  delivery: 'bestEffort',
                   ...trigger,
                 } as Notifications.NotificationTrigger);
               } else if (Platform.OS === 'ios') {
@@ -1617,7 +1670,9 @@ export async function test(t: JasmineInterface) {
           let exception = null;
           try {
             // @ts-expect-error invalid arg
-            await Notifications.getNextTriggerDateAsync({ channelId: 'test-channel-id' });
+            await Notifications.getNextTriggerDateAsync({
+              channelId: 'test-channel-id',
+            });
           } catch (e) {
             exception = e;
           }
@@ -1638,7 +1693,10 @@ export async function test(t: JasmineInterface) {
             await Notifications.scheduleNotificationAsync({
               identifier,
               content: notification,
-              trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+              trigger: {
+                type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                seconds: 5,
+              },
             });
             await Notifications.cancelScheduledNotificationAsync(identifier);
             await waitFor(6000);
@@ -1662,7 +1720,10 @@ export async function test(t: JasmineInterface) {
               await Notifications.scheduleNotificationAsync({
                 identifier: `notification-${i}`,
                 content: notification,
-                trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 5 },
+                trigger: {
+                  type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                  seconds: 5,
+                },
               });
             }
             await Notifications.cancelAllScheduledNotificationsAsync();
@@ -1736,7 +1797,10 @@ export async function test(t: JasmineInterface) {
                     title: 'Hello from the application!',
                     body: 'You can now return to the app and let the test know the notification has been shown.',
                   },
-                  trigger: { type: SchedulableTriggerInputTypes.TIME_INTERVAL, seconds: 1 },
+                  trigger: {
+                    type: SchedulableTriggerInputTypes.TIME_INTERVAL,
+                    seconds: 1,
+                  },
                 });
                 notificationSent = true;
               } else if (state === 'active' && notificationSent) {
@@ -1801,7 +1865,7 @@ export async function test(t: JasmineInterface) {
           const secondsToTimeout = 5;
           const shouldRun = await Promise.race([
             askUserYesOrNo('Could you tap on the next notification when it shows?'),
-            waitFor(secondsToTimeout * 1000),
+            waitFor(notificationPresentationDelay + secondsToTimeout * 1000),
           ]);
           if (!shouldRun) {
             console.warn(
@@ -2083,7 +2147,8 @@ async function sendTestPushNotification(
   }
 }
 
-function askUserYesOrNo(title: string, message = '') {
+async function askUserYesOrNo(title: string, message = '') {
+  await waitFor(notificationPresentationDelay);
   return new Promise((resolve, reject) => {
     try {
       Alert.alert(

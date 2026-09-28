@@ -593,6 +593,8 @@ Expo CLI provides authentication methods to use with the `npx expo start` comman
 
 These credentials are shared across Expo CLI and EAS CLI.
 
+Expo Go on a physical iOS device also checks this account. It opens a project from your development server only when Expo CLI and Expo Go are signed in to the same account. See [Expo Go sign-in required](/troubleshooting/expo-go-sign-in-required/) when the accounts do not match.
+
 ## Customizing
 
 Sometimes you may want to customize a project file that would otherwise be generated in memory by Expo CLI. When utilizing tools other than Expo CLI, you'll need to have the default config files present, otherwise your app may not work as expected. You can generate files by running:

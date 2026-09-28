@@ -31,6 +31,8 @@ Audit logs can track user invitations and permission changes within your organiz
 
 In this scenario, audit logs would record which employee account invited the attacker and modified permissions. Since audit logs are immutable, the attacker would not be able to delete this recorded history. Other organization members will be able to review the audit logs to determine which account was compromised, take action to revoke the attacker's permissions and secure the employee's account.
 
+Audit logs record permission changes by permission name, not by role. For example, `PUBLISH_PROTECTED` is included in the Release Manager, Admin, and Owner [roles](/accounts/account-types/#manage-access). It allows managing protected channels, which are in private beta, and publishing updates to the branches they point to.
+
 ### Access history
 
 An Expo organization account can include many projects where development access is controlled by distribution certificates assigned to individual teams. When devices are granted to join these teams, it is important to track when access is granted and removed for historical record keeping. While a device may not currently be included in an Apple team, it may be useful to see who previously had access to the team in the event of an internal security incident.

@@ -104,6 +104,12 @@ export function useNavigationTreeReportEvents(
           case 'browser-history':
             browserHistory.apply(event);
             break;
+          case 'route-preloaded':
+            unstable_navigationEvents.emit('routePreloaded', {
+              routeKey: event.routeKey,
+              state: event.state,
+            });
+            break;
         }
       } catch (error) {
         const message =
