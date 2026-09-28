@@ -28,7 +28,13 @@ object ExponentUrls {
     }
     val uri = Uri.parse(rawUrl)
     val useHttps = isHttpsHost(uri.host) || rawUrl.startsWith("exps")
-    return uri.buildUpon().scheme(if (useHttps) "https" else "http").build().toString()
+    return uri.buildUpon().scheme(
+      if (useHttps) {
+        "https"
+      } else {
+        "http"
+      }
+    ).build().toString()
   }
 
   /**

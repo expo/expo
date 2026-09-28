@@ -14,7 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
@@ -45,9 +48,6 @@ sealed interface Destination {
 
   @Serializable
   object Snacks : Destination
-
-  @Serializable
-  object Account : Destination
 
   @Serializable
   class Branches(val appId: String) : Destination
@@ -113,13 +113,14 @@ fun AppNavHost(
   viewModel: HomeAppViewModel
 ) {
   val selectedAccount by viewModel.selectedAccount.collectAsStateWithLifecycle()
+  var showsAccountSheet by rememberSaveable { mutableStateOf(false) }
 
   @Composable
   fun NavAccountHeaderAction() {
     AccountHeaderAction(
       account = selectedAccount,
       onLoginClick = { viewModel.login() },
-      onAccountClick = { navController.navigate(Destination.Account) }
+      onAccountClick = { showsAccountSheet = true }
     )
     Spacer(Modifier.padding(8.dp))
   }
@@ -199,13 +200,6 @@ fun AppNavHost(
       )
     }
 
-    composable<Destination.Account> {
-      AccountScreen(
-        viewModel = viewModel,
-        goBack = { navController.popBackStack() }
-      )
-    }
-
     composable<Destination.ProjectDetails> { backStackEntry ->
       val args = backStackEntry.toRoute<Destination.ProjectDetails>()
       val appFlow = remember { viewModel.app(args.appId) }
@@ -263,6 +257,13 @@ fun AppNavHost(
         }
       )
     }
+  }
+
+  if (showsAccountSheet) {
+    AccountSwitcherSheet(
+      viewModel = viewModel,
+      onDismiss = { showsAccountSheet = false }
+    )
   }
 }
 

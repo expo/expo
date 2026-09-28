@@ -72,7 +72,9 @@ internal class LanguageModelSessionController(
 
   fun acceptResult(requestId: String): Boolean = tasks.withLock {
     val pending = pendingResult
-    if (closed.get() || pending?.requestId != requestId) return@withLock false
+    if (closed.get() || pending?.requestId != requestId) {
+      return@withLock false
+    }
     try {
       requireForeground()
     } catch (_: LanguageModelException) {
@@ -85,7 +87,9 @@ internal class LanguageModelSessionController(
   }
 
   fun discardResult(requestId: String) = tasks.withLock {
-    if (pendingResult?.requestId == requestId) pendingResult = null
+    if (pendingResult?.requestId == requestId) {
+      pendingResult = null
+    }
     // Reject active work as well, so an in-flight completion cannot stage later.
     tasks.cancel(requestId)
   }
@@ -104,6 +108,8 @@ internal class LanguageModelSessionController(
       tasks.dispose()
       closed.compareAndSet(false, true)
     }
-    if (shouldClose) backend.close()
+    if (shouldClose) {
+      backend.close()
+    }
   }
 }

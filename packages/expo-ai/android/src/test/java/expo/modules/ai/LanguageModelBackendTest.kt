@@ -42,7 +42,9 @@ class LanguageModelBackendTest {
         assertTrue(capabilities.isNull("model"))
         assertTrue(capabilities.isNull("contextTokens"))
       }
-      if (status in setOf(ModelStatus.DOWNLOADING, ModelStatus.DOWNLOADABLE)) assertTrue(value.isNull("progress"))
+      if (status in setOf(ModelStatus.DOWNLOADING, ModelStatus.DOWNLOADABLE)) {
+        assertTrue(value.isNull("progress"))
+      }
     }
     assertEquals(0, backend.downloads)
   }
