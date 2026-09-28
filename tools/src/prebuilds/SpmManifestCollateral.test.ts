@@ -115,10 +115,16 @@ function writePackages(root: string, packages: Packages): void {
 type FixtureOptions = {
   base?: Packages;
   editHead?: (packages: Packages) => void;
+  /** Edits the base commit's copy of `tools/src`, given its path; the head restores it. */
+  editBaseTools?: (toolsSrc: string) => void;
   /** Edits the head commit's copy of `tools/src`, given its path. */
   editHeadTools?: (toolsSrc: string) => void;
   /** Packages given a root `Package.swift` in the head commit, which opts them in. */
   optInAtHead?: string[];
+  /** Extra files in the head commit, keyed by their path relative to the repository root. */
+  headFiles?: Record<string, string>;
+  /** Edits the working tree after the head commit, given the repository root; left uncommitted. */
+  editWorkingTree?: (root: string) => void;
 };
 
 /**
@@ -130,12 +136,17 @@ type FixtureOptions = {
 function fixtureRepo({
   base = basePackages(),
   editHead = () => {},
+  editBaseTools = () => {},
   editHeadTools = () => {},
   optInAtHead = [],
+  headFiles = {},
+  editWorkingTree = () => {},
 }: FixtureOptions = {}): { root: string; baseCommit: string } {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-fixture-')));
   fixtureRoots.push(root);
-  fs.cpSync(path.join(toolsDir, 'src'), path.join(root, 'tools/src'), { recursive: true });
+  const toolsSrc = path.join(root, 'tools/src');
+  fs.cpSync(path.join(toolsDir, 'src'), toolsSrc, { recursive: true });
+  editBaseTools(toolsSrc);
   fs.symlinkSync(path.join(toolsDir, 'node_modules'), path.join(root, 'tools/node_modules'));
   fs.writeFileSync(path.join(root, '.gitignore'), 'node_modules\n');
   writePackages(root, base);
@@ -144,7 +155,8 @@ function fixtureRepo({
   git(root, 'commit', '--quiet', '--message', 'base');
   const baseCommit = git(root, 'rev-parse', 'HEAD');
 
-  editHeadTools(path.join(root, 'tools/src'));
+  fs.cpSync(path.join(toolsDir, 'src'), toolsSrc, { recursive: true });
+  editHeadTools(toolsSrc);
   const head = structuredClone(base);
   editHead(head);
   fs.rmSync(path.join(root, 'packages'), { recursive: true, force: true });
@@ -155,18 +167,53 @@ function fixtureRepo({
       '// swift-tools-version: 5.9\n'
     );
   }
+  for (const [relative, content] of Object.entries(headFiles)) {
+    fs.writeFileSync(path.join(root, relative), content);
+  }
   git(root, 'add', '--all');
   git(root, 'commit', '--quiet', '--allow-empty', '--message', 'head');
+  editWorkingTree(root);
   return { root, baseCommit };
 }
 
-function runGate(root: string, base: string, ...args: string[]): SpawnSyncReturns<string> {
+function runGate(
+  root: string,
+  base: string,
+  args: string[] = [],
+  env: NodeJS.ProcessEnv = {}
+): SpawnSyncReturns<string> {
   return spawnSync(process.execPath, [gate, '--repo', root, '--base', base, ...args], {
     cwd: root,
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024,
+    // These tests may themselves run in a GitHub Actions step; keep fixtures out of its summary.
+    env: { ...process.env, GITHUB_STEP_SUMMARY: undefined, ...env },
   });
 }
+
+/** Rewrites one snippet of the head commit's generator, given its `tools/src` path. */
+function editGenerator(toolsSrc: string, snippet: string, replacement: string): void {
+  const generator = path.join(toolsSrc, 'prebuilds/SPMPackage.ts');
+  const source = fs.readFileSync(generator, 'utf8');
+  const edited = source.replace(snippet, replacement);
+  assert.notEqual(edited, source, 'the fixture edit must reach the generator');
+  fs.writeFileSync(generator, edited);
+}
+
+/** A head-side tooling change that alters every generated manifest. */
+function markEveryManifest(toolsSrc: string): void {
+  editGenerator(
+    toolsSrc,
+    "lines.push('import PackageDescription');",
+    "lines.push('import PackageDescription // edited at head');"
+  );
+}
+
+const everyProduct = [
+  'fixture-consumer/FixtureConsumer',
+  'fixture-core/FixtureCore',
+  'fixture-leaf/FixtureLeaf',
+];
 
 function output(result: SpawnSyncReturns<string>): string {
   return `${result.stdout}\n${result.stderr}`;
@@ -181,10 +228,11 @@ function comparedManifests(result: SpawnSyncReturns<string>): number {
 }
 
 /**
- * Runs the collateral gate, which regenerates every product's `Package.swift` at the baseline
- * commit and on the working tree and requires the two to be byte-identical. It is half the
- * acceptance criterion of every SwiftPM migration step: the packages *not* being migrated must
- * emit exactly what they emitted before.
+ * Runs the collateral gate, which regenerates every product's `Package.swift` with the current
+ * tooling from the baseline packages and from the working tree's, and requires the two to be
+ * byte-identical. It is half the acceptance criterion of every SwiftPM migration step: the packages
+ * *not* being migrated must emit exactly what they emitted before. Tooling changes are reported,
+ * not failed.
  */
 describe('check-spm-manifest-collateral', () => {
   it('passes when nothing changed, having compared every product', () => {
@@ -193,6 +241,7 @@ describe('check-spm-manifest-collateral', () => {
 
     assert.equal(result.status, 0, output(result));
     assert.equal(comparedManifests(result), 3);
+    assert.doesNotMatch(result.stdout, /Tooling report/);
   });
 
   it('excludes a product whose own config entry changed, and says so', () => {
@@ -231,33 +280,135 @@ describe('check-spm-manifest-collateral', () => {
     assert.doesNotMatch(result.stderr, /DIFF: fixture-core\//);
   });
 
-  it('fails on every product whose manifest a head-side generator change altered', () => {
+  it('reports, without failing, every manifest a tooling change altered', () => {
+    const { root, baseCommit } = fixtureRepo({ editHeadTools: markEveryManifest });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    for (const id of everyProduct) {
+      for (const flavor of ['Debug', 'Release']) {
+        assert.match(result.stdout, new RegExp(`INFO: Tooling report: ${id}/${flavor} changed\n`));
+      }
+    }
+    assert.match(result.stdout, /INFO: Tooling report: .* alter 6 of 6 generated manifests/);
+    assert.doesNotMatch(result.stderr, /DIFF:/);
+    assert.equal(comparedManifests(result), 3);
+  });
+
+  it('fails on package collateral even when the tooling changed too', () => {
     const { root, baseCommit } = fixtureRepo({
-      editHeadTools: (toolsSrc) => {
-        const generator = path.join(toolsSrc, 'prebuilds/SPMPackage.ts');
-        const source = fs.readFileSync(generator, 'utf8');
-        const edited = source.replace(
-          "lines.push('import PackageDescription');",
-          "lines.push('import PackageDescription // edited at head');"
-        );
-        assert.notEqual(edited, source, 'the fixture edit must reach the generator');
-        fs.writeFileSync(generator, edited);
+      editHeadTools: markEveryManifest,
+      editHead: (packages) => {
+        packages['fixture-core'] = [
+          product('FixtureCore', { externalDependencies: ['fixture-leaf/FixtureLeaf'] }),
+        ];
       },
     });
     const result = runGate(root, baseCommit);
 
     assert.equal(result.status, 1, output(result));
-    for (const id of [
-      'fixture-consumer/FixtureConsumer',
-      'fixture-core/FixtureCore',
-      'fixture-leaf/FixtureLeaf',
-    ]) {
-      for (const flavor of ['Debug', 'Release']) {
-        assert.match(result.stderr, new RegExp(`DIFF: ${id}/${flavor}\n`));
-      }
-    }
+    assert.match(result.stdout, /INFO: Tooling report: fixture-leaf\/FixtureLeaf\/Debug changed\n/);
+    assert.match(result.stderr, /DIFF: fixture-consumer\/FixtureConsumer\/Debug/);
+    assert.doesNotMatch(result.stderr, /DIFF: fixture-leaf\//);
     assert.match(result.stderr, /Collateral manifest changes/);
   });
+
+  it('lists the manifests a tooling change altered in the GitHub step summary', () => {
+    const { root, baseCommit } = fixtureRepo({ editHeadTools: markEveryManifest });
+    const summaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-summary-'));
+    fixtureRoots.push(summaryDirectory);
+    const summary = path.join(summaryDirectory, 'summary.md');
+    fs.writeFileSync(summary, '# Earlier step\n');
+    const result = runGate(root, baseCommit, [], { GITHUB_STEP_SUMMARY: summary });
+
+    assert.equal(result.status, 0, output(result));
+    const content = fs.readFileSync(summary, 'utf8');
+    assert.ok(content.startsWith('# Earlier step\n'), `the gate must append:\n${content}`);
+    for (const id of everyProduct) {
+      for (const flavor of ['Debug', 'Release']) {
+        assert.ok(content.includes(`${id}/${flavor}`), `${id}/${flavor} missing:\n${content}`);
+      }
+    }
+  });
+
+  it('skips the package check when the current tooling cannot read the baseline packages', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHeadTools: (toolsSrc) =>
+        editGenerator(
+          toolsSrc,
+          'const content = await generatePackageSwiftAsync(',
+          "if (!fs.existsSync(path.join(pkg.path, 'spm.format'))) throw new Error('spm.format is required');\n    const content = await generatePackageSwiftAsync("
+        ),
+      headFiles: Object.fromEntries(
+        Object.keys(basePackages()).map((directory) => [`packages/${directory}/spm.format`, '2'])
+      ),
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(result.stdout, /SKIP: .*package check/i);
+    assert.match(output(result), /Why:/);
+    assert.match(output(result), /How to fix:/);
+    assert.match(output(result), /spm\.format is required/);
+    assert.doesNotMatch(result.stdout, /PASS:/);
+  });
+
+  it('notes, without failing, a baseline tooling that cannot generate the current packages', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editBaseTools: (toolsSrc) =>
+        editGenerator(
+          toolsSrc,
+          'const content = await generatePackageSwiftAsync(',
+          "throw new Error('baseline generator is broken');\n    const content = await generatePackageSwiftAsync("
+        ),
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(result.stdout, /INFO: Tooling report skipped: .*baseline tooling/);
+    assert.equal(comparedManifests(result), 3);
+  });
+
+  it('fails when the baseline packages cannot be generated and the tooling did not change', () => {
+    const broken = basePackages();
+    broken['fixture-core'] = [product('FixtureCore', { externalDependencies: 5 })];
+    const { root, baseCommit } = fixtureRepo({
+      base: broken,
+      editHead: (packages) => {
+        packages['fixture-core'] = [product('FixtureCore')];
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
+    assert.doesNotMatch(result.stdout, /SKIP:/);
+    assert.match(result.stderr, /not iterable/);
+    assert.match(result.stderr, /baseline \w+ packages/);
+    assert.match(result.stderr, /Why:/);
+    assert.match(result.stderr, /How to fix:/);
+  });
+
+  const workingTreeToolingChanges: [string, (root: string) => void][] = [
+    [
+      'an untracked file',
+      (root) => fs.writeFileSync(path.join(root, 'tools/src/Untracked.ts'), 'export {};\n'),
+    ],
+    [
+      'an uncommitted edit',
+      (root) =>
+        fs.appendFileSync(path.join(root, 'tools/src/prebuilds/SPMPackage.ts'), '\n// edited\n'),
+    ],
+  ];
+  for (const [change, editWorkingTree] of workingTreeToolingChanges) {
+    it(`reports on the tooling when tools/src has ${change}`, () => {
+      const { root, baseCommit } = fixtureRepo({ editWorkingTree });
+      const result = runGate(root, baseCommit);
+
+      assert.equal(result.status, 0, output(result));
+      assert.match(result.stdout, /INFO: Tooling report: .* alter 0 of 6 generated manifests/);
+      assert.equal(comparedManifests(result), 3);
+    });
+  }
 
   it('fails loudly when two config entries claim the same product', () => {
     const { root, baseCommit } = fixtureRepo({
@@ -294,7 +445,7 @@ describe('check-spm-manifest-collateral', () => {
 
   it('honors an explicit --exclude', () => {
     const { root, baseCommit } = fixtureRepo();
-    const result = runGate(root, baseCommit, '--exclude', 'fixture-leaf/FixtureLeaf');
+    const result = runGate(root, baseCommit, ['--exclude', 'fixture-leaf/FixtureLeaf']);
 
     assert.equal(result.status, 0, output(result));
     assert.match(result.stdout, /1 explicit exclusions/);
@@ -456,7 +607,7 @@ describe('collateral gate diagnostics and harness', () => {
 
   it('preserves stack traces for unexpected gate errors', () => {
     const { root, baseCommit } = fixtureRepo();
-    const result = runGate(root, baseCommit, '--exclude', 'missing/Product');
+    const result = runGate(root, baseCommit, ['--exclude', 'missing/Product']);
 
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Exclusion does not name a real product: missing\/Product/);
