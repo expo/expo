@@ -316,7 +316,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
 
     itNative('installs our own Request as the global Request', () => {
       // On native, expo/fetch replaces React Native's whatwg-fetch Request with its own.
-      expect(globalThis.Request).toBe(Request);
+      expect(globalThis.Request as unknown).toBe(Request);
       const request = new Request('https://httpbin.io/get');
       expect(request).toBeInstanceOf(Request);
     });

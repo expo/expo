@@ -8,6 +8,27 @@ globalThis.ReadableStream = require('node:stream/web').ReadableStream;
 globalThis.TextDecoder = require('node:util').TextDecoder;
 globalThis.TextEncoder = require('node:util').TextEncoder;
 
+// Mirrors the shape of React Native's `whatwg-fetch` Request: no `Symbol.toStringTag`, and the body
+// is kept on the hidden `_bodyInit`/`_noBody` fields instead of a `body` stream.
+class WhatwgFetchRequest {
+  readonly url: string;
+  readonly method: string;
+  readonly headers: Headers;
+  readonly credentials = 'same-origin' as const;
+  readonly signal = new AbortController().signal;
+  bodyUsed = false;
+  _bodyInit: BodyInit | undefined;
+  _noBody: boolean;
+
+  constructor(url: string, init: { method?: string; body?: BodyInit; headers?: HeadersInit } = {}) {
+    this.url = url;
+    this.method = init.method ?? 'GET';
+    this.headers = new Headers(init.headers);
+    this._bodyInit = init.body;
+    this._noBody = init.body === undefined;
+  }
+}
+
 describe('Request', () => {
   it('defaults to GET and an empty body', () => {
     const request = new Request('https://example.test/');
@@ -30,7 +51,9 @@ describe('Request', () => {
   });
 
   it('throws when a body is given to a GET or HEAD request', () => {
+    // oxlint-disable-next-line unicorn/no-invalid-fetch-options -- testing the invalid case
     expect(() => new Request('https://example.test/', { body: 'x' })).toThrow(TypeError);
+    // oxlint-disable-next-line unicorn/no-invalid-fetch-options -- testing the invalid case
     expect(() => new Request('https://example.test/', { method: 'HEAD', body: 'x' })).toThrow(
       TypeError
     );
@@ -229,9 +252,46 @@ describe('Request', () => {
         method: 'POST',
         body: 'original',
       });
-      const copy = new Request(original, { body: 'override' });
+      const copy = new Request(original, { method: 'POST', body: 'override' });
       expect(copy._bodyInit).toBe('override');
       expect(original.bodyUsed).toBe(false);
+    });
+
+    it('copies url, method, headers and body from a whatwg-fetch Request', async () => {
+      const original = new WhatwgFetchRequest('https://example.test/', {
+        method: 'POST',
+        body: 'payload',
+        headers: { 'X-Custom': 'value' },
+      });
+      const copy = new Request(original as unknown as Request);
+      expect(copy.url).toBe('https://example.test/');
+      expect(copy.method).toBe('POST');
+      expect(copy.headers.get('x-custom')).toBe('value');
+      expect(await copy.text()).toBe('payload');
+      expect(original.bodyUsed).toBe(true);
+    });
+
+    it('treats a bodyless whatwg-fetch Request as having no body', () => {
+      const original = new WhatwgFetchRequest('https://example.test/');
+      const copy = new Request(original as unknown as Request);
+      expect(copy.url).toBe('https://example.test/');
+      expect(copy.body).toBeNull();
+    });
+
+    it('reads the body stream of a foreign spec-compliant Request', async () => {
+      // A Request from another implementation, recognized by its tag and exposing only `body`.
+      const original = {
+        [Symbol.toStringTag]: 'Request',
+        url: 'https://example.test/',
+        method: 'POST',
+        headers: new Headers(),
+        bodyUsed: false,
+        body: new Request('https://example.test/', { method: 'POST', body: 'payload' }).body,
+      };
+      const copy = new Request(original as unknown as Request);
+      expect(copy.url).toBe('https://example.test/');
+      expect(copy.method).toBe('POST');
+      expect(await copy.text()).toBe('payload');
     });
   });
 
@@ -248,6 +308,20 @@ describe('Request', () => {
       expect(await request.text()).toBe('payload');
     });
 
+    it('tees a ReadableStream body so both requests can be read', async () => {
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode('streamed'));
+          controller.close();
+        },
+      });
+      const request = new Request('https://example.test/', { method: 'POST', body: stream });
+      const clone = request.clone();
+      expect(clone.body).not.toBe(request.body);
+      expect(await request.text()).toBe('streamed');
+      expect(await clone.text()).toBe('streamed');
+    });
+
     it('throws when cloning an already-used request', async () => {
       const request = new Request('https://example.test/', {
         method: 'POST',
@@ -256,6 +330,13 @@ describe('Request', () => {
       await request.text();
       expect(() => request.clone()).toThrow(TypeError);
     });
+  });
+
+  it('names the method that failed when the body is already used', async () => {
+    const request = new Request('https://example.test/', { method: 'POST', body: 'hello' });
+    await request.text();
+    await expect(request.json()).rejects.toThrow("Failed to execute 'json'");
+    await expect(request.text()).rejects.toThrow("Failed to execute 'text'");
   });
 
   it('is tagged as a Request', () => {
