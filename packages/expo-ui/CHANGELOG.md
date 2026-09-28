@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Export the `FrameAlignment` type for the `alignment` parameter of `frame()`. ([#50702](https://github.com/expo/expo/pull/50702) by [@amandeepmittal](https://github.com/amandeepmittal))
+- Added `get()` and `set()` to the universal `ObservableState` type and to the web implementation of `useNativeState`, as React Compiler-compliant alternatives to `.value`. ([#50684](https://github.com/expo/expo/pull/50684) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🐛 Bug fixes
 
