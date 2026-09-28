@@ -69,11 +69,15 @@ export function getRedirectModule(redirectConfig: RedirectConfig) {
   };
 }
 
+function getPathSegments(path: string) {
+  return path.replace(/^\/+/, '').split('/');
+}
+
 export function convertRedirect(path: string, config: RedirectConfig) {
   const params: Record<string, string | string[]> = {};
 
-  const parts = path.split('/');
-  const sourceParts = config.source.split('/');
+  const parts = getPathSegments(path);
+  const sourceParts = getPathSegments(config.source);
 
   for (const [index, sourcePart] of sourceParts.entries()) {
     const dynamicName = matchDynamicName(sourcePart);
@@ -101,7 +105,7 @@ export function mergeVariablesWithPath(path: string, params: Record<string, stri
       } else {
         const param = params[dynamicName.name];
         delete params[dynamicName.name];
-        return param;
+        return Array.isArray(param) ? param.join('/') : param;
       }
     })
     .filter(Boolean)
