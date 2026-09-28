@@ -222,7 +222,7 @@ private fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCat
   }
   val ksp = extra.setIfNotExist("kspVersion") {
     versionCatalogs.getVersionOrDefault("ksp") {
-      resolveKspVersion(extra.get("kotlinVersion") as String)
+      resolveKspVersion(kotlin.toString())
     }
   }
 
