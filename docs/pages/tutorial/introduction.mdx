@@ -1,14 +1,14 @@
 ---
 title: 'Tutorial: Using React Native and Expo'
 sidebar_title: Introduction
-description: An introduction to a React Native tutorial on how to build a universal app that runs on Android, iOS and the web using Expo.
+description: An introduction to a React Native tutorial on how to build a universal app with Expo, Expo Router, and Expo UI that runs on Android, iOS, and web.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
 
-We're about to embark on a journey of building universal apps. In this tutorial, we'll create an Expo app that runs on Android, iOS, and web; all with a single codebase. Let's get started!
+We're about to embark on a journey of building universal apps. In this tutorial, we'll create an Expo app that runs on Android, iOS, and web, all with a single codebase. Let's get started!
 
 > **info** **New to programming?** You can build this same app by prompting an AI coding agent instead of writing the code yourself. Follow the [Build with AI tutorial](/tutorial/build-with-ai/introduction/). It covers setup from scratch.
 
@@ -17,10 +17,11 @@ We're about to embark on a journey of building universal apps. In this tutorial,
 The objective of this tutorial is to get started with Expo and become familiar with the Expo SDK. It'll cover the following topics:
 
 - Create an app using the default template with TypeScript enabled
-- Implement a two-screen bottom tabs layout with Expo Router
+- Implement a two-screen layout with native tabs from Expo Router
 - Break down the app layout and implement it with flexbox
+- Build native buttons with Expo UI, and use platform-specific files for Android, iOS, and web
 - Use each platform's system UI to select an image from the media library
-- Create a sticker modal using the `<Modal>` and `<FlatList>` components from React Native
+- Create an emoji picker with the bottom sheet from Expo UI and the `<FlatList>` component from React Native
 - Add touch gestures to interact with a sticker
 - Use third-party libraries to capture a screenshot and save it to the disk
 - Handle platform differences between Android, iOS, and web
@@ -28,9 +29,11 @@ The objective of this tutorial is to get started with Expo and become familiar w
 
 These topics provide a foundation to learn the fundamentals of building an Expo app. The tutorial is self-paced and can take up to two hours to complete.
 
+The app uses native UI from each platform. [Expo UI](/versions/latest/sdk/ui/) brings Jetpack Compose and SwiftUI components to React Native, and it works in Expo Go. On Android, the tab bar, the buttons, and the bottom sheet use Material 3. On iOS 26 and later, the tab bar uses Liquid Glass. On web, the app uses React Native components.
+
 To keep it beginner friendly, we divided the tutorial into nine chapters so that you can follow along or put it down and come back to it later. Each chapter contains the necessary code snippets to complete the steps, so you can follow along by creating an app from scratch or copy and paste it.
 
-Before we get started, take a look at what we'll build. It's an app named **StickerSmash** that runs on Android, iOS, and the web:
+Before we get started, take a look at what we'll build. It's an app named **StickerSmash** that runs on Android, iOS, and web:
 
 <ContentSpotlight file="tutorial/final.mp4" />
 
@@ -49,7 +52,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say: "Edit src/app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
+      /* @tutinfo This used to say "Edit src/app/index.tsx to edit this screen." Now it says "Hello world!" */<Text>Hello world!</Text>/* @end */
     </View>
   );
 }
