@@ -161,7 +161,11 @@ private fun Response.evictAfterClose(onClose: () -> Unit): Response {
 
 @OptIn(UnstableApi::class)
 private fun evictCacheEntry(url: String, storageKey: String) {
-  val cacheKey = if (storageKey.isEmpty()) url else "$url#$storageKey"
+  val cacheKey = if (storageKey.isEmpty()) {
+    url
+  } else {
+    "$url#$storageKey"
+  }
   try {
     VideoManager.cache.instance.removeResource(cacheKey)
   } catch (e: Exception) {
@@ -191,5 +195,9 @@ fun buildExpoVideoMediaSource(
 private fun getApplicationName(context: Context): String {
   val applicationInfo: ApplicationInfo = context.applicationInfo
   val stringId = applicationInfo.labelRes
-  return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(stringId)
+  return if (stringId == 0) {
+    applicationInfo.nonLocalizedLabel.toString()
+  } else {
+    context.getString(stringId)
+  }
 }

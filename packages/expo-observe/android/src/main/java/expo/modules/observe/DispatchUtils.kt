@@ -82,7 +82,11 @@ object DispatchUtils {
       429, 502, 503, 504 -> DispatchResult.RetryableFailure(parseRetryAfter(retryAfterHeader))
       else -> {
         val excerpt = bodyExcerpt()
-        val suffix = if (excerpt.isEmpty()) "" else ": $excerpt"
+        val suffix = if (excerpt.isEmpty()) {
+          ""
+        } else {
+          ": $excerpt"
+        }
         DispatchResult.NonRetryableFailure(reason = "HTTP $statusCode$suffix")
       }
     }
@@ -106,11 +110,15 @@ object DispatchUtils {
     cap: Long = backoffCapMs
   ): Long? {
     val raw = header?.trim() ?: return null
-    if (raw.isEmpty()) return null
+    if (raw.isEmpty()) {
+      return null
+    }
 
     raw.toLongOrNull()?.let { return clampToBounds(it * 1000L, base, cap) }
     raw.toDoubleOrNull()?.let {
-      if (!it.isFinite()) return null
+      if (!it.isFinite()) {
+        return null
+      }
       return clampToBounds((it * 1000L).toLong(), base, cap)
     }
 
@@ -137,8 +145,14 @@ object DispatchUtils {
    * diagnostic excerpt.
    */
   internal fun bodyExcerpt(body: String?, limit: Int = 512): String {
-    if (body.isNullOrEmpty()) return ""
-    return if (body.length <= limit) body else body.substring(0, limit)
+    if (body.isNullOrEmpty()) {
+      return ""
+    }
+    return if (body.length <= limit) {
+      body
+    } else {
+      body.substring(0, limit)
+    }
   }
 
   private val responseJson = Json { ignoreUnknownKeys = true }
@@ -170,7 +184,9 @@ object DispatchUtils {
     cap: Long = backoffCapMs,
     random: () -> Double = { Random.nextDouble() }
   ): Long {
-    if (attempt < 1) return 0L
+    if (attempt < 1) {
+      return 0L
+    }
     val unjittered = minOf((base.toDouble() * 2.0.pow(attempt - 1)).toLong(), cap)
     return (unjittered.toDouble() * random()).toLong()
   }

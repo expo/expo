@@ -34,7 +34,9 @@ class VideoThumbnailsModule : Module() {
     AsyncFunction("getThumbnail") { sourceFilename: String, options: VideoThumbnailOptions, promise: Promise ->
       withModuleScope(promise) {
         try {
-          if (!URLUtil.isValidUrl(sourceFilename)) throw InvalidSourceFilenameException()
+          if (!URLUtil.isValidUrl(sourceFilename)) {
+            throw InvalidSourceFilenameException()
+          }
 
           if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
             throw ThumbnailFileException()

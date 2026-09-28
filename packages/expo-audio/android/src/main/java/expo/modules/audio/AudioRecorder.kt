@@ -220,7 +220,11 @@ class AudioRecorder(
           "isFinished" to true,
           "hasError" to stopFailed,
           "error" to stopError,
-          "url" to if (stopFailed) null else url
+          "url" to if (stopFailed) {
+            null
+          } else {
+            url
+          }
         )
       )
     }
