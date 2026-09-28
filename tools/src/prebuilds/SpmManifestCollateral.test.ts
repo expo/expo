@@ -174,6 +174,23 @@ function runGate(root: string, base: string, ...args: string[]): SpawnSyncReturn
   });
 }
 
+/** Runs the gate with its own `$GITHUB_STEP_SUMMARY`, returning what the gate appended to it. */
+function runGateWithSummary(root: string, base: string) {
+  const summaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-summary-'));
+  fixtureRoots.push(summaryDirectory);
+  const summary = path.join(summaryDirectory, 'summary.md');
+  fs.writeFileSync(summary, '# Earlier step\n');
+  const result = spawnSync(process.execPath, [gate, '--repo', root, '--base', base], {
+    cwd: root,
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
+    env: { ...process.env, GITHUB_STEP_SUMMARY: summary },
+  });
+  const content = fs.readFileSync(summary, 'utf8');
+  assert.ok(content.startsWith('# Earlier step\n'), `the gate must append:\n${content}`);
+  return { result, appended: content.slice('# Earlier step\n'.length) };
+}
+
 /** Rewrites one snippet of the head commit's generator, given its `tools/src` path. */
 function editGenerator(toolsSrc: string, snippet: string, replacement: string): void {
   const generator = path.join(toolsSrc, 'prebuilds/SPMPackage.ts');
@@ -273,7 +290,7 @@ describe('check-spm-manifest-collateral', () => {
         assert.match(result.stdout, new RegExp(`INFO: Tooling report: ${id}/${flavor} changed\n`));
       }
     }
-    assert.match(result.stdout, /INFO: Tooling report: .* alter 6 of 6 generated manifests/);
+    assert.match(result.stdout, /INFO: Tooling report: .* alter 6 of 6 compared manifests/);
     assert.doesNotMatch(result.stderr, /DIFF:/);
     assert.equal(comparedManifests(result), 3);
   });
@@ -298,22 +315,12 @@ describe('check-spm-manifest-collateral', () => {
 
   it('lists the manifests a tooling change altered in the GitHub step summary', () => {
     const { root, baseCommit } = fixtureRepo({ editHeadTools: markEveryManifest });
-    const summaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-summary-'));
-    fixtureRoots.push(summaryDirectory);
-    const summary = path.join(summaryDirectory, 'summary.md');
-    fs.writeFileSync(summary, '# Earlier step\n');
-    const result = spawnSync(process.execPath, [gate, '--repo', root, '--base', baseCommit], {
-      cwd: root,
-      encoding: 'utf8',
-      env: { ...process.env, GITHUB_STEP_SUMMARY: summary },
-    });
+    const { result, appended } = runGateWithSummary(root, baseCommit);
 
     assert.equal(result.status, 0, output(result));
-    const content = fs.readFileSync(summary, 'utf8');
-    assert.ok(content.startsWith('# Earlier step\n'), `the gate must append:\n${content}`);
     for (const id of everyProduct) {
       for (const flavor of ['Debug', 'Release']) {
-        assert.ok(content.includes(`${id}/${flavor}`), `${id}/${flavor} missing:\n${content}`);
+        assert.ok(appended.includes(`${id}/${flavor}`), `${id}/${flavor} missing:\n${appended}`);
       }
     }
   });
@@ -332,7 +339,7 @@ describe('check-spm-manifest-collateral', () => {
         }
       },
     });
-    const result = runGate(root, baseCommit);
+    const { result, appended } = runGateWithSummary(root, baseCommit);
 
     assert.equal(result.status, 0, output(result));
     assert.match(result.stdout, /SKIP: .*package check/i);
@@ -340,6 +347,27 @@ describe('check-spm-manifest-collateral', () => {
     assert.match(output(result), /How to fix:/);
     assert.match(output(result), /spm\.format is required/);
     assert.doesNotMatch(result.stdout, /PASS:/);
+    assert.match(appended, /SKIP: .*package check/i);
+    assert.match(appended, /spm\.format is required/);
+  });
+
+  it('fails when the baseline packages cannot be generated and the tooling change is unrelated', () => {
+    const broken = basePackages();
+    broken['fixture-core'] = [product('FixtureCore', { externalDependencies: 5 })];
+    const { root, baseCommit } = fixtureRepo({
+      base: broken,
+      editHead: (packages) => {
+        packages['fixture-core'] = [product('FixtureCore')];
+      },
+      editHeadTools: (toolsSrc) =>
+        fs.appendFileSync(path.join(toolsSrc, 'Changelogs.ts'), '\n//\n'),
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
+    assert.doesNotMatch(result.stdout, /SKIP:/);
+    assert.match(result.stderr, /not iterable/);
+    assert.match(result.stderr, /baseline \w+ packages/);
   });
 
   it('fails when the baseline packages cannot be generated and the tooling did not change', () => {
@@ -369,7 +397,7 @@ describe('check-spm-manifest-collateral', () => {
     const result = runGate(root, baseCommit);
 
     assert.equal(result.status, 0, output(result));
-    assert.match(result.stdout, /INFO: Tooling report: .* alter 0 of 6 generated manifests/);
+    assert.match(result.stdout, /INFO: Tooling report: .* alter 0 of 6 compared manifests/);
     assert.equal(comparedManifests(result), 3);
   });
 

@@ -457,7 +457,7 @@ async function main() {
       const after = JSON.parse(fs.readFileSync(path.join(scratch, 'after.json'), 'utf8'));
       const changed = Object.keys(after).filter((id) => before[id] !== after[id]);
       for (const id of changed) console.log(`INFO: Tooling report: ${id} changed`);
-      const summary = `the tools/src changes since ${values.base} alter ${changed.length} of ${Object.keys(after).length} generated manifests`;
+      const summary = `the tools/src changes since ${values.base} alter ${changed.length} of ${Object.keys(after).length} compared manifests`;
       console.log(`INFO: Tooling report: ${summary}. The report never fails this check.`);
       if (process.env.GITHUB_STEP_SUMMARY && changed.length > 0) {
         fs.appendFileSync(
@@ -474,21 +474,38 @@ async function main() {
       'fix the error in the generator output above, then run this check again.'
     );
     if (toolingChanged) reportToolingChanges();
-    const before = runWorker('before', 'after', 'before');
+    let before = runWorker('before', 'after', 'before');
+    let beforeLabel = 'before';
     if (before.status !== 0 && toolingChanged) {
+      // Any tools/src edit sets toolingChanged, so only skip when the baseline's own generator
+      // still handles the baseline packages; otherwise the baseline itself is broken.
+      const baseline = runWorker('baseline', 'before', 'before');
+      if (baseline.status === 0) {
+        process.stderr.write(before.stdout);
+        process.stderr.write(before.stderr);
+        const skip = `SKIP: The package check did not run: the current tooling failed on the baseline ${values.base} packages (exit ${before.status}).`;
+        console.log(
+          `${skip}\n` +
+            'Why: tools/src changed together with the spm.config.json format, so the baseline configs are no longer valid generator input.\n' +
+            'How to fix: nothing, if that format change is intended. Otherwise, fix the generator error printed above.'
+        );
+        if (process.env.GITHUB_STEP_SUMMARY) {
+          fs.appendFileSync(
+            process.env.GITHUB_STEP_SUMMARY,
+            `\n### SwiftPM manifest collateral check skipped\n\n${skip}\n\nGenerator error: ${(before.stderr || before.stdout).trim().split('\n')[0]}\n`
+          );
+        }
+        return;
+      }
       process.stderr.write(before.stdout);
       process.stderr.write(before.stderr);
-      console.log(
-        `SKIP: The package check did not run: the current tooling failed on the baseline ${values.base} packages (exit ${before.status}).\n` +
-          'Why: tools/src changed too, likely with the spm.config.json format, so the baseline configs are no longer valid generator input.\n' +
-          'How to fix: nothing, if that format change is intended. Otherwise, fix the generator error printed above.'
-      );
-      return;
+      before = baseline;
+      beforeLabel = 'baseline';
     }
     requireWorkerSuccess(
-      'before',
+      beforeLabel,
       before,
-      `tools/src is unchanged, so the baseline ${values.base} packages fail with their own generator.`,
+      `the baseline ${values.base} packages fail with the baseline's own generator, so the baseline packages are most likely broken.`,
       'read the generator output above; if the baseline packages are broken, land their fix on the base branch first.'
     );
     compareSnapshots();
