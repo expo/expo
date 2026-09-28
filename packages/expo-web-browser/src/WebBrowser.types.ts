@@ -223,6 +223,12 @@ export type WebBrowserResult = {
    * Type of the result.
    */
   type: WebBrowserResultType;
+  /**
+   * Error message returned by the native layer, present on iOS when `ASWebAuthenticationSession`
+   * fails (e.g. missing Associated Domains entitlement for HTTPS callbacks).
+   * @platform ios
+   */
+  error?: string | null;
 };
 
 // @needsAudit @docsMissing
