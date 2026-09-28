@@ -100,6 +100,10 @@ export function createBitSetChunkingStrategy(context: ChunkingContext): Chunking
           requiredChunksByEntryPath.set(entryPath, []);
           continue;
         }
+        if (facade !== entryChunk && facade.deps.size === 0) {
+          chunks.delete(facade);
+          entryPathsByChunk.delete(facade);
+        }
         for (const ownerChunk of requiredChunks) {
           if (ownerChunk !== entryChunk && ownerChunk !== facade)
             facade.requiredChunks.add(ownerChunk);
@@ -107,7 +111,8 @@ export function createBitSetChunkingStrategy(context: ChunkingContext): Chunking
         requiredChunksByEntryPath.set(
           entryPath,
           [facade, ...requiredChunks].filter(
-            (chunk, index, all) => chunk !== entryChunk && all.indexOf(chunk) === index
+            (chunk, index, all) =>
+              chunks.has(chunk) && chunk !== entryChunk && all.indexOf(chunk) === index
           )
         );
       }
@@ -164,9 +169,28 @@ export function createBitSetChunkingStrategy(context: ChunkingContext): Chunking
         }
       }
       for (const modulePath of [...modulePaths].sort()) options.createModuleId(modulePath);
-      return (
-        await Promise.all([...orderedChunks].map(createChunkSerializer(orderedChunks, context)))
-      ).flat();
+      const results = await Promise.all(
+        [...orderedChunks].map(createChunkSerializer(orderedChunks, context))
+      );
+      const jsAssets = results.map((assets) => {
+        const asset = assets.find((asset) => asset.type === 'js');
+        assert(asset, 'Serialized chunk is missing its JavaScript asset.');
+        return asset;
+      });
+      const filenamesByChunk = new Map(
+        [...orderedChunks].map((chunk, index) => [chunk, jsAssets[index]!.filename] as const)
+      );
+      jsAssets[0]!.metadata.entryChunks = Object.fromEntries(
+        [...requiredChunksByEntryPath].map(([entryPath, requiredChunks]) => [
+          entryPath,
+          requiredChunks.map((chunk) => {
+            const filename = filenamesByChunk.get(chunk);
+            assert(filename, `Required chunk was not emitted: ${chunk.name}`);
+            return filename;
+          }),
+        ])
+      );
+      return results.flat();
     },
     getAsyncChunkTargets(chunk) {
       const targets = new Set<Chunk>();

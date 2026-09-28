@@ -26,6 +26,12 @@ describe(serialAssetsToStaticContentAssets, () => {
       bitSetJs('dist/entry.js', {
         isAsync: false,
         entryPaths: ['/entry.js', '/app/inlined.tsx'],
+        entryChunks: {
+          '/entry.js': [],
+          '/app/inlined.tsx': [],
+          '/app/_layout.tsx': ['dist/layout.js', 'dist/shared.js'],
+          '/app/nested/page.tsx': ['dist/page.js', 'dist/shared.js'],
+        },
         requires: ['dist/runtime.js'],
       }),
       bitSetJs('dist/page.js', {
@@ -76,10 +82,13 @@ describe(serialAssetsToStaticContentAssets, () => {
     }
   });
 
-  it('includes another route facade when it physically owns a requested entry module', () => {
+  it('loads an entry from its owner without an empty facade', () => {
     const assets = [
-      bitSetJs('entry.js', { isAsync: false, requires: ['runtime.js'] }),
-      bitSetJs('b.js', { entryPaths: ['/app/b.tsx'], requires: ['runtime.js', 'a.js'] }),
+      bitSetJs('entry.js', {
+        isAsync: false,
+        requires: ['runtime.js'],
+        entryChunks: { '/app/a.tsx': ['a.js'], '/app/b.tsx': ['a.js'] },
+      }),
       bitSetJs('a.js', {
         entryPaths: ['/app/a.tsx'],
         modulePaths: ['/app/a.tsx', '/app/b.tsx'],
@@ -93,7 +102,57 @@ describe(serialAssetsToStaticContentAssets, () => {
         baseUrl: '',
         route: { entryPoints: ['/app/b.tsx'] } as any,
       }).js
-    ).toEqual(['/runtime.js', '/a.js', '/b.js', '/entry.js']);
+    ).toEqual(['/runtime.js', '/a.js', '/entry.js']);
+  });
+
+  it.each(['a', 'b'])('loads only the required owner for /%s/index without a facade', (route) => {
+    const assets = [
+      bitSetJs('entry.js', {
+        isAsync: false,
+        requires: ['runtime.js'],
+        entryChunks: {
+          '/app/a/index.tsx': ['shared-a.js'],
+          '/app/b/index.tsx': ['shared-b.js'],
+        },
+      }),
+      bitSetJs('shared-a.js', { requires: ['runtime.js'] }),
+      bitSetJs('shared-b.js', { requires: ['runtime.js'] }),
+      bitSetJs('runtime.js', { isAsync: false }),
+    ];
+    expect(
+      serialAssetsToStaticContentAssets(assets, {
+        isExporting: true,
+        baseUrl: '/sub/',
+        route: { entryPoints: [`/app/${route}/index.tsx`] } as any,
+      }).js
+    ).toEqual(['/sub/runtime.js', `/sub/shared-${route}.js`, '/sub/entry.js']);
+  });
+
+  it('rejects missing or duplicated entry-to-chunks mappings', () => {
+    const missing = bitSetJs('entry.js', { isAsync: false });
+    expect(() =>
+      serialAssetsToStaticContentAssets([missing], { isExporting: true, baseUrl: '' })
+    ).toThrow(/entry-to-chunks mapping/);
+    expect(() =>
+      serialAssetsToStaticContentAssets(
+        [bitSetJs('a.js', { entryChunks: {} }), bitSetJs('b.js', { entryChunks: {} })],
+        { isExporting: true, baseUrl: '' }
+      )
+    ).toThrow(/entry-to-chunks mapping/);
+  });
+
+  it('rejects a missing file referenced by an entry', () => {
+    const entry = bitSetJs('entry.js', {
+      isAsync: false,
+      entryChunks: { '/app/page.tsx': ['missing.js'] },
+    });
+    expect(() =>
+      serialAssetsToStaticContentAssets([entry], {
+        isExporting: true,
+        baseUrl: '',
+        route: { entryPoints: ['/app/page.tsx'] } as any,
+      })
+    ).toThrow('Asset not found for entry /app/page.tsx: missing.js');
   });
 
   it('rejects incomplete or mixed provenance instead of using legacy matching', () => {
