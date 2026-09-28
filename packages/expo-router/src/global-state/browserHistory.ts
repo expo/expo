@@ -12,7 +12,7 @@ import type {
 } from './browserHistory.types';
 import { completeParsedState, createSeededRootState } from './createSeededNavigationState';
 import { getPathForState, resolvePathLinking } from './getPathForState';
-import { getRouteInfoFromState } from './getRouteInfoFromState';
+import { getRouteSegmentsFromState } from './getRouteSegmentsFromState';
 import { getRootStackRouteNames } from './utils';
 
 type Reduce<Result> = (result: Result, intent: ReducibleIntent) => Result;
@@ -244,7 +244,7 @@ function parseNavigationStateFromPath(
   const parsed = resolvePathLinking(config.linking).getStateFromPath(
     path,
     config.linking?.config,
-    getRouteInfoFromState(currentState).segments
+    getRouteSegmentsFromState(currentState)
   );
   const routeNames = getRootStackRouteNames();
   if (!parsed || !parsed.routes.every((route) => routeNames.includes(route.name))) {

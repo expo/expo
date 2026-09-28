@@ -5,6 +5,15 @@ import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import { getMockConfig } from '../../testing-library/mock-config';
 import { completeParsedState } from '../createSeededNavigationState';
 import { getPathForState } from '../getPathForState';
+import * as routeInfo from '../getRouteInfoFromState';
+
+let routeInfoSpy: jest.SpyInstance;
+beforeEach(() => {
+  routeInfoSpy = jest.spyOn(routeInfo, 'getRouteInfoFromState');
+});
+afterEach(() => {
+  routeInfoSpy.mockRestore();
+});
 
 const config = getMockConfig(['index', 'docs/[...rest]', 'user/[id]']);
 const linking = { config, getStateFromPath, getPathFromState };
@@ -28,6 +37,7 @@ test('keeps the original URL of a wildcard route while it still matches', () => 
   const state = stateFor('/docs/a/b/?x=1');
 
   expect(getPathForState(state, linking)).toBe('/docs/a/b/?x=1');
+  expect(routeInfoSpy).not.toHaveBeenCalled();
   expect(getPathFromState(state, config)).not.toBe('/docs/a/b/?x=1');
 });
 
@@ -38,6 +48,7 @@ test('serializes the state when the focused params no longer match the original 
 
   expect(getPathForState(changed, linking)).toBe(getPathFromState(changed, config));
   expect(getPathForState(changed, linking)).toBe('/docs/a/b?x=2');
+  expect(routeInfoSpy).not.toHaveBeenCalled();
 });
 
 test('serializes a state that has no original URL', () => {

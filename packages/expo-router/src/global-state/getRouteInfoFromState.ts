@@ -43,7 +43,7 @@ export function areUrlObjectsEqual(a: UrlObject, b: UrlObject): boolean {
 /**
  * A better typed version of `FocusedRouteState` that is easier to parse
  */
-type StrictState = (FocusedRouteState | NavigationState | PartialState<NavigationState>) & {
+export type StrictState = (FocusedRouteState | NavigationState | PartialState<NavigationState>) & {
   routes: {
     key?: string;
     name: string;
@@ -195,19 +195,22 @@ function serializeQueryAndHash(
   params: Record<string, unknown>,
   pathParams: Set<string>
 ) {
-  const searchParams = new URLSearchParams(
-    Object.entries(params).flatMap(([key, value]) => {
-      // Search params should not include path params
-      if (pathParams.has(key)) {
-        return [];
-      } else if (Array.isArray(value)) {
-        return value.filter(isSerializableParam).map((v) => [key, String(v)]);
-      } else if (!isSerializableParam(value)) {
-        return [];
-      }
-      return [[key, String(value)]];
-    })
-  );
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    // Search params should not include path params
+    if (pathParams.has(key)) {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((item) => {
+        if (isSerializableParam(item)) {
+          searchParams.append(key, String(item));
+        }
+      });
+    } else if (isSerializableParam(value)) {
+      searchParams.append(key, String(value));
+    }
+  }
 
   let hash: string | undefined;
   if (searchParams.has('#')) {

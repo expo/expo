@@ -10,24 +10,33 @@ import {
 } from '../browserHistory';
 import type { BrowserHistory, ReducibleIntent } from '../browserHistory.types';
 import { completeParsedState } from '../createSeededNavigationState';
+import * as routeInfo from '../getRouteInfoFromState';
 import { getRouteInfoFromState } from '../getRouteInfoFromState';
 
 jest.mock('../getPathForState', () => ({
   ...jest.requireActual<typeof import('../getPathForState')>('../getPathForState'),
   getPathForState: (state: NavigationState) => `/${state.routes[state.index]!.name}`,
 }));
-jest.mock('../getRouteInfoFromState', () => {
-  const actual = jest.requireActual<typeof import('../getRouteInfoFromState')>(
-    '../getRouteInfoFromState'
+jest.mock('../getRouteSegmentsFromState', () => {
+  const actual = jest.requireActual<typeof import('../getRouteSegmentsFromState')>(
+    '../getRouteSegmentsFromState'
   );
   return {
     ...actual,
-    // The simple test states below have no `__root` slot.
-    getRouteInfoFromState: (state: NavigationState) =>
-      state.routes[0]!.name === '__root'
-        ? actual.getRouteInfoFromState(state)
-        : { segments: [state.routes[state.index]!.name] },
+    // The simple legacy stack fixtures have no `__root` slot.
+    getRouteSegmentsFromState: (state: NavigationState) =>
+      state.key === 'root' || state.key === 'other-root'
+        ? [state.routes[state.index]!.name]
+        : actual.getRouteSegmentsFromState(state),
   };
+});
+
+let routeInfoSpy: jest.SpyInstance;
+beforeEach(() => {
+  routeInfoSpy = jest.spyOn(routeInfo, 'getRouteInfoFromState');
+});
+afterEach(() => {
+  routeInfoSpy.mockRestore();
 });
 
 const config = { browserHistoryIdPrefix: 'p' };
@@ -385,6 +394,7 @@ describe('restore', () => {
       entrySeq: 1,
     };
 
+    routeInfoSpy.mockClear();
     const restored = restoreNavigationFromBrowser(
       current,
       { state: currentState },
@@ -396,6 +406,7 @@ describe('restore', () => {
       reduceResets
     );
 
+    expect(routeInfoSpy).not.toHaveBeenCalled();
     expect(getRouteInfoFromState(restored.result.state).segments).toEqual(['(b)', 'shared']);
   });
 

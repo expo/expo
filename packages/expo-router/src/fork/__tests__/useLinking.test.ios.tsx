@@ -5,6 +5,7 @@ import { Text } from 'react-native';
 
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import { completeParsedState } from '../../global-state/createSeededNavigationState';
+import * as routeInfo from '../../global-state/getRouteInfoFromState';
 import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
 import { getStateFromPath } from '../../link/linking';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
@@ -13,6 +14,8 @@ import { getMockConfig } from '../../testing-library/mock-config';
 import { NavigationContainer } from '../NavigationContainer';
 import { useLinking } from '../useLinking';
 import { getPendingIntents, render, renderHook, setRouteNode } from './__fixtures__/store';
+
+let routeInfoSpy: jest.SpiedFunction<typeof getRouteInfoFromState>;
 
 let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
 
@@ -28,11 +31,13 @@ function getParsedHomeState() {
 }
 
 beforeEach(() => {
+  routeInfoSpy = jest.spyOn(routeInfo, 'getRouteInfoFromState');
   setRouteNode(node('root', [node('home', [node('[id]')])]));
 });
 
 afterEach(() => {
   errorSpy?.mockRestore();
+  routeInfoSpy.mockRestore();
 });
 
 test('queues an incoming deep link using its extracted app path', async () => {
@@ -72,13 +77,12 @@ test('queues an incoming deep link using its extracted app path', async () => {
   ]);
 });
 
-test('keeps the current route group when parsing an incoming deep link', async () => {
+test('uses the latest route group for each incoming deep link without deriving route info', async () => {
   const config = getMockConfig(['(a)/shared', '(b)/shared', '(a)/index', '(b)/other']);
-  const currentState = completeParsedState(
+  let currentState = completeParsedState(
     getStateFromPath('/other', config, ['(b)', 'other']),
     ROOT_CHAIN
   );
-  expect(getRouteInfoFromState(currentState).segments).toEqual(['(b)', 'other']);
   const ref = createNavigationContainerRef<ParamListBase>();
   ref.current = {
     getRootState: () => currentState,
@@ -100,12 +104,45 @@ test('keeps the current route group when parsing an incoming deep link', async (
   }
 
   await render(<Sample />);
-  await act(() => listener?.('example://shared'));
+  routeInfoSpy.mockClear();
+  await act(() => listener?.('example://shared?from=link'));
 
-  expect(parsePath).toHaveBeenCalledWith('shared', config, ['(b)', 'other']);
+  expect(routeInfoSpy).not.toHaveBeenCalled();
+  expect(parsePath).toHaveBeenLastCalledWith('shared?from=link', config, ['(b)', 'other']);
+  const firstResult = parsePath.mock.results[0]!;
   expect(
-    getRouteInfoFromState(getStateFromPath('/shared', config, ['(b)', 'other'])).segments
+    firstResult.type === 'return' && getRouteInfoFromState(firstResult.value).segments
   ).toEqual(['(b)', 'shared']);
+
+  currentState = completeParsedState(getStateFromPath('/', config, ['(a)']), ROOT_CHAIN);
+  routeInfoSpy.mockClear();
+  await act(() => listener?.('example://shared?from=second'));
+
+  expect(routeInfoSpy).not.toHaveBeenCalled();
+  expect(parsePath).toHaveBeenLastCalledWith('shared?from=second', config, ['(a)']);
+  // The second event must use the changed ref state without a render.
+  const secondResult = parsePath.mock.results[1]!;
+  expect(
+    secondResult.type === 'return' && getRouteInfoFromState(secondResult.value).segments
+  ).toEqual(['(a)', 'shared']);
+  expect(getPendingIntents()).toEqual([
+    {
+      type: 'NAVIGATE_TO_HREF',
+      payload: {
+        href: '/shared?from=link',
+        originalHref: 'example://shared?from=link',
+        options: { event: 'NAVIGATE' },
+      },
+    },
+    {
+      type: 'NAVIGATE_TO_HREF',
+      payload: {
+        href: '/shared?from=second',
+        originalHref: 'example://shared?from=second',
+        options: { event: 'NAVIGATE' },
+      },
+    },
+  ]);
 });
 
 test('resolves a completed state from an async initial URL', async () => {
