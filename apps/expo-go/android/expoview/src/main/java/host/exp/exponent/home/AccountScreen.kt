@@ -75,7 +75,7 @@ fun AccountScreen(
             account = item,
             isSelected = item.id == selectedAccount?.id,
             onClick = {
-              viewModel.selectAccount(item.id)
+              viewModel.sessions.value.activeSessionId?.let { viewModel.selectAccount(item.id, it) }
               goBack()
             }
           )
