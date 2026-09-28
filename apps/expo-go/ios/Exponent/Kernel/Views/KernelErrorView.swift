@@ -17,7 +17,9 @@ final class KernelErrorView: UIView {
   @objc var error: NSError? {
     didSet {
       render()
-      reportToDevServer()
+      if error !== oldValue {
+        reportToDevServer()
+      }
     }
   }
   @objc var appRecord: EXKernelAppRecord? {
@@ -76,14 +78,13 @@ final class KernelErrorView: UIView {
 
   private func reportToDevServer() {
     let content = self.content
-    guard let header = content.header,
-          let detail = content.detail,
-          let manifestUrl = appRecord?.appLoader.manifestUrl else {
+    guard let manifestUrl = appRecord?.appLoader.manifestUrl,
+          let message = ErrorScreenLogMessage.make(
+            header: content.header,
+            detail: content.detail,
+            fixInstructions: content.fixInstructions
+          ) else {
       return
-    }
-    var message = "\(header)\n\n\(detail.replacingOccurrences(of: "**", with: ""))"
-    if let fixInstructions = content.fixInstructions {
-      message += "\n\nHow to fix this error:\n\n\(fixInstructions)"
     }
     EXPackagerLogHelper.logError(message, withBundleUrl: manifestUrl)
   }
