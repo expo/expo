@@ -56,6 +56,15 @@ export type FileCanPreviewOptions = {
   mimeType?: string;
 };
 
+/** Options for choosing which file `File.preview()` displays first. */
+export type FilePreviewCollectionOptions = {
+  /**
+   * Zero-based index of the file to display first. Must be within the supplied array.
+   * @default 0
+   */
+  initialIndex?: number;
+};
+
 export type FilePreviewOptions = {
   /**
    * Optional display title for the preview when the platform supports one.

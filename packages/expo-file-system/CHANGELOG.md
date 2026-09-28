@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added static File.preview() and File.canPreview() methods for a file or array of files, with multi-file previews and initial selection on iOS. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@eliotgevers](https://github.com/eliotgevers))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
