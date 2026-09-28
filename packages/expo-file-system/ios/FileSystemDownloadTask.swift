@@ -240,8 +240,39 @@ struct DownloadTaskOptions: Record {
  * A SharedObject that handles file downloads with pause/resume support and progress tracking.
  */
 class FileSystemDownloadTask: SharedObject {
-  private var downloadTask: URLSessionDownloadTask?
-  private var delegateKey: String?
+  // `downloadTask` and `delegateKey` are cleared from the URLSession delegate queue (`didCompleteWithError`
+  // → `finishTask` → `cleanup`) and touched from the JS thread (`cancel`, `pause`, and
+  // `sharedObjectWillRelease`, which the Hermes GC finalizer calls as soon as the JS counterpart is
+  // collected). The JS side typically drops the task right as its promise settles, so those two overlap; an
+  // unguarded optional then tears and `cancel()` is sent to a freed `NSURLSessionTask` (objc_msgSend crash
+  // on the JS thread). Both fields live behind one lock.
+  private let stateLock = NSLock()
+  private var unsafeDownloadTask: URLSessionDownloadTask?
+  private var unsafeDelegateKey: String?
+  private var downloadTask: URLSessionDownloadTask? {
+    get {
+      stateLock.lock()
+      defer { stateLock.unlock() }
+      return unsafeDownloadTask
+    }
+    set {
+      stateLock.lock()
+      defer { stateLock.unlock() }
+      unsafeDownloadTask = newValue
+    }
+  }
+  private var delegateKey: String? {
+    get {
+      stateLock.lock()
+      defer { stateLock.unlock() }
+      return unsafeDelegateKey
+    }
+    set {
+      stateLock.lock()
+      defer { stateLock.unlock() }
+      unsafeDelegateKey = newValue
+    }
+  }
   private var sessionType: NetworkTaskSessionType = .background
   private(set) var isPausing = false
 
@@ -301,7 +332,7 @@ class FileSystemDownloadTask: SharedObject {
 
   func cancel() {
     isPausing = false
-    downloadTask?.cancel()
+    takeDownloadTask()?.cancel()
     cleanup(unregisterDelegate: false)
   }
 
@@ -311,16 +342,31 @@ class FileSystemDownloadTask: SharedObject {
   }
 
   override func sharedObjectWillRelease() {
-    downloadTask?.cancel()
+    takeDownloadTask()?.cancel()
     cleanup(unregisterDelegate: false)
   }
 
+  /**
+   Atomically detaches the underlying task so exactly one caller gets to cancel it, even when the
+   delegate queue is clearing it at the same moment.
+   */
+  private func takeDownloadTask() -> URLSessionDownloadTask? {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    let task = unsafeDownloadTask
+    unsafeDownloadTask = nil
+    return task
+  }
+
   private func cleanup(unregisterDelegate: Bool) {
+    stateLock.lock()
+    let key = unsafeDelegateKey
+    unsafeDelegateKey = nil
+    unsafeDownloadTask = nil
+    stateLock.unlock()
     if unregisterDelegate {
-      NetworkTaskSessionManager.shared.unregister(key: delegateKey)
+      NetworkTaskSessionManager.shared.unregister(key: key)
     }
-    delegateKey = nil
-    downloadTask = nil
   }
 }
 

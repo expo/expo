@@ -34,7 +34,23 @@ struct UploadTaskResult: Record {
  * A SharedObject that handles file uploads with progress tracking.
  */
 class FileSystemUploadTask: SharedObject {
-  private var uploadTask: URLSessionUploadTask?
+  // Same cross-thread hazard as `FileSystemDownloadTask.downloadTask`: cleared on the URLSession delegate
+  // queue when the upload completes, cancelled from the JS thread (including from the GC finalizer via
+  // `sharedObjectWillRelease`), so the optional is guarded by a lock and detached atomically for cancel.
+  private let stateLock = NSLock()
+  private var unsafeUploadTask: URLSessionUploadTask?
+  private var uploadTask: URLSessionUploadTask? {
+    get {
+      stateLock.lock()
+      defer { stateLock.unlock() }
+      return unsafeUploadTask
+    }
+    set {
+      stateLock.lock()
+      defer { stateLock.unlock() }
+      unsafeUploadTask = newValue
+    }
+  }
   private var delegateKey: String?
   private var sessionType: NetworkTaskSessionType = .background
   private var sourceAccess: FileSystemScopedAccess?
@@ -101,11 +117,23 @@ class FileSystemUploadTask: SharedObject {
 
   func cancel() {
     cancelled = true
-    uploadTask?.cancel()
+    takeUploadTask()?.cancel()
   }
 
   override func sharedObjectWillRelease() {
-    uploadTask?.cancel()
+    takeUploadTask()?.cancel()
+  }
+
+  /**
+   Atomically detaches the underlying task so exactly one caller gets to cancel it, even when the
+   delegate queue is clearing it at the same moment.
+   */
+  private func takeUploadTask() -> URLSessionUploadTask? {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    let task = unsafeUploadTask
+    unsafeUploadTask = nil
+    return task
   }
 
   fileprivate func emitProgress(bytesSent: Int64, totalBytes: Int64) {
@@ -121,7 +149,8 @@ class FileSystemUploadTask: SharedObject {
     }
   }
 
-  fileprivate func finishTask() {
+  // Internal (not fileprivate) to mirror `FileSystemDownloadTask.finishTask`.
+  func finishTask() {
     cleanup()
   }
 
