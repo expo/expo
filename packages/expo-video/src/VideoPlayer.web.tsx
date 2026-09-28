@@ -269,6 +269,7 @@ export default class VideoPlayerWeb
   }
 
   unmountVideoView(video: HTMLVideoElement) {
+    this._removeListeners(video);
     this._mountedVideos.delete(video);
   }
 
@@ -483,5 +484,24 @@ export default class VideoPlayerWeb
     video.onloadstart = () => {
       this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
     };
+  }
+
+  /**
+   * Undoes `_addListeners`. An unmounted video keeps firing events, and every handler
+   * above writes to the player, so they have to go when the view does. `mountVideoView`
+   * calls `_addListeners` again, so remounting re-attaches.
+   */
+  _removeListeners(video: HTMLVideoElement): void {
+    video.onplay = null;
+    video.onpause = null;
+    video.onvolumechange = null;
+    video.onseeking = null;
+    video.onseeked = null;
+    video.onratechange = null;
+    video.onerror = null;
+    video.oncanplay = null;
+    video.onwaiting = null;
+    video.onended = null;
+    video.onloadstart = null;
   }
 }

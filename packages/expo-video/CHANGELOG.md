@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Remove the `HTMLVideoElement` event handlers in `unmountVideoView`, so an unmounted video stops writing to the player. ([#50403](https://github.com/expo/expo/pull/50403) by [@KAMRONBEK](https://github.com/KAMRONBEK))
+
 ### 💡 Others
 
 ## 58.0.3 — 2026-09-23
