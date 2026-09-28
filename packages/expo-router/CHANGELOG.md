@@ -12,8 +12,7 @@
 
 ### 💡 Others
 
-- Update Expo Router navigation guidance in API comments and diagnostics to point to Expo documentation.
-
+- Update Expo Router navigation guidance in API comments and diagnostics to point to Expo documentation. ([#50732](https://github.com/expo/expo/pull/50732) by [@Ubax](https://github.com/Ubax))
 - Use `unwrapDevLaunchURL` from `expo-linking` instead of a private copy of the `expo-development-client` URL handling. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.9 — 2026-09-28
