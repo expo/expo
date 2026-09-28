@@ -2,7 +2,7 @@
 
 /** @jest-environment node */
 
-import { Request } from '../Request';
+import { Request } from '../ExpoRequest';
 import { fetch } from '../fetch';
 
 globalThis.ReadableStream = require('node:stream/web').ReadableStream;
