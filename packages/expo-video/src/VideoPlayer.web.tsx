@@ -311,7 +311,7 @@ export default class VideoPlayerWeb
 
   play(): void {
     this._mountedVideos.forEach((video) => {
-      video.play();
+      this._playWithRejectionHandling(video);
     });
   }
 
@@ -328,7 +328,7 @@ export default class VideoPlayerWeb
       if (uri) {
         video.setAttribute('src', uri);
         video.load();
-        video.play();
+        this._playWithRejectionHandling(video);
       } else {
         video.removeAttribute('src');
         video.load();
@@ -371,7 +371,7 @@ export default class VideoPlayerWeb
     if (firstVideo.paused) {
       video.pause();
     } else {
-      video.play();
+      this._playWithRejectionHandling(video);
     }
     video.currentTime = firstVideo.currentTime;
     video.volume = firstVideo.volume;
@@ -392,6 +392,44 @@ export default class VideoPlayerWeb
     if (mountedVideos[0] === eventSource) {
       this.emit(eventName, ...args);
     }
+  }
+
+  /**
+   * `HTMLMediaElement.play()` returns a promise that can reject, most often with
+   * `NotAllowedError` when the autoplay policy refuses a play that is too far from a user
+   * gesture. Nothing observed it, so the player went on reporting `playing: true` for a
+   * playback that never started, and emitted nothing to say otherwise.
+   *
+   * Only the three commands the player itself issues go through here. `replay()` and the
+   * resync inside `onplay` deliberately do not: the resync runs for the *other* mounted
+   * videos while one of them is genuinely playing, so reconciling from it would report the
+   * player paused while video is on screen.
+   */
+  _playWithRejectionHandling(video: HTMLVideoElement): void {
+    const playPromise = video.play();
+    if (!playPromise || typeof playPromise.catch !== 'function') {
+      return;
+    }
+    playPromise.catch((error) => {
+      // A newer load() or pause() superseded this play. That command's own events describe
+      // the real state, so a stale rejection must not overwrite them.
+      if (error?.name === 'AbortError') {
+        return;
+      }
+      // The same, for a rejection that lands after something already started this element.
+      if (!video.paused) {
+        return;
+      }
+      // Only the authoritative video reconciles, so a secondary view cannot flip the player.
+      if ([...this._mountedVideos][0] !== video) {
+        return;
+      }
+      const wasPlaying = this.playing;
+      this.playing = false;
+      if (wasPlaying) {
+        this.emit('playingChange', { isPlaying: false, oldIsPlaying: wasPlaying });
+      }
+    });
   }
 
   _addListeners(video: HTMLVideoElement): void {
