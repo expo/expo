@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Made `startActivityAsync` apply `packageName` with `Intent.setPackage` when `className` is not set, so the intent only goes to that app. Previously, `packageName` was ignored in that case. ([#50511](https://github.com/expo/expo/pull/50511) by [@sivefunc](https://github.com/sivefunc))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

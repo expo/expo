@@ -50,6 +50,11 @@ class IntentLauncherModule : Module() {
           }
       }
 
+      // Without a class name, restrict the intent to the package instead of dropping it.
+      if (params.className == null && params.packageName != null) {
+        intent.setPackage(params.packageName)
+      }
+
       // `setData` and `setType` are exclusive, so we need to use `setDataAndType` in that case.
       if (params.data != null && params.type != null) {
         intent.setDataAndType(params.data.toUri(), params.type)
