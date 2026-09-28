@@ -1,5 +1,3 @@
-import type * as queryString from 'query-string';
-
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import type { InitialState } from '../react-navigation/native';
 import { escapeStringRegexp as escape } from '../utils/escapeStringRegexp';
@@ -180,7 +178,10 @@ function formatRegexPattern(it: string): string {
   return escape(it) + `\\/`;
 }
 
-export function handleUrlParams(route: ParsedRoute, params?: queryString.ParsedQuery) {
+export function handleUrlParams(
+  route: ParsedRoute,
+  params?: Record<string, string | null | (string | null)[] | undefined>
+) {
   if (params) {
     route.params = Object.assign(Object.create(null), route.params) as Record<string, any>;
     for (const [name, value] of Object.entries(params)) {

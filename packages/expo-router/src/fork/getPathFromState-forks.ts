@@ -1,5 +1,3 @@
-import * as queryString from 'query-string';
-
 import { matchDynamicName, matchGroupName } from '../matchers';
 import type { Route } from '../react-navigation/native';
 import type { State, StringifyConfig } from './getPathFromState';
@@ -48,11 +46,27 @@ export function fixCurrentParams(
   return currentParams;
 }
 
+export function stringifySearchParams(params: Record<string, string | string[]>): string {
+  const searchParams = new URLSearchParams();
+
+  for (const [name, value] of Object.entries(params)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        searchParams.append(name, item);
+      }
+    } else {
+      searchParams.append(name, value);
+    }
+  }
+
+  return searchParams.toString();
+}
+
 export function appendQueryAndHash(
   path: string,
-  { '#': hash, ...focusedParams }: Record<string, any>
+  { '#': hash, ...focusedParams }: Record<string, string | string[]>
 ) {
-  const query = queryString.stringify(focusedParams, { sort: false });
+  const query = stringifySearchParams(focusedParams);
 
   if (query) {
     path += `?${query}`;
