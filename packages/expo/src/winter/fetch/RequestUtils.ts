@@ -141,15 +141,12 @@ export function overrideHeaders(
 export function normalizeMethod(method: string): string {
   const normalized = method.toUpperCase();
   switch (normalized) {
-    case 'CONNECT':
     case 'DELETE':
     case 'GET':
     case 'HEAD':
     case 'OPTIONS':
-    case 'PATCH':
     case 'POST':
     case 'PUT':
-    case 'TRACE':
       return normalized;
     default:
       return method;

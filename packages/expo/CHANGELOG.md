@@ -10,7 +10,7 @@
 
 - [iOS] Add a SwiftPM autolinking plugin (preview) so Expo modules can be consumed by `react-native spm`, contributing precompiled xcframeworks, source packages and the generated `ExpoModulesProvider` into the SwiftPM autolinking graph. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
-- Add a spec-compliant `Request` to `expo/fetch` (exported as `Request` and installed as the global on native) that replaces React Native's `whatwg-fetch` polyfill, so request bodies and `FormData` round-trip predictably. On web, `expo/fetch` exports the platform's `Request`. ([#46630](https://github.com/expo/expo/pull/46630) by [@tsapeta](https://github.com/tsapeta))
+- Add a `Request` to `expo/fetch` that follows the Fetch standard (exported as `Request` and installed as the global on native) and replaces React Native's `whatwg-fetch` polyfill, so request bodies and `FormData` round-trip predictably. On web, `expo/fetch` exports the platform's `Request`. ([#46630](https://github.com/expo/expo/pull/46630) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

@@ -47,7 +47,8 @@ describe('Request', () => {
 
   it('normalizes the method', () => {
     expect(new Request('https://example.test/', { method: 'post' }).method).toBe('POST');
-    expect(new Request('https://example.test/', { method: 'patch' }).method).toBe('PATCH');
+    // The spec uppercases only DELETE, GET, HEAD, OPTIONS, POST and PUT.
+    expect(new Request('https://example.test/', { method: 'patch' }).method).toBe('patch');
   });
 
   it('throws when a body is given to a GET or HEAD request', () => {
@@ -337,6 +338,158 @@ describe('Request', () => {
     await request.text();
     await expect(request.json()).rejects.toThrow("Failed to execute 'json'");
     await expect(request.text()).rejects.toThrow("Failed to execute 'text'");
+  });
+
+  // Expected values follow the Fetch standard (https://fetch.spec.whatwg.org/#request-class) and
+  // match what spec-compliant implementations such as undici return.
+  describe('spec conformance', () => {
+    describe('method', () => {
+      it.each(['CONNECT', 'trace', 'Track'])('throws for the forbidden method %s', (method) => {
+        expect(() => new Request('https://example.test/', { method })).toThrow(TypeError);
+      });
+
+      it.each(['bad method', '', 'GET\n'])('throws for the invalid method %j', (method) => {
+        expect(() => new Request('https://example.test/', { method })).toThrow(TypeError);
+      });
+
+      it('keeps a valid custom method as-is', () => {
+        expect(new Request('https://example.test/', { method: 'Custom' }).method).toBe('Custom');
+      });
+    });
+
+    describe('url', () => {
+      it('serializes a parsed URL', () => {
+        expect(new Request('https://example.test').url).toBe('https://example.test/');
+        expect(new Request('HTTPS://Example.Test/a/../b').url).toBe('https://example.test/b');
+      });
+
+      it('keeps input that cannot be parsed as-is for whatwg-fetch compatibility', () => {
+        expect(new Request('not a url').url).toBe('not a url');
+      });
+    });
+
+    describe('properties', () => {
+      it('has the spec defaults', () => {
+        const request = new Request('https://example.test/');
+        expect(request.mode).toBe('cors');
+        expect(request.cache).toBe('default');
+        expect(request.referrer).toBe('about:client');
+        expect(request.referrerPolicy).toBe('');
+        expect(request.integrity).toBe('');
+        expect(request.keepalive).toBe(false);
+        expect(request.destination).toBe('');
+        expect(request.duplex).toBe('half');
+      });
+
+      it('takes the values from the init', () => {
+        const request = new Request('https://example.test/', {
+          mode: 'no-cors',
+          cache: 'no-store',
+          referrer: '',
+          referrerPolicy: 'no-referrer',
+          integrity: 'sha256-abc',
+          keepalive: true,
+        });
+        expect(request.mode).toBe('no-cors');
+        expect(request.cache).toBe('no-store');
+        expect(request.referrer).toBe('');
+        expect(request.referrerPolicy).toBe('no-referrer');
+        expect(request.integrity).toBe('sha256-abc');
+        expect(request.keepalive).toBe(true);
+      });
+
+      it('copies the values from a source request', () => {
+        const original = new Request('https://example.test/', {
+          mode: 'same-origin',
+          cache: 'reload',
+          integrity: 'sha256-abc',
+          keepalive: true,
+        });
+        const copy = new Request(original);
+        expect(copy.mode).toBe('same-origin');
+        expect(copy.cache).toBe('reload');
+        expect(copy.integrity).toBe('sha256-abc');
+        expect(copy.keepalive).toBe(true);
+      });
+    });
+
+    describe('signal', () => {
+      it('creates a new signal that follows the init signal', () => {
+        const controller = new AbortController();
+        const request = new Request('https://example.test/', { signal: controller.signal });
+        expect(request.signal).not.toBe(controller.signal);
+        expect(request.signal.aborted).toBe(false);
+        const reason = new Error('stop');
+        controller.abort(reason);
+        expect(request.signal.aborted).toBe(true);
+        expect(request.signal.reason).toBe(reason);
+      });
+
+      it('is aborted when the init signal is already aborted', () => {
+        const request = new Request('https://example.test/', { signal: AbortSignal.abort() });
+        expect(request.signal.aborted).toBe(true);
+      });
+
+      it('follows the source request signal', () => {
+        const controller = new AbortController();
+        const original = new Request('https://example.test/', { signal: controller.signal });
+        const copy = new Request(original);
+        const clone = original.clone();
+        controller.abort();
+        expect(copy.signal.aborted).toBe(true);
+        expect(clone.signal.aborted).toBe(true);
+      });
+    });
+
+    describe('body', () => {
+      it('takes the blob type from the content-type header', async () => {
+        const request = new Request('https://example.test/', {
+          method: 'POST',
+          body: 'x',
+          headers: { 'content-type': 'text/foo' },
+        });
+        expect((await request.blob()).type).toBe('text/foo');
+      });
+
+      it('parses a urlencoded body with formData()', async () => {
+        const request = new Request('https://example.test/', {
+          method: 'POST',
+          body: new URLSearchParams('a=1&b=2'),
+        });
+        const formData = await request.formData();
+        expect(formData.get('a')).toBe('1');
+        expect(formData.get('b')).toBe('2');
+      });
+
+      it('rejects formData() for a body that is not form data', async () => {
+        const request = new Request('https://example.test/', { method: 'POST', body: 'a=1' });
+        await expect(request.formData()).rejects.toThrow(TypeError);
+      });
+
+      it('copies a URLSearchParams body at construction', async () => {
+        const params = new URLSearchParams('a=1');
+        const request = new Request('https://example.test/', { method: 'POST', body: params });
+        params.set('a', '2');
+        expect(await request.text()).toBe('a=1');
+      });
+
+      it('copies a byte body at construction', async () => {
+        const bytes = new TextEncoder().encode('abc');
+        const request = new Request('https://example.test/', { method: 'POST', body: bytes });
+        bytes[0] = 'x'.charCodeAt(0);
+        expect(await request.text()).toBe('abc');
+      });
+
+      it('copies a FormData body at construction', async () => {
+        const formData = new FormData();
+        formData.append('a', '1');
+        const request = new Request('https://example.test/', { method: 'POST', body: formData });
+        formData.append('b', '2');
+        const read = await request.formData();
+        expect(read.get('a')).toBe('1');
+        expect(read.has('b')).toBe(false);
+      });
+    });
   });
 
   it('is tagged as a Request', () => {
