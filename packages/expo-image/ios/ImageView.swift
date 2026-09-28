@@ -446,6 +446,11 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
+    if let image = assetCatalogImage(for: source.uri) {
+      onLoadStart([:])
+      didLoad(image, cacheType: .memory, imageUrl: source.uri)
+      return true
+    }
     if let local = localAssetImage(from: source) {
       // `UIImage(named:)` serves bundled assets from the system's in-memory cache, so report a
       // memory hit — this lets `transition.skipOnCacheHit` treat them as instantly available.
@@ -457,9 +462,6 @@ public final class ImageView: ExpoView {
   }
 
   private func localAssetImage(from source: ImageSource) -> UIImage? {
-    if let image = assetCatalogImage(for: source.uri) {
-      return image
-    }
     guard let path = localAssetName(from: source.uri) else {
       return nil
     }
@@ -518,7 +520,7 @@ public final class ImageView: ExpoView {
 
     // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
     // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
-    if let localImage = localAssetImage(from: placeholder) {
+    if let localImage = assetCatalogImage(for: placeholder.uri) ?? localAssetImage(from: placeholder) {
       placeholderImage = localImage
       displayPlaceholderIfNecessary()
       return
