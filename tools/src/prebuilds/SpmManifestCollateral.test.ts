@@ -119,6 +119,8 @@ type FixtureOptions = {
   editHeadTools?: (toolsSrc: string) => void;
   /** Packages given a root `Package.swift` in the head commit, which opts them in. */
   optInAtHead?: string[];
+  /** Edits the working tree after the head commit, given the repository root; left uncommitted. */
+  editWorkingTree?: (root: string) => void;
 };
 
 /**
@@ -132,6 +134,7 @@ function fixtureRepo({
   editHead = () => {},
   editHeadTools = () => {},
   optInAtHead = [],
+  editWorkingTree = () => {},
 }: FixtureOptions = {}): { root: string; baseCommit: string } {
   const root = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-fixture-')));
   fixtureRoots.push(root);
@@ -157,6 +160,7 @@ function fixtureRepo({
   }
   git(root, 'add', '--all');
   git(root, 'commit', '--quiet', '--allow-empty', '--message', 'head');
+  editWorkingTree(root);
   return { root, baseCommit };
 }
 
@@ -165,8 +169,51 @@ function runGate(root: string, base: string, ...args: string[]): SpawnSyncReturn
     cwd: root,
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024,
+    // These tests may themselves run in a GitHub Actions step; keep fixtures out of its summary.
+    env: { ...process.env, GITHUB_STEP_SUMMARY: undefined },
   });
 }
+
+/** Runs the gate with its own `$GITHUB_STEP_SUMMARY`, returning what the gate appended to it. */
+function runGateWithSummary(root: string, base: string) {
+  const summaryDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-collateral-summary-'));
+  fixtureRoots.push(summaryDirectory);
+  const summary = path.join(summaryDirectory, 'summary.md');
+  fs.writeFileSync(summary, '# Earlier step\n');
+  const result = spawnSync(process.execPath, [gate, '--repo', root, '--base', base], {
+    cwd: root,
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
+    env: { ...process.env, GITHUB_STEP_SUMMARY: summary },
+  });
+  const content = fs.readFileSync(summary, 'utf8');
+  assert.ok(content.startsWith('# Earlier step\n'), `the gate must append:\n${content}`);
+  return { result, appended: content.slice('# Earlier step\n'.length) };
+}
+
+/** Rewrites one snippet of the head commit's generator, given its `tools/src` path. */
+function editGenerator(toolsSrc: string, snippet: string, replacement: string): void {
+  const generator = path.join(toolsSrc, 'prebuilds/SPMPackage.ts');
+  const source = fs.readFileSync(generator, 'utf8');
+  const edited = source.replace(snippet, replacement);
+  assert.notEqual(edited, source, 'the fixture edit must reach the generator');
+  fs.writeFileSync(generator, edited);
+}
+
+/** A head-side tooling change that alters every generated manifest. */
+function markEveryManifest(toolsSrc: string): void {
+  editGenerator(
+    toolsSrc,
+    "lines.push('import PackageDescription');",
+    "lines.push('import PackageDescription // edited at head');"
+  );
+}
+
+const everyProduct = [
+  'fixture-consumer/FixtureConsumer',
+  'fixture-core/FixtureCore',
+  'fixture-leaf/FixtureLeaf',
+];
 
 function output(result: SpawnSyncReturns<string>): string {
   return `${result.stdout}\n${result.stderr}`;
@@ -184,7 +231,8 @@ function comparedManifests(result: SpawnSyncReturns<string>): number {
  * Runs the collateral gate, which regenerates every product's `Package.swift` at the baseline
  * commit and on the working tree and requires the two to be byte-identical. It is half the
  * acceptance criterion of every SwiftPM migration step: the packages *not* being migrated must
- * emit exactly what they emitted before.
+ * emit exactly what they emitted before. Both sides use the current tooling; tooling changes are
+ * reported, not failed.
  */
 describe('check-spm-manifest-collateral', () => {
   it('passes when nothing changed, having compared every product', () => {
@@ -193,6 +241,7 @@ describe('check-spm-manifest-collateral', () => {
 
     assert.equal(result.status, 0, output(result));
     assert.equal(comparedManifests(result), 3);
+    assert.doesNotMatch(result.stdout, /Tooling report/);
   });
 
   it('excludes a product whose own config entry changed, and says so', () => {
@@ -231,32 +280,125 @@ describe('check-spm-manifest-collateral', () => {
     assert.doesNotMatch(result.stderr, /DIFF: fixture-core\//);
   });
 
-  it('fails on every product whose manifest a head-side generator change altered', () => {
+  it('reports, without failing, every manifest a tooling change altered', () => {
+    const { root, baseCommit } = fixtureRepo({ editHeadTools: markEveryManifest });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    for (const id of everyProduct) {
+      for (const flavor of ['Debug', 'Release']) {
+        assert.match(result.stdout, new RegExp(`INFO: Tooling report: ${id}/${flavor} changed\n`));
+      }
+    }
+    assert.match(result.stdout, /INFO: Tooling report: .* alter 6 of 6 compared manifests/);
+    assert.doesNotMatch(result.stderr, /DIFF:/);
+    assert.equal(comparedManifests(result), 3);
+  });
+
+  it('fails on package collateral even when the tooling changed too', () => {
     const { root, baseCommit } = fixtureRepo({
-      editHeadTools: (toolsSrc) => {
-        const generator = path.join(toolsSrc, 'prebuilds/SPMPackage.ts');
-        const source = fs.readFileSync(generator, 'utf8');
-        const edited = source.replace(
-          "lines.push('import PackageDescription');",
-          "lines.push('import PackageDescription // edited at head');"
-        );
-        assert.notEqual(edited, source, 'the fixture edit must reach the generator');
-        fs.writeFileSync(generator, edited);
+      editHeadTools: markEveryManifest,
+      editHead: (packages) => {
+        packages['fixture-core'] = [
+          product('FixtureCore', { externalDependencies: ['fixture-leaf/FixtureLeaf'] }),
+        ];
       },
     });
     const result = runGate(root, baseCommit);
 
     assert.equal(result.status, 1, output(result));
-    for (const id of [
-      'fixture-consumer/FixtureConsumer',
-      'fixture-core/FixtureCore',
-      'fixture-leaf/FixtureLeaf',
-    ]) {
+    assert.match(result.stdout, /INFO: Tooling report: fixture-leaf\/FixtureLeaf\/Debug changed\n/);
+    assert.match(result.stderr, /DIFF: fixture-consumer\/FixtureConsumer\/Debug/);
+    assert.doesNotMatch(result.stderr, /DIFF: fixture-leaf\//);
+    assert.match(result.stderr, /Collateral manifest changes/);
+  });
+
+  it('lists the manifests a tooling change altered in the GitHub step summary', () => {
+    const { root, baseCommit } = fixtureRepo({ editHeadTools: markEveryManifest });
+    const { result, appended } = runGateWithSummary(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    for (const id of everyProduct) {
       for (const flavor of ['Debug', 'Release']) {
-        assert.match(result.stderr, new RegExp(`DIFF: ${id}/${flavor}\n`));
+        assert.ok(appended.includes(`${id}/${flavor}`), `${id}/${flavor} missing:\n${appended}`);
       }
     }
-    assert.match(result.stderr, /Collateral manifest changes/);
+  });
+
+  it('skips the package check when the current tooling cannot read the baseline packages', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editHeadTools: (toolsSrc) =>
+        editGenerator(
+          toolsSrc,
+          'const content = await generatePackageSwiftAsync(',
+          "if (!fs.existsSync(path.join(pkg.path, 'spm.format'))) throw new Error('spm.format is required');\n    const content = await generatePackageSwiftAsync("
+        ),
+      editWorkingTree: (root) => {
+        for (const directory of Object.keys(basePackages())) {
+          fs.writeFileSync(path.join(root, 'packages', directory, 'spm.format'), '2');
+        }
+      },
+    });
+    const { result, appended } = runGateWithSummary(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(result.stdout, /SKIP: .*package check/i);
+    assert.match(output(result), /Why:/);
+    assert.match(output(result), /How to fix:/);
+    assert.match(output(result), /spm\.format is required/);
+    assert.doesNotMatch(result.stdout, /PASS:/);
+    assert.match(appended, /SKIP: .*package check/i);
+    assert.match(appended, /spm\.format is required/);
+  });
+
+  it('fails when the baseline packages cannot be generated and the tooling change is unrelated', () => {
+    const broken = basePackages();
+    broken['fixture-core'] = [product('FixtureCore', { externalDependencies: 5 })];
+    const { root, baseCommit } = fixtureRepo({
+      base: broken,
+      editHead: (packages) => {
+        packages['fixture-core'] = [product('FixtureCore')];
+      },
+      editHeadTools: (toolsSrc) =>
+        fs.appendFileSync(path.join(toolsSrc, 'Changelogs.ts'), '\n//\n'),
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
+    assert.doesNotMatch(result.stdout, /SKIP:/);
+    assert.match(result.stderr, /not iterable/);
+    assert.match(result.stderr, /baseline \w+ packages/);
+  });
+
+  it('fails when the baseline packages cannot be generated and the tooling did not change', () => {
+    const broken = basePackages();
+    broken['fixture-core'] = [product('FixtureCore', { externalDependencies: 5 })];
+    const { root, baseCommit } = fixtureRepo({
+      base: broken,
+      editHead: (packages) => {
+        packages['fixture-core'] = [product('FixtureCore')];
+      },
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 1, output(result));
+    assert.doesNotMatch(result.stdout, /SKIP:/);
+    assert.match(result.stderr, /not iterable/);
+    assert.match(result.stderr, /baseline \w+ packages/);
+    assert.match(result.stderr, /Why:/);
+    assert.match(result.stderr, /How to fix:/);
+  });
+
+  it('reports on the tooling when tools/src has an untracked file', () => {
+    const { root, baseCommit } = fixtureRepo({
+      editWorkingTree: (root) =>
+        fs.writeFileSync(path.join(root, 'tools/src/Untracked.ts'), 'export {};\n'),
+    });
+    const result = runGate(root, baseCommit);
+
+    assert.equal(result.status, 0, output(result));
+    assert.match(result.stdout, /INFO: Tooling report: .* alter 0 of 6 compared manifests/);
+    assert.equal(comparedManifests(result), 3);
   });
 
   it('fails loudly when two config entries claim the same product', () => {
