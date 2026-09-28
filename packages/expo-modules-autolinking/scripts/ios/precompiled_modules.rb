@@ -35,6 +35,21 @@ require 'tempfile'
 require 'tmpdir'
 require 'uri'
 
+# The macOS system Ruby is 2.6, which lacks Enumerable#filter_map (added in 2.7). Without it the
+# precompiled modules code raises NoMethodError, and modules silently fall back to building from source.
+unless Enumerable.method_defined?(:filter_map)
+  module Enumerable
+    def filter_map
+      return to_enum(:filter_map) unless block_given?
+
+      each_with_object([]) do |item, result|
+        value = yield(item)
+        result << value if value
+      end
+    end
+  end
+end
+
 module Expo
   module PrecompiledModules
     # The environment variable that enables precompiled modules
