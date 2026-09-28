@@ -103,6 +103,8 @@ internal final class CoreModule: Module {
       for propName in viewDefinition.getSupportedPropNames() {
         validAttributes[propName] = true
       }
+      // Used by `ExpoViewShadowNode` to disable flattening of display content views when set to true
+      validAttributes["disableForceFlatten"] = true
       for eventName in viewDefinition.getSupportedEventNames() {
         guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
           continue

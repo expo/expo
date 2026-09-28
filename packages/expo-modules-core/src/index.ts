@@ -14,6 +14,7 @@ export { default as uuid } from './uuid';
 
 export type { ProxyNativeModule } from './NativeModulesProxy.types';
 export { requireNativeViewManager } from './NativeViewManagerAdapter';
+export { NativeLayoutContext } from './NativeLayoutContext';
 
 export * from './requireNativeModule';
 export * from './registerWebModule';

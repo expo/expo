@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { NativeLayoutContext, requireNativeView } from 'expo';
 import type { LayoutChangeEvent } from 'react-native';
 
 import { PresentedContentContext, useIsPresentedInOwnWindow } from '../PresentedContentContext';
@@ -34,19 +34,22 @@ export function RNHostView({ matchContents, ...props }: RNHostViewProps) {
     resolveMatchContents(matchContents);
 
   return (
-    <RNHostNativeView
-      {...props}
-      layoutRoot={layoutRoot}
-      matchContentsHorizontal={matchContentsHorizontal}
-      matchContentsVertical={matchContentsVertical}
-      expoInternalSizeFromChildren={matchContentsHorizontal || matchContentsVertical}
-      // `matchContents` can only be used once on mount
-      // So we force unmount when it changes to prevent unexpected layout
-      key={`${matchContentsHorizontal}-${matchContentsVertical}`}>
-      {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
-      <PresentedContentContext.Provider value={false}>
-        {props.children}
-      </PresentedContentContext.Provider>
-    </RNHostNativeView>
+    // React Native lays out this view and its hosted content, so both keep their Yoga boxes.
+    <NativeLayoutContext.Provider value={false}>
+      <RNHostNativeView
+        {...props}
+        layoutRoot={layoutRoot}
+        matchContentsHorizontal={matchContentsHorizontal}
+        matchContentsVertical={matchContentsVertical}
+        expoInternalSizeFromChildren={matchContentsHorizontal || matchContentsVertical}
+        // `matchContents` can only be used once on mount
+        // So we force unmount when it changes to prevent unexpected layout
+        key={`${matchContentsHorizontal}-${matchContentsVertical}`}>
+        {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
+        <PresentedContentContext.Provider value={false}>
+          {props.children}
+        </PresentedContentContext.Provider>
+      </RNHostNativeView>
+    </NativeLayoutContext.Provider>
   );
 }
