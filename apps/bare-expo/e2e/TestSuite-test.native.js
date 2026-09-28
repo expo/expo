@@ -24,6 +24,7 @@ const TESTS = [
   // 'Audio',
   'FileSystem',
   'Fetch',
+  'Request',
 ];
 
 module.exports = { TESTS };
