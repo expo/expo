@@ -67,7 +67,6 @@ function createClient() {
   return new ModelContextClient({
     getConnectionInfo: () => ({ devServer: 'localhost:8081', useWss: false }),
     createWebSocket: (url) => new FakeWebSocket(url),
-    platform: 'ios',
   });
 }
 
@@ -77,7 +76,7 @@ describe(ModelContextClient, () => {
     TOOL.execute.mockClear();
   });
 
-  it('connects on first registration and sends hello plus registrations on open', () => {
+  it('connects on first registration and sends registrations on open', () => {
     const client = createClient();
     client.registerTool(TOOL);
     expect(FakeWebSocket.instances).toHaveLength(1);
@@ -86,21 +85,14 @@ describe(ModelContextClient, () => {
     expect(ws.sent).toHaveLength(0);
 
     ws.open();
-    expect(ws.sent[0]).toMatchObject({
-      version: 2,
-      method: 'modelContext/hello',
-      params: { protocolVersion: 1, platform: 'ios' },
-    });
-    expect(ws.sent[1]).toMatchObject({
-      method: 'modelContext/registerTool',
-      params: {
-        name: 'add-todo',
-        description: 'Add a todo',
-        inputSchema: TOOL.inputSchema,
-        stack: expect.stringContaining('ModelContextClient'),
+    expect(ws.sent).toEqual([
+      {
+        version: 2,
+        id: expect.any(String),
+        method: 'modelContext/registerTool',
+        params: { name: 'add-todo', description: 'Add a todo', inputSchema: TOOL.inputSchema },
       },
-    });
-    expect(ws.sent).toHaveLength(2);
+    ]);
   });
 
   it('uses wss when the dev server is served over https', () => {
@@ -144,7 +136,7 @@ describe(ModelContextClient, () => {
     ws.receive({ id: 'x', method: 'tools/call', params: { name: 'add-todo', arguments: {} } });
     await ws.flush();
     expect(TOOL.execute).not.toHaveBeenCalled();
-    expect(ws.sent).toHaveLength(2);
+    expect(ws.sent).toHaveLength(1);
   });
 
   it('replies with errors for unknown tools and thrown errors', async () => {
@@ -202,7 +194,7 @@ describe(ModelContextClient, () => {
     });
   });
 
-  it('re-sends hello and every registration when the socket reconnects', () => {
+  it('re-sends every registration when the socket reconnects', () => {
     const client = createClient();
     client.registerTool(TOOL);
     client.registerTool({ ...TOOL, name: 'second' });
@@ -211,7 +203,6 @@ describe(ModelContextClient, () => {
 
     ws.reconnect();
     expect(ws.sent.map((message) => message.method)).toEqual([
-      'modelContext/hello',
       'modelContext/registerTool',
       'modelContext/registerTool',
     ]);
@@ -223,35 +214,6 @@ describe(ModelContextClient, () => {
     expect(() => client.registerTool({ ...TOOL, description: '' })).toThrow(/description/);
     expect(() => client.registerTool({ ...TOOL, execute: undefined as any })).toThrow(/execute/);
     expect(FakeWebSocket.instances).toHaveLength(0);
-  });
-
-  it('should warn when the dev server blocks a tool', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    try {
-      const client = createClient();
-      client.registerTool(TOOL);
-      const ws = FakeWebSocket.instances[0]!;
-      ws.open();
-      const registration = ws.sent.find(
-        (message) => message.method === 'modelContext/registerTool'
-      );
-
-      ws.receive({
-        version: 2,
-        id: registration.id,
-        result: {
-          status: 'blocked',
-          reason: 'package-not-allowed',
-          message: 'registered by package "expo-sqlite"',
-        },
-      });
-
-      expect(warn).toHaveBeenCalledWith(
-        '[modelContext] Tool "add-todo" is blocked: registered by package "expo-sqlite".'
-      );
-    } finally {
-      warn.mockRestore();
-    }
   });
 
   it('should warn when the dev server rejects a tool', () => {

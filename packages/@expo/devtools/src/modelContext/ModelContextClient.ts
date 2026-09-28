@@ -9,7 +9,6 @@ import type {
   RegisterToolOptions,
 } from './ModelContext.types';
 
-export const MODEL_CONTEXT_PROTOCOL_VERSION = 1;
 export const MODEL_CONTEXT_ENDPOINT = '/_expo/model-context';
 
 /** Envelope version shared with the dev server's `/message` socket (`socketMessages.ts`). */
@@ -50,8 +49,6 @@ export interface ModelContextClientOptions {
   getConnectionInfo: () => Pick<ConnectionInfo, 'devServer' | 'useWss'>;
   /** Creates the socket. Defaults to `WebSocketWithReconnect`. Used for injection when testing. */
   createWebSocket?: (url: string) => ModelContextSocket;
-  /** Platform name sent in the handshake. */
-  platform?: string;
 }
 
 /**
@@ -60,10 +57,9 @@ export interface ModelContextClientOptions {
  */
 export class ModelContextClient implements ModelContext {
   private tools = new Map<string, ModelContextTool<any>>();
-  private stacks = new Map<string, string | undefined>();
   private ws: ModelContextSocket | null = null;
   private nextRequestId = 1;
-  /** Register request id → tool name, so a block or rejection can be reported. */
+  /** Register request id → tool name, so a rejection can be reported. */
   private pendingRegistrations = new Map<string, string>();
 
   constructor(private readonly options: ModelContextClientOptions) {}
@@ -77,10 +73,7 @@ export class ModelContextClient implements ModelContext {
       return { remove: () => {} };
     }
 
-    // Capture the call site so the dev server can attribute the tool to the app or to a package.
-    const stack = options?.stack ?? new Error().stack;
     this.tools.set(tool.name, tool);
-    this.stacks.set(tool.name, stack);
 
     if (this.ws == null) {
       // The first connection sends every registration from the `open` handler.
@@ -98,7 +91,6 @@ export class ModelContextClient implements ModelContext {
     if (!this.tools.delete(name)) {
       return;
     }
-    this.stacks.delete(name);
     this.send({ method: 'modelContext/unregisterTool', params: { name } });
   }
 
@@ -134,13 +126,6 @@ export class ModelContextClient implements ModelContext {
     // the full tool list each time. Replies to the previous socket can no longer arrive.
     ws.addEventListener('open', () => {
       this.pendingRegistrations.clear();
-      this.send({
-        method: 'modelContext/hello',
-        params: {
-          protocolVersion: MODEL_CONTEXT_PROTOCOL_VERSION,
-          platform: this.options.platform,
-        },
-      });
       for (const name of this.tools.keys()) {
         this.sendRegistration(name);
       }
@@ -164,7 +149,6 @@ export class ModelContextClient implements ModelContext {
         name: tool.name,
         description: tool.description,
         inputSchema: tool.inputSchema,
-        stack: this.stacks.get(name),
       },
     });
   }
@@ -207,13 +191,6 @@ export class ModelContextClient implements ModelContext {
       // logger.warn stays silent unless the app opts in.
       // A rejected tool should show up anyway.
       console.warn(`[modelContext] Tool "${name}" was rejected: ${message.error.message}`);
-      return;
-    }
-    const result = message.result as { status?: string; message?: string; reason?: string } | null;
-    if (result?.status === 'blocked') {
-      console.warn(
-        `[modelContext] Tool "${name}" is blocked: ${result.message ?? result.reason ?? 'policy'}.`
-      );
     }
   }
 
@@ -267,7 +244,7 @@ function validateToolLocally(tool: ModelContextTool<any>): void {
   }
 }
 
-/** A `ModelContext` that does nothing. Used in production builds. */
+/** A `ModelContext` that does nothing. Used outside `__DEV__`. */
 export const noopModelContext: ModelContext = {
   registerTool: () => ({ remove: () => {} }),
   unregisterTool: () => {},

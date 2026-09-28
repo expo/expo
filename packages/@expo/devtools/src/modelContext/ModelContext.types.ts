@@ -34,12 +34,6 @@ export interface ModelContextTool<Input extends Record<string, unknown> = Record
 export interface RegisterToolOptions {
   /** Abort this signal to unregister the tool. */
   signal?: AbortSignal;
-  /**
-   * Stack trace captured at the call site. Used by the dev server to attribute the tool to the
-   * app or to a package. `useModelContextTool` sets this. Do not set it yourself.
-   * @hidden
-   */
-  stack?: string;
 }
 
 export interface ModelContextToolSubscription {
@@ -50,7 +44,7 @@ export interface ModelContextToolSubscription {
 export interface ModelContext {
   /**
    * Register a tool with the Expo dev server so an agent can call it.
-   * Only active in development. In production this is a no-op.
+   * Only active when `__DEV__` is true. Otherwise this is a no-op.
    */
   registerTool(
     tool: ModelContextTool<any>,
