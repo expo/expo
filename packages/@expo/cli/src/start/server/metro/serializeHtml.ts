@@ -187,13 +187,21 @@ export function getBitSetAssetsForRoute(
       );
     }
   }
-  // Only match async entries; the initial bundle must run after route registration.
-  const matchedAssets = jsAssets.filter(
-    (asset) =>
-      asset.metadata.isAsync &&
-      asset.metadata.entryPaths!.some((entry) => entryPoints.includes(entry))
+  const entryAssets = jsAssets.filter((asset) => asset.metadata.entryChunks !== undefined);
+  if (entryAssets.length !== 1) {
+    throw new Error('Expected one BitSet entry-to-chunks mapping.');
+  }
+  const entryChunks = entryAssets[0]!.metadata.entryChunks!;
+  const assetsByFilename = new Map(jsAssets.map((asset) => [asset.filename, asset]));
+  const rootAssets = entryPoints.flatMap((entryPath) =>
+    (entryChunks[entryPath] ?? []).map((filename) => {
+      const asset = assetsByFilename.get(filename);
+      if (!asset) {
+        throw new Error(`Asset not found for entry ${entryPath}: ${filename}`);
+      }
+      return asset;
+    })
   );
-  const rootAssets = sortMatchedAssetsByEntryPoints(matchedAssets, [...entryPoints]);
   return assetsRequiresSort(jsAssets, [
     ...rootAssets,
     ...jsAssets.filter((asset) => !asset.metadata.isAsync),
