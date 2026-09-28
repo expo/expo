@@ -1,14 +1,18 @@
-import { describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import * as SQLite from 'expo-sqlite';
 
 import { dumpDatabase, importDatabase } from '../sqliteDump';
 
-jest.mock(
-  '../../../../src/ExpoSQLite',
-  () =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock('../../../../src/ExpoSQLite', () =>
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('../../../../src/__mocks__/ExpoSQLite')
 );
+
+// `openDatabaseAsync` registers the database with devtools without awaiting it.
+// Left unmocked, that opens a real WebSocket whose retry timers outlive the test.
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
 
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;

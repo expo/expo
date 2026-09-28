@@ -1,8 +1,10 @@
 import { Asset } from 'expo-asset';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Asset';
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   t.describe(name, () => {
     [
       {
@@ -25,7 +27,9 @@ export async function test(t) {
           t.expect(asset.name).toMatch(new RegExp(`${name}.*\.${type}`));
           t.expect(asset.type).toBe(type);
           console.log(asset);
-          Object.keys(more).forEach((member) => t.expect(asset[member]).toBe(more[member]));
+          Object.keys(more).forEach((member) =>
+            t.expect(asset[member as keyof typeof asset]).toBe(more[member as keyof typeof more]!)
+          );
         });
 
         t.it("when downloaded, has a 'file://' localUri", async () => {

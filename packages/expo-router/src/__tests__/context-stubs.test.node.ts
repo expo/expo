@@ -1,14 +1,14 @@
 import path from 'path';
 
-import LayoutFixture from './fixtures/context-stubs/_layout';
-import IndexFixture from './fixtures/context-stubs/index';
-import NestedRouteFixture from './fixtures/context-stubs/nested/route';
 import {
   findDuplicateKeys,
   normalizeKey,
   normalizeKeys,
   requireContextWithOverrides,
 } from '../testing-library/context-stubs';
+import LayoutFixture from './fixtures/context-stubs/_layout';
+import IndexFixture from './fixtures/context-stubs/index';
+import NestedRouteFixture from './fixtures/context-stubs/nested/route';
 
 const appDir = path.join(__dirname, 'fixtures', 'context-stubs');
 

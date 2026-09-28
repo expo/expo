@@ -2,13 +2,17 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { NavigationState } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useNavigationState } from '../useNavigationState';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
+let mockNanoidCounter = 0;
+jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => String(mockNanoidCounter++)) }));
+
 beforeEach(() => {
+  mockNanoidCounter = 0;
   MockRouterKey.current = 0;
 });
 
@@ -121,6 +125,106 @@ test('gets the current navigation state with selector', () => {
   expect(callback.mock.calls[3]![0]).toBe(1);
 });
 
+test('updates a memoized consumer', () => {
+  const TestNavigator = (props: any): any => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  const callback = jest.fn();
+
+  const Test = React.memo(() => {
+    callback(useNavigationState((state) => state.index));
+
+    return null;
+  });
+
+  const navigation = React.createRef<any>();
+
+  render(
+    <BaseNavigationContainer ref={navigation}>
+      <TestNavigator>
+        <Screen name="first" component={Test} />
+        <Screen name="second">{() => null}</Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(callback).toHaveBeenLastCalledWith(0);
+
+  act(() => navigation.current.navigate('second'));
+
+  expect(callback).toHaveBeenLastCalledWith(1);
+});
+
+test('keeps filtered state stable when the container rerenders', () => {
+  const TestRouter = (options: any) => {
+    const router = MockRouter(options);
+
+    return {
+      ...router,
+      getStateForAction(state: NavigationState, action: any) {
+        if (action.type === 'ROUTE_NAMES_CHANGED') {
+          return null;
+        }
+
+        return router.getStateForAction(state, action, options);
+      },
+    };
+  };
+
+  const TestNavigator = (props: any): any => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(TestRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  const callback = jest.fn();
+
+  const Test = React.memo(() => {
+    callback(useNavigationState((state) => state));
+
+    return null;
+  });
+
+  const initialState = {
+    stale: false as const,
+    routeKeySeq: 0,
+    key: 'root',
+    index: 0,
+    routeNames: ['first', 'hidden'],
+    routes: [
+      { key: 'first-0', name: 'first' },
+      { key: 'hidden-0', name: 'hidden' },
+    ],
+  };
+
+  const App = (_props: { value: string }) => (
+    <BaseNavigationContainer initialState={initialState}>
+      <TestNavigator>
+        <Screen name="first" component={Test} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  const root = render(<App value="first" />);
+
+  expect(callback).toHaveBeenCalledTimes(1);
+
+  root.update(<App value="second" />);
+
+  expect(callback).toHaveBeenCalledTimes(1);
+});
+
 test('gets the correct value if selector changes', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
@@ -207,16 +311,8 @@ test('gets the current navigation state at navigator level', () => {
   "index": 0,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
-    },
-    {
-      "name": "second",
-      "key": "second"
-    },
-    {
-      "name": "third",
-      "key": "third"
+      "key": "first-1",
+      "name": "first"
     }
   ]
 }"
@@ -229,16 +325,12 @@ test('gets the current navigation state at navigator level', () => {
   "index": 1,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
+      "key": "first-1",
+      "name": "first"
     },
     {
       "name": "second",
-      "key": "second"
-    },
-    {
-      "name": "third",
-      "key": "third"
+      "key": "second-0"
     }
   ]
 }"
@@ -251,16 +343,16 @@ test('gets the current navigation state at navigator level', () => {
   "index": 2,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
+      "key": "first-1",
+      "name": "first"
     },
     {
       "name": "second",
-      "key": "second"
+      "key": "second-0"
     },
     {
       "name": "third",
-      "key": "third"
+      "key": "third-1"
     }
   ]
 }"
@@ -273,16 +365,16 @@ test('gets the current navigation state at navigator level', () => {
   "index": 1,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
+      "key": "first-1",
+      "name": "first"
     },
     {
       "name": "second",
-      "key": "second"
+      "key": "second-0"
     },
     {
       "name": "third",
-      "key": "third"
+      "key": "third-1"
     }
   ]
 }"

@@ -10,6 +10,7 @@ import type {
   AssetField,
   AssetFieldValueMap,
   AssetMetadata,
+  AssetUriOptions,
   GranularPermission,
   MediaTypeFilter,
   MediaLibraryAssetsChangeEvent,
@@ -71,7 +72,7 @@ class NativeAssetWeb implements NativeAssetClass {
   getShape() {
     return unavailable('Asset.getShape');
   }
-  getUri() {
+  getUri(_options?: AssetUriOptions) {
     return unavailable('Asset.getUri');
   }
   getWidth() {

@@ -12,7 +12,16 @@ struct AudioMode: Record {
 enum InterruptionMode: String, Enumerable {
   case mixWithOthers
   case doNotMix
+  case doNotMixPersistent
   case duckOthers
+
+  var preventsMixing: Bool {
+    self == .doNotMix || self == .doNotMixPersistent
+  }
+
+  var shouldNotifyOthersOnDeactivation: Bool {
+    self != .doNotMixPersistent
+  }
 }
 
 enum LoopMode: String, Enumerable {
@@ -40,6 +49,7 @@ enum PitchCorrectionQuality: String, Enumerable {
 
 struct RecordingOptions: Record {
   @Field var directory: RecordingDirectory?
+  @Field var fileName: String?
   @Field var `extension`: String
   @Field var sampleRate: Double
   @Field var numberOfChannels: Double

@@ -1,5 +1,5 @@
 import { act, screen } from '@testing-library/react-native';
-import { useEffect, type ComponentType } from 'react';
+import { useEffect, type ComponentType, type ReactNode } from 'react';
 import { Text } from 'react-native';
 
 import { router, useNavigation, usePathname, useRouter } from '../exports';
@@ -8,7 +8,7 @@ import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
 
 // TODO(@ubax): remove this once types are fixed in tests
-const TestTabs = Tabs as unknown as ComponentType;
+const TestTabs = Tabs as unknown as ComponentType<{ children: ReactNode }>;
 const TestStack = Stack as unknown as ComponentType;
 
 const noop = () => {};
@@ -26,7 +26,12 @@ describe('Tabs render counts', () => {
         _layout: function Layout() {
           layoutRender();
           hook();
-          return <TestTabs />;
+          return (
+            <TestTabs>
+              <Tabs.Screen name="index" />
+              <Tabs.Screen name="two" />
+            </TestTabs>
+          );
         },
         index: function Index() {
           indexRender();
@@ -77,7 +82,12 @@ describe('Tabs render counts', () => {
       _layout: function Layout() {
         layoutRender();
         usePathname();
-        return <TestTabs />;
+        return (
+          <TestTabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="two" />
+          </TestTabs>
+        );
       },
       index: function Index() {
         indexRender();
@@ -291,7 +301,12 @@ describe('Stack nested in Tabs render counts', () => {
         _layout: function Layout() {
           layoutRender();
           hook();
-          return <TestTabs />;
+          return (
+            <TestTabs>
+              <Tabs.Screen name="(index)" />
+              <Tabs.Screen name="other" />
+            </TestTabs>
+          );
         },
         '(index)/_layout': function HomeTab() {
           homeTabRender();
@@ -398,7 +413,12 @@ describe('Stack nested in Tabs render counts', () => {
       _layout: function Layout() {
         layoutRender();
         usePathname();
-        return <TestTabs />;
+        return (
+          <TestTabs>
+            <Tabs.Screen name="(index)" />
+            <Tabs.Screen name="other" />
+          </TestTabs>
+        );
       },
       '(index)/_layout': function HomeTab() {
         homeTabRender();
@@ -467,10 +487,10 @@ describe('Stack nested in Tabs render counts', () => {
     expect(screen.getByTestId('index')).toBeVisible();
 
     expect(layoutRender).toHaveBeenCalledTimes(1);
-    expect(homeTabRender).toHaveBeenCalledTimes(2);
+    expect(homeTabRender).toHaveBeenCalledTimes(1);
     expect(indexMount).toHaveBeenCalledTimes(1);
-    expect(indexRender).toHaveBeenCalledTimes(3);
-    expect(twoRender).toHaveBeenCalledTimes(2);
+    expect(indexRender).toHaveBeenCalledTimes(2);
+    expect(twoRender).toHaveBeenCalledTimes(1);
     expect(otherRender).toHaveBeenCalledTimes(1);
     expect(router.canGoBack()).toBe(true);
 

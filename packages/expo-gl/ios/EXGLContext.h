@@ -14,6 +14,9 @@
 - (void)glContextWillDestroy:(nonnull EXGLContext *)context;
 - (EXGLObjectId)glContextGetDefaultFramebuffer;
 
+/// The scale the drawable was sized with, so snapshots convert pixels to points using the same value.
+- (CGFloat)glContextGetScale;
+
 @end
 
 @interface EXGLContext : NSObject

@@ -2,6 +2,7 @@ package expo.modules.kotlin.views
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.Configuration
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +47,11 @@ inline fun <T : ComposableScope> T.withIf(
   condition: Boolean,
   block: T.() -> T
 ): T {
-  return if (condition) block() else this
+  return if (condition) {
+    block()
+  } else {
+    this
+  }
 }
 
 /**
@@ -113,6 +118,15 @@ abstract class ExpoComposeView<T : ComposeProps>(
     }
   }
 
+  override fun dispatchConfigurationChanged(newConfig: Configuration) {
+    super.dispatchConfigurationChanged(newConfig)
+    // React Native owns this view's bounds and may not schedule another Android layout pass
+    // when a configuration change leaves its Yoga layout unchanged.
+    if (withHostingView && isAttachedToWindow && isLaidOut) {
+      requestLayout()
+    }
+  }
+
   /**
    * Validates that this non-hosting Compose view has a valid Compose parent.
    *
@@ -140,7 +154,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
       // Hosting children render themselves via their own ComposeView; skip to avoid double-rendering.
-      if (child.shouldUseAndroidLayout) continue
+      if (child.shouldUseAndroidLayout) {
+        continue
+      }
       key(child) {
         with(composableScope ?: ComposableScope()) {
           with(child) {
@@ -156,7 +172,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
     recomposeScope = currentRecomposeScope
     for (index in 0..<this.size) {
       val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
-      if (child.shouldUseAndroidLayout) continue
+      if (child.shouldUseAndroidLayout) {
+        continue
+      }
       if (!filter(child)) {
         continue
       }
@@ -174,7 +192,9 @@ abstract class ExpoComposeView<T : ComposeProps>(
   fun Child(composableScope: ComposableScope, index: Int) {
     recomposeScope = currentRecomposeScope
     val child = getChildAt(index) as? ExpoComposeView<*> ?: return
-    if (child.shouldUseAndroidLayout) return
+    if (child.shouldUseAndroidLayout) {
+      return
+    }
     key(child) {
       with(composableScope) {
         with(child) {
@@ -193,6 +213,15 @@ abstract class ExpoComposeView<T : ComposeProps>(
     if (withHostingView) {
       clipChildren = false
       clipToPadding = false
+      addOnAttachStateChangeListener(
+        OnAttachAfterDetachmentListener(
+          onAttachAfterDetachment = {
+            // Restore the Android layout pass after a real detach. The listener deliberately
+            // ignores the first attach and React Native's same-loop reparenting.
+            requestLayout()
+          }
+        )
+      )
       addComposeView()
     } else {
       this.visibility = GONE
@@ -202,10 +231,10 @@ abstract class ExpoComposeView<T : ComposeProps>(
 
   private fun addComposeView() {
     val composeView = ComposeView(context).also {
-      // Give each Host a unique id so its rememberSaveable state gets its own key.
-      // All Hosts share the Activity's SavedStateRegistry (set below), so without an id
-      // they'd collide on one key and only the first could save/restore state.
-      it.id = generateViewId()
+      // Give each Host a unique rememberSaveable namespace. All Hosts share the Activity's
+      // SavedStateRegistry (set below), so without one they'd collide on a single key and only
+      // the first could save/restore state.
+      HostingViewSaveableState.assignNamespace(it)
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       // Pin the composition to the Activity lifecycle so it survives
       // react-native-screens detaching inactive screens on every switch.
@@ -366,7 +395,11 @@ class FunctionalComposableScope(
     val currentHandler = rememberUpdatedState(handler)
     DisposableEffect(name) {
       view.functionHandlers[name] = { args ->
-        val arg = if (args.isEmpty()) Unit else args[0]
+        val arg = if (args.isEmpty()) {
+          Unit
+        } else {
+          args[0]
+        }
         enforceType<P0>(arg)
         currentHandler.value(arg)
       }

@@ -8,6 +8,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -37,6 +38,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -80,6 +82,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -195,6 +198,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -240,6 +244,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -285,6 +290,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -330,6 +336,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -555,6 +562,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -618,6 +626,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -695,6 +704,7 @@ exports[`with live bindings 22. import namespace by specifier 1`] = `
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -828,6 +838,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -1023,6 +1034,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -1121,6 +1133,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -1219,6 +1232,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,
@@ -1394,6 +1408,7 @@ function _interopNamespace(e) {
   if (e && e.__esModule) return e;
   var n = {};
   if (e) Object.keys(e).forEach(function (k) {
+    if (k === 'default') return;
     var d = Object.getOwnPropertyDescriptor(e, k);
     Object.defineProperty(n, k, d.get ? d : {
       enumerable: true,

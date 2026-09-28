@@ -10,6 +10,8 @@ import type { LoadedModuleSource } from '../ExpoConfigLoader';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { getNodeModulesPackageJsonPath, toPosixPath } from '../utils/Path';
+import { profile } from '../utils/Profile';
+import { normalizeAutolinkingConfig } from './AutolinkingConfig';
 import { SourceSkips } from './SourceSkips';
 import {
   createAutolinkingHashSourceAsync,
@@ -46,9 +48,11 @@ export async function getExpoConfigSourcesAsync(
     'expo-splash-screen'
   );
   const fontPluginProps = getConfigPluginProps<{
-    // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts
+    // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts and must stay in sync with it
     fonts?: string[];
-    android?: { fonts?: (string | { fontDefinitions: { path: string }[] })[] };
+    android?: {
+      fonts?: (string | { path?: string; fontDefinitions: { path?: string }[] })[];
+    };
     ios?: { fonts?: string[] };
   }>(expoConfig, 'expo-font');
 
@@ -58,7 +62,11 @@ export async function getExpoConfigSourcesAsync(
     ...(isIos ? (fontPluginProps?.ios?.fonts ?? []) : []),
     ...(isAndroid
       ? (fontPluginProps?.android?.fonts ?? []).flatMap((f) =>
-          typeof f === 'string' ? [f] : (f.fontDefinitions ?? []).map((d) => d.path)
+          typeof f === 'string'
+            ? [f]
+            : // When a variable font file backs several definitions,
+              // a family may name the file path once instead of each definition repeating it
+              (f.fontDefinitions ?? []).map((d) => d.path ?? f.path)
         )
       : []),
 
@@ -287,7 +295,10 @@ export async function createHashSourceExternalFileAsync({
 }
 
 export async function getEasBuildSourcesAsync(projectRoot: string, options: NormalizedOptions) {
-  const files = ['eas.json', '.easignore'];
+  const files = [
+    ...(options.sourceSkips & SourceSkips.EasJson ? [] : ['eas.json']),
+    ...(options.sourceSkips & SourceSkips.Easignore ? [] : ['.easignore']),
+  ];
   const results = (
     await Promise.all(
       files.map(async (file) => {
@@ -384,7 +395,12 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
     results.push({
       type: 'contents',
       id: 'expoAutolinkingConfig:android',
-      contents: JSON.stringify(config),
+      contents: JSON.stringify(
+        profile(options, normalizeAutolinkingConfig)(config, {
+          stripPaths: !!(options.sourceSkips & SourceSkips.AutolinkingConfigPaths),
+          roots: [realProjectRoot],
+        })
+      ),
       reasons,
     });
     return results;
@@ -447,7 +463,12 @@ export async function getExpoAutolinkingIosSourcesAsync(
     results.push({
       type: 'contents',
       id: 'expoAutolinkingConfig:ios',
-      contents: JSON.stringify(config),
+      contents: JSON.stringify(
+        profile(options, normalizeAutolinkingConfig)(config, {
+          stripPaths: !!(options.sourceSkips & SourceSkips.AutolinkingConfigPaths),
+          roots: [realProjectRoot],
+        })
+      ),
       reasons,
     });
     return results;

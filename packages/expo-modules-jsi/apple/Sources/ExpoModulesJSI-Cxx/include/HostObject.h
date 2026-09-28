@@ -23,11 +23,13 @@ public:
   }
 
   inline jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override {
-    auto result = _callbacks.get(name.utf8(runtime).c_str());
+    jsi::Value result;
     // If the Swift getter stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
-    if (auto *error = CppError::getCurrent()) {
-      throw error->release();
+    if (_callbacks.get(name.utf8(runtime).c_str(), result)) {
+      if (auto *error = CppError::getCurrent()) {
+        throw error->release();
+      }
     }
     return result;
   }
@@ -37,9 +39,10 @@ public:
     // `jsi::JSError` directly and the `CppError` check below is never reached.
     // For writable host objects, a throwing Swift setter routes its error through
     // `CppError`'s thread-local slot, which we drain and rethrow here.
-    _callbacks.set(runtime, name.utf8(runtime).c_str(), value);
-    if (auto *error = CppError::getCurrent()) {
-      throw error->release();
+    if (_callbacks.set(runtime, name.utf8(runtime).c_str(), value)) {
+      if (auto *error = CppError::getCurrent()) {
+        throw error->release();
+      }
     }
   }
 

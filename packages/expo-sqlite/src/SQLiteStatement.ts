@@ -22,10 +22,26 @@ type ValuesOf<T extends object> = T[keyof T][];
  * A prepared statement returned by [`SQLiteDatabase.prepareAsync()`](#prepareasyncsource) or [`SQLiteDatabase.prepareSync()`](#preparesyncsource) that can be binded with parameters and executed.
  */
 export class SQLiteStatement {
+  /**
+   * The cursor that currently owns the underlying `sqlite3_stmt`. A prepared statement has exactly
+   * one cursor, so running the statement again invalidates the cursor of every earlier run.
+   */
+  private currentCursor: object | null = null;
+
   constructor(
     private readonly nativeDatabase: NativeDatabase,
     private readonly nativeStatement: NativeStatement
   ) {}
+
+  /**
+   * Make the run that just finished the owner of the statement cursor, and return a predicate
+   * that tells whether it still is.
+   */
+  private claimCursor(): () => boolean {
+    const cursor = {};
+    this.currentCursor = cursor;
+    return () => this.currentCursor === cursor;
+  }
 
   //#region Asynchronous API
 
@@ -51,7 +67,8 @@ export class SQLiteStatement {
         rawResult: false,
         lastInsertRowId,
         changes,
-      }
+      },
+      this.claimCursor()
     );
   }
 
@@ -83,7 +100,8 @@ export class SQLiteStatement {
         rawResult: true,
         lastInsertRowId,
         changes,
-      }
+      },
+      this.claimCursor()
     );
   }
 
@@ -133,7 +151,8 @@ export class SQLiteStatement {
         rawResult: false,
         lastInsertRowId,
         changes,
-      }
+      },
+      this.claimCursor()
     );
   }
 
@@ -165,7 +184,8 @@ export class SQLiteStatement {
         rawResult: true,
         lastInsertRowId,
         changes,
-      }
+      },
+      this.claimCursor()
     );
   }
 
@@ -347,6 +367,12 @@ interface SQLiteExecuteResultOptions {
   changes: number;
 }
 
+const SUPERSEDED_CURSOR_MESSAGE =
+  'This result is no longer readable because the prepared statement ran again. ' +
+  'A prepared statement holds a single SQLite cursor, so a later run rebinds the parameters and moves that cursor, ' +
+  'and this result would return the rows of the later run. ' +
+  'Read a result to the end before you run the same statement again, or prepare a separate statement for each reader.';
+
 /**
  * Create the `SQLiteExecuteAsyncResult` instance.
  *
@@ -357,13 +383,15 @@ async function createSQLiteExecuteAsyncResult<T>(
   database: SQLiteAnyDatabase,
   statement: NativeStatement,
   firstRowValues: SQLiteColumnValues | null,
-  options: SQLiteExecuteResultOptions
+  options: SQLiteExecuteResultOptions,
+  isCursorOwner: () => boolean
 ): Promise<SQLiteExecuteAsyncResult<T>> {
   const instance = new SQLiteExecuteAsyncResultImpl<T>(
     database,
     statement,
     firstRowValues ? processNativeRow(firstRowValues) : null,
-    options
+    options,
+    isCursorOwner
   );
   const generator = instance.generatorAsync();
   Object.defineProperties(generator, {
@@ -404,13 +432,15 @@ function createSQLiteExecuteSyncResult<T>(
   database: SQLiteAnyDatabase,
   statement: NativeStatement,
   firstRowValues: SQLiteColumnValues | null,
-  options: SQLiteExecuteResultOptions
+  options: SQLiteExecuteResultOptions,
+  isCursorOwner: () => boolean
 ): SQLiteExecuteSyncResult<T> {
   const instance = new SQLiteExecuteSyncResultImpl<T>(
     database,
     statement,
     firstRowValues ? processNativeRow(firstRowValues) : firstRowValues,
-    options
+    options,
+    isCursorOwner
   );
   const generator = instance.generatorSync();
   Object.defineProperties(generator, {
@@ -452,8 +482,16 @@ class SQLiteExecuteAsyncResultImpl<T> {
     private readonly database: SQLiteAnyDatabase,
     private readonly statement: NativeStatement,
     private firstRowValues: SQLiteColumnValues | null,
-    public readonly options: SQLiteExecuteResultOptions
+    public readonly options: SQLiteExecuteResultOptions,
+    private readonly isCursorOwner: () => boolean
   ) {}
+
+  /** Throw rather than step a cursor that a later run of the same statement has taken over. */
+  private assertCursorOwner() {
+    if (!this.isCursorOwner()) {
+      throw new Error(SUPERSEDED_CURSOR_MESSAGE);
+    }
+  }
 
   async getFirstAsync(): Promise<T | null> {
     if (this.isStepCalled) {
@@ -467,6 +505,7 @@ class SQLiteExecuteAsyncResultImpl<T> {
     if (firstRowValues != null) {
       return composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
     }
+    this.assertCursorOwner();
     const firstRow = await this.statement.stepAsync(this.database);
     return firstRow != null
       ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(firstRow))
@@ -486,9 +525,10 @@ class SQLiteExecuteAsyncResultImpl<T> {
       return [];
     }
     const columnNames = await this.getColumnNamesAsync();
+    this.assertCursorOwner();
     const nativeRows = await this.statement.getAllAsync(this.database);
     const allRows = processNativeRows(nativeRows);
-    if (firstRowValues != null && firstRowValues.length > 0) {
+    if (firstRowValues.length > 0) {
       return composeRowsIfNeeded<T>(this.options.rawResult, columnNames, [
         firstRowValues,
         ...allRows,
@@ -507,6 +547,7 @@ class SQLiteExecuteAsyncResultImpl<T> {
 
     let result;
     do {
+      this.assertCursorOwner();
       result = await this.statement.stepAsync(this.database);
       if (result != null) {
         yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(result));
@@ -514,10 +555,11 @@ class SQLiteExecuteAsyncResultImpl<T> {
     } while (result != null);
   }
 
-  resetAsync(): Promise<void> {
-    const result = this.statement.resetAsync(this.database);
+  async resetAsync(): Promise<void> {
+    // Resetting a superseded result would rewind the cursor of the run that owns it now.
+    this.assertCursorOwner();
+    await this.statement.resetAsync(this.database);
     this.isStepCalled = false;
-    return result;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {
@@ -545,8 +587,16 @@ class SQLiteExecuteSyncResultImpl<T> {
     private readonly database: SQLiteAnyDatabase,
     private readonly statement: NativeStatement,
     private firstRowValues: SQLiteColumnValues | null,
-    public readonly options: SQLiteExecuteResultOptions
+    public readonly options: SQLiteExecuteResultOptions,
+    private readonly isCursorOwner: () => boolean
   ) {}
+
+  /** Throw rather than step a cursor that a later run of the same statement has taken over. */
+  private assertCursorOwner() {
+    if (!this.isCursorOwner()) {
+      throw new Error(SUPERSEDED_CURSOR_MESSAGE);
+    }
+  }
 
   getFirstSync(): T | null {
     if (this.isStepCalled) {
@@ -559,6 +609,7 @@ class SQLiteExecuteSyncResultImpl<T> {
     if (firstRowValues != null) {
       return composeRowIfNeeded<T>(this.options.rawResult, columnNames, firstRowValues);
     }
+    this.assertCursorOwner();
     const firstRow = this.statement.stepSync(this.database);
     return firstRow != null
       ? composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(firstRow))
@@ -577,6 +628,7 @@ class SQLiteExecuteSyncResultImpl<T> {
       return [];
     }
     const columnNames = this.getColumnNamesSync();
+    this.assertCursorOwner();
     const nativeRows = this.statement.getAllSync(this.database);
     const allRows = processNativeRows(nativeRows);
     if (firstRowValues != null && firstRowValues.length > 0) {
@@ -596,6 +648,7 @@ class SQLiteExecuteSyncResultImpl<T> {
     }
     let result;
     do {
+      this.assertCursorOwner();
       result = this.statement.stepSync(this.database);
       if (result != null) {
         yield composeRowIfNeeded<T>(this.options.rawResult, columnNames, processNativeRow(result));
@@ -604,9 +657,10 @@ class SQLiteExecuteSyncResultImpl<T> {
   }
 
   resetSync(): void {
-    const result = this.statement.resetSync(this.database);
+    // Resetting a superseded result would rewind the cursor of the run that owns it now.
+    this.assertCursorOwner();
+    this.statement.resetSync(this.database);
     this.isStepCalled = false;
-    return result;
   }
 
   private popFirstRowValues(): SQLiteColumnValues | null {

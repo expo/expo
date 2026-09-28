@@ -10,8 +10,10 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.spyk
@@ -89,5 +91,66 @@ class DatabaseLauncherTest {
       "new lastAccessed date should be within 1000 ms of now",
       Date().time - sameUpdate.lastAccessed.time < 1000
     )
+  }
+
+  @Test
+  fun testGetLaunchableUpdate_SkipsUpdateWithMissingLaunchAsset() = runTest {
+    val configuration = testConfiguration()
+
+    val completeUpdate = readyUpdate(configuration.scopeKey, Date(1000))
+    db.updateDao().insertUpdate(completeUpdate)
+    db.assetDao().insertAssets(listOf(launchAssetEntity()), completeUpdate)
+
+    // newer, but its launch asset was never registered -- launching it would throw
+    val incompleteUpdate = readyUpdate(configuration.scopeKey, Date(2000))
+    db.updateDao().insertUpdate(incompleteUpdate)
+
+    val launchableUpdate = databaseLauncher(configuration).getLaunchableUpdate(db)
+
+    Assert.assertEquals(completeUpdate.id, launchableUpdate?.id)
+  }
+
+  @Test
+  fun testGetLaunchableUpdate_NullWhenEveryUpdateIsMissingItsLaunchAsset() = runTest {
+    val configuration = testConfiguration()
+
+    val incompleteUpdate = readyUpdate(configuration.scopeKey, Date(1000))
+    db.updateDao().insertUpdate(incompleteUpdate)
+
+    Assert.assertNull(databaseLauncher(configuration).getLaunchableUpdate(db))
+  }
+
+  private fun testConfiguration() = UpdatesConfiguration(
+    null,
+    mapOf(
+      "updateUrl" to Uri.parse("https://example.com"),
+      "runtimeVersion" to "1.0",
+      "hasEmbeddedUpdate" to false
+    )
+  )
+
+  private fun databaseLauncher(configuration: UpdatesConfiguration) = DatabaseLauncher(
+    context,
+    configuration,
+    File("test"),
+    mockk(),
+    SelectionPolicyFactory.createFilterAwarePolicy("1.0", configuration),
+    UpdatesLogger(context.filesDir),
+    TestScope()
+  )
+
+  private fun readyUpdate(scopeKey: String, commitTime: Date) = UpdateEntity(
+    UUID.randomUUID(),
+    commitTime,
+    "1.0",
+    scopeKey,
+    JSONObject("{}"),
+    null,
+    null
+  ).apply { status = UpdateStatus.READY }
+
+  private fun launchAssetEntity() = AssetEntity("bundle-1234", "js").apply {
+    relativePath = "bundle-1234"
+    isLaunchAsset = true
   }
 }

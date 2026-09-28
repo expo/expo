@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+import { stageIosPrebuilds } from '../utils/iosPrebuilds.js';
+
+try {
+  if (stageIosPrebuilds()) console.log('Staged iOS prebuilds for publishing');
+} catch (error) {
+  console.error(error);
+  process.exit(error.status || error.code || 1);
+}

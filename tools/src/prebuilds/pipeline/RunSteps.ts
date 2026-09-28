@@ -18,15 +18,23 @@ import logger from '../../Logger';
 import { getPackageByName } from '../../Packages';
 import { getBundledVersionsAsync } from '../../ProjectVersions';
 import { Artifacts } from '../Artifacts';
+import {
+  listCheckedInTargetInputs,
+  resolveCheckedInManifestAsync,
+  resolveCheckedInManifestRoot,
+} from '../CheckedInManifest';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
 import { getExternalPackageByProductName, isExternalPackage } from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
+import { withPackageLocalBuildPath } from '../PackageLocalBuild';
 import type { BuildFlavor } from '../Prebuilder.types';
 import { buildSharedSPMDependencyAsync } from '../SPMBuild';
 import type { SPMPackageDependencyConfig, SPMProduct, SPMTarget } from '../SPMConfig.types';
+import { getTargetExcludePatterns } from '../SPMGenerator';
 import {
   getVersionsInfoAsync,
+  resolveFrameworkTargetPath,
   setForceNonInteractive,
   validateAllPodNamesAsync,
   verifyAllPackagesAsync,
@@ -255,7 +263,10 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
 type DependencyFrameworkStatus =
   | { status: 'fresh' }
   | { status: 'missing'; flavor: BuildFlavor }
-  | { status: 'stale'; flavor: BuildFlavor };
+  | { status: 'stale'; flavor: BuildFlavor }
+  | { status: 'unknown-inputs'; reason: string };
+
+type NewestProductInput = { mtimeMs: number } | { unknownReason: string };
 
 function getPathMtimeMs(filePath: string): number {
   try {
@@ -278,8 +289,12 @@ function getFrameworkMtimeMs(frameworkPath: string): number {
 
 function getSourceTargetPath(pkg: SPMPackageSource, target: SPMTarget): string | null {
   if (target.type === 'framework') {
-    return path.resolve(pkg.path, target.path);
+    return resolveFrameworkTargetPath(pkg.path, target);
   }
+
+  // Source targets of a package with a checked-in Package.swift are never listed here, and a
+  // pathless one without it already forced a rebuild, so no freshness decision rests on this null.
+  if (!target.path) return null;
 
   const isBuildArtifact = target.path.startsWith('.build/');
   const targetRoot = isBuildArtifact ? pkg.buildPath : pkg.path;
@@ -300,40 +315,85 @@ function collectTargetInputPaths(pkg: SPMPackageSource, target: SPMTarget): stri
   return glob
     .sync('**/*', {
       cwd: targetSourcePath,
-      ignore: target.exclude ?? [],
+      ignore: getTargetExcludePatterns(target),
       nodir: true,
     })
     .map((file) => path.join(targetSourcePath, file));
 }
 
-function getNewestProductInputMtimeMs(pkg: SPMPackageSource, product: SPMProduct): number {
-  const inputPaths = [
-    path.join(pkg.path, 'package.json'),
-    path.join(pkg.path, 'spm.config.json'),
-    ...product.targets.flatMap((target) => collectTargetInputPaths(pkg, target)),
-  ];
-
-  for (const target of product.targets) {
-    if (target.type === 'framework') continue;
-    for (const resource of target.resources ?? []) {
-      for (const file of glob.sync(resource.path, {
-        cwd: pkg.path,
-        nodir: true,
-      })) {
-        inputPaths.push(path.join(pkg.path, file));
-      }
-    }
-  }
-
-  return Math.max(...inputPaths.map(getPathMtimeMs));
+/**
+ * Whether a non-framework target omits `path` with no checked-in manifest to supply the layout —
+ * a config error, and one this check has to catch itself. The error SPMGenerator raises for it is
+ * only reached by building the package, which a product judged fresh never is.
+ * Framework targets are exempt: `resolveFrameworkTargetPath` derives their path from the flavor.
+ */
+function hasPathlessSourceTarget(product: SPMProduct): boolean {
+  return product.targets.some((target) => target.type !== 'framework' && !target.path);
 }
 
-function getDependencyFrameworkStatus(
+function getResourceInputPaths(pkg: SPMPackageSource, product: SPMProduct): string[] {
+  return product.targets.flatMap((target) =>
+    target.type === 'framework'
+      ? []
+      : (target.resources ?? []).flatMap((resource) =>
+          glob
+            .sync(resource.path, { cwd: pkg.path, nodir: true })
+            .map((file) => path.join(pkg.path, file))
+        )
+  );
+}
+
+/**
+ * A package with a checked-in Package.swift takes its source targets from the manifest alone, so
+ * a `path` left behind in its converted config cannot name a source root the build never reads.
+ * Inputs that cannot be listed yield a reason instead of an mtime, so they never read as fresh;
+ * building the package reports the underlying error in full.
+ */
+async function getNewestProductInputAsync(
+  pkg: SPMPackageSource,
+  product: SPMProduct
+): Promise<NewestProductInput> {
+  const inputPaths = [path.join(pkg.path, 'package.json'), path.join(pkg.path, 'spm.config.json')];
+  const frameworkTargets = product.targets.filter((target) => target.type === 'framework');
+  const checkedInRoot = resolveCheckedInManifestRoot(pkg);
+
+  if (checkedInRoot) {
+    let targets;
+    try {
+      targets = await resolveCheckedInManifestAsync(checkedInRoot, product);
+    } catch {
+      return { unknownReason: 'its checked-in Package.swift could not be resolved' };
+    }
+    let targetInputs;
+    try {
+      targetInputs = targets.flatMap(listCheckedInTargetInputs);
+    } catch {
+      return { unknownReason: 'the files its checked-in Package.swift names could not be listed' };
+    }
+    inputPaths.push(
+      path.join(checkedInRoot, 'Package.swift'),
+      ...targetInputs,
+      ...frameworkTargets.flatMap((target) => collectTargetInputPaths(pkg, target))
+    );
+  } else {
+    if (hasPathlessSourceTarget(product)) {
+      return { unknownReason: 'a target declares no "path" in spm.config.json' };
+    }
+    inputPaths.push(
+      ...product.targets.flatMap((target) => collectTargetInputPaths(pkg, target)),
+      ...getResourceInputPaths(pkg, product)
+    );
+  }
+
+  return { mtimeMs: Math.max(...inputPaths.map(getPathMtimeMs)) };
+}
+
+async function getDependencyFrameworkStatusAsync(
   pkg: SPMPackageSource,
   product: SPMProduct,
   buildFlavors: BuildFlavor[]
-): DependencyFrameworkStatus {
-  const newestInputMtimeMs = getNewestProductInputMtimeMs(pkg, product);
+): Promise<DependencyFrameworkStatus> {
+  const newestInput = await getNewestProductInputAsync(pkg, product);
 
   for (const flavor of buildFlavors) {
     const frameworkPath = Frameworks.findFrameworkAtAnyVersion(pkg.buildPath, product.name, flavor);
@@ -341,7 +401,11 @@ function getDependencyFrameworkStatus(
       return { status: 'missing', flavor };
     }
 
-    if (getFrameworkMtimeMs(frameworkPath) < newestInputMtimeMs) {
+    if ('unknownReason' in newestInput) {
+      return { status: 'unknown-inputs', reason: newestInput.unknownReason };
+    }
+
+    if (getFrameworkMtimeMs(frameworkPath) < newestInput.mtimeMs) {
       return { status: 'stale', flavor };
     }
   }
@@ -365,10 +429,10 @@ type DependencyExpansionOptions = {
  * and that dependency's xcframework doesn't exist yet, it's automatically added
  * to the build set so the build can succeed without manual intervention.
  */
-export function expandWithUnbuiltDependencies(
+export async function expandWithUnbuiltDependencies(
   packages: SPMPackageSource[],
   options: DependencyExpansionOptions = {}
-): SPMPackageSource[] {
+): Promise<SPMPackageSource[]> {
   const buildFlavors = options.buildFlavors ?? ['Debug', 'Release'];
   const resolvePackageByName = options.resolvePackageByName ?? getPackageByName;
   const packagesByName = new Map(packages.map((p) => [p.packageName, p]));
@@ -442,13 +506,22 @@ export function expandWithUnbuiltDependencies(
           } else if (isCustomBuild) {
             reason = 'customBuild — script decides cache';
           } else if (depProduct) {
-            const status = getDependencyFrameworkStatus(depPkg, depProduct, buildFlavors);
+            const status = await getDependencyFrameworkStatusAsync(
+              depPkg,
+              depProduct,
+              buildFlavors
+            );
             if (status.status === 'fresh') continue;
 
-            reason =
-              status.status === 'stale'
-                ? `${status.flavor} xcframework stale`
-                : `${status.flavor} xcframework not found`;
+            if (status.status === 'missing') {
+              reason = `${status.flavor} xcframework not found`;
+            } else if (status.status === 'unknown-inputs') {
+              // Its sources may well be untouched; nothing here can tell. Saying "stale" would
+              // send a developer looking for a change that need not exist.
+              reason = status.reason;
+            } else {
+              reason = `${status.flavor} xcframework stale`;
+            }
           }
 
           logger.info(
@@ -504,18 +577,27 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     }
 
     // 1. Verify packages exist and have spm.config.json (or discover the default set)
-    const requestedPackages = await verifyAllPackagesAsync(
+    let requestedPackages = await verifyAllPackagesAsync(
       request.packageNames,
       request.includeExternal,
       request.externalOnly,
       request.allPackages
     );
 
+    if (request.exactPackage) {
+      if (request.packageNames.length !== 1 || requestedPackages.length !== 1) {
+        throw new Error('Exact-package mode requires exactly one package.');
+      }
+      requestedPackages = requestedPackages.map(withPackageLocalBuildPath);
+    }
+
     // 2. Auto-add unbuilt dependencies to the build set
-    const unsortedPackages = expandWithUnbuiltDependencies(requestedPackages, {
-      buildFlavors: request.buildFlavors,
-      clean: request.clean,
-    });
+    const unsortedPackages = request.exactPackage
+      ? requestedPackages
+      : await expandWithUnbuiltDependencies(requestedPackages, {
+          buildFlavors: request.buildFlavors,
+          clean: request.clean,
+        });
 
     // 3. Validate podName in spm.config.json matches actual .podspec files
     await validateAllPodNamesAsync(unsortedPackages);
@@ -579,7 +661,9 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     });
 
     // Resolve artifacts path
-    ctx.artifactsPath = Artifacts.getArtifactsPath(PACKAGES_DIR);
+    ctx.artifactsPath = request.exactPackage
+      ? path.join(ctx.packages[0].buildPath, 'intermediates', 'artifacts')
+      : Artifacts.getArtifactsPath(PACKAGES_DIR);
   },
 };
 
@@ -660,6 +744,9 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
 
   async run(ctx) {
     const shared = collectSharedSPMDependencies(ctx.packages);
+    const spmDepsRoot = ctx.request.exactPackage
+      ? path.join(ctx.packages[0].buildPath, 'intermediates', 'spm-deps')
+      : Frameworks.getSharedSPMDepsRoot();
 
     logger.info(
       `📦 Found ${shared.length} shared SPM ${shared.length === 1 ? 'dependency' : 'dependencies'}:`
@@ -671,7 +758,6 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
     // When --clean is passed, wipe shared SPM dep build dirs and xcframeworks
     // so they're rebuilt from scratch (including re-resolving dependencies).
     if (ctx.request.clean) {
-      const spmDepsRoot = Frameworks.getSharedSPMDepsRoot();
       logger.info(`🧹 Cleaning shared SPM dependency caches...`);
       for (const { dep } of shared) {
         const depDir = path.join(spmDepsRoot, dep.productName);
@@ -686,7 +772,13 @@ export const prepareSharedSPMDepsStep: Step<PrebuildContext> = {
 
     for (const flavor of ctx.request.buildFlavors) {
       for (const { dep } of shared) {
-        await buildSharedSPMDependencyAsync(dep, flavor, allSharedDeps);
+        await buildSharedSPMDependencyAsync(
+          dep,
+          flavor,
+          allSharedDeps,
+          ['iOS', 'iOS Simulator'],
+          spmDepsRoot
+        );
       }
     }
   },

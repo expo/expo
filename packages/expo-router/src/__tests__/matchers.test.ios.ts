@@ -3,6 +3,7 @@ import {
   getNameFromFilePath,
   matchGroupName,
   stripGroupSegmentsFromPath,
+  stripInvisibleSegmentsFromPath,
   matchArrayGroupName,
   matchLastGroupName,
 } from '../matchers';
@@ -13,6 +14,18 @@ describe(stripGroupSegmentsFromPath, () => {
       '/[[...foobar]]/bar/[bax]'
     );
     expect(stripGroupSegmentsFromPath('(foo)/(bar)')).toBe('');
+  });
+});
+
+describe(stripInvisibleSegmentsFromPath, () => {
+  it('strips index route segments', () => {
+    expect(stripInvisibleSegmentsFromPath('index')).toBe('');
+    expect(stripInvisibleSegmentsFromPath('/index')).toBe('');
+    expect(stripInvisibleSegmentsFromPath('nested/index')).toBe('nested');
+  });
+
+  it.each(['/reindex', 'someindex'])('preserves the route name %s', (path) => {
+    expect(stripInvisibleSegmentsFromPath(path)).toBe(path);
   });
 });
 

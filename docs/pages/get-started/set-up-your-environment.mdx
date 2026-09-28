@@ -5,9 +5,12 @@ hideTOC: true
 searchRank: 3
 ---
 
+import { Download03Icon } from '@expo/styleguide-icons/outline/Download03Icon';
+
 import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
 import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
 import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 Let's set up a local development environment for running your project on Android and iOS.
 
@@ -26,6 +29,13 @@ Expo Go is a playground for students and learners to try Expo quickly. A develop
 ---
 
 <DevelopmentEnvironmentInstructions />
+
+<BoxLink
+  title="Download Expo Go"
+  description="You can also download any version of Expo Go from the download page."
+  href="https://expo.dev/go"
+  Icon={Download03Icon}
+/>
 
 ## Next step
 

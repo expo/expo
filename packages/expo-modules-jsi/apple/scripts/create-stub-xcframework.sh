@@ -31,7 +31,7 @@ echo -e "${BLUE}[Expo]${RESET} Ensuring required slices in ${PACKAGE_NAME}.xcfra
 # reuse the same binary for every slice that needs stamping.
 mkdir -p "$XCFRAMEWORK_PATH"
 STUB_SOURCE="${XCFRAMEWORK_PATH}/.stub-binary"
-echo "" | clang -x c - -dynamiclib \
+echo "" | xcrun --sdk macosx clang -x c - -dynamiclib \
   -o "$STUB_SOURCE" \
   -install_name "@rpath/${PACKAGE_NAME}.framework/${PACKAGE_NAME}"
 

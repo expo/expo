@@ -33,7 +33,11 @@ class CalendarSource : Record {
     get() = jsIsLocalAccount ?: false
 
   val resolvedType: String?
-    get() = if (isLocalAccount) CalendarContract.ACCOUNT_TYPE_LOCAL else type
+    get() = if (isLocalAccount) {
+      CalendarContract.ACCOUNT_TYPE_LOCAL
+    } else {
+      type
+    }
 
   fun assertValidForNewCalendar() {
     if (name == null) {

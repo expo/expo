@@ -19,7 +19,7 @@ const MODES = [
   {
     name: 'server',
     outputDir: 'dist-css-global-import-server',
-    exportEnv: { EXPO_USE_STATIC: 'server', E2E_ROUTER_SERVER_RENDERING: 'true' },
+    exportEnv: { EXPO_USE_STATIC: 'server' },
   },
 ] as const;
 

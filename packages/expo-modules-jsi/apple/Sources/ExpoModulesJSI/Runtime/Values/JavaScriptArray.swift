@@ -404,7 +404,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
       guard let runtime else {
         FatalError.runtimeLost()
       }
-      let jsiValue = expo.getProperty(runtime.pointee, pointee, .forUtf8(runtime.pointee, key, key.count))
+      let jsiValue = expo.getProperty(runtime.pointee, pointee, key.toJSIPropNameID(in: runtime.pointee))
       return JavaScriptValue(runtime, jsiValue)
     }
     nonmutating set(newValue) {
@@ -412,7 +412,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
         FatalError.runtimeLost()
       }
       let jsiValue = newValue.toJSIValue(in: runtime.pointee)
-      expo.setProperty(runtime.pointee, pointee, key, jsiValue)
+      expo.setProperty(runtime.pointee, pointee, key.toJSIPropNameID(in: runtime.pointee), jsiValue)
     }
   }
 

@@ -112,12 +112,27 @@ bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &val
   return value.isNumber();
 }
 
+namespace {
+
+/**
+ * Builds a Java string from UTF-16, which is what a Java string already stores, so the code units
+ * go straight to `NewString` with their length and no encoding step.
+ */
+jstring makeJavaString(JNIEnv *env, const std::u16string &utf16) {
+  if (utf16.empty()) {
+    return env->NewStringUTF("");
+  }
+  return static_cast<jstring>(jni::make_jstring(utf16).release());
+}
+
+} // namespace
+
 jobject StringFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
   const jsi::Value &value
 ) const {
-  return env->NewStringUTF(value.asString(rt).utf8(rt).c_str());
+  return makeJavaString(env, value.asString(rt).utf16(rt));
 }
 
 bool StringFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -608,7 +623,7 @@ jobject MapFrontendConverter::convert(
     auto key = propertyNames.getValueAtIndex(rt, i).getString(rt);
     auto jsValue = jsObject.getProperty(rt, key);
 
-    auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
+    auto convertedKey = makeJavaString(env, key.utf16(rt));
 
     auto convertedValue = valueConverter->convert(
       rt, env, jsValue
@@ -714,7 +729,7 @@ jobject AnyFrontendConvert::convert(
     auto key = propertyNames.getValueAtIndex(rt, i).getString(rt);
     auto jsValue = obj.getProperty(rt, key);
 
-    auto convertedKey = env->NewStringUTF(key.utf8(rt).c_str());
+    auto convertedKey = makeJavaString(env, key.utf16(rt));
     auto convertedValue = this->convert(
       rt, env, jsValue
     );

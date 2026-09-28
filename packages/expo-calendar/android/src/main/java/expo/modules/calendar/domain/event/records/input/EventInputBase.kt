@@ -8,9 +8,10 @@ import expo.modules.calendar.domain.event.records.Alarm
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
 import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import java.util.TimeZone
 
-abstract class EventInputBase {
+abstract class EventInputBase : Record {
   @Field val alarms: List<Alarm>? = null
 
   @Field val availability: Availability? = null

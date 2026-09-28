@@ -10,7 +10,11 @@ data class SortDescriptor(
   @Field val ascending: Boolean? = true
 ) : Record {
   fun toMediaStoreQueryString(): String {
-    val ascendingString = if (ascending ?: true) "ASC" else "DESC"
+    val ascendingString = if (ascending ?: true) {
+      "ASC"
+    } else {
+      "DESC"
+    }
     return "${key.toMediaStoreColumn()} $ascendingString"
   }
 }

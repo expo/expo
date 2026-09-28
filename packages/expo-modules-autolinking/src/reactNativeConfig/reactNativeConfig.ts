@@ -36,6 +36,7 @@ import { checkDependencyWebAsync } from './webResolver';
 const deepObjectMerge = (target: any, source: any): any => {
   if (
     source !== undefined &&
+    source !== null &&
     typeof target === 'object' &&
     target != null &&
     !Array.isArray(target) &&
@@ -139,13 +140,17 @@ export async function resolveReactNativeModule(
     // Use the platform-specific `react-native.config` entry when it's set — including an explicit
     // `null`, which disables autolinking for that platform — and only fall back to `platforms.ios`
     // when it's unset (`undefined`). Results are reported under the platform's own key.
+    // When the config says nothing about the platform, the podspec decides: a library whose
+    // podspec does not declare it is skipped, so codegen and Metro do not see native code that
+    // the Podfile is going to filter out anyway.
     const platformConfig = reactNativeConfig.platforms?.[platform as 'tvos' | 'macos'];
     const appleConfig =
       platformConfig !== undefined ? platformConfig : reactNativeConfig.platforms?.ios;
     platformData = await resolveDependencyConfigImplIosAsync(
       resolution,
       appleConfig,
-      maybeExpoModuleConfig
+      maybeExpoModuleConfig,
+      platformConfig === undefined ? { platform: platform as 'tvos' | 'macos' } : undefined
     );
   } else if (platform === 'web') {
     platformData = await checkDependencyWebAsync(
@@ -237,9 +242,19 @@ export async function createReactNativeConfigAsync({
   return {
     root: appRoot,
     reactNativePath,
-    dependencies,
+    dependencies: sortDependenciesByName(dependencies),
     project: await resolveAppProjectConfigAsync(appRoot, autolinkingOptions.platform, sourceDir),
   };
+}
+
+function sortDependenciesByName(
+  dependencies: Record<string, RNConfigDependency>
+): Record<string, RNConfigDependency> {
+  const sortedDependencies: Record<string, RNConfigDependency> = {};
+  for (const name of Object.keys(dependencies).sort()) {
+    sortedDependencies[name] = dependencies[name]!;
+  }
+  return sortedDependencies;
 }
 
 function resolveAppleProjectSourceDir(projectRoot: string, platform: string): string {

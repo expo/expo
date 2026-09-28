@@ -1,14 +1,20 @@
 import { render } from '@testing-library/react-native';
 
 import type { NavigationState, ParamListBase } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+});
+
+test('isReady returns false before the container mounts', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+
+  expect(ref.isReady()).toBe(false);
 });
 
 test('adds the listener even if container is mounted later', () => {

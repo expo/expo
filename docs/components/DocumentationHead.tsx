@@ -36,9 +36,31 @@ const DocumentationHead = ({
       <meta charSet="utf-8" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="icon" type="image/png" href="/static/images/favicon.ico" sizes="32x32" />
+      <link
+        rel="apple-touch-icon"
+        href="https://static.expo.dev/static/brand/app-icon-512x512.png"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-48x48.png"
+        type="image/png"
+        sizes="48x48"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-32x32.png"
+        type="image/png"
+        sizes="32x32"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-16x16.png"
+        type="image/png"
+        sizes="16x16"
+      />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} />}
+      <link rel="llms-txt" href="/llms.txt" />
 
       <meta name="description" content={resolvedDescription} />
       <meta property="og:title" content={title} />

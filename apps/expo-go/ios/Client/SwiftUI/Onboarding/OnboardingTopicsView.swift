@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 struct OnboardingTopicsView: View {
   @ObservedObject var viewModel: OnboardingViewModel
@@ -10,7 +11,7 @@ struct OnboardingTopicsView: View {
       Spacer()
       
       Text("What do you want to learn?")
-        .frame(width: UIScreen.main.bounds.width * 0.65)
+        .frame(width: SceneGeometry.bounds().width * 0.65)
         .font(.system(size: 32, weight: .bold))
         .multilineTextAlignment(.center)
         .padding(.bottom, 20)

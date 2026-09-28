@@ -13,7 +13,7 @@ public struct LogRecord: Codable, Sendable {
   public let droppedAttributesCount: Int
   /// Severity of the event.
   public let severity: Severity
-  public var timestamp: String = Date.now.ISO8601Format()
+  public var timestamp: String = Date.now.ISO8601Format(.init(includingFractionalSeconds: true))
 
   init(
     name: String,
@@ -21,7 +21,7 @@ public struct LogRecord: Codable, Sendable {
     attributes: [String: Any]? = nil,
     droppedAttributesCount: Int = 0,
     severity: Severity = .info,
-    timestamp: String = Date.now.ISO8601Format()
+    timestamp: String = Date.now.ISO8601Format(.init(includingFractionalSeconds: true))
   ) {
     self.name = name
     self.body = body

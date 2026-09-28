@@ -11,7 +11,7 @@ import type WebpackDevServer from 'webpack-dev-server';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../../../utils/nodeEnv';
+import { type EnvironmentMode, loadEnvFiles } from '../../../utils/nodeEnv';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -163,7 +163,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const config = await this.loadConfigAsync(options);
 
-    Log.log(chalk`Starting Webpack on port ${port} in {underline ${mode}} mode.`);
+    Log.log(chalk`Starting Webpack on port ${this.getPort()} in {underline ${mode}} mode.`);
 
     // Create a webpack compiler that is configured with custom messages.
     const compiler = webpack(config);
@@ -173,7 +173,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       env.WEB_HOST ?? (options.location.hostType === 'localhost' ? 'localhost' : undefined);
 
     // Launch WebpackDevServer.
-    server.listen(port, host, function (this: http.Server, error) {
+    server.listen(this.getPort(), host, function (this: http.Server, error) {
       if (error) {
         Log.error(error.message);
       }
@@ -198,8 +198,8 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       // URL Info
       // TODO(@kitten): Why is this not using the URL creator?
       location: {
-        url: `${protocol}://${_host}:${port}`,
-        port,
+        url: `${protocol}://${_host}:${this.getPort()}`,
+        port: this.getPort(),
         protocol,
         host: _host,
       },
@@ -239,8 +239,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       https: options.https,
     };
 
-    setNodeEnv(env.mode ?? 'development');
-    loadEnvFiles(env.projectRoot);
+    loadEnvFiles(env.projectRoot, { mode: env.mode ?? 'development' });
 
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
@@ -266,7 +265,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
   protected async clearWebProjectCacheAsync(
     projectRoot: string,
-    mode: string = 'development'
+    mode: EnvironmentMode = 'development'
   ): Promise<void> {
     Log.log(chalk.dim(`Clearing Webpack ${mode} cache directory...`));
 

@@ -68,7 +68,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
           ])
           return
         case .error(let error):
-          promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
+          promise.reject(CheckForUpdateException(error))
           return
         }
       } error: { error in
@@ -97,7 +97,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       do {
         return try UpdatesLogReader().getLogEntries(newerThan: Date(timeIntervalSinceNow: TimeInterval(-1 * (maxAge / 1000))))
       } catch {
-        throw Exception(name: "ERR_UPDATES_READ_LOGS", description: error.localizedDescription)
+        throw ReadLogEntriesException(error)
       }
     }
 
@@ -107,7 +107,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
           promise.resolve(nil)
           return
         }
-        promise.reject("ERR_UPDATES_READ_LOGS", error.localizedDescription)
+        promise.reject(ClearLogEntriesException(error))
       }
     }
 
@@ -134,7 +134,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
           ])
           return
         case .error(let error):
-          promise.reject("ERR_UPDATES_FETCH", error.localizedDescription)
+          promise.reject(FetchUpdateException(error))
           return
         }
       } error: { error in

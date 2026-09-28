@@ -10,6 +10,36 @@
 
 ### 💡 Others
 
+## 0.12.1 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- Fix `Invalid mimeType` error for images with uppercase file extensions, such as `icon.PNG`. ([#50298](https://github.com/expo/expo/pull/50298) by [@tahakocal](https://github.com/tahakocal))
+
+## 0.12.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.4 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.1 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.11.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 0.10.1 — 2026-05-23
 
 _This version does not introduce any user-facing changes._

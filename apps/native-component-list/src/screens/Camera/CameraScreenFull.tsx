@@ -1,7 +1,6 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '@react-native-community/slider';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import {
   BarcodeScanningResult,
   CameraView,
@@ -375,9 +374,9 @@ export default function CameraScreen() {
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={updatePreviewState}>
         {state.previewPaused ? (
-          <AntDesign name="play-circle" size={24} color="white" />
+          <Ionicons name="play-circle" size={24} color="white" />
         ) : (
-          <AntDesign name="pause-circle" size={24} color="white" />
+          <Ionicons name="pause-circle" size={24} color="white" />
         )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={toggleMoreOptions}>

@@ -1,0 +1,405 @@
+---
+title: 'EAS Workflows で開発ビルドを自動化する'
+sidebar_title: 開発ビルド
+description: EAS Workflows で Android と iOS の開発ビルドを自動化し、JavaScript のみの変更ではフィンガープリントを使って再ビルドをスキップする方法を学びます。
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FingerprintFlow } from '~/ui/components/FlowDiagram/Diagrams/FingerprintFlow';
+import { UnitTestGate } from '~/ui/components/FlowDiagram/Diagrams/UnitTestGate';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+GitHub リポジトリへプッシュするたびに開発クライアントを手動で再ビルドするのは、時間がかかります。ネイティブの変更（新しいモジュール、新しいパーミッション、SDK のアップグレード）を取り込んだチームメンバーや新しいコントリビューターは、プロジェクトを動かす前に新しいビルドの完了を待つことになります。
+
+`main` ブランチで開発ビルドを自動化しておけば、インストールできる最新のビルドが常に用意されている状態を保てます。`eas build:dev` を実行すれば、互換性のある最新のビルドをインストールできます。プロジェクトのフィンガープリントが既存のビルドと一致する場合、EAS は新しくビルドを作らずにそのビルドをダウンロードします。
+
+## この章で学べること
+
+- `build` ジョブタイプで Android と iOS の[開発ビルド](/develop/development-builds/introduction/)を自動化する
+- `fingerprint` ジョブと `get-build` ジョブを使い、ネイティブコードに変更がないときは再ビルドをスキップする
+- テストの成功をワークフローの通過条件にする、ユニットテスト用のカスタムジョブを追加する
+
+<Prerequisites>
+
+<Requirement title="development プロファイル向けの EAS Build の設定">
+
+EAS CLI は、あるプロファイルで初めてビルドをトリガーしたときに認証情報の生成を促します。ワークフローが走る前に認証情報が用意されているよう、Android と iOS の両方で開発ビルドを手動でトリガーしておきます。
+
+<Terminal cmd={['$ eas build --profile development --platform all']} />
+
+</Requirement>
+
+</Prerequisites>
+
+## 開発ビルド向けの `build` ジョブタイプ
+
+`build` ジョブタイプは、EAS Workflows の[事前パッケージ済みジョブ](/ja/tutorial/cicd/first-workflow/#eas-workflows-のジョブの種類)の 1 つです。ビルドプロセスの各ステップを自分で定義する代わりに、`build` ジョブタイプを使って Android と iOS の EAS Build を実行します。
+
+この章では、**eas.json** の `development` ビルドプロファイルを使用します。このプロファイルは Expo アプリの開発中に使用するものです。
+
+<Step label="1">
+
+### build.yml を追加する
+
+**.eas/workflows/** の中に **build.yml** という新しいファイルを追加します。このファイルでは、`build` ジョブタイプに `profile` と `platform` のパラメーターを指定して、Android と iOS の開発ビルドを作成します。
+
+**build.yml** ファイルに次のコードを追加します。
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: development
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: development
+```
+
+`build_android` と `build_ios` の 2 つのジョブを追加しました。どちらも `build` タイプで、プラットフォームとビルドプロファイルのパラメーターだけが異なります。
+
+各ジョブの `params` キーには次のものを指定しています。
+
+- [`platform`](/eas/workflows/pre-packaged-jobs/#build) は、ビルドの対象 OS（`android` または `ios`）を指定します
+- [`profile`](/build/eas-json/#build-profiles) は、**eas.json** に定義されたビルドプロファイルを指定します
+
+</Step>
+
+<Step label="2">
+
+### ワークフローを手動で実行する
+
+次のコマンドでワークフローを手動で実行してみましょう。
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/build.yml']} />
+
+</Step>
+
+<Step label="3">
+
+### EAS ダッシュボードで確認する
+
+EAS ダッシュボードの **Workflow graph** タブを見ると、"Triggered manually" と表示されています。**Trigger** が **Manual** になっているときは、そのワークフローが `eas workflow:run` コマンドで開始されたことを意味します。
+
+<ContentSpotlight
+  alt="手動でトリガーされ、Android と iOS の開発ビルドを並列に作成している実行を表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-development-build-manual-run.png"
+  className="max-w-160"
+/>
+
+各ビルドのログはワークフローの画面内に表示されます。ビルドの ID をクリックすると、そのビルドの EAS Build ページが開きます。
+
+<ContentSpotlight
+  alt="Android 開発ビルドの EAS Build 詳細ページ。ビルドのステータス、フィンガープリントのハッシュ、コミット SHA、展開されたログ出力が表示されています。"
+  src="/static/images/tutorial/cicd/eas-build-android-development-build-logs.webp"
+  className="max-w-160"
+/>
+
+> **important** EAS Workflows では、依存関係のないジョブはデフォルトで並列に実行されます。上のワークフローでは、`build_android` と `build_ios` のどちらのジョブにも依存関係がないため、同時に開始されます。
+
+次のステップに進む前に、両方のビルドが完了するのを待ちます。完了したら、**Install** または **Open with [Orbit](/build/orbit/)** ボタンを使うか、**Artifacts** からダウンロードして、デバイス/エミュレーター/シミュレーターにインストールできます。
+
+</Step>
+
+## フィンガープリントで不要なビルドをスキップする
+
+プロジェクトの変更が TypeScript/JavaScript のみの場合、既存の開発ビルドはそのまま使えるので、新しいビルドは必要ありません。
+
+[**Expo Fingerprint**](/versions/latest/sdk/fingerprint/) は、この判断を自動化します。プロジェクトのネイティブの特徴（依存関係、ネイティブプロジェクトのファイル、設定）をハッシュ化し、そのハッシュが既存のビルドと一致すればネイティブコードは変わっていないと判断して、EAS は再ビルドをスキップします。ハッシュが異なる場合はネイティブコードが変わったということなので、EAS は新しいビルドを作成します。
+
+<FingerprintFlow />
+
+ネイティブの変更を検知して必要なときだけビルドするよう、**build.yml** をステップごとに更新していきましょう。
+
+<Step label="1">
+
+### fingerprint ジョブを追加する
+
+事前パッケージ済みの [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) ジョブは、プロジェクトのネイティブの特徴をハッシュ化し、プラットフォームごとにフィンガープリントのハッシュを出力します。`environment` フィールドは、どの[環境変数の設定](/eas/environment-variables/)を使うかを EAS に伝えます。なお、`environment` と `profile` は同じ名前を持つことがありますが、指すものは異なります。`profile` は **eas.json** のビルドプロファイル（どうビルドするか）を指し、`environment` は EAS 上に設定された環境変数（ビルド時にどの値を注入するか）を指します。
+
+**build.yml** を更新して、ビルドジョブの前に `fingerprint` ジョブを追加します。
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  # @info #
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: development
+  # @end #
+  build_android:
+    # ...
+  build_ios:
+    # ...
+```
+
+`fingerprint` ジョブは、`android_fingerprint_hash` と `ios_fingerprint_hash` という 2 つの出力を生成します。次のステップでは、これらのハッシュを使って互換性のあるビルドがすでに存在するかどうかを確認します。
+
+</Step>
+
+<Step label="2">
+
+### get-build ジョブを追加する
+
+事前パッケージ済みの [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) ジョブは、指定したフィンガープリントのハッシュとプロファイルに対応するビルドがすでに存在するかを確認します。一致するビルドがあれば `build_id` を出力し、なければ `build_id` は空になります。
+
+ワークフローファイルの `fingerprint` とビルドジョブの間に、`get_android_build` と `get_ios_build` のジョブを追加しましょう。どちらも `needs: [fingerprint]` を使って fingerprint ジョブの完了を待ち、その出力にアクセスします。
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  fingerprint:
+    # ...
+  # @info #
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: development
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: development
+  # @end #
+  build_android:
+    # ...
+  build_ios:
+    # ...
+```
+
+上のワークフローでは、`get-build` ジョブが `${{ needs.fingerprint.outputs.* }}` という式の構文を使って、前のジョブからフィンガープリントのハッシュを受け取っています。
+
+</Step>
+
+<Step label="3">
+
+### 条件付きのビルドを追加する
+
+[`if`](/eas/workflows/syntax/#jobsjob_idif) フィールドは、ジョブを実行するかどうかを制御します。`${{ !needs.get_android_build.outputs.build_id }}` という式は、_`get-build` が一致するビルドを見つけられなかった場合にのみジョブを実行する_ という意味です。`!` は否定の演算子です。このフィンガープリントに対応する互換性のあるビルドがすでに存在する場合、ビルドジョブはスキップされます。
+
+各ビルドジョブが対応する `get-build` ジョブに依存するよう更新し、`if` 条件を追加しましょう。
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  fingerprint:
+    # ...
+  get_android_build:
+    # ...
+  get_ios_build:
+    # ...
+  build_android:
+    name: Build Android
+    # @info #
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: android
+      profile: development
+  build_ios:
+    name: Build iOS
+    # @info #
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: ios
+      profile: development
+```
+
+</Step>
+
+<Step label="4">
+
+### トリガーを追加してワークフローを実行する
+
+`main` へのプッシュのたびに自動実行されるよう、ワークフローに `on.push` トリガーを追加しましょう。
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+# @info #
+on:
+  push:
+    branches: ['main']
+# @end #
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: development
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: development
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: development
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: development
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: development
+```
+
+ここで、ボタンの色を変えたり画面のテキストを更新したりといった、TypeScript/JavaScript の変更を Expo プロジェクトに加えたとしましょう。変更したら、`main` ブランチにコミットをプッシュして、GitHub リポジトリからワークフローをトリガーできます。
+
+<Terminal
+  cmd={[
+    '$ git add .',
+    '$ git commit -m "Update button label and tweak styling"',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add . && git commit -m 'Update button label and tweak styling' && git push origin main"
+/>
+
+これにより新しいワークフローがトリガーされ、数秒で完了します。EAS ダッシュボードでは、前のセクションで作成した一致するビルドがすでに存在するため、Android と iOS のビルドがどちらもスキップされています。
+
+<ContentSpotlight
+  alt="互換性のある既存のビルドが見つかったため、fingerprint ジョブと get-build ジョブが Android と iOS のビルドジョブをスキップしている EAS Workflows の実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-fingerprint-skips-existing-build.png"
+  className="max-w-160"
+/>
+
+`main` ブランチから最新を取得して `npx expo start` を実行します。既存の開発ビルドが JS の変更を読み込みます。
+
+</Step>
+
+## ユニットテスト用のカスタムジョブ
+
+> **info** このセクションは、プロジェクトに Jest が設定済みであることを前提としています。設定方法については [Jest によるユニットテスト](/develop/unit-testing/)を参照してください。
+
+チームで作業するときは、`main` ブランチにプッシュされたすべての変更が、新しいビルドをトリガーする前にテストを通過してほしいものです。
+
+自動化されていないと、チームは `main` にプッシュする前にローカルでテストを実行することを覚えておかなければなりません。忘れたままテストが失敗するコードをプッシュすると、次のワークフローが壊れたコードからビルドを作ってしまう可能性があります。
+
+**EAS Workflows** では、既存の事前パッケージ済みジョブにカスタムジョブを組み合わせることで、このプロセスを自動化できます。このカスタムジョブは fingerprint ジョブとビルドジョブの前に実行されます。テストが失敗した場合、EAS はワークフローを停止し、ビルドは作成されません。
+
+<UnitTestGate />
+
+<Step label="1">
+
+### ユニットテスト用のカスタムジョブを追加する
+
+**build.yml** ワークフローファイルに、ビルドが始まる前にユニットテストを実行するカスタムジョブを追加しましょう。
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  # @info #
+  run_tests:
+    name: Run unit tests
+    steps:
+      - uses: eas/checkout # Check out the repo
+      - uses: eas/install_node_modules
+      - run: npx jest --ci
+  # @end #
+  fingerprint:
+    name: Fingerprint
+    # @info これを fingerprint ジョブに追加します。テストが成功したあとにのみ実行され、テストが失敗すれば何もビルドされません。 #
+    needs: [run_tests]
+    # @end #
+    type: fingerprint
+    environment: development
+  get_android_build:
+    # ...
+  get_ios_build:
+    # ...
+  build_android:
+    # ...
+  build_ios:
+    # ...
+```
+
+カスタムジョブ `run_tests` は、次のことを行っています。
+
+- `uses: eas/checkout` は、GitHub リポジトリからプロジェクトのソースファイルをチェックアウトします。カスタムジョブは新しい仮想マシン上で実行されるため、コードはデフォルトでは利用できません。プロジェクトのファイルにアクセスする前に、このステップが必要です。
+- `uses: eas/install_node_modules` は、プロジェクトで検出されたパッケージマネージャー（bun、npm、pnpm、Yarn）を使って依存関係をインストールします。Jest のように **node_modules** のパッケージに依存するコマンドを実行する前に必要です。
+- `run: npx jest --ci` はテストスイートを実行します。`run` キーは、先ほどの `echo` コマンドと同じように、任意のシェルコマンドを実行します。`--ci` フラグは Jest を CI モードで実行するよう指示するもので、ファイル変更の監視を行わず、すべてのテストを実行したあとに終了します。
+
+これで `fingerprint` ジョブには `needs: [run_tests]` が付いたので、テストが成功したあとにのみ実行されます。テストが失敗した場合、EAS はワークフローの残りをスキップします。
+
+</Step>
+
+<Step label="2">
+
+### ワークフローをトリガーする
+
+更新したワークフローとテストファイルをコミットして `main` にプッシュします。
+
+<Terminal
+  cmd={[
+    '$ git add .',
+    '$ git commit -m "Add unit tests to development builds workflow"',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add . && git commit -m 'Add unit tests to development builds workflow' && git push origin main"
+/>
+
+ワークフローをトリガーしたら、EAS ダッシュボードを開いて、ワークフロー内のジョブの流れを確認してみましょう。
+
+<ContentSpotlight
+  alt="フィンガープリントの一致によって既存の開発ビルドを再利用し、Android と iOS のどちらのビルドジョブもスキップしている EAS Workflows の実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-fingerprint-reuses-build.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/cicd/development-builds"
+  name="CICD_TUTORIAL"
+  chapterTitle="第 2 章：開発ビルド"
+  summary="事前パッケージ済みジョブを使って開発ビルドを自動化し、フィンガープリントを追加して不要な再ビルドをスキップし、ビルドパイプラインの前段にカスタムジョブとしてユニットテストを組み込みました。"
+  nextChapterDescription="次の章では、Slack 通知付きのプレビュービルドと、PR プレビューアップデートを作成する方法を学びます。"
+  nextChapterTitle="プレビュービルド"
+  nextChapterLink="/ja/tutorial/cicd/preview-builds"
+/>

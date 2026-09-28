@@ -46,6 +46,8 @@ export interface XCFrameworkSliceVerificationReport {
   modularHeadersValid: XCFrameworkVerificationResult;
   clangModuleImport: XCFrameworkVerificationResult;
   swiftInterfaceTypecheck: XCFrameworkVerificationResult;
+  /** Whether the shipped swiftinterfaces are free of test-only imports (Swift Testing) */
+  testOnlyImports: XCFrameworkVerificationResult;
   /** Whether a matching dSYM bundle exists for this slice */
   dsymPresent: XCFrameworkVerificationResult;
   /** Whether dSYM UUIDs match the framework binary UUIDs */

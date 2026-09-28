@@ -2,7 +2,7 @@ package expo.modules.widgets
 
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import io.github.jakex7.peek.appwidget.PeekAppWidgetId
+import androidx.glance.appwidget.AppWidgetId
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +45,7 @@ internal object WidgetsUpdater {
     val widget = ExpoWidgetsPeekWidget(name)
 
     appWidgetManager.getAppWidgetIds(componentName).forEach { appWidgetId ->
-      widget.update(context, PeekAppWidgetId(appWidgetId))
+      widget.update(context, AppWidgetId(appWidgetId))
     }
   }
 

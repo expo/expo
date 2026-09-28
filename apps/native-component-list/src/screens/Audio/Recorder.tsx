@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { useAudioRecorder, useAudioRecorderState, AudioModule, RecordingPresets } from 'expo-audio';
 import type { RecordingDirectory, RecordingOptions, RecordingStatus } from 'expo-audio';
 import React, { useEffect } from 'react';

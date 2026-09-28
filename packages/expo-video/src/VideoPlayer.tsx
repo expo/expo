@@ -1,7 +1,7 @@
 import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
 import { useState } from 'react';
 
-import NativeVideoModule from './NativeVideoModule';
+import NativeVideoModule from './ExpoVideo';
 import type { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';
 import resolveAssetSource from './resolveAssetSource';
 
@@ -27,7 +27,7 @@ NativeVideoModule.VideoPlayer.prototype.replaceAsync = function (source: VideoSo
 /**
  * Creates a direct instance of `VideoPlayer` that doesn't release automatically.
  *
- * > **info** For most use cases you should use the [`useVideoPlayer`](#usevideoplayer) hook instead. See the [Using the VideoPlayer Directly](#using-the-videoplayer-directly) section for more details.
+ * > **info** For most use cases you should use the [`useVideoPlayer`](#usevideoplayersource-setup-playerbuilderoptions) hook instead. See the [Using the VideoPlayer Directly](#using-the-videoplayer-directly) section for more details.
  * @param source -  A video source that is used to initialize the player.
  * @param playerBuilderOptions - Options to apply to the Android player builder before the native constructor is invoked.
  */
@@ -71,10 +71,11 @@ export function useVideoPlayer(
       update: (player, { previousDependencies, dependencies }) => {
         // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
         if (previousDependencies[0] !== dependencies[0]) {
-          player.replaceAsync(parsedSource).catch(() => {
+          return player.replaceAsync(parsedSource).catch(() => {
             setForceRecreateCount((c) => c + 1);
           });
         }
+        return undefined;
       },
     },
     [parsedSourceKey, playerBuilderOptionsKey, forceRecreateCount] // [0] source, [1] options, [2] recreate counter

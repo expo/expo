@@ -46,6 +46,7 @@ internal class NativeDatabaseBinding : Closeable {
   external fun sqlite3_changes(): Int
   external fun sqlite3_finalize_all_statement()
   external fun sqlite3_close(): Int
+  external fun sqlite3_interrupt()
   external fun sqlite3_db_filename(databaseName: String): String
   external fun sqlite3_enable_load_extension(onoff: Int): Int
   external fun sqlite3_exec(source: String): Int
@@ -57,10 +58,6 @@ internal class NativeDatabaseBinding : Closeable {
   external fun sqlite3_serialize(databaseName: String): ByteArray
   external fun sqlite3_deserialize(databaseName: String, serializedData: ByteArray): Int
   private external fun sqlite3_update_hook(enabled: Boolean) // Keeps it private internally and uses `enableUpdateHook` publicly
-
-  external fun libsql_open_remote(url: String, authToken: String): Int
-  external fun libsql_open(dbPath: String, url: String, authToken: String): Int
-  external fun libsql_sync(): Int
 
   external fun convertSqlLiteErrorToString(): String
 

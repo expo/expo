@@ -14,7 +14,7 @@ import { validateURL } from './validateURL';
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
  * It is recommended to use the [`useLinkingURL()`](#uselinkingurl) hook instead.
  * @param type The only valid type is `'url'`.
- * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
+ * @param handler An [`URLListener`](#urllistenerevent) function that takes an `event` object of the type
  * [`EventType`](#eventtype).
  * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native documentation on Linking](https://reactnative.dev/docs/linking#addeventlistener).
@@ -176,3 +176,4 @@ export function useLinkingURL(): string | null {
 export * from './Linking.types';
 export * from './Schemes';
 export { parse, createURL } from './createURL';
+export { unwrapDevLaunchURL } from './devLaunchURL';

@@ -109,7 +109,7 @@ data class EASMetric(
  * Wire shape of a log event ready for dispatch. Distinct from the storage-side
  * `LogRecord`: this form has the JSON `attributes` blob already parsed back
  * into a structured object (so the OTel encoder can map values to typed
- * `OTAnyValue`s) and drops storage-only columns like `logId`.
+ * `OTAnyValue`s) and drops storage-only columns like the row id.
  */
 @Serializable
 data class LogEvent(
@@ -144,4 +144,14 @@ data class Event(
   val metadata: Metadata,
   val metrics: List<EASMetric>,
   val logs: List<LogEvent> = emptyList()
+)
+
+/**
+ * One session's spans paired with the event carrying that session's resource metadata, ready
+ * for the traces dispatch. Spans travel separately from `Event` because they aren't part of
+ * the payload shape the metrics/logs signals share.
+ */
+data class SpanBatch(
+  val event: Event,
+  val spans: List<OTSpan>
 )

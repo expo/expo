@@ -107,15 +107,21 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 **Why:** We store separate versions of API reference docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on main between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
 
-**How:**
+**How:** Run the **Docs SDK Beta** workflow (`.github/workflows/docs-sdk-beta.yml`) from the Actions tab, passing the major version to cut as `sdkVersion`, for example `58`. Do this immediately before cutting the release branch.
 
-- Do this step immediately before cutting the release branch.
-- Run `et generate-docs-api-data` to regenerate `unversioned` API data files before cutting new documentation version.
-- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK.
-- Run `pnpm schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
-- Run `pnpm versions-schema-sync` in the `docs` directory to fetch the new version's `native-modules.json`, which the package-version header on each SDK page requires. This fetches from `exp.host`, so the new SDK's packages must already be published and synced to the versions endpoint (see [0.6. Publish `next` packages](#06-publish-next-packages)). If the packages are not live yet, the fetch returns nothing, so run this step once they are but you should create the `native-modules.json` file for the new SDK version before cutting the release branch.
-- Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
-- Commit and push changes to main.
+The run takes care of:
+
+- Refreshing the canary example on the Reference index.
+- Regenerating the `unversioned` API data (`et generate-docs-api-data`).
+- Generating the versioned reference docs for the new SDK (`et generate-sdk-docs`).
+- Cloning hardcoded type links into the new version directory.
+- Syncing the app config schema and repointing the import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
+- Creating the `native-modules.json` stub, so the cut is not blocked on the new SDK's packages being live on `exp.host`. Run `pnpm versions-schema-sync` in `docs` to replace it once they are.
+- Archiving the previous SDK's `llms-sdk.txt` bundle and linking it from `pages/llms.mdx`.
+- Adding the new SDK's row to the compatibility table.
+- Setting `betaVersion` in `docs/package.json`, leaving `version` at the released SDK.
+
+The run never pushes to `main`. It opens a PR labelled `docs` and `preview` whose body carries a per-step status table, the files changed per directory, and a checklist of what is still manual. `docs/package.json` keeps `version` at the released SDK and gains `betaVersion`, so the new reference stays hidden in production until it is promoted.
 
 # Stage 1 - Quality Assurance
 
@@ -221,7 +227,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 **How:**
 
 - Run `et eas ios-simulator-build` to trigger building Expo Go for iOS simulators on EAS.
-- Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas ios-simulator-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
+- Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas ios-simulator-upload` to download the simulator build artifact and the device IPA (built by `ios-client-build-and-submit`) and upload both to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
 - Run `et eas android-apk-build` to trigger building Expo Go for Android APK on EAS.
 - Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas android-apk-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
 - Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.

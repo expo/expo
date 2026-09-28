@@ -3,9 +3,12 @@ title: FAQ
 description: A list of common questions and limitations about Expo and related services.
 ---
 
+import { FAQ } from '~/ui/components/FAQ';
 import { latestSdkVersionValues } from '~/ui/components/SDKTables';
 
 This page lists some of the common questions and answers about Expo and related services. If you have a question that is not answered here, see [Forums](https://chat.expo.dev/) for more common questions.
+
+<FAQ>
 
 ## What is Expo used for?
 
@@ -127,7 +130,7 @@ It can be used simultaneously with React Native Community. Regardless of which C
 
 - Learn how you can migrate to use Expo CLI in an [existing React Native project](/bare/using-expo-cli/).
 - Learn about the benefits of [using a framework to build React Native apps](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps).
-- Learn about the benefits of migrating to Expo CLI such as improved app performance, expedites release, and fostering stronger collaboration across you team in [this blog post](https://expo.dev/blog/from-rnc-cli-to-expo).
+- Learn about the benefits of migrating to Expo CLI, such as better app performance, faster releases, and closer collaboration across your team, in [this blog post](https://expo.dev/blog/from-rnc-cli-to-expo).
 
 > **Note:** EAS Build is compatible with existing React Native projects (where native directories are checked into version control). When these directories are present, EAS Build does not run the prebuild step, as that could overwrite any manual customizations you have made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 
@@ -150,3 +153,5 @@ Expo Go cannot use third-party libraries that require custom native code and you
 Yes, eject is a deprecated term and is no longer necessary. When Expo was first released, apps had larger native binary sizes and didn't support custom native code without "ejecting". This changed in December 2020 with the release of [EAS Build](/build/introduction) which supports any React Native app. The concept of "ejecting" was replaced by the [`npx expo prebuild`](/more/glossary-of-terms/#prebuild) command in SDK 41 (April 2021), which continuously generates native projects based on the libraries in your project and the app config (**app.json**). The `expo eject` command was fully deprecated in SDK 46 (August 2022).
 
 Unlike the previous eject workflow, authors can configure their libraries to work with Expo Prebuild by creating a [config plugin](/config-plugins/introduction/). This means you can use any library with Expo Prebuild. You can also use any custom native code with Expo Prebuild by creating a [development build](/develop/development-builds/introduction/). Learn more in the [Expo Prebuild documentation](/workflow/continuous-native-generation).
+
+</FAQ>

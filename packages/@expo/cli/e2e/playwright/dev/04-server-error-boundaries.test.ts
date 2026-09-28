@@ -13,12 +13,13 @@ const testName = '04-server-error-boundaries';
 const inputDir = 'dist-' + testName;
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
       EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_JS_ENGINE: 'hermes',
       E2E_ROUTER_SRC: testName,
       E2E_SERVER_FUNCTIONS: '1',
 
@@ -27,7 +28,7 @@ test.describe(inputDir, () => {
     },
   });
 
-  test.beforeEach('bundle and serve', async () => {
+  test.beforeAll('bundle and serve', async () => {
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
@@ -36,7 +37,7 @@ test.describe(inputDir, () => {
     await expoStart.fetchBundleAsync('/');
     console.timeEnd('Eagerly bundled JS');
   });
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoStart.stopAsync();
   });
 

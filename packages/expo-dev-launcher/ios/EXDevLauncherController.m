@@ -3,7 +3,6 @@
 #import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTDevMenu.h>
 #import <React/RCTDevSettings.h>
-#import <React/RCTRootContentView.h>
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
 #import <React/RCTKeyCommands.h>
@@ -180,13 +179,18 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 #endif
 }
 
-- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
++ (void)disablePackagerServerAccess
 {
 #if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
-  // Matches the guard on the declaration in React/Base/RCTBundleURLProvider.h.
-  // The function isn't declared in builds without packager support.
+  // Guarded because the function isn't declared in builds without packager support
+  // (matches the guard in React/Base/RCTBundleURLProvider.h).
   RCTBundleURLProviderAllowPackagerServerAccess(NO);
 #endif
+}
+
+- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
+{
+  [EXDevLauncherController disablePackagerServerAccess];
 
   _delegate = delegate;
   _launchOptions = launchOptions;
@@ -310,11 +314,32 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
 {
+  if ([EXDevLauncherFingerprintCheck handle:url]) {
+    return YES;
+  }
+
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
 
+  // The dev menu params apply to every launcher command, with or without a `__expo_url`.
+  [[DevMenuManager shared] applyLaunchParamsFromURL:url];
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
+
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
+    NSURL *externalDeepLink = [EXDevLauncherURLHelper externalDeepLinkFromLauncherURL:url];
+    if (externalDeepLink) {
+      // e.g. `myapp://login?__expo_disable_fab=1`: the reserved params are applied above, the app
+      // receives the rest as its initial URL. While the app is already running, the linking
+      // subscribers still deliver the original URL; `unwrapDevLaunchURL` in expo-linking drops
+      // the reserved params on the JS side.
+      return [self _handleExternalDeepLink:externalDeepLink options:options];
+    }
+    if ([self isAppRunning] && ![EXDevLauncherURLHelper isLegacyLauncherURL:url]) {
+      // e.g. `exp+slug://?__expo_disable_fab=1` while a project is open: the params are applied
+      // above and there is nothing to open, so keep the project running.
+      return true;
+    }
     // edgecase: this is a dev launcher url but it doesn't specify what url to open
     // fallback to navigating to the launcher home screen
     [self launchDefaultUrlFallbackOrNavigateToLauncher];
@@ -416,8 +441,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     projectUrl = expoUrl;
   }
 
-  // Disable onboarding popup if "&disableOnboarding=1" is a param
+  [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:url];
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
+
+  [[DevMenuManager shared] applyLaunchParamsFromURL:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {

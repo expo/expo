@@ -7,10 +7,8 @@ import { StyleSheet, Text, View, Platform, Image } from 'react-native';
 
 import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';
-import { useRoute } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigation } from '../useNavigation';
-import { isRoutePreloadedInStack } from '../utils/stack';
 import { Pressable } from '../views/Pressable';
 import { NoSSR } from './NoSSR';
 import { useSafeLayoutEffect } from './useSafeLayoutEffect';
@@ -34,8 +32,6 @@ function UnmatchedInner() {
   const [render, setRender] = React.useState(false);
 
   const router = useRouter();
-  const route = useRoute();
-
   const navigation = useNavigation();
   const pathname = usePathname();
   const url = createURL(pathname);
@@ -44,17 +40,12 @@ function UnmatchedInner() {
     setRender(true);
   }, []);
 
-  const isFocused = navigation.isFocused();
-  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route);
-
   /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
   useSafeLayoutEffect(() => {
-    if (!isPreloaded || (isPreloaded && isFocused)) {
-      navigation.setOptions({
-        title: 'Not Found',
-      });
-    }
-  }, [isFocused, isPreloaded, navigation]);
+    navigation.setOptions({
+      title: 'Not Found',
+    });
+  }, [navigation]);
 
   return (
     <View testID="expo-router-unmatched" style={styles.container}>

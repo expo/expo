@@ -175,4 +175,41 @@ class TimeUtilsTest {
       parsedDate.time > tenYearsAgo
     )
   }
+
+  @Test
+  fun `dateToIsoUtcSeconds formats a fixed date as whole-second UTC`() {
+    // Given
+    val date = Date(1_700_000_000_000L)
+
+    // When
+    val timestamp = TimeUtils.dateToIsoUtcSeconds(date)
+
+    // Then
+    assertEquals("2023-11-14T22:13:20Z", timestamp)
+  }
+
+  @Test
+  fun `millisToTimestamp formats a fixed value as millisecond-precision UTC`() {
+    // Given
+    val millis = 1_700_000_000_123L
+
+    // When
+    val timestamp = TimeUtils.millisToTimestamp(millis)
+
+    // Then
+    assertEquals("2023-11-14T22:13:20.123Z", timestamp)
+  }
+
+  @Test
+  fun `timestampToDateNS round-trips a timestamp produced by millisToTimestamp`() {
+    // Given
+    val millis = 1_700_000_000_123L
+    val timestamp = TimeUtils.millisToTimestamp(millis)
+
+    // When
+    val nanos = TimeUtils.timestampToDateNS(timestamp)
+
+    // Then
+    assertEquals(millis * 1_000_000L, nanos)
+  }
 }

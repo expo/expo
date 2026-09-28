@@ -40,6 +40,12 @@
   }
 }
 
+- (NSArray<NSString *> *)unstableModulesRequiringMainQueueSetup
+{
+  NSArray<NSString *> *modules = RCTAppSetupUnstableModulesRequiringMainQueueSetup(self.delegate.dependencyProvider);
+  return [modules filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != %@", @"SampleTurboModule"]];
+}
+
 - (void)hostDidStart:(nonnull RCTHost *)host {
   if ([self.delegate respondsToSelector:@selector(hostDidStart:)]) {
     [self.delegate hostDidStart:host];

@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import type { ExpoModifier } from '../../types';
+import { LazyItems } from '../LazyItems';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
@@ -77,3 +78,5 @@ function transformProps(props: LazyColumnProps): NativeLazyColumnProps {
 export function LazyColumn(props: LazyColumnProps) {
   return <LazyColumnNativeView {...transformProps(props)} />;
 }
+
+LazyColumn.Items = LazyItems;

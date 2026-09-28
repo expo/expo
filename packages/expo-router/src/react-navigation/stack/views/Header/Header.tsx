@@ -35,7 +35,7 @@ export const Header = React.memo(function Header({
   const goBack = React.useCallback(
     throttle(() => {
       if (navigation.isFocused() && navigation.canGoBack()) {
-        navigation.dispatch({
+        navigation.dispatchSync({
           ...StackActions.pop(),
           source: route.key,
         });

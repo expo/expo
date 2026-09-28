@@ -1,0 +1,182 @@
+---
+title: Integrate a third-party package with EAS Observe
+sidebar_title: Third-party
+description: Learn how to add an optional EAS Observe integration to a third-party package.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
+
+Third-party packages can integrate with EAS Observe to send events that help developers identify performance and usage issues. These are often problems that are difficult to detect from application code alone.
+
+Events should describe actionable issues that developers can fix. For example, a package might report:
+
+- An image that is much larger than the device's screen
+- A background task that takes too long to complete
+- A native resource that loads slowly
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Expo SDK 57 and later">
+    Third-party integrations require SDK 57 and later to access `Observe.registerIntegration()`.
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## Add `expo-observe` as an optional peer dependency
+
+Add `expo-observe` as an optional peer dependency so your package continues to work when it is not installed. Also, add it as a development dependency for TypeScript types and tests. Do not add it as a required runtime dependency.
+
+```json package.json
+{
+  "peerDependencies": {
+    "expo-observe": ">={{expoSdkVersion}}"
+  },
+  "peerDependenciesMeta": {
+    "expo-observe": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "expo-observe": "^{{expoSdkVersion}}"
+  }
+}
+```
+
+Load the package with `require()` inside a `try/catch` block. Use `typeof import()` to preserve its TypeScript types:
+
+```ts observe.ts
+let observeModule: typeof import('expo-observe') | undefined;
+
+try {
+  observeModule = require('expo-observe') as typeof import('expo-observe');
+} catch {
+  // The integration remains disabled when expo-observe is not installed.
+}
+```
+
+</Step>
+
+<Step label="2">
+
+## Declare the integration configuration
+
+Use declaration merging to add your package's integration key to `expo-observe`:
+
+```ts observe.types.ts
+export type YourPackageIntegrationConfig = {
+  thresholdMs?: number;
+};
+
+declare module 'expo-observe' {
+  interface ObserveIntegrationsConfig {
+    'your-package'?: boolean | YourPackageIntegrationConfig;
+  }
+}
+```
+
+Export this declaration from your package entry point so TypeScript loads it when users import your package.
+
+Developers using your package can then enable the integration with `Observe.configure()`:
+
+```tsx app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'your-package': true,
+  },
+});
+```
+
+If the integration accepts options, developers can pass a configuration object instead of `true`:
+
+```tsx app/_layout.tsx
+Observe.configure({
+  integrations: {
+    'your-package': {
+      thresholdMs: 1500,
+    },
+  },
+});
+```
+
+</Step>
+
+<Step label="3">
+
+## Register the integration
+
+Call `Observe.registerIntegration()` with your integration key. The callback receives the configuration for your integration:
+
+```ts observe.ts
+export function initObserveIntegration() {
+  // The `typeof window` check skips initialization during server-side rendering on web.
+  if (typeof window !== 'undefined' && observeModule) {
+    const { Observe } = observeModule;
+
+    Observe.registerIntegration('your-package', config => {
+      if (config) {
+        enableObserveIntegration(config === true ? {} : config);
+      }
+    });
+  }
+}
+
+let enabled = false;
+
+function enableObserveIntegration() {
+  // Initialize the integration here
+  // For example:
+  enabled = true;
+}
+```
+
+Implement `enableObserveIntegration()` in your package. The callback does not run when the integration is omitted or set to `false`.
+
+Call the initialization function from your package entry point:
+
+```ts index.ts
+import { initObserveIntegration } from './observe';
+
+export type { YourPackageIntegrationConfig } from './observe.types';
+
+initObserveIntegration();
+```
+
+</Step>
+
+<Step label="4">
+
+## Log events
+
+Call `Observe.logEvent()` when your package detects an actionable issue. Use a lowercase event name with the package name as the first segment. Separate segments with periods:
+
+```ts observe.ts
+export function logExpensiveOperation(durationMs: number, thresholdMs: number) {
+  if (!observeModule || !enabled) {
+    return;
+  }
+
+  const { Observe } = observeModule;
+
+  Observe.logEvent('your-package.expensive-operation', {
+    severity: 'warn',
+    body: 'Reduce the work performed by this operation or increase the configured threshold.',
+    attributes: {
+      durationMs,
+      thresholdMs,
+    },
+  });
+}
+```
+
+For more information about naming events and adding details, see [User-defined events](/eas/observe/events/).
+
+</Step>

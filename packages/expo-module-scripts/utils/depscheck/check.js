@@ -98,10 +98,6 @@ const SPECIAL_DEPENDENCIES = {
 const IGNORED_IMPORTS = {
   'expo-modules-core': 'ignore-dev',
   'expo-asset': 'ignore-dev',
-
-  // This is force-resolved in the CLI and therefore, for Expo modules, is generally safe.
-  // See: https://github.com/expo/expo/blob/d63143c/packages/%40expo/cli/src/start/server/metro/withMetroMultiPlatform.ts#L603-L622
-  '@react-native/assets-registry/registry': 'ignore-dev',
 };
 
 const WORKSPACE_SPECIFIER = 'workspace:';
@@ -120,6 +116,19 @@ const WORKSPACE_SPECIFIER = 'workspace:';
  * @returns {Promise<void>}
  */
 export async function checkDependenciesAsync(pkg, type = 'package', logger = defaultLogger) {
+  if (
+    !EXPO_METRO_DEPENDENTS.includes(pkg.packageName) &&
+    getDependencies(pkg.packageJson, [DependencyKind.Normal, DependencyKind.Peer]).some(
+      ({ name }) => name === '@expo/metro'
+    )
+  ) {
+    logger.warn(
+      `📦 Disallowed dependency: @expo/metro. Only ${EXPO_METRO_DEPENDENTS.join(', ')} may depend ` +
+        `on it at runtime; reach Metro through @expo/metro-config, or list it in devDependencies.`
+    );
+    throw new Error(`${pkg.packageName} has invalid dependency chains.`);
+  }
+
   if (isNCCBuilt(pkg.packageJson)) {
     return;
   }
@@ -217,6 +226,11 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
   }
 }
 
+// Packages allowed to depend on `@expo/metro` at runtime; any package may list it in
+// `devDependencies`. Metro coupling is being consolidated into `@expo/metro-config`, so this list
+// only shrinks.
+const EXPO_METRO_DEPENDENTS = ['@expo/metro-config', '@expo/cli', 'expo'];
+
 /**
  * @param {SourceFileImportRef} ref
  * @returns {boolean}
@@ -306,12 +320,8 @@ function createExternalImportValidator(packageName, packageJson) {
       seenDependencyName.add(ref.packageName);
       const dependency = dependencyMap.get(ref.packageName);
       if (dependency && dependency.kind !== DependencyKind.Dev) {
-        let { versionRange } = dependency;
-        if (versionRange.startsWith(WORKSPACE_SPECIFIER)) {
-          versionRange = versionRange.slice(WORKSPACE_SPECIFIER.length);
-        }
-        // NOTE: Loose check to see if a dependency is pinned
-        const isLoose = /[~|^><=](\s*\d+\.)/.test(versionRange) || versionRange === '*';
+        const { versionRange } = dependency;
+        const isLoose = isLooseDependencyVersionRange(versionRange);
         const isPrerelease = versionRange.includes('-');
         const isPinned = /^\d+\.\d+\.\d+$/.test(versionRange);
         return !isPrerelease && (!isLoose || isPinned);
@@ -319,6 +329,24 @@ function createExternalImportValidator(packageName, packageJson) {
       return null;
     },
   };
+}
+
+/**
+ * Loosely checks whether a dependency range allows more than one version
+ *
+ * @param {string} versionRange
+ * @returns {boolean}
+ */
+function isLooseDependencyVersionRange(versionRange) {
+  if (versionRange.startsWith(WORKSPACE_SPECIFIER)) {
+    versionRange = versionRange.slice(WORKSPACE_SPECIFIER.length);
+  }
+  return (
+    versionRange === '*' ||
+    versionRange === '~' ||
+    versionRange === '^' ||
+    /[~|^><=](\s*\d+\.)/.test(versionRange)
+  );
 }
 
 /** @type {DepsLogger} */

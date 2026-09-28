@@ -105,12 +105,16 @@ class ExponentPackage : ReactPackage {
       URLHandlerModule(reactContext),
       KeyboardModule(reactContext)
     )
-    nativeModules.add(if (isVerified) ExponentAsyncStorageModule(reactContext, manifest) else ExponentUnsignedAsyncStorageModule(reactContext))
+    nativeModules.add(
+      if (isVerified) {
+        ExponentAsyncStorageModule(reactContext, manifest)
+      } else {
+        ExponentUnsignedAsyncStorageModule(reactContext)
+      }
+    )
 
     if (isKernel) {
-      // WHEN_VERSIONING_REMOVE_FROM_HERE
       nativeModules.add((ExponentKernelModuleProvider.newInstance(reactContext) as NativeModule?)!!)
-      // WHEN_VERSIONING_REMOVE_TO_HERE
     }
 
     if (isVerified) {

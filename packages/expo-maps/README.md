@@ -1,5 +1,3 @@
-> 🚨 Expo Maps is currently in alpha and subject to breaking changes. It is not available in the Expo Go app.
-
 <p>
   <a href="https://docs.expo.dev/versions/latest/sdk/maps/">
     <img

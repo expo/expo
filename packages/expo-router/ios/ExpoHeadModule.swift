@@ -1,7 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import CoreSpotlight
+import ExpoModulesCore
 import MobileCoreServices
 
 struct MetadataOptions: Record {
@@ -82,7 +82,7 @@ public class ExpoHeadModule: Module {
           "imageUrl": activity.contentAttributeSet?.thumbnailURL,
           "keywords": activity.keywords,
           "dateModified": activity.contentAttributeSet?.metadataModificationDate,
-          "userInfo": activity.userInfo
+          "userInfo": activity.userInfo,
         ]
       }
       return nil
@@ -91,7 +91,11 @@ public class ExpoHeadModule: Module {
     Function("createActivity") { (value: MetadataOptions) in
       if let webpageUrl = value.webpageURL {
         if webpageUrl.absoluteString.starts(with: "file://") == true {
-          throw Exception(name: "Invalid webpageUrl", description: "Scheme file:// is not allowed for location origin (webpageUrl in NSUserActivity). URL: \(webpageUrl.absoluteString)")
+          throw Exception(
+            name: "Invalid webpageUrl",
+            description:
+              "Scheme file:// is not allowed for location origin (webpageUrl in NSUserActivity). URL: \(webpageUrl.absoluteString)"
+          )
         }
       }
 
@@ -100,18 +104,21 @@ public class ExpoHeadModule: Module {
     }
 
     AsyncFunction("clearActivitiesAsync") { (ids: [String], promise: Promise) in
-      ids.forEach { id in
+      for id in ids {
         self.revokeActivity(id: id)
       }
 
-      CSSearchableIndex.default().deleteSearchableItems(withIdentifiers: ids, completionHandler: { error in
-        if error != nil {
-          // swiftlint:disable:next force_cast
-          promise.reject(error as! Exception)
-        } else {
-          promise.resolve()
+      CSSearchableIndex.default().deleteSearchableItems(
+        withIdentifiers: ids,
+        completionHandler: { error in
+          if error != nil {
+            // swiftlint:disable:next force_cast
+            promise.reject(error as! Exception)
+          } else {
+            promise.resolve()
+          }
         }
-      })
+      )
     }
 
     Function("suspendActivity") { (id: String) in

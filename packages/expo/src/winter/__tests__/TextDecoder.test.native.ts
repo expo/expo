@@ -249,6 +249,8 @@ describe('TextDecoder', () => {
           chars.substring(TypeConstructor.BYTES_PER_ELEMENT, TypeConstructor.BYTES_PER_ELEMENT + 8)
         );
       });
+
+      expect(decoder.decode(new DataView(buffer, 2, 8))).toBe(chars.substring(2, 10));
     });
   });
 
@@ -274,6 +276,15 @@ describe('TextDecoder', () => {
     });
   });
 
+  it('accepts callable options dictionaries', () => {
+    const options = () => {};
+
+    // @ts-expect-error Web IDL dictionaries accept callable objects
+    expect(new TextDecoder('utf-8', options).fatal).toBe(false);
+    // @ts-expect-error Web IDL dictionaries accept callable objects
+    expect(new TextDecoder().decode(new Uint8Array([0x61]), options)).toBe('a');
+  });
+
   // https://github.com/inexorabletash/text-encoding/blob/3f330964c0e97e1ed344c2a3e963f4598610a7ad/test/test-misc.js#L383
   it('encode() called with falsy arguments (polyfill bindings)', () => {
     const encoder = new TextEncoder();
@@ -281,6 +292,137 @@ describe('TextDecoder', () => {
     expect([...encoder.encode(false)]).toEqual([102, 97, 108, 115, 101]);
     // @ts-expect-error
     expect([...encoder.encode(0)]).toEqual([48]);
+  });
+
+  describe('indexed UTF-8 decoder', () => {
+    it('decodes valid sequences at each UTF-8 boundary', () => {
+      const bytes = new Uint8Array([
+        0x00, 0x7f, 0xc2, 0x80, 0xdf, 0xbf, 0xe0, 0xa0, 0x80, 0xed, 0x9f, 0xbf, 0xee, 0x80, 0x80,
+        0xf0, 0x90, 0x80, 0x80, 0xf4, 0x8f, 0xbf, 0xbf,
+      ]);
+
+      expect(new TextDecoder().decode(bytes)).toBe(
+        '\u0000\u007f\u0080\u07ff\u0800\ud7ff\ue000\u{10000}\u{10ffff}'
+      );
+    });
+
+    it('reads the stream option once for malformed input', () => {
+      let reads = 0;
+      const options = {
+        get stream() {
+          reads++;
+          return false;
+        },
+      };
+
+      expect(new TextDecoder().decode(new Uint8Array([0xff]), options)).toBe('\ufffd');
+      expect(reads).toBe(1);
+    });
+
+    it('handles incomplete and malformed sequences across every chunk boundary', () => {
+      const NativeTextDecoder = require('node:util').TextDecoder;
+      const cases = [
+        [0xef, 0xbb, 0xbf, 0x61],
+        [0xc2, 0xa2, 0xe6, 0xb0, 0xb4, 0xf0, 0x9d, 0x84, 0x9e],
+        [0xe0, 0x80, 0x80, 0x61],
+        [0xed, 0xa0, 0x80, 0x61],
+        [0xf4, 0x90, 0x80, 0x80, 0x61],
+        [0xe1, 0x80, 0x41, 0xc2],
+        [0xff, 0xef, 0xbb, 0xbf],
+        [0x61, 0xef, 0xbb, 0xbf],
+      ];
+
+      for (const input of cases) {
+        for (let split = 0; split <= input.length; split++) {
+          const decoder = new TextDecoder();
+          const nativeDecoder = new NativeTextDecoder();
+          const first = new Uint8Array(input.slice(0, split));
+          const second = new Uint8Array(input.slice(split));
+          const actual =
+            decoder.decode(first, { stream: true }) +
+            decoder.decode(second, { stream: true }) +
+            decoder.decode();
+          const expected =
+            nativeDecoder.decode(first, { stream: true }) +
+            nativeDecoder.decode(second, { stream: true }) +
+            nativeDecoder.decode();
+
+          expect(actual).toBe(expected);
+        }
+      }
+    });
+
+    it('decodes large ASCII and multi-byte inputs', () => {
+      const value = 'a'.repeat(9000) + '水𝄞'.repeat(9000);
+      const encoded = new TextEncoder().encode(value);
+
+      expect(new TextDecoder().decode(encoded)).toBe(value);
+    });
+
+    it.each([0, 1, 31, 32, 33, 4095, 4096, 4097, 8193])(
+      'decodes %i ASCII bytes across conversion boundaries',
+      (length) => {
+        const bytes = new Uint8Array(length);
+        for (let i = 0; i < length; i++) bytes[i] = 32 + (i % 95);
+
+        const NativeTextDecoder = require('node:util').TextDecoder;
+        expect(new TextDecoder().decode(bytes)).toBe(new NativeTextDecoder().decode(bytes));
+      }
+    );
+
+    it('agrees with the native decoder for every two-byte input', () => {
+      const NativeTextDecoder = require('node:util').TextDecoder;
+      const bytes = new Uint8Array(2);
+      for (let first = 0; first <= 0xff; first++) {
+        bytes[0] = first;
+        for (let second = 0; second <= 0xff; second++) {
+          bytes[1] = second;
+          expect(new TextDecoder().decode(bytes)).toBe(new NativeTextDecoder().decode(bytes));
+        }
+      }
+    });
+
+    it('agrees with the native decoder for malformed inputs and all streaming splits', () => {
+      const NativeTextDecoder = require('node:util').TextDecoder;
+      let random = 0x12345678;
+      const nextByte = () => {
+        random = (Math.imul(random, 1664525) + 1013904223) >>> 0;
+        return random >>> 24;
+      };
+
+      for (let test = 0; test < 2000; test++) {
+        const input = new Uint8Array(test % 9);
+        for (let i = 0; i < input.length; i++) input[i] = nextByte();
+        expect(new TextDecoder().decode(input)).toBe(new NativeTextDecoder().decode(input));
+
+        for (let split = 0; split <= input.length; split++) {
+          const decoder = new TextDecoder();
+          const nativeDecoder = new NativeTextDecoder();
+          const actual =
+            decoder.decode(input.subarray(0, split), { stream: true }) +
+            decoder.decode(input.subarray(split), { stream: true }) +
+            decoder.decode();
+          const expected =
+            nativeDecoder.decode(input.subarray(0, split), { stream: true }) +
+            nativeDecoder.decode(input.subarray(split), { stream: true }) +
+            nativeDecoder.decode();
+          expect(actual).toBe(expected);
+        }
+      }
+    });
+
+    it('starts a fresh BOM session after a completed decode', () => {
+      const decoder = new TextDecoder();
+      expect(decoder.decode(new Uint8Array([0x61]))).toBe('a');
+      expect(decoder.decode(new Uint8Array([0xef, 0xbb, 0xbf, 0x62]))).toBe('b');
+    });
+
+    it('recovers cleanly after a fatal streaming error', () => {
+      const decoder = new TextDecoder('utf-8', { fatal: true });
+      expect(decoder.decode(new Uint8Array([0xe2]), { stream: true })).toBe('');
+      expect(() => decoder.decode(new Uint8Array([0x41]), { stream: true })).toThrow(TypeError);
+      expect(decoder.decode(new Uint8Array([0x42]))).toBe('B');
+    });
   });
 
   // https://github.com/inexorabletash/text-encoding/blob/master/test/test-utf.js

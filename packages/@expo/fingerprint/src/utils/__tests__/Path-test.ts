@@ -100,6 +100,14 @@ describe(isIgnoredPath, () => {
     ).toBe(true);
   });
 
+  it('should keep matching other patterns inside a virtual store', () => {
+    expect(
+      isIgnoredPath('node_modules/.pnpm/sharp@1.0.0/node_modules/sharp/build/Release/sharp.node', [
+        '**/node_modules/**/*.node',
+      ])
+    ).toBe(true);
+  });
+
   it('should match .cxx from parent directories', () => {
     const ignorePaths = ['**/android/.cxx/**/*'];
     expect(isIgnoredPath('node_modules/module/android/.cxx/file', ignorePaths)).toBe(true);

@@ -86,6 +86,14 @@ export interface SliderProps {
   children?: React.ReactNode;
 }
 
+export interface VerticalSliderProps extends SliderProps {
+  /**
+   * Whether the direction of the slider is reversed. By default, values increase from top to bottom.
+   * @default false
+   */
+  reverseDirection?: boolean;
+}
+
 type NativeSliderProps = Omit<SliderProps, 'onValueChange' | 'onValueChangeFinished' | 'children'> &
   ViewEvent<'onValueChange', { value: number }> &
   ViewEvent<'onValueChangeFinished', void> & { children?: React.ReactNode };
@@ -94,6 +102,10 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'ExpoUI',
   'SliderView'
 );
+
+const VerticalSliderNativeView: React.ComponentType<
+  NativeSliderProps & Pick<VerticalSliderProps, 'reverseDirection'>
+> = requireNativeView('ExpoUI', 'VerticalSliderView');
 
 function transformSliderProps(
   props: Omit<SliderProps, 'children'>
@@ -118,7 +130,7 @@ function transformSliderProps(
 }
 
 /**
- * A custom thumb slot for `Slider`.
+ * A custom thumb slot for `Slider` and `VerticalSlider`.
  * Wrap any content to use as the slider's thumb indicator.
  *
  * @platform android
@@ -128,7 +140,7 @@ function Thumb(props: { children: React.ReactNode }) {
 }
 
 /**
- * A custom track slot for `Slider`.
+ * A custom track slot for `Slider` and `VerticalSlider`.
  * Wrap any content to use as the slider's track.
  *
  * @platform android
@@ -149,5 +161,24 @@ function SliderComponent(props: SliderProps) {
 
 SliderComponent.Thumb = Thumb;
 SliderComponent.Track = Track;
+
+/**
+ * A vertical slider component that wraps Material3's `VerticalSlider`.
+ *
+ * @platform android
+ */
+export function VerticalSlider(props: VerticalSliderProps) {
+  const { children, reverseDirection, ...sliderProps } = props;
+  return (
+    <VerticalSliderNativeView
+      {...transformSliderProps(sliderProps)}
+      reverseDirection={reverseDirection}>
+      {children}
+    </VerticalSliderNativeView>
+  );
+}
+
+VerticalSlider.Thumb = Thumb;
+VerticalSlider.Track = Track;
 
 export { SliderComponent as Slider };

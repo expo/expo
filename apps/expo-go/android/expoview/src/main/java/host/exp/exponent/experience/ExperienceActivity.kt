@@ -196,7 +196,10 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           override fun onManifestCompleted(manifest: Manifest) {
             lifecycleScope.launch {
               try {
-                val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
+                val bundleUrl = ExponentUrls.bundleUrlFromManifest(
+                  manifest,
+                  this@ExperienceActivity.manifestUrl!!
+                )
                 setManifest(
                   this@ExperienceActivity.manifestUrl!!,
                   manifest,
@@ -643,7 +646,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     Exponent.instance
       .testPackagerStatus(
         isDebugModeEnabled,
-        manifest!!,
+        ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!),
         object : Exponent.PackagerStatusCallback {
           override fun onSuccess() {
             reactHost = startReactInstance(
@@ -683,7 +686,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
     val mutableFlag =
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
 
     // Home
     val homeIntent = Intent(this, LauncherActivity::class.java)

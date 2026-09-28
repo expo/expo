@@ -38,6 +38,8 @@
   NSString *engine;
 #if USE_HERMES
   engine = @"Hermes";
+#elif USE_QUICKJS
+  engine = @"QuickJS";
 #else
   engine = @"JSC";
 #endif

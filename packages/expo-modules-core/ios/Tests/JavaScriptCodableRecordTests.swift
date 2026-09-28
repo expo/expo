@@ -50,6 +50,14 @@ struct CodableMixed: Equatable {
 @Record
 struct CodableEmpty: Equatable {}
 
+// Covers binary fields: a typed array and an array buffer as record fields. Both decode as
+// views into the JS-owned memory rather than copies.
+@Record
+struct CodableBinary {
+  var data: Uint8Array
+  var buffer: ArrayBuffer
+}
+
 @Suite("JavaScriptCodable+Record")
 @JavaScriptActor
 struct JavaScriptCodableRecordTests {
@@ -216,5 +224,38 @@ struct JavaScriptCodableRecordTests {
     #expect(decoded == CodableEmpty())
     let reencoded = try CodableEmpty.encode(decoded, in: runtime)
     #expect(reencoded.isObject())
+  }
+
+  // MARK: - Binary fields
+
+  @Test
+  func `decodes typed array and array buffer fields`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ data: new Uint8Array([1, 2, 3]), buffer: new ArrayBuffer(8) })")
+    let decoded = try CodableBinary.decode(value, in: runtime)
+    #expect(decoded.data.kind == .Uint8Array)
+    #expect(decoded.data.length == 3)
+    #expect(decoded.data[1] == 2)
+    #expect(decoded.buffer.byteLength == 8)
+  }
+
+  @Test
+  func `typed array field is a view into the JS memory`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("globalThis.binarySource = { data: new Uint8Array([1, 2, 3]), buffer: new ArrayBuffer(8) }")
+    let decoded = try CodableBinary.decode(value, in: runtime)
+    decoded.data[0] = 42
+    #expect(try runtime.eval("binarySource.data[0]").getInt() == 42)
+  }
+
+  @Test
+  func `encodes a record with binary fields back to JS`() throws {
+    let runtime = try runtime
+    let value = try runtime.eval("({ data: new Uint8Array([9, 8]), buffer: new ArrayBuffer(4) })")
+    let decoded = try CodableBinary.decode(value, in: runtime)
+    let encoded = try CodableBinary.encode(decoded, in: runtime)
+    runtime.global().setProperty("encodedBinary", value: encoded)
+    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool())
+    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool())
   }
 }

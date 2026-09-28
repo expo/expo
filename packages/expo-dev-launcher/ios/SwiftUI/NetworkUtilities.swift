@@ -129,20 +129,6 @@ func connectionReceive(_ connection: NWConnection) async throws -> String {
 }
 
 class NetworkUtilities {
-  static func getNWBrowserResultName(_ result: NWBrowser.Result) -> String? {
-    if case .bonjour(let txtRecord) = result.metadata {
-      return txtRecord.getEntry(for: "name").flatMap {
-        if case .string(let value) = $0 {
-          value
-        } else {
-          nil
-        }
-      }
-    } else {
-      return nil
-    }
-  }
-
   static func resolveBundlerEndpoint(
     endpoint: NWEndpoint,
     queue: DispatchQueue,

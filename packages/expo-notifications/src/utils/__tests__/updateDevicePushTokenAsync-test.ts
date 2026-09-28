@@ -1,5 +1,4 @@
 import 'abort-controller/polyfill';
-
 import * as Application from 'expo-application';
 
 import ServerRegistrationModule from '../../ServerRegistrationModule';
@@ -102,6 +101,21 @@ describe('given valid registration info', () => {
     expect(global.fetch).toHaveBeenCalledTimes(2);
     warnSpy.mockRestore();
     debugSpy.mockRestore();
+  });
+
+  it('does not warn if fetch rejects after the signal has been aborted', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    const abortController = new AbortController();
+    global.fetch.mockImplementationOnce(() => {
+      abortController.abort();
+      return Promise.reject(new Error('FetchRequestCanceledException'));
+    });
+
+    await updateDevicePushTokenAsync(abortController.signal, TOKEN);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });
 

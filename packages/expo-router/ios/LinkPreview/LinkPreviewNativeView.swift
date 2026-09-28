@@ -2,16 +2,12 @@ import ExpoModulesCore
 import RNScreens
 
 class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDelegate,
-  RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable {
+  RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable
+{
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   var directChild: UIView?
-  var nextScreenId: String? {
-    didSet {
-      performUpdateOfPreloadedView()
-    }
-  }
-  var tabPath: TabPathPayload? {
+  var previewActivationPath: PreviewActivationPathPayload? {
     didSet {
       performUpdateOfPreloadedView()
     }
@@ -43,13 +39,14 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
   // MARK: - Props
 
   func performUpdateOfPreloadedView() {
-    if nextScreenId == nil && tabPath?.path.isEmpty != false {
-      // If we have no tab to change and no screen to push, then we can't update the preloaded view
+    guard let path = previewActivationPath?.path, !path.isEmpty else {
+      linkPreviewNativeNavigation.clearPreloadedView()
       return
     }
-    // However if one these is defined then we can perform the native update
     linkPreviewNativeNavigation.updatePreloadedView(
-      screenId: nextScreenId, tabPath: tabPath, responder: self)
+      path: path.map { PreviewActivationRoute(key: $0.key) },
+      responder: self
+    )
   }
 
   // MARK: - Children
@@ -116,6 +113,8 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     _ interaction: UIContextMenuInteraction,
     configurationForMenuAtLocation location: CGPoint
   ) -> UIContextMenuConfiguration? {
+    cancelReactNativeTouches()
+    linkPreviewNativeNavigation.beginInteraction()
     onWillPreviewOpen()
     return UIContextMenuConfiguration(
       identifier: nil,
@@ -124,7 +123,8 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
       },
       actionProvider: { [weak self] _ in
         self?.createContextMenu()
-      })
+      }
+    )
   }
 
   func contextMenuInteraction(
@@ -136,7 +136,9 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
       let triggerView: UIView =
         (directChild as? LinkPreviewIndirectTriggerProtocol)?.indirectTrigger ?? directChild
       let target = UIPreviewTarget(
-        container: superview, center: self.convert(triggerView.center, to: superview))
+        container: superview,
+        center: self.convert(triggerView.center, to: superview)
+      )
 
       let parameters = UIPreviewParameters()
       parameters.backgroundColor = triggerView.backgroundColor ?? .clear
@@ -177,11 +179,40 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     animator: UIContextMenuInteractionCommitAnimating
   ) {
     if preview != nil {
-      self.onPreviewTapped()
+      let activation = linkPreviewNativeNavigation.captureActivation()
+      if let screenId = activation?.screenId {
+        self.onPreviewTapped(["screenId": screenId])
+      } else {
+        self.onPreviewTapped()
+      }
       animator.addCompletion { [weak self] in
-        self?.linkPreviewNativeNavigation.pushPreloadedView()
+        if UIDevice.current.userInterfaceIdiom != .pad {
+          activation?.commit()
+        }
         self?.onPreviewTappedAnimationCompleted()
       }
+    }
+  }
+
+  // A press released before the menu fully presents is still recognized as a tap by
+  // react-native, so cancel in-flight touches on the nearest surface when the interaction
+  // starts. Unlike rnscreens_cancelTouches, `reset` is omitted deliberately: the press is
+  // still active and UIKit delivers touchesCancelled after this returns — resetting first
+  // desyncs the touch registry (NSAssert in -[RCTSurfaceTouchHandler _updateTouches:]).
+  private func cancelReactNativeTouches() {
+    guard let touchHandlerClass = NSClassFromString("RCTSurfaceTouchHandler") else {
+      return
+    }
+    var view: UIView? = self
+    while let current = view {
+      if let recognizer = current.gestureRecognizers?.first(where: { $0.isKind(of: touchHandlerClass) }) {
+        if recognizer.isEnabled {
+          recognizer.isEnabled = false
+          recognizer.isEnabled = true
+        }
+        return
+      }
+      view = current.superview
     }
   }
 

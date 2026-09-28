@@ -183,13 +183,15 @@ class RouterToolbarItemView: RouterViewWithLogger {
           badge.foregroundColor = foregroundColor
         }
         if badgeConfig.fontFamily != nil || badgeConfig.fontSize != nil
-          || badgeConfig.fontWeight != nil {
+          || badgeConfig.fontWeight != nil
+        {
           let font = RouterFontUtils.convertTitleStyleToFont(
             TitleStyle(
               fontFamily: badgeConfig.fontFamily,
               fontSize: badgeConfig.fontSize,
               fontWeight: badgeConfig.fontWeight
-            ))
+            )
+          )
           badge.font = font
         }
         item.badge = badge

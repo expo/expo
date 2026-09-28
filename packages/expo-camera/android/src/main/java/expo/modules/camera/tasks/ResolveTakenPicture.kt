@@ -146,7 +146,11 @@ class ResolveTakenPicture(
 
         // Cache compressed image in imageStream
         ByteArrayOutputStream().use { imageStream ->
-          val format = if (options.imageType == PictureFormat.PNG) Bitmap.CompressFormat.PNG else Bitmap.CompressFormat.JPEG
+          val format = if (options.imageType == PictureFormat.PNG) {
+            Bitmap.CompressFormat.PNG
+          } else {
+            Bitmap.CompressFormat.JPEG
+          }
           bitmap.compress(format, quality, imageStream)
           // Write compressed image to file in cache directory
           val filePath = writeStreamToFile(directory, imageStream, options.imageType.toExtension())

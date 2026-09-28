@@ -13,7 +13,10 @@ import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
+import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
+import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
+import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateDisplayName
@@ -22,6 +25,7 @@ import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.logevents.withDisplayNameAttribute
 import expo.modules.appmetrics.memory.MemoryMetricsManager
 import expo.modules.appmetrics.storage.JsDebugSession
+import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.LogRecord
@@ -64,6 +68,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   lateinit var sessionManager: SessionManager
 
   lateinit var mainSession: SessionSharedObject
+
+  /**
+   * The span producer installed on the monitor in `OnCreate`, kept so `setNetworkTracesConfig`
+   * can apply a new recording policy to the live instance and `OnDestroy` can uninstall it
+   * when the module is torn down (a JS reload).
+   */
+  private var networkRequestPersistence: NetworkRequestPersistence? = null
 
   // Lazy-initialized metadata - created once when first needed
   private val metadata: AppMetadata? by lazy {
@@ -127,6 +138,22 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         GlobalAttributes.set(attributes)
       }
 
+      Function("setNetworkTracesConfig") { config: NetworkTracesConfigParam ->
+        val configuration = NetworkTracesConfiguration(
+          enabled = config.enabled,
+          hosts = config.filter?.hosts,
+          methods = config.filter?.methods
+        )
+        // Persisted before the hop, so a configure racing startup is either read from
+        // preferences by the installing producer or applied to the live one below.
+        AppMetricsPreferences.setNetworkTracesConfiguration(context, configuration)
+        scope.launch {
+          // `modulesQueue` is a single thread fed from the JS thread, so rapid calls land in
+          // order. iOS re-reads instead, because its actor hops carry no such guarantee.
+          networkRequestPersistence?.setConfiguration(configuration)
+        }
+      }
+
       OnCreate {
         sessionManager = SessionManager(context)
 
@@ -150,7 +177,20 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
-        scope.launch { mainSession.awaitSessionPersisted() }
+        scope.launch {
+          mainSession.awaitSessionPersisted()
+          // From here on every completed request is written to the `spans` table, attributed to
+          // the main session. The await above keeps the FK satisfied for every span insert;
+          // installation also drains requests buffered since process start.
+          val persistence = NetworkRequestPersistence(
+            database = MetricsDatabase.getDatabase(context),
+            scope = scope,
+            initialConfiguration = AppMetricsPreferences.getNetworkTracesConfiguration(context),
+            sessionId = mainSession.sessionId
+          )
+          networkRequestPersistence = persistence
+          NetworkRequestMonitor.shared.installPersistence(persistence)
+        }
 
         // Sweep sessions orphaned by a previous process. The cutoff equals this
         // session's start and the comparison is strict (`<`), so this session
@@ -168,13 +208,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
             exitInfoProvider = ExitInfoProviderImpl(context),
             lastProcessedExitStore = PreferencesLastProcessedExitStore(context),
             appVersion = metadata?.appVersion
-          ) { sessionId, origin, report ->
+          ) { sessionId, origin, report, logDetails ->
             attributeAndStoreCrashReport(
               sessionManager = sessionManager,
               currentSessionId = mainSession.sessionId,
               sessionId = sessionId,
               origin = origin,
-              report = report
+              report = report,
+              logDetails = logDetails
             )
           }.process()
         }
@@ -215,6 +256,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnDestroy {
+        // Stop persisting spans for this module's session. Without this, a JS reload leaves
+        // the old instance on the process-wide monitor, writing rows attributed to the
+        // torn-down session until the next OnCreate replaces it.
+        networkRequestPersistence?.let { NetworkRequestMonitor.shared.uninstallPersistence(it) }
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
         // is persisted before teardown. `stop` awaits the session-start job
@@ -363,4 +408,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 data class MetricAttributes(
   @Field val routeName: String? = null,
   @Field val params: Map<String, Any>? = null
+) : Record
+
+/**
+ * Payload of `setNetworkTracesConfig`: the normalized `networkTraces` setting pushed down by
+ * `Observe.configure`.
+ */
+@OptimizedRecord
+data class NetworkTracesConfigParam(
+  @Field val enabled: Boolean = true,
+  @Field val filter: NetworkRequestFilter? = null
 ) : Record

@@ -4,7 +4,7 @@ import {
   getSelectedTestNames,
 } from '../getScreenIdForLinking';
 
-describe(getScreenIdForLinking, () => {
+describe('getScreenIdForLinking', () => {
   it('should normalize derived routes to lowercase and trim', () => {
     expect(getScreenIdForLinking({ name: ' MyScreen ' })).toBe('myscreen');
   });
@@ -46,13 +46,13 @@ describe(getScreenIdForLinking, () => {
   });
 });
 
-describe(createQueryString, () => {
+describe('createQueryString', () => {
   it('should join normalized test names with commas', () => {
     expect(createQueryString([' Test1 ', 'TEST2', 'test1'])).toBe('test1,test2');
   });
 });
 
-describe(getSelectedTestNames, () => {
+describe('getSelectedTestNames', () => {
   it('should split and normalize query string', () => {
     expect(getSelectedTestNames(' Test1 , Test2 ')).toEqual(['test1', 'test2']);
   });

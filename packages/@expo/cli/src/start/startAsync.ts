@@ -26,11 +26,12 @@ import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
 
-async function getMultiBundlerStartOptions(
+/** Exported for testing. `startAsync` is the entry point. */
+export async function _getMultiBundlerStartOptions(
   projectRoot: string,
   options: Options,
   platformBundlers: PlatformBundlers
-): Promise<[BundlerStartOptions, MultiBundlerStartOptions]> {
+): Promise<[BundlerStartOptions, MultiBundlerStartOptions, number | undefined]> {
   const commonOptions: BundlerStartOptions = {
     mode: options.dev ? 'development' : 'production',
     devClient: options.devClient,
@@ -52,7 +53,10 @@ async function getMultiBundlerStartOptions(
   }
 
   const bundlers = [...new Set(Object.values(optionalBundlers))];
-  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, bundlers);
+  // Resolve ports for every bundler, not just the ones starting now, so a bundler that
+  // starts interactively already has a port when it's asked for.
+  const allBundlers = [...new Set(Object.values(platformBundlers))];
+  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, allBundlers);
 
   const multiBundlerStartOptions = bundlers.map((bundler) => {
     const port =
@@ -66,7 +70,7 @@ async function getMultiBundlerStartOptions(
     };
   });
 
-  return [commonOptions, multiBundlerStartOptions];
+  return [commonOptions, multiBundlerStartOptions, multiBundlerSettings.webpackPort];
 }
 
 export async function startAsync(
@@ -98,13 +102,13 @@ export async function startAsync(
 
   const platformBundlers = getPlatformBundlers(projectRoot, exp);
 
-  const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
+  const [defaultOptions, startOptions, webPort] = await _getMultiBundlerStartOptions(
     projectRoot,
     options,
     platformBundlers
   );
 
-  const devServerManager = new DevServerManager(projectRoot, defaultOptions);
+  const devServerManager = new DevServerManager(projectRoot, defaultOptions, webPort);
 
   // Validations
 

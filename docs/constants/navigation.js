@@ -284,12 +284,15 @@ export const general = [
       makePage('router/advanced/web-modals.mdx'),
       makePage('router/advanced/shared-routes.mdx'),
       makePage('router/advanced/protected.mdx'),
+      makePage('router/advanced/prevent-screen-removal.mdx'),
     ]),
     makeGroup('Advanced', [
       makePage('router/advanced/platform-specific-modules.mdx'),
       makePage('router/advanced/native-intent.mdx'),
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
+      makePage('router/advanced/navigation-transitions.mdx'),
+      makePage('router/advanced/react-activity.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
       makePage('router/advanced/custom-navigators.mdx'),
       makePage('router/advanced/stack-toolbar.mdx'),
@@ -322,6 +325,7 @@ export const general = [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
       makePage('router/migrate/sdk-55-to-56.mdx'),
+      makePage('router/migrate/sdk-57-to-58.mdx'),
     ]),
   ]),
   makeSection(
@@ -377,7 +381,6 @@ export const general = [
       makePage('guides/using-sentry.mdx'),
       makePage('guides/using-bugsnag.mdx'),
       makePage('guides/using-logrocket.mdx'),
-      makePage('guides/using-vexo.mdx'),
       makeGroup(
         'Using PostHog',
         [makePage('guides/using-posthog/index.mdx'), makePage('guides/using-posthog/recipes.mdx')],
@@ -426,16 +429,13 @@ export const general = [
         makePage('guides/keyboard-handling.mdx'),
         makePage('guides/controlled-components.mdx'),
       ]),
-      makeSection('Expo UI', [
-        makePage('guides/expo-ui-swift-ui/index.mdx'),
-        makePage('guides/expo-ui-swift-ui/extending.mdx'),
-        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
-      ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
         makePage('troubleshooting/application-has-not-been-registered.mdx'),
         makePage('troubleshooting/clear-cache-macos-linux.mdx'),
         makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/expo-go-version-mismatch.mdx'),
+        makePage('troubleshooting/expo-go-sign-in-required.mdx'),
         makePage('troubleshooting/react-native-version-mismatch.mdx'),
         makePage('troubleshooting/proxies.mdx'),
       ]),
@@ -477,6 +477,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/custom-functions.mdx'),
     makePage('eas/workflows/environment.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
     makePage('eas/workflows/rest-api.mdx'),
@@ -613,6 +614,27 @@ export const eas = [
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
     ]),
   ]),
+  makeSection('EAS Observe', [
+    makePage('eas/observe/introduction.mdx'),
+    makePage('eas/observe/get-started.mdx'),
+    makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/eas-cli.mdx'),
+    makePage('eas/observe/eas-update.mdx'),
+    makePage('eas/observe/events.mdx'),
+    makePage('eas/observe/errors.mdx'),
+    makePage('eas/observe/configuration.mdx'),
+    makeGroup('Integrations', [
+      makePage('eas/observe/integrations/expo-router.mdx'),
+      makePage('eas/observe/integrations/react-navigation.mdx'),
+      makePage('eas/observe/integrations/expo-image.mdx'),
+      makePage('eas/observe/integrations/third-party.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('eas/observe/reference/metrics.mdx'),
+      makePage('eas/observe/reference/client-id.mdx'),
+      makePage('eas/observe/reference/troubleshooting.mdx'),
+    ]),
+  ]),
   makeSection('EAS Metadata', [
     makePage('eas/metadata/index.mdx'),
     makePage('eas/metadata/getting-started.mdx'),
@@ -627,22 +649,7 @@ export const eas = [
     makePage('eas-insights/app-usage.mdx'),
     makePage('eas-insights/workflows.mdx'),
     makePage('eas-insights/maestro.mdx'),
-  ]),
-  makeSection('EAS Observe', [
-    makePage('eas/observe/introduction.mdx'),
-    makePage('eas/observe/get-started.mdx'),
-    makePage('eas/observe/dashboard.mdx'),
-    makePage('eas/observe/eas-update.mdx'),
-    makePage('eas/observe/events.mdx'),
-    makePage('eas/observe/configuration.mdx'),
-    makeGroup('Integrations', [
-      makePage('eas/observe/integrations/expo-router.mdx'),
-      makePage('eas/observe/integrations/react-navigation.mdx'),
-    ]),
-    makeGroup('Reference', [
-      makePage('eas/observe/reference/metrics.mdx'),
-      makePage('eas/observe/reference/troubleshooting.mdx'),
-    ]),
+    makePage('eas-insights/eas-cli.mdx'),
   ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
@@ -742,32 +749,23 @@ export const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
-    makeGroup('Expo Router', [makePage('preview/singular.mdx'), { expanded: true }]),
+    makeGroup(
+      'EAS Simulator',
+      [
+        makePage('preview/eas-simulator/introduction.mdx'),
+        makePage('preview/eas-simulator/get-started.mdx'),
+        makePage('preview/eas-simulator/run-and-control.mdx'),
+        makePage('preview/eas-simulator/create-session-links.mdx'),
+        makePage('preview/eas-simulator/cli-reference.mdx'),
+        makePage('preview/eas-simulator/rest-api.mdx'),
+        makePage('preview/eas-simulator/troubleshooting.mdx'),
+      ],
+      { expanded: true }
+    ),
   ]),
 ];
 
 const archive = [
-  makeSection('Classic Updates', [
-    makePage('archive/classic-updates/introduction.mdx'),
-    makeSection('Guides', [
-      makePage('archive/classic-updates/configuring-updates.mdx'),
-      makePage('archive/classic-updates/preloading-and-caching-assets.mdx'),
-    ]),
-    makeSection('Distribution', [
-      makePage('archive/classic-updates/release-channels.mdx'),
-      makePage('archive/classic-updates/advanced-release-channels.mdx'),
-      makePage('archive/classic-updates/hosting-your-app.mdx'),
-      makePage('archive/classic-updates/offline-support.mdx'),
-      makePage('archive/classic-updates/optimizing-updates.mdx'),
-    ]),
-    makeSection('Workflow', [makePage('archive/classic-updates/publishing.mdx')]),
-    makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
-  ]),
-  makeSection('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
-  makeSection('Push Notifications', [
-    makePage('archive/push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
-    makePage('archive/push-notifications/notification-channels.mdx'),
-  ]),
   makeSection('More', [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
@@ -920,6 +918,7 @@ function makePage(file) {
     isDeprecated: data.isDeprecated ?? undefined,
     inExpoGo: data.inExpoGo ?? undefined,
     hasVideoLink: data.hasVideoLink ?? undefined,
+    sidebarOrder: data.sidebar_order ?? undefined,
   };
   // TODO(cedric): refactor sidebarTitle into metadata
   if (data.sidebar_title) {
@@ -949,18 +948,7 @@ function pagesFromDir(dir) {
     .filter(entity => entity.isDirectory())
     .map(folder => {
       const folderPages = pagesFromDir(path.join(dir, folder.name));
-      const sortedFolderPages = folderPages.sort((a, b) => {
-        // prioritize index files first
-        if (a.isIndex && !b.isIndex) {
-          return -1;
-        }
-        if (!a.isIndex && b.isIndex) {
-          return 1;
-        }
-
-        // otherwise sort by name (title)
-        return a.name.localeCompare(b.name);
-      });
+      const sortedFolderPages = folderPages.sort(compareSidebarEntries);
 
       if (folderPages.length === 0) {
         return null;
@@ -969,6 +957,7 @@ function pagesFromDir(dir) {
       const metaJsonPath = path.join(dirPath, folder.name, 'metadata.json');
       let sidebarTitle = folder.name.toUpperCase();
       let expanded = true;
+      let sidebarOrder;
 
       if (fs.existsSync(metaJsonPath)) {
         try {
@@ -980,28 +969,42 @@ function pagesFromDir(dir) {
           if (typeof meta.expanded === 'boolean') {
             expanded = meta.expanded;
           }
+          if (typeof meta.order === 'number') {
+            sidebarOrder = meta.order;
+          }
         } catch (error) {
           // fallback to default behavior
           console.warn(`Invalid metadata.json in ${metaJsonPath}:`, error.message);
         }
       }
 
-      return makeGroup(sidebarTitle, sortedFolderPages, { expanded });
+      return makeGroup(sidebarTitle, sortedFolderPages, { expanded, sidebarOrder });
     })
     .filter(Boolean);
 
-  return [...files, ...folders].sort((a, b) => {
-    // prioritize index files first
-    if (a.isIndex && !b.isIndex) {
-      return -1;
-    }
-    if (!a.isIndex && b.isIndex) {
-      return 1;
-    }
+  return [...files, ...folders].sort(compareSidebarEntries);
+}
 
-    // otherwise sort by name (title)
-    return a.name.localeCompare(b.name);
-  });
+/**
+ * Orders one level of the sidebar: the index page first, then by explicit order, then
+ * alphabetically by sidebar title.
+ *
+ * The order is a weight, from a folder's `metadata.json` or a page's `sidebar_order`
+ * frontmatter, and defaults to 0. A negative weight sorts above the alphabetical run and
+ * a positive one below it, so a page can be pinned to either end of its group.
+ */
+function compareSidebarEntries(a, b) {
+  if (a.isIndex !== b.isIndex) {
+    return a.isIndex ? -1 : 1;
+  }
+
+  const aOrder = a.sidebarOrder ?? 0;
+  const bOrder = b.sidebarOrder ?? 0;
+  if (aOrder !== bOrder) {
+    return aOrder - bOrder;
+  }
+
+  return a.name.localeCompare(b.name);
 }
 
 /**

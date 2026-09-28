@@ -2,7 +2,7 @@ import type { EventSubscription } from 'expo';
 import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
-import { type NativeDatabase, flattenOpenOptions, type SQLiteOpenOptions } from './NativeDatabase';
+import { type NativeDatabase, type SQLiteOpenOptions } from './NativeDatabase';
 import {
   registerDatabaseForDevToolsAsync,
   unregisterDatabaseForDevToolsAsync,
@@ -143,7 +143,12 @@ export class SQLiteDatabase {
       await task();
       await this.execAsync('COMMIT');
     } catch (e) {
-      await this.execAsync('ROLLBACK');
+      try {
+        await this.execAsync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back (for example, after an interrupted write).
+        // Preserve the original error if rollback also fails.
+      }
       throw e;
     }
   }
@@ -185,7 +190,11 @@ export class SQLiteDatabase {
       await task(transaction);
       await transaction.execAsync('COMMIT');
     } catch (e) {
-      await transaction.execAsync('ROLLBACK');
+      try {
+        await transaction.execAsync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back; preserve the original error.
+      }
       error = e;
     } finally {
       await transaction.closeAsync();
@@ -200,6 +209,28 @@ export class SQLiteDatabase {
    */
   public isInTransactionSync(): boolean {
     return this.nativeDatabase.isInTransactionSync();
+  }
+
+  /**
+   * Interrupt running async operations on this connection. Returns immediately; await the operations
+   * to observe their errors before closing or reusing the connection.
+   *
+   * Affects all running statements on the connection, including shared cached handles. Interrupting
+   * a write rolls back its entire explicit transaction. Has no effect when idle; an operation that
+   * is nearly finished may still complete successfully.
+   *
+   * Throws if closing is already in progress. Interrupt and await pending operations before calling
+   * `closeAsync()` or `closeSync()`. Closing does not automatically cancel operations.
+   * For `withExclusiveTransactionAsync()`, call this on the callback's `txn` connection.
+   *
+   * @see https://www.sqlite.org/c3ref/interrupt.html
+   * @platform android
+   * @platform ios
+   * @platform macos
+   * @platform tvos
+   */
+  public interruptSync(): void {
+    return this.nativeDatabase.interruptSync();
   }
 
   /**
@@ -301,7 +332,11 @@ export class SQLiteDatabase {
       task();
       this.execSync('COMMIT');
     } catch (e) {
-      this.execSync('ROLLBACK');
+      try {
+        this.execSync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back; preserve the original error.
+      }
       throw e;
     }
   }
@@ -539,17 +574,6 @@ export class SQLiteDatabase {
     return allRows;
   }
 
-  /**
-   * Synchronize the local database with the remote libSQL server.
-   * This method is only available from libSQL integration.
-   */
-  public syncLibSQL(): Promise<void> {
-    if (typeof this.nativeDatabase.syncLibSQL !== 'function') {
-      throw new Error('syncLibSQL is not supported in the current environment');
-    }
-    return this.nativeDatabase.syncLibSQL();
-  }
-
   //#endregion
 }
 
@@ -581,10 +605,7 @@ export async function openDatabaseAsync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    databasePath,
-    flattenOpenOptions(openOptions)
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
   await nativeDatabase.initAsync();
   const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
   if (options?.useNewConnection !== true) {
@@ -610,10 +631,7 @@ export function openDatabaseSync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    databasePath,
-    flattenOpenOptions(openOptions)
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
   nativeDatabase.initSync();
   const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
   if (options?.useNewConnection !== true) {
@@ -633,11 +651,7 @@ export async function deserializeDatabaseAsync(
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    ':memory:',
-    flattenOpenOptions(openOptions),
-    serializedData
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
   await nativeDatabase.initAsync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -655,11 +669,7 @@ export function deserializeDatabaseSync(
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    ':memory:',
-    flattenOpenOptions(openOptions),
-    serializedData
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
   nativeDatabase.initSync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -787,10 +797,7 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(
-      db.databasePath,
-      flattenOpenOptions(options)
-    );
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databasePath, options);
     await nativeDatabase.initAsync();
     return new Transaction(db.databasePath, options, nativeDatabase);
   }

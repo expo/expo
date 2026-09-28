@@ -6,6 +6,7 @@ import androidx.media3.common.Player.REPEAT_MODE_OFF
 import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -23,6 +24,7 @@ import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.ScrubbingModeOptions
 import expo.modules.video.records.SeekTolerance
+import expo.modules.video.records.VideoSize
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
@@ -72,7 +74,8 @@ class VideoModule : Module() {
 
     Class(VideoPlayer::class) {
       Constructor { source: VideoSource?, /* useSynchronousReplace - iOS-only */ _: Boolean?, playerBuilderOptions: PlayerBuilderOptions? ->
-        val player = VideoPlayer(appContext.throwingActivity.applicationContext, appContext, source, playerBuilderOptions)
+        val applicationContext = appContext.reactContext?.applicationContext ?: throw Exceptions.ReactContextLost()
+        val player = VideoPlayer(applicationContext, appContext, source, playerBuilderOptions)
         appContext.mainQueue.launch {
           player.prepare()
         }
@@ -131,6 +134,14 @@ class VideoModule : Module() {
       Property("videoTrack")
         .get { ref: VideoPlayer ->
           ref.currentVideoTrack
+        }
+
+      Property("maxResolution")
+        .get { ref: VideoPlayer ->
+          ref.maxResolution
+        }
+        .set { ref: VideoPlayer, maxResolution: VideoSize? ->
+          ref.maxResolution = maxResolution
         }
 
       Property("availableSubtitleTracks")

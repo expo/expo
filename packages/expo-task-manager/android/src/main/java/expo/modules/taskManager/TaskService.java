@@ -230,7 +230,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
 
     // Invoke task callback
-    TaskExecutionCallback taskCallback = sTaskCallbacks.get(eventId);
+    TaskExecutionCallback taskCallback = sTaskCallbacks.remove(eventId);
 
     if (taskCallback != null) {
       taskCallback.onFinished(response);

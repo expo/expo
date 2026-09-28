@@ -1,7 +1,7 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import type { InfoPlist, URLScheme } from './IosConfig.types';
 import { createInfoPlistPluginWithPropertyGuard } from '../plugins/ios-plugins';
+import type { InfoPlist, URLScheme } from './IosConfig.types';
 
 export const withScheme = createInfoPlistPluginWithPropertyGuard(
   setScheme,

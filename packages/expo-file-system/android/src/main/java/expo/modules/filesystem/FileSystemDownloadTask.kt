@@ -8,6 +8,7 @@ import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.Dispatchers
@@ -318,6 +319,7 @@ fun calculateDownloadTotalBytes(
 }
 
 fun resolveDownloadDestination(to: FileSystemPath, url: URI): UnifiedFileInterface {
+  to.validatePermission(FilePermissionService.Permission.WRITE)
   return when (to) {
     is FileSystemDirectory -> {
       val filename = url.filename

@@ -1,15 +1,15 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-// `JavaScriptCodable` conformances for the standard container and wrapper types — `Array`,
-// `Optional`, and `Dictionary` — each conditional on its element/wrapped type conforming, and
-// each recursing statically into that element's conversion.
+// `JavaScriptCodable` conformances for the standard container and wrapper types (`Array`,
+// `Optional`, `Dictionary`), each recursing statically into its element/wrapped type's conversion.
 //
-// `JavaScriptCodable` is a composition type alias, so a conformance clause spells out both halves:
-// `extension Array: JavaScriptDecodable, JavaScriptEncodable where Element: JavaScriptCodable`.
+// The decodable and encodable halves are separate conditional conformances, each gated only on the
+// half it needs. A type conforming to both still gets both halves, but an encode-only element type
+// (e.g. `Task`, which has no `decode`) can still be carried through a container's encode.
 
 // MARK: - Array
 
-extension Array: JavaScriptDecodable, JavaScriptEncodable where Element: JavaScriptCodable {
+extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -26,7 +26,9 @@ extension Array: JavaScriptDecodable, JavaScriptEncodable where Element: JavaScr
       return try Element.decode(element, in: runtime)
     }
   }
+}
 
+extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: [Element], in runtime: borrowing JavaScriptRuntime) throws
@@ -42,7 +44,7 @@ extension Array: JavaScriptDecodable, JavaScriptEncodable where Element: JavaScr
 
 // MARK: - Optional
 
-extension Optional: JavaScriptDecodable, JavaScriptEncodable where Wrapped: JavaScriptCodable {
+extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
   // Optional copies nothing itself, so it overrides the zero-copy overload too and forwards the
   // borrowed value straight through — a wrapped primitive argument stays fully zero-copy.
   @JavaScriptActor
@@ -66,7 +68,9 @@ extension Optional: JavaScriptDecodable, JavaScriptEncodable where Wrapped: Java
     }
     return try Wrapped.decode(value, in: runtime)
   }
+}
 
+extension Optional: JavaScriptEncodable where Wrapped: JavaScriptEncodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Wrapped?, in runtime: borrowing JavaScriptRuntime) throws
@@ -82,7 +86,7 @@ extension Optional: JavaScriptDecodable, JavaScriptEncodable where Wrapped: Java
 
 // MARK: - Dictionary
 
-extension Dictionary: JavaScriptDecodable, JavaScriptEncodable where Key == String, Value: JavaScriptCodable {
+extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScriptDecodable {
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -102,7 +106,9 @@ extension Dictionary: JavaScriptDecodable, JavaScriptEncodable where Key == Stri
     }
     return result
   }
+}
 
+extension Dictionary: JavaScriptEncodable where Key == String, Value: JavaScriptEncodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: [String: Value], in runtime: borrowing JavaScriptRuntime) throws

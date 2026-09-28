@@ -129,6 +129,8 @@ export abstract class BundlerDevServer {
     {};
   /** Manages the creation of dev server URLs. */
   protected urlCreator?: UrlCreator | null = null;
+  /** The resolved port every URL and `instance.location` is built from. */
+  private resolvedPort: number | null = null;
 
   private notifier: FileNotifier | null = null;
   protected readonly devToolsPluginManager: DevToolsPluginManager;
@@ -238,11 +240,11 @@ export abstract class BundlerDevServer {
       },
       location: {
         // The port is the main thing we want to send back.
-        port: options.port,
+        port: this.getPort(),
         // localhost isn't always correct.
         host: 'localhost',
         // http is the only supported protocol on native.
-        url: `http://localhost:${options.port}`,
+        url: `http://localhost:${this.getPort()}`,
         protocol: 'http',
       },
       middleware: {},
@@ -370,6 +372,7 @@ export abstract class BundlerDevServer {
     const stoppedAt = Date.now();
     // Reset url creator
     this.urlCreator = undefined;
+    // Keep `resolvedPort`: the manifest middleware still builds URLs until the server closes below.
 
     // Stop file watching.
     this.notifier?.stopObserving();
@@ -425,9 +428,13 @@ export abstract class BundlerDevServer {
   ) {
     assert(options?.port, 'Dev server instance not found');
     assert(!this.urlCreator, 'Dev server is already initialized');
+    this.resolvedPort = options.port;
+    // TODO: Drop the undocumented REACT_NATIVE_PACKAGER_HOSTNAME
     const urlCreator = await UrlCreator.init(options.location, {
-      port: options.port,
+      getPort: () => this.getPort(),
       getTunnelUrl: this.getTunnelUrl.bind(this),
+      getHostnameOverride: () => env.REACT_NATIVE_PACKAGER_HOSTNAME,
+      getProxyUrl: () => env.EXPO_PACKAGER_PROXY_URL,
     });
     this.urlCreator = urlCreator;
     return urlCreator;
@@ -436,6 +443,11 @@ export abstract class BundlerDevServer {
   public getUrlCreator() {
     assert(this.urlCreator, 'Dev server is uninitialized');
     return this.urlCreator;
+  }
+
+  protected getPort() {
+    assert(this.resolvedPort != null, 'Dev server port is unresolved');
+    return this.resolvedPort;
   }
 
   public getNativeRuntimeUrl(opts: Partial<CreateURLOptions> = {}) {

@@ -116,7 +116,7 @@ export class MemoryVFS extends FacadeVFS {
     }
 
     // Copy data.
-    new Uint8Array(file.data, iOffset, pData.byteLength).set(pData);
+    new Uint8Array(file.data, iOffset, pData.byteLength).set(pData.subarray());
     file.size = Math.max(file.size, iOffset + pData.byteLength);
     return VFS.SQLITE_OK;
   }

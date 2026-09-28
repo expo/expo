@@ -12,51 +12,49 @@ import {
   Screen,
   useHeaderHeight,
 } from '../../elements';
-import {
-  type ParamListBase,
-  type RouteProp,
-  type StackNavigationState,
-  useLinkBuilder,
-} from '../../native';
+import { useLinkBuilder } from '../../native';
 import type {
-  NativeStackDescriptor,
   NativeStackDescriptorMap,
-  NativeStackNavigationHelpers,
+  NativeStackNavigationConfig,
+  NativeStackViewEmit,
+  NativeStackViewState,
 } from '../types';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 
 type Props = {
-  state: StackNavigationState<ParamListBase>;
-  // This is used for the native implementation of the stack.
-  navigation: NativeStackNavigationHelpers;
+  state: NativeStackViewState;
   descriptors: NativeStackDescriptorMap;
-  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
-};
+  // These are used for the native implementation of the stack.
+  emit: NativeStackViewEmit;
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
+  pop: (count: number, sourceRouteKey: string) => void;
+} & NativeStackNavigationConfig;
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
-export function NativeStackView({ state, descriptors, describe }: Props) {
+export function NativeStackView({
+  state,
+  descriptors,
+  isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
+}: Props) {
   const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 
-  const preloadedDescriptors = state.preloadedRoutes.reduce<NativeStackDescriptorMap>(
-    (acc, route) => {
-      acc[route.key] = acc[route.key] || describe(route, true);
-      return acc;
-    },
-    {}
-  );
+  // Preloaded routes are rendered hidden and don't participate in back-affordance computations.
+  const activeRoutes = state.routes.filter((route) => !isPreloaded(route.key));
 
   return (
     <SafeAreaProviderCompat>
-      {state.routes.concat(state.preloadedRoutes).map((route, i) => {
+      {state.routes.map((route, i) => {
         const isFocused = state.index === i;
-        const previousKey = state.routes[i - 1]?.key;
-        const nextKey = state.routes[i + 1]?.key;
+        const activeIndex = activeRoutes.findIndex((activeRoute) => activeRoute.key === route.key);
+        const previousKey = activeIndex > 0 ? activeRoutes[activeIndex - 1]?.key : undefined;
+        const nextKey = activeIndex >= 0 ? activeRoutes[activeIndex + 1]?.key : undefined;
         const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
         const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
-        const { options, navigation, render } = (descriptors[route.key] ??
-          preloadedDescriptors[route.key])!;
+        const { options, navigation, render } = descriptors[route.key]!;
 
         const headerBack = previousDescriptor
           ? {
@@ -82,8 +80,7 @@ export function NativeStackView({ state, descriptors, describe }: Props) {
 
         const nextPresentation = nextDescriptor?.options.presentation;
 
-        const isPreloaded =
-          preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
+        const routeIsPreloaded = isPreloaded(route.key);
 
         return (
           <Screen
@@ -147,7 +144,7 @@ export function NativeStackView({ state, descriptors, describe }: Props) {
                   (isFocused ||
                     (nextPresentation != null &&
                       TRANSPARENT_PRESENTATIONS.includes(nextPresentation))) &&
-                  !isPreloaded
+                  !routeIsPreloaded
                     ? 'flex'
                     : 'none',
               },

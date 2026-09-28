@@ -25,6 +25,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+  var onRelease: (() -> Void)?
 
   var isLooping = false {
     didSet {
@@ -266,7 +267,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
-  func replaceCurrentSource(source: AudioSource) {
+  func replaceCurrentSource(source: AudioSource?) {
     self.source = source
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
@@ -510,6 +511,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   public override func sharedObjectWillRelease() {
+    onRelease?()
+    onRelease = nil
     ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
 

@@ -3,19 +3,44 @@ internal import jsi
 /// A buffer that stores instances of `facebook.jsi.Value` with the ability to convert them to `JavaScriptValue` on element access
 /// without the need to create a new container (e.g. `std.vector<facebook.jsi.Value>` or `[JavaScriptValue]`).
 /// Used mainly to pass function arguments from C++ to Swift.
+// `@frozen` so client modules, which consume a buffer in every host function closure, can destroy it
+// with a direct call to its `deinit` instead of a metadata accessor plus a value witness dispatch.
+@frozen
 public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
-  // Safe to use unowned — the buffer's lifetime is scoped to a host function call,
+  // MARK: - Layout
+
+  // Every stored property below is part of the frozen layout: adding, removing or reordering one
+  // changes the ABI that client modules compiled against, and each type has to be public, which is
+  // why the storage is kept as a raw pointer and rebuilt into its C++ view on access.
+
+  // Safe to use unowned: the buffer's lifetime is scoped to a host function call,
   // so the runtime is always alive while the buffer exists.
-  internal unowned let runtime: JavaScriptRuntime
+  //
+  // `unowned(unsafe)` rather than `unowned`: the runtime object carries a refcount side table (other
+  // wrappers hold it `weak`), so a safe `unowned` retain/release on it takes the slow side-table path
+  // on every buffer construction and destruction. Profiling showed that pair as roughly a third of the
+  // native-side cost of a no-op host function call. `unowned(unsafe)` is a plain pointer store/load.
+  internal unowned(unsafe) let runtime: JavaScriptRuntime
 
-  // The raw `facebook.jsi.IRuntime`, cached alongside the `JavaScriptRuntime` wrapper. `IRuntime` is
-  // an immortal reference (`jsi.apinotes`), so reading it costs no ARC, whereas reading `.pointee`
-  // off the `unowned` wrapper emits an unowned retain/release on every access. The hot decode path
-  // (`unownedValue(at:)`, `set`) reads this; `subscript`/`copy` still need the wrapper.
-  internal nonisolated(unsafe) let iRuntime: facebook.jsi.IRuntime
+  // The start of the storage, type-erased because `facebook.jsi.Value` is not a public type.
+  internal nonisolated(unsafe) let start: UnsafeMutableRawPointer?
 
-  internal nonisolated(unsafe) let bufferPointer: UnsafeMutableBufferPointer<facebook.jsi.Value>
-  private let ownsMemory: Bool
+  /// The number of values in the buffer.
+  public let count: Int
+
+  internal let ownsMemory: Bool
+
+  // MARK: - C++ views
+
+  // `IRuntime` is an immortal reference (`jsi.apinotes`) and `runtime` is `unowned(unsafe)`, so this is
+  // two plain loads with no reference counting.
+  internal var iRuntime: facebook.jsi.IRuntime {
+    return runtime.pointee
+  }
+
+  internal var bufferPointer: UnsafeMutableBufferPointer<facebook.jsi.Value> {
+    return UnsafeMutableBufferPointer(start: start?.assumingMemoryBound(to: facebook.jsi.Value.self), count: count)
+  }
 
   /// A pointer to the first value of the buffer.
   /// If the baseAddress of this buffer is `nil`, the `count` is zero.
@@ -27,28 +52,26 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   /// passing across Swift/ObjC++ boundaries where `facebook.jsi.Value` cannot
   /// appear in a public signature.
   public var rawBaseAddress: UnsafeRawPointer? {
-    return baseAddress.map { UnsafeRawPointer($0) }
-  }
-
-  /// The number of values in the buffer.
-  public var count: Int {
-    return bufferPointer.count
+    return start.map { UnsafeRawPointer($0) }
   }
 
   internal init(
-    _ runtime: JavaScriptRuntime, buffer: consuming UnsafeMutableBufferPointer<facebook.jsi.Value>,
+    _ runtime: JavaScriptRuntime,
+    buffer: consuming UnsafeMutableBufferPointer<facebook.jsi.Value>,
     ownsMemory: Bool = false
   ) {
     self.runtime = runtime
-    self.iRuntime = runtime.pointee
-    self.bufferPointer = buffer
+    self.start = UnsafeMutableRawPointer(buffer.baseAddress)
+    self.count = buffer.count
     self.ownsMemory = ownsMemory
   }
 
   internal init(_ runtime: JavaScriptRuntime, start: consuming UnsafePointer<facebook.jsi.Value>?, count: Int) {
     self.init(
-      runtime, buffer: UnsafeMutableBufferPointer(start: UnsafeMutablePointer(mutating: start), count: count),
-      ownsMemory: false)
+      runtime,
+      buffer: UnsafeMutableBufferPointer(start: UnsafeMutablePointer(mutating: start), count: count),
+      ownsMemory: false
+    )
   }
 
   internal init(_ runtime: JavaScriptRuntime, buffer: consuming UnsafeBufferPointer<facebook.jsi.Value>) {
@@ -65,7 +88,7 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   public subscript(index: Int) -> JavaScriptValue {
-    return JavaScriptValue(runtime, bufferPointer[index])
+    return JavaScriptValue(runtime, copying: bufferPointer[index])
   }
 
   /// Returns a non-owning, non-copyable value borrowing the element at `index` for the zero-copy decode
@@ -122,13 +145,17 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   /// You must initialize all elements using `set(value:atIndex)` method.
   public static func allocate(in runtime: JavaScriptRuntime, capacity: Int) -> JavaScriptValuesBuffer {
     return JavaScriptValuesBuffer(
-      runtime, buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: capacity), ownsMemory: true)
+      runtime,
+      buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: capacity),
+      ownsMemory: true
+    )
   }
 
   /// Allocates new values buffer with the given JS representables.
   /// Note that parameter packs still do not support non-copyable types so they need to be passed as `JavaScriptRef`.
   public static func allocate<each T: JavaScriptRepresentable>(
-    in runtime: JavaScriptRuntime, with values: repeat each T
+    in runtime: JavaScriptRuntime,
+    with values: repeat each T
   ) -> JavaScriptValuesBuffer {
     // First we count parameters in a pack to find the proper buffer capacity. This is still the simplest way.
     var capacity = 0
@@ -170,7 +197,9 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
     for (index, value) in values.enumerated() {
       assert(
-        value.runtime === runtime, "JavaScriptValue belongs to a different runtime than the buffer being initialized")
+        value.runtime === runtime,
+        "JavaScriptValue belongs to a different runtime than the buffer being initialized"
+      )
       buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
     }
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)

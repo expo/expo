@@ -39,6 +39,56 @@ export const KNOWN_MODES = ['development', 'test', 'production'];
 /** The environment variable name to use when marking the environment as loaded */
 export const LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
 
+function getLoadedEnvKeys(loadedEnvMarker: string | undefined): string[] {
+  if (!loadedEnvMarker) {
+    return [];
+  }
+
+  try {
+    const loadedKeys = JSON.parse(loadedEnvMarker);
+    return Array.isArray(loadedKeys)
+      ? loadedKeys.filter((key): key is string => typeof key === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Modes used by Expo commands and tools. */
+export type EnvMode = 'development' | 'production';
+
+/**
+ * Set `NODE_ENV` for an Expo command or tool.
+ * Existing values are replaced.
+ *
+ * Pass a custom `systemEnv` to set the value without changing `process.env`.
+ */
+export function setNodeEnv(
+  mode: EnvMode,
+  { systemEnv = process.env }: { systemEnv?: EnvOutput } = {}
+) {
+  systemEnv.NODE_ENV = mode;
+  return systemEnv;
+}
+
+/** @internal Read and remove the config mode passed by a parent Expo tool. */
+export function consumeConfigEnvMode({ systemEnv = process.env }: { systemEnv?: EnvOutput } = {}):
+  | EnvMode
+  | undefined {
+  const mode = systemEnv.__EXPO_CONFIG_MODE;
+  delete systemEnv.__EXPO_CONFIG_MODE;
+
+  if (!mode) {
+    return undefined;
+  }
+  if (mode !== 'development' && mode !== 'production') {
+    throw new Error(
+      `Invalid __EXPO_CONFIG_MODE value: "${mode}". Use "development" or "production".`
+    );
+  }
+  return mode;
+}
+
 /**
  * Get a list of all `.env*` files based on the `NODE_ENV` mode.
  * This returns a list of files, in order of highest priority to lowest priority.
@@ -195,7 +245,7 @@ function formatViolationFiles(byFile: Record<string, string[]>): string {
 function formatBlockedViolation(byFile: Record<string, string[]>): string {
   return [
     'Refused to load dangerous environment variables from .env files.',
-    'Opt in via EXPO_UNSAFE_DOTENV_KEYS in your shell environment if you truly need them.',
+    'Use EXPO_UNSAFE_DOTENV_KEYS in your shell environment to allow a non-internal key.',
     '',
     formatViolationFiles(byFile),
   ].join('\n');
@@ -270,6 +320,7 @@ export function parseProjectEnv(
 /**
  * Parse all environment variables using the detected list of `.env*` files from a project.
  * This won't override existing environment variables defined in the system environment.
+ * A development or production mode also sets `NODE_ENV` before loading.
  * Once the mutations are done, this will also set a property `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
@@ -277,6 +328,10 @@ export function loadProjectEnv(
   projectRoot: string,
   options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof loadEnvFiles>[1]
 ) {
+  if (options?.mode === 'development' || options?.mode === 'production') {
+    setNodeEnv(options.mode, { systemEnv: options.systemEnv });
+  }
+
   return loadEnvFiles(
     getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
     options
@@ -284,15 +339,16 @@ export function loadProjectEnv(
 }
 
 /**
- * Get a fresh clone of the system environment with all `@expo/env`-applied
- * mutations reverted to their pre-load values. The result is intended to be
+ * Get a fresh clone of the system environment with dotenv changes reverted to their pre-load
+ * values. Values set by `setNodeEnv` are not reverted. The result is intended to be
  * passed as the `env` option of `child_process.spawn` / `@expo/spawn-async`
  * when a subprocess should observe the environment as it was before any
  * `.env*` files were loaded — for example, when resolving SDK tooling paths
  * that should not be influenced by project-controlled `.env` values.
  *
- * Allocates lazily: nothing is held until this function is called, and each
- * call returns a new object so callers may mutate it freely.
+ * An inherited `__EXPO_ENV_LOADED` marker identifies dotenv values loaded by a parent process.
+ *
+ * Each call returns a new object so callers may mutate it freely.
  *
  * @param systemEnv The env to revert against; defaults to `process.env`.
  */
@@ -308,14 +364,26 @@ export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
       }
     }
   }
+
+  // A new process cannot access its parent's in-memory backup, so use the inherited marker to
+  // remove the parent's dotenv values.
+  for (const key of getLoadedEnvKeys(result[LOADED_ENV_NAME])) {
+    if (!isUnsafeAllowedEnvKey(key)) {
+      delete result[key];
+    }
+  }
+  delete result[LOADED_ENV_NAME];
+
   return result;
 }
 
 /**
  * Get the pre-load value of a single environment variable as recorded by
  * `@expo/env`. Falls through to the value in `systemEnv` for keys that
- * `@expo/env` never touched. O(1) and allocation-free, intended for read-sites
- * that resolve filesystem paths or executables from a single env var.
+ * `@expo/env` never touched. Intended for read-sites that resolve filesystem
+ * paths or executables from a single env var.
+ *
+ * An inherited `__EXPO_ENV_LOADED` marker identifies dotenv values loaded by a parent process.
  *
  * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into
  * via the escape hatch return their currently loaded value, not the original.
@@ -328,6 +396,16 @@ export function getOriginalEnvValue(
   systemEnv: EnvOutput = process.env
 ): string | undefined {
   const backup = originalEnvBackup.get(systemEnv);
+  const marker = backup?.has(LOADED_ENV_NAME)
+    ? backup.get(LOADED_ENV_NAME)
+    : systemEnv[LOADED_ENV_NAME];
+
+  if (
+    key === LOADED_ENV_NAME ||
+    (!isUnsafeAllowedEnvKey(key) && getLoadedEnvKeys(marker).includes(key))
+  ) {
+    return undefined;
+  }
   if (backup && backup.has(key)) {
     return backup.get(key);
   }

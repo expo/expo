@@ -33,6 +33,7 @@ async function main(packageNames: string[], options: PrebuildCliOptions) {
       includeExternal: options.includeExternal,
       externalOnly: options.externalOnly,
       dryRun: options.dryRun,
+      bundled: options.bundled,
     });
     process.exit(exitCode);
   }
@@ -46,7 +47,7 @@ export default (program: Command) => {
     .command('prebuild-packages [packageNames...]')
     .description(
       'Generates `.xcframework` artifacts for iOS packages. If no package names are provided, builds the default distributed set; pass --all-packages to build every package with an spm.config.json.\n' +
-        'Run `et prebuild prune [packageNames...]` to delete the intermediate build files (Xcode DerivedData, ~2GB/package) while keeping the composed xcframeworks. With no names (or `all`) it cleans every build cache found on disk; pass package names to prune only those. Add --dry-run to preview what would be removed.'
+        "Run `et prebuild prune [packageNames...]` to delete the intermediate build files (Xcode DerivedData, ~2GB/package) while keeping the composed xcframeworks. With no names (or `all`) it cleans every build cache found on disk; pass package names to prune only those. Add --dry-run to preview what would be removed, or --bundled to also drop each package's bundled `prebuilds/` directory."
     )
     .alias('prebuild')
     .option(
@@ -88,6 +89,11 @@ export default (program: Command) => {
     .option(
       '--dry-run',
       'Only applies to `prebuild prune`: list the build files that would be removed (with sizes) without deleting anything.',
+      false
+    )
+    .option(
+      '--bundled',
+      "Only applies to `prebuild prune`: also remove each package's bundled `prebuilds/` directory. That directory is publish staging output; in a monorepo checkout CocoaPods falls back to it whenever the build cache is missing, which silently links stale binaries against current source.",
       false
     )
     .option('--skip-generate', 'Skip the generate step.', false)

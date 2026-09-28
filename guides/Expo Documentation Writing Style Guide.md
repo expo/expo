@@ -172,12 +172,18 @@ If the section or the sub-section heading refers to a product name such as Expo,
 - Correct: Creating your first EAS build
 - Incorrect: Creating your first eas build
 
-### Buttons
+### UI copy
 
-We, sometimes, have buttons that lead to an Expo Snack. Use title case for these or any type of text on buttons. While following the title case, we have a rule of thumb to not to capitalize articles, prepositions, and conjunctions.
+Use sentence case for all UI copy: buttons, links, labels, table headers, tab titles, image alt text, and navigation entries. Capitalize only the first word and any product or proper names, the same rule that applies to [headings](#headings).
 
 - Correct: Try this example on Snack
 - Incorrect: Try This Example On Snack
+
+- Correct: Show more
+- Incorrect: Show More
+
+- Correct: Project environment variables
+- Incorrect: Project Environment Variables
 
 ### File names, directory names, file extensions as bold text
 

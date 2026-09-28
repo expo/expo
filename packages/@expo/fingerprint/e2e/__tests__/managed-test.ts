@@ -3,15 +3,15 @@ import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 
-import type { FingerprintSource } from '../../src/Fingerprint.types';
-import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import {
   createFingerprintAsync,
   createProjectHashAsync,
   diffFingerprintChangesAsync,
 } from '../../src/Fingerprint';
+import type { FingerprintSource } from '../../src/Fingerprint.types';
 import { normalizeOptionsAsync } from '../../src/Options';
 import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 type HashSources = Awaited<ReturnType<typeof getHashSourcesAsync>>;
@@ -22,7 +22,14 @@ function normalizeAutolinkingSourceVersionsForSnapshot<T extends HashSource | Fi
   source: T
 ): T {
   // SDK templates can resolve different patch releases over time.
-  // Keep snapshots focused on the autolinking source shape.
+  // Keep snapshots focused on the source shape rather than resolved versions.
+  if (source.type === 'package') {
+    const normalizedSource = { ...source, version: '*' };
+    return (
+      'hash' in normalizedSource ? { ...normalizedSource, hash: '*' } : normalizedSource
+    ) as T;
+  }
+
   if (source.type !== 'contents' || !source.id.includes('AutolinkingConfig:')) {
     return source;
   }
@@ -209,7 +216,7 @@ describe('managed project test', () => {
       [
         {
           "afterSource": {
-            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"libraryName":"RNCNetInfoSpec","componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
+            "contents": "[{"name":"@react-native-community/netinfo","platforms":{"android":{"packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"libraryName":"RNCNetInfoSpec","componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}},{"name":"expo","platforms":{"android":{"packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}]",
             "hash": "*",
             "id": "rncoreAutolinkingConfig:android",
             "reasons": [
@@ -218,7 +225,7 @@ describe('managed project test', () => {
             "type": "contents",
           },
           "beforeSource": {
-            "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
+            "contents": "[{"name":"expo","platforms":{"android":{"packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}]",
             "hash": "*",
             "id": "rncoreAutolinkingConfig:android",
             "reasons": [
@@ -230,7 +237,7 @@ describe('managed project test', () => {
         },
         {
           "afterSource": {
-            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"ios":{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","version":"*","configurations":[],"scriptPhases":[]}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
+            "contents": "[{"name":"@react-native-community/netinfo","platforms":{"ios":{"version":"*","configurations":[],"scriptPhases":[]}}},{"name":"expo","platforms":{"ios":{"version":"*","configurations":[],"scriptPhases":[]}}}]",
             "hash": "*",
             "id": "rncoreAutolinkingConfig:ios",
             "reasons": [
@@ -239,7 +246,7 @@ describe('managed project test', () => {
             "type": "contents",
           },
           "beforeSource": {
-            "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
+            "contents": "[{"name":"expo","platforms":{"ios":{"version":"*","configurations":[],"scriptPhases":[]}}}]",
             "hash": "*",
             "id": "rncoreAutolinkingConfig:ios",
             "reasons": [
@@ -252,14 +259,14 @@ describe('managed project test', () => {
         {
           "addedSource": {
             "filePath": "node_modules/@react-native-community/netinfo/package.json",
-            "hash": "82008ba806a67c1485ebda79b9ea3e45e2d06e92",
+            "hash": "*",
             "name": "@react-native-community/netinfo",
             "reasons": [
               "rncoreAutolinkingAndroid",
               "rncoreAutolinkingIos",
             ],
             "type": "package",
-            "version": "12.0.1",
+            "version": "*",
           },
           "op": "added",
         },

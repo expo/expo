@@ -1,6 +1,7 @@
-import type { PackagerAsset } from '@react-native/assets-registry/registry';
 import { Platform } from 'expo-modules-core';
+import { getBundleOrigin } from 'expo/internal/bundle-origin';
 import { PixelRatio, NativeModules } from 'react-native';
+import type { PackagerAsset } from 'react-native/asset-registry';
 
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest2, manifestBaseUrl } from './PlatformUtils';
@@ -19,6 +20,21 @@ export type AssetSource = {
   uri: string;
   hash: string;
 };
+
+function resolveDevServerUrl(
+  manifest2: NonNullable<ReturnType<typeof getManifest2>>
+): string | null {
+  const bundleOrigin = getBundleOrigin();
+  if (bundleOrigin) {
+    return bundleOrigin;
+  }
+  const debuggerHost = manifest2.extra?.expoGo?.debuggerHost;
+  if (!debuggerHost) {
+    return null;
+  }
+  const scheme = manifestBaseUrl?.startsWith('https://') ? 'https://' : 'http://';
+  return scheme + debuggerHost;
+}
 
 /**
  * Selects the best file for the given asset (ex: choosing the best scale for images) and returns
@@ -56,12 +72,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
 
   // For assets during development using manifest2, we use the development server's URL origin
   const manifest2 = getManifest2();
-
-  // Use the scheme from manifestBaseUrl (derived from experienceUrl) to support HTTPS dev servers
-  const scheme = manifestBaseUrl?.startsWith('https://') ? 'https://' : 'http://';
-  const devServerUrl = manifest2?.extra?.expoGo?.developer
-    ? scheme + manifest2.extra.expoGo.debuggerHost
-    : null;
+  const devServerUrl = manifest2?.extra?.expoGo?.developer ? resolveDevServerUrl(manifest2) : null;
   if (devServerUrl) {
     const baseUrl = new URL(meta.httpServerLocation + suffix, devServerUrl);
 

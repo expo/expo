@@ -14,7 +14,7 @@ final class MetricsDatabase: Sendable {
   static let currentSchemaVersion = 3
 
   /// How long a session (and its metrics, logs, crash report) is retained before `init` prunes it.
-  static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60  // 7 days
+  static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60 // 7 days
 
   let database: SQLiteDatabase
 
@@ -122,7 +122,8 @@ final class MetricsDatabase: Sendable {
         """
         [AppMetrics] Metrics database at \(fileUrl.path) is at schema v\(mismatchedVersion) but \
         this build expects v\(currentSchemaVersion); recreating to keep this build functional.
-        """)
+        """
+      )
       try removeDatabaseFile(at: fileUrl)
     }
     return try SQLiteDatabase(fileUrl: fileUrl)
@@ -135,7 +136,8 @@ final class MetricsDatabase: Sendable {
     let tableExists = try database.prepare(
       """
       SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'schema_version' LIMIT 1
-      """)
+      """
+    )
     var hasTable = false
     try tableExists.forEachRow { _ in
       hasTable = true
@@ -191,7 +193,8 @@ final class MetricsDatabase: Sendable {
         ?15, ?16, ?17, ?18,
         ?19, ?20, ?21, ?22
       )
-      """)
+      """
+    )
     try statement.bindAll([
       session.id, session.type, session.startTimestamp, session.endTimestamp, session.isActive, session.environment,
       session.appName, session.appIdentifier, session.appVersion, session.appBuildNumber,
@@ -218,7 +221,8 @@ final class MetricsDatabase: Sendable {
     let statement = try database.prepare(
       """
       UPDATE sessions SET isActive = ?1, endTimestamp = ?2 WHERE id = ?3
-      """)
+      """
+    )
     try statement.bindAll([isActive, endTimestamp, id])
     try statement.run()
   }
@@ -228,7 +232,8 @@ final class MetricsDatabase: Sendable {
     let statement = try database.prepare(
       """
       UPDATE sessions SET isActive = 0 WHERE isActive = 1 AND startTimestamp < ?1
-      """)
+      """
+    )
     try statement.bindAll([timestamp])
     try statement.run()
   }
@@ -261,7 +266,8 @@ final class MetricsDatabase: Sendable {
       UPDATE sessions
       SET appUpdateId = ?1, appUpdateRuntimeVersion = ?2, appUpdateRequestHeaders = ?3
       WHERE isActive = 1
-      """)
+      """
+    )
     try statement.bindAll([updateId, runtimeVersion, requestHeadersJSON])
     try statement.run()
   }
@@ -326,13 +332,14 @@ final class MetricsDatabase: Sendable {
   /// Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Dispatch uses
   /// this with the persisted "last dispatched metric id" cursor to fetch only new rows.
   @AppMetricsActor
-  func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
+  func getMetrics(afterId cursor: Int64, limit: Int? = nil) throws -> [MetricRow] {
     let statement = try database.prepare(
       """
       SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params
-      FROM metrics WHERE id > ?1 ORDER BY id ASC
-      """)
-    try statement.bindAll([cursor])
+      FROM metrics WHERE id > ?1 ORDER BY id ASC LIMIT ?2
+      """
+    )
+    try statement.bindAll([cursor, limit ?? -1])
     var rows: [MetricRow] = []
     try statement.forEachRow { row in
       rows.append(MetricRow(row: row))
@@ -342,13 +349,14 @@ final class MetricsDatabase: Sendable {
 
   /// Returns log rows whose `id` is greater than `cursor`, in ascending id order.
   @AppMetricsActor
-  func getLogs(afterId cursor: Int64) throws -> [LogRow] {
+  func getLogs(afterId cursor: Int64, limit: Int? = nil) throws -> [LogRow] {
     let statement = try database.prepare(
       """
       SELECT id, sessionId, timestamp, severity, name, body, attributes, droppedAttributesCount
-      FROM logs WHERE id > ?1 ORDER BY id ASC
-      """)
-    try statement.bindAll([cursor])
+      FROM logs WHERE id > ?1 ORDER BY id ASC LIMIT ?2
+      """
+    )
+    try statement.bindAll([cursor, limit ?? -1])
     var rows: [LogRow] = []
     try statement.forEachRow { row in
       rows.append(LogRow(row: row))
@@ -367,7 +375,8 @@ final class MetricsDatabase: Sendable {
     let statement = try database.prepare(
       """
       SELECT \(sessionColumns) FROM sessions WHERE id IN (\(placeholders))
-      """)
+      """
+    )
     try statement.bindAll(ids.map { $0 as SQLiteBindable })
     var rows: [SessionRow] = []
     try statement.forEachRow { row in
@@ -381,7 +390,8 @@ final class MetricsDatabase: Sendable {
     return try collectSessions(
       sql: """
         SELECT \(sessionColumns) FROM sessions WHERE isActive = 1 ORDER BY startTimestamp DESC
-        """)
+        """
+    )
   }
 
   /// Deletes sessions whose start timestamp is older than `cutoff`, regardless of their `isActive`
@@ -395,7 +405,8 @@ final class MetricsDatabase: Sendable {
         """
         DELETE FROM crash_reports
         WHERE sessionId IN (SELECT id FROM sessions WHERE startTimestamp < ?1)
-        """)
+        """
+      )
       try dropCrashReports.bindAll([cutoff])
       try dropCrashReports.run()
 
@@ -415,7 +426,8 @@ final class MetricsDatabase: Sendable {
       """
       INSERT INTO metrics (sessionId, timestamp, category, name, value, routeName, updateId, params)
       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
-      """)
+      """
+    )
     try statement.bindAll([
       metric.sessionId, metric.timestamp, metric.category, metric.name,
       metric.value, metric.routeName, metric.updateId, metric.params,
@@ -442,7 +454,8 @@ final class MetricsDatabase: Sendable {
       """
       SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params
       FROM metrics WHERE sessionId = ?1 ORDER BY id ASC
-      """)
+      """
+    )
     try statement.bindAll([sessionId])
     var rows: [MetricRow] = []
     try statement.forEachRow { row in
@@ -468,7 +481,8 @@ final class MetricsDatabase: Sendable {
       """
       INSERT INTO logs (sessionId, timestamp, severity, name, body, attributes, droppedAttributesCount)
       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
-      """)
+      """
+    )
     try statement.bindAll([
       log.sessionId, log.timestamp, log.severity, log.name,
       log.body, log.attributes, log.droppedAttributesCount,
@@ -495,7 +509,8 @@ final class MetricsDatabase: Sendable {
       """
       SELECT id, sessionId, timestamp, severity, name, body, attributes, droppedAttributesCount
       FROM logs WHERE sessionId = ?1 ORDER BY id ASC
-      """)
+      """
+    )
     try statement.bindAll([sessionId])
     var rows: [LogRow] = []
     try statement.forEachRow { row in
@@ -521,9 +536,25 @@ final class MetricsDatabase: Sendable {
     let statement = try database.prepare(
       """
       INSERT OR REPLACE INTO crash_reports (sessionId, payload) VALUES (?1, ?2)
-      """)
+      """
+    )
     try statement.bindAll([sessionId, payload])
     try statement.run()
+  }
+
+  /// Stores a crash report once and, when its session row exists, its dispatchable log atomically.
+  /// The crash report's primary key is the idempotence marker for MetricKit payload redelivery.
+  @AppMetricsActor
+  func storeCrashReportIfNew(sessionId: String, payload: String, log: LogRow) throws {
+    try database.transaction {
+      if try getCrashReport(sessionId: sessionId) != nil {
+        return
+      }
+      try setCrashReport(sessionId: sessionId, payload: payload)
+      if try getSession(id: sessionId) != nil {
+        try insert(log: log)
+      }
+    }
   }
 
   @AppMetricsActor
@@ -543,6 +574,102 @@ final class MetricsDatabase: Sendable {
     try statement.run()
   }
 
+  // MARK: - Spans
+
+  /// Maximum number of rows retained in `spans`. Span producers (network requests especially)
+  /// can outnumber metrics and logs by orders of magnitude, and when nothing consumes the rows
+  /// (`expo-observe` not installed, or dispatch disabled) the session-retention prune alone
+  /// would let a busy app accumulate a week of traffic. Inserts prune anything older than the cap.
+  static let spanCap = 2_000
+
+  /// Inserts a single span and returns its rowid (the auto-incremented `id`). Also prunes rows
+  /// older than `spanCap`. Ids are monotonic, so "older" is simply everything at least
+  /// `spanCap` ids behind the row just inserted. Insert and prune share one transaction, so the
+  /// per-span hot path pays a single commit.
+  @AppMetricsActor
+  @discardableResult
+  func insert(span: SpanRow) throws -> Int64 {
+    return try database.transaction {
+      let insertedId = try insertUncapped(span: span)
+      try deleteSpans(upToId: insertedId - Int64(Self.spanCap))
+      return insertedId
+    }
+  }
+
+  /// Raw row insert with no cap enforcement and no transaction of its own, the primitive
+  /// `insert(span:)` builds on. `database.transaction` issues a plain `BEGIN` and doesn't nest,
+  /// so a future batch path (`insertAll(spans:)`) can call this inside one outer transaction.
+  @AppMetricsActor
+  private func insertUncapped(span: SpanRow) throws -> Int64 {
+    let statement = try database.prepare(
+      """
+      INSERT INTO spans (
+        sessionId, traceId, spanId, parentSpanId, name, kind,
+        startTimestampMs, endTimestampMs, statusCode, statusMessage, attributes, events
+      ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
+      """
+    )
+    try statement.bindAll([
+      span.sessionId, span.traceId, span.spanId, span.parentSpanId, span.name, span.kind,
+      span.startTimestampMs, span.endTimestampMs, span.statusCode, span.statusMessage,
+      span.attributes, span.events,
+    ])
+    try statement.run()
+    return database.lastInsertRowid()
+  }
+
+  /// Returns span rows whose `id` is greater than `cursor`, in ascending id order, at most
+  /// `limit` of them (all when `nil`). Mirrors `getMetrics(afterId:limit:)` so consumers can
+  /// drain the table in chunks.
+  @AppMetricsActor
+  func getSpans(afterId cursor: Int64, limit: Int? = nil) throws -> [SpanRow] {
+    let statement = try database.prepare(
+      """
+      SELECT \(spanColumns) FROM spans WHERE id > ?1 ORDER BY id ASC LIMIT ?2
+      """
+    )
+    try statement.bindAll([cursor, limit ?? -1])
+    var rows: [SpanRow] = []
+    try statement.forEachRow { row in
+      rows.append(SpanRow(row: row))
+    }
+    return rows
+  }
+
+  /// Returns the spans attributed to `sessionId`, in ascending id (insertion) order. This is
+  /// the session-association read for a future session-inspection consumer. The exporter owns
+  /// deletion today, so this sees only rows it hasn't dispatched yet, bounded also by the
+  /// insert-time row cap.
+  @AppMetricsActor
+  func getSpans(forSessionId sessionId: String) throws -> [SpanRow] {
+    let statement = try database.prepare(
+      """
+      SELECT \(spanColumns) FROM spans WHERE sessionId = ?1 ORDER BY id ASC
+      """
+    )
+    try statement.bindAll([sessionId])
+    var rows: [SpanRow] = []
+    try statement.forEachRow { row in
+      rows.append(SpanRow(row: row))
+    }
+    return rows
+  }
+
+  @AppMetricsActor
+  func getMaxSpanId() throws -> Int64? {
+    return try selectMaxId(table: "spans")
+  }
+
+  /// Deletes rows with `id <= upToId`. Called after a dispatch consumed (or deliberately
+  /// dropped) a batch, and by the insert-time row cap. The exporter owns deletion: the
+  /// per-session read (`getSpans(forSessionId:)`) sees only rows not yet dispatched.
+  @AppMetricsActor
+  func deleteSpans(upToId: Int64) throws {
+    let statement = try database.prepare("DELETE FROM spans WHERE id <= ?1")
+    try statement.bindAll([upToId])
+    try statement.run()
+  }
+
   // MARK: - Schema
 
   /// Creates the schema (tables, indexes, version row) atomically. Wrapping the whole bootstrap in a
@@ -559,14 +686,20 @@ final class MetricsDatabase: Sendable {
     }
   }
 
-  /// Creates the four data tables plus `schema_version`. Relationships:
+  /// Creates the five data tables plus `schema_version`. Relationships:
   ///
   /// - `sessions` is the root. Every other table keys off `sessions.id` (a UUID string).
-  /// - `metrics` and `logs` each have a `sessionId` FK with `ON DELETE CASCADE`. Their `id` is
-  /// `INTEGER PRIMARY KEY AUTOINCREMENT` so `expo-observe` can dispatch with a monotonic cursor.
+  /// - `metrics`, `logs` and `spans` each have a `sessionId` FK with `ON DELETE CASCADE`. Their
+  /// `id` is `INTEGER PRIMARY KEY AUTOINCREMENT` so `expo-observe` can dispatch with a monotonic
+  /// cursor.
   /// - `crash_reports` is keyed by `sessionId`. There's no FK constraint; the relationship is
   /// informational, and deletes cascade manually (see `deleteSession`, `deleteAllSessions`,
   /// `cleanupSessions`).
+  ///
+  /// Because this runs with `IF NOT EXISTS` on every open, a table added in a newer build appears
+  /// in an existing database without a schema-version bump, and older data is preserved. Bump
+  /// `currentSchemaVersion` only for changes an older or newer build couldn't operate on (altered
+  /// columns, changed semantics).
   private func createSchemaTables() throws {
     try database.execute(
       """
@@ -626,7 +759,25 @@ final class MetricsDatabase: Sendable {
         sessionId TEXT PRIMARY KEY NOT NULL,
         payload TEXT NOT NULL
       );
-      """)
+
+      CREATE TABLE IF NOT EXISTS spans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sessionId TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+        traceId TEXT NOT NULL,
+        spanId TEXT NOT NULL,
+        parentSpanId TEXT,
+        name TEXT NOT NULL,
+        kind INTEGER NOT NULL,
+        startTimestampMs INTEGER NOT NULL,
+        endTimestampMs INTEGER NOT NULL,
+        statusCode INTEGER,
+        statusMessage TEXT,
+        attributes TEXT,
+        events TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_spans_sessionId ON spans(sessionId);
+      """
+    )
   }
 
   private static func readSchemaVersion(database: borrowing SQLiteDatabase) throws -> Int? {
@@ -650,8 +801,8 @@ final class MetricsDatabase: Sendable {
 
   @AppMetricsActor
   private func selectMaxId(table: String) throws -> Int64? {
-    // The table name is a literal we control (`metrics` / `logs`), so interpolating into the SQL
-    // text is safe — SQLite has no parameter placeholder for identifiers.
+    // The table name is a literal we control (`metrics` / `logs` / `spans`), so interpolating into
+    // the SQL text is safe, and SQLite has no parameter placeholder for identifiers.
     let statement = try database.prepare("SELECT MAX(id) FROM \(table)")
     var maxId: Int64?
     try statement.forEachRow { row in
@@ -666,5 +817,10 @@ final class MetricsDatabase: Sendable {
     appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
     deviceOs, deviceOsVersion, deviceModel, deviceName,
     expoSdkVersion, reactNativeVersion, clientVersion, languageTag
+    """
+
+  private let spanColumns = """
+    id, sessionId, traceId, spanId, parentSpanId, name, kind,
+    startTimestampMs, endTimestampMs, statusCode, statusMessage, attributes, events
     """
 }

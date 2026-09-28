@@ -1,7 +1,7 @@
 import { screen, act } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
@@ -100,81 +100,89 @@ it('push should include (group)/index as an anchor route when using withAnchor',
     '(group)/test': () => null,
   });
 
-  // Initial stale state
-  expect(store.state).toStrictEqual({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [
-            {
-              name: 'index',
-              path: '/',
-            },
-          ],
-        },
-      },
-    ],
-  });
-
-  act(() => router.push('/orange', { withAnchor: true }));
-
-  expect(store.state).toStrictEqual({
+  // Initial complete state
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
-          index: 1,
+          index: 0,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+  });
+
+  act(() => router.push('/orange', { withAnchor: true }));
+
+  expect(navigationRef.getRootState()).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 1,
+          key: expect.any(String),
+          routeNames: ['index', '(group)'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
               path: '/',
             },
             {
               key: expect.any(String),
               name: '(group)',
-              params: { initial: false, params: { initial: false }, screen: 'orange' },
+              params: {},
               path: undefined,
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'test',
-                    params: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: { initial: false },
-                    path: undefined,
+                    params: {},
+                    path: '/orange',
                   },
                 ],
                 stale: false,
-                type: 'stack',
+                routeKeySeq: expect.any(Number),
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -189,76 +197,85 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
     '(group)/test': () => null,
   });
 
-  // Initial stale state
-  expect(store.state).toStrictEqual({
-    routes: [
-      {
-        name: '__root',
-        state: {
-          routes: [
-            {
-              name: 'index',
-              path: '/',
-            },
-          ],
-        },
-      },
-    ],
-  });
-
-  act(() => router.push('/orange'));
-
-  expect(store.state).toStrictEqual({
+  // Initial complete state
+  expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
-          index: 1,
+          index: 0,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
+              path: '/',
+            },
+          ],
+          stale: false,
+          routeKeySeq: expect.any(Number),
+        },
+      },
+    ],
+    stale: false,
+    routeKeySeq: expect.any(Number),
+  });
+
+  act(() => router.push('/orange'));
+
+  expect(navigationRef.getRootState()).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 1,
+          key: expect.any(String),
+          routeNames: ['index', '(group)'],
+          routes: [
+            {
+              key: expect.any(String),
+              name: 'index',
               path: '/',
             },
             {
               key: expect.any(String),
               name: '(group)',
-              params: { params: {}, screen: 'orange' },
+              params: {},
               path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'orange',
                     params: {},
-                    path: undefined,
+                    path: '/orange',
                   },
                 ],
                 stale: false,
-                type: 'stack',
+                routeKeySeq: expect.any(Number),
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });

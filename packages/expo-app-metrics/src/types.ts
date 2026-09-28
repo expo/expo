@@ -356,6 +356,13 @@ export type NetworkRequestRedirect = {
   toUrl: string;
   /** The 3xx status code (301, 302, 307, 308, …) returned by `fromUrl`. */
   statusCode: number;
+  /**
+   * ISO 8601 UTC timestamp of when `fromUrl` returned the 3xx response, or `null` when the
+   * platform did not report it. Includes milliseconds (for example `2026-09-07T12:00:00.250Z`),
+   * unlike the whole-second `startedAt`, because hops within one request are usually fractions of
+   * a second apart.
+   */
+  respondedAt: string | null;
 };
 
 /**
@@ -494,6 +501,21 @@ export type DebugSession = {
   crashReport?: CrashReport | null;
 };
 
+/**
+ * Normalized form of `Observe.configure({ networkTraces })`, persisted natively.
+ * @hidden
+ */
+export type NetworkTracesConfig = {
+  /**
+   * Whether completed network requests are written to the local `spans` table.
+   */
+  enabled: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted filter records every request.
+   */
+  filter?: NetworkRequestFilter | null;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
@@ -508,6 +530,12 @@ export interface ExpoAppMetricsModuleType {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Applies and persists the network traces recording setting. Affects future captures only;
+   * spans already written keep dispatching.
+   * @hidden
+   */
+  setNetworkTracesConfig(config: NetworkTracesConfig): void;
   /**
    * Sets attributes merged into every subsequent metric and log event.
    * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
@@ -549,7 +577,7 @@ export interface ExpoAppMetricsModuleType {
   getAllCrashReports?: () => Promise<CrashReport[]>;
 
   /**
-   * Reports an unhandled JavaScript error, recorded natively as an `exception` log event following
+   * Reports an unhandled JavaScript error, recorded natively as a `js.exception` log event following
    * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
    * `installErrorHandler` installs and by `AppMetricsErrorBoundary`; the `source` field records
    * which path captured the error.

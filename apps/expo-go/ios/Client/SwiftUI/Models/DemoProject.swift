@@ -18,7 +18,7 @@ struct DemoProject {
     "expo-status-bar": ["version": "*"]
   ]
 
-  static let snackFiles: [String: SnackSessionClient.SnackFile] = [
+  static let snackFiles: [String: SnackFile] = [
     "App.js": .init(path: "App.js", contents: appCode, isAsset: false),
     "shared.js": .init(path: "shared.js", contents: sharedCode, isAsset: false),
     "HomeScreen.js": .init(path: "HomeScreen.js", contents: homeScreenCode, isAsset: false),

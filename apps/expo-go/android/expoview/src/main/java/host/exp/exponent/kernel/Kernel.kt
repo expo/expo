@@ -20,11 +20,12 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.interfaces.fabric.ReactSurface
-import com.facebook.react.runtime.ReactHostImpl
-import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
+import expo.modules.devmenu.launch.ExpoLauncherUrl
+import expo.modules.devmenu.launch.applyDevMenuLaunchParams
 import expo.modules.jsonutils.require
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
@@ -37,22 +38,22 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.LauncherActivity
 import host.exp.exponent.RNObject
-import host.exp.exponent.ReactNativeStaticHelpers
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
 import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity
+import host.exp.exponent.experience.DevMenuSharedPreferencesAdapter
 import host.exp.exponent.experience.ErrorActivity
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.HomeActivity
 import host.exp.exponent.experience.KernelData
 import host.exp.exponent.experience.KernelReactNativeHost
 import host.exp.exponent.factories.ReactHostFactory
-import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
 import host.exp.exponent.kernel.ExponentUrls.toHttp
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
+import host.exp.exponent.network.ExpoGoOkHttpClientFactory
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.notifications.ExponentNotificationManager
@@ -138,7 +139,7 @@ class Kernel : KernelInterface() {
   private var hasError = false
 
   private fun updateKernelRNOkHttp() {
-    ReactNativeStaticHelpers.setExponentNetwork(exponentNetwork)
+    OkHttpClientProvider.setOkHttpClientFactory(ExpoGoOkHttpClientFactory(exponentNetwork))
   }
 
   private val kernelInitialURL: String?
@@ -193,7 +194,13 @@ class Kernel : KernelInterface() {
 
     // On first run use the embedded kernel js but fire off a request for the new js in the background.
     val bundleUrlToLoad =
-      bundleUrl + (if (ExpoViewBuildConfig.DEBUG) "" else "?versionName=" + ExpoViewKernel.instance.versionName)
+      bundleUrl + (
+        if (ExpoViewBuildConfig.DEBUG) {
+          ""
+        } else {
+          "?versionName=" + ExpoViewKernel.instance.versionName
+        }
+        )
     if (exponentSharedPreferences.shouldUseEmbeddedKernel()) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH)
     } else {
@@ -242,19 +249,16 @@ class Kernel : KernelInterface() {
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
             manifest.isDevelopmentMode()
           ) {
-            Exponent.enableDeveloperSupport(
-              manifest.getDebuggerHost(),
-              manifest.getMainModuleName(),
-              nativeHost
-            )
+            Exponent.enableDeveloperSupport(manifest.getMainModuleName(), nativeHost)
           }
 
           reactHost = ReactHostFactory.getDefaultReactHost(
             context = applicationContext,
-            packageList = nativeHost.packages,
-            jsMainModulePath = nativeHost.jsMainModuleName,
-            jsBundleFilePath = nativeHost.jsBundleFile,
-            useDevSupport = nativeHost.useDeveloperSupport
+            packageList = nativeHost.getPackages(),
+            jsMainModulePath = nativeHost.getJSMainModuleName(),
+            jsBundleFilePath = nativeHost.getJSBundleFile(),
+            useDevSupport = nativeHost.getUseDeveloperSupport(),
+            devServerBundleUrl = toHttp(manifest.getBundleURL())
           )
 
           reactNativeHost = nativeHost
@@ -329,12 +333,14 @@ class Kernel : KernelInterface() {
 
   val surface: ReactSurface
     get() {
-      val surface = ReactSurfaceImpl.createWithView(
+      val host = checkNotNull(reactHost) {
+        "Kernel React host must be created before requesting its surface"
+      }
+      val surface = host.createSurface(
         context,
         KernelConstants.HOME_MODULE_NAME,
         kernelLaunchOptions
       )
-      surface.attach(reactHost as ReactHostImpl)
       surface.start()
       return surface
     }
@@ -378,7 +384,7 @@ class Kernel : KernelInterface() {
   fun openHomeActivity() {
     val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     for (task: AppTask in manager.appTasks) {
-      val baseIntent = task.taskInfo.baseIntent
+      val baseIntent = task.taskInfo?.baseIntent ?: continue
       if ((HomeActivity::class.java.name == baseIntent.component!!.className)) {
         task.moveToFront()
         return
@@ -502,8 +508,18 @@ class Kernel : KernelInterface() {
     openExperience(ExperienceOptions(defaultUrl, defaultUrl, null))
   }
 
+  @Suppress("DEPRECATION")
   override fun openExperience(options: ExperienceOptions) {
-    openManifestUrl(getManifestUrlFromFullUri(options.manifestUri), options, true)
+    val launch = ExpoLauncherUrl(Uri.parse(options.manifestUri))
+    launch.applyDevMenuLaunchParams(DevMenuSharedPreferencesAdapter(applicationContext, exponentSharedPreferences))
+    // A target is normalized to `exp(s)://` like on iOS, so it shares its task with a scanned `exp://` URL.
+    val projectUri = launch.targetUrl?.let { ExponentUrls.toExp(it.toString()) } ?: launch.strippedUrl.toString()
+    val resolved = if (projectUri == options.manifestUri) {
+      options
+    } else {
+      ExperienceOptions(projectUri, projectUri, options.notification, options.notificationObject)
+    }
+    openManifestUrl(getManifestUrlFromFullUri(resolved.manifestUri), resolved, true)
   }
 
   private fun getManifestUrlFromFullUri(uriString: String?): String? {
@@ -609,7 +625,7 @@ class Kernel : KernelInterface() {
         // There is race condition to retrieve the taskInfo from the finishing task.
         // Uses try-catch to handle the cases.
         try {
-          val baseIntent = task.taskInfo.baseIntent
+          val baseIntent = task.taskInfo!!.baseIntent
           if (baseIntent.hasExtra(KernelConstants.MANIFEST_URL_KEY) && (
               baseIntent.getStringExtra(
                 KernelConstants.MANIFEST_URL_KEY
@@ -629,7 +645,7 @@ class Kernel : KernelInterface() {
     }
     if (existingTask != null) {
       try {
-        moveTaskToFront(existingTask.taskInfo.id)
+        moveTaskToFront(existingTask.taskInfo!!.id)
       } catch (e: IllegalArgumentException) {
         // Sometimes task can't be found.
         existingTask = null
@@ -696,7 +712,7 @@ class Kernel : KernelInterface() {
     manifest: Manifest,
     existingTask: AppTask?
   ) {
-    val bundleUrl = toHttp(manifest.getBundleURL())
+    val bundleUrl = ExponentUrls.bundleUrlFromManifest(manifest, manifestUrl)
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
     if (existingTask == null) {
@@ -814,7 +830,7 @@ class Kernel : KernelInterface() {
       // Crash with NoSuchFieldException instead of hard crashing at taskInfo.numActivities
       RecentTaskInfo::class.java.getDeclaredField("numActivities")
       for (task: AppTask in tasks) {
-        val taskInfo = task.taskInfo
+        val taskInfo = task.taskInfo ?: continue
         if (taskInfo.numActivities == 0 && (taskInfo.baseIntent.action == Intent.ACTION_MAIN)) {
           task.finishAndRemoveTask()
           return
@@ -833,9 +849,9 @@ class Kernel : KernelInterface() {
   }
 
   private fun moveTaskToFront(taskId: Int) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-    tasks.find { it.taskInfo.taskId == taskId }
+    tasks.find { it.taskInfo?.taskId == taskId }
   } else {
-    tasks.find { it.taskInfo.id == taskId }
+    tasks.find { it.taskInfo?.id == taskId }
   }?.also { task ->
     // If we have the task in memory, tell the ExperienceActivity to check for new options.
     // Otherwise options will be added in initialProps when the Experience starts.
@@ -856,9 +872,9 @@ class Kernel : KernelInterface() {
     // Kill the current task.
     val manager = activity.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      manager.appTasks.find { it.taskInfo.taskId == activity.taskId }
+      manager.appTasks.find { it.taskInfo?.taskId == activity.taskId }
     } else {
-      manager.appTasks.find { it.taskInfo.id == activity.taskId }
+      manager.appTasks.find { it.taskInfo?.id == activity.taskId }
     }?.also { task -> task.finishAndRemoveTask() }
 
     // We're sure that it will be an `ExperienceActivity`. However we still need to do a cast and
@@ -945,50 +961,8 @@ class Kernel : KernelInterface() {
       }
     }
 
-    // Called from DevServerHelper via ReactNativeStaticHelpers
-    @JvmStatic
-    @DoNotStrip
-    fun getManifestUrlForActivityId(activityId: Int): String? {
+    private fun getManifestUrlForActivityId(activityId: Int): String? {
       return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.manifestUrl
-    }
-
-    // Called from DevServerHelper via ReactNativeStaticHelpers
-    @JvmStatic
-    @DoNotStrip
-    fun getBundleUrlForActivityId(
-      activityId: Int,
-      host: String,
-      mainModuleId: String?,
-      bundleTypeId: String?,
-      devMode: Boolean,
-      jsMinify: Boolean
-    ): String? {
-      // NOTE: This current implementation doesn't look at the bundleTypeId (see RN's private
-      // BundleType enum for the possible values) but may need to
-      if (activityId == -1) {
-        // This is the kernel
-        return instance.bundleUrl
-      }
-      if (InternalHeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
-        return InternalHeadlessAppLoader.getBundleUrlForActivityId(activityId)
-      }
-      return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.bundleUrl
-    }
-
-    // <= SDK 25
-    @DoNotStrip
-    fun getBundleUrlForActivityId(
-      activityId: Int,
-      host: String,
-      jsModulePath: String?,
-      devMode: Boolean,
-      jsMinify: Boolean
-    ): String? {
-      if (activityId == -1) {
-        // This is the kernel
-        return instance.bundleUrl
-      }
-      return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.bundleUrl
     }
 
     /*
@@ -996,26 +970,7 @@ class Kernel : KernelInterface() {
      * Error handling
      *
      */
-    // Called using reflection from ReactAndroid.
-    @DoNotStrip
     fun handleReactNativeError(
-      errorMessage: String?,
-      detailsUnversioned: Any?,
-      exceptionId: Int?,
-      isFatal: Boolean
-    ) {
-      handleReactNativeError(
-        developerErrorMessage(errorMessage),
-        detailsUnversioned,
-        exceptionId,
-        isFatal
-      )
-    }
-
-    // Called using reflection from ReactAndroid.
-    @DoNotStrip
-    fun handleReactNativeError(
-      throwable: Throwable?,
       errorMessage: String?,
       detailsUnversioned: Any?,
       exceptionId: Int?,

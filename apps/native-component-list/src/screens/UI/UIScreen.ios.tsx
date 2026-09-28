@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'List.ForEach data',
+    route: 'ui/virtualized-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DataListForEachScreen'));
+    },
+  },
+  {
     name: 'Label component',
     route: 'ui/label',
     options: {},
@@ -144,6 +152,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./StepperScreen'));
+    },
+  },
+  {
+    name: 'NavigationStack component',
+    route: 'ui/navigationstack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationStackScreen'));
+    },
+  },
+  {
+    name: 'NavigationSplitView component',
+    route: 'ui/navigationsplitview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationSplitViewScreen'));
     },
   },
   {
@@ -307,6 +331,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Geometry Group',
+    route: 'ui/geometry-group',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./GeometryGroupScreen'));
+    },
+  },
+  {
     name: 'LazyVStack / LazyHStack',
     route: 'ui/lazy-stack',
     options: {},
@@ -376,6 +408,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./OverlayScreen'));
+    },
+  },
+  {
+    name: 'Background component',
+    route: 'ui/background',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BackgroundScreen'));
     },
   },
   {

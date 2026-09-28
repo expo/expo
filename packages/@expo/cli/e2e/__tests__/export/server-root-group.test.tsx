@@ -1,11 +1,10 @@
-/* eslint-env jest */
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { processFindPrefixedValue } from '../../utils/process';
 import { createBackgroundServer } from '../../utils/server';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -75,8 +74,10 @@ describe('server-root-group', () => {
     // Has routes.json
     expect(files).toContain('server/_expo/routes.json');
 
-    // HTML
-    expect(files).toContain('server/(root)/index.html');
+    expect(files).toContain('server/_expo/server/render.js');
+
+    // Group routes render at request time
+    expect(files).not.toContain('server/(root)/index.html');
     expect(files).not.toContain('server/index.html');
   });
 });
