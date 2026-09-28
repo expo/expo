@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add the `/_expo/model-context` dev server endpoint where a running app registers tools through `modelContext` from `expo/devtools`. ([#50116](https://github.com/expo/expo/pull/50116) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
