@@ -72,6 +72,17 @@ public final class WidgetsModule: Module {
         widget.reload()
       }
 
+      AsyncFunction("isInstalled") { (widget: WidgetObject) async throws -> Bool in
+        let name = widget.name
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
+          WidgetCenter.shared.getCurrentConfigurations { result in
+            continuation.resume(with: result.map { configurations in
+              configurations.contains { $0.kind == name }
+            })
+          }
+        }
+      }
+
       Function("updateTimeline") { (widget: WidgetObject, entries: [WidgetsJSTimelineEntry]) in
         try widget.updateTimeline(entries: entries)
       }

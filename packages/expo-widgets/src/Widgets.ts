@@ -47,6 +47,13 @@ export class Widget<
   }
 
   /**
+   * Returns whether at least one instance of this widget is installed on the device.
+   */
+  isInstalled(): Promise<boolean> {
+    return this.nativeWidgetObject.isInstalled();
+  }
+
+  /**
    * Schedules a series of updates for the widget's content and reloads the widget.
    * @param entries Timeline entries, each specifying a date and the props to display at that time.
    */
