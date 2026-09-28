@@ -18,7 +18,7 @@ afterEvaluate {
 
   project.android.libraryVariants.all { variant ->
     def assetsDir = file("$buildDir/generated/assets/expo-constants/${variant.name}")
-    def configMode = variant.buildType.debuggable ? "development" : "production"
+    def configMode = variant.buildType.name == "debug" || variant.buildType.name == "debugOptimized" ? "development" : "production"
 
     def createConfigTask = tasks.register("create${variant.name.capitalize()}ExpoConfig", Exec) {
       description = 'expo-constants: Create app.config.'
