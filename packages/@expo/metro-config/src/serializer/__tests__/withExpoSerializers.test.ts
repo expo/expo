@@ -88,16 +88,16 @@ describe('BitSet chunk emission', () => {
     ).toBe(true);
   });
 
-  async function serializeBitSetAsync(fs: Record<string, string>) {
+  async function serializeBitSetAsync(fs: Record<string, string>, sourceMaps = false) {
     const [entry, premodules, graph, options] = await microBundle({
       fs,
       preModulesFs: { runtime: '/* runtime */' },
-      options: { platform: 'web', dev: false, output: 'static', splitChunks: true },
+      options: { platform: 'web', dev: false, output: 'static', splitChunks: true, sourceMaps },
     });
     return createBitSetChunkingStrategy({
       serializerConfig: {},
       serializeChunkOptions: {
-        includeSourceMaps: false,
+        includeSourceMaps: sourceMaps,
         splitChunks: true,
         chunkingStrategy: 'bitset',
       },
@@ -167,22 +167,60 @@ describe('BitSet chunk emission', () => {
       expect(coveredFilenames.has(required)).toBe(true);
   });
 
-  it('keeps a semantic facade when its module belongs to an earlier route', async () => {
+  it('omits an empty facade while preserving its entry requirements', async () => {
     const artifacts = await serializeBitSetAsync({
       'index.js': `import('./a');`,
       'a.js': `import './b'; export const load = () => import('./b');`,
       'b.js': `console.log('b');`,
     });
     const a = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/a.js'))!;
-    const b = artifacts.find((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))!;
-    expect(artifacts).toHaveLength(4); // initial, runtime, A, empty B facade
+    expect(artifacts).toHaveLength(3);
     expect(a.metadata.modulePaths).toContain('/app/b.js');
-    expect(b.metadata.modulePaths).toEqual([]);
-    expect(b.metadata.requires).toContain(a.filename);
-    expect(Object.values(a.metadata.paths!).flatMap(Object.values)).toContainEqual([
-      '/' + b.filename,
-    ]);
+    expect(artifacts[0]!.metadata.entryChunks!['/app/b.js']).toEqual([a.filename]);
+    expect(artifacts.some((asset) => asset.metadata.entryPaths?.includes('/app/b.js'))).toBe(false);
+    expect(a.metadata.paths).toEqual({});
   });
+
+  it.each([false, true])(
+    'omits empty same-basename facades (source maps: %s)',
+    async (sourceMaps) => {
+      const artifacts = await serializeBitSetAsync(
+        {
+          'index.js': `import('./a/index'); import('./b/index'); import('./x'); import('./y');`,
+          'a/index.js': `console.log('a');`,
+          'b/index.js': `console.log('b');`,
+          'x.js': `import './a/index';`,
+          'y.js': `import './b/index';`,
+        },
+        sourceMaps
+      );
+      const jsAssets = artifacts.filter((asset) => asset.type === 'js');
+      const a = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/a/index.js'))!;
+      const b = artifacts.find((asset) => asset.metadata.modulePaths?.includes('/app/b/index.js'))!;
+      const entry = artifacts[0]!;
+      expect(jsAssets).toHaveLength(6);
+      expect(
+        artifacts.filter((asset) => asset.type === 'map').map((asset) => asset.filename)
+      ).toEqual(sourceMaps ? jsAssets.map((asset) => asset.filename + '.map') : []);
+      expect(new Set(artifacts.map((asset) => asset.filename)).size).toBe(artifacts.length);
+      expect(a.filename).toContain('__shared-');
+      expect(b.filename).toContain('__shared-');
+      expect(a.filename).not.toBe(b.filename);
+      expect(entry.metadata.entryChunks!['/app/a/index.js']).toEqual([a.filename]);
+      expect(entry.metadata.entryChunks!['/app/b/index.js']).toEqual([b.filename]);
+      expect(entry.metadata.paths!['/app/index.js']!['/app/a/index.js']).toEqual([
+        '/' + a.filename,
+      ]);
+      expect(entry.metadata.paths!['/app/index.js']!['/app/b/index.js']).toEqual([
+        '/' + b.filename,
+      ]);
+      expect(
+        artifacts
+          .filter((asset) => asset.metadata.isAsync)
+          .every((asset) => asset.metadata.modulePaths!.length > 0)
+      ).toBe(true);
+    }
+  );
 
   it('skips fully initial-owned facades and records their aliases', async () => {
     const artifacts = await serializeBitSetAsync({
@@ -191,6 +229,10 @@ describe('BitSet chunk emission', () => {
     });
     expect(artifacts).toHaveLength(1);
     expect(artifacts[0]!.metadata.entryPaths).toEqual(['/app/a.js', '/app/index.js']);
+    expect(artifacts[0]!.metadata.entryChunks).toEqual({
+      '/app/a.js': [],
+      '/app/index.js': [],
+    });
     expect(artifacts[0]!.metadata.paths).toEqual({});
   });
 
