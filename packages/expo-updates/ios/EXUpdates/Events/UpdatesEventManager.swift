@@ -7,6 +7,7 @@ public protocol UpdatesEventManagerObserver: AnyObject {
 }
 
 public protocol UpdatesEventManager: AnyObject {
-  var observer: UpdatesEventManagerObserver? { get set }
+  func setObserver(_ observer: UpdatesEventManagerObserver)
+  func removeObserver(_ observer: UpdatesEventManagerObserver)
   func sendStateMachineContextEvent(context: UpdatesStateContext)
 }
