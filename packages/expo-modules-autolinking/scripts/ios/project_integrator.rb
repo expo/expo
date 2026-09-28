@@ -143,6 +143,14 @@ module Expo
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
+          # Make the path relative to PODS_ROOT so a relocated Pods directory keeps working.
+          pods_root = Pod::Config.instance.project_pods_root.to_s
+          begin
+            relative_dir = Pathname.new(macros_plugin_dir).relative_path_from(Pathname.new(pods_root)).to_s
+            macros_plugin_dir = "${PODS_ROOT}/#{relative_dir}"
+          rescue ArgumentError
+            # Different volume or drive: keep the absolute path.
+          end
           macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
         end
 
@@ -311,9 +319,16 @@ module Expo
       args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }
       platform = autolinking_manager.platform_name.downcase
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
-      entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
+      # Make the paths relative to PODS_ROOT so a relocated Pods directory keeps working.
+      pods_root = Pod::Config.instance.project_pods_root.to_s
+      relocatable = ->(path) {
+        path.start_with?("#{pods_root}/") ? path.sub(pods_root, '${PODS_ROOT}') :
+          path.start_with?("#{File.dirname(pods_root)}/") ? path.sub(File.dirname(pods_root), '${PODS_ROOT}/..') : path
+      }
+      modules_provider_path = relocatable.call(modules_provider_path)
+      entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{relocatable.call(entitlement_path)}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
-      podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
+      podfile_properties_param = "--podfile-properties-file-path \"#{relocatable.call(autolinking_manager.get_podfile_properties_path())}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
