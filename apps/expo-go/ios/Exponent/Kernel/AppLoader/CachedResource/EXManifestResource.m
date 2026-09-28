@@ -384,7 +384,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
   return [[self.originalUrl query] containsString:@"snack"] || [[self.originalUrl query] containsString:@"snack-channel"];
 }
 
-+ (NSString * _Nonnull)formatHeader:(NSError * _Nonnull)error {
++ (NSString * _Nullable)formatHeader:(NSError * _Nonnull)error {
   NSString *errorCode = error.userInfo[@"errorCode"];
   NSDictionary *metadata = error.userInfo[@"metadata"];
   BOOL isSnackURL = [metadata[@"isSnackURL"] boolValue];
