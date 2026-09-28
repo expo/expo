@@ -116,6 +116,19 @@ const WORKSPACE_SPECIFIER = 'workspace:';
  * @returns {Promise<void>}
  */
 export async function checkDependenciesAsync(pkg, type = 'package', logger = defaultLogger) {
+  if (
+    !EXPO_METRO_DEPENDENTS.includes(pkg.packageName) &&
+    getDependencies(pkg.packageJson, [DependencyKind.Normal, DependencyKind.Peer]).some(
+      ({ name }) => name === '@expo/metro'
+    )
+  ) {
+    logger.warn(
+      `📦 Disallowed dependency: @expo/metro. Only ${EXPO_METRO_DEPENDENTS.join(', ')} may depend ` +
+        `on it at runtime; reach Metro through @expo/metro-config, or list it in devDependencies.`
+    );
+    throw new Error(`${pkg.packageName} has invalid dependency chains.`);
+  }
+
   if (isNCCBuilt(pkg.packageJson)) {
     return;
   }
@@ -212,6 +225,11 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
     throw new Error(`${pkg.packageName} has invalid pinned versions.`);
   }
 }
+
+// Packages allowed to depend on `@expo/metro` at runtime; any package may list it in
+// `devDependencies`. Metro coupling is being consolidated into `@expo/metro-config`, so this list
+// only shrinks.
+const EXPO_METRO_DEPENDENTS = ['@expo/metro-config', '@expo/cli', 'expo'];
 
 /**
  * @param {SourceFileImportRef} ref

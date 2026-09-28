@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "58.0.4",
+  "version": "58.0.5",
   "description": "Expo module for browser-based authentication",
   "keywords": [
     "auth",

@@ -8,10 +8,23 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed images in recycled lists going permanently blank: the transition's cleanup ran through `withEndAction`, which `ViewPropertyAnimator` drops when the animation is cancelled, so the Glide target was never returned to the pool. ([#49283](https://github.com/expo/expo/pull/49283) by [@oscnord](https://github.com/oscnord))
-- [Android] Fixed a `You can't start or clear loads in RequestListener or Target callbacks` crash when an image fails to load while layout updates are pending, for example from `react-native-reanimated`. The `onError` event is now dispatched after Glide's failure callback returns, as `onLoad` already was.
+- [Android] Fixed native crashes when decoding and clearing some animated GIFs. ([#49533](https://github.com/expo/expo/pull/49533) by [@MangelSpec](https://github.com/MangelSpec))
+- [Android] Avoid reporting an image load error when displaying a placeholder without a source. ([#50668](https://github.com/expo/expo/pull/50668) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed a `You can't start or clear loads in RequestListener or Target callbacks` crash when an image fails to load while layout updates are pending, for example from `react-native-reanimated`. The `onError` event is now dispatched after Glide's failure callback returns, as `onLoad` already was. ([#50550](https://github.com/expo/expo/pull/50550) by [@Joozty](https://github.com/Joozty))
 
 ### 💡 Others
+
+## 58.0.6 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `prefetch` crashing with `PromiseAlreadySettledException` when Glide restarts a failed request after connectivity is restored, resolving the already-settled promise a second time. ([#49944](https://github.com/expo/expo/pull/49944) by [@riorafe](https://github.com/riorafe))
+
+## 58.0.5 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [Android] Fixed images in recycled lists going permanently blank: the transition's cleanup ran through `withEndAction`, which `ViewPropertyAnimator` drops when the animation is cancelled, so the Glide target was never returned to the pool. ([#49283](https://github.com/expo/expo/pull/49283) by [@oscnord](https://github.com/oscnord))
 
 ## 58.0.4 — 2026-09-22
 

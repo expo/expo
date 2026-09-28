@@ -36,8 +36,21 @@ function resolveExpoModules(appRoot) {
  * Returns its absolute path for `generatedSources`, or null if generation produced nothing.
  * `generate-modules-provider` filters to an explicit allowlist (`--packages`); without it the
  * provider is empty, so pass every resolved module's package name.
+ *
+ * `--target-name` and `--podfile-properties-file-path` only have an effect together: inline
+ * modules are registered by looking the target name up in the properties file.
  */
-function generateModulesProvider(appRoot, outDir, moduleNames) {
+function generateModulesProvider({
+  appRoot,
+  outDir,
+  moduleNames,
+  targetName = null,
+  entitlementPath = null,
+  podfilePropertiesPath = null,
+}) {
+  // `--packages` is variadic and the CLI rejects it without a value, so an app that
+  // autolinks nothing (everything excluded) must not reach the generator at all.
+  if (moduleNames.length === 0) return null;
   const bin = resolveAutolinkingBin();
   const target = path.join(outDir, 'ExpoModulesProvider.swift');
   fs.mkdirSync(outDir, { recursive: true });
@@ -52,6 +65,12 @@ function generateModulesProvider(appRoot, outDir, moduleNames) {
       appRoot,
       '--platform',
       'apple',
+      ...(targetName != null ? ['--target-name', targetName] : []),
+      ...(entitlementPath != null ? ['--entitlement', entitlementPath] : []),
+      ...(podfilePropertiesPath != null
+        ? ['--podfile-properties-file-path', podfilePropertiesPath]
+        : []),
+      // Variadic: everything after it is read as a package name, so it goes last.
       '--packages',
       ...moduleNames,
     ],

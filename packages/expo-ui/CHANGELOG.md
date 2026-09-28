@@ -6,9 +6,34 @@
 
 ### 🎉 New features
 
+- [iOS] Export the `FrameAlignment` type for the `alignment` parameter of `frame()`. ([#50702](https://github.com/expo/expo/pull/50702) by [@amandeepmittal](https://github.com/amandeepmittal))
+- [Android] Add `contentDescription` to the `semantics` modifier, so TalkBack can announce a label other than the visible content. ([#50688](https://github.com/expo/expo/pull/50688) by [@enavermate](https://github.com/enavermate))
+- Added `get()` and `set()` to the universal `ObservableState` type and to the web implementation of `useNativeState`, as React Compiler-compliant alternatives to `.value`. ([#50684](https://github.com/expo/expo/pull/50684) by [@Den1Marshall](https://github.com/Den1Marshall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 58.0.7 — 2026-09-25
+
+### 🎉 New features
+
+- [iOS] Added `presentationCornerRadius` modifier. ([#50632](https://github.com/expo/expo/pull/50632) by [@shanelord01](https://github.com/shanelord01))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `onPress` on universal components such as `Row` and `Column` not firing when tapping empty space, such as a `Spacer`. ([#50599](https://github.com/expo/expo/pull/50599) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.6 — 2026-09-23
+
+### 🛠 Breaking changes
+
+- [iOS] `frame()` now matches SwiftUI's two `frame` overloads, so one call accepts either `width`/`height` or `min*`/`ideal*`/`max*`, not both. ([#50537](https://github.com/expo/expo/issues/50537) by [@wwisheess](https://github.com/wwisheess), [#50544](https://github.com/expo/expo/pull/50544) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 🎉 New features
+
+- [iOS] `List.ForEach` recycles rows from a small pool around the visible range, so large lists only render the rows near the viewport. Deprecated element children in favor of this form. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `LazyColumn.Items` and `LazyRow.Items`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large lists only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50258](https://github.com/expo/expo/pull/50258) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 58.0.5 — 2026-09-22
 
@@ -91,6 +116,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix hosted React Native content sliding off the top of a `BottomSheet` when the keyboard opens. ([#49399](https://github.com/expo/expo/issues/49399) by [@starsky-nev](https://github.com/starsky-nev)) ([#49427](https://github.com/expo/expo/pull/49427) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fix `DatePickerDialog` preselecting today when `initialDate` is omitted, and keep its confirm button disabled while no date is selected so `onDateSelected` never receives an invalid date. ([#49898](https://github.com/expo/expo/pull/49898) by [@pataar](https://github.com/pataar))
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme. ([#49697](https://github.com/expo/expo/pull/49697) by [@expo-bot](https://github.com/expo-bot))

@@ -274,6 +274,7 @@ async function countQuietDispatches(since: string): Promise<number> {
  *  which covers every run this repo has made. */
 const MODEL_PRICES: Record<string, { input: number; output: number }> = {
   'claude-fable-5': { input: 10, output: 50 },
+  'claude-opus-5-5': { input: 4, output: 20 },
   'claude-opus-5': { input: 5, output: 25 },
   'claude-opus-4-8': { input: 5, output: 25 },
   'claude-opus-4-7': { input: 5, output: 25 },
@@ -940,7 +941,7 @@ function contextHelp(argv: string[]): string {
 // subcommands exec the engine with the repo's .expo-agents/verify/ profile. roundup
 // stays native here — it is expo policy (emoji conventions, branch scoping,
 // cost tables) the engine has not absorbed yet.
-const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.11.13';
+const ENGINE_VERSION = process.env.VERIFY_ENGINE_VERSION || '0.11.14';
 
 async function delegateToEngine(engineArgs: string[]): Promise<never> {
   // The profile's home is .expo-agents/verify/ (engine 0.9.0); the engine itself

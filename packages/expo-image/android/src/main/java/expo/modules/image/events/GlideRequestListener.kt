@@ -31,6 +31,11 @@ class GlideRequestListener(
     target: Target<Drawable>,
     isFirstResource: Boolean
   ): Boolean {
+    // A null source is valid while displaying only a placeholder. Glide treats its
+    // empty main request as a failure, but there is no image load error to report.
+    if (model == null) {
+      return false
+    }
     val errorMessage = e
       ?.message
       // Glide always append that line to the end of the message.

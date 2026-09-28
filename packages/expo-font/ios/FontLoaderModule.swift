@@ -29,7 +29,7 @@ public final class FontLoaderModule: Module {
         }
       }
 
-      try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
+      let registeredFont = try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
 
       // Alias every name the file provides to `fontFamilyAlias` — one per named instance for a
       // variable font — that makes its weights reachable through the `fontWeight` style prop.
@@ -39,10 +39,14 @@ public final class FontLoaderModule: Module {
 
       FontFamilyAliasManager.setAlias(fontFamilyAlias, forPostScriptNames: aliasedNames, url: localUri)
 
-      // A file no longer aliased stays registered with CoreText otherwise. A failed unregister
-      // is fine: `registerFont` tolerates duplicates.
-      for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
-        _ = try? unregisterFont(url: staleUrl as CFURL)
+      // A duplicate-name registration still depends on a previously registered URL. Do not
+      // unregister it when the incoming URL did not acquire its own registration. The registry
+      // then records the incoming URL while CoreText serves the previous one, until the next
+      // cold launch registers the incoming URL first.
+      if registeredFont {
+        for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
+          _ = try? unregisterFont(url: staleUrl as CFURL)
+        }
       }
 
       // Only report names the app supplied. This list is what `Font.isLoaded` answers from, and
@@ -69,6 +73,7 @@ public final class FontLoaderModule: Module {
     var faceEntries = [(url: URL, names: [String])]()
     var faceInfos = [FaceInfo]()
     var seenUrls = Set<URL>()
+    var registeredAllFaces = true
 
     for (index, face) in faces.enumerated() {
       guard let localUri = face.localUri else {
@@ -85,7 +90,9 @@ public final class FontLoaderModule: Module {
         _ = try? unregisterFont(url: fontUrl)
       }
 
-      try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
+      if try !registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias) {
+        registeredAllFaces = false
+      }
 
       let names = try postScriptNames(inFileAt: fontUrl, alias: fontFamilyAlias)
       faceEntries.append((url: localUri, names: names))
@@ -110,8 +117,13 @@ public final class FontLoaderModule: Module {
     }
     FontFamilyAliasManager.setFaces(faceEntries, alias: fontFamilyAlias)
 
-    for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
-      _ = try? unregisterFont(url: staleUrl as CFURL)
+    // Deliberately coarse: one duplicate-name face keeps every stale URL registered, even
+    // faces unrelated to the collision. Leaving a registration behind is safe; removing one
+    // that still serves a name is not.
+    if registeredAllFaces {
+      for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
+        _ = try? unregisterFont(url: staleUrl as CFURL)
+      }
     }
 
     registeredFonts = Array(Set(registeredFonts).union([fontFamilyAlias]))

@@ -44,8 +44,6 @@ interface WatcherOptions {
   console: Console;
   enableSymlinks: boolean;
   extensions: readonly string[];
-  /** @deprecated */
-  forceNodeFilesystemAPI?: boolean;
   healthCheckFilePrefix: string | null;
   ignoreForCrawl: (filePath: string) => boolean;
   ignorePatternForWatch: RegExp | null;
@@ -150,7 +148,6 @@ export class Watcher extends EventEmitter {
       console: options.console,
       includeSymlinks: options.enableSymlinks,
       extensions: options.extensions,
-      forceNodeFilesystemAPI: options.forceNodeFilesystemAPI,
       ignore: ignoreForCrawl,
       onStatus: (status) => {
         this.emit('status', status);

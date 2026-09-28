@@ -203,6 +203,15 @@ class ExpoUIModule : Module() {
     }
     View(LazyColumnView::class)
     View(LazyRowView::class)
+    View(LazyItemsView::class) {
+      Events("onWindowChange")
+
+      OnViewDestroys { view: LazyItemsView ->
+        view.cancelPendingWindowChange()
+      }
+    }
+    View(LazyItemsPoolView::class)
+    View(LazyItemsSlotView::class)
 
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)

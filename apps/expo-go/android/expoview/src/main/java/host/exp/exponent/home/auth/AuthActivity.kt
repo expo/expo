@@ -11,6 +11,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import expo.modules.core.utilities.VRUtilities
 import host.exp.exponent.home.HomeAppTheme
+import host.exp.exponent.services.SessionStore
 import host.exp.exponent.services.ThemeSetting
 import java.net.URLEncoder
 
@@ -139,6 +140,7 @@ class AuthActivity : AppCompatActivity() {
   private fun createCustomTabsIntent(): Intent {
     val builder = CustomTabsIntent.Builder()
     builder.setShowTitle(false)
+    builder.setEphemeralBrowsingEnabled(usesEphemeralBrowserSession(SessionStore.getInstance(this).state.value))
 
     return builder
       .build()

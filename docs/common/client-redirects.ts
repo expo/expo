@@ -210,6 +210,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v55.0.0/sdk/ui/jetpack-compose/textinput/':
     '/versions/v55.0.0/sdk/ui/jetpack-compose/textfield/',
 
+  // Expo UI guides merged into the versioned reference
+  '/guides/expo-ui-swift-ui/': '/versions/latest/sdk/ui/swift-ui/',
+  '/guides/expo-ui-swift-ui/extending/': '/versions/latest/sdk/ui/swift-ui/extending/',
+  '/guides/expo-ui-jetpack-compose/extending/':
+    '/versions/latest/sdk/ui/jetpack-compose/extending/',
+
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',

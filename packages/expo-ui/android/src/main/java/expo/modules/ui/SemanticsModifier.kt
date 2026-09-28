@@ -7,7 +7,8 @@ import expo.modules.kotlin.types.OptimizedRecord
 
 @OptimizedRecord
 internal data class SemanticsParams(
-  @Field val contentType: String? = null
+  @Field val contentType: String? = null,
+  @Field val contentDescription: String? = null
 ) : Record
 
 internal fun String?.toContentType(): ContentType? = when (this) {

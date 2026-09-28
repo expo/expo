@@ -8,7 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix crop failing for large images ([#48019](https://github.com/expo/expo/pull/48019) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.5 — 2026-09-22
 

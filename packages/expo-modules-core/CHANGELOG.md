@@ -8,10 +8,28 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed async functions rejecting with `Cannot use shared object that was already released`, and `sharedObjectDidRelease` being called in the middle of a pending call, when the garbage collector took the JS object of a shared object receiver or argument before the call finished. ([#50513](https://github.com/expo/expo/pull/50513) by [@lukmccall](https://github.com/lukmccall))
-
+- [Android] Throw a JavaScript error instead of aborting when returning a shared object whose JavaScript instance is no longer available. ([#50667](https://github.com/expo/expo/pull/50667) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+## 58.0.7 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`).
+- [iOS] Fixed `Exception` reporting `undefined reason` to JavaScript instead of the description it was created with, which also affected every `promise.reject(code, description)` call. ([#50215](https://github.com/expo/expo/pull/50215) by [@Maher-Reven](https://github.com/Maher-Reven))
+
+## 58.0.6 — 2026-09-23
+
+### 🎉 New features
+
+- Added `Platform.isQuest` to detect Meta Quest devices from JavaScript. ([#50283](https://github.com/expo/expo/pull/50283) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- Preserve shared objects when React Activity becomes hidden, handle Strict Mode replay, and wait for all pending updates before releasing objects. ([#49979](https://github.com/expo/expo/pull/49979) by [@behenate](https://github.com/behenate))
+- [Android] Fixed async functions rejecting with `Cannot use shared object that was already released`, and `sharedObjectDidRelease` being called in the middle of a pending call, when the garbage collector took the JS object of a shared object receiver or argument before the call finished. ([#50513](https://github.com/expo/expo/pull/50513) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixed `nil` record fields being omitted instead of returned as `null` when a function's return type is an optional record. ([#50560](https://github.com/expo/expo/pull/50560) by [@wenszel](https://github.com/wenszel))
 
 ## 58.0.5 — 2026-09-22
 
@@ -117,6 +135,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Measure hosted React Native views where SwiftUI placed them, instead of at their Yoga box. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Measure hosted React Native views where Jetpack Compose placed them, instead of at their Yoga box. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed `ActivityResultLauncher.launch()` throwing `IllegalStateException: Attempting to launch an unregistered ActivityResultLauncher` after the Activity is recreated, by registering the launcher again against the live Activity. ([#49634](https://github.com/expo/expo/pull/49634) by [@idoyana](https://github.com/idoyana))
 
 ### 💡 Others
 

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 58.0.7 — 2026-09-25
+
+### 🎉 New features
+
+- Add __expo_* reserved namespace for deep linking URLs. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.5 — 2026-09-22
 
 _This version does not introduce any user-facing changes._

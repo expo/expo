@@ -59,6 +59,7 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: 'bottom-right',
   },
+  agentRules: false,
   experimental: {
     optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
     parallelServerCompiles: true,
