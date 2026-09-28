@@ -336,7 +336,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
 
     it('normalizes the method', () => {
       expect(new Request('https://httpbin.io/post', { method: 'post' }).method).toBe('POST');
-      expect(new Request('https://httpbin.io/patch', { method: 'patch' }).method).toBe('PATCH');
+      // The spec uppercases only DELETE, GET, HEAD, OPTIONS, POST and PUT.
+      expect(new Request('https://httpbin.io/patch', { method: 'patch' }).method).toBe('patch');
     });
 
     it('rejects a body on a GET or HEAD request', () => {

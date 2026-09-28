@@ -11,10 +11,13 @@ export interface FetchRequestInit {
 
   // These fields are accepted for `RequestInit` compatibility but ignored: `expo/fetch` does not
   // act on them, and they are not forwarded to the native request.
+  cache?: RequestCache;
+  duplex?: 'half';
   integrity?: string;
   keepalive?: boolean;
   mode?: RequestMode;
   referrer?: string;
+  referrerPolicy?: ReferrerPolicy;
   window?: any;
 }
 
