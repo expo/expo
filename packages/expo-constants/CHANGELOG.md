@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Load app config and `.env` files in the build's mode: development for configurations containing `Debug`, production otherwise. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
