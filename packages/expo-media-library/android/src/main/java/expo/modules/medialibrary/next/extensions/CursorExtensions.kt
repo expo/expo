@@ -18,7 +18,9 @@ fun Cursor.asIterable(): Iterable<Cursor> {
 
       override fun next(): Cursor {
         if (!hasNextCalled) {
-          if (!moveToNext()) throw NoSuchElementException()
+          if (!moveToNext()) {
+            throw NoSuchElementException()
+          }
         }
         hasNextCalled = false
         return this@asIterable

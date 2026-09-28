@@ -1,14 +1,27 @@
 'use client';
 
+import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { warnIfScreenParam } from '../navigationParams';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
-import type { InitialState, NavigationAction, NavigationState } from '../react-navigation/routers';
+import type {
+  InitialState,
+  NavigationAction,
+  NavigationState,
+  RouterBrowserHistoryAction,
+} from '../react-navigation/routers';
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
+import {
+  applyRouterHistoryAction,
+  createBrowserHistory,
+  restoreNavigationFromBrowser,
+  updateCurrentHistoryEntry,
+} from './browserHistory';
+import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types';
 import {
   completeNavigationState,
   createSeededNavigationState,
@@ -20,16 +33,27 @@ import type { RoutingIntent } from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';
 import type { StoreRedirects } from './types';
 
+// React IDs can repeat after a reload; the session prefix keeps old browser entries distinct.
+const browserHistorySessionId = nanoid();
+
 type ReducerConfig = {
   registry: RouterRegistry;
   routesWithRemovalPrevented: ReadonlySet<string>;
   routeNode?: RouteNode;
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
+  browserHistoryIdPrefix: string;
 };
 
 type TreeOperation =
-  | RoutingIntent
+  | Exclude<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
+  | (Extract<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
+      /**
+       * Browser traversal may interrupt a suspended transition. Restore from the last committed
+       * result so commands from the abandoned transition are not applied later.
+       */
+      commitedTreeResult?: NavigationTreeResult;
+    })
   | {
       type: 'NAVIGATOR_UNMOUNTED';
       stateKey: string;
@@ -77,7 +101,13 @@ type NavigationTreeReportEventData =
       type: 'action-dispatched';
       action: NavigationAction;
       state: NavigationState;
-    };
+    }
+  | {
+      type: 'route-preloaded';
+      routeKey: string;
+      state: NavigationState;
+    }
+  | BrowserHistoryEvent;
 
 export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
   id: number;
@@ -87,6 +117,9 @@ type NavigationTreeResult = {
   state: NavigationState;
   report: NavigationTreeReport | undefined;
   eventSeq: number;
+  // Web only; browser entries tracked by this page.
+  history: BrowserHistory | undefined;
+  browserHistoryAction?: RouterBrowserHistoryAction;
 };
 
 const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
@@ -106,9 +139,48 @@ function warnIfStaleState(state: NavigationState) {
   }
 }
 
+// Browser changes restore a saved navigation state. Other operations update navigation first,
+// then queue the matching browser command to run after React commits.
 function navigationTreeReducer(
   result: NavigationTreeResult,
   operation: TreeOperation,
+  config: ReducerConfig
+): NavigationTreeResult {
+  if (operation.type === 'BROWSER_HISTORY_CHANGED') {
+    if (operation.commitedTreeResult) {
+      // Discard the interrupted transition while keeping event IDs monotonic.
+      result = { ...operation.commitedTreeResult, eventSeq: result.eventSeq };
+    }
+    if (!result.history) {
+      return result;
+    }
+    const restored = restoreNavigationFromBrowser(
+      result.history,
+      result,
+      operation.payload,
+      config,
+      (current, intent) => reduceTree(current, intent, config)
+    );
+    return appendReportEvents({ ...restored.result, history: restored.history }, restored.events);
+  }
+
+  const next = reduceTree({ ...result, browserHistoryAction: undefined }, operation, config);
+  if (next.state === result.state || !next.history) {
+    return next;
+  }
+  // Structural repairs are not navigations, so they never move the browser.
+  const projected =
+    operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
+      ? updateCurrentHistoryEntry(next.history, next.state, config)
+      : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
+  return appendReportEvents({ ...next, history: projected.history }, projected.events);
+}
+
+// Browser changes are handled above because they restore tracked history and may call this
+// helper with a generated navigation intent. Excluding them prevents a recursive restore.
+function reduceTree(
+  result: NavigationTreeResult,
+  operation: Exclude<TreeOperation, { type: 'BROWSER_HISTORY_CHANGED' }>,
   config: ReducerConfig
 ): NavigationTreeResult {
   const state = result.state;
@@ -125,7 +197,7 @@ function navigationTreeReducer(
           options.event,
           options.withAnchor,
           options.dangerouslySingular,
-          !!options.__internal__PreviewKey,
+          options.__internal__PreviewKey,
           state
         );
       } catch (error) {
@@ -145,11 +217,7 @@ function navigationTreeReducer(
         );
         return result;
       }
-      return navigationTreeReducer(
-        result,
-        { type: 'ACTION', payload: { action: resolution.action } },
-        config
-      );
+      return reduceTree(result, { type: 'ACTION', payload: { action: resolution.action } }, config);
     }
     case 'COMPUTED_ACTION': {
       let action: NavigationAction | undefined;
@@ -167,9 +235,12 @@ function navigationTreeReducer(
       if (!action) {
         return result;
       }
-      return navigationTreeReducer(
+      return reduceTree(
         result,
-        { type: 'ACTION', payload: { action, originKey: operation.payload.originKey } },
+        {
+          type: 'ACTION',
+          payload: { action, originKey: operation.payload.originKey },
+        },
         config
       );
     }
@@ -224,13 +295,26 @@ function navigationTreeReducer(
                     },
                   ] satisfies NavigationTreeReportEventData[])
                 : []),
+              ...(operation.payload.action.type === 'PRELOAD' &&
+              reduction.affectedRouteKey !== undefined
+                ? ([
+                    {
+                      type: 'route-preloaded',
+                      routeKey: reduction.affectedRouteKey,
+                      state: committedState,
+                    },
+                  ] satisfies NavigationTreeReportEventData[])
+                : []),
               {
                 type: 'action-dispatched',
                 action: operation.payload.action,
                 state: committedState,
               },
             ];
-      return appendReportEvents({ ...result, state: committedState }, eventsWithoutIds);
+      return appendReportEvents(
+        { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
+        eventsWithoutIds
+      );
     }
     case 'NAVIGATOR_UNMOUNTED': {
       // A still-registered key re-registered before this operation reduced, so it did not unmount.
@@ -287,6 +371,9 @@ function appendReportEvents(
   result: NavigationTreeResult,
   events: NavigationTreeReportEventData[]
 ): NavigationTreeResult {
+  if (events.length === 0) {
+    return result;
+  }
   const eventsWithIds: NavigationTreeReportEvent[] = events.map((event, index) => ({
     ...event,
     id: result.eventSeq + index,
@@ -308,12 +395,14 @@ export function useNavigationTreeReducer({
   linking,
   redirects,
 }: Options) {
+  const browserHistoryIdPrefix = `${browserHistorySessionId}:${React.useId()}`;
   const config: ReducerConfig = {
     registry,
     routesWithRemovalPrevented,
     routeNode,
     linking,
     redirects,
+    browserHistoryIdPrefix,
   };
   const [result, reactDispatch] = React.useReducer(
     (result: NavigationTreeResult, operation: TreeOperation) =>
@@ -327,7 +416,12 @@ export function useNavigationTreeReducer({
         );
       }
       // TODO(@ubax): check if deepFreeze is needed here.
-      return { state: deepFreeze(value), report: undefined, eventSeq: 0 };
+      const state = deepFreeze(value);
+      const initial = createBrowserHistory(state, config);
+      return appendReportEvents(
+        { state, report: undefined, eventSeq: 0, history: initial.history },
+        initial.events
+      );
     }
   );
   const [previousRegistry, setPreviousRegistry] = React.useState(registry);
@@ -364,6 +458,17 @@ export function useNavigationTreeReducer({
     reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
   });
 
+  const processIntent = useLatestCallback((intent: RoutingIntent) => {
+    if (intent.type === 'BROWSER_HISTORY_CHANGED') {
+      // Example: A is visible while a push to B is suspended. Browser Back starts from A,
+      // so restore from A's committed result, not the reducer's pending B state.
+      // useLatestCallback keeps `result` at the last commit; the browser's ID and URL still pass through.
+      reactDispatch({ ...intent, commitedTreeResult: result });
+      return;
+    }
+    reactDispatch(intent);
+  });
+
   React.useInsertionEffect(() => {
     warnIfStaleState(result.state);
   }, [result.state]);
@@ -374,7 +479,7 @@ export function useNavigationTreeReducer({
     consumeReportEvents,
     resetNavigator,
     handleAction,
-    processIntent: reactDispatch,
+    processIntent,
   };
 }
 

@@ -197,7 +197,10 @@ class HomeViewModel: ObservableObject {
   }
 
   func openApp(url: String) {
-    openAppViaBridge(url: url)
+    // Home gets URLs as the user gave them (QR, recents, dev servers, initial URL). Deep links are resolved by
+    // `EXKernelLinkingManager.openUrl:` before they reach the bridge, so this is the only other resolve point.
+    let resolved = URL(string: url).map { EXKernelLinkingManager.resolveLaunchUrl($0).absoluteString } ?? url
+    openAppViaBridge(url: resolved)
   }
 
   func openApp(url: String, snackParams: NSDictionary) {

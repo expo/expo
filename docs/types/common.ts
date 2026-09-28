@@ -71,6 +71,7 @@ export type PlatformName =
   | 'android-noemu'
   | 'web'
   | 'expo'
+  | 'expo-widgets'
   | 'macos'
   | 'tvos'
   | string;

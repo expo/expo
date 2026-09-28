@@ -6,7 +6,7 @@ description: Learn how to speed up development with async bundling in Expo Route
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** Async routes is in [alpha](/more/release-statuses/#alpha).
+> **important** In SDK 58 and later, async routes on web are stable and enabled by default in development and production. On native platforms, async routes remain experimental, require explicit opt-in, and are supported only in development. See [Caveats](#caveats) for current limitations.
 
 <ContentSpotlight file="expo-router/async-routes.mp4" loop={false} />
 
@@ -30,30 +30,25 @@ For those familiar with advanced bundling techniques, the async routes feature i
 
 ## Setup
 
-Enable the feature by setting the `asyncRoutes` option in the Expo Router config plugin of your [app config](/versions/latest/config/app/):
+In SDK 58 and later, async routes are enabled by default on web in development and production. Native platforms default to disabled. In SDK 57 and earlier, async routes require an explicit opt-in on every platform.
 
-    > Set `asyncRoutes` to `true` to enable production bundle splitting.
+Configure `asyncRoutes` in the Expo Router config plugin of your [app config](/workflow/configuration/). To disable async routes on web, set `asyncRoutes` to `{ "web": false }`. Setting `asyncRoutes` to `false` disables the feature on all platforms:
 
-    ```json app.json
-    {
-      "expo": {
-        "plugins": [
-          [
-            "expo-router",
-            {
-              "origin": "https://acme.com",
-              "asyncRoutes": {
-                "web": true,
-                "default": "development"
-              }
-            }
-          ]
-        ]
-      }
-    }
-    ```
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-router", { "asyncRoutes": false }]]
+  }
+}
+```
 
-You can set platform-specific settings (`default`, `android`, `ios` or `web`) for `asyncRoutes` using an object:
+You can also use `"development"` or `"production"` to enable async routes only in that mode, or an object with platform-specific settings (`default`, `android`, `ios`, or `web`):
+
+- An explicit platform value takes precedence over `default`.
+- Setting `{ "default": false }` disables async routes on web unless `web` explicitly enables them.
+- In SDK 58 and later, setting only native platforms keeps the web default. For example, `{ "android": true }` behaves as `{ "android": true, "web": true }`. Native production builds still load routes synchronously.
+
+For example, this configuration enables async routes on web in both modes and on iOS in development, while disabling them on Android. It also works as an explicit opt-in in SDK 57 and earlier:
 
 ```json app.json
 {
@@ -75,7 +70,7 @@ You can set platform-specific settings (`default`, `android`, `ios` or `web`) fo
 }
 ```
 
-Then, when you are about to start your project, you can use the `--clear` flag to clear the Metro cache. This will ensure that the routes are loaded asynchronously:
+After changing the setting, clear the Metro cache with `--clear` when starting or exporting your project:
 
 <Terminal
   cmd={{
@@ -96,8 +91,8 @@ All anchor routes, defined with `unstable_settings = { anchor: '...' }` will be 
 
 ## Caveats
 
-Async Routes represents an early preview of how we plan to support [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components) in the future. As such, there are some caveats to be aware of:
+The following limitations apply to async routes:
 
 - Async routes do not support native production apps yet.
 - In development, the runtime JavaScript is lazily bundled so you may encounter cases where the HTML doesn't match the available JavaScript.
-- Custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports do not work with async routes.
+- Custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports do not work with async routes. In SDK 58 and later, web apps use the default loading fallback unless async routes are disabled. To keep a custom fallback, set `asyncRoutes: { web: false }` in the `expo-router` config plugin. See the [migration guide](/router/migrate/sdk-57-to-58/#review-async-route-defaults) for an app config example.

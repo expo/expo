@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules, Module } from '../TestModules';
@@ -51,6 +52,7 @@ function ListItem({
 // (`/run` standalone, `/test-suite/run` in bare-expo).
 export default function SelectScreen({ onRunTests }: { onRunTests: (tests: string) => void }) {
   const { theme } = useTheme();
+  const { left, right } = useSafeAreaInsets();
   const { markInteractive } = useObserve();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [modules, setModules] = useState<Module[]>([]);
@@ -159,7 +161,11 @@ export default function SelectScreen({ onRunTests }: { onRunTests: (tests: strin
         renderItem={renderItem}
         initialNumToRender={15}
         style={{ flex: 1, backgroundColor: theme.background.screen }}
-        contentContainerStyle={supportsGlass ? { paddingBottom: footerHeight } : undefined}
+        contentContainerStyle={{
+          paddingLeft: left,
+          paddingRight: right,
+          ...(supportsGlass ? { paddingBottom: footerHeight } : null),
+        }}
       />
       <View style={supportsGlass ? styles.footerOverlay : undefined} onLayout={onFooterLayout}>
         {footer}

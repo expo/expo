@@ -171,7 +171,7 @@ export default function ListStylesExample() {
 Enable selection, deletion, and reordering of list items using the [`List.ForEach`](#listforeach) compound component with `onDelete` and `onMove` props.
 
 - Use the [`environment`](modifiers/#environmentkey-value) modifier to enable edit mode
-- Use the [`tag`](modifiers/#tagtag) modifier to identify items
+- Use the `keyExtractor` prop to identify items
 - Use the [`selection`](#selection) prop to control selected items
 - Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items
 
@@ -191,7 +191,7 @@ import {
   Button,
   Toggle,
 } from '@expo/ui/swift-ui';
-import { environment, tag } from '@expo/ui/swift-ui/modifiers';
+import { environment } from '@expo/ui/swift-ui/modifiers';
 
 type Task = { id: string; title: string };
 
@@ -243,14 +243,12 @@ export default function EditableListExample() {
           />
         </Section>
         <Section title="Tasks">
-          <List.ForEach onDelete={handleDelete} onMove={handleMove}>
-            {tasks.map(task => (
-              <Label
-                key={task.id}
-                title={task.title}
-                modifiers={[tag(task.id)]}
-              />
-            ))}
+          <List.ForEach
+            data={tasks}
+            keyExtractor={task => task.id}
+            onDelete={handleDelete}
+            onMove={handleMove}>
+            {({ item }) => <Label title={item.title} />}
           </List.ForEach>
         </Section>
       </List>

@@ -80,6 +80,10 @@ class Env {
   get EXPO_NO_CACHE() {
     return boolish('EXPO_NO_CACHE', false);
   }
+  /** Disable validating Metro's transform cache against inlined ambient values (e.g. `EXPO_PUBLIC_*` env vars). */
+  get EXPO_NO_CACHE_VARY() {
+    return boolish('EXPO_NO_CACHE_VARY', false);
+  }
   /** Disable the app select redirect page. */
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);

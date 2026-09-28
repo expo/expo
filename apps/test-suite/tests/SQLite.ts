@@ -952,6 +952,113 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
     }, 10000);
   });
 
+  nativeDescribe('Interrupt', () => {
+    const longQuery = `WITH RECURSIVE numbers(n) AS (
+      VALUES(1) UNION ALL SELECT n + 1 FROM numbers WHERE n < 10000000
+    ) SELECT sum(n) FROM numbers`;
+
+    it('interrupts a running query and leaves the connection usable', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        // Repeat until the operation settles so the test also covers a query queued by the bridge.
+        const timer = setInterval(() => db.interruptSync(), 10);
+        let error = null;
+        try {
+          await db.execAsync(longQuery);
+        } catch (e) {
+          error = e;
+        } finally {
+          clearInterval(timer);
+        }
+        expect(String(error)).toMatch(/interrupted/);
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
+    it('rolls back the entire transaction when a write is interrupted', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        await db.execAsync(
+          'CREATE TABLE interrupt_test (value); BEGIN; INSERT INTO interrupt_test VALUES (1)'
+        );
+        const timer = setInterval(() => db.interruptSync(), 10);
+        let error = null;
+        try {
+          await db.execAsync('INSERT INTO interrupt_test ' + longQuery);
+        } catch (e) {
+          error = e;
+        } finally {
+          clearInterval(timer);
+        }
+        expect(String(error)).toMatch(/interrupted/);
+        expect(await db.isInTransactionAsync()).toBe(false);
+        expect(await db.getFirstAsync('SELECT count(*) AS count FROM interrupt_test')).toEqual({
+          count: 0,
+        });
+        await db.execAsync('INSERT INTO interrupt_test VALUES (42)');
+        expect(await db.getFirstAsync('SELECT * FROM interrupt_test')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
+    for (const exclusive of [false, true]) {
+      it(`preserves interruption errors in ${exclusive ? 'exclusive' : 'regular'} transaction helpers`, async () => {
+        // The exclusive helper opens another connection, so both must use the same file.
+        const databaseName = `interrupt-transaction-${exclusive}.db`;
+        const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
+        try {
+          await db.execAsync(
+            'DROP TABLE IF EXISTS interrupt_test; CREATE TABLE interrupt_test (value)'
+          );
+          const write = async (txn: SQLite.SQLiteDatabase) => {
+            await txn.execAsync('INSERT INTO interrupt_test VALUES (1)');
+            const timer = setInterval(() => txn.interruptSync(), 10);
+            try {
+              await txn.execAsync('INSERT INTO interrupt_test ' + longQuery);
+            } finally {
+              // Stop interrupting before the helper rolls back or closes its connection.
+              clearInterval(timer);
+            }
+          };
+          let error = null;
+          try {
+            if (exclusive) {
+              await db.withExclusiveTransactionAsync(write);
+            } else {
+              await db.withTransactionAsync(() => write(db));
+            }
+          } catch (e) {
+            error = e;
+          }
+          expect(String(error)).toMatch(/interrupted/);
+          expect(await db.isInTransactionAsync()).toBe(false);
+          expect(await db.getFirstAsync('SELECT count(*) AS count FROM interrupt_test')).toEqual({
+            count: 0,
+          });
+          await db.execAsync('INSERT INTO interrupt_test VALUES (42)');
+          expect(await db.getFirstAsync('SELECT * FROM interrupt_test')).toEqual({ value: 42 });
+        } finally {
+          await db.closeAsync();
+          await SQLite.deleteDatabaseAsync(databaseName);
+        }
+      });
+    }
+
+    it('does nothing while idle and rejects a closed connection', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        db.interruptSync();
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+      expect(() => db.interruptSync()).toThrowError(/Access to closed resource/);
+    });
+  });
+
   describe('Error handling', () => {
     it('finalizeUnusedStatementsBeforeClosing should close all unclosed statements', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');

@@ -148,7 +148,12 @@ class DeviceModule : Module() {
           0
         ) == 1
       } else {
-        context.applicationContext.packageManager.canRequestPackageInstalls()
+        try {
+          context.applicationContext.packageManager.canRequestPackageInstalls()
+        } catch (e: SecurityException) {
+          // throws when REQUEST_INSTALL_PACKAGES is not declared
+          throw MissingRequestInstallPackagesPermissionException(e)
+        }
       }
     }
 

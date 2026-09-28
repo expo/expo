@@ -1993,6 +1993,14 @@ extension ViewModifierRegistry {
       return try NavigationTitleModifier(from: params, appContext: appContext)
     }
 
+    register("navigationSplitViewStyle") { params, appContext, _ in
+      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewColumnWidth") { params, appContext, _ in
+      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
+    }
+
     register("accessibilityLabel") { params, appContext, _ in
       return try AccessibilityLabelModifier(from: params, appContext: appContext)
     }
@@ -2309,6 +2317,10 @@ extension ViewModifierRegistry {
       return try ScrollIndicatorsModifier(from: params, appContext: appContext)
     }
 
+    register("scrollEdgeEffectStyle") { params, appContext, _ in
+      return try ScrollEdgeEffectStyleModifier(from: params, appContext: appContext)
+    }
+
     register("tabViewStyle") { params, appContext, _ in
       return try TabViewStyleModifier(from: params, appContext: appContext)
     }
@@ -2339,6 +2351,10 @@ extension ViewModifierRegistry {
 
     register("presentationDragIndicator") { params, appContext, _ in
       return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
+    }
+
+    register("presentationCornerRadius") { params, appContext, _ in
+      return try PresentationCornerRadiusModifier(from: params, appContext: appContext)
     }
 
     register("presentationBackgroundInteraction") { params, appContext, _ in

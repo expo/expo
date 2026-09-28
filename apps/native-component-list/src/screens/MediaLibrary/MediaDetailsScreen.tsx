@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
-import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
+import { ScrollView, StyleSheet, Text, View, Alert, Platform } from 'react-native';
 
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
@@ -35,7 +35,12 @@ export default class MediaDetailsScreen extends React.Component<Props> {
   }
 
   getAssetDetails = () => {
-    const { assetId } = this.props.route.params;
+    const assetId = this.props.route?.params?.assetId;
+    // Reachable by deep link with no asset chosen. Without this guard both calls
+    // below reject with "Asset ID must be a string!" and the screen renders empty.
+    if (!assetId) {
+      return;
+    }
     MediaLibrary.getAssetInfoAsync(assetId, { shouldDownloadFromNetwork: false }).then(
       (details) => {
         this.setState({ detailsWithoutDownloadingFromNetwork: details });
@@ -121,7 +126,15 @@ export default class MediaDetailsScreen extends React.Component<Props> {
 
   render() {
     const { details, detailsWithoutDownloadingFromNetwork } = this.state;
-    const { albumId, albumTitle } = this.props.route.params;
+    const { albumId, albumTitle, assetId } = this.props.route?.params ?? {};
+
+    if (!assetId) {
+      return (
+        <ScrollView style={styles.container}>
+          <Text>Access this screen from the "MediaLibrary" screen.</Text>
+        </ScrollView>
+      );
+    }
     // Show the local asset while the network-downloading fetch is still in flight.
     const previewDetails = details ?? detailsWithoutDownloadingFromNetwork;
 

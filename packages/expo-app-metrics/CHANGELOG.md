@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [iOS] [Android] Do not record an `updateDownloadTime` metric when `fetchUpdateAsync` completes with an update that was already downloaded and ready on device. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@douglowder](https://github.com/douglowder)) ([#50471](https://github.com/expo/expo/pull/50471) by [@douglowder](https://github.com/douglowder))
+
+## 58.0.5 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+### 🐛 Bug fixes
+
+- [iOS] [Android] Stop attributing native crash stack frames to unrelated functions, and keep enough detail in the report to symbolicate them off-device. ([#49921](https://github.com/expo/expo/pull/49921) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.2 — 2026-09-15
 
 ### 💡 Others

@@ -37,28 +37,24 @@ final class StatementLockTests {
   /// call, which is what the module takes. The row read belongs to whichever caller bound the
   /// statement last, so callers assert only that a value the table holds comes back.
   private func runAndReadFirstRow(of statement: NativeStatement, id: Int32) -> String? {
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
+    return statement.lock.withLock { _ -> String? in
+      exsqlite3_reset(statement.pointer)
+      exsqlite3_clear_bindings(statement.pointer)
+      exsqlite3_bind_int(statement.pointer, 1, id)
+      guard exsqlite3_step(statement.pointer) == SQLITE_ROW,
+        let text = exsqlite3_column_text(statement.pointer, 0)
+      else {
+        return nil
+      }
+      return String(cString: text)
     }
-    exsqlite3_reset(statement.pointer)
-    exsqlite3_clear_bindings(statement.pointer)
-    exsqlite3_bind_int(statement.pointer, 1, id)
-    guard exsqlite3_step(statement.pointer) == SQLITE_ROW,
-      let text = exsqlite3_column_text(statement.pointer, 0)
-    else {
-      return nil
-    }
-    return String(cString: text)
   }
 
   /// Drains the cursor in its own critical section, the way `getAll` does.
   private func drain(_ statement: NativeStatement) {
-    statement.lock.wait()
-    defer {
-      statement.lock.signal()
+    statement.lock.withLock { _ in
+      while exsqlite3_step(statement.pointer) == SQLITE_ROW {}
     }
-    while exsqlite3_step(statement.pointer) == SQLITE_ROW {}
   }
 
   @Test

@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a data race on reload that could crash the app or stop the delivery of `onKeyRecreated` events and messages. ([#49560](https://github.com/expo/expo/pull/49560) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.5 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
 ## 58.0.2 — 2026-09-15
 
 _This version does not introduce any user-facing changes._

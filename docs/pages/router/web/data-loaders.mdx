@@ -17,31 +17,6 @@ Data loaders enable server-side data fetching for your routes. By exporting a `l
 
 <Step label="1">
 
-Data loaders are enabled by default. If you use [server rendering](/router/web/server-rendering), enable it in your project's [app config](/versions/latest/config/app/):
-
-```json app.json
-{
-  "expo": {
-    /* @hide ... */
-    /* @end */
-    "plugins": [
-      [
-        "expo-router",
-        {
-          /* @info Required for server rendering */
-          "unstable_useServerRendering": true
-          /* @end */
-        }
-      ]
-    ]
-  }
-}
-```
-
-</Step>
-
-<Step label="2">
-
 Configure your web output mode. Data loaders work with both [static rendering](/router/web/static-rendering) (`web.output: 'static'`) and [server rendering](/router/web/server-rendering) (`web.output: 'server'`):
 
 ```json app.json
@@ -62,7 +37,7 @@ Configure your web output mode. Data loaders work with both [static rendering](/
 
 </Step>
 
-<Step label="3">
+<Step label="2">
 
 Start the development server:
 

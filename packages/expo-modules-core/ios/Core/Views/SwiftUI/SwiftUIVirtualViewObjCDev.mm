@@ -16,6 +16,9 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTComponentViewProtocol.h>
+#if TARGET_OS_OSX
+#import <React/UIView+React.h>
+#endif
 
 namespace react = facebook::react;
 
@@ -127,6 +130,13 @@ static std::unordered_map<std::string, expo::ExpoViewComponentDescriptor<>::Flav
   }
 }
 #endif // TARGET_OS_IOS || TARGET_OS_TV
+
+#if TARGET_OS_OSX
+- (NSInteger)tag
+{
+  return self.reactTag.integerValue;
+}
+#endif // TARGET_OS_OSX
 
 #include "SwiftUIVirtualViewSharedImpl+Private.h"
 

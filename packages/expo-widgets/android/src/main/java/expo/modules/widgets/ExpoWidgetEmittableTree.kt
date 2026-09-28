@@ -22,6 +22,7 @@ import expo.modules.kotlin.views.createComposeProps
 import expo.modules.ui.BackgroundParams
 import expo.modules.ui.CheckboxProps
 import expo.modules.ui.CircularProgressIndicatorProps
+import expo.modules.ui.CornerRadiusParams
 import expo.modules.ui.FillMaxHeightParams
 import expo.modules.ui.FillMaxSizeParams
 import expo.modules.ui.FillMaxWidthParams
@@ -66,6 +67,7 @@ import androidx.glance.TintColorFilterParams
 import androidx.glance.GlanceModifier
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckboxDefaults
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.EmittableCheckBox
 import androidx.glance.appwidget.EmittableCircularProgressIndicator
 import androidx.glance.appwidget.EmittableLinearProgressIndicator
@@ -416,6 +418,7 @@ private fun ModifierType.toPeekModifier(converterContext: ConverterContext): Gla
     "fillMaxHeight" -> asRecord<FillMaxHeightParams>(converterContext)?.let { GlanceModifier.fillMaxHeight() }
     "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toGlanceColorProvider()
       ?.let { GlanceModifier.background(it) }
+    "cornerRadius" -> asRecord<CornerRadiusParams>(converterContext)?.let { GlanceModifier.cornerRadius(it.radius.dp) }
     // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
     else -> null
   } ?: GlanceModifier

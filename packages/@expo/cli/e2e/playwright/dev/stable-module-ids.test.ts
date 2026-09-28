@@ -49,7 +49,7 @@ test.describe(inputDir, () => {
     // Ensure the JS code has string module IDs
     const jsFile = findProjectFiles(path.join(projectRoot, inputDir, '_expo/static/js'))
       .map((file) => path.join(projectRoot, inputDir, '_expo/static/js', file))
-      .find((file) => file.endsWith('.js'));
+      .find((file) => /^entry-.*\.js$/.test(path.basename(file)));
     expect(fs.readFileSync(jsFile!, 'utf8')).toMatch(/__r\("packages\/expo-router\/entry.js"\);/);
 
     // Listen for console logs and errors

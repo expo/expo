@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.0-preview.2",
+  "version": "58.0.0-preview.7",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -23,6 +23,8 @@
   },
   "files": [
     "android",
+    "!android/.gitignore",
+    "!android/build/**",
     "bin",
     "build",
     "internal",
@@ -31,6 +33,7 @@
     "src",
     "AppEntry.js",
     "Expo.podspec",
+    "Package.swift",
     "bundledNativeModules.json",
     "expo-module.config.json",
     "metro-config.js",
@@ -201,7 +204,8 @@
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest",
+    "test": "jest && jest --config scripts/spm/jest.config.js",
+    "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
@@ -236,12 +240,12 @@
     "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo-updates": "workspace:*",
     "npm-run-all2": "^8.0.4",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native": "0.88.0-rc.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.88.0-rc.2",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },

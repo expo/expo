@@ -6,7 +6,17 @@ import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import { UpdatesLogEntry } from 'expo-updates';
 import React from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StatusBar as RNStatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 const ExpoUpdatesE2ETestModule = requireNativeModule('ExpoUpdatesE2ETest');
 
@@ -264,7 +274,7 @@ export default function App() {
     );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TestValue testID="numActive" value={`${numActive}`} />
       <TestValue
         testID="didCheckAndDownloadHappenInParallel"
@@ -371,15 +381,20 @@ export default function App() {
       </View>
 
       <StatusBar style="auto" />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 100,
-    marginBottom: 100,
+    // `SafeAreaView` keeps the content clear of the notch and home indicator on iOS. On Android it
+    // renders a plain `View`, so the status bar height is applied here instead. The fixed 100
+    // margins this replaces left too little room for the rows below, and the overflow of the
+    // centered content reached under the status bar, where Maestro could read a value but could
+    // not reliably tap it.
+    paddingTop: Platform.OS === 'android' ? (RNStatusBar.currentHeight ?? 0) : 0,
+    paddingBottom: 24,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
@@ -399,14 +414,14 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 10,
+    fontSize: 8,
   },
   labelText: {
-    fontSize: 10,
+    fontSize: 8,
   },
   logEntriesContainer: {
-    margin: 10,
-    height: 20,
+    margin: 8,
+    height: 16,
     paddingVertical: 5,
     paddingHorizontal: 10,
     width: '90%',

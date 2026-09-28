@@ -10,6 +10,7 @@
 #include <react/renderer/core/LayoutableShadowNode.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
@@ -104,7 +105,7 @@ public:
       return ConcreteViewShadowNode::measureContent(layoutContext, layoutConstraints);
     }
 
-    auto const *content = hostedContent();
+    auto const content = hostedContent();
 
     if (content == nullptr) {
       return {};
@@ -122,7 +123,7 @@ public:
       return;
     }
 
-    auto const *content = hostedContent();
+    auto const content = hostedContent();
 
     if (content == nullptr) {
       return;
@@ -144,12 +145,15 @@ public:
   }
 
 private:
-  const react::LayoutableShadowNode *hostedContent() const {
+  // Owning on purpose: `layout()` calls `replaceChild()`, which overwrites this node's only strong
+  // reference to the content — `RNHostView` is a leaf Yoga node, so Yoga keeps no second one, and
+  // `YogaLayoutableShadowNode::replaceChild()` reads `oldChild` right after.
+  std::shared_ptr<const react::LayoutableShadowNode> hostedContent() const {
     auto const &children = this->getChildren();
 
     return children.empty()
       ? nullptr
-      : dynamic_cast<const react::LayoutableShadowNode *>(children.front().get());
+      : std::dynamic_pointer_cast<const react::LayoutableShadowNode>(children.front());
   }
 
   react::LayoutDirection resolvedLayoutDirection() const {

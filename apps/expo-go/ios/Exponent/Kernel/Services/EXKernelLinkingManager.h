@@ -55,4 +55,11 @@ continueUserActivity:(NSUserActivity *)userActivity
 
 + (NSURL *)initialUrlFromLaunchOptions: (NSDictionary *)launchOptions;
 
+/**
+ * Consumes the reserved `__expo_*` launch params of a URL the user gave us and returns the project URL to open:
+ * the `__expo_url` target normalized like any other project URL, or the URL without its reserved params.
+ * Call it once per URL. Params inside a `__expo_url` target belong to that project and must not be applied.
+ */
++ (nonnull NSURL *)resolveLaunchUrl:(nonnull NSURL *)url NS_SWIFT_NAME(resolveLaunchUrl(_:));
+
 @end

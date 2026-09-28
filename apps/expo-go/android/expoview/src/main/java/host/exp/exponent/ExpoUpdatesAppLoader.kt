@@ -30,6 +30,7 @@ import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConfig
+import host.exp.exponent.services.SessionRepository
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.HermesBundleUtils
 import kotlinx.coroutines.CoroutineScope
@@ -68,6 +69,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 ) {
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
+
+  @Inject
+  lateinit var sessionRepository: SessionRepository
 
   @Inject
   lateinit var database: UpdatesDatabase
@@ -333,17 +337,19 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     shouldShowAppLoaderStatus = !manifest.isDevelopmentSilentLaunch()
   }
 
+  private fun requestHeaders(manifestUrl: Uri): Map<String, String?> =
+    requestHeaders(manifestUrl, ExpoViewKernel.instance.versionName)
+
   // XDL expects the full "exponent-" header names
-  private fun requestHeaders(manifestUrl: Uri): Map<String, String?> {
+  internal fun requestHeaders(manifestUrl: Uri, versionName: String?): Map<String, String?> {
     val headers = mutableMapOf<String, String>()
     headers["Expo-Updates-Environment"] = clientEnvironment
     headers["Expo-Client-Environment"] = clientEnvironment
     headers.putAll(getForwardedHeaders(manifestUrl))
-    val versionName = ExpoViewKernel.instance.versionName
     if (versionName != null) {
       headers["Exponent-Version"] = versionName
     }
-    val sessionSecret = exponentSharedPreferences.sessionSecret
+    val sessionSecret = sessionRepository.getSessionSecret()
     if (sessionSecret != null) {
       headers["Expo-Session"] = sessionSecret
     }

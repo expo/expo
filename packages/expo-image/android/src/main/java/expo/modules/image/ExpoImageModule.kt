@@ -15,11 +15,12 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.gif.GifDrawable as GlideGifDrawable
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.signature.EmptySignature
 import com.github.penfeizhou.animation.apng.APNGDrawable
-import com.github.penfeizhou.animation.gif.GifDrawable
+import com.github.penfeizhou.animation.gif.GifDrawable as APNGGifDrawable
 import com.github.penfeizhou.animation.webp.WebPDrawable
 import expo.modules.image.blurhash.BlurhashEncoder
 import expo.modules.image.enums.ContentFit
@@ -75,7 +76,7 @@ class ExpoImageModule : Module() {
       val context = appContext.reactContext ?: return@AsyncFunction false
 
       var imagesLoaded = 0
-      var failed = false
+      var settled = false
 
       val headers = headersMap?.let {
         LazyHeaders.Builder().apply {
@@ -102,8 +103,8 @@ class ExpoImageModule : Module() {
               target: Target<Drawable>,
               isFirstResource: Boolean
             ): Boolean {
-              if (!failed) {
-                failed = true
+              if (!settled) {
+                settled = true
                 promise.resolve(false)
               }
               return true
@@ -118,7 +119,8 @@ class ExpoImageModule : Module() {
             ): Boolean {
               imagesLoaded++
 
-              if (imagesLoaded == urls.size) {
+              if (!settled && imagesLoaded == urls.size) {
+                settled = true
                 promise.resolve(true)
               }
               return true
@@ -237,7 +239,7 @@ class ExpoImageModule : Module() {
         (image.ref.toBitmapOrNull()?.density ?: 1) / (screenDensity * 160.0f)
       }
       Property("isAnimated") { image: Image ->
-        if (image.ref is GifDrawable) {
+        if (image.ref is APNGGifDrawable || image.ref is GlideGifDrawable) {
           return@Property true
         }
         if (image.ref is APNGDrawable) {

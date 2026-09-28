@@ -565,7 +565,9 @@ class HomeAppViewModel(
     val context = getApplication<Application>()
 
     val isStoreReviewAvailable = withContext(Dispatchers.IO) {
-      if (!isDevice) return@withContext false
+      if (!isDevice) {
+        return@withContext false
+      }
       try {
         ReviewManagerFactory.create(context)
         true

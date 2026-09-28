@@ -1,5 +1,5 @@
 import { validate } from '@expo/schema-utils';
-import { ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
+import { type ConfigPlugin, withInfoPlist, withPodfile } from 'expo/config-plugins';
 import { styleText } from 'node:util';
 
 const schema = require('../options.json');
@@ -75,7 +75,7 @@ export type Props = {
   platformRoutes?: boolean;
   /** Enable or disable automatically generated routes. Defaults to `true`. */
   sitemap?: boolean;
-  /** Should Async Routes be enabled. `production` is currently web-only and will be disabled on native. */
+  /** Enable async routes. Stable and enabled by default on web in SDK 58 and later. Experimental and disabled by default on native. */
   asyncRoutes?:
     | AsyncRouteOption
     | {
@@ -94,6 +94,8 @@ export type Props = {
   headers?: Record<string, string | string[]>;
   /** A list of headers that are set on a specific path's response from the server. */
   pageHeaders?: PageHeadersConfig[];
+  /** Enable API routes with static or server output. Defaults to `true` for server output and `false` for static output. */
+  apiRoutes?: boolean;
   /**
    * (Deprecated) Enable experimental server middleware support. Middleware no longer requires an opt-in as of SDK 58.
    * @deprecated
@@ -104,7 +106,10 @@ export type Props = {
    * @deprecated
    */
   unstable_useServerDataLoaders?: boolean;
-  /** Enable experimental server-side rendering. When enabled with `web.output: 'server'`, HTML is rendered at request time instead of being pre-rendered at build time. */
+  /**
+   * Server rendering no longer requires an opt-in as of SDK 58. This option has no effect.
+   * @deprecated
+   */
   unstable_useServerRendering?: boolean;
   /** Disable synchronous layout updates for native screens. */
   disableSynchronousScreensUpdates?: boolean;
@@ -127,22 +132,56 @@ const withRouter: ConfigPlugin<Props | void> = (config, _props) => {
     );
   }
 
+  if (Object.hasOwn(props, 'unstable_useServerRendering')) {
+    warnOnce(
+      '`unstable_useServerRendering` in the `expo-router` config plugin is deprecated as of SDK 58 and has no effect. Remove it from your app config.'
+    );
+  }
+
   validate(schema, props);
+
+  if (props.apiRoutes === true && !['static', 'server'].includes(config.web?.output ?? '')) {
+    throw new Error(
+      'The `apiRoutes` option requires `web.output` to be set to `static` or `server`.'
+    );
+  }
 
   withExpoHeadIos(config);
   withGammaScreens(config);
+
+  const router = normalizeAsyncRoutesProp({
+    ...config.extra?.router,
+    ...props,
+  });
 
   return {
     ...config,
     extra: {
       ...config.extra,
-      router: {
-        ...config.extra?.router,
-        ...props,
-      },
+      router,
     },
   };
 };
+
+function normalizeAsyncRoutesProp(props: Props) {
+  const asyncRoutes = props.asyncRoutes;
+
+  if (asyncRoutes == null) {
+    return {
+      ...props,
+      asyncRoutes: { web: true },
+    };
+  }
+
+  if (typeof asyncRoutes === 'object' && asyncRoutes.web == null && asyncRoutes.default == null) {
+    return {
+      ...props,
+      asyncRoutes: { ...asyncRoutes, web: true },
+    };
+  }
+
+  return props;
+}
 
 const warnMap: Record<string, boolean> = {};
 function warnOnce(message: string) {

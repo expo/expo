@@ -91,6 +91,7 @@ export async function microBundle({
   resolve?: (from: string, id: string) => string;
   options?: {
     dev?: boolean;
+    lazy?: boolean;
     platform?: string;
     baseUrl?: string;
     output?: 'static';
@@ -196,6 +197,11 @@ export async function microBundle({
 
         try {
           const resolved = resolve(id, dep.data.name);
+          if (options.lazy && dep.data.data.asyncType != null) {
+            // @ts-expect-error
+            dep.absolutePath = path.join(projectRoot, resolved);
+            continue;
+          }
           await recurseWith([resolved], module, (fp) => {
             // @ts-expect-error
             dep.absolutePath = fp;

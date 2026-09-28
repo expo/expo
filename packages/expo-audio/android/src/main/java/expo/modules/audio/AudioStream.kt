@@ -32,6 +32,11 @@ private data class ResolvedAudioConfig(
   val readSize: Int
 )
 
+internal fun trimToRecordedBytes(byteBuffer: ByteBuffer, bytesRead: Int): ByteBuffer {
+  byteBuffer.limit(bytesRead)
+  return byteBuffer.slice()
+}
+
 class AudioStream(
   appContext: AppContext,
   private val options: AudioStreamOptions
@@ -229,11 +234,11 @@ class AudioStream(
     val byteBuffer = ByteBuffer.allocateDirect(readSizeBytes).order(ByteOrder.nativeOrder())
     val bytesRead = recorder.read(byteBuffer, readSizeBytes, AudioRecord.READ_BLOCKING)
     if (bytesRead > 0) {
-      byteBuffer.limit(bytesRead)
+      val recorded = trimToRecordedBytes(byteBuffer, bytesRead)
       // Copy PCM bytes before acquiring the lock so the lock covers only the file write,
       // not the allocation+copy. Write to file before constructing NativeArrayBuffer.
       val pcmBytes = ByteArray(bytesRead).also { buf ->
-        byteBuffer.duplicate().apply {
+        recorded.duplicate().apply {
           position(0)
           get(buf)
         }
@@ -241,7 +246,7 @@ class AudioStream(
       synchronized(fileWriterLock) {
         fileWriter?.append(pcmBytes)
       }
-      emitBufferEvent(NativeArrayBuffer(byteBuffer), channels, sampleRate)
+      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate)
     }
   }
 

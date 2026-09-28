@@ -217,6 +217,11 @@ internal data class BlurParams(
 ) : Record
 
 @OptimizedRecord
+data class CornerRadiusParams(
+  @Field val radius: Int = 0
+) : Record
+
+@OptimizedRecord
 internal data class RotateParams(
   @Field val degrees: Float = 0f
 ) : Record
@@ -570,6 +575,12 @@ object ModifierRegistry {
     register("blur") { map, _, appContext, _ ->
       val params = recordFromMap<BlurParams>(map, appContext)
       Modifier.blur(params.radius.dp)
+    }
+
+    // Glance-only modifier: Jetpack Compose has no equivalent, so it is a no-op here.
+    // `expo-widgets` applies it to Android widgets.
+    register("cornerRadius") { _, _, _, _ ->
+      Modifier
     }
 
     // Transform modifiers

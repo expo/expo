@@ -1,4 +1,4 @@
-import { Column, Host, RNHostView } from '@expo/ui';
+import { Button, Column, Host, RNHostView } from '@expo/ui';
 import React from 'react';
 import { Text, View, type LayoutChangeEvent } from 'react-native';
 
@@ -247,6 +247,24 @@ function DivergenceProbe({ onMeasured }: { onMeasured: (widths: number[]) => voi
   );
 }
 
+// Regression test for https://github.com/expo/expo/issues/50451
+function NestedHostProbe({ onMeasured }: { onMeasured: (size: Axes) => void }) {
+  return (
+    <View style={{ width: PARENT_WIDTH }}>
+      <Host matchContents>
+        <RNHostView matchContents onLayout={({ nativeEvent }) => onMeasured(nativeEvent.layout)}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ width: BOX_WIDTH, height: BOX_HEIGHT }} />
+            <Host matchContents={{ horizontal: true }} style={{ height: BOX_HEIGHT }}>
+              <Button>{TEXT}</Button>
+            </Host>
+          </View>
+        </RNHostView>
+      </Host>
+    </View>
+  );
+}
+
 export async function test(
   { it, describe, expect, afterEach }: JasmineInterface,
   { setPortalChild, cleanupPortal }: TestPortal
@@ -360,6 +378,19 @@ export async function test(
       expect(Math.abs(widths[widths.length - 1] - widths[0])).toBeLessThan(TOLERANCE);
       // The width the parent offers never reaches the content.
       expect(Math.abs(Math.max(...widths) - BOX_WIDTH)).toBeLessThan(TOLERANCE);
+    });
+
+    // Regression test for https://github.com/expo/expo/issues/50451
+    it('lays the hosted content out twice without releasing it', async () => {
+      const size = await mountAndWaitForWithTimeout<Axes>(
+        <NestedHostProbe onMeasured={() => {}} />,
+        'onMeasured',
+        setPortalChild,
+        TIMEOUT_MS
+      );
+
+      expect(size.width).toBeGreaterThan(BOX_WIDTH);
+      expect(size.height).toBeGreaterThan(0);
     });
   });
 }

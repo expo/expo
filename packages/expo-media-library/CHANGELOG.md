@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fix `Album.create` naming copied assets (with `moveAssets` set to `false`) after the full `file://` path of the original, e.g. `file____storage_emulated_0_DCIM_Camera_IMG_1234.jpg`, instead of its file name. ([#50621](https://github.com/expo/expo/pull/50621) by [@devonik](https://github.com/devonik))
+
+## 58.0.1 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Request a single high-quality delivery for Live Photos. Under the default `.opportunistic` delivery mode `requestLivePhoto` invokes its result handler more than once, and the first, degraded pass could resolve `getAssetInfoAsync` without `pairedVideoAsset`. ([#50295](https://github.com/expo/expo/pull/50295) by [@henriquegpb](https://github.com/henriquegpb))
+
 ## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes

@@ -76,7 +76,7 @@ const VISUAL_INTELLIGENCE_TEMPLATE_FILES = [
  * Indented for the body of `OnCreate`, because it is both rendered into a new setup module and
  * offered to the user for pasting into one this run kept.
  */
-const VISUAL_INTELLIGENCE_REGISTRATION = `      if #available(iOS 18.0, *) {
+const VISUAL_INTELLIGENCE_REGISTRATION = `      if #available(iOS 18.0, macOS 15.0, *) {
         AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
       }`;
 
@@ -726,7 +726,7 @@ async function findOtherAppIntentsSetupAsync(
         entry.name === APP_INTENTS_SETUP_FILE_NAME &&
         path.resolve(entryPath) !== requestedSetupPath
       ) {
-        return path.relative(projectRoot, entryPath);
+        return path.relative(projectRoot, entryPath).split(path.sep).join('/');
       }
     }
   }
@@ -760,7 +760,7 @@ async function assertDirectoryIsNotAlreadyConfiguredAsync(
           `plugins list is computed in JavaScript in ` +
           `${path.relative(projectRoot, config.dynamicConfigPath)}, but the watched inline-module ` +
           `tree already contains '${existingSetup}'. This run would also create ` +
-          `'${path.join(directory, APP_INTENTS_SETUP_FILE_NAME)}', and autolinking would compile ` +
+          `'${directory}/${APP_INTENTS_SETUP_FILE_NAME}', and autolinking would compile ` +
           `both files into the app target, making the iOS build fail with ` +
           `\`error: filename "${APP_INTENTS_SETUP_FILE_NAME}" used twice\`. Point the existing ` +
           `expo-app-intents plugin entry at '${directory}' and move the Swift files there, or ` +

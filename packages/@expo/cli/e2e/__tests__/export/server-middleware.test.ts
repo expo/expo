@@ -129,10 +129,12 @@ describe('exports middleware', () => {
       expect(files).not.toContain('+html.html');
       expect(files).not.toContain('_layout.html');
 
-      // In server mode, HTML files are in the server directory
-      expect(files).toContain('server/_sitemap.html');
-      expect(files).toContain('server/+not-found.html');
-      expect(files).toContain('server/index.html');
+      expect(files).toContain('server/_expo/server/render.js');
+
+      // Server output renders HTML at request time
+      expect(files).not.toContain('server/_sitemap.html');
+      expect(files).not.toContain('server/+not-found.html');
+      expect(files).not.toContain('server/index.html');
 
       // Middleware should be bundled and referenced in routes.json
       expect(files).toContain('server/_expo/functions/+middleware.js');

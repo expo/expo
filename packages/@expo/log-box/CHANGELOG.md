@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 58.0.5 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+### 💡 Others
+
+- [Internal] Drop `expo-modules-core` dependency ([#50228](https://github.com/expo/expo/pull/50228) by [@kitten](https://github.com/kitten))
+
 ## 58.0.2 — 2026-09-15
 
 _This version does not introduce any user-facing changes._
