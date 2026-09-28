@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `searchable` and `searchToolbarBehavior` SwiftUI modifiers. ([#50369](https://github.com/expo/expo/pull/50369) by [@expo-bot](https://github.com/expo-bot))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

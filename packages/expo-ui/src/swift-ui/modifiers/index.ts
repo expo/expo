@@ -1948,6 +1948,7 @@ export * from './presentationModifiers';
 export * from './environment';
 export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
+export * from './searchable';
 export * from './symbolEffect';
 export * from './scrollObservation';
 export * from './widgets';
