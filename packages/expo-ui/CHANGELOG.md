@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Export the `FrameAlignment` type for the `alignment` parameter of `frame()`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@amandeepmittal](https://github.com/amandeepmittal))
+- [iOS] Export the `FrameAlignment` type for the `alignment` parameter of `frame()`. ([#50702](https://github.com/expo/expo/pull/50702) by [@amandeepmittal](https://github.com/amandeepmittal))
 
 ### 🐛 Bug fixes
 
