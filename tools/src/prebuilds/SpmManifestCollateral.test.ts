@@ -164,18 +164,13 @@ function fixtureRepo({
   return { root, baseCommit };
 }
 
-function runGate(
-  root: string,
-  base: string,
-  args: string[] = [],
-  env: NodeJS.ProcessEnv = {}
-): SpawnSyncReturns<string> {
+function runGate(root: string, base: string, ...args: string[]): SpawnSyncReturns<string> {
   return spawnSync(process.execPath, [gate, '--repo', root, '--base', base, ...args], {
     cwd: root,
     encoding: 'utf8',
     maxBuffer: 32 * 1024 * 1024,
     // These tests may themselves run in a GitHub Actions step; keep fixtures out of its summary.
-    env: { ...process.env, GITHUB_STEP_SUMMARY: undefined, ...env },
+    env: { ...process.env, GITHUB_STEP_SUMMARY: undefined },
   });
 }
 
@@ -307,7 +302,11 @@ describe('check-spm-manifest-collateral', () => {
     fixtureRoots.push(summaryDirectory);
     const summary = path.join(summaryDirectory, 'summary.md');
     fs.writeFileSync(summary, '# Earlier step\n');
-    const result = runGate(root, baseCommit, [], { GITHUB_STEP_SUMMARY: summary });
+    const result = spawnSync(process.execPath, [gate, '--repo', root, '--base', baseCommit], {
+      cwd: root,
+      encoding: 'utf8',
+      env: { ...process.env, GITHUB_STEP_SUMMARY: summary },
+    });
 
     assert.equal(result.status, 0, output(result));
     const content = fs.readFileSync(summary, 'utf8');
@@ -409,7 +408,7 @@ describe('check-spm-manifest-collateral', () => {
 
   it('honors an explicit --exclude', () => {
     const { root, baseCommit } = fixtureRepo();
-    const result = runGate(root, baseCommit, ['--exclude', 'fixture-leaf/FixtureLeaf']);
+    const result = runGate(root, baseCommit, '--exclude', 'fixture-leaf/FixtureLeaf');
 
     assert.equal(result.status, 0, output(result));
     assert.match(result.stdout, /1 explicit exclusions/);
@@ -571,7 +570,7 @@ describe('collateral gate diagnostics and harness', () => {
 
   it('preserves stack traces for unexpected gate errors', () => {
     const { root, baseCommit } = fixtureRepo();
-    const result = runGate(root, baseCommit, ['--exclude', 'missing/Product']);
+    const result = runGate(root, baseCommit, '--exclude', 'missing/Product');
 
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Exclusion does not name a real product: missing\/Product/);
