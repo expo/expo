@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix a crash on launch in production when the app has no `scheme`.
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-25
