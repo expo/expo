@@ -170,7 +170,7 @@ import UIKit
     guard let message = sessionExpiredMessage() else {
       return nil
     }
-    AuthenticationService.clearSession()
+    AuthenticationService.deactivateExpiredSession()
     return message
   }
 
