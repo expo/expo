@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 
 import * as Log from '../../log';
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
+import { resolveInstalledVersion } from '../../utils/resolveInstalledVersion';
 import {
   hashForDependencyMap,
   updatePkgDependencies,
@@ -11,6 +12,7 @@ import {
 } from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
+jest.mock('../../utils/resolveInstalledVersion');
 jest.mock('../../log');
 
 describe(hashForDependencyMap, () => {
@@ -24,6 +26,9 @@ describe(hashForDependencyMap, () => {
 describe(updatePackageJSONAsync, () => {
   beforeAll(() => {
     (isModuleSymlinked as any).mockImplementation(() => false);
+    // Simulate "module not installed" so the version check is skipped. These tests
+    // don't assert on Log.warn — they exercise dependency merging and script updates.
+    (resolveInstalledVersion as any).mockImplementation(() => null);
   });
 
   it(`has no changes`, async () => {
@@ -147,6 +152,13 @@ describe(updatePackageJSONAsync, () => {
 describe(updatePkgDependencies, () => {
   beforeAll(() => {
     (isModuleSymlinked as any).mockImplementation(() => false);
+    // Return a non-null value so the version-check path runs. The existing tests
+    // use non-semver sentinel strings (e.g. 'version-from-project'), so
+    // `semver.satisfies` throws and the safe wrapper returns false — triggering the
+    // warning exactly as the previous `semver.intersects`-based logic did.
+    (resolveInstalledVersion as any).mockImplementation(
+      (_projectRoot: string, packageName: string) => `installed-${packageName}`
+    );
   });
   const requiredPackages = {
     react: 'version-from-template-required-1',
@@ -276,6 +288,49 @@ describe(updatePkgDependencies, () => {
         `instead of recommended ${chalk.bold('react-native@version-from-template-required-1')}`
       )
     );
+  });
+});
+
+describe(`${updatePkgDependencies.name} installed-version warning`, () => {
+  beforeEach(() => {
+    (isModuleSymlinked as any).mockImplementation(() => false);
+  });
+
+  function runWithInstalledVersion(installedVersion: string | null, recommendedRange: string) {
+    (resolveInstalledVersion as any).mockImplementation(() => installedVersion);
+    updatePkgDependencies('fake path', {
+      pkg: {
+        // Non-semver spec — the kind that misfired against the old `semver.intersects` check.
+        dependencies: { 'react-native': 'catalog:mobile' },
+        devDependencies: {},
+      },
+      templatePkg: {
+        dependencies: { 'react-native': recommendedRange },
+        devDependencies: {},
+      },
+    });
+  }
+
+  it(`does not warn when the installed version satisfies the recommended range, even for a non-semver spec`, () => {
+    runWithInstalledVersion('0.83.4', '0.83.4');
+    expect(Log.warn).not.toHaveBeenCalled();
+  });
+
+  it(`does not warn when the package is not installed yet (resolveInstalledVersion returns null)`, () => {
+    runWithInstalledVersion(null, '0.83.4');
+    expect(Log.warn).not.toHaveBeenCalled();
+  });
+
+  it(`warns with the resolved installed version, not the package.json spec`, () => {
+    runWithInstalledVersion('0.82.0', '0.83.4');
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`${chalk.bold('react-native@0.82.0')}`)
+    );
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(`recommended ${chalk.bold('react-native@0.83.4')}`)
+    );
+    // The raw catalog spec must never reach the warning message.
+    expect(Log.warn).not.toHaveBeenCalledWith(expect.stringContaining('catalog:mobile'));
   });
 });
 
