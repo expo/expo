@@ -18,7 +18,6 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.session.MediaSession
 import expo.modules.audio.service.AudioPlaybackServiceConnection
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import java.lang.ref.WeakReference
 
 private const val PLAYBACK_STATUS_UPDATE = "playbackStatusUpdate"
@@ -66,7 +65,7 @@ class AudioPlayer(
   override var isActiveForLockScreen = false
   override var metadata: Metadata? = null
   override var lockScreenOptions: AudioLockScreenOptions? = null
-  override var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
+  override var mediaSession: MediaSession? = null
   override val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
 
   override val isLive: Boolean
@@ -80,10 +79,6 @@ class AudioPlayer(
 
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
-  private val context by lazy {
-    appContext.reactContext
-      ?: throw Exceptions.ReactContextLost()
-  }
 
   init {
     installPlayerListeners()
@@ -180,9 +175,9 @@ class AudioPlayer(
     )
   }
 
-  override fun assignBasicMediaSession() {
-    mediaSession.release()
-    mediaSession = buildBasicMediaSession(context, ref)
+  override fun releaseMediaSession() {
+    mediaSession?.release()
+    mediaSession = null
   }
 
   private fun sendAudioSampleUpdate(sample: List<Float>) {
@@ -238,7 +233,7 @@ class AudioPlayer(
   }
 
   override fun releasePlayer() {
-    mediaSession.release()
+    mediaSession?.release()
     if (isActiveForLockScreen) {
       serviceConnection.playbackServiceBinder?.service?.unregisterPlayable()
     }

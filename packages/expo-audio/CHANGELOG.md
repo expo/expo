@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Stopped creating a platform `MediaSession` for every player, which made apps that create many players over a session hit the system's 100-sessions-per-UID limit and crash in the `AudioPlayer` constructor. ([#50104](https://github.com/expo/expo/pull/50104) by [@yurkser](https://github.com/yurkser))
+
 ### 💡 Others
 
 ## 58.0.2 — 2026-09-22

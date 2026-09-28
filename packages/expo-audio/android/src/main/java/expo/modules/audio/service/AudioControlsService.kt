@@ -398,16 +398,15 @@ class AudioControlsService : MediaSessionService() {
         val sessionPlayer = MetadataInjectingPlayer(resolveSessionPlayer(playable, options)).apply {
           updateMetadata(metadata)
         }
-        // Distinguish this lock-screen session from the basic session built in
-        // `buildBasicMediaSession` (and from sessions for other players); two
+        // Distinguish this session from the ones built for other playables; two
         // MediaSession instances with the empty default ID throw on construction.
         val session = MediaSession.Builder(context, sessionPlayer)
           .setId("ExpoAudioLockScreenSession_${playable.player.hashCode()}")
           .setCallback(AudioMediaSessionCallback(this@AudioControlsService))
           .build()
 
-        // Replace the basic media session with a session connected to our playback service.
-        playable.mediaSession.release()
+        // Replace any previous session with one connected to our playback service.
+        playable.mediaSession?.release()
         playable.mediaSession = session
 
         addSession(session)
@@ -446,7 +445,7 @@ class AudioControlsService : MediaSessionService() {
     mediaSession = null
     sessionMetadataPlayer = null
     clearArtwork()
-    playable?.assignBasicMediaSession()
+    playable?.releaseMediaSession()
     currentPlayable = null
     stopForeground(STOP_FOREGROUND_REMOVE)
   }
@@ -486,7 +485,7 @@ class AudioControlsService : MediaSessionService() {
           .setCallback(AudioMediaSessionCallback(this@AudioControlsService))
           .build()
 
-        playable.mediaSession.release()
+        playable.mediaSession?.release()
         playable.mediaSession = session
 
         addSession(session)
