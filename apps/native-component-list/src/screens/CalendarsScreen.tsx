@@ -56,7 +56,9 @@ const CalendarRow = (props: {
 
 export default function CalendarsScreen() {
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
-  const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
+  const [, askForReminderPermissions] = Calendar.useRemindersPermissions({
+    get: Platform.OS === 'ios',
+  });
 
   const [calendars, setCalendars] = useState<Calendar.Calendar[]>([]);
 

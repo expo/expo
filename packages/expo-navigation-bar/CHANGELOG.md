@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add a Jest mock for the `ExpoNavigationBar` native module, so importing `expo-navigation-bar` no longer throws under the `jest-expo/android` preset. ([#50592](https://github.com/expo/expo/pull/50592) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-21
