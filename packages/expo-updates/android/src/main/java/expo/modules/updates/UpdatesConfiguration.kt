@@ -281,7 +281,11 @@ data class UpdatesConfiguration(
         return UpdatesConfigurationValidationResult.INVALID_NOT_ENABLED
       }
       val disableAntiBrickingMeasures = getDisableAntiBrickingMeasures(context, overrideMap)
-      val configOverride = if (context != null) UpdatesConfigurationOverride.load(context) else null
+      val configOverride = if (context != null) {
+        UpdatesConfigurationOverride.load(context)
+      } else {
+        null
+      }
       getUpdateUrl(context, overrideMap, disableAntiBrickingMeasures, configOverride) ?: return UpdatesConfigurationValidationResult.INVALID_MISSING_URL
 
       if (getRuntimeVersion(context, overrideMap).isNullOrEmpty()) {
@@ -350,7 +354,11 @@ internal fun getNormalizedUrlOrigin(url: Uri): String {
   if (port == getDefaultPortForScheme(scheme)) {
     port = -1
   }
-  return if (port > -1) "$scheme://${url.host}:$port" else "$scheme://${url.host}"
+  return if (port > -1) {
+    "$scheme://${url.host}:$port"
+  } else {
+    "$scheme://${url.host}"
+  }
 }
 
 private fun maybeGetDefaultScopeKey(scopeKey: String?, updateUrl: Uri): String {
