@@ -27,6 +27,10 @@
   BOOL isDetached = NO;
 
   constants[@"isDetached"] = @(isDetached);
+
+  // There is no `fingerprint` key to override: `EXConstantsService` reads none. If this ever
+  // moves to `ConstantsProvider`, null it the way `ConstantsBinding.kt` does — the embedded one
+  // describes Expo Go itself, not the loaded project.
   
   if (_unversionedConstants) {
     [constants addEntriesFromDictionary:_unversionedConstants];

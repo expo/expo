@@ -37,6 +37,9 @@ internal final class ConstantsProvider: EXConstantsInterface {
     if let manifest = getManifest() {
       result["manifest"] = manifest
     }
+    if let fingerprint = EmbeddedFingerprint.read()?.hash {
+      result["fingerprint"] = fingerprint
+    }
     return result
   }
 }

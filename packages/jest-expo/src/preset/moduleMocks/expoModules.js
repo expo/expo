@@ -1376,6 +1376,7 @@ module.exports = {
           debugMode: { type: 'boolean', mock: true },
           deviceName: { type: 'string' },
           executionEnvironment: { type: 'string' },
+          fingerprint: { type: 'string', mock: null },
           getWebViewUserAgentAsync: { type: 'function' },
           isHeadless: { type: 'boolean', mock: false },
           manifest: { type: 'object' },
