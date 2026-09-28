@@ -76,7 +76,7 @@ export function getTestModules() {
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
     require('./tests/Fetch'),
-    require('./tests/Request'),
+    require('./tests/FetchRequest'),
     require('./tests/SQLite')
   );
 
