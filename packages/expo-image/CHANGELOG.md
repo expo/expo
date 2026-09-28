@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed bundled images not loading when the app compiles them into React Native's asset catalog with the `RCTUseAssetCatalog` Info.plist key. ([#PRNUM](https://github.com/expo/expo/pull/PRNUM) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
 
 ## 58.0.7 — 2026-09-28

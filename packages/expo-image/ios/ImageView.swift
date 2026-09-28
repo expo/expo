@@ -457,6 +457,9 @@ public final class ImageView: ExpoView {
   }
 
   private func localAssetImage(from source: ImageSource) -> UIImage? {
+    if let image = assetCatalogImage(for: source.uri) {
+      return image
+    }
     guard let path = localAssetName(from: source.uri) else {
       return nil
     }
