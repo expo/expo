@@ -26,6 +26,7 @@ minimumReleaseAgeExclude:
   - '@noxcturnal/*'
   - '@react-native/*'
   - 'react-native'
+  - expo-modules-macros
   - multitars
   - noxcturnal
 

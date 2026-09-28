@@ -153,10 +153,9 @@ describe('buildSwiftSettings ExpoModulesMacros plugin flags', () => {
 
   const macroToolPathSegment = path.join(
     'node_modules',
-    '@expo',
-    'expo-modules-macros-plugin',
+    'expo-modules-macros',
     'apple',
-    'ExpoModulesMacros-tool'
+    'ExpoModulesMacros'
   );
 
   it('should emit load-plugin-executable flags for the ExpoModulesCore swift target', () => {
