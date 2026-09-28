@@ -314,6 +314,12 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
   // `fetch()` and the native runtime handle `Request` objects.
   describe('Request', () => {
     const itNative = Platform.OS !== 'web' ? it : t.xit;
+    const itWeb = Platform.OS === 'web' ? it : t.xit;
+
+    itWeb('exports the platform Request on web', () => {
+      // On web, `fetch` is the browser's own and only accepts the browser's `Request`.
+      expect(Request as unknown).toBe(globalThis.Request);
+    });
 
     itNative('installs our own Request as the global Request', () => {
       // On native, expo/fetch replaces React Native's whatwg-fetch Request with its own.
@@ -405,7 +411,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
 
     itNative('should send a FormData body with a file part, copied at construction', async () => {
-      const file = new File(Paths.document, 'request-form-data.txt');
+      // A unique name, so overlapping runs of the suite don't delete each other's file.
+      const file = new File(Paths.document, `request-form-data-${Date.now()}.txt`);
       file.write('file content');
       const formData = new FormData();
       formData.append('foo', 'foo');
@@ -413,9 +420,12 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       const request = new Request('https://httpbin.io/post', { method: 'POST', body: formData });
       // The body is extracted at construction, so later changes must not be sent.
       formData.append('late', 'late');
-      const resp = await fetch(request);
-      const json = await resp.json();
-      file.delete();
+      let json;
+      try {
+        json = await (await fetch(request)).json();
+      } finally {
+        file.delete();
+      }
       expect(json.form.foo).toEqual(['foo']);
       expect(json.form.late).toBeUndefined();
       expect(json.files.file).toEqual(['file content']);
@@ -454,7 +464,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         },
       });
 
-    it('should send a ReadableStream body', async () => {
+    // Browsers restrict streaming uploads; Chrome fails these with 'Failed to fetch'.
+    itNative('should send a ReadableStream body', async () => {
       const request = new Request('https://httpbin.io/post', {
         method: 'POST',
         body: createStream('streamed'),
@@ -466,7 +477,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       expect(json.data).toBe('streamed');
     });
 
-    it('should send both a Request with a ReadableStream body and its clone', async () => {
+    // Browsers restrict streaming uploads; Chrome fails these with 'Failed to fetch'.
+    itNative('should send both a Request with a ReadableStream body and its clone', async () => {
       const request = new Request('https://httpbin.io/post', {
         method: 'POST',
         body: createStream('streamed'),
