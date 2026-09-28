@@ -86,6 +86,17 @@ describe('tintColor', () => {
   });
 });
 
+// ─── titleColor ─────────────────────────────────────────────────────────────────
+
+describe('titleColor', () => {
+  test('stays colors.text when headerTransparent on Android', () => {
+    const { result } = renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerTransparent: true }))
+    );
+    expect(result.current.titleColor).toBe(DEFAULT_COLORS.text);
+  });
+});
+
 // ─── backgroundColor ────────────────────────────────────────────────────────────
 
 describe('backgroundColor', () => {

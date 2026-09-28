@@ -142,6 +142,40 @@ describe('titleColor', () => {
     );
     expect(result.current.titleColor).toBe('orange');
   });
+
+  test.each([
+    { name: 'headerTransparent', props: { headerTransparent: true } },
+    { name: 'headerLargeTitleEnabled', props: { headerLargeTitleEnabled: true } },
+    { name: 'headerBackground', props: { headerBackground: () => <View /> } },
+  ])('is undefined with $name so the title adapts to the content underneath', ({ props }) => {
+    const { result } = renderHook(() => useHeaderConfigProps(defaultProps(props)));
+    expect(result.current.titleColor).toBeUndefined();
+  });
+
+  test('uses headerTintColor when the header is transparent', () => {
+    const { result } = renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerTransparent: true, headerTintColor: 'purple' }))
+    );
+    expect(result.current.titleColor).toBe('purple');
+  });
+
+  test('headerTitleStyle.color overrides the adaptive color when the header is transparent', () => {
+    const { result } = renderHook(() =>
+      useHeaderConfigProps(
+        defaultProps({ headerTransparent: true, headerTitleStyle: { color: 'orange' } })
+      )
+    );
+    expect(result.current.titleColor).toBe('orange');
+  });
+
+  test('defaults to colors.text with a large title and an opaque headerStyle.backgroundColor', () => {
+    const { result } = renderHook(() =>
+      useHeaderConfigProps(
+        defaultProps({ headerLargeTitleEnabled: true, headerStyle: { backgroundColor: 'white' } })
+      )
+    );
+    expect(result.current.titleColor).toBe(DEFAULT_COLORS.text);
+  });
 });
 
 // ─── backgroundColor ────────────────────────────────────────────────────────────
