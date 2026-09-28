@@ -15,7 +15,6 @@
 # Pod install flow:
 #   1. has_prebuilt_xcframework?(pod_name) returns true → autolinking uses :podspec instead of :path
 #   2. store_podspec hook auto-patches the spec via patch_spec_for_prebuilt (sandbox.rb)
-#      (ExpoModulesCore still uses inline try_link_with_prebuilt_xcframework for ExpoModulesJSI)
 #   3. spec.source is set to {:http => "file:///<tarball>"} → CocoaPods extracts into Pods/<PodName>/
 #   4. prepare_command copies both flavor tarballs into artifacts/ subdirectory
 #   5. Script phases switch debug/release at build time via tarball extraction
@@ -424,15 +423,11 @@ module Expo
       # Returns true if the pod has a prebuilt xcframework AND the spec hasn't already
       # been configured by an inline try_link_with_prebuilt_xcframework call.
       #
-      # ExpoModulesCore is excluded — it has a source-only dependency on ExpoModulesJSI
-      # that requires special handling via the inline conditional.
-      #
       # @param name [String] The pod name
       # @param spec [Pod::Specification] The evaluated podspec
       # @return [Boolean] true if the spec should be auto-patched
       def should_auto_patch_spec?(name, spec)
         return false unless enabled?
-        return false if name == 'ExpoModulesCore'
         return false unless has_prebuilt_xcframework?(name)
 
         vendored = spec.attributes_hash['vendored_frameworks']
@@ -643,9 +638,9 @@ module Expo
 
       # Links a pod spec with a prebuilt XCFramework.
       #
-      # NOTE: This method is only used by ExpoModulesCore.podspec, which needs an inline
-      # conditional for its source-only ExpoModulesJSI dependency. All other pods are
-      # handled by auto-patching in store_podspec → patch_spec_for_prebuilt.
+      # NOTE: No podspec in this repo calls this — pods here are auto-patched in
+      # store_podspec → patch_spec_for_prebuilt. It is kept as the inline entry point
+      # documented for external prebuilt packages in external-configs/ios/README.md.
       #
       # Sets spec.source to the local tarball so CocoaPods extracts it into Pods/<PodName>/.
       # Adds a prepare_command to copy both flavor tarballs into artifacts/.
