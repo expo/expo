@@ -303,7 +303,7 @@ When adding dependencies or changing static/server rendering, run e2e tests in `
 ## Changelog entries
 
 - Always keep `CHANGELOG.md` entries short and to the point: one concise sentence describing the user-visible change.
-- Omit implementation walkthroughs, exhaustive edge cases, unchanged behavior, and speculative downstream effects. Put detailed explanations in the PR description or documentation.
+- Omit implementation walkthroughs, historical background, exhaustive edge cases, unchanged behavior, and speculative downstream effects. Put detailed explanations in the PR description or documentation.
 - Include breaking changes or required migration steps in the fewest words needed.
 
 ## Documentation
