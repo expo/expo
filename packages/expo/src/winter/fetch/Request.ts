@@ -10,13 +10,42 @@ type UniversalFormData = globalThis.FormData & RNFormData;
 // Methods that may not carry a request body per the Fetch standard.
 const BODYLESS_METHODS = new Set(['GET', 'HEAD']);
 
+// The shape of React Native's `whatwg-fetch` Request. It has no `Symbol.toStringTag` and keeps the
+// body input on hidden fields instead of exposing a `body` stream.
+type WhatwgFetchRequest = {
+  url: string;
+  bodyUsed: boolean;
+  _bodyInit?: BodyInit | null;
+  _noBody?: boolean;
+};
+
+function isWhatwgFetchRequest(input: object): input is WhatwgFetchRequest {
+  return '_bodyInit' in input && typeof (input as { url?: unknown }).url === 'string';
+}
+
 function isRequest(input: unknown): input is Request {
   return (
     input != null &&
     typeof input === 'object' &&
     (input instanceof Request ||
-      (input as { [Symbol.toStringTag]?: string })[Symbol.toStringTag] === 'Request')
+      (input as { [Symbol.toStringTag]?: string })[Symbol.toStringTag] === 'Request' ||
+      isWhatwgFetchRequest(input))
   );
+}
+
+/**
+ * Returns the body input of a request from any `Request` implementation, without reading it.
+ * Our own `Request` and `whatwg-fetch` keep the raw body input, other implementations expose
+ * only the `body` stream.
+ */
+export function getRequestBodyInit(request: object): BodyInit | null {
+  if (request instanceof Request) {
+    return request._bodyInit;
+  }
+  if (isWhatwgFetchRequest(request)) {
+    return request._noBody !== true ? (request._bodyInit ?? null) : null;
+  }
+  return (request as { body?: BodyInit | null }).body ?? null;
 }
 
 /**
@@ -36,7 +65,8 @@ export class Request implements Body {
   readonly signal: AbortSignal;
 
   // The raw body input, kept so `fetch()` can normalize it without consuming the request.
-  readonly _bodyInit: BodyInit | null;
+  // Replaced by a tee branch when a stream body is cloned.
+  _bodyInit: BodyInit | null;
 
   // Whether the body has been read/disturbed. The `bodyUsed` getter also factors in a locked
   // body stream.
@@ -63,12 +93,21 @@ export class Request implements Body {
         headers = input.headers;
       }
       // Reuse the source body when the init doesn't provide one, consuming the source.
-      if (body == null && input._bodyInit != null) {
+      const sourceBody = body == null ? getRequestBodyInit(input) : null;
+      if (sourceBody != null) {
         if (input.bodyUsed) {
-          throw new TypeError("Failed to construct 'Request': Request body is already used.");
+          throw new TypeError(
+            "Failed to construct 'Request': the source request body is already used. Create a new request with a fresh body, or clone the source request before reading its body."
+          );
         }
-        body = input._bodyInit;
-        input.consumed = true;
+        body = sourceBody;
+        const source: object = input;
+        if (source instanceof Request) {
+          source.consumed = true;
+        } else if (isWhatwgFetchRequest(source)) {
+          source.bodyUsed = true;
+        }
+        // Other implementations only expose a `body` stream, which is disturbed once we read it.
       }
     } else {
       this.url = `${input}`;
@@ -78,7 +117,7 @@ export class Request implements Body {
     this.credentials = credentials ?? 'same-origin';
     this.redirect = redirect ?? 'follow';
     this.signal = signal ?? new AbortController().signal;
-    this.headers = headers instanceof Headers ? new Headers(headers) : new Headers(headers ?? {});
+    this.headers = new Headers(headers);
 
     if (body != null && BODYLESS_METHODS.has(this.method)) {
       throw new TypeError('Request with GET/HEAD method cannot have body.');
@@ -135,12 +174,12 @@ export class Request implements Body {
   }
 
   async arrayBuffer(): Promise<ArrayBuffer> {
-    const bytes = await this.consumeAsBytes();
+    const bytes = await this.consumeAsBytes('arrayBuffer');
     return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
   }
 
   async bytes(): Promise<Uint8Array<ArrayBuffer>> {
-    return this.consumeAsBytes();
+    return this.consumeAsBytes('bytes');
   }
 
   async blob(): Promise<Blob> {
@@ -149,17 +188,16 @@ export class Request implements Body {
       this.markConsumed('blob');
       return body;
     }
-    const bytes = await this.consumeAsBytes();
+    const bytes = await this.consumeAsBytes('blob');
     return new Blob([bytes]);
   }
 
   async text(): Promise<string> {
-    const bytes = await this.consumeAsBytes();
-    return new TextDecoder().decode(bytes);
+    return this.consumeAsText('text');
   }
 
   async json(): Promise<any> {
-    return JSON.parse(await this.text());
+    return JSON.parse(await this.consumeAsText('json'));
   }
 
   async formData(): Promise<UniversalFormData> {
@@ -169,7 +207,7 @@ export class Request implements Body {
       return body as UniversalFormData;
     }
     // Mirrors the URL-encoded parsing in `FetchResponse.formData()`.
-    const text = await this.text();
+    const text = await this.consumeAsText('formData');
     const searchParams = new URLSearchParams(text);
     const formData = new FormData() as UniversalFormData;
     searchParams.forEach((value, key) => {
@@ -182,19 +220,33 @@ export class Request implements Body {
     if (this.bodyUsed) {
       throw new TypeError("Failed to execute 'clone' on 'Request': Request body is already used.");
     }
+    let body = this._bodyInit;
+    if (body instanceof ReadableStream) {
+      // A stream can be read only once, so tee it: this request keeps one branch and the clone
+      // gets the other, per the Fetch spec.
+      const [ownBranch, cloneBranch] = body.tee();
+      this._bodyInit = ownBranch;
+      this.bodyStream = null;
+      body = cloneBranch;
+    }
     return new Request(this.url, {
       method: this.method,
       headers: this.headers,
       credentials: this.credentials,
       redirect: this.redirect,
       signal: this.signal,
-      body: this._bodyInit,
+      body,
     });
   }
 
-  private async consumeAsBytes(): Promise<Uint8Array<ArrayBuffer>> {
+  private async consumeAsText(method: string): Promise<string> {
+    const bytes = await this.consumeAsBytes(method);
+    return new TextDecoder().decode(bytes);
+  }
+
+  private async consumeAsBytes(method: string): Promise<Uint8Array<ArrayBuffer>> {
     const body = this._bodyInit;
-    this.markConsumed('arrayBuffer');
+    this.markConsumed(method);
     if (body == null) {
       return new Uint8Array(0);
     }
