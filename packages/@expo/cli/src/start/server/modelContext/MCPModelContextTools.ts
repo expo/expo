@@ -4,6 +4,8 @@ import { Log } from '../../../log';
 import type { McpServer } from '../MCP';
 import type { ModelContextRegistry } from './ModelContextRegistry';
 
+const MAX_CALL_TIMEOUT_MS = 25_000;
+
 /**
  * Exposes runtime-registered app tools to the MCP server.
  *
@@ -59,9 +61,12 @@ export function addModelContextMcpCapabilities(
           .number()
           .int()
           .min(1)
-          .max(60_000)
+          // The tunnel hub gives up on a forwarded call at 30s. Stop the app first.
+          .max(MAX_CALL_TIMEOUT_MS)
           .optional()
-          .describe('How long to wait for the app, in milliseconds. Default 10000.'),
+          .describe(
+            `How long to wait for the app, in milliseconds. Default 10000, max ${MAX_CALL_TIMEOUT_MS}.`
+          ),
       },
     },
     async ({ name, arguments: args, timeoutMs }) => {

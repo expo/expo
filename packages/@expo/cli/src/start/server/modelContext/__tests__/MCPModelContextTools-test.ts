@@ -71,4 +71,12 @@ describe(addModelContextMcpCapabilities, () => {
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toMatch(/Unknown tool/);
   });
+
+  it('should keep timeoutMs under the 30s limit of the tunnel hub', () => {
+    const { server, tools } = createMockMcpServer();
+    addModelContextMcpCapabilities(server, new ModelContextRegistry());
+    const { timeoutMs } = tools.get('app_call_tool')!.config.inputSchema;
+    expect(timeoutMs.safeParse(25_000).success).toBe(true);
+    expect(timeoutMs.safeParse(30_000).success).toBe(false);
+  });
 });
