@@ -1,6 +1,5 @@
-export type ObservableState<T> = {
-    value: T;
-};
+import type { ObservableState } from './types';
+export type { ObservableState };
 /**
  * Web polyfill for the native `useNativeState` hook.
  */
