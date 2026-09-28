@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `modelContext.registerTool()` and `useModelContextTool()`, an API to register tools from the running app so an agent connected to the Expo CLI MCP server can call them. Only active in `__DEV__`. ([#50117](https://github.com/expo/expo/pull/50117) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

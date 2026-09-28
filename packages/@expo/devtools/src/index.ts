@@ -1,4 +1,7 @@
 export * from './hooks';
+export { modelContext } from './modelContext/modelContext';
+export { useModelContextTool } from './modelContext/hooks';
+export type * from './modelContext/ModelContext.types';
 export { setEnableLogging } from './logger';
 export { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';
 export { DevToolsPluginClient } from './DevToolsPluginClient';
