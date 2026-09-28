@@ -153,19 +153,25 @@ Fills available height.
 
 ### `width(value)`
 
-Sets an exact width.
+Sets an exact width, or the minimum or maximum intrinsic width of the content. Inside a `Host` with `matchContents`, the available width has no limit, so children with `weight` in a `Row` get no space. Apply `width(IntrinsicSize.Max)` to the `Row` to give them a width to share.
 
-| Parameter | Type     | Description  |
-| --------- | -------- | ------------ |
-| `value`   | `number` | Width in dp. |
+| Parameter | Type                      | Description                                                                                                                                                                                                                              |
+| --------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`   | `number \| IntrinsicSize` | Width in dp, or an `IntrinsicSize`. `IntrinsicSize.Min` uses the narrowest width that fits the content (for a text, its widest word). `IntrinsicSize.Max` uses the width the content needs without wrapping (for a text, a single line). |
 
-### `intrinsicWidth(size)`
+In the following example, `fillMaxWidth()` comes before `width(IntrinsicSize.Max)` so the row still fills a bounded width, and `weight(1)` gives the label the space left next to the switch:
 
-Sets the width to the minimum or maximum intrinsic width of the content. Unlike `weight`, it gives children a width to share when the incoming width is unbounded, such as inside a `Host` with `matchContents`.
+```tsx
+import { Host, Row, Switch, Text } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, IntrinsicSize, weight, width } from '@expo/ui/jetpack-compose/modifiers';
 
-| Parameter | Type               | Description                   |
-| --------- | ------------------ | ----------------------------- |
-| `size`    | `'min'` \| `'max'` | Which intrinsic width to use. |
+<Host matchContents>
+  <Row modifiers={[fillMaxWidth(), width(IntrinsicSize.Max)]}>
+    <Text modifiers={[weight(1)]}>Errors only</Text>
+    <Switch value={checked} onCheckedChange={setChecked} />
+  </Row>
+</Host>;
+```
 
 ### `height(value)`
 
