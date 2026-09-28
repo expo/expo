@@ -9,6 +9,72 @@ type UniversalFormData = globalThis.FormData & RNFormData;
 
 // Methods that may not carry a request body per the Fetch standard.
 const BODYLESS_METHODS = new Set(['GET', 'HEAD']);
+// Methods the Fetch standard forbids, compared case-insensitively.
+const FORBIDDEN_METHODS = new Set(['CONNECT', 'TRACE', 'TRACK']);
+// An HTTP token, which a request method must be.
+const METHOD_TOKEN = /^[!#$%&'*+\-.^_`|~0-9A-Za-z]+$/;
+
+function validateMethod(method: string): string {
+  if (!METHOD_TOKEN.test(method)) {
+    throw new TypeError(
+      `Failed to construct 'Request': '${method}' is not a valid HTTP method. Use a method name such as 'GET' or 'POST'.`
+    );
+  }
+  if (FORBIDDEN_METHODS.has(method.toUpperCase())) {
+    throw new TypeError(
+      `Failed to construct 'Request': '${method}' HTTP method is unsupported. The Fetch standard forbids CONNECT, TRACE and TRACK.`
+    );
+  }
+  return normalizeMethod(method);
+}
+
+// Parses the URL like the spec does, but keeps input that can't be parsed as-is instead of throwing,
+// for compatibility with React Native's `whatwg-fetch` Request.
+function serializeURL(input: string | URL): string {
+  try {
+    return new URL(`${input}`).href;
+  } catch {
+    return `${input}`;
+  }
+}
+
+// Returns a new signal that aborts with the given signal. Not `AbortSignal.any()`, which not every
+// runtime this code runs in provides.
+function followSignal(signal: AbortSignal): AbortSignal {
+  const controller = new AbortController();
+  if (signal.aborted) {
+    controller.abort(signal.reason);
+  } else {
+    signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
+  }
+  return controller.signal;
+}
+
+function copyFormData(source: FormData): FormData {
+  const copy = new FormData();
+  source.forEach((value, name) => {
+    copy.append(name, value);
+  });
+  return copy;
+}
+
+// The spec extracts the body at construction, so later changes to a mutable body input don't
+// affect the request. Copy the mutable inputs to match that.
+function copyBodyInit(body: BodyInit): BodyInit {
+  if (body instanceof URLSearchParams) {
+    return body.toString();
+  }
+  if (body instanceof ArrayBuffer) {
+    return body.slice(0);
+  }
+  if (ArrayBuffer.isView(body)) {
+    return new Uint8Array(body.buffer, body.byteOffset, body.byteLength).slice();
+  }
+  if (body instanceof FormData) {
+    return copyFormData(body);
+  }
+  return body;
+}
 
 // The shape of React Native's `whatwg-fetch` Request. It has no `Symbol.toStringTag` and keeps the
 // body input on hidden fields instead of exposing a `body` stream.
@@ -63,6 +129,15 @@ export class Request implements Body {
   readonly credentials: RequestCredentials;
   readonly redirect: RequestRedirect;
   readonly signal: AbortSignal;
+  // Accepted and exposed for spec compatibility, but `expo/fetch` does not act on them.
+  readonly mode: RequestMode;
+  readonly cache: RequestCache;
+  readonly referrer: string;
+  readonly referrerPolicy: ReferrerPolicy;
+  readonly integrity: string;
+  readonly keepalive: boolean;
+  readonly destination: RequestDestination = '';
+  readonly duplex = 'half' as const;
 
   // The raw body input, kept so `fetch()` can normalize it without consuming the request.
   // Replaced by a tee branch when a stream body is cloned.
@@ -82,6 +157,12 @@ export class Request implements Body {
     let credentials: RequestCredentials | undefined = init?.credentials;
     let redirect: RequestRedirect | undefined = init?.redirect;
     let signal: AbortSignal | null | undefined = init?.signal;
+    let mode = init?.mode;
+    let cache = init?.cache;
+    let referrer = init?.referrer;
+    let referrerPolicy = init?.referrerPolicy;
+    let integrity = init?.integrity;
+    let keepalive = init?.keepalive;
 
     if (isRequest(input)) {
       this.url = input.url;
@@ -89,6 +170,13 @@ export class Request implements Body {
       credentials ??= input.credentials;
       redirect ??= input.redirect;
       signal ??= input.signal;
+      // `whatwg-fetch` leaves some of these unset or `null`, so they fall back to the defaults.
+      mode ??= input.mode ?? undefined;
+      cache ??= input.cache ?? undefined;
+      referrer ??= input.referrer ?? undefined;
+      referrerPolicy ??= input.referrerPolicy ?? undefined;
+      integrity ??= input.integrity ?? undefined;
+      keepalive ??= input.keepalive ?? undefined;
       if (headers == null) {
         headers = input.headers;
       }
@@ -110,13 +198,20 @@ export class Request implements Body {
         // Other implementations only expose a `body` stream, which is disturbed once we read it.
       }
     } else {
-      this.url = `${input}`;
+      this.url = serializeURL(input);
     }
 
-    this.method = method != null ? normalizeMethod(method) : 'GET';
+    this.method = method != null ? validateMethod(method) : 'GET';
     this.credentials = credentials ?? 'same-origin';
     this.redirect = redirect ?? 'follow';
-    this.signal = signal ?? new AbortController().signal;
+    // Per the spec, the request gets its own signal that follows the given one.
+    this.signal = signal != null ? followSignal(signal) : new AbortController().signal;
+    this.mode = mode ?? 'cors';
+    this.cache = cache ?? 'default';
+    this.referrer = referrer ?? 'about:client';
+    this.referrerPolicy = referrerPolicy ?? '';
+    this.integrity = integrity ?? '';
+    this.keepalive = keepalive ?? false;
     this.headers = new Headers(headers);
 
     if (body != null && BODYLESS_METHODS.has(this.method)) {
@@ -125,6 +220,9 @@ export class Request implements Body {
 
     this._bodyInit = body ?? null;
     this.setDefaultContentType();
+    if (this._bodyInit != null) {
+      this._bodyInit = copyBodyInit(this._bodyInit);
+    }
   }
 
   get bodyUsed(): boolean {
@@ -184,12 +282,14 @@ export class Request implements Body {
 
   async blob(): Promise<Blob> {
     const body = this._bodyInit;
-    if (body instanceof Blob) {
+    // Per the spec, the blob type comes from the `Content-Type` header.
+    const type = this.headers.get('content-type') ?? '';
+    if (body instanceof Blob && body.type === type) {
       this.markConsumed('blob');
       return body;
     }
     const bytes = await this.consumeAsBytes('blob');
-    return new Blob([bytes]);
+    return new Blob([bytes], { type });
   }
 
   async text(): Promise<string> {
@@ -204,7 +304,14 @@ export class Request implements Body {
     const body = this._bodyInit;
     if (body instanceof FormData) {
       this.markConsumed('formData');
-      return body as UniversalFormData;
+      return copyFormData(body) as UniversalFormData;
+    }
+    const contentType = this.headers.get('content-type') ?? '';
+    if (!contentType.toLowerCase().startsWith('application/x-www-form-urlencoded')) {
+      this.markConsumed('formData');
+      throw new TypeError(
+        `Failed to execute 'formData' on 'Request': the body can't be parsed as form data because its Content-Type is '${contentType}'. Use a FormData or URLSearchParams body, or set the Content-Type to 'application/x-www-form-urlencoded'.`
+      );
     }
     // Mirrors the URL-encoded parsing in `FetchResponse.formData()`.
     const text = await this.consumeAsText('formData');
@@ -235,6 +342,12 @@ export class Request implements Body {
       credentials: this.credentials,
       redirect: this.redirect,
       signal: this.signal,
+      mode: this.mode,
+      cache: this.cache,
+      referrer: this.referrer,
+      referrerPolicy: this.referrerPolicy,
+      integrity: this.integrity,
+      keepalive: this.keepalive,
       body,
     });
   }
