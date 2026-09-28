@@ -13,8 +13,12 @@ internal class LanguageModelException(code: String, message: String, cause: Thro
     fun background() = LanguageModelException("ERR_APP_BACKGROUND", "ML Kit language model operations require the app to be in the foreground.")
 
     fun from(error: Throwable, fallback: String = "ERR_GENERATION_FAILED"): LanguageModelException {
-      if (error is LanguageModelException) return error
-      if (error is CancellationException) return cancelled()
+      if (error is LanguageModelException) {
+        return error
+      }
+      if (error is CancellationException) {
+        return cancelled()
+      }
       val code = if (error is GenAiException) {
         when (error.errorCode) {
           GenAiException.ErrorCode.CANCELLED -> "ERR_REQUEST_CANCELLED"

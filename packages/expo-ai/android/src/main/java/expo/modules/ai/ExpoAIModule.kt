@@ -51,7 +51,9 @@ class ExpoAIModule : Module() {
     }.runOnQueue(registrationScope)
 
     AsyncFunction("prepareAsync") { requestId: String, allowDownload: Boolean, inputLanguages: List<String>, outputLanguage: String?, promise: Promise ->
-      if (requestId.isEmpty()) throw LanguageModelException.invalid("requestId must not be empty.")
+      if (requestId.isEmpty()) {
+        throw LanguageModelException.invalid("requestId must not be empty.")
+      }
       tasks.start("prepare-$requestId", promise, "ERR_PREPARATION_FAILED") { request ->
         requireForeground()
         backendFactory().use { backend ->
@@ -123,8 +125,12 @@ class ExpoAIModule : Module() {
   }
 
   private fun requireForeground() {
-    if (destroyed) throw LanguageModelException.disposed()
-    if (!foreground) throw LanguageModelException.background()
+    if (destroyed) {
+      throw LanguageModelException.disposed()
+    }
+    if (!foreground) {
+      throw LanguageModelException.background()
+    }
   }
 
   private fun register(session: LanguageModelSession) = synchronized(sessionsLock) {
