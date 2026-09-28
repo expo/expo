@@ -208,17 +208,17 @@ private fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCat
   val ndk = extra.setIfNotExist("ndkVersion") { versionCatalogs.getVersionOrDefault("ndkVersion", "27.1.12297006") }
 
   // Kotlin related
-  val kotlinGradlePluginVersion = kotlinGradlePluginVersionOrNull()
-  val catalogKotlinVersion = versionCatalogs.getVersionOrNull("kotlin")
   val kotlin = extra.setIfNotExist("kotlinVersion") {
+    val kotlinGradlePluginVersion = kotlinGradlePluginVersionOrNull()
+    val catalogKotlinVersion = versionCatalogs.getVersionOrNull("kotlin")
+    if (kotlinGradlePluginVersion != null && catalogKotlinVersion != null && kotlinGradlePluginVersion != catalogKotlinVersion) {
+      project.logger.quiet(
+        "${"[ExpoRootProject]".withColor(Colors.GREEN)} The Kotlin Gradle plugin used by this build is " +
+          "${kotlinGradlePluginVersion.withColor(Colors.GREEN)}, but the version catalog declares " +
+          "${catalogKotlinVersion.withColor(Colors.YELLOW)}. Using the plugin version."
+      )
+    }
     resolveKotlinVersion(kotlinGradlePluginVersion, catalogKotlinVersion)
-  }
-  if (kotlinGradlePluginVersion != null && catalogKotlinVersion != null && kotlinGradlePluginVersion != catalogKotlinVersion) {
-    project.logger.quiet(
-      "${"[ExpoRootProject]".withColor(Colors.GREEN)} The Kotlin Gradle plugin used by this build is " +
-        "${kotlinGradlePluginVersion.withColor(Colors.GREEN)}, but the version catalog declares " +
-        "${catalogKotlinVersion.withColor(Colors.YELLOW)}. Using the plugin version."
-    )
   }
   val ksp = extra.setIfNotExist("kspVersion") {
     versionCatalogs.getVersionOrDefault("ksp") {
