@@ -2,8 +2,7 @@ import { z } from 'zod';
 
 import { Log } from '../../../log';
 import type { McpServer } from '../MCP';
-import { describeBlockReason, describeOwner } from './ModelContextPolicy';
-import type { ModelContextRegistry, RegisteredTool } from './ModelContextRegistry';
+import type { ModelContextRegistry } from './ModelContextRegistry';
 
 /**
  * Exposes runtime-registered app tools to the MCP server.
@@ -22,8 +21,8 @@ export function addModelContextMcpCapabilities(
       title: 'List tools registered by the running app',
       description:
         'List tools the running Expo app registered at runtime through `modelContext` from `expo/devtools`. ' +
-        'Returns each tool with its name, description, input schema, and owner. ' +
-        'Call a listed tool with "app_call_tool". Tools blocked by the project policy are listed separately and cannot be called.',
+        'Returns each tool with its name, description, and input schema. ' +
+        'Call a listed tool with "app_call_tool".',
     },
     async () => {
       if (registry.getConnectionCount() === 0) {
@@ -36,13 +35,10 @@ export function addModelContextMcpCapabilities(
           ],
         };
       }
-      const tools = registry.listAllowedTools().map(serializeTool);
-      const blocked = registry.listBlockedTools().map((tool) => ({
-        name: tool.mcpName,
-        owner: describeOwner(tool.owner),
-        reason: describeBlockReason(tool.blockedReason!, tool.owner),
-      }));
-      return { content: [{ type: 'text', text: JSON.stringify({ tools, blocked }, null, 2) }] };
+      const tools = registry
+        .listTools()
+        .map(({ name, description, inputSchema }) => ({ name, description, inputSchema }));
+      return { content: [{ type: 'text', text: JSON.stringify({ tools }, null, 2) }] };
     }
   );
 
@@ -82,14 +78,4 @@ export function addModelContextMcpCapabilities(
       }
     }
   );
-}
-
-/** Descriptions are untrusted text. The owner prefix is fixed and the app cannot remove it. */
-function serializeTool(tool: RegisteredTool) {
-  return {
-    name: tool.mcpName,
-    description: `[Registered at runtime by ${describeOwner(tool.owner)}] ${tool.descriptor.description}`,
-    inputSchema: tool.descriptor.inputSchema,
-    owner: tool.owner.kind === 'package' ? tool.owner.name : tool.owner.kind,
-  };
 }
