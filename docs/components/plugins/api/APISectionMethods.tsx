@@ -144,11 +144,6 @@ export const renderMethod = (
           nested && 'border-b border-palette-gray4 last:border-b-0'
         )}>
         <APISectionDeprecationNote comment={comment} sticky className="rounded-t-none!" />
-        {/* Keep the short link working for SDKs whose generated signature includes this legacy diagnostic parameter. */}
-        {method.name === 'useFocusEffect' &&
-          parameters?.[1]?.name === 'do_not_pass_a_second_prop' && (
-            <span id="usefocuseffecteffect" className="invisible relative -top-25" />
-          )}
         <APIBoxHeader
           name={getMethodName(
             method as MethodDefinitionData,

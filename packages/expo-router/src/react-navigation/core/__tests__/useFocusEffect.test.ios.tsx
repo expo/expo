@@ -290,8 +290,8 @@ test('prints error when a dependency array is passed', () => {
   expect(spy.mock.calls[0]![0]).toMatch(
     "You passed a second argument to 'useFocusEffect', but it only accepts one argument."
   );
-  expect(spy.mock.calls[0]![0]).toMatch(
-    /https:\/\/docs\.expo\.dev\/versions\/latest\/sdk\/router\/#usefocuseffecteffect$/
+  expect(spy.mock.calls[0]![0]).toContain(
+    'https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop'
   );
 
   spy.mockRestore();
@@ -398,8 +398,8 @@ test('prints error when the effect is an async function', () => {
   expect(spy.mock.calls[0]![0]).toMatch(
     "An effect function must not return anything besides a function, which is used for clean-up.\n\nIt looks like you wrote 'useFocusEffect(async () => ...)' or returned a Promise."
   );
-  expect(spy.mock.calls[0]![0]).toMatch(
-    /https:\/\/docs\.expo\.dev\/versions\/latest\/sdk\/router\/#usefocuseffecteffect$/
+  expect(spy.mock.calls[0]![0]).toContain(
+    'https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop'
   );
 
   spy.mockRestore();

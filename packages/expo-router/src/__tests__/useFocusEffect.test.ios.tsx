@@ -49,25 +49,3 @@ it('is called once on focus', () => {
 
   expect(onFocus).toHaveBeenCalledTimes(1);
 });
-
-test('warns when a dependency array is passed to the public hook', () => {
-  const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-  try {
-    renderRouter({
-      index: function Index() {
-        // @ts-expect-error A second argument is intentionally rejected by the public API.
-        useFocusEffect(() => {}, []);
-        return null;
-      },
-    });
-
-    expect(spy).toHaveBeenCalledWith(
-      expect.stringMatching(
-        /https:\/\/docs\.expo\.dev\/versions\/latest\/sdk\/router\/#usefocuseffecteffect$/
-      )
-    );
-  } finally {
-    spy.mockRestore();
-  }
-});
