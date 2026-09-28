@@ -27,7 +27,6 @@ import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
-import { parseModelContextPolicy } from '../modelContext/ModelContextPolicy';
 import { createModelContextWebsocketEndpoint } from '../modelContext/ModelContextWebsocketEndpoint';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
@@ -444,11 +443,12 @@ export async function instantiateMetroAsync(
     // Runtime tool registry for `modelContext` from `expo/devtools`. Only mounted together with
     // the MCP server, which is its only consumer.
     if (env.EXPO_UNSTABLE_MCP_SERVER) {
-      const { modelContextRegistry } = devToolsPluginManager;
-      modelContextRegistry.configure({ policy: parseModelContextPolicy(exp) });
       Object.assign(
         websocketEndpoints,
-        createModelContextWebsocketEndpoint({ registry: modelContextRegistry, serverBaseUrl })
+        createModelContextWebsocketEndpoint({
+          registry: devToolsPluginManager.modelContextRegistry,
+          serverBaseUrl,
+        })
       );
     }
 

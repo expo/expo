@@ -1,13 +1,10 @@
 import { z } from 'zod';
 
-export const MODEL_CONTEXT_PROTOCOL_VERSION = 1;
-
 /** Limits applied to app-supplied data. Everything from the app is untrusted input. */
 export const LIMITS = {
   toolName: 64,
   description: 1024,
   inputSchemaBytes: 16 * 1024,
-  stackChars: 64 * 1024,
   resultTextChars: 1024 * 1024,
   messageBytes: 2 * 1024 * 1024,
 } as const;
@@ -48,20 +45,7 @@ export const ToolDescriptorSchema = z
 
 export type ToolDescriptor = z.infer<typeof ToolDescriptorSchema>;
 
-export const RegisterToolParamsSchema = ToolDescriptorSchema.extend({
-  stack: z.string().max(LIMITS.stackChars).optional(),
-});
-
-export type RegisterToolParams = z.infer<typeof RegisterToolParamsSchema>;
-
 export const UnregisterToolParamsSchema = z.object({ name: ToolNameSchema }).strict();
-
-export const HelloParamsSchema = z
-  .object({
-    protocolVersion: z.literal(MODEL_CONTEXT_PROTOCOL_VERSION),
-    platform: z.string().max(32).optional(),
-  })
-  .strict();
 
 /** Mirrors the MCP `CallToolResult`, which is also what WebMCP's `execute` returns. */
 export const ToolResultSchema = z.object({

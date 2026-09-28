@@ -1,19 +1,17 @@
 import type { IncomingMessage } from 'node:http';
 import { type WebSocket, WebSocketServer } from 'ws';
 
-import { isLocalSocket, isMatchingOrigin } from '../../../utils/net';
+import { isMatchingOrigin } from '../../../utils/net';
 import { parseRawMessage, serializeMessage } from '../metro/dev-server/utils/socketMessages';
 import {
-  HelloParamsSchema,
   LIMITS,
-  RegisterToolParamsSchema,
   RequestMessageSchema,
   ResponseMessageSchema,
+  ToolDescriptorSchema,
   UnregisterToolParamsSchema,
   formatIssues,
 } from './ModelContext.schema';
-import { describeBlockReason } from './ModelContextPolicy';
-import { ModelContextRegistry, ToolRegistrationError } from './ModelContextRegistry';
+import type { ModelContextRegistry } from './ModelContextRegistry';
 
 export const MODEL_CONTEXT_ENDPOINT = '/_expo/model-context';
 
@@ -33,10 +31,16 @@ export function createModelContextWebsocketEndpoint({
   const wss = new WebSocketServer({ noServer: true, maxPayload: LIMITS.messageBytes });
 
   wss.on('connection', (socket: WebSocket, request: IncomingMessage) => {
+    // Native apps send no origin, so devices on the LAN still connect.
+    // This only stops other websites open in the developer's browser.
+    if (!isMatchingOrigin(request, serverBaseUrl)) {
+      socket.close(1008, 'Origin does not match the dev server.');
+      return;
+    }
+
     const connectionId = `mc-${nextConnectionId++}`;
     registry.addConnection({
       id: connectionId,
-      trusted: isLocalSocket(request.socket) && isMatchingOrigin(request, serverBaseUrl),
       send: (message) => socket.send(serializeMessage(message)),
     });
 
@@ -47,7 +51,7 @@ export function createModelContextWebsocketEndpoint({
       if (id != null) socket.send(serializeMessage({ id, ...body }));
     };
 
-    socket.on('message', async (data, isBinary) => {
+    socket.on('message', (data, isBinary) => {
       const message = parseRawMessage<Record<string, unknown>>(data, isBinary);
       if (message == null) return;
 
@@ -62,28 +66,10 @@ export function createModelContextWebsocketEndpoint({
 
       try {
         switch (method) {
-          case 'modelContext/hello': {
-            registry.markHello(connectionId, HelloParamsSchema.parse(params).platform);
-            reply(id, { result: { ok: true } });
-            break;
-          }
           case 'modelContext/registerTool': {
-            const tool = await registry.registerToolAsync(
-              connectionId,
-              RegisterToolParamsSchema.parse(params)
-            );
-            reply(id, {
-              result: {
-                name: tool.name,
-                status: tool.status,
-                ...(tool.blockedReason
-                  ? {
-                      reason: tool.blockedReason,
-                      message: describeBlockReason(tool.blockedReason, tool.owner),
-                    }
-                  : {}),
-              },
-            });
+            const tool = ToolDescriptorSchema.parse(params);
+            registry.registerTool(connectionId, tool);
+            reply(id, { result: { name: tool.name } });
             break;
           }
           case 'modelContext/unregisterTool': {
@@ -99,8 +85,7 @@ export function createModelContextWebsocketEndpoint({
           error?.name === 'ZodError'
             ? `Invalid params for ${method}: ${formatIssues(error)}`
             : (error?.message ?? String(error));
-        const code = error instanceof ToolRegistrationError ? error.code : -32602;
-        reply(id, { error: { code, message } });
+        reply(id, { error: { code: -32602, message } });
       }
     });
 
