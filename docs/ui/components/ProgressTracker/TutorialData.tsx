@@ -35,7 +35,7 @@ export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
     title: 'Chapter 3: Build a screen',
     slug: '/tutorial/build-a-screen',
     summary:
-      "We've successfully implemented the initial design to start building our app's first screen.",
+      "We've successfully built our app's first screen with Expo Image and native buttons from Expo UI.",
     nextDescription:
       "In the next chapter, we'll add the functionality to pick an image from the device's media library.",
   },
