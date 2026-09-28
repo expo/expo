@@ -79,18 +79,22 @@ export const fillMaxWidth = (fraction?: number) => createModifier('fillMaxWidth'
 export const fillMaxHeight = (fraction?: number) => createModifier('fillMaxHeight', { fraction });
 
 /**
- * Sets the exact width of the view.
- * @param value - Width in dp.
+ * Intrinsic width values for the `width` modifier.
  */
-export const width = (value: number) => createModifier('width', { width: value });
+export const IntrinsicSize = { Min: 'min', Max: 'max' } as const;
+export type IntrinsicSize = (typeof IntrinsicSize)[keyof typeof IntrinsicSize];
 
 /**
- * Sets the width of the view to the minimum or maximum intrinsic width of its content.
- * Unlike `weight`, this gives the view a width when the incoming width is unbounded, such as inside a `Host` with `matchContents`.
- * @param size - Which intrinsic width to use: `'min'` or `'max'`.
+ * Sets the width of the view to an exact value or to the minimum or maximum intrinsic width of its content.
+ * Inside a `Host` with `matchContents`, the available width has no limit, so children with `weight`
+ * in a `Row` get no space.
+ * Apply `width(IntrinsicSize.Max)` to the `Row` to give them a width to share.
+ * @param value - Width in dp, or an `IntrinsicSize`. `IntrinsicSize.Min` uses the narrowest width
+ * that fits the content (for a text, its widest word). `IntrinsicSize.Max` uses the width the content
+ * needs without wrapping (for a text, a single line).
  * @see [Compose `width(IntrinsicSize)` modifier](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#(androidx.compose.ui.Modifier).width(androidx.compose.foundation.layout.IntrinsicSize))
  */
-export const intrinsicWidth = (size: 'min' | 'max') => createModifier('intrinsicWidth', { size });
+export const width = (value: number | IntrinsicSize) => createModifier('width', { width: value });
 
 /**
  * Sets the exact height of the view.

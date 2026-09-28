@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [android] Added the `intrinsicWidth` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+- [android] Added `IntrinsicSize` support to the `width` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
 
 ### 🐛 Bug fixes
 

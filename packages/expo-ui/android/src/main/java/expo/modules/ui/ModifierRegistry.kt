@@ -80,6 +80,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.recordFromMap
 import expo.modules.kotlin.types.ConverterContext
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.ComposableScope
@@ -136,12 +137,17 @@ data class WidthParams(
 
 internal enum class IntrinsicSizeType(val value: String) : Enumerable {
   MIN("min"),
-  MAX("max")
+  MAX("max");
+
+  fun toComposeIntrinsicSize(): IntrinsicSize = when (this) {
+    MIN -> IntrinsicSize.Min
+    MAX -> IntrinsicSize.Max
+  }
 }
 
 @OptimizedRecord
-internal data class IntrinsicWidthParams(
-  @Field val size: IntrinsicSizeType = IntrinsicSizeType.MAX
+internal data class ComposeWidthParams(
+  @Field val width: Either<Int, IntrinsicSizeType>? = null
 ) : Record
 
 @OptimizedRecord
@@ -486,18 +492,12 @@ object ModifierRegistry {
     }
 
     register("width") { map, _, appContext, _ ->
-      val params = recordFromMap<WidthParams>(map, appContext)
-      Modifier.width(params.width.dp)
-    }
-
-    register("intrinsicWidth") { map, _, appContext, _ ->
-      val params = recordFromMap<IntrinsicWidthParams>(map, appContext)
-      Modifier.width(
-        when (params.size) {
-          IntrinsicSizeType.MIN -> IntrinsicSize.Min
-          IntrinsicSizeType.MAX -> IntrinsicSize.Max
-        }
-      )
+      val width = recordFromMap<ComposeWidthParams>(map, appContext).width
+      if (width?.`is`(IntrinsicSizeType::class) == true) {
+        Modifier.width(width.second().toComposeIntrinsicSize())
+      } else {
+        Modifier.width((width?.first() ?: 0).dp)
+      }
     }
 
     register("height") { map, _, appContext, _ ->
