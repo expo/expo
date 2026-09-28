@@ -182,7 +182,11 @@ data class NetworkRequest(
         return null
       }
       val seconds = (end.time - start.time) / 1000.0
-      return if (seconds > 0) seconds else null
+      return if (seconds > 0) {
+        seconds
+      } else {
+        null
+      }
     }
   }
 }

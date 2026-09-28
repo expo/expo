@@ -498,7 +498,9 @@ private class TouchDispatchingRootViewGroup(
     // Use the (…, type, consumed) variant so we can read how much the sheet ate (consumed[1]).
     val consumed = IntArray(2)
     dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, ViewCompat.TYPE_TOUCH, consumed)
-    if (consumed[1] != 0) sheetMovingOnLastDragFrame = true
+    if (consumed[1] != 0) {
+      sheetMovingOnLastDragFrame = true
+    }
   }
 
   override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
