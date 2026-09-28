@@ -1,4 +1,4 @@
-/* oxlint-disable unicorn/no-invalid-fetch-options -- WPT constructs invalid requests on purpose */
+/* oxlint-disable no-new, unicorn/no-invalid-fetch-options -- WPT constructs requests for their side effects and invalid requests on purpose */
 // Based on tests in https://github.com/web-platform-tests/wpt/tree/master/fetch/api/request
 //
 // Ported to Jasmine. Relative URLs are replaced with absolute ones because native runtimes have no
