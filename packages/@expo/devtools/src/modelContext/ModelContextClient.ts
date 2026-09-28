@@ -1,6 +1,5 @@
 import { WebSocketWithReconnect } from '../WebSocketWithReconnect';
 import type { ConnectionInfo } from '../devtools.types';
-import * as logger from '../logger';
 import type {
   ModelContext,
   ModelContextTool,
@@ -10,6 +9,9 @@ import type {
 } from './ModelContext.types';
 
 export const MODEL_CONTEXT_ENDPOINT = '/_expo/model-context';
+
+/** The dev server drops a reply whose error message is longer than this. */
+const MAX_ERROR_MESSAGE_LENGTH = 1024;
 
 /** Envelope version shared with the dev server's `/message` socket (`socketMessages.ts`). */
 const SOCKET_PROTOCOL_VERSION = 2;
@@ -57,6 +59,8 @@ export interface ModelContextClientOptions {
  */
 export class ModelContextClient implements ModelContext {
   private tools = new Map<string, ModelContextTool<any>>();
+  /** The latest registration of each name. An older subscription must not remove a newer tool. */
+  private registrationTokens = new Map<string, symbol>();
   private ws: ModelContextSocket | null = null;
   private nextRequestId = 1;
   /** Register request id → tool name, so a rejection can be reported. */
@@ -73,7 +77,9 @@ export class ModelContextClient implements ModelContext {
       return { remove: () => {} };
     }
 
+    const token = Symbol(tool.name);
     this.tools.set(tool.name, tool);
+    this.registrationTokens.set(tool.name, token);
 
     if (this.ws == null) {
       // The first connection sends every registration from the `open` handler.
@@ -82,12 +88,18 @@ export class ModelContextClient implements ModelContext {
       this.sendRegistration(tool.name);
     }
 
-    const remove = () => this.unregisterTool(tool.name);
+    const remove = () => {
+      options?.signal?.removeEventListener('abort', remove);
+      if (this.registrationTokens.get(tool.name) === token) {
+        this.unregisterTool(tool.name);
+      }
+    };
     options?.signal?.addEventListener('abort', remove, { once: true });
     return { remove };
   }
 
   unregisterTool(name: string): void {
+    this.registrationTokens.delete(name);
     if (!this.tools.delete(name)) {
       return;
     }
@@ -116,11 +128,19 @@ export class ModelContextClient implements ModelContext {
       this.options.createWebSocket ??
       ((url: string) =>
         new WebSocketWithReconnect(url, {
-          onError: (error) => logger.warn(`[modelContext] ${error.message}`),
+          onError: (error) => console.warn(`[modelContext] ${error.message}`),
         }));
 
     const ws = create(url);
     this.ws = ws;
+
+    // `WebSocketWithReconnect` emits `close` only when it stops retrying.
+    // Clear it so the next registration connects again.
+    ws.addEventListener('close', () => {
+      if (this.ws === ws) {
+        this.ws = null;
+      }
+    });
 
     // `WebSocketWithReconnect` fires `open` again after every reconnect, so the dev server gets
     // the full tool list each time. Replies to the previous socket can no longer arrive.
@@ -217,7 +237,10 @@ export class ModelContextClient implements ModelContext {
     } catch (error: any) {
       this.send({
         id,
-        error: { code: -32000, message: error?.message ?? String(error) },
+        error: {
+          code: -32000,
+          message: String(error?.message ?? error).slice(0, MAX_ERROR_MESSAGE_LENGTH),
+        },
       });
     } finally {
       if (timeout) clearTimeout(timeout);

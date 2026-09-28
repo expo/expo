@@ -45,6 +45,14 @@ class FakeWebSocket implements ModelContextSocket {
     this.open();
   }
 
+  /** `WebSocketWithReconnect` emits `close` only when it gives up, not on a reconnect. */
+  closeForGood() {
+    this.readyState = 3;
+    this.listeners.close?.forEach((listener) =>
+      listener({ code: 1000, reason: 'Exceeded max retries' })
+    );
+  }
+
   receive(message: unknown) {
     this.listeners.message?.forEach((listener) => listener({ data: JSON.stringify(message) }));
   }
@@ -239,5 +247,56 @@ describe(ModelContextClient, () => {
     } finally {
       warn.mockRestore();
     }
+  });
+
+  it('should keep a newer registration when an older subscription is removed', () => {
+    const client = createClient();
+    const first = client.registerTool(TOOL);
+    client.registerTool({ ...TOOL, description: 'Add a todo item' });
+    const ws = FakeWebSocket.instances[0]!;
+    ws.open();
+
+    first.remove();
+    expect(client.getTools().map((tool) => tool.description)).toEqual(['Add a todo item']);
+    expect(ws.sent.some((message) => message.method === 'modelContext/unregisterTool')).toBe(false);
+  });
+
+  it('should detach the abort listener when the subscription is removed', () => {
+    const client = createClient();
+    const controller = new AbortController();
+    const subscription = client.registerTool(TOOL, { signal: controller.signal });
+    subscription.remove();
+    client.registerTool(TOOL);
+
+    controller.abort();
+    expect(client.getTools()).toHaveLength(1);
+  });
+
+  it('should connect again after the socket closes for good', () => {
+    const client = createClient();
+    client.registerTool(TOOL);
+    FakeWebSocket.instances[0]!.closeForGood();
+
+    client.registerTool({ ...TOOL, name: 'second' });
+    expect(FakeWebSocket.instances).toHaveLength(2);
+    const ws = FakeWebSocket.instances[1]!;
+    ws.open();
+    expect(ws.sent.map((message) => message.params.name)).toEqual(['add-todo', 'second']);
+  });
+
+  it('should cut a long tool error to the length the dev server accepts', async () => {
+    const client = createClient();
+    client.registerTool({
+      ...TOOL,
+      execute: async () => {
+        throw new Error('x'.repeat(5000));
+      },
+    });
+    const ws = FakeWebSocket.instances[0]!;
+    ws.open();
+
+    ws.receive({ version: 2, id: 1, method: 'tools/call', params: { name: 'add-todo' } });
+    await ws.flush();
+    expect(ws.sent.at(-1).error.message).toHaveLength(1024);
   });
 });
