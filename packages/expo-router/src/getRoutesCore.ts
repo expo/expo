@@ -1,6 +1,7 @@
 import {
   getValidInitialRoute,
   type DynamicConvention,
+  type LoadedRoute,
   type MiddlewareNode,
   type RouteNode,
 } from './Route';
@@ -60,6 +61,65 @@ type DirectoryNode = {
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
+
+type LazyRouteEntry =
+  | { status: 'pending'; promise: PromiseLike<unknown> }
+  | { status: 'loaded'; module: LoadedRoute };
+
+/**
+ * Route modules that resolved in the `lazy` import mode, keyed by context module and route file.
+ *
+ * On web the async require returns the module synchronously once its split bundle is registered.
+ * On native it always returns a promise, so without this cache `loadRoute()` could never return a
+ * loaded layout and `unstable_settings` would never be read.
+ */
+const loadedLazyRoutes = new WeakMap<RequireContext, Map<string, LazyRouteEntry>>();
+
+export function isThenable(value: unknown): value is PromiseLike<unknown> {
+  return (
+    value != null &&
+    (typeof value === 'object' || typeof value === 'function') &&
+    typeof (value as { then?: unknown }).then === 'function'
+  );
+}
+
+function resolveLazyRouteModule(
+  contextModule: RequireContext,
+  filePath: string,
+  routeModule: unknown
+): unknown {
+  if (!isThenable(routeModule)) {
+    return routeModule;
+  }
+
+  let entries = loadedLazyRoutes.get(contextModule);
+  if (!entries) {
+    entries = new Map();
+    loadedLazyRoutes.set(contextModule, entries);
+  }
+
+  const entry = entries.get(filePath);
+  if (entry) {
+    // The context module created a new thenable for this call. Nothing consumes it, so keep a
+    // failed load from surfacing as an unhandled rejection.
+    routeModule.then(undefined, () => {});
+    return entry.status === 'loaded' ? entry.module : entry.promise;
+  }
+
+  const promise = routeModule.then(
+    (module) => {
+      entries.set(filePath, { status: 'loaded', module: module as LoadedRoute });
+      return module;
+    },
+    (error: unknown) => {
+      // Let the next `loadRoute()` retry the import instead of caching the failure.
+      entries.delete(filePath);
+      throw error;
+    }
+  );
+  entries.set(filePath, { status: 'pending', promise });
+  return promise;
+}
 
 export type RedirectConfig = {
   source: string;
@@ -370,6 +430,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             '_result' in routeModule && routeModule._result != null
               ? routeModule._result
               : routeModule;
+          routeModule = resolveLazyRouteModule(contextModule, filePath, routeModule);
         }
 
         if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
