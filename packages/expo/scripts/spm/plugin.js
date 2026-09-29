@@ -144,18 +144,20 @@ function resolvePodIdentities(modules, metadata, autolinkedRoots) {
 function macroPluginFlags(coreModuleRoot) {
   let pkgJsonPath;
   try {
-    pkgJsonPath = require.resolve('@expo/expo-modules-macros-plugin/package.json', {
+    pkgJsonPath = require.resolve('expo-modules-macros/package.json', {
       paths: [coreModuleRoot],
     });
   } catch {
     throw new Error(
-      `[expo-spm-plugin] Could not resolve "@expo/expo-modules-macros-plugin" from ${coreModuleRoot}. ` +
+      `[expo-spm-plugin] Could not resolve "expo-modules-macros" from ${coreModuleRoot}. ` +
         'Expo modules are compiled from source here, and their Swift macros cannot expand without ' +
         'this plugin — the build would fail with "external macro implementation could not be found". ' +
-        'Reinstall your JavaScript dependencies and build again.'
+        '"expo-modules-core" must be a version that depends on "expo-modules-macros", the new name of ' +
+        '"@expo/expo-modules-macros-plugin". Run `npx expo install --fix` to align the Expo package ' +
+        'versions, then build again.'
     );
   }
-  const tool = path.join(path.dirname(pkgJsonPath), 'apple', 'ExpoModulesMacros-tool');
+  const tool = path.join(path.dirname(pkgJsonPath), 'apple', 'ExpoModulesMacros');
   if (!fs.existsSync(tool)) {
     throw new Error(
       `[expo-spm-plugin] The Expo Swift macro plugin is missing its executable at ${tool}. ` +

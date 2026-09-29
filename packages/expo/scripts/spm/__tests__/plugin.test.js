@@ -655,7 +655,7 @@ describe('the source-emit pass', () => {
       'utf8'
     );
     expect(out).toContain('"-Xfrontend", "-load-plugin-executable", "-Xfrontend"');
-    expect(out).toMatch(/ExpoModulesMacros-tool#ExpoModulesMacros/);
+    expect(out).toMatch(/expo-modules-macros\/apple\/ExpoModulesMacros#ExpoModulesMacros/);
   });
 });
 

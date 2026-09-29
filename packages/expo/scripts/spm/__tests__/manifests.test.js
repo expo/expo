@@ -199,12 +199,12 @@ describe('macro plugin flags', () => {
     '-Xfrontend',
     '-load-plugin-executable',
     '-Xfrontend',
-    '/abs/macros/ExpoModulesMacros-tool#ExpoModulesMacros',
+    '/abs/macros/ExpoModulesMacros#ExpoModulesMacros',
   ];
   const EXPECTED_SWIFT =
     'swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces", "-Xfrontend", ' +
     '"-load-plugin-executable", "-Xfrontend", ' +
-    '"/abs/macros/ExpoModulesMacros-tool#ExpoModulesMacros"])]';
+    '"/abs/macros/ExpoModulesMacros#ExpoModulesMacros"])]';
 
   describe('renderPureSwiftManifest', () => {
     const out = renderPureSwiftManifest({
