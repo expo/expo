@@ -9,8 +9,6 @@
   - expo-app-metrics@58.0.9
   - expo-eas-client@58.0.1
 
-- [iOS] Remove legacy `UserDefaults` keys that are no longer read. ([#50752](https://github.com/expo/expo/pull/50752) by [@tsapeta](https://github.com/tsapeta))
-
 ## 58.0.10 — 2026-09-28
 
 _This version does not introduce any user-facing changes._
