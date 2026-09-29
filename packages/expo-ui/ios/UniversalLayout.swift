@@ -489,18 +489,25 @@ private func compressChildren(
   }
   guard !candidates.isEmpty else { return }
 
-  var remainingReduction = min(overflow, candidates.reduce(CGFloat(0)) { $0 + $1.slack })
-  var remainingSlack = candidates.reduce(CGFloat(0)) { $0 + $1.slack }
-  for (offset, candidate) in candidates.enumerated() {
-    let isLast = offset == candidates.count - 1
-    let share = isLast || remainingSlack <= 0
-      ? min(candidate.slack, remainingReduction)
-      : min(candidate.slack, (remainingReduction * candidate.slack / remainingSlack).rounded(.down))
-    remainingReduction -= share
-    remainingSlack -= candidate.slack
-    guard share > 0 else { continue }
+  // Smallest slack first, so a short label keeps its width when that fits an equal share.
+  // The long text then takes what remains.
+  candidates.sort { lhs, rhs in
+    if lhs.slack != rhs.slack { return lhs.slack < rhs.slack }
+    return lhs.index < rhs.index
+  }
+  let candidateIndices = Set(candidates.map(\.index))
+  let reserved = children.enumerated().reduce(CGFloat(0)) { total, item in
+    if flexibleIndices.contains(item.offset) || candidateIndices.contains(item.offset) {
+      return total
+    }
+    return total + mainLength(item.element.size, axis: axis)
+  }
+  var available = max(0, offeredMain - spacings.reduce(0, +) - reserved)
+  var left = candidates.count
+  for candidate in candidates {
+    let share = min(candidate.idealMain, available / CGFloat(left))
     let proposal = proposedSize(
-      main: candidate.idealMain - share,
+      main: share,
       cross: children[candidate.index].crossProposal,
       axis: axis
     )
@@ -508,6 +515,8 @@ private func compressChildren(
     children[candidate.index].size = size
     children[candidate.index].proposal = proposal
     children[candidate.index].crossContribution = crossLength(size, axis: axis)
+    available = max(0, available - mainLength(size, axis: axis))
+    left -= 1
   }
 }
 
