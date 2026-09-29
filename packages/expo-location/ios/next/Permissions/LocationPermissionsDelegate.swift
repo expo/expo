@@ -33,7 +33,7 @@ final class LocationPermissionsDelegate {
     try requestAndRaiseAccuracyIfNeeded(.background, options: options, promise)
   }
 
-  private func getPermissions(_ kind: PermissionKind, _ promise: Promise) throws {
+  private func getPermissions(_ kind: LocationPermissionKind, _ promise: Promise) throws {
     guard let permissions = appContext?.permissions else {
       throw PermissionsModuleUnavailable()
     }
@@ -45,7 +45,7 @@ final class LocationPermissionsDelegate {
   }
 
   private func requestAndRaiseAccuracyIfNeeded(
-    _ kind: PermissionKind,
+    _ kind: LocationPermissionKind,
     options: PermissionsRequestOptions,
     _ promise: Promise
   ) throws {
@@ -80,19 +80,5 @@ final class LocationPermissionsDelegate {
       return nil
     }
     return purposeKey
-  }
-
-  private enum PermissionKind {
-    case foreground
-    case background
-
-    var requesterClass: EXPermissionsRequester.Type {
-      switch self {
-      case .foreground:
-        return ForegroundPermissionsRequester.self
-      case .background:
-        return BackgroundPermissionsRequester.self
-      }
-    }
   }
 }

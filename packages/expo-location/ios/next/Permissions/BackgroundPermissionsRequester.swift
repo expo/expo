@@ -23,13 +23,8 @@ final class BackgroundPermissionsRequester: NSObject, EXPermissionsRequester {
     resolver resolve: @escaping EXPromiseResolveBlock,
     rejecter reject: @escaping EXPromiseRejectBlock
   ) {
-    guard LocationPlistKeys.isIncludedInInfoPlist(LocationPlistKeys.whenInUse) else {
-      let exception = MissingPlistKeyException(LocationPlistKeys.whenInUse)
-      reject(exception.code, exception.description, exception)
-      return
-    }
-    guard LocationPlistKeys.isIncludedInInfoPlist(LocationPlistKeys.alwaysAndWhenInUse) else {
-      let exception = MissingPlistKeyException(LocationPlistKeys.alwaysAndWhenInUse)
+    if let missingKey = LocationPlistKeys.firstMissing(in: LocationPermissionKind.background.plistKeys) {
+      let exception = MissingPlistKeyException(missingKey)
       reject(exception.code, exception.description, exception)
       return
     }
@@ -74,8 +69,7 @@ final class BackgroundPermissionsRequester: NSObject, EXPermissionsRequester {
   }
 
   private func currentResponse() -> LocationPermissionResponse {
-    guard LocationPlistKeys.isIncludedInInfoPlist(LocationPlistKeys.whenInUse),
-      LocationPlistKeys.isIncludedInInfoPlist(LocationPlistKeys.alwaysAndWhenInUse) else {
+    guard LocationPlistKeys.firstMissing(in: LocationPermissionKind.background.plistKeys) == nil else {
       return LocationPermissionResponse.denied
     }
 
