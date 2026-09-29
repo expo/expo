@@ -1,13 +1,18 @@
 import * as Log from '../../../log';
+import { isInteractive } from '../../../utils/interactive';
 import { UrlCreator } from '../UrlCreator';
 
 jest.mock('../../../log');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 
 const NO_DEV_MENU_QUERY =
   '__expo_disable_fab=1&__expo_disable_auto_launch=1&__expo_disable_onboarding=1';
 
 beforeEach(() => {
   delete process.env.EXPO_NO_DEV_MENU;
+  jest.mocked(isInteractive).mockReturnValue(true);
 });
 
 function createDefaultCreator(overrides?: {
@@ -117,6 +122,19 @@ describe('constructDevClientUrl', () => {
     process.env.EXPO_NO_DEV_MENU = '1';
     expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
       `bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081&${NO_DEV_MENU_QUERY}`
+    );
+  });
+  it(`appends the dev menu launch params when the process is not interactive`, () => {
+    jest.mocked(isInteractive).mockReturnValue(false);
+    expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      `bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081&${NO_DEV_MENU_QUERY}`
+    );
+  });
+  it(`keeps the dev menu when EXPO_NO_DEV_MENU=0 in a non-interactive process`, () => {
+    jest.mocked(isInteractive).mockReturnValue(false);
+    process.env.EXPO_NO_DEV_MENU = '0';
+    expect(createDefaultCreator().constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      'bacon://?__expo_url=http%3A%2F%2F100.100.1.100%3A8081'
     );
   });
 });

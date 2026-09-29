@@ -3,6 +3,9 @@ import { OpenDiscoveryResult, OpenSinglePlatformResult } from '../OpenMiddleware
 import { createOpen, resolveOpenInfo } from '../openHandlers';
 
 jest.mock('../../../../log');
+jest.mock('../../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 
 const TUNNEL_URL = 'https://abc.ngrok-free.app';
 const LAN_ADDR = '192.168.7.42';

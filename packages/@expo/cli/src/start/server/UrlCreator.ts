@@ -3,6 +3,7 @@ import { URL } from 'url';
 
 import * as Log from '../../log';
 import { env } from '../../utils/env';
+import { isInteractive } from '../../utils/interactive';
 import type { GatewayInfo } from '../../utils/ip';
 import { getGateway, getGatewayAsync } from '../../utils/ip';
 import { debugEvent } from './events';
@@ -23,8 +24,13 @@ export interface CreateURLOptions {
 const NO_DEV_MENU_LAUNCH_QUERY =
   '__expo_disable_fab=1&__expo_disable_auto_launch=1&__expo_disable_onboarding=1';
 
+/** `EXPO_NO_DEV_MENU` wins when set; otherwise hide the dev menu in non-interactive runs (CI, agents, piped output). */
+function shouldHideDevMenu(): boolean {
+  return process.env.EXPO_NO_DEV_MENU == null ? !isInteractive() : env.EXPO_NO_DEV_MENU;
+}
+
 function withDevMenuLaunchParams(url: string): string {
-  if (!env.EXPO_NO_DEV_MENU) {
+  if (!shouldHideDevMenu()) {
     return url;
   }
   return url + (url.includes('?') ? '&' : '?') + NO_DEV_MENU_LAUNCH_QUERY;

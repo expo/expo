@@ -88,7 +88,7 @@ class Env {
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
   }
-  /** Append the reserved `__expo_*` params that keep the dev menu closed to Expo Go and development build launch URLs. */
+  /** Append the reserved `__expo_*` params that keep the dev menu closed to Expo Go and development build launch URLs. Unset defaults to the inverse of `isInteractive()`. */
   get EXPO_NO_DEV_MENU(): boolean {
     return boolish('EXPO_NO_DEV_MENU', false);
   }

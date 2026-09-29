@@ -74,7 +74,7 @@ The same parameters work on Expo Go launch URLs, for example `exp://192.168.1.10
 
 #### Using launch URLs in automation scenarios
 
-When launching a development build with automation, such as in a CI/CD workflow, an end-to-end test, or an agent loop, add `__expo_disable_onboarding=1`, `__expo_disable_fab=1`, and `__expo_disable_auto_launch=1` to the launch URL. Set `EXPO_NO_DEV_MENU=1` when you start Expo CLI to add these parameters to every launch URL, QR code, and redirect for that session.
+When launching a development build with automation, such as in a CI/CD workflow, an end-to-end test, or an agent loop, add `__expo_disable_onboarding=1`, `__expo_disable_fab=1`, and `__expo_disable_auto_launch=1` to the launch URL. Set `EXPO_NO_DEV_MENU=1` when you start Expo CLI to add these parameters to every launch URL, QR code, and redirect for that session. Expo CLI does this by default when it is not interactive, such as in CI or without a TTY. Set `EXPO_NO_DEV_MENU=0` to opt out.
 
 #### App-specific deep links
 
