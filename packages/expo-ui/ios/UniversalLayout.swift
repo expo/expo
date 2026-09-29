@@ -100,12 +100,38 @@ private struct UniversalPercentageParentKey: EnvironmentKey {
   static let defaultValue = false
 }
 
+private struct ResolvesOwnPercentageKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
 extension EnvironmentValues {
-  /// Set by `Host` and by universal `Row` / `Column`.
-  /// A platform stack sets it back to false, so a percentage there keeps the child's own size.
+  /// `Host`, universal `Row` / `Column`, and `ScrollView` set this for their children.
+  /// Other views clear it.
+  /// `Group` passes the parent's value through.
   var universalPercentageParent: Bool {
     get { self[UniversalPercentageParentKey.self] }
     set { self[UniversalPercentageParentKey.self] = newValue }
+  }
+
+  /// Parent opt-in captured for this view, after descendants have been cleared.
+  var resolvesOwnPercentage: Bool {
+    get { self[ResolvesOwnPercentageKey.self] }
+    set { self[ResolvesOwnPercentageKey.self] = newValue }
+  }
+}
+
+/**
+ The sizing modifier sits outside this wrapper, so it still sees the parent flag.
+ Descendants see the flag cleared unless this view sets it again.
+ */
+internal struct UniversalPercentageParentBoundary<Content: View>: View {
+  @Environment(\.universalPercentageParent) private var parentOptedIn
+  let content: Content
+
+  var body: some View {
+    content
+      .environment(\.resolvesOwnPercentage, parentOptedIn)
+      .environment(\.universalPercentageParent, false)
   }
 }
 
@@ -136,6 +162,7 @@ internal struct UniversalPercentageLayout: Layout {
  Opt-in replacement for `HStack`.
  Universal `Row` uses it so a child percentage is a fraction of this stack.
  A child that grows on the main axis, such as `Spacer`, shares the leftover space.
+ Text and other children that can shrink give up space when the ideals do not fit.
  The cross axis gets the size this stack was offered, so text can wrap.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
@@ -297,9 +324,14 @@ private struct StackMeasurement {
 private struct MeasuredChild {
   var size: CGSize
   var proposal: ProposedViewSize
+  /// Cross-axis proposal from the first pass.
+  /// The flexible pass must keep it, or a `ScrollView` in a column loses the column width.
+  var crossProposal: CGFloat?
   /// Cross-axis size counted toward the stack.
   /// A flexible child uses its ideal cross size, so `Spacer` does not stretch the other axis.
   var crossContribution: CGFloat
+  /// False for a resolved percentage or a flexible child.
+  var canCompress: Bool
 }
 
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
@@ -350,7 +382,9 @@ private func measureChildren(
       children.append(MeasuredChild(
         size: size,
         proposal: childProposal,
-        crossContribution: crossLength(size, axis: axis)
+        crossProposal: crossProposal,
+        crossContribution: crossLength(size, axis: axis),
+        canCompress: false
       ))
       continue
     }
@@ -368,27 +402,42 @@ private func measureChildren(
       children.append(MeasuredChild(
         size: ideal,
         proposal: idealProposal,
-        crossContribution: crossLength(unspecified, axis: axis)
+        crossProposal: crossProposal,
+        crossContribution: crossLength(unspecified, axis: axis),
+        canCompress: false
       ))
     } else {
       children.append(MeasuredChild(
         size: ideal,
         proposal: idealProposal,
-        crossContribution: crossLength(ideal, axis: axis)
+        crossProposal: crossProposal,
+        crossContribution: crossLength(ideal, axis: axis),
+        canCompress: true
       ))
     }
   }
 
+  let flexible = Set(flexibleIndices)
+  if let offeredMain {
+    compressChildren(
+      &children,
+      subviews: subviews,
+      offeredMain: offeredMain,
+      flexibleIndices: flexible,
+      spacings: spacings,
+      axis: axis
+    )
+  }
   if let offeredMain, !flexibleIndices.isEmpty {
     let fixedMain = children.enumerated().reduce(CGFloat(0)) { total, item in
-      flexibleIndices.contains(item.offset) ? total : total + mainLength(item.element.size, axis: axis)
+      flexible.contains(item.offset) ? total : total + mainLength(item.element.size, axis: axis)
     }
     var remaining = max(0, offeredMain - fixedMain - spacings.reduce(0, +))
     for (offset, index) in flexibleIndices.enumerated() {
       let slotsLeft = flexibleIndices.count - offset
       let share = slotsLeft == 1 ? remaining : (remaining / CGFloat(slotsLeft)).rounded(.down)
       remaining -= share
-      let childProposal = proposedSize(main: share, cross: nil, axis: axis)
+      let childProposal = proposedSize(main: share, cross: children[index].crossProposal, axis: axis)
       children[index].size = subviews[index].sizeThatFits(childProposal)
       children[index].proposal = childProposal
     }
@@ -403,6 +452,63 @@ private func measureChildren(
     definiteMain: definiteMain,
     definiteCross: definiteCross
   )
+}
+
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private struct CompressionCandidate {
+  let index: Int
+  let idealMain: CGFloat
+  let slack: CGFloat
+}
+
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private func compressChildren(
+  _ children: inout [MeasuredChild],
+  subviews: LayoutSubviews,
+  offeredMain: CGFloat,
+  flexibleIndices: Set<Int>,
+  spacings: [CGFloat],
+  axis: Axis
+) {
+  let fixedMain = children.enumerated().reduce(CGFloat(0)) { total, item in
+    flexibleIndices.contains(item.offset) ? total : total + mainLength(item.element.size, axis: axis)
+  }
+  let overflow = fixedMain + spacings.reduce(0, +) - offeredMain
+  guard overflow > 1 else { return }
+
+  var candidates: [CompressionCandidate] = []
+  for index in children.indices where !flexibleIndices.contains(index) && children[index].canCompress {
+    let minSize = subviews[index].sizeThatFits(
+      proposedSize(main: 0, cross: children[index].crossProposal, axis: axis)
+    )
+    let idealMain = mainLength(children[index].size, axis: axis)
+    let slack = idealMain - mainLength(minSize, axis: axis)
+    if slack > 1 {
+      candidates.append(CompressionCandidate(index: index, idealMain: idealMain, slack: slack))
+    }
+  }
+  guard !candidates.isEmpty else { return }
+
+  var remainingReduction = min(overflow, candidates.reduce(CGFloat(0)) { $0 + $1.slack })
+  var remainingSlack = candidates.reduce(CGFloat(0)) { $0 + $1.slack }
+  for (offset, candidate) in candidates.enumerated() {
+    let isLast = offset == candidates.count - 1
+    let share = isLast || remainingSlack <= 0
+      ? min(candidate.slack, remainingReduction)
+      : min(candidate.slack, (remainingReduction * candidate.slack / remainingSlack).rounded(.down))
+    remainingReduction -= share
+    remainingSlack -= candidate.slack
+    guard share > 0 else { continue }
+    let proposal = proposedSize(
+      main: candidate.idealMain - share,
+      cross: children[candidate.index].crossProposal,
+      axis: axis
+    )
+    let size = subviews[candidate.index].sizeThatFits(proposal)
+    children[candidate.index].size = size
+    children[candidate.index].proposal = proposal
+    children[candidate.index].crossContribution = crossLength(size, axis: axis)
+  }
 }
 
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)

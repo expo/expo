@@ -31,7 +31,7 @@ public final class VStackViewProps: UIBaseViewProps {
 public struct VStackView: ExpoSwiftUI.View {
   @ObservedObject public var props: VStackViewProps
   // A fraction on this stack is a real size only when the parent opted in.
-  @Environment(\.universalPercentageParent) private var resolvesOwnPercentage
+  @Environment(\.resolvesOwnPercentage) private var resolvesOwnPercentage
 
   public init(props: VStackViewProps) {
     self.props = props
