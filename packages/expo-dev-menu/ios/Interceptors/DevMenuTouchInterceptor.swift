@@ -6,6 +6,7 @@ import UIKit
 
 class DevMenuTouchInterceptor {
   static fileprivate let recognizer: DevMenuGestureRecognizer = DevMenuGestureRecognizer()
+  static private var observers: [NSObjectProtocol] = []
 
   /**
    Returns bool value whether the dev menu touch gestures are being intercepted.
@@ -13,44 +14,86 @@ class DevMenuTouchInterceptor {
   static var isInstalled: Bool = false {
     willSet {
       if isInstalled != newValue {
-        // Capture touch gesture from any window by swizzling default implementation from UIWindow.
-        swizzle()
-
         // Make sure recognizer is enabled/disabled accordingly.
         recognizer.isEnabled = newValue
+
+        if newValue {
+          // Attach to the root view controller's view and observe window/scene
+          // changes so we can re-attach when the active window changes.
+          attachRecognizerToRootView()
+          startObserving()
+        } else {
+          stopObserving()
+          recognizer.view?.removeGestureRecognizer(recognizer)
+        }
       }
     }
   }
 
-  static private func swizzle() {
-    DevMenuUtils.swizzle(
-      selector: #selector(getter: UIWindow.gestureRecognizers),
-      withSelector: #selector(getter: UIWindow.EXDevMenu_gestureRecognizers),
-      forClass: UIWindow.self
+  static private func attachRecognizerToRootView() {
+    guard let rootView = Self.findRootView(), recognizer.view != rootView else {
+      return
+    }
+    recognizer.view?.removeGestureRecognizer(recognizer)
+    rootView.addGestureRecognizer(recognizer)
+  }
+
+  static private func findRootView() -> UIView? {
+    let window = UIApplication.shared.connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .filter { $0.activationState == .foregroundActive }
+      .flatMap { $0.windows }
+      .first { $0.isKeyWindow && !Self.isOverlayWindow($0) }
+    return window?.rootViewController?.view
+  }
+
+  static private func startObserving() {
+    guard observers.isEmpty else { return }
+
+    // Re-attach when a different window becomes key
+    observers.append(
+      NotificationCenter.default.addObserver(
+        forName: UIWindow.didBecomeKeyNotification,
+        object: nil,
+        queue: .main
+      ) { _ in
+        if isInstalled {
+          attachRecognizerToRootView()
+        }
+      }
+    )
+
+    // Re-attach when a scene activates (e.g. app comes to foreground)
+    observers.append(
+      NotificationCenter.default.addObserver(
+        forName: UIScene.didActivateNotification,
+        object: nil,
+        queue: .main
+      ) { _ in
+        if isInstalled {
+          attachRecognizerToRootView()
+        }
+      }
     )
   }
-}
 
-extension UIWindow {
-  @objc open var EXDevMenu_gestureRecognizers: [UIGestureRecognizer]? {
-    // Just for thread safety, someone may uninstall the interceptor in the meantime and we would fall into recursive loop.
-    if !DevMenuTouchInterceptor.isInstalled {
-      return self.gestureRecognizers
+  static private func stopObserving() {
+    for observer in observers {
+      NotificationCenter.default.removeObserver(observer)
     }
+    observers.removeAll()
+  }
 
-    // Check for the case where singleton instance of gesture recognizer is not created yet or is attached to different window.
-    let recognizer = DevMenuTouchInterceptor.recognizer
-    if recognizer.view != self {
-      // Remove it from the window it's attached to.
-      recognizer.view?.removeGestureRecognizer(recognizer)
-
-      // Attach to this window.
-      self.addGestureRecognizer(recognizer)
+  static private func isOverlayWindow(_ window: UIWindow) -> Bool {
+    if window is DevMenuWindow {
+      return true
     }
-
-    // `EXDevMenu_gestureRecognizers` implementation has been swizzled with `gestureRecognizers`
-    // It might be confusing that we call it recursively, but we don't.
-    return self.EXDevMenu_gestureRecognizers
+    #if !os(tvOS)
+    if window is DevMenuFABWindow {
+      return true
+    }
+    #endif
+    return false
   }
 }
 
