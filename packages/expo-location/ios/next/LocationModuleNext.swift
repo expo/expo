@@ -32,7 +32,7 @@ public final class LocationModuleNext: Module {
       guard CLLocationManager.locationServicesEnabled() else {
         throw LocationServicesDisabledGlobally()
       }
-      try accessGuard.checkForegroundPermissions()
+      try accessGuard.checkPermissions(.foreground)
 
       let location = try await PositionRequester().get(options: options ?? GetPositionOptions())
       return location?.toPosition()
