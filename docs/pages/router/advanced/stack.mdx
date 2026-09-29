@@ -110,14 +110,14 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerLargeTitle: true }} />
+      <Stack.Screen name="index" options={{ headerLargeTitleEnabled: true }} />
       <Stack.Screen name="details" options={{ headerUserInterfaceStyle: 'dark' }} />
     </Stack>
   );
 }
 ```
 
-You can also set this option in `screenOptions` for the whole stack. A `Stack.Screen` option overrides it for that screen. When the option is omitted, the native header follows the navigation theme. This option affects the native header only; set header colors separately if needed.
+You can also set this option in `screenOptions` for the whole stack. A `Stack.Screen` option overrides it for that screen. When the option is omitted, the native header follows the navigation theme. The native header does not support changes to this option while the screen is visible. This option affects the native header only. Set header colors separately if needed.
 
 ### Set screen options dynamically
 
