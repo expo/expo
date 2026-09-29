@@ -33,6 +33,7 @@ module Pod
     private
 
     _original_run_podfile_pre_install_hooks = instance_method(:run_podfile_pre_install_hooks)
+    _original_run_podfile_post_install_hooks = instance_method(:run_podfile_post_install_hooks)
     _original_perform_post_install_actions = instance_method(:perform_post_install_actions)
 
     public
@@ -41,23 +42,8 @@ module Pod
       # Call original implementation first
       _original_perform_post_install_actions.bind(self).()
 
-      # CocoaPods overrides generate_available_uuid_list to use a fast sequential counter
-      # (Pod::Project#generate_available_uuid_list) that skips collision checks. After
-      # predictabilize_uuids reassigns all UUIDs to deterministic values, the counter resets
-      # and new sequential UUIDs can collide with existing ones, corrupting Pods.xcodeproj.
-      # Fix: replace the sequential generator with collision-safe random UUIDs for any
-      # objects created after predictabilize_uuids has run.
-      # pods_project is nil with the `skip_pods_project_generation` install option;
-      # the rest of the post-install work must still run there.
-      if (project = self.pods_project)
-        existing_uuids = project.objects_by_uuid.keys.to_set
-        project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
-          new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
-          uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
-          @generated_uuids += uniques
-          @available_uuids += uniques
-        end
-      end
+      # Collision-safe UUIDs for the objects added below (see `use_collision_safe_uuids`).
+      use_collision_safe_uuids(self.pods_project)
 
       # Run all precompiled module post-install configuration
       Expo::PrecompiledModules.perform_post_install(self)
@@ -83,6 +69,14 @@ module Pod
       # Make React Native's ccache build settings resolve for app targets that
       # are not integrated with CocoaPods (e.g. custom share/widget extensions).
       fix_react_native_path_for_non_cocoapods_targets()
+    end
+
+    define_method(:run_podfile_post_install_hooks) do
+      # The Podfile's post_install also creates objects: React Native's `react_native_post_install` adds a Swift
+      # package's reference, product dependency and build file for every `spm_dependency` (scripts/cocoapods/spm.rb).
+      # They come after `stabilize_target_uuids` reset the UUID counter, so guard them too.
+      use_collision_safe_uuids(self.pods_project)
+      _original_run_podfile_post_install_hooks.bind(self).()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
@@ -116,6 +110,23 @@ module Pod
     end
 
     private
+
+    # CocoaPods hands out Pods project UUIDs from a fast sequential counter that skips collision checks
+    # (Pod::Project#generate_available_uuid_list). `stabilize_target_uuids` (every install) and `predictabilize_uuids`
+    # reset that counter to the current batch's spare UUIDs (Xcodeproj's UUIDGenerator#generate!), so objects created
+    # afterwards can take UUIDs already in the project, the root object's included, which leaves a Pods.xcodeproj
+    # Xcode cannot open. Replace the generator with collision-safe random UUIDs from here on.
+    # `project` is nil with the `skip_pods_project_generation` install option.
+    def use_collision_safe_uuids(project)
+      return if project.nil?
+      existing_uuids = project.objects_by_uuid.keys.to_set
+      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
+        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
+        uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
+        @generated_uuids += uniques
+        @available_uuids += uniques
+      end
+    end
 
     # See call site in perform_post_install_actions for rationale.
     # This runs AFTER the user's `post_install` hook, so it will overwrite any
