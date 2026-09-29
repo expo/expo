@@ -1,8 +1,14 @@
 # Changelog
 
-## 58.0.9 — 2026-09-28
+## Unpublished
 
-_This version does not introduce any user-facing changes._
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
 
 ## 58.0.8 — 2026-09-25
 
