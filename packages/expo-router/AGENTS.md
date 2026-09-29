@@ -8,6 +8,8 @@ Expo Router turns app files into routes for React Native and web. Judge features
 - Routes follow file names: `page/index.tsx` maps to `/page`, `post/[id].tsx` has a dynamic segment, and `(group)/_layout.tsx` defines a URL-invisible layout group.
 - Read [stack header and toolbar instructions](src/layouts/stack-utils/AGENTS.md) before changing that directory.
 - Native implementations live in `ios/` and `android/`; the config plugin lives in `plugin/`.
+- [`@expo/router-server`](../@expo/router-server/package.json) uses Router internals for route manifests, typed routes, and server rendering; [`@expo/cli`](../@expo/cli/package.json) depends on it for development and export. Check both packages when changing those flows.
+- `expo-router/server` re-exports APIs from the separate [`expo-server`](../expo-server/package.json) dependency.
 
 ## Build and checks
 
