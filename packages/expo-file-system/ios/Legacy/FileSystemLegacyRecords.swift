@@ -43,7 +43,6 @@ struct DownloadOptionsLegacy: Record {
   @Field var cache: Bool = false
   @Field var headers: [String: String]?
   @Field var sessionType: SessionType = .background
-  @Field var deferBackgroundSessionCompletion: Bool = false
 }
 
 struct UploadOptions: Record {

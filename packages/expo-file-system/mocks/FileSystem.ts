@@ -822,6 +822,10 @@ export class FileSystemDownloadTask extends SharedObject {
   release(): void {
     super.release();
   }
+  acknowledgeBackgroundCompletionAsync(): Promise<void> {
+    return Promise.resolve();
+  }
+
   cancel(): void {}
 }
 

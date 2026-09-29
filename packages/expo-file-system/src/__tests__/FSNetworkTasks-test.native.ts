@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import ExpoFileSystem from '../ExpoFileSystem';
 import {
   File,
@@ -718,5 +719,78 @@ describe('Progress callback', () => {
 
     expect(file.uri).toBe(outputUri);
     expect(onProgress).toHaveBeenCalledWith({ bytesWritten: 42, totalBytes: 42 });
+  });
+});
+
+describe('DownloadTask background completion acknowledgment', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('keeps default behavior and forwards opt-in to download and resume', async () => {
+    const start = jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start')
+      .mockResolvedValue('file:///cache/test');
+    const resume = jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'resume')
+      .mockResolvedValue('file:///cache/test');
+    const file = new File(Paths.cache, 'test');
+    const standard = new DownloadTask('https://example.com/file', file);
+    await standard.downloadAsync();
+    expect(start.mock.calls[0][2]?.deferBackgroundSessionCompletion).toBeUndefined();
+    const optedIn = new DownloadTask('https://example.com/file', file, {
+      deferBackgroundSessionCompletion: true,
+    });
+    await optedIn.downloadAsync();
+    expect(start.mock.calls[1][2]?.deferBackgroundSessionCompletion).toBe(true);
+    const restored = DownloadTask.fromSavable(
+      {
+        url: 'https://example.com/file',
+        fileUri: file.uri,
+        isDirectory: false,
+        resumeData: 'resume-data',
+      },
+      { deferBackgroundSessionCompletion: true }
+    );
+    await restored.resumeAsync();
+    expect(resume.mock.calls[0][3]?.deferBackgroundSessionCompletion).toBe(true);
+  });
+
+  it('acknowledges only successful opted-in iOS background downloads', async () => {
+    const acknowledge = jest
+      .spyOn(
+        ExpoFileSystem.FileSystemDownloadTask.prototype,
+        'acknowledgeBackgroundCompletionAsync'
+      )
+      .mockResolvedValue();
+    jest
+      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start')
+      .mockResolvedValue('file:///cache/test');
+    const file = new File(Paths.cache, 'test');
+    const task = new DownloadTask('https://example.com/file', file, {
+      deferBackgroundSessionCompletion: true,
+    });
+    if (Platform.OS === 'ios') {
+      await expect(task.acknowledgeBackgroundCompletionAsync()).rejects.toThrow(
+        'after a successful download'
+      );
+    } else {
+      await task.acknowledgeBackgroundCompletionAsync();
+    }
+    expect(acknowledge).not.toHaveBeenCalled();
+    await task.downloadAsync();
+    expect(acknowledge).not.toHaveBeenCalled();
+    await task.acknowledgeBackgroundCompletionAsync();
+    await task.acknowledgeBackgroundCompletionAsync();
+    expect(acknowledge).toHaveBeenCalledTimes(Platform.OS === 'ios' ? 2 : 0);
+    const foreground = new DownloadTask('https://example.com/file', file, {
+      deferBackgroundSessionCompletion: true,
+      sessionType: 'foreground',
+    });
+    const standard = new DownloadTask('https://example.com/file', file);
+    acknowledge.mockClear();
+    await foreground.downloadAsync();
+    await foreground.acknowledgeBackgroundCompletionAsync();
+    await standard.downloadAsync();
+    await standard.acknowledgeBackgroundCompletionAsync();
+    expect(acknowledge).not.toHaveBeenCalled();
   });
 });

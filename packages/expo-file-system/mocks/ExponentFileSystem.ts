@@ -69,8 +69,6 @@ export async function downloadResumableStartAsync(
   resumeDataString: string | undefined
 ): Promise<any> {}
 
-export async function completeBackgroundSessionAsync(uuid: string): Promise<void> {}
-
 export async function downloadResumablePauseAsync(id: string): Promise<{
   [key: string]: string | undefined;
 }> {

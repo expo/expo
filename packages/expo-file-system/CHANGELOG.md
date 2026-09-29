@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Add opt-in control over background URLSession completion for legacy resumable downloads.
+- [iOS] Adds opt-in control over background completion to modern download tasks.
 
 ### 🐛 Bug fixes
 
