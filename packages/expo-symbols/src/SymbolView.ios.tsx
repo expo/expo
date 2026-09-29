@@ -30,8 +30,14 @@ function getNativeProps(props: SymbolViewProps): NativeSymbolViewProps {
   const name = typeof props.name === 'object' ? props.name.ios : props.name;
   const weight = typeof props.weight === 'object' ? props.weight.ios : props.weight;
 
+  const { 'aria-hidden': ariaHidden, 'aria-label': ariaLabel, ...viewProps } = props;
+
   return {
-    ...props,
+    ...viewProps,
+    // React Native only maps `aria-*` props to their native counterparts inside its own `View`
+    // component, which this native view does not render through, so map them here.
+    accessibilityElementsHidden: ariaHidden ?? props.accessibilityElementsHidden,
+    accessibilityLabel: ariaLabel ?? props.accessibilityLabel,
     name,
     style,
     colors: colors.map((c) => processColor(c)),

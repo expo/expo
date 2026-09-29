@@ -11,6 +11,20 @@ const DEFAULT_SYMBOL_COLOR =
   Platform.OS === 'android' ? PlatformColor('@android:color/system_primary_dark') : '#7d9bd4';
 
 export function SymbolView(props: SymbolViewProps): JSX.Element {
+  const {
+    name: _name,
+    fallback: _fallback,
+    type: _type,
+    scale: _scale,
+    weight: _weight,
+    colors: _colors,
+    size: _size,
+    tintColor: _tintColor,
+    resizeMode: _resizeMode,
+    animationSpec: _animationSpec,
+    style: _style,
+    ...viewProps
+  } = props;
   const font = useMemo(() => getFont(props.weight), [props.weight]);
   const name =
     typeof props.name === 'object'
@@ -33,11 +47,12 @@ export function SymbolView(props: SymbolViewProps): JSX.Element {
   }
   const size = props.size ?? 24;
   const style = [{ width: size, height: size }, props.style];
+  // Forward view props such as `aria-hidden` and `accessibilityLabel` to the view we render.
   if (!loaded) {
-    return <View style={style} />;
+    return <View {...viewProps} style={style} />;
   }
   return (
-    <View style={style}>
+    <View {...viewProps} style={style}>
       <Text
         style={{
           fontFamily: font.name,
