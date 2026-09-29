@@ -2,6 +2,7 @@ import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import { sync as globSync } from 'glob';
 import crypto from 'node:crypto';
+import url from 'node:url';
 import path from 'path';
 
 import { toPosixPath } from '../../src/utils/filePath';
@@ -191,6 +192,56 @@ describe('Export DOM Components', () => {
         expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
       ])
     );
+  });
+
+  it('keeps unrelated string literals intact when renaming the DOM html inside Hermes bytecode', async () => {
+    // hermesc overlap-packs strings that share suffix/prefix bytes. Plant a literal whose tail
+    // is the head of the DOM html placeholder (`md5(file URL).html`, see `use-dom-directive-plugin`)
+    // so the two get packed together: rewriting the placeholder inside the compiled bytecode
+    // would clip the literal (https://github.com/expo/expo/issues/49626).
+    const domComponentUrl = url.pathToFileURL(
+      path.join(await fs.realpath(projectRoot), 'DomView.js')
+    ).href;
+    const placeholderHash = crypto.createHash('md5').update(domComponentUrl).digest('hex');
+    const probe = `hbc-overlap-probe-${placeholderHash.slice(0, 16)}`;
+
+    const outputDir = path.join(projectRoot, 'dist-hbc-probe');
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '--clear', '--platform', 'ios', '--output-dir', outputDir],
+      {
+        env: {
+          NODE_ENV: 'production',
+          TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+          // Inlined into `App.js` by the fixture.
+          EXPO_PUBLIC_HBC_OVERLAP_PROBE: probe,
+        },
+      }
+    );
+
+    const nativeBundle = await fs.readFile(
+      globSync('**/*.hbc', {
+        cwd: path.join(outputDir, '_expo/static/js/ios'),
+        absolute: true,
+      })[0]!
+    );
+    const domEntry = await fs.readFile(
+      globSync('www.bundle/**/*.html', {
+        cwd: outputDir,
+        absolute: true,
+      })[0]!,
+      'utf8'
+    );
+    const md5HtmlBundle = crypto.createHash('md5').update(domEntry).digest('hex');
+
+    // The content-hashed html name is compiled into the bytecode and the placeholder is gone...
+    expect(nativeBundle.indexOf(Buffer.from(`${md5HtmlBundle}.html`))).toBeGreaterThan(-1);
+    expect(nativeBundle.indexOf(Buffer.from(`${placeholderHash}.html`))).toBe(-1);
+    // ...without the rename clipping the neighbouring literal.
+    expect(nativeBundle.indexOf(Buffer.from(probe))).toBeGreaterThan(-1);
+    expect(
+      nativeBundle.indexOf(Buffer.from(`hbc-overlap-probe-${md5HtmlBundle.slice(0, 16)}`))
+    ).toBe(-1);
   });
 });
 

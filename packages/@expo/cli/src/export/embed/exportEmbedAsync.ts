@@ -32,6 +32,7 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { compileDeferredHermesArtifactsAsync } from '../compileDeferredHermesArtifacts';
 import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -281,6 +282,15 @@ export async function exportEmbedBundleAndAssetsAsync(
         })
       );
     }
+
+    // Compile the bytecode the serializer deferred for chunks that reference DOM
+    // components. `export:embed` does not rename the DOM html assets, so this can
+    // run right after the DOM component exports.
+    await compileDeferredHermesArtifactsAsync({
+      projectRoot,
+      artifacts: bundles.artifacts,
+      files,
+    });
 
     return {
       files,
