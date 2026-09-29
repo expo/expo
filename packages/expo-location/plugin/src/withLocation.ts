@@ -15,6 +15,7 @@ import { resolve } from 'path';
 const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to detect your current motion activity';
+const FULL_ACCURACY_USAGE = 'Allow $(PRODUCT_NAME) to access your precise location';
 
 export const FULL_ACCURACY_PURPOSE_KEY = 'ExpoLocationFullAccuracy';
 
@@ -194,10 +195,11 @@ export type Props = {
    * A string to set the message the system shows when a permission request from
    * `expo-location/next` asks to raise a reduced accuracy authorization to full accuracy. It is written under the
    * `ExpoLocationFullAccuracy` key of `NSLocationTemporaryUsageDescriptionDictionary`.
-   * Without it, the key is omitted and the raise is skipped.
+   * Pass `false` to omit the key, which skips the raise.
+   * @default "Allow $(PRODUCT_NAME) to access your precise location"
    * @platform ios
    */
-  locationFullAccuracyPermission?: string;
+  locationFullAccuracyPermission?: string | false;
   /**
    * Whether the permission prompt offers reduced accuracy by default, by setting
    * `NSLocationDefaultAccuracyReduced` in `Info.plist`. The app can still ask for full accuracy
@@ -267,8 +269,11 @@ const withLocation: ConfigPlugin<Props | void> = (
     return config;
   });
 
-  if (locationFullAccuracyPermission) {
-    config = withTemporaryFullAccuracy(config, locationFullAccuracyPermission);
+  if (locationFullAccuracyPermission !== false) {
+    config = withTemporaryFullAccuracy(
+      config,
+      locationFullAccuracyPermission || FULL_ACCURACY_USAGE
+    );
   }
 
   if (isIosReducedAccuracyByDefault) {
