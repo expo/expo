@@ -264,7 +264,7 @@ describe('canonical query serialization', () => {
     expect(path).toBe(
       '/?space+key=a+b&plus=%2B&symbols=*%7E&unicode=caf%C3%A9+%F0%9F%98%80&delimiters=%26%3D%23%2F%3F&array=second+value&array=first%2Bvalue'
     );
-    expect(getStateFromPath(path, config)?.routes[0].params).toEqual(params);
+    expect(getStateFromPath(path, config)?.routes[0]!.params).toEqual(params);
   });
 
   it('preserves configured normalization and omits empty arrays and undefined properties', () => {
@@ -285,7 +285,7 @@ describe('canonical query serialization', () => {
     expect(path).toBe(
       '/?empty=&nullValue=null&mixed=null&mixed=undefined&mixed=&mixed=false&mixed=0&object=%5Bobject+Object%5D&boolean=false&number=0'
     );
-    expect(getStateFromPath(path, config)?.routes[0].params).toEqual({
+    expect(getStateFromPath(path, config)?.routes[0]!.params).toEqual({
       empty: '',
       nullValue: 'null',
       mixed: ['null', 'undefined', '', 'false', '0'],
@@ -310,7 +310,7 @@ describe('canonical query serialization', () => {
     );
 
     expect(path).toBe('/path%20space?custom=value+42%2B*%7E');
-    expect(getStateFromPath(path, config)?.routes[0].params).toEqual({
+    expect(getStateFromPath(path, config)?.routes[0]!.params).toEqual({
       id: 'path space',
       custom: 'value 42+*~',
     });
@@ -337,12 +337,12 @@ describe('canonical query serialization', () => {
         path: '/raw%20route?nullValue=&mixed=&mixed=&mixed=a+b&mixed=false&mixed=0&object=%5Bobject+Object%5D',
         params: {},
       });
-      expect(getStateFromPath(result.path)?.routes[0].params).toEqual({
+      expect(getStateFromPath(result.path)?.routes[0]!.params).toEqual({
         nullValue: '',
         mixed: ['', '', 'a b', 'false', '0'],
         object: '[object Object]',
       });
-      expect(state.routes[0].params).toBe(params);
+      expect(state.routes[0]!.params).toBe(params);
       expect(params.mixed).toEqual([undefined, null, '', 'a b', false, 0]);
       expect(params['#']).toBe('ignored hash');
     }
