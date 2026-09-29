@@ -2,9 +2,7 @@ import CoreLocation
 import ExpoModulesCore
 
 final class BackgroundPermissionsRequester: NSObject, EXPermissionsRequester {
-  private lazy var locationManager: CLLocationManager = Thread.isMainThread
-    ? CLLocationManager()
-    : DispatchQueue.main.sync { CLLocationManager() }
+  private lazy var locationManager = CLLocationManager.makeOnMainThread()
   private var wasAsked = false
   // Only accessed from the main thread, so it does not need to be synchronized
   private var pendingRequests: [(resolve: EXPromiseResolveBlock, reject: EXPromiseRejectBlock)] = []
