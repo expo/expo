@@ -1,15 +1,7 @@
 import CoreLocation
 import ExpoModulesCore
 
-final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
-  private lazy var locationManager: CLLocationManager = {
-    let locationManager = CLLocationManager.makeOnMainThread()
-    locationManager.delegate = self
-    return locationManager
-  }()
-  // Only accessed from the main thread, so it does not need to be synchronized
-  private var pendingRequests: [(resolve: EXPromiseResolveBlock, reject: EXPromiseRejectBlock)] = []
-
+final class ForegroundPermissionsRequester: LocationPermissionsRequester, CLLocationManagerDelegate {
   // The selector is constructed at runtime from separate parts so that neither the selector
   // nor the full method name literal ends up in the binary. Apple's static analysis warns
   // developers when it sees this method called while the matching usage description may be
@@ -17,73 +9,22 @@ final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CL
   // the behavior instead.
   private static let whenInUseAuthorizationSelector = NSSelectorFromString(["request", "WhenInUseAuthorization"].joined())
 
-  static func permissionType() -> String {
+  init() {
+    super.init(kind: .foreground)
+  }
+
+  override class func permissionType() -> String {
     return "locationForegroundNext"
   }
 
-  func getPermissions() -> [AnyHashable: Any] {
-    return currentResponse().toDictionary()
+  @MainActor
+  override func requestFromSystem() async {
+    locationManager.delegate = self
+    locationManager.perform(Self.whenInUseAuthorizationSelector)
   }
-
-  func requestPermissions(
-    resolver resolve: @escaping EXPromiseResolveBlock,
-    rejecter reject: @escaping EXPromiseRejectBlock
-  ) {
-    if let missingKey = LocationPlistKeys.firstMissing(in: LocationPermissionKind.foreground.plistKeys) {
-      let exception = MissingPlistKeyException(missingKey)
-      reject(exception.code, exception.description, exception)
-      return
-    }
-
-    if let response = determinedResponse() {
-      resolve(response.toDictionary())
-      return
-    }
-
-    Task { @MainActor [weak self] in
-      guard let self else {
-        return
-      }
-      let isPromptAlreadyRequested = !pendingRequests.isEmpty
-      pendingRequests.append((resolve, reject))
-      if !isPromptAlreadyRequested {
-        locationManager.perform(Self.whenInUseAuthorizationSelector)
-      }
-    }
-  }
-
-  private func determinedResponse() -> LocationPermissionResponse? {
-    let response = currentResponse()
-    return response.isUndetermined ? nil : response
-  }
-
-  private func currentResponse() -> LocationPermissionResponse {
-    guard LocationPlistKeys.firstMissing(in: LocationPermissionKind.foreground.plistKeys) == nil else {
-      return LocationPermissionResponse.denied
-    }
-
-    switch locationManager.authorizationStatus {
-    case .authorizedWhenInUse:
-      return LocationPermissionResponse.whenInUse(accuracy: locationManager.accuracyAuthorization)
-    case .authorizedAlways:
-      return LocationPermissionResponse.always(accuracy: locationManager.accuracyAuthorization)
-    case .denied, .restricted:
-      return LocationPermissionResponse.denied
-    case .notDetermined:
-      return LocationPermissionResponse.undetermined
-    @unknown default:
-      return LocationPermissionResponse.undetermined
-    }
-  }
-
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-    let exception = PermissionRequestFailedException().causedBy(error)
-    let requests = pendingRequests
-    pendingRequests = []
-    for request in requests {
-      request.reject(exception.code, exception.description, exception)
-    }
+    rejectPendingRequests(with: error)
   }
 
   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -92,12 +33,6 @@ final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CL
     guard manager.authorizationStatus != .notDetermined else {
       return
     }
-
-    let response = getPermissions()
-    let requests = pendingRequests
-    pendingRequests = []
-    for request in requests {
-      request.resolve(response)
-    }
+    resolvePendingRequests()
   }
 }
