@@ -16,7 +16,7 @@ public struct UIBaseView<Props: UIBaseViewProps, Content: ExpoSwiftUI.View<Props
   }
 
   public var body: some View {
-    innerView
+    UniversalPercentageParentBoundary(content: innerView)
       .applyAccessibilityIdentifier(props.testID)
       .applyModifiers(props.modifiers, appContext: props.appContext, globalEventDispatcher: props.globalEventDispatcher)
   }
