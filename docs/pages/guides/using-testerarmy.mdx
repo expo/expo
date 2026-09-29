@@ -327,6 +327,7 @@ jobs:
     name: Run e2e tests on iOS
     needs: [build_ios]
     runs_on: macos-medium
+    environment: preview
     steps:
       - uses: eas/checkout
 
@@ -364,11 +365,14 @@ To start the workflow, run the following command:
 
 The workflow uploads **.e2e/report.json** and the failure files in the **Artifacts** section of the workflow run. To run it on each pull request, add a [`pull_request`](/eas/workflows/syntax/#onpull_request) trigger.
 
-Tests with only exact steps need no model. Agent steps need a model on the worker:
+Tests with only exact steps need no model.
+
+For agent steps:
 
 - A subscription login is stored on your computer, so it is not available on the worker. Use an API key from your provider, and add an agent for it to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
-- Store the API key as an [EAS environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
-- Agent steps recorded on your own simulator may not replay on the worker. The simulator on the worker can report a different accessibility tree, so the agent calls the model again.
+- The `e2e_ios` job sets `environment: preview`, so it reads variables from the `preview` environment. Store the API key there as an [EAS environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
+- `npx e2e init` adds `.e2e/cache/` to **.gitignore**, so the workflow starts without recorded agent steps. To replay them on the worker, remove that line and commit the **.e2e/cache** directory. See [Commit your traces](https://e2e.tester.army/docs/cache#commit-your-traces).
+- A replay needs the recorded elements on the screen. The simulator on the worker can report a different accessibility tree than your own simulator, and then the agent calls the model.
 
 </Collapsible>
 
