@@ -1,5 +1,6 @@
 import SwiftUI
 import ExpoModulesCore
+import ExpoUI
 #if !os(tvOS)
 import WidgetKit
 #endif

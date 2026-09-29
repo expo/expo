@@ -2,20 +2,18 @@
 
 import ExpoModulesCore
 import SwiftUI
-#if !os(tvOS)
-import WidgetKit
-#endif
 
-internal enum ContainerBackgroundPlacementOptions: String, Enumerable {
+public enum ContainerBackgroundPlacementOptions: String, Enumerable {
   case widget
   case navigation
   case navigationSplitView
 
 #if !os(tvOS) && !os(macOS)
+  // `widget` is declared in WidgetKit, so expo-widgets registers its own modifier for it.
   @available(iOS 18.0, *)
-  var toContainerBackgroundPlacement: ContainerBackgroundPlacement {
+  var toContainerBackgroundPlacement: ContainerBackgroundPlacement? {
     switch self {
-    case .widget: return .widget
+    case .widget: return nil
     case .navigation: return .navigation
     case .navigationSplitView: return .navigationSplitView
     }
@@ -28,23 +26,11 @@ internal struct ContainerBackgroundModifier: ViewModifier, Record {
   @Field var container: ContainerBackgroundPlacementOptions?
 
   func body(content: Content) -> some View {
-#if os(tvOS)
+#if os(tvOS) || os(macOS)
     content
-#elseif os(macOS)
-    if let shapeStyle = style?.toAnyShapeStyle(), container == .widget {
-      content.containerBackground(shapeStyle, for: .widget)
-    } else {
-      content
-    }
 #else
-    if let shapeStyle = style?.toAnyShapeStyle(), let container {
-      if #available(iOS 18.0, *) {
-        content.containerBackground(shapeStyle, for: container.toContainerBackgroundPlacement)
-      } else if #available(iOS 17.0, *) {
-        content.containerBackground(shapeStyle, for: .widget)
-      } else {
-        content
-      }
+    if #available(iOS 18.0, *), let shapeStyle = style?.toAnyShapeStyle(), let placement = container?.toContainerBackgroundPlacement {
+      content.containerBackground(shapeStyle, for: placement)
     } else {
       content
     }

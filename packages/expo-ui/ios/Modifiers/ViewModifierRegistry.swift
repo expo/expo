@@ -1533,6 +1533,13 @@ public class ViewModifierRegistry {
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
 
+  public typealias WidgetAccentedRenderingModeHandler = (Image, [String: Any], AppContext) -> AnyView?
+
+  /**
+   * Applies `widgetAccentedRenderingMode`, which is declared in WidgetKit. expo-widgets sets it, so ExpoUI does not link WidgetKit.
+   */
+  public static var widgetAccentedRenderingModeHandler: WidgetAccentedRenderingModeHandler?
+
   private init() {
     registerBuiltInModifiers()
   }
@@ -2391,14 +2398,6 @@ extension ViewModifierRegistry {
 
     register("contentTransition") { params, appContext, _ in
       return try ContentTransitionModifier(from: params, appContext: appContext)
-    }
-
-    register("widgetURL") { params, appContext, _ in
-      return try WidgetURLModifier(from: params, appContext: appContext)
-    }
-
-    register("activityBackgroundTint") { params, appContext, _ in
-      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
     }
 
     register("keyboardType") { params, appContext, _ in
