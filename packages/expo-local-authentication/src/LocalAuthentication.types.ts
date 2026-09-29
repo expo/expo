@@ -1,7 +1,17 @@
 import { Platform } from 'expo';
 
 export type LocalAuthenticationResult =
-  | { success: true }
+  | {
+      success: true;
+      /**
+       * A warning message emitted when authentication succeeded in a degraded mode. For example,
+       * on Android 9 and 10 requesting `biometricsSecurityLevel: 'strong'` with the device
+       * credential fallback enabled also accepts weak biometrics, as the system cannot combine
+       * strong biometrics and device credentials in a single prompt on those versions.
+       * @platform android
+       */
+      warning?: string;
+    }
   | {
       success: false;
       error: LocalAuthenticationError;
@@ -116,6 +126,11 @@ export type LocalAuthenticationOptions = {
    * Sets the security class of biometric authentication to allow.
    * `strong` allows only Android Class 3 biometrics. For example, a fingerprint or a 3D face scan.
    * `weak` allows both Android Class 3 and Class 2 biometrics. Class 2 biometrics are less secure than Class 3. For example, a camera-based face unlock.
+   * > On Android 9 and 10, the system cannot combine `strong` biometrics and device credentials in
+   * > a single prompt. On those versions, when the device fallback is enabled, `strong`
+   * > automatically falls back to `weak` and the successful authentication result contains a
+   * > `warning` reporting the downgrade. Set `disableDeviceFallback: true` to enforce
+   * > strong biometrics only.
    * @platform android
    * @default 'weak'
    */
