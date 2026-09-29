@@ -48,7 +48,10 @@ function isBlob(obj: any): obj is Blob {
 /**
  * Normalize a BodyInit object to a Uint8Array for NativeRequest
  */
-export async function normalizeBodyInitAsync(body: BodyInit | null | undefined): Promise<{
+export async function normalizeBodyInitAsync(
+  body: BodyInit | null | undefined,
+  options: { formDataBoundary?: string } = {}
+): Promise<{
   body: Uint8Array | null;
   defaultHeaders?: NativeHeadersType;
   overriddenHeaders?: NativeHeadersType;
@@ -90,7 +93,7 @@ export async function normalizeBodyInitAsync(body: BodyInit | null | undefined):
   }
 
   if (body instanceof FormData) {
-    const { body: result, boundary } = await convertFormDataAsync(body);
+    const { body: result, boundary } = await convertFormDataAsync(body, options.formDataBoundary);
 
     return {
       body: result,
