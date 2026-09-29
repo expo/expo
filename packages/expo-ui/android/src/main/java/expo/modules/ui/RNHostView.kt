@@ -161,17 +161,20 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       childViewState.value ?: return@let
       val sizingModifier = when {
         matchContentsHorizontal && matchContentsVertical -> applySizeFromYogaNodeModifier()
-        matchContentsVertical -> Modifier
-          .fillMaxWidth()
-          .then(reportSizeToYogaNodeModifier(reportHeight = false))
-          .then(applyHeightFromYogaNodeModifier())
-        matchContentsHorizontal -> Modifier
-          .fillMaxHeight()
-          .then(reportSizeToYogaNodeModifier(reportWidth = false))
-          .then(applyWidthFromYogaNodeModifier())
-        else -> Modifier
-          .fillMaxSize()
-          .then(reportSizeToYogaNodeModifier())
+        matchContentsVertical ->
+          Modifier
+            .fillMaxWidth()
+            .then(reportSizeToYogaNodeModifier(reportHeight = false))
+            .then(applyHeightFromYogaNodeModifier())
+        matchContentsHorizontal ->
+          Modifier
+            .fillMaxHeight()
+            .then(reportSizeToYogaNodeModifier(reportWidth = false))
+            .then(applyWidthFromYogaNodeModifier())
+        else ->
+          Modifier
+            .fillMaxSize()
+            .then(reportSizeToYogaNodeModifier())
       }
       // Origin last: a chain applies outside-in, so a caller `padding` or `offset` has to shift the
       // content before it is read.

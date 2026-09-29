@@ -4,6 +4,7 @@ import type { LayoutChangeEvent } from 'react-native';
 
 import { PresentedContentContext, useIsPresentedInOwnWindow } from '../../PresentedContentContext';
 import type { ModifierConfig } from '../../types';
+import { resolveMatchContents } from '../../utils/matchContents';
 import type { PrimitiveBaseProps } from '../layout';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -49,10 +50,8 @@ const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
 
 function transformProps(props: RNHostProps, layoutRoot: boolean): NativeRNHostProps {
   const { modifiers, matchContents, ...restProps } = props;
-  const matchContentsHorizontal =
-    (typeof matchContents === 'object' ? matchContents.horizontal : matchContents) ?? false;
-  const matchContentsVertical =
-    (typeof matchContents === 'object' ? matchContents.vertical : matchContents) ?? false;
+  const { horizontal: matchContentsHorizontal, vertical: matchContentsVertical } =
+    resolveMatchContents(matchContents);
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),

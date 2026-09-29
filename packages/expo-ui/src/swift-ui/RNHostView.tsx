@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { LayoutChangeEvent } from 'react-native';
 
 import { PresentedContentContext, useIsPresentedInOwnWindow } from '../PresentedContentContext';
+import { resolveMatchContents } from '../utils/matchContents';
 
 const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHostView');
 
@@ -29,10 +30,8 @@ export function RNHostView({ matchContents, ...props }: RNHostViewProps) {
   // Hosted content there owns its touches and is the origin it is measured from; native reads
   // this one prop for both.
   const layoutRoot = useIsPresentedInOwnWindow();
-  const matchContentsHorizontal =
-    (typeof matchContents === 'object' ? matchContents.horizontal : matchContents) ?? false;
-  const matchContentsVertical =
-    (typeof matchContents === 'object' ? matchContents.vertical : matchContents) ?? false;
+  const { horizontal: matchContentsHorizontal, vertical: matchContentsVertical } =
+    resolveMatchContents(matchContents);
 
   return (
     <RNHostNativeView
