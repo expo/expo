@@ -136,8 +136,8 @@ An Exam Mock Test is a practice examination designed to simulate the structure, 
               description="Practice in our modern computer lab with equipment identical to official test centers."
             />
             <FeatureItem
-              title="Full-Length Practice Examination"
-              description="Complete mock tests that cover all sections and question types of the actual PTE."
+title="FULL-LENGTH PRACTICE EXAMINATION"
+  description="Complete mock examinations designed to cover the key sections and question formats of internationally recognized examinations, helping candidates assess their readiness and build confidence before test day."
             />
             <FeatureItem
               title="Exam-Like Conditions"
@@ -170,14 +170,14 @@ An Exam Mock Test is a practice examination designed to simulate the structure, 
       {/* Who Should Take */}
       <section className="py-20 bg-card border-y border-border">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-foreground mb-12">Who Should Take Our Mock Tests?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-12">WHO SHOULD TAKE OUR MOCK TESTS?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <AudienceCard description="First-time PTE candidates wanting to understand the exam format" />
-            <AudienceCard description="Candidates preparing for PTE Academic examination" />
-            <AudienceCard description="Candidates preparing for PTE Core examination" />
-            <AudienceCard description="Candidates seeking higher scores on their next attempt" />
-            <AudienceCard description="Candidates who want to assess readiness before booking official exam" />
-            <AudienceCard description="Those wanting to track progress and improvement over time" />
+<AudienceCard description="First-time candidates who want to understand the examination format" />
+  <AudienceCard description="Candidates preparing for international examinations such as IELTS, PTE, TOEFL, GRE, GMAT, CELPIP and more" />
+  <AudienceCard description="Candidates who want to assess their readiness before the official examination" />
+  <AudienceCard description="Candidates seeking to improve their performance on their next attempt" />
+  <AudienceCard description="Candidates who want to practise under realistic examination conditions" />
+  <AudienceCard description="Candidates who want to identify strengths, weaknesses and areas for improvement" />
           </div>
         </div>
       </section>
@@ -185,31 +185,31 @@ An Exam Mock Test is a practice examination designed to simulate the structure, 
       {/* Why Choose Vertex Mock Tests */}
       <section className="py-20 border-b border-border">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-foreground mb-12">Why Choose Vertex Mock Tests?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-12">WHY CHOOSE VERTEX MOCK TESTS?</h2>
           <div className="space-y-6">
             <WhyChooseItem
-              title="Realistic Examination Experience"
-              description="Practice under conditions that closely resemble the actual PTE examination setup."
+title="REALISTIC EXAMINATION EXPERIENCE"
+  description="Practice under structured, timed conditions designed to help you become comfortable with computer-based examinations."
             />
             <WhyChooseItem
-              title="Comprehensive Performance Analysis"
-              description="Receive detailed feedback to understand your performance and identify areas for improvement."
+title="PERFORMANCE INSIGHTS"
+  description="Understand your current level, identify areas for improvement, and prepare more effectively for your examination."
             />
             <WhyChooseItem
-              title="Experienced Trainers"
-              description="Benefit from professional advice and practical strategies to improve your score."
+title="PROFESSIONAL TESTING ENVIRONMENT"
+  description="Experience mock examinations in a comfortable, organized, and well-equipped computer-based environment."
             />
             <WhyChooseItem
               title="Modern Computer Facilities"
               description="Practice in a comfortable and well-equipped computer-based learning environment."
             />
             <WhyChooseItem
-              title="Personalized Feedback"
-              description="Our instructors provide specific recommendations to help you maximize your performance."
+title="READINESS ASSESSMENT"
+  description="Measure your level of preparedness and identify areas requiring additional attention before your official examination."
             />
             <WhyChooseItem
-              title="Multiple Test Options"
-              description="Take multiple mock tests to monitor your progress and track improvement over time."
+title="MULTIPLE EXAM OPTIONS"
+  description="Access mock testing support for a range of international examinations, including IELTS, PTE, TOEFL, GRE, GMAT, CELPIP and more."
             />
           </div>
         </div>
@@ -241,8 +241,8 @@ An Exam Mock Test is a practice examination designed to simulate the structure, 
               answer="Mock tests can typically be scheduled within a few days of your booking. Contact our team for available dates and times."
             />
             <FAQItem
-              question="Will I get a score similar to my actual PTE score?"
-              answer="Our mock tests are designed to provide an accurate assessment of your current level, though actual PTE scores may vary based on test day conditions."
+question="WILL MY MOCK TEST SCORE BE THE SAME AS MY OFFICIAL EXAM SCORE?"
+  answer="Mock test results are designed to help you assess your current level of preparation and identify areas for improvement. Your official examination score may differ due to examination format, scoring systems, performance, and test-day conditions."
             />
           </div>
         </div>

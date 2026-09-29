@@ -18,13 +18,13 @@ export default function PreparationPage() {
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Master the PTE with Confidence
+              MASTER YOUR EXAM WITH CONFIDENCE
             </h1>
             <p className="text-xl text-muted-foreground mb-6">
-              Comprehensive preparation programmes designed for your success
+              Comprehensive preparation programmes designed to help you succeed.
             </p>
             <p className="text-lg text-muted-foreground mb-8">
-              At Vertex Testing Services Limited, our PTE Preparation Programme is designed to equip candidates with the knowledge, strategies, and confidence needed to achieve their target scores. Our experienced instructors provide practical guidance, personalized support, and realistic practice sessions.
+              At Vertex Testing Services Limited, our examination preparation programmes are designed to equip candidates with the knowledge, strategies, practice, and confidence required to perform at their best. We provide structured preparation support for IELTS, PTE, TOEFL, GRE, GMAT, CELPIP and other leading international examinations. Our goal is simple: Prepare Better. Perform Better. Achieve More.
             </p>
             <Link
               href="/register"
@@ -138,7 +138,7 @@ export default function PreparationPage() {
           <div className="space-y-4">
             <FeatureItem
               title="Experienced Instructors"
-              description="Our dedicated trainers have extensive PTE expertise and are committed to student success."
+              description="Our dedicated trainers have extensive expertise and are committed to student success."
             />
             <FeatureItem
               title="Structured Learning Materials"
@@ -148,9 +148,13 @@ export default function PreparationPage() {
               title="Computer-Based Practice Sessions"
               description="Practice with authentic exam-like simulations to build familiarity and confidence."
             />
-            <FeatureItem
+              <FeatureItem
               title="Realistic Mock Tests"
-              description="Full-length practice exams that replicate actual test conditions and difficulty."
+              description="Full-length practice exams that replicate actual test conditions."
+            />
+            <FeatureItem
+              title="International Examination Registration Support"
+              description="Professional guidance and registration assistance for IELTS, PTE, TOEFL, GRE, GMAT, CELPIP and other recognized examinations."
             />
             <FeatureItem
               title="Individual Performance Feedback"
