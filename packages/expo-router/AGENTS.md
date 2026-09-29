@@ -5,44 +5,9 @@ Expo Router turns app files into routes for React Native and web. Judge features
 ## Where to look
 
 - `src/` contains routing, navigation, views, hooks, server integration, and tests. Start with `src/index.tsx`, `src/exports.ts`, `src/ExpoRoot.tsx`, and `src/getRoutes.ts`. Read [stack header and toolbar instructions](src/layouts/stack-utils/AGENTS.md) before changing that directory.
-  - `src/__tests__/`: package-level Jest tests.
-  - `src/color/`: platform color values and types.
-  - `src/domComponents/`: DOM component events and navigation.
-  - `src/fork/`: adapted React Navigation routing and linking code.
-  - `src/global-state/`: navigation state, actions, and browser history.
-  - `src/head/`: document head support across platforms.
-  - `src/hooks/`: route and navigation hooks.
-  - `src/import-mode/`: synchronous or lazy route import selection.
-  - `src/internal/`: private routing, server, static, and testing exports.
-  - `src/layouts/`: stack, drawer, and tab layouts.
-  - `src/link/`: links, redirects, hrefs, and link previews.
-  - `src/loaders/`: route data loading and lifecycle.
-  - `src/native-tabs/`: native tab navigation and views.
-  - `src/navigationEvents/`: navigation event types and subscriptions.
-  - `src/onboard/`: onboarding tutorial.
-  - `src/optional-libraries/`: adapters for optional dependencies.
-  - `src/primitives/`: screen, group, and navigation primitives.
-  - `src/react-navigation/`: React Navigation internals and compatibility exports.
-  - `src/rsc/`: React Server Components router and entry points.
-  - `src/server/`: server document and exports.
-  - `src/split-view/`: split-view navigation components.
-  - `src/stack/`: stack component and type exports.
-  - `src/standard-navigation/`: navigation state, actions, and route helpers.
-  - `src/static/`: static HTML and root registration.
-  - `src/testing-library/`: router test renderer and mocks.
-  - `src/toolbar/`: native toolbar components and types.
-  - `src/ts-declarations/`: ambient TypeScript declarations.
-  - `src/typed-routes/`: typed route definitions.
-  - `src/types/`: shared type declarations.
-  - `src/ui/`: Slot and headless tab components.
-  - `src/utils/`: shared helpers.
-  - `src/views/`: route views, navigators, and error boundaries.
-- `ios/` contains Swift modules and native views, plus Swift tests in `ios/Tests/`; `android/` contains the Kotlin module and Android build configuration.
-- `plugin/` contains the Expo config plugin and its tests; `assets/` contains images and other bundled resources.
-- `internal/` and `link/` contain package subpath entry points; `rsc/` contains React Server Components entry points and the web bootstrap.
-- `__mocks__/` contains Jest asset and style mocks; `vendor/` contains the local `react-helmet-async` fork; `.claude/` contains package-local agent settings and testing guidance.
-- [`@expo/router-server`](../@expo/router-server/package.json) uses Router internals for route manifests, typed routes, and server rendering; [`@expo/cli`](../@expo/cli/package.json) depends on it for development and export. Check both packages when changing those flows.
-- `expo-router/server` re-exports APIs from the separate [`expo-server`](../expo-server/package.json) dependency.
+- `ios/` contains Swift modules, native views, and tests; `android/` contains the Kotlin module and Android build configuration.
+- `plugin/` contains the Expo config plugin and its tests.
+- External packages: [`@expo/router-server`](../@expo/router-server/package.json) uses Router internals for route manifests, typed routes, and server rendering; [`@expo/cli`](../@expo/cli/package.json) depends on it for development and export. `expo-router/server` re-exports APIs from the separate [`expo-server`](../expo-server/package.json) dependency.
 
 ## Conventions
 
