@@ -79,13 +79,23 @@ async function resolveReactNativeAsync(projectRoot: string): Promise<{
 }
 
 export async function prebuildAndroidPackageForPublishAsync(packageRoot = process.cwd()) {
+  await runAndroidPrecompileAsync(packageRoot, false);
+}
+
+export async function prepareAndroidJdkImageAsync() {
+  await runAndroidPrecompileAsync(path.join(EXPO_DIR, 'packages/expo-modules-core'), true);
+}
+
+async function runAndroidPrecompileAsync(packageRoot: string, prepareJdkImage: boolean) {
   const pkg = new Package(packageRoot);
-  if (!pkg.scripts['precompile-android']) {
+  if (!prepareJdkImage && !pkg.scripts['precompile-android']) {
     throw new Error(`${pkg.packageName} does not declare a precompile-android script`);
   }
 
   const projects = androidProjects(pkg);
-  const manifest = createAndroidPublicationManifest(pkg.packageName, pkg.packageVersion, projects);
+  const manifest = prepareJdkImage
+    ? null
+    : createAndroidPublicationManifest(pkg.packageName, pkg.packageVersion, projects);
   const closure = await resolveNativeClosureAsync(pkg);
   const bareExpoRoot = path.join(EXPO_DIR, 'apps/bare-expo');
   const reactNative = await resolveReactNativeAsync(bareExpoRoot);
@@ -130,9 +140,11 @@ export async function prebuildAndroidPackageForPublishAsync(packageRoot = proces
       `-Pexpo.precompileAndroid.reactNativeVersion=${reactNative.version}`,
       `-Pexpo.precompileAndroid.repository=${repositoryRoot}`,
     ];
-    const tasks = projects.map(
-      ({ projectName }) => `:${projectName}:publishReleasePublicationToNPMPackageRepository`
-    );
+    const tasks = prepareJdkImage
+      ? ['prepareAndroidJdkImage']
+      : projects.map(
+          ({ projectName }) => `:${projectName}:publishReleasePublicationToNPMPackageRepository`
+        );
     await spawnAsync(
       path.join(EXPO_DIR, 'apps/bare-expo/android/gradlew'),
       [
@@ -149,6 +161,8 @@ export async function prebuildAndroidPackageForPublishAsync(packageRoot = proces
       ],
       { cwd: EXPO_DIR, stdio: 'inherit' }
     );
+
+    if (!manifest) return;
 
     await validateAndroidPublicationRepositoryAsync(repositoryRoot, manifest);
     await removeNondeterministicMavenMetadataAsync(repositoryRoot);

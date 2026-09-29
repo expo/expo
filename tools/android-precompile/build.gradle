@@ -35,3 +35,20 @@ subprojects { project ->
 }
 
 apply plugin: "expo-root-project"
+
+// Resolve the same transformed image as javac before independent Gradle builds start.
+// Resolving androidJdkImage directly only resolves the input JAR, not the image.
+tasks.register("prepareAndroidJdkImage") {
+  doLast {
+    def javac = project(":expo-modules-core").tasks.named("compileReleaseJavaWithJavac").get()
+    def imageInputs = javac.options.compilerArgumentProviders.findAll {
+      it instanceof com.android.build.gradle.tasks.JdkImageInput
+    }
+    if (imageInputs.empty) {
+      throw new GradleException("AGP did not configure a JDK image for Android precompilation")
+    }
+    imageInputs.each { input ->
+      logger.lifecycle("Prepared Android JDK image: ${input.asArguments().join(' ')}")
+    }
+  }
+}

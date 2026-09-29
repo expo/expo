@@ -88,7 +88,8 @@
     },
     "//#prepare-precompile-android": {
       "cache": false,
-      "passThroughEnv": ["ANDROID_HOME", "ANDROID_SDK_ROOT", "PATH"]
+      "dependsOn": ["expo-modules-autolinking#build"],
+      "passThroughEnv": ["JAVA_HOME", "GRADLE_USER_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT", "PATH"]
     },
     "precompile-android-inputs": {
       "inputs": [
