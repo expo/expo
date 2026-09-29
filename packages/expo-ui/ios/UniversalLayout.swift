@@ -116,32 +116,8 @@ internal struct UniversalPercentageLayout: Layout {
 }
 
 /**
- Host children are placed at the top leading edge, matching the previous `ZStack` alignment.
- The layout proposes the host size so a `100%` child can fill it.
- */
-@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
-internal struct ParentAwareHostLayout: Layout {
-  let layoutDirection: LayoutDirection
-
-  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    subviews.reduce(.zero) { size, subview in
-      let childSize = subview.sizeThatFits(proposal)
-      return CGSize(width: max(size.width, childSize.width), height: max(size.height, childSize.height))
-    }
-  }
-
-  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-    for subview in subviews {
-      let childSize = subview.sizeThatFits(ProposedViewSize(bounds.size))
-      let x = layoutDirection == .rightToLeft ? bounds.maxX - childSize.width : bounds.minX
-      subview.place(at: CGPoint(x: x, y: bounds.minY), proposal: ProposedViewSize(bounds.size))
-    }
-  }
-}
-
-/**
- Replacement for `HStack` that can offer a child the stack's width when that child asks for a percentage.
- Children without a percentage keep their ideal size and are aligned on the cross axis.
+ Opt-in replacement for `HStack`. Universal `Row` uses it so a child percentage is a fraction of this stack.
+ A SwiftUI `HStack` does not. Children without a percentage keep their ideal size.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 internal struct ParentAwareHStackLayout: Layout {
@@ -229,7 +205,7 @@ internal struct ParentAwareHStackLayout: Layout {
 }
 
 /**
- Replacement for `VStack`. See `ParentAwareHStackLayout`.
+ Opt-in replacement for `VStack`. Universal `Column` uses it. See `ParentAwareHStackLayout`.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 internal struct ParentAwareVStackLayout: Layout {

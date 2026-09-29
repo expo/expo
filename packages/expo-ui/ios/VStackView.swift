@@ -23,6 +23,9 @@ internal enum HorizontalAlignmentOptions: String, Enumerable {
 public final class VStackViewProps: UIBaseViewProps {
   @Field var spacing: Double?
   @Field var alignment: HorizontalAlignmentOptions?
+  // Universal `Column` sets this so a child percentage is a fraction of this stack.
+  // A SwiftUI `VStack` leaves it off and keeps the platform layout.
+  @Field var resolvesChildPercentages: Bool = false
 }
 
 public struct VStackView: ExpoSwiftUI.View {
@@ -34,22 +37,30 @@ public struct VStackView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-      ParentAwareVStackLayout(
-        alignment: props.alignment ?? .center,
-        spacing: props.spacing.map { CGFloat($0) },
-        layoutDirection: layoutDirection,
-        ownDimensions: universalLayoutDimensions(from: props.modifiers)
-      ) {
-        Children()
+    if props.resolvesChildPercentages {
+      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+        ParentAwareVStackLayout(
+          alignment: props.alignment ?? .center,
+          spacing: props.spacing.map { CGFloat($0) },
+          layoutDirection: layoutDirection,
+          ownDimensions: universalLayoutDimensions(from: props.modifiers)
+        ) {
+          Children()
+        }
+      } else {
+        platformStack
       }
     } else {
-      VStack(
-        alignment: props.alignment?.toHorizontalAlignment() ?? .center,
-        spacing: props.spacing.map { CGFloat($0) }
-      ) {
-        Children()
-      }
+      platformStack
+    }
+  }
+
+  private var platformStack: some View {
+    VStack(
+      alignment: props.alignment?.toHorizontalAlignment() ?? .center,
+      spacing: props.spacing.map { CGFloat($0) }
+    ) {
+      Children()
     }
   }
 }

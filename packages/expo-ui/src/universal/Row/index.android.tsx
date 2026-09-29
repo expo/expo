@@ -39,6 +39,7 @@ export function Row({
     <ComposeRow
       verticalAlignment={alignmentMap[alignment]}
       horizontalArrangement={spacing != null ? { spacedBy: spacing } : undefined}
+      resolvesChildPercentages
       modifiers={modifiers}>
       {children}
     </ComposeRow>

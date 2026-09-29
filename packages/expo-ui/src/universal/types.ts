@@ -10,7 +10,8 @@ export type { UniversalDimension } from './modifierUtils';
  * and Jetpack Compose modifiers. On web, passes through to React Native StyleSheet.
  *
  * `width` and `height` also accept a percentage of the parent, such as `'50%'`.
- * A percentage resolves only when that parent already has a size on the same axis.
+ * A percentage resolves when the parent is a universal `Row`, `Column`, or `Host` with a size on that axis.
+ * A SwiftUI stack or a Jetpack Compose `Row` or `Column` does not resolve it.
  * @docsInline
  */
 export type UniversalStyle = Pick<
@@ -30,12 +31,12 @@ export type UniversalStyle = Pick<
 > & {
   /**
    * Fixed size in density-independent pixels, or a percentage of the parent's content width.
-   * Percentages resolve only when the parent already has a defined width.
+   * Percentages resolve when the parent is a universal `Row`, `Column`, or `Host` with a defined width.
    */
   width?: UniversalDimension;
   /**
    * Fixed size in density-independent pixels, or a percentage of the parent's content height.
-   * Percentages resolve only when the parent already has a defined height.
+   * Percentages resolve when the parent is a universal `Row`, `Column`, or `Host` with a defined height.
    */
   height?: UniversalDimension;
 };

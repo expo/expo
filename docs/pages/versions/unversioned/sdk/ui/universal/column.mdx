@@ -111,7 +111,7 @@ export default function ColumnAlignmentExample() {
 
 ### Size
 
-`style.width` and `style.height` take a number of points, or a percentage of the parent such as `'50%'`. The parent needs a defined size on that axis. A percentage of a column that sizes itself from its children does not resolve.
+`style.width` and `style.height` take a number of points, or a percentage of the parent such as `'50%'`. The parent has to be a universal `Row`, `Column`, or `Host` with a size on that axis. A percentage of a column that sizes itself from its children does not resolve. A SwiftUI `VStack` or a Jetpack Compose `Column` does not resolve it either.
 
 ```tsx
 import { Host, Column } from '@expo/ui';

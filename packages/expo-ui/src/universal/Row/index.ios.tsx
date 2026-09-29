@@ -41,6 +41,7 @@ export function Row({
       alignment={alignmentMap[alignment]}
       spacing={spacing}
       modifiers={modifiers}
+      resolvesChildPercentages
       testID={testID}>
       {children}
     </HStack>
