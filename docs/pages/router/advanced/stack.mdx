@@ -98,6 +98,25 @@ export default function Layout() {
 }
 ```
 
+### Set the native header's interface style
+
+Use `headerUserInterfaceStyle` to set a screen's native header to `'light'` or `'dark'` without changing the navigation theme. For example, a detail screen can use a dark header while the rest of the stack keeps its theme-based style:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerLargeTitle: true }} />
+      <Stack.Screen name="details" options={{ headerUserInterfaceStyle: 'dark' }} />
+    </Stack>
+  );
+}
+```
+
+You can also set this option in `screenOptions` for the whole stack. A `Stack.Screen` option overrides it for that screen. When the option is omitted, the native header follows the navigation theme. This option is supported on iOS and affects the native header only; set header colors separately if needed.
+
 ### Set screen options dynamically
 
 To configure a route's options dynamically, you can use either the composition components or the options-based API.
