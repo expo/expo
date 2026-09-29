@@ -54,7 +54,14 @@ let _rootURL: string | undefined;
 
 export function getRootURL(): string {
   if (_rootURL === undefined) {
-    _rootURL = Linking.createURL('/');
+    try {
+      _rootURL = Linking.createURL('/');
+    } catch {
+      // `createURL` throws in production when the app has no `scheme`.
+      // The root URL only seeds the initial route, so the root path is enough.
+      _rootURL = '/';
+      return _rootURL;
+    }
     if (isExpoGo) {
       _rootURL = parsePathFromExpoGoLink(_rootURL);
     }
