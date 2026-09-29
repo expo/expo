@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["LocationModule", "LocationNextModule"]
+    "modules": ["LocationModule", "LocationModuleNext"]
   },
   "android": {
     "modules": [
