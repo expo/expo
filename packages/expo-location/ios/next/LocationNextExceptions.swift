@@ -14,9 +14,10 @@ final class LocationServicesDisabledGlobally: Exception, @unchecked Sendable {
   }
 }
 
-final class MissingPermissionsException: GenericException<(name: String, request: String)>, @unchecked Sendable {
+final class MissingPermissionsException: GenericException<LocationPermissionKind>, @unchecked Sendable {
   override var reason: String {
-    "\(param.name) permission is required to do this operation. Request it with \(param.request)() before calling this method"
+    "\(param.permissionName) permission is required to do this operation. " +
+    "Request it with \(param.requestFunctionName)() before calling this method"
   }
 }
 
