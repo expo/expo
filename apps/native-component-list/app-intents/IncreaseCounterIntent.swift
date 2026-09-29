@@ -12,9 +12,3 @@ struct IncreaseCounterIntent: AppIntent {
     return .result(dialog: "Counter increased.")
   }
 }
-
-extension IncreaseCounterIntent: DonatableAppIntent {
-  init(donationParams: AppIntentParams) {
-    self.init()
-  }
-}

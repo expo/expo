@@ -8,7 +8,7 @@ final class AppIntentsSetup: Module {
     Name("AppIntentsSetup")
 
     OnCreate {
-      AppIntentDonationRegistry.shared.register("increaseCounter", as: IncreaseCounterIntent.self)
+      AppIntentDonationRegistry.shared.register("donationProbe", as: DonationProbeIntent.self)
 
       if #available(iOS 18.0, macOS 15.0, *) {
         AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)

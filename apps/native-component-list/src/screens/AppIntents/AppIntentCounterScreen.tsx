@@ -25,6 +25,7 @@ export default function AppIntentCounterScreen() {
   const { theme } = useTheme();
   const counterState = useAppIntentState(getCounterState, initialCounterState);
   const openedBySiri = route.params?.source === 'siri';
+  const [donationResult, setDonationResult] = React.useState('None');
 
   return (
     <ScrollPage>
@@ -68,27 +69,37 @@ export default function AppIntentCounterScreen() {
           <Button
             title="Donate intent"
             onPress={() => {
-              AppIntents.donateIntentAsync('increaseCounter').catch((error: unknown) => {
-                console.warn(
-                  'Could not donate the Increase Counter intent; check that AppIntentsSetup registers it with AppIntentDonationRegistry.',
-                  error
-                );
-              });
+              AppIntents.donateIntentAsync('donationProbe')
+                .then((id) => setDonationResult(`Donated: ${id ?? 'unavailable'}`))
+                .catch((error: unknown) => {
+                  console.warn(
+                    'Could not donate the Donation Probe intent; check that AppIntentsSetup registers it with AppIntentDonationRegistry.',
+                    error
+                  );
+                });
             }}
           />
           <Button
             title="Delete donations"
             onPress={() => {
-              AppIntents.deleteDonationsAsync({ intent: 'increaseCounter' }).catch(
-                (error: unknown) => {
+              AppIntents.deleteDonationsAsync({ intent: 'donationProbe' })
+                .then((ids) =>
+                  setDonationResult(`Deleted: ${ids.length > 0 ? ids.join(', ') : 'none'}`)
+                )
+                .catch((error: unknown) => {
                   console.warn(
-                    'Could not delete the Increase Counter donations; check that AppIntentsSetup registers the intent with AppIntentDonationRegistry.',
+                    'Could not delete the Donation Probe donations; check that AppIntentsSetup registers the intent with AppIntentDonationRegistry.',
                     error
                   );
-                }
-              );
+                });
             }}
           />
+          <BodyText>
+            {
+              'Tap Donate intent, then Delete donations. The delete returns the donated id.\nA second delete returns none.'
+            }
+          </BodyText>
+          <BodyText>Last donation result: {donationResult}</BodyText>
         </View>
       </Section>
     </ScrollPage>
