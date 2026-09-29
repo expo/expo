@@ -137,32 +137,32 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   }
 
   public func isArray() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isArray(jsiRuntime)
+    return pointee.isObject() && pointee.getObject(cxxRuntime).isArray(cxxRuntime)
   }
 
   public func isFunction() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isFunction(jsiRuntime)
+    return pointee.isObject() && pointee.getObject(cxxRuntime).isFunction(cxxRuntime)
   }
 
   public func isTypedArray() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && expo.isTypedArray(jsiRuntime, pointee.getObject(jsiRuntime))
+    return pointee.isObject() && expo.isTypedArray(cxxRuntime, pointee.getObject(cxxRuntime))
   }
 
   /// Checks whether the value is an `ArrayBuffer`.
   public func isArrayBuffer() -> Bool {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return pointee.isObject() && pointee.getObject(jsiRuntime).isArrayBuffer(jsiRuntime)
+    return pointee.isObject() && pointee.getObject(cxxRuntime).isArrayBuffer(cxxRuntime)
   }
 
   /// Checks whether the value is an instance of a global class of the given name.
@@ -258,11 +258,11 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Returns the value as a string, or asserts if not a string.
   public func getString() -> String {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(jsiString: pointee.getString(jsiRuntime), in: jsiRuntime)
+    return String(jsiString: pointee.getString(cxxRuntime), in: cxxRuntime)
   }
 
   /// Returns the value as a BigInt, or asserts if not a BigInt.
@@ -426,10 +426,10 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Returns a string representing the value. Same as calling `toString()` in JS.
   public func toString() -> String {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return String(jsiString: pointee.toString(jsiRuntime), in: jsiRuntime)
+    return String(jsiString: pointee.toString(cxxRuntime), in: cxxRuntime)
   }
 
   /// Converts the JavaScript value to a JSON string representation.
@@ -597,8 +597,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Tests whether two values are strictly equal, according to https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
   public func isEqual(to another: JavaScriptValue) -> Bool {
-    if let jsiRuntime = runtime?.pointee ?? another.runtime?.pointee {
-      return facebook.jsi.Value.strictEquals(jsiRuntime, pointee, another.pointee)
+    if let cxxRuntime = runtime?.pointee ?? another.runtime?.pointee {
+      return facebook.jsi.Value.strictEquals(cxxRuntime, pointee, another.pointee)
     }
     // Some types don't have to be tied to any runtime. Since `strictEquals` needs a runtime, we need to handle this case ourselves.
     let thisKind = kind

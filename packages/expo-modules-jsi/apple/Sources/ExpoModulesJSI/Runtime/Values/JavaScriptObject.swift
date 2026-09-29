@@ -141,11 +141,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let jsiRuntime = runtime.pointee
-    var value = pointee.getProperty(jsiRuntime, key)
+    let cxxRuntime = runtime.pointee
+    var value = pointee.getProperty(cxxRuntime, key)
 
     for key in nestedKeys {
-      value = value.getObject(jsiRuntime).getProperty(jsiRuntime, key)
+      value = value.getObject(cxxRuntime).getProperty(cxxRuntime, key)
     }
     return JavaScriptValue(runtime, value)
   }
@@ -156,14 +156,14 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   ///
   /// - Returns: An array of property names as strings
   public func getPropertyNames() -> [String] {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    let propertyNames: facebook.jsi.Array = pointee.getPropertyNames(jsiRuntime)
-    let count = propertyNames.size(jsiRuntime)
+    let propertyNames: facebook.jsi.Array = pointee.getPropertyNames(cxxRuntime)
+    let count = propertyNames.size(cxxRuntime)
 
     return (0..<count).map { i in
-      return String(jsiString: propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime), in: jsiRuntime)
+      return String(jsiString: propertyNames.getValueAtIndex(cxxRuntime, i).getString(cxxRuntime), in: cxxRuntime)
     }
   }
 

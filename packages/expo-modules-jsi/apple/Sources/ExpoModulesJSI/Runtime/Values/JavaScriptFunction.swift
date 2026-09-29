@@ -92,26 +92,26 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
   // MARK: - Conversions
 
   public func asValue() -> JavaScriptValue {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, expo.valueFromFunction(jsiRuntime, pointee))
+    return JavaScriptValue(runtime, expo.valueFromFunction(cxxRuntime, pointee))
   }
 
   /// Returns the function as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let cxxRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return expo.valueFromFunction(jsiRuntime, pointee)
+    return expo.valueFromFunction(cxxRuntime, pointee)
   }
 
   public func asObject() -> JavaScriptObject {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let jsiRuntime = runtime.pointee
-    return JavaScriptObject(runtime, expo.valueFromFunction(jsiRuntime, pointee).getObject(jsiRuntime))
+    let cxxRuntime = runtime.pointee
+    return JavaScriptObject(runtime, expo.valueFromFunction(cxxRuntime, pointee).getObject(cxxRuntime))
   }
 }
 

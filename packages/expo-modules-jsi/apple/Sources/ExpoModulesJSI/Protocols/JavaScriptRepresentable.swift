@@ -42,10 +42,10 @@ extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaSc
     guard let runtime = value.runtime else {
       FatalError.runtimeLost()
     }
-    let jsiRuntime = runtime.pointee
-    let object = value.pointee.getObject(jsiRuntime)
-    let propertyNames = object.getPropertyNames(jsiRuntime)
-    let size = propertyNames.size(jsiRuntime)
+    let cxxRuntime = runtime.pointee
+    let object = value.pointee.getObject(cxxRuntime)
+    let propertyNames = object.getPropertyNames(cxxRuntime)
+    let size = propertyNames.size(cxxRuntime)
     var result: Self = [:]
 
     result.reserveCapacity(size)
@@ -53,9 +53,9 @@ extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaSc
     for index in 0..<size {
       // Look the value up by the key string the engine handed back instead of re-encoding the Swift
       // key: it skips one engine string allocation per entry and round-trips any name exactly.
-      let jsiKey = propertyNames.getValueAtIndex(jsiRuntime, index).getString(jsiRuntime)
-      let jsiValue = JavaScriptValue(runtime, object.getProperty(jsiRuntime, jsiKey))
-      result[String(jsiString: jsiKey, in: jsiRuntime)] = Value.fromJavaScriptValue(jsiValue)
+      let jsiKey = propertyNames.getValueAtIndex(cxxRuntime, index).getString(cxxRuntime)
+      let jsiValue = JavaScriptValue(runtime, object.getProperty(cxxRuntime, jsiKey))
+      result[String(jsiString: jsiKey, in: cxxRuntime)] = Value.fromJavaScriptValue(jsiValue)
     }
     return result
   }
