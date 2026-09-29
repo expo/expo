@@ -4,8 +4,6 @@ import path from 'path';
 
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
-import { DependencyKind } from '../../Packages';
-import { getAvailableProjectTemplatesAsync } from '../../ProjectTemplates';
 import { Task } from '../../TasksRunner';
 import * as Workspace from '../../Workspace';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
@@ -31,21 +29,6 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
     }
 
     const workspaceInfo = await Workspace.getInfoAsync();
-
-    // Append project templates as they're not pnpm workspaces.
-    const templates = await getAvailableProjectTemplatesAsync();
-    templates.forEach((template) => {
-      workspaceInfo[template.packageName] = {
-        location: template.path.replace(EXPO_DIR, ''),
-        workspaceDependencies: template
-          .getDependencies([DependencyKind.Normal, DependencyKind.Dev])
-          .map((dep) => dep.name),
-        mismatchedWorkspaceDependencies: [],
-        workspacePeerDependencies: [],
-        mismatchedWorkspacePeerDependencies: [],
-        workspaceOptionalDependencies: [],
-      };
-    });
 
     const dependenciesKeys = [
       'dependencies',

@@ -8,7 +8,6 @@ import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
-import { addTemplateTarball } from './addTemplateTarball';
 import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
@@ -29,7 +28,6 @@ import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile
 import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
-import { updateProjectTemplates } from './updateProjectTemplates';
 import { updateVersionsEndpoint } from './updateVersionsEndpoint';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 
@@ -58,11 +56,11 @@ const cleanWorkingTree = new Task<TaskArgs>(
         });
         // Remove package-root staging directories while retaining their separate Turbo outputs.
         await Promise.all(
-          parcels.flatMap(({ pkg }) =>
-            ['prebuilds', 'local-maven-repo'].map((directory) =>
-              fs.remove(path.join(pkg.path, directory))
-            )
-          )
+          parcels.flatMap(({ pkg }) => [
+            fs.remove(path.join(pkg.path, 'prebuilds')),
+            fs.remove(path.join(pkg.path, 'local-maven-repo')),
+            ...(pkg.packageName === 'expo' ? [fs.remove(path.join(pkg.path, 'template.tgz'))] : []),
+          ])
         );
         // Remove tarballs.
         await Git.cleanAsync({
@@ -91,12 +89,10 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       checkPackagesWithTurbo,
       updatePackageVersions,
       updateBundledNativeModulesFile,
-      updateProjectTemplates,
       updateModuleTemplate,
       updateWorkspaceProjects,
       updateAndroidProjects,
       updateIosProjects,
-      addTemplateTarball,
       cutOffChangelogs,
       refreshPnpmLockfile,
       commitStagedChanges,

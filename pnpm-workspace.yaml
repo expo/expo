@@ -1,4 +1,5 @@
 packages:
+  - templates/*
   - apps/*
   - packages/*
   - packages/@expo/*
