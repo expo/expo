@@ -43,6 +43,13 @@ jsEngine: graaljs
       testID: 'video-view'
       mode: 'keep-originals'
 
+# The seek is issued before the reloaded source has finished loading and must
+# still be applied once it has.
+- tapOn: Reload and seek by 10s
+- extendedWaitUntil:
+    visible: 'currentTime = 10'
+    timeout: 10000
+
 - tapOn: Trigger an Error
 
 - assertVisible: 'source = No title'

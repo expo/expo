@@ -356,9 +356,7 @@ public final class VideoModule: Module {
       }
 
       Function("seekBy") { (player, seconds: Double) in
-        let newTime = player.ref.currentTime() + CMTime(seconds: seconds, preferredTimescale: .max)
-
-        player.seeker.seek(to: newTime)
+        player.seekBy(seconds)
       }
 
       Function("replay") { player in

@@ -59,6 +59,18 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  func seekBy(_ seconds: Double) {
+    // Like `currentTime`, a relative seek can't be applied while the item is loading, so it is
+    // folded into the deferred time and applied once the item has been set.
+    if dangerousPropertiesStore.ownerIsReplacing {
+      currentTime = (dangerousPropertiesStore.currentTime ?? 0) + seconds
+      return
+    }
+
+    let newTime = ref.currentTime() + CMTime(seconds: seconds, preferredTimescale: .max)
+    seeker.seek(to: newTime)
+  }
+
   var staysActiveInBackground = false {
     didSet {
       if staysActiveInBackground {
