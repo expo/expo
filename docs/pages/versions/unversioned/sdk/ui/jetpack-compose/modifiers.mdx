@@ -153,17 +153,22 @@ Fills available height.
 
 ### `width(value)`
 
-Sets an exact width, or the minimum or maximum intrinsic width of the content. Inside a `Host` with `matchContents`, the available width has no limit, so children with `weight` in a `Row` get no space. Apply `width(IntrinsicSize.Max)` to the `Row` to give them a width to share.
+Sets an exact width, or the minimum or maximum [intrinsic width](https://developer.android.com/develop/ui/compose/layouts/intrinsic-measurements) of the content. The incoming constraints can still make the view narrower or wider than that width.
 
-| Parameter | Type                      | Description                                                                                                                                                                                                                              |
-| --------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`   | `number \| IntrinsicSize` | Width in dp, or an `IntrinsicSize`. `IntrinsicSize.Min` uses the narrowest width that fits the content (for a text, its widest word). `IntrinsicSize.Max` uses the width the content needs without wrapping (for a text, a single line). |
+| Parameter | Type                      | Description                                                                                                                                                                                                                                                                                                                  |
+| --------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`   | `number \| IntrinsicSize` | Width in dp, or an `IntrinsicSize`. `IntrinsicSize.Min` uses the minimum intrinsic width, the smallest width at which the content still draws correctly (for a text, its widest word). `IntrinsicSize.Max` uses the maximum intrinsic width, the width the content needs when nothing limits it (for a text, a single line). |
 
-In the following example, `fillMaxWidth()` comes before `width(IntrinsicSize.Max)` so the row still fills a bounded width, and `weight(1)` gives the label the space left next to the switch:
+One case is a `Host` with `matchContents`: the available width has no limit, so children with `weight` in a `Row` get no space. In the following example, `width(IntrinsicSize.Max)` gives the `Row` the width its content needs, `fillMaxWidth()` before it keeps the row filling a bounded width, and `weight(1)` gives the label the space left next to the switch:
 
 ```tsx
 import { Host, Row, Switch, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, IntrinsicSize, weight, width } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  fillMaxWidth,
+  IntrinsicSize,
+  weight,
+  width,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 <Host matchContents>
   <Row modifiers={[fillMaxWidth(), width(IntrinsicSize.Max)]}>
