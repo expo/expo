@@ -3,8 +3,8 @@ import ExpoModulesCore
 
 final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
   private let locationManager: CLLocationManager
-  private var resolve: EXPromiseResolveBlock?
-  private var reject: EXPromiseRejectBlock?
+  // Only accessed from the main thread, so it does not need to be synchronized
+  private var pendingRequests: [(resolve: EXPromiseResolveBlock, reject: EXPromiseRejectBlock)] = []
 
   // The selector is constructed at runtime from separate parts so that neither the selector
   // nor the full method name literal ends up in the binary. Apple's static analysis warns
@@ -46,10 +46,15 @@ final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CL
       return
     }
 
-    self.resolve = resolve
-    self.reject = reject
     Task { @MainActor [weak self] in
-      self?.locationManager.perform(Self.whenInUseAuthorizationSelector)
+      guard let self else {
+        return
+      }
+      let isPromptAlreadyRequested = !pendingRequests.isEmpty
+      pendingRequests.append((resolve, reject))
+      if !isPromptAlreadyRequested {
+        locationManager.perform(Self.whenInUseAuthorizationSelector)
+      }
     }
   }
 
@@ -79,25 +84,26 @@ final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CL
 
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-    guard let reject else {
-      return
-    }
-
     let exception = PermissionRequestFailedException().causedBy(error)
-    reject(exception.code, exception.description, exception)
-    self.resolve = nil
-    self.reject = nil
+    let requests = pendingRequests
+    pendingRequests = []
+    for request in requests {
+      request.reject(exception.code, exception.description, exception)
+    }
   }
 
   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     // notDetermined authorizationStatus means that user has not clicked the pop-up yet
     // this check is important because this callback runs on the manager initalization with notDetermined
-    guard let resolve, manager.authorizationStatus != .notDetermined else {
+    guard manager.authorizationStatus != .notDetermined else {
       return
     }
 
-    resolve(getPermissions())
-    self.resolve = nil
-    self.reject = nil
+    let response = getPermissions()
+    let requests = pendingRequests
+    pendingRequests = []
+    for request in requests {
+      request.resolve(response)
+    }
   }
 }
