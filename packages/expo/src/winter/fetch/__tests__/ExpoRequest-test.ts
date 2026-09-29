@@ -499,6 +499,53 @@ describe('Request', () => {
     });
   });
 
+  describe('FormData body', () => {
+    const formData = () => {
+      const form = new FormData();
+      form.append('a', 'b');
+      return form;
+    };
+    const boundaryOf = (request: Request) =>
+      request.headers.get('content-type')?.match(/^multipart\/form-data; boundary=(.+)$/)?.[1];
+
+    it('sets a multipart content-type with the boundary its body uses', async () => {
+      const request = new Request('https://example.test/', { method: 'POST', body: formData() });
+      const boundary = boundaryOf(request);
+      expect(boundary).toBeTruthy();
+      expect(await request.text()).toMatch(new RegExp(`^--${boundary}\r\n`));
+    });
+
+    it('keeps the boundary in a clone and in a request built from it', async () => {
+      const request = new Request('https://example.test/', { method: 'POST', body: formData() });
+      const boundary = boundaryOf(request);
+      const clone = request.clone();
+      const copy = new Request(request);
+      expect(boundaryOf(clone)).toBe(boundary);
+      expect(boundaryOf(copy)).toBe(boundary);
+      expect(await clone.text()).toMatch(new RegExp(`^--${boundary}\r\n`));
+      expect(await copy.text()).toMatch(new RegExp(`^--${boundary}\r\n`));
+    });
+
+    it('uses the boundary of an explicit multipart content-type', async () => {
+      const request = new Request('https://example.test/', {
+        method: 'POST',
+        body: formData(),
+        headers: { 'content-type': 'multipart/form-data; boundary=custom' },
+      });
+      expect(request.headers.get('content-type')).toBe('multipart/form-data; boundary=custom');
+      expect(await request.text()).toMatch(/^--custom\r\n/);
+    });
+
+    it('keeps an explicit non-multipart content-type', () => {
+      const request = new Request('https://example.test/', {
+        method: 'POST',
+        body: formData(),
+        headers: { 'content-type': 'text/plain' },
+      });
+      expect(request.headers.get('content-type')).toBe('text/plain');
+    });
+  });
+
   // WebIDL: https://webidl.spec.whatwg.org/#es-interfaces
   describe('WebIDL shape', () => {
     it('has a constructor length of 1', () => {

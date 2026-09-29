@@ -81,6 +81,23 @@ describe('fetch', () => {
     expect(sentBody()).toBeNull();
   });
 
+  it("sends a FormData body with the Request's content-type and boundary", async () => {
+    const formData = new FormData();
+    formData.append('a', 'b');
+    const request = new Request('https://example.test/', { method: 'POST', body: formData });
+    const contentType = request.headers.get('content-type');
+    await fetch(request);
+    const sentHeaders = new Map(
+      (mockStart.mock.calls[0][1].headers as [string, string][]).map(([k, v]) => [
+        k.toLowerCase(),
+        v,
+      ])
+    );
+    expect(sentHeaders.get('content-type')).toBe(contentType);
+    const boundary = contentType!.split('boundary=')[1];
+    expect(sentBody()).toMatch(new RegExp(`^--${boundary}\r\n`));
+  });
+
   it('lets the init body override the Request body', async () => {
     const request = new Request('https://example.test/', { method: 'POST', body: 'original' });
     await fetch(request, { method: 'POST', body: 'override' });

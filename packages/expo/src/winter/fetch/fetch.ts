@@ -1,5 +1,5 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
-import { getRequestBodyInit } from './ExpoRequest';
+import { getRequestBodyInit, getRequestFormDataBoundary } from './ExpoRequest';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import type { NativeRequest, NativeRequestInit } from './NativeRequest';
@@ -33,9 +33,11 @@ export async function fetch(
 ): Promise<FetchResponse> {
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
-  const body =
-    (init != null ? getRequestBodyInit(init) : null) ??
-    (initFromRequest ? getRequestBodyInit(input) : null);
+  const initBody = init != null ? getRequestBodyInit(init) : null;
+  const bodySource = initBody != null ? init : initFromRequest ? input : null;
+  const body = initBody ?? (initFromRequest ? getRequestBodyInit(input) : null);
+  // Serialize a Request's FormData body with the boundary its Content-Type header already names.
+  const formDataBoundary = bodySource != null ? getRequestFormDataBoundary(bodySource) : undefined;
   const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
   const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
   const method = init?.method ?? (initFromRequest ? input.method : undefined);
@@ -57,7 +59,9 @@ export async function fetch(
 
   const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
-  const { body: requestBody, overriddenHeaders } = await normalizeBodyInitAsync(body);
+  const { body: requestBody, overriddenHeaders } = await normalizeBodyInitAsync(body, {
+    formDataBoundary,
+  });
   if (overriddenHeaders) {
     headers = overrideHeaders(headers, overriddenHeaders);
   }
