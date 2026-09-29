@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Added `LazyVStack.ForEach` and `LazyHStack.ForEach`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large stacks only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50579](https://github.com/expo/expo/pull/50579) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [android] Fix `Switch` label rendering one letter per line inside a `Host` with `matchContents`. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+- [android] Added `IntrinsicSize` support to the `width` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+
 ## 58.0.8 — 2026-09-28
 
 ### 🎉 New features
