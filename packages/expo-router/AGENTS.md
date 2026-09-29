@@ -4,12 +4,19 @@ Expo Router turns app files into routes for React Native and web. Judge features
 
 ## Where to look
 
-- Start with `src/index.tsx`, `src/exports.ts`, `src/ExpoRoot.tsx`, and `src/getRoutes.ts`; inspect current source for details instead of relying on a static directory map.
-- Routes follow file names: `page/index.tsx` maps to `/page`, `post/[id].tsx` has a dynamic segment, and `(group)/_layout.tsx` defines a URL-invisible layout group.
-- Read [stack header and toolbar instructions](src/layouts/stack-utils/AGENTS.md) before changing that directory.
-- Native implementations live in `ios/` and `android/`; the config plugin lives in `plugin/`.
+- `src/` contains routing, navigation, views, hooks, server integration, and tests. Start with `src/index.tsx`, `src/exports.ts`, `src/ExpoRoot.tsx`, and `src/getRoutes.ts`. Read [stack header and toolbar instructions](src/layouts/stack-utils/AGENTS.md) before changing that directory.
+- `ios/` contains Swift modules and native views, plus Swift tests in `ios/Tests/`; `android/` contains the Kotlin module and Android build configuration.
+- `plugin/` contains the Expo config plugin and its tests; `assets/` contains images and other bundled resources.
+- `internal/` and `link/` contain package subpath entry points; `rsc/` contains React Server Components entry points and the web bootstrap.
+- `__mocks__/` contains Jest asset and style mocks; `vendor/` contains the local `react-helmet-async` fork; `.claude/` contains package-local agent settings and testing guidance.
 - [`@expo/router-server`](../@expo/router-server/package.json) uses Router internals for route manifests, typed routes, and server rendering; [`@expo/cli`](../@expo/cli/package.json) depends on it for development and export. Check both packages when changing those flows.
 - `expo-router/server` re-exports APIs from the separate [`expo-server`](../expo-server/package.json) dependency.
+
+## Conventions
+
+- App routes follow file names: `page/index.tsx` maps to `/page`, `post/[id].tsx` has a dynamic segment, and `(group)/_layout.tsx` defines a URL-invisible layout group.
+- Put native implementation and tests in `ios/` or `android/` as appropriate; put config plugin changes in `plugin/`. Keep shared JavaScript and TypeScript behavior in `src/`.
+- Use `.ios`, `.android`, `.native`, and `.web` file suffixes for platform-specific implementations and tests. Import implementation modules through their extensionless base path so the resolver selects the matching variant.
 
 ## Build and checks
 
@@ -33,7 +40,6 @@ At the repository root, `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `pnpm t
 - Keep functions short. Add inline comments when they explain non-obvious behavior. Every `as` cast needs a nearby comment explaining why the cast is sound or necessary.
 - Avoid `useRef` unless necessary. For latest-value callbacks in effects, consider React's `useEffectEvent`; for stable callback identity, consider [`useLatestCallback`](src/utils/useLatestCallback.ts). Check each call site's constraints; retain a ref when mutable identity is required.
 - Keep code working with and without React Compiler. Prefer `unknown` and narrow it where practical instead of adding `any`.
-- Import platform variants through their extensionless base path so the resolver selects `.ios`, `.android`, `.native`, or `.web` implementations.
 
 ## App verification
 
