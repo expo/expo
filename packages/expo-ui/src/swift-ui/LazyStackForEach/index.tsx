@@ -4,23 +4,22 @@ import { Fragment, type ReactElement } from 'react';
 import {
   useItemKeys,
   useRecycledRows,
-  type RenderItem,
   type WindowChangeEvent,
 } from '../../recycling/useRecycledRows';
 import { type ViewEvent } from '../../types';
 import { NativeSlot } from '../List/DataListForEach';
 
-export interface LazyStackForEachProps<ItemT> {
+export interface LazyStackForEachProps<T> {
   /** Items to display. Replace the array when updating data. */
-  data: readonly ItemT[];
+  data: readonly T[];
   /** Returns a stable, unique string key for each item. */
-  keyExtractor: (item: ItemT, index: number) => string;
+  keyExtractor: (item: T, index: number) => string;
   /**
    * Renders a row. Wrap it in `useCallback`, or every row re-renders on each parent render.
    * Recycled rows are reused for other items, so their local state (`useState`) carries over.
    * Reset it when the item changes, or keep the state outside the row.
    */
-  children: RenderItem<ItemT>;
+  children: (info: { item: T; index: number }) => ReactElement;
   /**
    * Renders only the rows near the visible range and reuses them while scrolling. Set to `false` to
    * render every row at once. Set it once; changing it remounts the rows.
@@ -35,7 +34,7 @@ export interface LazyStackForEachProps<ItemT> {
   overscanCount?: number;
   /**
    * Placeholder size in points along the stack axis, until a row is measured. Must be positive.
-   * Measurements reset when `data` changes. Ignored when `recycling` is `false`.
+   * Ignored when `recycling` is `false`.
    * @default 64
    */
   estimatedItemSize?: number;
@@ -62,29 +61,29 @@ const NativePool = requireNativeView<{ children: ReactElement[] }>(
  * Creates the `ForEach` component of one lazy stack, so its errors name that stack.
  */
 export function createLazyStackForEach(componentName: string, axis: Axis) {
-  function ForEach<ItemT>({ recycling = true, ...props }: LazyStackForEachProps<ItemT>) {
+  function ForEach<T>({ recycling = true, ...props }: LazyStackForEachProps<T>) {
     return recycling ? <RecycledForEach {...props} /> : <StaticForEach {...props} />;
   }
 
   // Each row is a plain child of the lazy stack.
-  function StaticForEach<ItemT>({
+  function StaticForEach<T>({
     data,
     keyExtractor,
     children: renderItem,
-  }: Omit<LazyStackForEachProps<ItemT>, 'recycling'>) {
+  }: Omit<LazyStackForEachProps<T>, 'recycling'>) {
     const itemKeys = useItemKeys(componentName, data, keyExtractor);
     return data.map((item, index) => (
       <Fragment key={itemKeys[index]}>{renderItem({ item, index })}</Fragment>
     ));
   }
 
-  function RecycledForEach<ItemT>({
+  function RecycledForEach<T>({
     data,
     keyExtractor,
     children: renderItem,
     overscanCount,
     estimatedItemSize = 64,
-  }: Omit<LazyStackForEachProps<ItemT>, 'recycling'>) {
+  }: Omit<LazyStackForEachProps<T>, 'recycling'>) {
     const { itemKeys, revision, rows, onWindowChange } = useRecycledRows({
       componentName,
       Slot: NativeSlot,
