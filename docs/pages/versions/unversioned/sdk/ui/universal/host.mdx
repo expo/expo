@@ -101,6 +101,8 @@ export default function GroupedButtonsExample() {
 }
 ```
 
+Automatic hosting does not apply to a universal component inside a React Native view that a `Host` wraps. The component still detects the outer `Host` and does not create its own. See [Placing components inside React Native views](#placing-components-inside-react-native-views) for how to handle this case.
+
 ### Placing components inside React Native views
 
 `Host` renders its universal children with Jetpack Compose on Android and SwiftUI on iOS. A React Native view inside `Host`, such as `View` or `ScrollView`, switches back to React Native rendering. To use a universal component inside that view, wrap the component in a new `Host`. Do this even when a `Host` higher in the tree wraps the view.
