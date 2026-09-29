@@ -47,6 +47,21 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
     pickingContext = nil
 
+    if options.copyToCacheDirectory && options.useFileCoordination {
+      // A coordinated read of a cloud file that is not on the device waits for the download,
+      // so these files are read off the main thread.
+      let pickedUrls = options.multiple ? urls : Array(urls.prefix(1))
+      DispatchQueue.global(qos: .userInitiated).async {
+        do {
+          let assets = try pickedUrls.map { try self.readCoordinatedDocumentDetails(documentUrl: $0) }
+          promise.resolve(DocumentPickerResponse(assets: assets))
+        } catch {
+          promise.reject(error)
+        }
+      }
+      return
+    }
+
     do {
       if options.multiple {
         let assets = try urls.map {
@@ -139,6 +154,58 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     )
   }
 
+  /// Reads an original file returned by a picker opened with `asCopy: false`. The file is readable
+  /// only inside security-scoped access, and is copied to the cache with a coordinated read so its
+  /// file provider can make it available first, for example by downloading it from iCloud.
+  private func readCoordinatedDocumentDetails(documentUrl: URL) throws -> DocumentInfo {
+    guard let fileSystem = self.appContext?.fileSystem else {
+      throw Exceptions.FileSystemModuleNotFound()
+    }
+
+    let isAccessingSecurityScopedResource = documentUrl.startAccessingSecurityScopedResource()
+    defer {
+      if isAccessingSecurityScopedResource {
+        documentUrl.stopAccessingSecurityScopedResource()
+      }
+    }
+
+    let cacheDirURL = URL(fileURLWithPath: fileSystem.cachesDirectory)
+    let directory = cacheDirURL.appendingPathComponent("DocumentPicker", isDirectory: true).path
+    let fileExtension = "." + documentUrl.pathExtension
+    let path = fileSystem.generatePath(inDirectory: directory, withExtension: fileExtension)
+    let newUrl = URL(fileURLWithPath: path)
+
+    var coordinationError: NSError?
+    var copyError: Error?
+    NSFileCoordinator().coordinate(readingItemAt: documentUrl, options: [], error: &coordinationError) { readableUrl in
+      do {
+        try FileManager.default.copyItem(at: readableUrl, to: newUrl)
+      } catch {
+        copyError = error
+      }
+    }
+    if let error = coordinationError ?? copyError {
+      throw error
+    }
+
+    guard let fileSize = getFileSize(path: newUrl) else {
+      throw InvalidFileException()
+    }
+
+    let mimeType = self.getMimeType(from: documentUrl.pathExtension) ?? "application/octet-stream"
+    let lastModified = try? documentUrl.resourceValues(forKeys: [.contentModificationDateKey])
+      .contentModificationDate?.timeIntervalSince1970
+    let lastModifiedMs = Int64((lastModified ?? Date().timeIntervalSince1970) * 1000)
+
+    return DocumentInfo(
+      uri: newUrl.absoluteString,
+      name: documentUrl.lastPathComponent,
+      size: fileSize,
+      mimeType: mimeType,
+      lastModified: lastModifiedMs
+    )
+  }
+
   private func getMimeType(from pathExtension: String) -> String? {
     if #available(iOS 14, *) {
       return UTType(filenameExtension: pathExtension)?.preferredMIMEType
@@ -205,9 +272,12 @@ public class DocumentPickerModule: Module, PickingResultHandler {
   private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
     if #available(iOS 14.0, *) {
       let utTypes = options.type.compactMap { toUTType(mimeType: $0) }
+      // With `asCopy`, iOS hands over copies named after the originals in one shared folder.
+      // File coordination opens the originals and copies them itself (see `readCoordinatedDocumentDetails`).
+      let opensOriginals = options.copyToCacheDirectory && options.useFileCoordination
       return UIDocumentPickerViewController(
         forOpeningContentTypes: utTypes,
-        asCopy: true
+        asCopy: !opensOriginals
       )
     } else {
       let utiTypes = options.type.map { toUTI(mimeType: $0) }

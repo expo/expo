@@ -10,4 +10,7 @@ struct DocumentPickerOptions: Record {
 
   @Field
   var multiple: Bool
+
+  @Field
+  var useFileCoordination: Bool = false
 }

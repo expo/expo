@@ -18,6 +18,16 @@ export type DocumentPickerOptions = {
    */
   copyToCacheDirectory?: boolean;
   /**
+   * If `true`, the picker opens the original files instead of asking iOS to copy them first, and
+   * each file is copied to the cache directory with a coordinated read. This keeps picked files
+   * that share a name apart (iOS otherwise hands over a single copy for all of them) and lets
+   * the file provider download a cloud file that is not on the device yet before it is copied.
+   * Only takes effect when `copyToCacheDirectory` is `true`.
+   * @platform ios
+   * @default false
+   */
+  useFileCoordination?: boolean;
+  /**
    * Allows multiple files to be selected from the system UI.
    * @default false
    *
