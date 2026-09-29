@@ -3,6 +3,7 @@
 #if !os(macOS) && !os(tvOS)
 
 import ExpoModulesCore
+import React
 import UIKit
 import SwiftUI
 
@@ -44,6 +45,13 @@ class DevMenuFABWindow: UIWindow {
     hostingController.view.backgroundColor = .clear
     self.hostingController = hostingController
     rootViewController = hostingController
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(handleAppWindowFrameChange(_:)),
+      name: .RCTWindowFrameDidChange,
+      object: nil
+    )
   }
 
   private var edgeTranslation: CGAffineTransform {
@@ -106,6 +114,12 @@ class DevMenuFABWindow: UIWindow {
     }
 
     return nil
+  }
+
+  @objc private func handleAppWindowFrameChange(_ notification: Notification) {
+    // Per-screen orientation changes can rotate the app window without rotating this overlay.
+    // Refresh it too, so the scene does not keep reporting the overlay's previous orientation.
+    hostingController?.setNeedsUpdateOfSupportedInterfaceOrientations()
   }
 }
 
