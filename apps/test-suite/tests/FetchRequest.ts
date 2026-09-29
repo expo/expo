@@ -23,9 +23,6 @@ const NATIVE_DEVIATIONS = new Set([
   'Input URL has credentials',
   // Stream bodies don't require `duplex: 'half'`.
   'It is error to omit .duplex when the body is a ReadableStream.',
-  // A FormData body gets its multipart Content-Type in `fetch()`, not at construction.
-  'Default Content-Type for Request with FormData body',
-  'Initialize Request\'s body with "[object FormData]", multipart/form-data',
 ]);
 
 // Test names starting with these are native deviations too. React Native apps set headers such as
@@ -49,7 +46,8 @@ const WEB_DEVIATIONS = new Set([
 
 // WPT expects the input request to be disturbed even when the init replaces its body, but the
 // current spec creates a proxy for (and so disturbs) the input body only when the init body is
-// null: https://fetch.spec.whatwg.org/#dom-request. undici follows the spec here.
+// null: https://fetch.spec.whatwg.org/#dom-request. Firefox 148, WebKit 26.4 and undici follow the
+// spec here; Chrome 140 follows WPT.
 const SPEC_CONFLICTS = new Set([
   'Input request used for creating new request became disturbed even if body is not used',
 ]);

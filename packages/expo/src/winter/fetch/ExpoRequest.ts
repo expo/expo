@@ -1,5 +1,5 @@
 import { normalizeBodyInitAsync, normalizeMethod } from './RequestUtils';
-import { convertFormDataAsync } from './convertFormData';
+import { convertFormDataAsync, createBoundary } from './convertFormData';
 import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
 import type { FetchRequestInit } from './fetch.types';
 
@@ -105,6 +105,16 @@ function isRequest(input: unknown): input is Request {
  * Our own `Request` and `whatwg-fetch` keep the raw body input, other implementations expose
  * only the `body` stream.
  */
+export function getRequestFormDataBoundary(request: object): string | undefined {
+  return request instanceof Request ? (request._formDataBoundary ?? undefined) : undefined;
+}
+
+// Reads the boundary of a `multipart/form-data` content type.
+function parseMultipartBoundary(contentType: string): string | null {
+  const match = /^multipart\/form-data\s*;.*\bboundary=(?:"([^"]+)"|([^;\s]+))/i.exec(contentType);
+  return match ? (match[1] ?? match[2] ?? null) : null;
+}
+
 export function getRequestBodyInit(request: object): BodyInit | null {
   if (request instanceof Request) {
     return request._bodyInit;
@@ -207,8 +217,7 @@ type RequestState = {
 /**
  * A `Request` implementation for `expo/fetch` that follows the Fetch standard, with a few
  * deviations kept for compatibility with `whatwg-fetch`: invalid URLs don't throw, stream bodies
- * don't require `duplex`, a FormData body gets its Content-Type in `fetch()`, and forbidden or
- * `no-cors` request headers aren't filtered.
+ * don't require `duplex`, and forbidden or `no-cors` request headers aren't filtered.
  *
  * React Native installs the `whatwg-fetch` polyfill as the global `Request`, which is not fully
  * spec-compliant and forces `expo/fetch` to reach into its private fields to recover the body.
@@ -229,6 +238,9 @@ export class Request implements Body {
   // The lazily-created body stream. Cached so `.body` returns the same object across gets, and
   // so reading or locking it disturbs this request's body (sets `consumed`) per the Fetch spec.
   private bodyStream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
+  // The multipart boundary of a FormData body. Set at construction, like the spec's body
+  // extraction, so the Content-Type header matches the body that `text()` and `fetch()` produce.
+  _formDataBoundary: string | null = null;
 
   // A default for `init` keeps `Request.length` at 1, like WebIDL's optional arguments.
   constructor(input: string | URL | Request, init: FetchRequestInit = {}) {
@@ -350,6 +362,17 @@ export class Request implements Body {
     this.setDefaultContentType();
     if (this._bodyInit != null) {
       this._bodyInit = copyBodyInit(this._bodyInit);
+    }
+    if (this._bodyInit instanceof FormData) {
+      const contentType = this.headers.get('content-type');
+      if (contentType == null) {
+        this._formDataBoundary = createBoundary();
+        this.headers.set('content-type', `multipart/form-data; boundary=${this._formDataBoundary}`);
+      } else {
+        // Keep the boundary of an explicit multipart content type, including one copied from a
+        // source request, so the body matches the header.
+        this._formDataBoundary = parseMultipartBoundary(contentType);
+      }
     }
 
     // Consume the source body last, so a constructor that throws leaves the source usable.
@@ -561,7 +584,7 @@ export class Request implements Body {
     }
     this.markConsumed(method);
     if (body instanceof FormData) {
-      const { body: bytes } = await convertFormDataAsync(body);
+      const { body: bytes } = await convertFormDataAsync(body, this._formDataBoundary ?? undefined);
       return bytes as Uint8Array<ArrayBuffer>;
     }
     const { body: bytes } = await normalizeBodyInitAsync(body);
