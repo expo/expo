@@ -2,6 +2,7 @@ import ExpoModulesCore
 
 final class LocationPermissionsDelegate {
   private weak var appContext: AppContext?
+  private lazy var fullAccuracyRequester = TemporaryFullAccuracyRequester()
 
   init(appContext: AppContext?) {
     self.appContext = appContext
@@ -62,7 +63,7 @@ final class LocationPermissionsDelegate {
           return
         }
         Task { @MainActor in
-          await TemporaryFullAccuracyRequester().raiseIfReduced(purposeKey: purposeKey)
+          await self.fullAccuracyRequester.raiseIfReduced(purposeKey: purposeKey)
           permissions.getPermissionUsingRequesterClass(
             kind.requesterClass,
             resolve: promise.legacyResolver,

@@ -1,23 +1,28 @@
 import CoreLocation
 
 final class TemporaryFullAccuracyRequester {
-  private let manager: CLLocationManager
-
-  @MainActor
-  init() {
-    manager = CLLocationManager()
-  }
+  private lazy var manager = CLLocationManager.makeOnMainThread()
+  private var pendingRaise: Task<Void, Never>?
 
   @MainActor
   func raiseIfReduced(purposeKey: String) async {
+    if let pendingRaise {
+      await pendingRaise.value
+      return
+    }
     let isGranted = manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways
     guard isGranted, manager.accuracyAuthorization == .reducedAccuracy else {
       return
     }
-    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-      manager.requestTemporaryFullAccuracyAuthorization(withPurposeKey: purposeKey) { _ in
-        continuation.resume()
+    let task = Task { @MainActor in
+      await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+        manager.requestTemporaryFullAccuracyAuthorization(withPurposeKey: purposeKey) { _ in
+          continuation.resume()
+        }
       }
     }
+    pendingRaise = task
+    await task.value
+    pendingRaise = nil
   }
 }
