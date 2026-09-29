@@ -28,6 +28,14 @@ const assetWithNonIosScales = {
   fileHashes: ['hash-1x', 'hash-1.5x', 'hash-2x', 'hash-3x', 'hash-4x'],
 };
 
+// An asset shipping both `name.png` and `name@1x.png`, as `@react-navigation/elements` icons do.
+const assetWithDuplicateScales = {
+  ...assetWithNonIosScales,
+  name: 'clear-icon',
+  scales: [1, 1, 2, 3, 4],
+  fileHashes: ['hash-1x', 'hash-1x-duplicate', 'hash-2x', 'hash-3x', 'hash-4x'],
+};
+
 let cwd: string;
 let projectRoot: string;
 
@@ -68,6 +76,41 @@ describe(createManifestForBuildAsync, () => {
       [1.5, 'hash-1.5x'],
       [2, 'hash-2x'],
       [3, 'hash-3x'],
+      [4, 'hash-4x'],
+    ]);
+  });
+
+  it('assigns each duplicate iOS scale the hash of its own file', async () => {
+    jest.mocked(exportEmbedAssetsAsync).mockResolvedValue([assetWithDuplicateScales] as any);
+    const manifest = await createManifestAsync('ios');
+    expect(manifest.assets.map((asset: any) => [asset.scale, asset.packagerHash])).toEqual([
+      [1, 'hash-1x'],
+      [1, 'hash-1x-duplicate'],
+      [2, 'hash-2x'],
+      [3, 'hash-3x'],
+    ]);
+  });
+
+  it('assigns each duplicate Android scale the hash of its own file', async () => {
+    jest.mocked(exportEmbedAssetsAsync).mockResolvedValue([assetWithDuplicateScales] as any);
+    const manifest = await createManifestAsync('android');
+    expect(manifest.assets.map((asset: any) => [asset.scale, asset.packagerHash])).toEqual([
+      [1, 'hash-1x'],
+      [1, 'hash-1x-duplicate'],
+      [2, 'hash-2x'],
+      [3, 'hash-3x'],
+      [4, 'hash-4x'],
+    ]);
+  });
+
+  it('assigns the iOS fallback scale the hash of its own file', async () => {
+    jest
+      .mocked(exportEmbedAssetsAsync)
+      .mockResolvedValue([
+        { ...assetWithNonIosScales, scales: [1.5, 4], fileHashes: ['hash-1.5x', 'hash-4x'] },
+      ] as any);
+    const manifest = await createManifestAsync('ios');
+    expect(manifest.assets.map((asset: any) => [asset.scale, asset.packagerHash])).toEqual([
       [4, 'hash-4x'],
     ]);
   });
