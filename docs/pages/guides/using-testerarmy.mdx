@@ -376,6 +376,90 @@ For agent steps:
 
 </Collapsible>
 
+## Run e2e on EAS Simulator
+
+EAS Simulator runs Android Emulators and iOS Simulators on EAS infrastructure. e2e runs on your computer and drives the remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
+
+> **important** EAS Simulator is a limited-access preview. For more information, see the [EAS Simulator documentation](/preview/eas-simulator/introduction/).
+
+<Step label="1">
+
+### Start an EAS Simulator session
+
+Link your project to EAS and check that your account can use EAS Simulator:
+
+<Terminal cmd={['$ eas init', '$ eas simulator:availability --json']} />
+
+EAS CLI saves the session ID and the connection details for the remote device in **.env.eas-simulator**. The connection details include an authentication token, so add the file to **.gitignore** before you start a session:
+
+```sh .gitignore
+.env.eas-simulator
+```
+
+Start an iOS session with agent-device. `--max-idle-time-minutes` stops the session after 10 minutes without activity:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --device "iPhone 17 Pro" --max-idle-time-minutes 10 --non-interactive',
+  ]}
+/>
+
+</Step>
+
+<Step label="2">
+
+### Install your app on the remote device
+
+`eas simulator:exec` runs a command with the connection details of the active session. Use it to install the iOS release build that you created in [Build and install a release build](#build-and-install-a-release-build) on the remote device. Xcode saves the build as **testerarmye2eexample.app** in a **Build/Products/Release-iphonesimulator** directory under **~/Library/Developer/Xcode/DerivedData**.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device install com.example.testerarmye2e ./path/to/testerarmye2eexample.app --platform ios',
+  ]}
+/>
+
+To install an iOS Simulator build from EAS Build instead, pass `--build-id` to `eas simulator:start`.
+
+</Step>
+
+<Step label="3">
+
+### Run the tests
+
+Create **e2e.eas.config.ts**. It reuses **e2e.config.ts**, including the agent. It replaces the targets with one iOS target that does not set `device`, because the session has one remote device:
+
+```ts e2e.eas.config.ts
+import type { E2EConfig } from 'e2e';
+import { mobile } from '@e2e-dev/mobile';
+
+import config from './e2e.config';
+
+export default {
+  ...config,
+  targets: [{ name: 'ios', engine: mobile({ platform: 'ios', app: 'com.example.testerarmye2e' }) }],
+} satisfies E2EConfig;
+```
+
+Run the tests through `eas simulator:exec`:
+
+<Terminal cmd={['$ eas simulator:exec npx e2e run --config e2e.eas.config.ts']} />
+
+Agent steps that you recorded on your own simulator can replay on the remote device without a model call.
+
+</Step>
+
+<Step label="4">
+
+### Review the session and stop it
+
+The output of `eas simulator:start` links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
+
+A session counts toward your EAS Simulator usage until it stops. Stop it when the tests finish:
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+</Step>
+
 ## Run TesterArmy tests on EAS Workflows
 
 The TesterArmy platform runs saved tests and an exploration agent on TesterArmy's cloud emulators and simulators. A workflow in EAS Workflows builds your app, uploads it to TesterArmy, and starts the tests on each push and pull request.
