@@ -35,7 +35,7 @@ export default function RegisterPage() {
 
     try {
       const message = `
-*New Registration Request from Vertex Assessment Center*
+*New Registration Request from Vertex Testing Services Limited*
 
 📋 *Candidate Information:*
 • Name: ${formData.firstName} ${formData.lastName}

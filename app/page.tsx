@@ -67,7 +67,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center space-y-4">
                     <Trophy className="w-24 h-24 text-white/80 mx-auto" />
-                    <p className="text-white text-lg font-semibold">Your Gateway to Global Success</p>
+                    <p className="text-white text-lg font-semibold">Vertex Testing Services Limited</p>
                   </div>
                 </div>
               </div>
@@ -178,7 +178,7 @@ export default function HomePage() {
                   Excellence Begins Here
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Vertex Assessment Center Limited is committed to helping individuals achieve their international education, career, and immigration goals through high-quality PTE registration and preparation services.
+                  Vertex Testing Services Limited is committed to helping individuals achieve their international education, career, and immigration goals through high-quality PTE registration and preparation services.
                 </p>
               </div>
 

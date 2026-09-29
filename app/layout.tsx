@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Vertex Assessment Center Limited | PTE Registration & Preparation',
+  title: 'Vertex Testing Services Limited | PTE Registration & Preparation',
   description: 'Professional PTE Academic & PTE Core registration, expert preparation classes, and realistic mock tests in Lagos, Nigeria.',
   keywords: 'PTE, PTE Academic, PTE Core, English test, exam preparation, Lagos Nigeria',
   icons: {

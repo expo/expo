@@ -39,9 +39,9 @@ export default function ContactPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-1">Visit Our Centre</h3>
                   <p className="text-muted-foreground">
-                    Vertex Testing Services Limited, Vertex House<br />
-                    Abiola Way, near Oke Lantoro<br />
-                    Abeokuta 111101, Ogun State
+                    Proxy Building<br />
+                    Prince Dele Alao Close, Olokuta Junction Idi-aba<br />
+                    Abeokuta, 111101, Ogun State
                   </p>
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
             <div className="text-center">
               <MapPin className="w-16 h-16 text-primary/30 mx-auto mb-4" />
               <p className="text-muted-foreground">
-                Vertex Testing Services Limited, Vertex House, Abiola Way, near Oke Lantoro, Abeokuta 111101, Ogun State
+                Vertex Testing Services Limited, Proxy Building, Prince Dele Alao Close, Olokuta Junction Idi-aba, Abeokuta, 111101, Ogun State
               </p>
             </div>
           </div>
@@ -161,7 +161,7 @@ function ContactForm() {
     setIsLoading(true)
 
     // Create WhatsApp message with form details
-    const whatsappMessage = `Hello Vertex Assessment Center!
+    const whatsappMessage = `Hello Vertex Testing Services Limited!
 
 Name: ${formData.name}
 Email: ${formData.email}

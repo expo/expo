@@ -4,7 +4,7 @@ import { CheckCircle2, Laptop, Users, BookMarked, Zap, ArrowRight, Award } from 
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'PTE Preparation Classes | Vertex Assessment Center Limited',
+  title: 'PTE Preparation Classes | Vertex Testing Services Limited',
   description: 'Master the PTE with confidence. Physical, online, weekend, and intensive preparation classes designed to help you achieve your target score.',
 }
 
@@ -24,7 +24,7 @@ export default function PreparationPage() {
               Comprehensive preparation programmes designed for your success
             </p>
             <p className="text-lg text-muted-foreground mb-8">
-              At Vertex Assessment Center Limited, our PTE Preparation Programme is designed to equip candidates with the knowledge, strategies, and confidence needed to achieve their target scores. Our experienced instructors provide practical guidance, personalized support, and realistic practice sessions.
+              At Vertex Testing Services Limited, our PTE Preparation Programme is designed to equip candidates with the knowledge, strategies, and confidence needed to achieve their target scores. Our experienced instructors provide practical guidance, personalized support, and realistic practice sessions.
             </p>
             <Link
               href="/register"
@@ -191,7 +191,7 @@ export default function PreparationPage() {
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Start Your Preparation Today</h2>
           <p className="text-lg opacity-90 max-w-2xl mx-auto mb-8">
-            Join hundreds of successful candidates who have achieved their target scores with Vertex Assessment Center Limited.
+            Join hundreds of successful candidates who have achieved their target scores with Vertex Testing Services Limited.
           </p>
           <Link
             href="/register"

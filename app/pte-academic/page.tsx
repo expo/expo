@@ -4,7 +4,7 @@ import { CheckCircle2, BookOpen, Headphones, PenTool, Eye, ArrowRight } from 'lu
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'PTE Academic | Vertex Assessment Center Limited',
+  title: 'PTE Academic | Vertex Testing Services Limited',
   description: 'Achieve your global education goals with PTE Academic. Professional registration assistance, expert preparation classes, and realistic mock tests.',
 }
 
@@ -24,7 +24,7 @@ export default function PTEAcademicPage() {
               Recognized by universities, colleges, governments, and organizations worldwide
             </p>
             <p className="text-lg text-muted-foreground mb-8">
-              PTE Academic is a computer-based English language proficiency test designed to assess the speaking, writing, reading, and listening skills of non-native English speakers. At Vertex Assessment Center Limited, we provide professional registration assistance, expert preparation classes, and realistic mock tests to help you prepare with confidence.
+              PTE Academic is a computer-based English language proficiency test designed to assess the speaking, writing, reading, and listening skills of non-native English speakers. At Vertex Testing Services Limited, we provide professional registration assistance, expert preparation classes, and realistic mock tests to help you prepare with confidence.
             </p>
             <Link
               href="/register"
@@ -190,7 +190,7 @@ export default function PTEAcademicPage() {
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Register for PTE Academic?</h2>
           <p className="text-lg opacity-90 max-w-2xl mx-auto mb-8">
-            Begin your PTE Academic journey with Vertex Assessment Center Limited and prepare with confidence.
+            Begin your PTE Academic journey with Vertex Testing Services Limited and prepare with confidence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link

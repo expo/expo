@@ -14,11 +14,11 @@ export function Footer() {
               </div>
               <div>
                 <div className="text-lg font-bold text-primary">Vertex</div>
-                <div className="text-xs text-muted-foreground">Assessment Center</div>
+                <div className="text-xs text-muted-foreground">Vertex Assessment Center</div>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Your Gateway to Global Success
+              Vertex Testing Services Limited
             </p>
             <div className="flex gap-3">
               <SocialLink href="#" icon={Globe} />
@@ -56,7 +56,7 @@ export function Footer() {
               <li className="flex gap-3">
                 <MapPin className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                 <span className="text-sm text-muted-foreground">
-                  Vertex Testing Services Limited, Vertex House, Abiola Way, near Oke Lantoro, Abeokuta 111101, Ogun State
+                  Vertex Testing Services Limited, Proxy Building, Prince Dele Alao Close, Olokuta Junction Idi-aba, Abeokuta, 111101, Ogun State
                 </span>
               </li>
               <li className="flex gap-3">
@@ -84,7 +84,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Vertex Assessment Center Limited. All rights reserved.
+            &copy; {new Date().getFullYear()} Vertex Testing Services Limited. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
             <Link

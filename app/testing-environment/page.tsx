@@ -167,7 +167,7 @@ export default function TestingEnvironmentPage() {
               ) : (
                 <div className="text-center">
                   <p className="text-xl font-semibold text-foreground">Vertex</p>
-                  <p className="text-sm text-muted-foreground">Assessment Center</p>
+                  <p className="text-sm text-muted-foreground">Vertex Assessment Center</p>
                 </div>
               )}
             </div>

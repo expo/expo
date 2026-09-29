@@ -4,8 +4,8 @@ import { CheckCircle2, Lightbulb, Users, Target, Zap, Shield } from 'lucide-reac
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'About Vertex Assessment Center Limited | Professional PTE Services',
-  description: 'Learn about Vertex Assessment Center Limited - excellence in PTE registration, preparation, and mock testing since inception.',
+  title: 'About Vertex Testing Services Limited | Professional PTE Services',
+  description: 'Learn about Vertex Testing Services Limited - excellence in PTE registration, preparation, and mock testing since inception.',
 }
 
 export default function AboutPage() {
@@ -18,10 +18,10 @@ export default function AboutPage() {
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              About Vertex Assessment Center Limited
+              VERTEX TESTING SERVICES LIMITED
             </h1>
             <p className="text-xl text-muted-foreground">
-              Excellence in Assessment. Commitment to Success.
+              A subsidiary of Proxy Cooding School.
             </p>
           </div>
         </div>
@@ -34,12 +34,21 @@ export default function AboutPage() {
             <div className="space-y-12">
               {/* Introduction */}
               <div>
-                <h2 className="text-3xl font-bold text-foreground mb-6">Who We Are</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-6">WHO WE ARE</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-                  Vertex Assessment Center Limited is a professional assessment and candidate support organization dedicated to helping individuals achieve their academic, professional, and immigration goals through high-quality PTE registration, preparation, and mock testing services.
+                  Vertex Testing Services Limited, a subsidiary of Proxy Coding School, is a professional examination registration organization dedicated to connecting candidates with global educational, professional, and immigration opportunities.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+                  We provide registration support for a wide range of internationally recognized examinations, including: PTE • IELTS • TOEFL • GRE • GMAT • CELPIP • SAT • OET and other international examinations.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+                  Our goal is to make examination registration simple, reliable, transparent, and accessible, while providing candidates with professional guidance throughout their examination journey.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-4">
+                  Through our integration with Proxy Coding School, we are expanding beyond examinations into technology, digital skills, and career development, creating a broader platform that brings together assessment, education, technology, and global opportunities.
                 </p>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Our mission is to provide a seamless, transparent, and professional experience that empowers every candidate to perform at their best. We combine modern facilities, expert guidance, and outstanding customer service to ensure every learner receives the support they need from registration through exam preparation.
+                  At Vertex, we are guided by: Integrity • Professionalism • Accuracy • Innovation • Excellence
                 </p>
               </div>
 
@@ -128,7 +137,7 @@ export default function AboutPage() {
               <div className="bg-card border border-border rounded-xl p-8 md:p-12">
                 <h2 className="text-3xl font-bold text-foreground mb-6">Our Commitment</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  At Vertex Assessment Center Limited, we are committed to creating an environment where every candidate feels confident, supported, and fully prepared to achieve their goals.
+                  At Vertex Testing Services Limited, we are committed to creating an environment where every candidate feels confident, supported, and fully prepared to achieve their goals.
                 </p>
                 <p className="text-lg text-muted-foreground leading-relaxed">
                   Through continuous improvement, quality service, and a passion for excellence, we aim to become the preferred destination for assessment support services across Nigeria and beyond.
@@ -139,7 +148,7 @@ export default function AboutPage() {
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-foreground mb-6">Ready to Begin Your Journey?</h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Join hundreds of successful candidates who have trusted Vertex Assessment Center Limited for their PTE preparation and registration needs.
+                  Join hundreds of successful candidates who have trusted Vertex Testing Services Limited for their PTE preparation and registration needs.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link

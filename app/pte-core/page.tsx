@@ -4,7 +4,7 @@ import { CheckCircle2, Globe, Users, BookOpen, Headphones, ArrowRight, PenTool }
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'PTE Core | Vertex Assessment Center Limited',
+  title: 'PTE Core | Vertex Testing Services Limited',
   description: 'Your pathway to Canadian immigration. Professional PTE Core registration, expert preparation, and realistic mock tests.',
 }
 
@@ -24,7 +24,7 @@ export default function PTECorePage() {
               PTE Core - English language proficiency for eligible Canadian immigration pathways
             </p>
             <p className="text-lg text-muted-foreground mb-8">
-              PTE Core is an English language proficiency test designed to assess the everyday English communication skills of individuals applying for Canadian immigration and other eligible programs. At Vertex Assessment Center Limited, we provide professional registration assistance, expert preparation classes, and realistic mock tests to help you prepare confidently.
+              PTE Core is an English language proficiency test designed to assess the everyday English communication skills of individuals applying for Canadian immigration and other eligible programs. At Vertex Testing Services Limited, we provide professional registration assistance, expert preparation classes, and realistic mock tests to help you prepare confidently.
             </p>
             <Link
               href="/register"
@@ -151,7 +151,7 @@ export default function PTECorePage() {
       {/* Why Choose Vertex */}
       <section className="py-20 bg-card border-y border-border">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-foreground mb-12">Why Choose Vertex Assessment Center Limited?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-12">Why Choose Vertex Testing Services Limited?</h2>
           <div className="space-y-6">
             <WhyChooseItem
               title="Professional Support"
@@ -211,7 +211,7 @@ export default function PTECorePage() {
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Begin Your PTE Core Journey Today</h2>
           <p className="text-lg opacity-90 max-w-2xl mx-auto mb-8">
-            Whether you are planning your next step toward Canada or preparing to improve your English proficiency, Vertex Assessment Center Limited is ready to support you every step of the way.
+            Whether you are planning your next step toward Canada or preparing to improve your English proficiency, Vertex Testing Services Limited is ready to support you every step of the way.
           </p>
           <Link
             href="/register"

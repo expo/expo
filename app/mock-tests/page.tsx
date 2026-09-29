@@ -4,7 +4,7 @@ import { CheckCircle2, Monitor, TrendingUp, Users, Clock, BookOpen, ArrowRight, 
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'PTE Mock Tests | Vertex Assessment Center Limited',
+  title: 'PTE Mock Tests | Vertex Testing Services Limited',
   description: 'Experience realistic computer-based mock exams with detailed performance feedback. Build confidence before your PTE examination.',
 }
 
