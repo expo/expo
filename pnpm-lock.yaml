@@ -2923,7 +2923,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-constants:
-        specifier: workspace:^56.0.26
+        specifier: workspace:^56.0.27
         version: link:../../expo-constants
       expo-font:
         specifier: workspace:^56.0.7
@@ -3527,10 +3527,10 @@ importers:
         specifier: workspace:~56.0.20
         version: link:../babel-preset-expo
       expo-asset:
-        specifier: workspace:~56.0.24
+        specifier: workspace:~56.0.25
         version: link:../expo-asset
       expo-constants:
-        specifier: workspace:~56.0.26
+        specifier: workspace:~56.0.27
         version: link:../expo-constants
       expo-file-system:
         specifier: workspace:~56.0.11
@@ -3545,7 +3545,7 @@ importers:
         specifier: workspace:~56.0.23
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~56.0.26
+        specifier: workspace:~56.0.27
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3679,7 +3679,7 @@ importers:
         specifier: workspace:^0.10.5
         version: link:../@expo/image-utils
       expo-constants:
-        specifier: workspace:~56.0.26
+        specifier: workspace:~56.0.27
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -3738,7 +3738,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.26
+        specifier: workspace:~56.0.27
         version: link:../expo-constants
       expo-crypto:
         specifier: workspace:~56.0.5
@@ -4640,7 +4640,7 @@ importers:
   packages/expo-linking:
     dependencies:
       expo-constants:
-        specifier: workspace:~56.0.26
+        specifier: workspace:~56.0.27
         version: link:../expo-constants
       invariant:
         specifier: ^2.2.4
@@ -4924,7 +4924,7 @@ importers:
         specifier: 0.2.2
         version: 0.2.2
       expo-modules-jsi:
-        specifier: workspace:~56.0.13
+        specifier: workspace:~56.0.14
         version: link:../expo-modules-jsi
       invariant:
         specifier: ^2.2.4
@@ -5047,7 +5047,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.26
+        specifier: workspace:~56.0.27
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -5174,7 +5174,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       expo-constants:
-        specifier: workspace:^56.0.26
+        specifier: workspace:^56.0.27
         version: link:../expo-constants
       expo-glass-effect:
         specifier: workspace:^56.0.4

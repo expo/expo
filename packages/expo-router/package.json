@@ -92,7 +92,7 @@
     "@expo/metro-runtime": "workspace:^56.0.21",
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",
-    "expo-constants": "workspace:^56.0.26",
+    "expo-constants": "workspace:^56.0.27",
     "expo-linking": "workspace:^56.0.18",
     "react": "*",
     "react-dom": "*",

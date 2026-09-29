@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `pod install` failing when the Command Line Tools SDK is newer than the selected Xcode. ([#50316](https://github.com/expo/expo/pull/50316) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 56.0.14 — 2026-09-29
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `pod install` failing when the Command Line Tools SDK is newer than the selected Xcode. ([#50316](https://github.com/expo/expo/pull/50316) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.13 — 2026-08-28
 
