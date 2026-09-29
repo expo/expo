@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the embedded manifest giving every duplicate asset scale the same `packagerHash`, which made updates download assets already in the binary. ([#50757](https://github.com/expo/expo/pull/50757) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 56.0.27 — 2026-09-17
