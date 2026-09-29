@@ -5,6 +5,16 @@
 #include <atomic>
 #include <swift/bridging>
 
+// Swift 6.3 (Xcode 26.4+) wants the ownership of a foreign reference returned by a
+// constructor spelled out and warns without it (Xcode 27). Swift 6.2 (Xcode 26.3 and
+// older, Apple clang 17) rejects the annotation on a constructor as an error, and
+// takes the constructed object as +1 anyway.
+#if __clang_major__ > 17
+#define EXPO_CONSTRUCTOR_RETURNS_RETAINED SWIFT_RETURNS_RETAINED
+#else
+#define EXPO_CONSTRUCTOR_RETURNS_RETAINED
+#endif
+
 namespace expo {
 
 /**
@@ -50,7 +60,7 @@ public:
    `scheduleTask` dispatches through `fn`, which the host implements against
    the real react::RuntimeScheduler.
    */
-  SWIFT_RETURNS_RETAINED RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
+  EXPO_CONSTRUCTOR_RETURNS_RETAINED RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
       : nativeScheduler(scheduler), scheduleFn(fn) {}
 
   /**
@@ -58,7 +68,7 @@ public:
    caller's thread — intended for standalone runtimes (e.g. tests) that have
    no React scheduler.
    */
-  SWIFT_RETURNS_RETAINED RuntimeScheduler() {}
+  EXPO_CONSTRUCTOR_RETURNS_RETAINED RuntimeScheduler() {}
 
   RuntimeScheduler(const RuntimeScheduler &) = delete;
 
