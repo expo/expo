@@ -38,6 +38,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   internal let runtimePointee: facebook.jsi.Runtime
   internal let scheduler: expo.RuntimeScheduler
 
+  /// Strong handle that values hold instead of a `weak` reference to the runtime. See
+  /// ``JavaScriptRuntimeHandle`` for why.
+  internal let handle: JavaScriptRuntimeHandle
+
   /// Whether this wrapper owns the underlying `jsi::Runtime` and must destroy it on `deinit`. True
   /// only for the standalone `init()`, which creates the runtime via `createHermesRuntime()`. The
   /// other initializers adopt a runtime owned elsewhere (e.g. React Native), which must never be
@@ -62,8 +66,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   internal init(_ runtime: facebook.jsi.Runtime) {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
     self.scheduler = expo.RuntimeScheduler()
     self.ownsRuntime = false
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
@@ -73,8 +79,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let runtime = expo.createHermesRuntime()
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
     self.scheduler = expo.RuntimeScheduler()
     self.ownsRuntime = true
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
@@ -85,8 +93,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
     self.scheduler = expo.RuntimeScheduler()
     self.ownsRuntime = false
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
@@ -112,12 +122,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let fn = unsafeBitCast(dispatch, to: expo.RuntimeScheduler.ScheduleFn.self)
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
     self.scheduler = expo.RuntimeScheduler(scheduler, fn)
     self.ownsRuntime = false
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
   deinit {
+    handle.detach()
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
     guard ownsRuntime else {

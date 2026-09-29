@@ -39,10 +39,9 @@ extension Array: JavaScriptRepresentable where Element: JavaScriptRepresentable 
 
 extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaScriptRepresentable {
   public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
-    guard let runtime = value.runtime else {
+    guard let runtimeHandle = value.runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
-    let jsiRuntime = runtime.pointee
     let object = value.pointee.getObject(jsiRuntime)
     let propertyNames = object.getPropertyNames(jsiRuntime)
     let size = propertyNames.size(jsiRuntime)
@@ -54,7 +53,7 @@ extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaSc
       // Look the value up by the key string the engine handed back instead of re-encoding the Swift
       // key: it skips one engine string allocation per entry and round-trips any name exactly.
       let jsiKey = propertyNames.getValueAtIndex(jsiRuntime, index).getString(jsiRuntime)
-      let jsiValue = JavaScriptValue(runtime, object.getProperty(jsiRuntime, jsiKey))
+      let jsiValue = JavaScriptValue(runtimeHandle, object.getProperty(jsiRuntime, jsiKey))
       result[String(jsiString: jsiKey, in: jsiRuntime)] = Value.fromJavaScriptValue(jsiValue)
     }
     return result
