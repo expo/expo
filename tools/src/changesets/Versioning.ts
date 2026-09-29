@@ -46,7 +46,7 @@ export async function updateVersionDerivedFilesAsync(
 }
 
 export async function refreshPnpmLockfileAsync(): Promise<void> {
-  await spawnAsync('pnpm', ['install', '--lockfile-only', '--offline'], {
+  await spawnAsync('pnpm', ['install', '--lockfile-only', '--prefer-offline'], {
     cwd: EXPO_DIR,
     stdio: 'inherit',
     env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
