@@ -7,6 +7,7 @@ import { sync as globSync } from 'glob';
 import path from 'path';
 import semver from 'semver';
 import slugify from 'slugify';
+import { isDeepStrictEqual } from 'util';
 
 import type {
   AppJSONConfig,
@@ -356,6 +357,20 @@ export async function modifyConfigAsync(
 }
 
 /**
+ * Append the source items that are not in the target array yet.
+ * This avoids duplicate entries when a modification repeats existing array values.
+ */
+function mergeArraysWithoutDuplicates(target: unknown[], source: unknown[]): unknown[] {
+  const result = [...target];
+  for (const item of source) {
+    if (!result.some((existing) => isDeepStrictEqual(existing, item))) {
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+/**
  * Merge the config modifications, using an optional possible top-level `expo` object.
  * Note, changes in the plugins are merged differently to avoid duplicate entries.
  */
@@ -363,9 +378,11 @@ function mergeConfigModifications(
   config: ProjectConfig,
   { plugins, ...modifications }: Partial<ExpoConfig>
 ): AppJSONConfig {
-  const modifiedExpoConfig: ExpoConfig = !config.rootConfig.expo
-    ? deepMerge(config.rootConfig, modifications)
-    : deepMerge(config.rootConfig.expo, modifications);
+  const modifiedExpoConfig: ExpoConfig = deepMerge(
+    config.rootConfig.expo || config.rootConfig,
+    modifications,
+    { arrayMerge: mergeArraysWithoutDuplicates }
+  );
 
   if (plugins?.length) {
     // When adding plugins, ensure the config has a plugin list

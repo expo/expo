@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Avoid duplicate array entries, such as `updates.assetPatternsToBeBundled`, when `modifyConfigAsync` merges modifications into a static config. ([#50575](https://github.com/expo/expo/pull/50575) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

@@ -402,6 +402,55 @@ describe(modifyConfigAsync, () => {
     });
   });
 
+  it('does not duplicate existing array entries when modifying static config', async () => {
+    const updates = {
+      assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'],
+      requestHeaders: { 'expo-channel-name': 'main' },
+    };
+    createProject('/static-arrays', {
+      'app.json': JSON.stringify({ expo: { ...appFile, updates } }),
+    });
+
+    await expect(
+      modifyConfigAsync('/static-arrays', {
+        updates: { ...updates, url: 'https://u.expo.dev/test-project' },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: {
+        updates: {
+          assetPatternsToBeBundled: ['app/**/*.png', 'assets/**/*'],
+          url: 'https://u.expo.dev/test-project',
+        },
+      },
+    });
+
+    const written = JSON.parse(
+      vol.readFileSync('/static-arrays/app.json', { encoding: 'utf-8' }) as string
+    );
+    expect(written.expo.updates.assetPatternsToBeBundled).toEqual(['app/**/*.png', 'assets/**/*']);
+  });
+
+  it('appends only new array entries when modifying static config', async () => {
+    const intentFilter = { action: 'VIEW', data: [{ scheme: 'myapp' }] };
+    createProject('/static-arrays-append', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        android: { permissions: ['CAMERA'], intentFilters: [intentFilter] },
+      }),
+    });
+
+    const { config } = await modifyConfigAsync('/static-arrays-append', {
+      android: {
+        permissions: ['CAMERA', 'RECORD_AUDIO'],
+        intentFilters: [{ action: 'VIEW', data: [{ scheme: 'myapp' }] }],
+      },
+    });
+
+    expect(config?.android?.permissions).toEqual(['CAMERA', 'RECORD_AUDIO']);
+    expect(config?.android?.intentFilters).toEqual([intentFilter]);
+  });
+
   it('warns when modifying dynamic config only', async () => {
     createProject('/dynamic-only', {
       'app.config.js': `module.exports = () => JSON.parse(\`${JSON.stringify({ ...appFile, version: '9.9.9' })}\`);`,
