@@ -1,14 +1,17 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-app-metrics@58.0.9
+  - expo-eas-client@58.0.1
 
-### 🐛 Bug fixes
+## 58.0.10 — 2026-09-28
 
-### 💡 Others
+_This version does not introduce any user-facing changes._
 
 ## 58.0.9 — 2026-09-25
 

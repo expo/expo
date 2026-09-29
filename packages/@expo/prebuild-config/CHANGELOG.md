@@ -1,14 +1,22 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Point the `ios.backgroundColor` prebuild warning at the `expo-system-ui` reference instead of the removed `build-reference/migrating` page, which returns a 404. ([#49791](https://github.com/expo/expo/pull/49791) by [@dennytosp](https://github.com/dennytosp))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964), [#50680](https://github.com/expo/expo/pull/50680))
+  - @expo/config@58.0.1
+  - @expo/config-plugins@58.0.4
+  - @expo/config-types@58.0.2
+  - @expo/image-utils@0.12.2
+  - @expo/json-file@11.2.1
+  - expo-modules-autolinking@58.0.6
 
-### 🐛 Bug fixes
+## 58.0.5 — 2026-09-28
 
-### 💡 Others
+_This version does not introduce any user-facing changes._
 
 ## 58.0.4 — 2026-09-25
 

@@ -176,7 +176,15 @@ internal fun LazyListScope.lazyRecycledItems(
     Box(
       modifier = Modifier.onSizeChanged { size ->
         if (content != null) {
-          window.measure(itemKey, if (isVertical) size.height else size.width, revision)
+          window.measure(
+            itemKey,
+            if (isVertical) {
+              size.height
+            } else {
+              size.width
+            },
+            revision
+          )
         }
       }
     ) {
@@ -205,7 +213,11 @@ internal fun LazyListScope.lazyRecycledItems(
  */
 internal fun Modifier.lazyRecycledItemsCrossAxis(list: ViewGroup, isVertical: Boolean): Modifier =
   layout { measurable, constraints ->
-    val crossAxisSize = if (isVertical) constraints.maxWidth else constraints.maxHeight
+    val crossAxisSize = if (isVertical) {
+      constraints.maxWidth
+    } else {
+      constraints.maxHeight
+    }
     for (index in 0..<list.childCount) {
       (list.getChildAt(index) as? LazyItemsView)?.window?.updateCrossAxisSize(crossAxisSize)
     }

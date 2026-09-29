@@ -1,0 +1,20 @@
+pluginManagement {
+  repositories {
+    google()
+    mavenCentral()
+    gradlePluginPortal()
+  }
+  includeBuild(providers.gradleProperty("expo.precompileAndroid.reactNativePlugin").get())
+  includeBuild(providers.gradleProperty("expo.precompileAndroid.expoPlugin").get())
+}
+
+plugins {
+  id("expo-autolinking-settings")
+}
+
+expoAutolinking.searchPaths = [providers.gradleProperty("expo.precompileAndroid.modulesDirectory").get()]
+expoAutolinking.useExpoModules()
+expoAutolinking.useExpoVersionCatalog()
+includeBuild(providers.gradleProperty("expo.precompileAndroid.reactNativePlugin").get())
+
+rootProject.name = "expo-android-precompile"

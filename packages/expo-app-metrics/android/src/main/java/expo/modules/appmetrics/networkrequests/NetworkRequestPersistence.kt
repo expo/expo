@@ -127,7 +127,14 @@ internal fun NetworkRequest.toSpan(sessionId: String): Span? {
   // (verbatim value preserved in `http.request.method_original`) and names the span `HTTP`,
   // so caller-controlled verbs can't mint unbounded span names.
   val isKnownMethod = method in KNOWN_HTTP_METHODS
-  attributes.put("http.request.method", if (isKnownMethod) method else "_OTHER")
+  attributes.put(
+    "http.request.method",
+    if (isKnownMethod) {
+      method
+    } else {
+      "_OTHER"
+    }
+  )
   if (!isKnownMethod) {
     attributes.put("http.request.method_original", method)
   }
@@ -195,14 +202,30 @@ internal fun NetworkRequest.toSpan(sessionId: String): Span? {
 
   return Span(
     sessionId = sessionId,
-    name = if (isKnownMethod) method else "HTTP",
+    name = if (isKnownMethod) {
+      method
+    } else {
+      "HTTP"
+    },
     kind = Span.CLIENT_KIND,
     startTimestampMs = resolvedStart,
     endTimestampMs = resolvedEnd,
-    statusCode = if (failed) Span.STATUS_ERROR else null,
-    statusMessage = if (failed) errorDescription else null,
+    statusCode = if (failed) {
+      Span.STATUS_ERROR
+    } else {
+      null
+    },
+    statusMessage = if (failed) {
+      errorDescription
+    } else {
+      null
+    },
     attributes = attributes.toString(),
-    events = if (events.length() > 0) events.toString() else null
+    events = if (events.length() > 0) {
+      events.toString()
+    } else {
+      null
+    }
   )
 }
 
@@ -258,7 +281,11 @@ private fun redactedUrlFull(url: String, parsed: okhttp3.HttpUrl?): String {
           // A malformed escape cannot be decoded; fall back to the raw name rather than drop it.
           name
         }
-        if (decodedName.lowercase() in SENSITIVE_QUERY_PARAMETERS) "$name=REDACTED" else pair
+        if (decodedName.lowercase() in SENSITIVE_QUERY_PARAMETERS) {
+          "$name=REDACTED"
+        } else {
+          pair
+        }
       }
     if (redacted != encodedQuery) {
       builder.encodedQuery(redacted)

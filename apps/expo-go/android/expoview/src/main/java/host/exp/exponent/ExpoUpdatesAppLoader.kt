@@ -349,7 +349,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     if (versionName != null) {
       headers["Exponent-Version"] = versionName
     }
-    val sessionSecret = sessionRepository.getSessionSecret()
+    val sessionSecret = sessionRepository.getActiveSessionSecret()
     if (sessionSecret != null) {
       headers["Expo-Session"] = sessionSecret
     }

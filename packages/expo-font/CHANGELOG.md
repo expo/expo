@@ -1,16 +1,16 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.3 — 2026-09-28
 
 ### 🐛 Bug fixes
 
 - [iOS] Keep the previously registered font when a font loaded from a new path has the same PostScript name, instead of unregistering it and crashing on render. ([#50561](https://github.com/expo/expo/pull/50561) by [@eliotgevers](https://github.com/eliotgevers))
-
-### 💡 Others
 
 ## 58.0.2 — 2026-09-21
 

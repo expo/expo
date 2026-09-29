@@ -7,25 +7,21 @@ import * as expo from './getPathFromState-forks';
 import type { ExpoConfigItem, ExpoOptions } from './getPathFromState-forks';
 import { validatePathConfig } from './validatePathConfig';
 
-// START FORK
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;
   initialRouteName?: string;
   screens: PathConfigMap<ParamList>;
 };
-// END FORK
 
 export type State = NavigationState | Omit<PartialState<NavigationState>, 'stale'>;
 
 export type StringifyConfig = Record<string, (value: any) => string>;
 
-// START FORK
 type ConfigItem = ExpoConfigItem & {
   pattern?: string;
   stringify?: StringifyConfig;
   screens?: Record<string, ConfigItem>;
 };
-// END FORK
 
 const getActiveRoute = (state: State): { name: string; params?: object } => {
   const route =
@@ -130,21 +126,8 @@ export function getPathDataFromState<ParamList extends object>(
       if (route.params) {
         const stringify = currentOptions[route.name]?.stringify;
 
-        // START FORK
         // This mutates allParams
         const currentParams = expo.fixCurrentParams(allParams, route, stringify);
-
-        // const currentParams = Object.fromEntries(
-        //   Object.entries(route.params).map(([key, value]) => [
-        //     key,
-        //     stringify?.[key] ? stringify[key](value) : String(value),
-        //   ])
-        // );
-
-        // if (pattern) {
-        //   Object.assign(allParams, currentParams);
-        // }
-        // END FORK
 
         if (focusedRoute === route) {
           // If this is the focused route, keep the params for later use
@@ -192,7 +175,6 @@ export function getPathDataFromState<ParamList extends object>(
     }
 
     if (currentOptions[route.name] !== undefined) {
-      // START FORK
       path += expo.getPathWithConventionsCollapsed({
         ...options,
         pattern,
@@ -200,42 +182,9 @@ export function getPathDataFromState<ParamList extends object>(
         params: allParams,
         initialRouteName: configs[route.name]?.initialRouteName,
       });
-      // path += pattern
-      //   .split('/')
-      //   .map((p) => {
-      //     const name = getParamName(p);
-
-      //     // We don't know what to show for wildcard patterns
-      //     // Showing the route name seems ok, though whatever we show here will be incorrect
-      //     // Since the page doesn't actually exist
-      //     if (p === '*') {
-      //       return route.name;
-      //     }
-
-      //     // If the path has a pattern for a param, put the param in the path
-      //     if (p.startsWith(':')) {
-      //       const value = allParams[name];
-
-      //       if (value === undefined && p.endsWith('?')) {
-      //         // Optional params without value assigned in route.params should be ignored
-      //         return '';
-      //       }
-
-      //       // Valid characters according to
-      //       // https://datatracker.ietf.org/doc/html/rfc3986#section-3.3 (see pchar definition)
-      //       return String(value).replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]/g, (char) =>
-      //         encodeURIComponent(char)
-      //       );
-      //     }
-
-      //     return encodeURIComponent(p);
-      //   })
-      //   .join('/');
-      // } else {
     } else if (!route.name.startsWith('+')) {
       path += encodeURIComponent(route.name);
     }
-    // END FORK
 
     if (!focusedParams) {
       focusedParams = focusedRoute.params ? { ...focusedRoute.params } : undefined;
@@ -250,11 +199,8 @@ export function getPathDataFromState<ParamList extends object>(
           delete focusedParams[param];
         }
       }
-
-      // START FORK
       delete focusedParams['#'];
       focusedParams = removeInternalExpoRouterParams(focusedParams);
-      // END FORK
 
       const query = queryString.stringify(focusedParams, { sort: false });
       if (query) {
@@ -274,19 +220,13 @@ export function getPathDataFromState<ParamList extends object>(
     path = joinPaths(options.path, path);
   }
 
-  // START FORK
   path = expo.appendBaseUrl(path);
   if (allParams['#']) {
     path += `#${allParams['#']}`;
   }
-  // END FORK
 
-  // START FORK
   return { path, params: allParams };
-  // END FORK
 }
-
-// const getParamName = (pattern: string) => pattern.replace(/^:/, '').replace(/\?$/, '');
 
 const joinPaths = (...paths: string[]): string =>
   ([] as string[])

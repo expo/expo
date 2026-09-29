@@ -390,7 +390,7 @@ export default class NotificationScreen extends React.Component<
     const actualNumber = await Notifications.getBadgeCountAsync();
     const message = didIncrement
       ? `Incremented from ${previousNumber} to ${actualNumber} (expected: ${previousNumber + 1}).`
-      : "You don't have notification permissions.";
+      : 'Could not update the badge. The launcher may not support badge counts, or badge permissions may be disabled.';
     Alert.alert(message);
   };
 
