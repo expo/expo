@@ -66,9 +66,6 @@ public:
       static_cast<const facebook::react::ViewProps &>(*sharedProps).yogaStyle);
     bool propsStyleChanged = false;
 
-    // Changes to the props style first. They reach the Yoga node only through `updateYogaProps()`,
-    // which rebuilds the node style from props and so would drop a later `setSize`.
-
     if (isRNHostView(sharedProps)) {
       // If RNHostView has align self set to auto or stretch, we should override it to flex-start so that the node can size itself to its content
       auto const alignSelf = style.alignSelf();
