@@ -499,6 +499,32 @@ describe('Request', () => {
     });
   });
 
+  // WebIDL: https://webidl.spec.whatwg.org/#es-interfaces
+  describe('WebIDL shape', () => {
+    it('has a constructor length of 1', () => {
+      expect(Request.length).toBe(1);
+    });
+
+    it.each(['url', 'method', 'headers', 'body', 'bodyUsed', 'signal', 'keepalive'])(
+      'exposes the %s attribute as an enumerable prototype getter',
+      (name) => {
+        const descriptor = Object.getOwnPropertyDescriptor(Request.prototype, name);
+        expect(typeof descriptor?.get).toBe('function');
+        expect(descriptor?.set).toBeUndefined();
+        expect(descriptor?.enumerable).toBe(true);
+      }
+    );
+
+    it.each(['clone', 'arrayBuffer', 'blob', 'bytes', 'formData', 'json', 'text'])(
+      'exposes the %s operation as an enumerable prototype method',
+      (name) => {
+        const descriptor = Object.getOwnPropertyDescriptor(Request.prototype, name);
+        expect(typeof descriptor?.value).toBe('function');
+        expect(descriptor?.enumerable).toBe(true);
+      }
+    );
+  });
+
   it('is tagged as a Request', () => {
     const request = new Request('https://example.test/');
     expect(Object.prototype.toString.call(request)).toBe('[object Request]');

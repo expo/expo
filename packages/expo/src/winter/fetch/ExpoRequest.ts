@@ -126,6 +126,7 @@ const REQUEST_CACHES = [
   'only-if-cached',
 ];
 const REQUEST_REDIRECTS = ['follow', 'error', 'manual'];
+const REQUEST_PRIORITIES = ['high', 'low', 'auto'];
 const REFERRER_POLICIES = [
   '',
   'no-referrer',
@@ -226,7 +227,8 @@ export class Request implements Body {
   // so reading or locking it disturbs this request's body (sets `consumed`) per the Fetch spec.
   private bodyStream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
 
-  constructor(input: string | URL | Request, init?: FetchRequestInit) {
+  // A default for `init` keeps `Request.length` at 1, like WebIDL's optional arguments.
+  constructor(input: string | URL | Request, init: FetchRequestInit = {}) {
     let headers: HeadersInit | undefined = init?.headers;
     let method: string | undefined = init?.method;
     let credentials = validateEnum(init?.credentials, REQUEST_CREDENTIALS, 'credentials');
@@ -237,6 +239,7 @@ export class Request implements Body {
     let referrer = init?.referrer;
     let referrerPolicy = validateEnum(init?.referrerPolicy, REFERRER_POLICIES, 'referrerPolicy');
     let integrity = init?.integrity;
+    validateEnum(init?.priority, REQUEST_PRIORITIES, 'priority');
     let keepalive = init?.keepalive;
     let url: string;
     let inputBody: BodyInit | null = null;
@@ -299,6 +302,12 @@ export class Request implements Body {
       );
     }
     if (initBody instanceof ReadableStream) {
+      // Per the spec's body extraction, keepalive requests can't have a stream body.
+      if (keepalive) {
+        throw new TypeError(
+          "Failed to construct 'Request': a keepalive request can't have a ReadableStream body. Use another body type, or set 'keepalive' to false."
+        );
+      }
       if (isStreamUnusable(initBody)) {
         throw new TypeError(
           "Failed to construct 'Request': the body stream is locked or was already read. Pass a fresh ReadableStream."
@@ -330,7 +339,8 @@ export class Request implements Body {
       referrer: referrer != null ? parseReferrer(referrer) : 'about:client',
       referrerPolicy: referrerPolicy ?? '',
       integrity: integrity ?? '',
-      keepalive: keepalive ?? false,
+      // WebIDL converts the value to a boolean.
+      keepalive: Boolean(keepalive),
     };
 
     this._bodyInit = initBody ?? inputBody;
@@ -587,3 +597,36 @@ Object.defineProperty(Request.prototype, Symbol.toStringTag, {
   value: 'Request',
   configurable: true,
 });
+
+// WebIDL exposes attributes and operations as enumerable prototype properties, unlike class syntax.
+// Only the public interface members, not the private helpers.
+for (const name of [
+  'url',
+  'method',
+  'headers',
+  'credentials',
+  'redirect',
+  'signal',
+  'mode',
+  'cache',
+  'referrer',
+  'referrerPolicy',
+  'integrity',
+  'keepalive',
+  'destination',
+  'duplex',
+  'isReloadNavigation',
+  'isHistoryNavigation',
+  'bodyUsed',
+  'body',
+  'arrayBuffer',
+  'bytes',
+  'blob',
+  'text',
+  'json',
+  'formData',
+  'clone',
+]) {
+  const descriptor = Object.getOwnPropertyDescriptor(Request.prototype, name)!;
+  Object.defineProperty(Request.prototype, name, { ...descriptor, enumerable: true });
+}
