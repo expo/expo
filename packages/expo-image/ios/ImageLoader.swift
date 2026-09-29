@@ -12,6 +12,14 @@ internal final class ImageLoader {
   )
 
   func load(_ source: ImageSource, options: ImageLoadOptions) async throws -> UIImage {
+    // `maxSize` isn't applied to asset catalog images: the catalog already serves the variant for the screen scale.
+    if let image = assetCatalogImage(for: source.uri) {
+      if let tintColor = options.tintColor {
+        return image.withTintColor(tintColor)
+      }
+      return image
+    }
+
     // This loader uses only the disk cache. We may want to give more control on this, but the memory cache
     // doesn't make much sense for shared refs as they're kept in memory as long as their JS objects.
     var context = createSDWebImageContext(forSource: source, cachePolicy: .disk)
