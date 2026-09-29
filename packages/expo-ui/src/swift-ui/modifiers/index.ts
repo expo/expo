@@ -106,7 +106,11 @@ export const matchedGeometryEffect = (
  */
 export const geometryGroup = () => createModifier('geometryGroup', {});
 
-type FrameAlignment =
+/**
+ * The alignment of a view inside the frame that `frame()` creates.
+ * Most values have no visible effect when the frame is the same size as the view.
+ */
+export type FrameAlignment =
   | 'center'
   | 'leading'
   | 'trailing'

@@ -1,17 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-- [Android][Web] Added filled Material Symbols weights (`expo-symbols/androidWeights/regularFilled` and the other six), so a symbol can render filled, like `.fill` SF Symbols on iOS. ([#50689](https://github.com/expo/expo/pull/50689) by [@enavermate](https://github.com/enavermate))
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
 ## 58.0.2 — 2026-09-21
 
 _This version does not introduce any user-facing changes._

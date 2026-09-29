@@ -1,8 +1,6 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
+## 58.0.5 — 2026-09-28
 
 ### 🎉 New features
 
@@ -10,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone. ([#50455](https://github.com/expo/expo/pull/50455) by [@lukmccall](https://github.com/lukmccall))
 
 ## 58.0.4 — 2026-09-25
 

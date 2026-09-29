@@ -1,14 +1,8 @@
 # Changelog
 
-## Unpublished
+## 58.0.8 — 2026-09-28
 
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+_This version does not introduce any user-facing changes._
 
 ## 58.0.7 — 2026-09-25
 
@@ -604,13 +598,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Allow location to work on Android with only coarse location permission. All apps do not require fine/precise location permission, but in past Expo was enforcing fine/precise even if you only needed coarse level location. ([#15760](https://github.com/expo/expo/pull/15760) by [@Noitidart](https://github.com/Noitidart))
-
-## Unpublished
-
-### 🛠 Breaking changes
-
-- Add an option to whether kill or keep the foreground service when app is killed on Android. ([#15633](https://github.com/expo/expo/pull/15633) by [@islamouzou](https://github.com/islamouzou))
-- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 14.0.2 — 2022-02-01
 

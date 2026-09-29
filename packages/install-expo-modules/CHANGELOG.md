@@ -1,15 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
 ## 0.18.0 — 2026-09-15
 
 ### 🎉 New features
