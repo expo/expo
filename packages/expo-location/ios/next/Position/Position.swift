@@ -14,31 +14,6 @@ struct Position {
   var headingAccuracy: Double?
   var speed: Double?
   var speedAccuracy: Double?
-  init(
-    coordinates: Coordinates,
-    horizontalAccuracy: Double?,
-    timestamp: Double,
-    altitude: Double?,
-    mslAltitude: Double?,
-    verticalAccuracy: Double?,
-    mocked: Bool,
-    heading: Double?,
-    headingAccuracy: Double?,
-    speed: Double?,
-    speedAccuracy: Double?
-  ) {
-    self.coordinates = coordinates
-    self.horizontalAccuracy = horizontalAccuracy
-    self.timestamp = timestamp
-    self.altitude = altitude
-    self.mslAltitude = mslAltitude
-    self.verticalAccuracy = verticalAccuracy
-    self.mocked = mocked
-    self.heading = heading
-    self.headingAccuracy = headingAccuracy
-    self.speed = speed
-    self.speedAccuracy = speedAccuracy
-  }
 }
 
 extension Position {
