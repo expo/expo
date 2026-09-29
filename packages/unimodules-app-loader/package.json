@@ -20,5 +20,9 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/unimodules-app-loader",
   "devDependencies": {
     "expo-module-scripts": "workspace:*"
+  },
+  "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "prepack": "expo-module prepack"
   }
 }

@@ -1,21 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-- [iOS] Let the native stack header title adapt its color to the content underneath (Liquid Glass) when the header is transparent, as in `@react-navigation/native-stack`. A `headerTintColor` or `headerTitleStyle.color` still sets it explicitly. ([#50741](https://github.com/expo/expo/pull/50741) by [@enavermate](https://github.com/enavermate))
-- Ignore the reserved `__expo_*` launch URL params on Expo Go and development build launch URLs, so they no longer become route search params. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
-
-- Use `unwrapDevLaunchURL` from `expo-linking` instead of a private copy of the `expo-development-client` URL handling. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Remove obsolete fork annotations and commented-out path conversion code. ([#50726](https://github.com/expo/expo/pull/50726) by [@Ubax](https://github.com/Ubax))
-
 ## 58.0.9 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

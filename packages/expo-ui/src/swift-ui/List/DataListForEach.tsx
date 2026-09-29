@@ -10,7 +10,7 @@ import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export interface ListForEachProps<ItemT> extends CommonViewModifierProps {
+export interface ListForEachProps<T> extends CommonViewModifierProps {
   /** Called with deleted indices from this group's `data` array. */
   onDelete?: (indices: number[]) => void;
   /**
@@ -19,16 +19,16 @@ export interface ListForEachProps<ItemT> extends CommonViewModifierProps {
    */
   onMove?: (sourceIndices: number[], destination: number) => void;
   /** Items to display. Replace the array when updating data. */
-  data: readonly ItemT[];
+  data: readonly T[];
   /** Returns a stable, unique string key, also used for `List` selection. */
-  keyExtractor: (item: ItemT, index: number) => string;
+  keyExtractor: (item: T, index: number) => string;
   /**
    * Renders a row. When `recycling` is `true`, wrap it in `useCallback`, or every row
    * re-renders on each parent render.
    * Recycled rows are reused for other items, so their local state (`useState`) carries over.
    * Reset it when the item changes, or keep the state outside the row.
    */
-  children: (info: { item: ItemT; index: number }) => ReactElement;
+  children: (info: { item: T; index: number }) => ReactElement;
   /**
    * Renders only the rows near the visible range and reuses them while scrolling. Set to `false` to
    * render every row at once. Set it once; changing it remounts the rows.
@@ -43,8 +43,7 @@ export interface ListForEachProps<ItemT> extends CommonViewModifierProps {
   overscanCount?: number;
   /**
    * Placeholder height in points, excluding `List` insets, until a row is measured.
-   * Must be positive. Measurements reset when `data` or width changes.
-   * Ignored when `recycling` is `false`.
+   * Must be positive. Ignored when `recycling` is `false`.
    * @default 64
    */
   estimatedItemSize?: number;
@@ -74,7 +73,7 @@ const NativePool = requireNativeView<{ children: ReactElement[] }>(
  * Rows show placeholders while JS prepares content. Native keys still cover the full data set.
  * @platform ios
  */
-export function DataListForEach<ItemT>({
+export function DataListForEach<T>({
   data,
   keyExtractor,
   children: renderItem,
@@ -84,7 +83,7 @@ export function DataListForEach<ItemT>({
   onDelete,
   onMove,
   ...props
-}: ListForEachProps<ItemT>) {
+}: ListForEachProps<T>) {
   const { itemKeys, revision, rows, onWindowChange, isCurrentRevision } = useRecycledRows({
     componentName: 'List.ForEach',
     Slot: NativeSlot,
