@@ -69,7 +69,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          # NOTE: Changesets automatically deepens the clone for older changeset entries.
+          fetch-depth: 100
       - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
@@ -105,7 +106,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          # NOTE: The version-commit safeguard compares HEAD against HEAD^.
+          fetch-depth: 2
       - run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - run: echo "$(pwd)/bin" >> "$GITHUB_PATH"
       - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
