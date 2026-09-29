@@ -1,4 +1,5 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
+import { getRequestBodyInit } from './ExpoRequest';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import type { NativeRequest, NativeRequestInit } from './NativeRequest';
@@ -15,19 +16,13 @@ const isRequest = (input: any): input is FetchRequestLike => {
   if (input == null || typeof input !== 'object') {
     return false;
   } else {
-    return 'body' in input || input instanceof Request || input[Symbol.toStringTag] === 'Request';
-  }
-};
-
-const dangerouslyGetBodyFromRequest = (
-  input: FetchRequestLike | FetchRequestInit | undefined
-): BodyInit | null => {
-  if (input != null && input instanceof Request && '_bodyInit' in input) {
-    // NOTE(@kitten): whatwg-fetch has a hidden property for the body input
-    // TODO(@kitten): We should have our own Request class implementation
-    return (input as any)._noBody !== true ? (input as any)._bodyInit : null;
-  } else {
-    return input?.body ?? null;
+    // `_bodyInit` identifies a whatwg-fetch Request, which has neither `body` nor a string tag.
+    return (
+      'body' in input ||
+      '_bodyInit' in input ||
+      input instanceof Request ||
+      input[Symbol.toStringTag] === 'Request'
+    );
   }
 };
 
@@ -39,8 +34,8 @@ export async function fetch(
   const initFromRequest = isRequest(input);
   const url = initFromRequest ? input.url : input;
   const body =
-    dangerouslyGetBodyFromRequest(init) ??
-    (initFromRequest ? dangerouslyGetBodyFromRequest(input) : null);
+    (init != null ? getRequestBodyInit(init) : null) ??
+    (initFromRequest ? getRequestBodyInit(input) : null);
   const signal = init?.signal ?? (initFromRequest ? input.signal : undefined);
   const redirect = init?.redirect ?? (initFromRequest ? input.redirect : undefined);
   const method = init?.method ?? (initFromRequest ? input.method : undefined);

@@ -140,7 +140,7 @@ export function overrideHeaders(
 /** Normalizes known HTTP methods to uppercase */
 export function normalizeMethod(method: string): string {
   const normalized = method.toUpperCase();
-  switch (method.toUpperCase()) {
+  switch (normalized) {
     case 'DELETE':
     case 'GET':
     case 'HEAD':
