@@ -12,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -99,11 +98,7 @@ internal fun FunctionalComposableScope.FlowRowContent(props: LayoutProps) {
     modifier = ModifierRegistry
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    // FlowRow still uses RowScope. Clear the universal axis so weight and align
-    // keep the FlowRow scope instead of the surrounding stack's parent data.
-    CompositionLocalProvider(LocalUniversalStackAxis provides null) {
-      Children(UIComposableScope(rowScope = this@FlowRow))
-    }
+    Children(UIComposableScope(rowScope = this@FlowRow))
   }
 }
 
@@ -161,8 +156,6 @@ fun FunctionalComposableScope.BoxContent(props: LayoutProps) {
         }
       )
   ) {
-    CompositionLocalProvider(LocalUniversalStackAxis provides null) {
-      Children(UIComposableScope(boxScope = this@Box, nestedScrollConnection = scrollBehavior))
-    }
+    Children(UIComposableScope(boxScope = this@Box, nestedScrollConnection = scrollBehavior))
   }
 }

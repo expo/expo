@@ -679,31 +679,43 @@ object ModifierRegistry {
     register("weight") { map, scope, appContext, _ ->
       val params = recordFromMap<WeightParams>(map, appContext)
       val weight = params.weight.takeIf { it.isFinite() && it > 0f }
-      when (LocalUniversalStackAxis.current) {
-        UniversalStackAxis.Horizontal, UniversalStackAxis.Vertical ->
+      // Prefer row, column, or box scope.
+      // Those parents ignore universal parent data, and Box has no weight.
+      when {
+        scope?.rowScope != null || scope?.columnScope != null ->
+          scope?.rowScope?.run {
+            weight?.let { Modifier.weight(it) }
+          } ?: scope?.columnScope?.run {
+            weight?.let { Modifier.weight(it) }
+          } ?: Modifier
+        scope?.boxScope != null -> Modifier
+        LocalUniversalStackAxis.current == UniversalStackAxis.Horizontal ||
+          LocalUniversalStackAxis.current == UniversalStackAxis.Vertical ->
           weight?.let { UniversalWeightElement(it) } ?: Modifier
-        null -> scope?.rowScope?.run {
-          weight?.let { Modifier.weight(it) }
-        } ?: scope?.columnScope?.run {
-          weight?.let { Modifier.weight(it) }
-        } ?: Modifier
+        else -> Modifier
       }
     }
 
     register("align") { map, scope, appContext, _ ->
       val params = recordFromMap<AlignParams>(map, appContext)
-      when (LocalUniversalStackAxis.current) {
-        UniversalStackAxis.Horizontal ->
+      when {
+        scope?.boxScope != null ->
+          scope?.boxScope?.run {
+            params.alignment?.toAlignment()?.let { alignment -> Modifier.align(alignment) }
+          } ?: Modifier
+        scope?.rowScope != null ->
+          scope?.rowScope?.run {
+            params.alignment?.toVerticalAlignment()?.let { alignment -> Modifier.align(alignment) }
+          } ?: Modifier
+        scope?.columnScope != null ->
+          scope?.columnScope?.run {
+            params.alignment?.toHorizontalAlignment()?.let { alignment -> Modifier.align(alignment) }
+          } ?: Modifier
+        LocalUniversalStackAxis.current == UniversalStackAxis.Horizontal ->
           UniversalAlignElement(vertical = params.alignment?.toVerticalAlignment())
-        UniversalStackAxis.Vertical ->
+        LocalUniversalStackAxis.current == UniversalStackAxis.Vertical ->
           UniversalAlignElement(horizontal = params.alignment?.toHorizontalAlignment())
-        null -> scope?.boxScope?.run {
-          params.alignment?.toAlignment()?.let { alignment -> Modifier.align(alignment) }
-        } ?: scope?.rowScope?.run {
-          params.alignment?.toVerticalAlignment()?.let { alignment -> Modifier.align(alignment) }
-        } ?: scope?.columnScope?.run {
-          params.alignment?.toHorizontalAlignment()?.let { alignment -> Modifier.align(alignment) }
-        } ?: Modifier
+        else -> Modifier
       }
     }
 

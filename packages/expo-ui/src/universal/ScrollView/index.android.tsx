@@ -29,10 +29,18 @@ export function ScrollView({
   );
 
   if (direction === 'horizontal') {
-    return <Row modifiers={[...modifiers, horizontalScroll()]}>{children}</Row>;
+    return (
+      <Row resolvesChildPercentages modifiers={[...modifiers, horizontalScroll()]}>
+        {children}
+      </Row>
+    );
   }
 
-  return <Column modifiers={[...modifiers, verticalScroll()]}>{children}</Column>;
+  return (
+    <Column resolvesChildPercentages modifiers={[...modifiers, verticalScroll()]}>
+      {children}
+    </Column>
+  );
 }
 
 export * from './types';
