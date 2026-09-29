@@ -2,7 +2,13 @@ import CoreLocation
 import ExpoModulesCore
 
 final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
-  private let locationManager: CLLocationManager
+  private lazy var locationManager: CLLocationManager = {
+    let locationManager = Thread.isMainThread
+      ? CLLocationManager()
+      : DispatchQueue.main.sync { CLLocationManager() }
+    locationManager.delegate = self
+    return locationManager
+  }()
   // Only accessed from the main thread, so it does not need to be synchronized
   private var pendingRequests: [(resolve: EXPromiseResolveBlock, reject: EXPromiseRejectBlock)] = []
 
@@ -12,16 +18,6 @@ final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CL
   // missing from Info.plist - we let the provided NSLocation*UsageDescription keys govern
   // the behavior instead.
   private static let whenInUseAuthorizationSelector = NSSelectorFromString(["request", "WhenInUseAuthorization"].joined())
-
-  override init() {
-    if Thread.isMainThread {
-      locationManager = CLLocationManager()
-    } else {
-      locationManager = DispatchQueue.main.sync { CLLocationManager() }
-    }
-    super.init()
-    locationManager.delegate = self
-  }
 
   static func permissionType() -> String {
     return "locationForegroundNext"
