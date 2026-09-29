@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Add privacy manifest describing required reason API usage. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
+- [iOS] Add privacy manifest describing required reason API usage and the collected data types. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
 
 ## 58.0.10 — 2026-09-28
 
