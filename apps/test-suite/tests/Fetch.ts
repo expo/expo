@@ -10,6 +10,8 @@ import { requireNotNull } from '../utils/requireNotNull';
 export const name = 'Fetch';
 
 export async function test({ describe, expect, it, ...t }: JasmineInterface) {
+  const itNative = Platform.OS !== 'web' ? it : t.xit;
+  const itWeb = Platform.OS === 'web' ? it : t.xit;
   const httpbin = await gateOnHostAsync(
     { describe, it, pending: t.pending },
     'https://httpbin.io/get'
@@ -196,22 +198,27 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       expect(json.url).toMatch(/^http?:\/\/httpbin\.io\/get$/);
     });
 
-    it('should throw an error when redirect is set to error and a redirect occurs', async () => {
-      let error: Error | null = null;
-      try {
-        await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
-          redirect: 'error',
-        });
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          error = e;
+    // On web, `fetch` is the browser's, which uses its own error messages.
+    itNative(
+      'should throw an error when redirect is set to error and a redirect occurs',
+      async () => {
+        let error: Error | null = null;
+        try {
+          await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
+            redirect: 'error',
+          });
+        } catch (e: unknown) {
+          if (e instanceof Error) {
+            error = e;
+          }
         }
+        expect(error).not.toBeNull();
+        expect(error?.message).toContain('redirect');
       }
-      expect(error).not.toBeNull();
-      expect(error?.message).toContain('redirect');
-    });
+    );
 
-    it('should not follow redirects when redirect is set to manual', async () => {
+    // Browsers return an opaque-redirect response (status 0, no headers) for `manual`, per the spec.
+    itNative('should not follow redirects when redirect is set to manual', async () => {
       const resp = await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
         redirect: 'manual',
       });
@@ -313,9 +320,6 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
   // Spec conformance of `Request` is covered by the WPT port in `FetchRequest.ts`. These tests cover how
   // `fetch()` and the native runtime handle `Request` objects.
   describe('Request', () => {
-    const itNative = Platform.OS !== 'web' ? it : t.xit;
-    const itWeb = Platform.OS === 'web' ? it : t.xit;
-
     itWeb('exports the platform Request on web', () => {
       // On web, `fetch` is the browser's own and only accepts the browser's `Request`.
       expect(Request as unknown).toBe(globalThis.Request);
@@ -331,8 +335,6 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
 
   httpbin.describe('Request with fetch', () => {
     setupTestTimeout(t);
-
-    const itNative = Platform.OS !== 'web' ? it : t.xit;
 
     it('should fetch using a Request object', async () => {
       const request = new Request('https://httpbin.io/get', {
@@ -553,7 +555,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
   httpbin.describe('Cookies', () => {
     setupTestTimeout(t);
 
-    it('should include cookies when credentials are set to include', async () => {
+    // In Chrome, with the test page on localhost, httpbin's cookie doesn't come back.
+    itNative('should include cookies when credentials are set to include', async () => {
       const resp = await fetch('https://httpbin.io/cookies/set?foo=bar', {
         credentials: 'include',
       });
@@ -662,7 +665,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
 
     // Same as the previous test but abort at 0ms,
     // that to ensure the request is aborted before receiving any chunks.
-    it('should abort streaming request before receiving chunks', async () => {
+    // On web, `fetch` is the browser's, which uses its own error messages.
+    itNative('should abort streaming request before receiving chunks', async () => {
       const controller = new AbortController();
       setTimeout(() => controller.abort(), 0);
       let error: Error | null = null;
