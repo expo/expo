@@ -1,5 +1,6 @@
 package expo.modules.widgets
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -49,6 +50,12 @@ class WidgetsModule : Module() {
 
       Function("reload") { widget: WidgetObject ->
         widget.reload()
+      }
+
+      AsyncFunction("isInstalledAsync") { widget: WidgetObject ->
+        AppWidgetManager.getInstance(context)
+          .getAppWidgetIds(widgetProviderComponentName(context, widget.name))
+          .isNotEmpty()
       }
 
       Function("updateSnapshot") { widget: WidgetObject, props: Map<String, Any?> ->

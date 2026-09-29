@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `Widget.isInstalledAsync()` to detect whether a widget is installed on iOS and Android. ([#50710](https://github.com/expo/expo/pull/50710) by [@mozzius](https://github.com/mozzius))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

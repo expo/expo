@@ -303,6 +303,7 @@ export type LiveActivityEvents = {
 export declare class NativeWidgetObject extends SharedObject {
   constructor(name: string, layout: string, initialProps?: Record<string, any>);
   reload(): void;
+  isInstalledAsync(): Promise<boolean>;
   updateSnapshot(props: Record<string, any>): void;
   updateTimeline(entries: ExpoTimelineEntry[]): void;
   getTimeline(): Promise<ExpoTimelineEntry[]>;
