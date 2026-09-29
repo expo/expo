@@ -2937,7 +2937,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-constants:
-        specifier: workspace:^57.0.19
+        specifier: workspace:^57.0.20
         version: link:../../expo-constants
       expo-font:
         specifier: workspace:^57.0.4
@@ -3161,7 +3161,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-widgets:
-        specifier: workspace:^57.0.21
+        specifier: workspace:^57.0.22
         version: link:../expo-widgets
     devDependencies:
       '@babel/core':
@@ -3544,7 +3544,7 @@ importers:
         specifier: workspace:~57.0.18
         version: link:../expo-asset
       expo-constants:
-        specifier: workspace:~57.0.19
+        specifier: workspace:~57.0.20
         version: link:../expo-constants
       expo-file-system:
         specifier: workspace:~57.0.7
@@ -3559,7 +3559,7 @@ importers:
         specifier: workspace:~57.0.13
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~57.0.19
+        specifier: workspace:~57.0.20
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3693,7 +3693,7 @@ importers:
         specifier: workspace:^0.11.5
         version: link:../@expo/image-utils
       expo-constants:
-        specifier: workspace:~57.0.19
+        specifier: workspace:~57.0.20
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -3752,7 +3752,7 @@ importers:
         specifier: workspace:~57.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~57.0.19
+        specifier: workspace:~57.0.20
         version: link:../expo-constants
       expo-crypto:
         specifier: workspace:~57.0.3
@@ -3786,7 +3786,7 @@ importers:
   packages/expo-background-fetch:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~57.0.20
+        specifier: workspace:~57.0.21
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3802,7 +3802,7 @@ importers:
   packages/expo-background-task:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~57.0.20
+        specifier: workspace:~57.0.21
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -4660,7 +4660,7 @@ importers:
   packages/expo-linking:
     dependencies:
       expo-constants:
-        specifier: workspace:~57.0.19
+        specifier: workspace:~57.0.20
         version: link:../expo-constants
       invariant:
         specifier: ^2.2.4
@@ -5070,7 +5070,7 @@ importers:
         specifier: workspace:~57.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~57.0.19
+        specifier: workspace:~57.0.20
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -5167,7 +5167,7 @@ importers:
         specifier: workspace:^57.0.2
         version: link:../@expo/schema-utils
       '@expo/ui':
-        specifier: workspace:^57.0.20
+        specifier: workspace:^57.0.21
         version: link:../expo-ui
       '@radix-ui/react-slot':
         specifier: ^1.2.0
@@ -5191,7 +5191,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       expo-constants:
-        specifier: workspace:^57.0.19
+        specifier: workspace:^57.0.20
         version: link:../expo-constants
       expo-glass-effect:
         specifier: workspace:^57.0.4
@@ -5974,7 +5974,7 @@ importers:
         specifier: workspace:^0.8.1
         version: link:../@expo/plist
       '@expo/ui':
-        specifier: workspace:~57.0.20
+        specifier: workspace:~57.0.21
         version: link:../expo-ui
       react:
         specifier: 19.2.3

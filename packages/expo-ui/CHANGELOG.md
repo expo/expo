@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.21 — 2026-09-29
+
+### 🎉 New features
+
 - Added `get()` and `set()` to the universal `ObservableState` type and to the web implementation of `useNativeState`, as React Compiler-compliant alternatives to `.value`. ([#50684](https://github.com/expo/expo/pull/50684) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added `presentationCornerRadius` modifier. ([#50632](https://github.com/expo/expo/pull/50632) by [@shanelord01](https://github.com/shanelord01))
 - [Android] Add `contentDescription` to the `semantics` modifier, so TalkBack can announce a label other than the visible content. ([#50688](https://github.com/expo/expo/pull/50688) by [@enavermate](https://github.com/enavermate))
@@ -13,8 +21,6 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed `onPress` on universal components such as `Row` and `Column` not firing when tapping empty space, such as a `Spacer`. ([#50599](https://github.com/expo/expo/pull/50599) by [@expo-bot](https://github.com/expo-bot))
-
-### 💡 Others
 
 ## 57.0.20 — 2026-09-24
 
