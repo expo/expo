@@ -22,11 +22,37 @@ export { requireContext };
 
 const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-export function inMemoryContext(context: MemoryContext) {
+export type InMemoryContextOptions = {
+  /**
+   * Resolve modules asynchronously like Metro's `lazy` context mode with async routes: the
+   * context returns a promise that carries the module in `_result` once it has resolved, and the
+   * module itself on later calls.
+   *
+   * @see expo/src/async-require/asyncRequireModule.ts
+   */
+  lazy?: boolean;
+};
+
+export function inMemoryContext(
+  context: MemoryContext,
+  { lazy = false }: InMemoryContextOptions = {}
+) {
+  const loaded = new Set<string>();
   return Object.assign(
     function (id: string) {
       id = id.replace(/^\.\//, '').replace(/\.\w*$/, '');
-      return typeof context[id] === 'function' ? { default: context[id] } : context[id];
+      const module = typeof context[id] === 'function' ? { default: context[id] } : context[id];
+      if (!lazy) {
+        return module;
+      }
+      const promise: Promise<unknown> & { _result?: unknown } = Promise.resolve(module).then(
+        (resolved) => {
+          loaded.add(id);
+          return resolved;
+        }
+      );
+      promise._result = loaded.has(id) ? module : promise;
+      return promise;
     },
     {
       resolve: (key: string) => key,

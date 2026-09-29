@@ -10,6 +10,7 @@ import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConf
 import { getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
+import EXPO_ROUTER_IMPORT_MODE, { type ImportMode } from '../import-mode';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { cancelSplashScreenAnimationFrame } from '../utils/splash';
@@ -21,7 +22,8 @@ import type { StoreRedirects } from './types';
 export function useRouterConfig(
   context: RequireContext,
   linkingConfigOptions: LinkingConfigOptions,
-  serverUrl?: string
+  serverUrl?: string,
+  importMode: ImportMode = EXPO_ROUTER_IMPORT_MODE
 ): { routerConfig: RouterConfig; rootComponent: ComponentType<any> } {
   const config = Constants.expoConfig?.extra?.router;
   const configValue = useMemo(() => {
@@ -33,6 +35,7 @@ export function useRouterConfig(
       ignoreEntryPoints: true,
       platform: Platform.OS,
       preserveRedirectAndRewrites: true,
+      importMode,
     });
 
     const redirects: StoreRedirects[] = [config?.redirects, config?.rewrites]
@@ -56,7 +59,7 @@ export function useRouterConfig(
         sitemap: config?.sitemap ?? true,
         notFound: config?.notFound ?? true,
       });
-      rootComponent = getQualifiedRouteComponent(routeNode);
+      rootComponent = getQualifiedRouteComponent(routeNode, importMode);
     } else {
       // Only error in production, in development we will show the onboarding screen
       if (process.env.NODE_ENV === 'production') {
@@ -67,8 +70,8 @@ export function useRouterConfig(
       rootComponent = Fragment;
     }
 
-    return { routerConfig: { linking, redirects, routeNode }, rootComponent };
-  }, [config, context, linkingConfigOptions, serverUrl]);
+    return { routerConfig: { linking, redirects, routeNode, importMode }, rootComponent };
+  }, [config, context, linkingConfigOptions, serverUrl, importMode]);
 
   useEffect(() => {
     return cancelSplashScreenAnimationFrame;

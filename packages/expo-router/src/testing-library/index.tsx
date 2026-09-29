@@ -8,6 +8,7 @@ import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { navigationRef } from '../global-state/navigationRef';
 import type { ReactNavigationState } from '../global-state/types';
 import { router } from '../imperative-api';
+import type { ImportMode } from '../import-mode';
 import { type MockContextConfig, getMockContext } from './mock-config';
 
 export { type MockContextConfig, getMockConfig, getMockContext } from './mock-config';
@@ -56,16 +57,22 @@ Object.defineProperty(exports, 'screen', {
   },
 });
 
-export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] & {
+type RouterOptions = {
   initialUrl?: any;
   linking?: Partial<ExpoLinkingOptions>;
+  /**
+   * How route modules load. `lazy` resolves the in-memory routes asynchronously, like async
+   * routes do, and is only supported for routes passed as an object or an array of file names.
+   * @default 'sync'
+   */
+  importMode?: ImportMode;
 };
 
+export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] & RouterOptions;
+
 // TODO: Remove `renderAsync` when we migrate to RNTL v14.
-export type RenderRouterAsyncOptions = Parameters<typeof rnTestingLibrary.renderAsync>[1] & {
-  initialUrl?: any;
-  linking?: Partial<ExpoLinkingOptions>;
-};
+export type RenderRouterAsyncOptions = Parameters<typeof rnTestingLibrary.renderAsync>[1] &
+  RouterOptions;
 
 type Result = ReturnType<typeof rnTestingLibrary.render> & {
   getPathname(): string;
@@ -77,7 +84,7 @@ type Result = ReturnType<typeof rnTestingLibrary.render> & {
 
 export function renderRouter(
   context: MockContextConfig = './app',
-  { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
+  { initialUrl = '/', linking, importMode = 'sync', ...options }: RenderRouterOptions = {}
 ): Result {
   // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
   const systemTime = Date.now();
@@ -88,13 +95,15 @@ export function renderRouter(
     // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
   }
 
-  const mockContext = getMockContext(context);
-
-  // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+  const mockContext = getMockContext(context, { lazy: importMode === 'lazy' });
 
   const result = rnTestingLibrary.render(
-    <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
+    <ExpoRoot
+      context={mockContext}
+      location={initialUrl}
+      linking={linking}
+      importMode={importMode}
+    />,
     options
   );
 
@@ -124,7 +133,7 @@ export function renderRouter(
 
 export async function renderRouterAsync(
   context: MockContextConfig = './app',
-  { initialUrl = '/', linking, ...options }: RenderRouterAsyncOptions = {}
+  { initialUrl = '/', linking, importMode = 'sync', ...options }: RenderRouterAsyncOptions = {}
 ): Promise<Awaited<ReturnType<typeof rnTestingLibrary.renderAsync>>> {
   const systemTime = Date.now();
   jest.useFakeTimers();
@@ -134,11 +143,14 @@ export async function renderRouterAsync(
     // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
   }
 
-  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-
   // TODO: Remove `renderAsync` when we migrate to RNTL v14.
   return rnTestingLibrary.renderAsync(
-    <ExpoRoot context={getMockContext(context)} location={initialUrl} linking={linking} />,
+    <ExpoRoot
+      context={getMockContext(context, { lazy: importMode === 'lazy' })}
+      location={initialUrl}
+      linking={linking}
+      importMode={importMode}
+    />,
     options
   );
 }

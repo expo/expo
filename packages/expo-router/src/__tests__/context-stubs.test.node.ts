@@ -2,6 +2,7 @@ import path from 'path';
 
 import {
   findDuplicateKeys,
+  inMemoryContext,
   normalizeKey,
   normalizeKeys,
   requireContextWithOverrides,
@@ -126,5 +127,27 @@ describe('requireContextWithOverrides', () => {
 
     expect(ctx('modal').default).toBe(MockModal);
     expect(ctx.keys()).toContain('modal');
+  });
+});
+
+describe('inMemoryContext', () => {
+  it('returns modules synchronously by default', () => {
+    const context = inMemoryContext({ index: IndexFixture });
+
+    expect(context('./index.js')).toEqual({ default: IndexFixture });
+  });
+
+  it('resolves modules asynchronously in lazy mode', async () => {
+    const context = inMemoryContext({ index: IndexFixture }, { lazy: true });
+
+    type LazyModule = Promise<unknown> & { _result?: unknown };
+    const pending = context('./index.js') as LazyModule;
+    expect(pending).toBeInstanceOf(Promise);
+    expect(pending._result).toBe(pending);
+    await expect(pending).resolves.toEqual({ default: IndexFixture });
+
+    // Once loaded, the module is available synchronously through `_result`.
+    const loaded = context('./index.js') as LazyModule;
+    expect(loaded._result).toEqual({ default: IndexFixture });
   });
 });

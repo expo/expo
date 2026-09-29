@@ -14,6 +14,7 @@ import { RouterConfigContext } from './global-state/routerConfigContext';
 import { RoutingQueueProvider } from './global-state/routingQueueContext';
 import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
+import type { ImportMode } from './import-mode';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { Screen } from './primitives';
 import type { LinkingOptions } from './react-navigation/native';
@@ -31,6 +32,11 @@ export type ExpoRootProps = {
   location?: URL | string;
   wrapper?: ComponentType<PropsWithChildren>;
   linking?: Partial<ExpoLinkingOptions>;
+  /**
+   * How route modules load. Defaults to the bundler's setting for async routes, which is inlined
+   * at build time. Tests pass `lazy` together with a context that resolves modules asynchronously.
+   */
+  importMode?: ImportMode;
 };
 
 export type NativeIntent = {
@@ -95,6 +101,7 @@ function ContextNavigator({
   location: initialLocation = initialUrl,
   wrapper: WrapperComponent = Fragment,
   linking = {},
+  importMode,
 }: ExpoRootProps) {
   // location and linking.getInitialURL are both used to initialize the router state
   //  - location is used on web and during static rendering
@@ -112,7 +119,7 @@ function ContextNavigator({
     return undefined;
   }, []);
 
-  const { routerConfig, rootComponent } = useRouterConfig(context, linking, serverUrl);
+  const { routerConfig, rootComponent } = useRouterConfig(context, linking, serverUrl, importMode);
   const { linking: linkingConfig, routeNode } = routerConfig;
 
   useDomComponentNavigation();

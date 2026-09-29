@@ -11,10 +11,11 @@ import {
   sortRoutesWithInitial,
   useRouteNode,
 } from './Route';
+import { RouterConfigContext } from './global-state/routerConfigContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import EXPO_ROUTER_IMPORT_MODE, { type ImportMode } from './import-mode';
 import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
@@ -185,6 +186,7 @@ export function useSortedScreens<
   guardedRedirects: GuardedRedirects = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
+  const importMode = use(RouterConfigContext)?.importMode;
 
   const children = node?.children ?? [];
   const sorted = children.length
@@ -196,9 +198,15 @@ export function useSortedScreens<
       return { ...value, isGuarded: isRouteGuarded(route, guardedRedirects) };
     });
     return screensWithGuarded.map((value) => {
-      return routeToScreen(value.route, value.props, value.isGuarded, value.routeSource);
+      return routeToScreen(
+        value.route,
+        value.props,
+        value.isGuarded,
+        value.routeSource,
+        importMode
+      );
     });
-  }, [sorted, guardedRedirects]);
+  }, [sorted, guardedRedirects, importMode]);
 }
 
 function fromImport(
@@ -267,7 +275,10 @@ function fromImport(
 const qualifiedStore = new WeakMap<RouteNode, React.ComponentType<any>>();
 
 /** Wrap the component with various enhancements and add access to child routes. */
-export function getQualifiedRouteComponent(value: RouteNode) {
+export function getQualifiedRouteComponent(
+  value: RouteNode,
+  importMode: ImportMode = EXPO_ROUTER_IMPORT_MODE
+) {
   if (qualifiedStore.has(value)) {
     return qualifiedStore.get(value)!;
   }
@@ -276,7 +287,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-  if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
+  if (importMode === 'lazy') {
     ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
       const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
       // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
@@ -349,7 +360,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     }, [isGuarded, isRouteType, routeInfo]);
 
     const ResolvedSuspenseFallback =
-      EXPO_ROUTER_IMPORT_MODE === 'lazy'
+      importMode === 'lazy'
         ? DefaultSuspenseFallback
         : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
     const providedSuspenseFallback =
@@ -590,7 +601,8 @@ export function routeToScreen<
   route: RouteNode,
   { options, getId, ...props }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
-  routeSource?: RouteSource
+  routeSource?: RouteSource,
+  importMode?: ImportMode
 ) {
   return (
     <Screen
@@ -600,7 +612,7 @@ export function routeToScreen<
       getId={getId}
       routeSource={routeSource}
       options={screenOptionsFactory(route, options, isGuarded)}
-      getComponent={() => getQualifiedRouteComponent(route)}
+      getComponent={() => getQualifiedRouteComponent(route, importMode)}
     />
   );
 }
