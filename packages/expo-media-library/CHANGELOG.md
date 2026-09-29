@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🐛 Bug fixes
+
+- [iOS] Fix `Album.getAll()` not returning albums nested inside folders. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
