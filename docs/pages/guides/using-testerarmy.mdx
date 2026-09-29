@@ -12,24 +12,24 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-[TesterArmy](https://tester.army/) builds tools that test your app with AI agents. An agent opens your app, taps through a flow like a user does, and checks the result. You can use TesterArmy with an Expo app in two ways:
+[TesterArmy](https://tester.army/) builds tools that test your app with AI agents. An agent opens your app, taps through a flow like a user does, and checks the result. **You can use TesterArmy with an Expo app in two ways:**
 
 |                       | Open source e2e                                                     | TesterArmy platform                                                                         |
 | --------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | What it is            | An open source end-to-end (E2E) testing framework                   | A hosted testing service                                                                    |
-| Where tests run       | On your iOS Simulator or Android Emulator, or on your CI machine    | On TesterArmy's cloud iOS Simulators and Android Emulators                                  |
+| Where tests run       | On your  Android Emulator or  iOS Simulator, or on your CI machine    | On TesterArmy's cloud Android Emulators and iOS Simulators                                  |
 | What you need         | A model for agent steps, such as a subscription you already have    | A TesterArmy account and API key                                                            |
 | How tests are written | Test files with agent steps and exact assertions                    | Saved tests in the TesterArmy dashboard, plus an agent that tests each pull request         |
 | Expo setup            | A release build installed on your Android Emulator or iOS Simulator | EAS Build profiles and a workflow in EAS Workflows that builds, uploads, and tests your app |
 
-This guide shows how to set up e2e in an Expo project and run it on your computer. It also shows how to build your app with [EAS Build](/build/introduction/) and run TesterArmy platform tests on each push and pull request with [EAS Workflows](/eas/workflows/introduction/).
+This guide shows how to set up e2e in an Expo project and run it on your computer. It also shares an example on how to build your app with [EAS Build](/build/introduction/) and run TesterArmy platform tests on each push and pull request with [EAS Workflows](/eas/workflows/introduction/).
 
 ## Run E2E tests with e2e framework
 
 [e2e](https://e2e.tester.army/docs) is TesterArmy's open source E2E testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
 
-- **Exact steps** find an element with a locator, act on it, and assert the result, like other E2E frameworks.
-- **Agent steps** describe a goal in plain language, and an AI model decides what to tap. e2e records the actions and replays them on later runs without a model call.
+- **Exact steps** to find an element with a locator, act on it, and assert the result, like other E2E frameworks.
+- **Agent steps** to describe a goal in plain language and an AI model decides what to tap. e2e records the actions and replays them on later runs without a model call.
 
 <Prerequisites>
   <Requirement title="Node.js 22.12 or later">
@@ -49,7 +49,7 @@ This guide shows how to set up e2e in an Expo project and run it on your compute
 
 ### Build and install a release build
 
-Set `ios.bundleIdentifier` and `android.package` in your [app config](/workflow/configuration/). e2e uses these values to open your app.
+Set `android.package`and `ios.bundleIdentifier` in your [app config](/workflow/configuration/). e2e uses these values to open your app.
 
 ```json app.json
 {
@@ -88,7 +88,7 @@ In your project directory, run the setup command:
 
 <Terminal cmd={['$ npx e2e@canary init']} />
 
-Answer the prompts:
+Then, answer the following prompts:
 
 1. For the engine, select **Mobile (iOS/Android)**.
 2. For the model gateway, select the subscription or provider you use for agent steps. Select **None** to add a model later.
@@ -101,8 +101,6 @@ The command adds `e2e` and `@e2e-dev/mobile` to your development dependencies an
 - **tests/example.e2e.ts**: An example test that opens the iOS Settings app. Delete it after you add your own tests.
 - **.agents/skills/e2e/**: A skill that tells coding agents how to write and run e2e tests. **.claude/skills/e2e/** links to it for Claude Code.
 - **.mcp.json** and **.cursor/mcp.json**: The e2e MCP server configuration for coding agents.
-
-e2e sends usage telemetry by default. To turn it off, run `npx e2e telemetry disable` or set `E2E_TELEMETRY_DISABLED=1`.
 
 </Step>
 
@@ -140,7 +138,7 @@ export default {
 } satisfies E2EConfig;
 ```
 
-For an Android Emulator, use the name that `npx agent-device devices` shows for the running emulator, such as `Medium Phone`. The Android Virtual Device (AVD) name with underscores, such as `Medium_Phone`, fails after the emulator boots.
+> **info** For an Android Emulator, use the name that `npx agent-device devices` shows for the running emulator, such as `Medium Phone`. The Android Virtual Device (AVD) name with underscores, such as `Medium_Phone`, fails after the emulator boots.
 
 `appPath` names the build to install. e2e does not install it on its own. On a new emulator or simulator, such as on a CI machine, call `await device.installApp()` at the start of a test to install the build from `appPath`. When you install the app with `npx expo run:android --variant release` or `npx expo run:ios --configuration Release`, it is already on the emulator or simulator.
 
@@ -169,9 +167,7 @@ test('explore tab expands file-based routing', async ({ app, screen }) => {
 });
 ```
 
-These tests use the screens from the [default Expo template](/more/create-expo/#--template). For your own app, change the text to match your screens.
-
-Run the tests on both platforms:
+In the above example snippet, these tests use the screens from the [default Expo template](/more/create-expo/#--template). For your own app, change the text to match your screens. Then, run the tests on both platforms:
 
 <Terminal cmd={['$ npx e2e run']} />
 
@@ -183,17 +179,13 @@ e2e boots the configured emulator or simulator if it is not running, runs each t
 
 ### Add an agent step
 
-An agent step needs a model, such as one from the subscriptions and providers listed in the [prerequisites](#prerequisites).
-
-If you selected a subscription or provider during setup, **e2e.config.ts** already has a default agent. To use a subscription, sign in and select your provider:
+An agent step needs a model, such as one from the subscriptions and providers listed in the [prerequisites](#prerequisites). If you selected a subscription or provider during setup, **e2e.config.ts** already has a default agent. To use a subscription, sign in and select your provider:
 
 <Terminal cmd={['$ npx e2e login']} />
 
-To use an API key, set the environment variable that your provider needs. If you selected **None** during setup, add a model to **e2e.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
+To use an API key, set the environment variable that your provider needs. If you selected **None** during setup, add a model to **e2e.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models). To see the model IDs that your subscriptions can use, run `npx e2e models`.
 
-To see the model IDs that your subscriptions can use, run `npx e2e models`.
-
-Create **tests/agent.e2e.ts** with one goal per `agent.act()` call, followed by an exact assertion:
+Then, create **tests/agent.e2e.ts** with one goal per `agent.act()` call, followed by an exact assertion:
 
 ```ts tests/agent.e2e.ts
 import { test } from '@e2e-dev/mobile';
@@ -284,7 +276,7 @@ The e2e skill in **.agents/skills/e2e/** tells coding agents such as Claude Code
 
 [EAS Workflows](/eas/workflows/introduction/) can run e2e on a macOS worker with an iOS Simulator. The following workflow builds your app, boots a simulator on the worker, installs the app, and runs the tests.
 
-Add an iOS Simulator build profile to **eas.json**:
+Start by adding an iOS Simulator build profile to **eas.json**:
 
 ```json eas.json
 {
@@ -298,7 +290,7 @@ Add an iOS Simulator build profile to **eas.json**:
 }
 ```
 
-Create **e2e.ci.config.ts** with one iOS target. It does not set `device`, because the worker has one simulator:
+Then, create **e2e.ci.config.ts** with one iOS target. It does not set `device`, because the worker has one simulator:
 
 ```ts e2e.ci.config.ts
 import type { E2EConfig } from 'e2e';
@@ -361,7 +353,7 @@ jobs:
             .e2e/artifacts/**/*
 ```
 
-Start the workflow:
+To start the workflow, run the following command:
 
 <Terminal cmd={['$ eas workflow:run .eas/workflows/e2e-tests.yml']} />
 
@@ -1002,9 +994,7 @@ jobs:
 
 Before a run starts, TesterArmy checks the changes. A pull request may have no change that users can see, such as a docs or config change. Then the check shows "Tests skipped" with the reason. TesterArmy decides this for each platform.
 
-TesterArmy checks do not block merges by default.
-
-If a coding agent writes your pull requests, add the [TesterArmy testing instructions](https://docs.tester.army/run/pull-request-testing#guide-the-planner-from-your-pr-description) to your **AGENTS.md** or **CLAUDE.md**. The agent then ends each pull request description with steps the exploration agent can follow.
+TesterArmy checks do not block merges by default. If a coding agent writes your pull requests, add the [TesterArmy testing instructions](https://docs.tester.army/run/pull-request-testing#guide-the-planner-from-your-pr-description) to your **AGENTS.md** or **CLAUDE.md**. The agent then ends each pull request description with steps the exploration agent can follow.
 
 </Step>
 
