@@ -735,12 +735,13 @@ describe('DownloadTask background completion acknowledgment', () => {
     const file = new File(Paths.cache, 'test');
     const standard = new DownloadTask('https://example.com/file', file);
     await standard.downloadAsync();
-    expect(start.mock.calls[0][2]?.deferBackgroundSessionCompletion).toBeUndefined();
+    expect(start).toHaveBeenCalledTimes(1);
+    expect(start.mock.calls[0]?.[2]?.deferBackgroundSessionCompletion).toBeUndefined();
     const optedIn = new DownloadTask('https://example.com/file', file, {
       deferBackgroundSessionCompletion: true,
     });
     await optedIn.downloadAsync();
-    expect(start.mock.calls[1][2]?.deferBackgroundSessionCompletion).toBe(true);
+    expect(start.mock.calls[1]?.[2]?.deferBackgroundSessionCompletion).toBe(true);
     const restored = DownloadTask.fromSavable(
       {
         url: 'https://example.com/file',
@@ -751,7 +752,7 @@ describe('DownloadTask background completion acknowledgment', () => {
       { deferBackgroundSessionCompletion: true }
     );
     await restored.resumeAsync();
-    expect(resume.mock.calls[0][3]?.deferBackgroundSessionCompletion).toBe(true);
+    expect(resume.mock.calls[0]?.[3]?.deferBackgroundSessionCompletion).toBe(true);
   });
 
   it('acknowledges only successful opted-in iOS background downloads', async () => {
