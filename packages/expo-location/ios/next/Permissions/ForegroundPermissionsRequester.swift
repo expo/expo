@@ -31,8 +31,8 @@ final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CL
     resolver resolve: @escaping EXPromiseResolveBlock,
     rejecter reject: @escaping EXPromiseRejectBlock
   ) {
-    guard LocationPlistKeys.isIncludedInInfoPlist(LocationPlistKeys.whenInUse) else {
-      let exception = MissingPlistKeyException(LocationPlistKeys.whenInUse)
+    if let missingKey = LocationPlistKeys.firstMissing(in: LocationPermissionKind.foreground.plistKeys) {
+      let exception = MissingPlistKeyException(missingKey)
       reject(exception.code, exception.description, exception)
       return
     }
@@ -60,7 +60,7 @@ final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CL
   }
 
   private func currentResponse() -> LocationPermissionResponse {
-    guard LocationPlistKeys.isIncludedInInfoPlist(LocationPlistKeys.whenInUse) else {
+    guard LocationPlistKeys.firstMissing(in: LocationPermissionKind.foreground.plistKeys) == nil else {
       return LocationPermissionResponse.denied
     }
 
