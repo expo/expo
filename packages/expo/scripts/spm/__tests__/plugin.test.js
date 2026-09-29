@@ -2429,7 +2429,7 @@ describe('a Swift macro plugin that does not resolve', () => {
         env,
       })
     );
-    expect(message).toContain('Could not resolve "@expo/expo-modules-macros-plugin"');
+    expect(message).toContain('Could not resolve "expo-modules-macros"');
     expect(cause).toBe('MODULE_NOT_FOUND');
   });
 });
