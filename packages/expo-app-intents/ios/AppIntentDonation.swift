@@ -204,7 +204,9 @@ internal final class UnregisteredDonationEntityException: GenericException<(Stri
   }
 }
 
-internal final class DonationIntentInitException: GenericException<(intent: String, error: any Error)>, @unchecked Sendable {
+internal final class DonationIntentInitException: GenericException<(intent: String, error: any Error)>,
+  @unchecked Sendable
+{
   override var reason: String {
     return """
       expo-app-intents could not donate the '\(param.intent)' intent, because its \
@@ -215,7 +217,10 @@ internal final class DonationIntentInitException: GenericException<(intent: Stri
   }
 }
 
-internal final class PartialDonationDeletionException: GenericException<(deleted: [String], failed: [String], error: any Error)>, @unchecked Sendable {
+internal final class PartialDonationDeletionException: GenericException<
+  (deleted: [String], failed: [String], error: any Error)
+>, @unchecked Sendable
+{
   override var reason: String {
     return """
       expo-app-intents could not delete every donation. Deleted: \(list(param.deleted)). Not \

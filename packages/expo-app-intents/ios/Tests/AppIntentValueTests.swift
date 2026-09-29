@@ -50,15 +50,17 @@ struct AppIntentValueTests {
   /// `NSNull`, arrays and string-keyed dictionaries.
   @Test
   func `converts every JSON value from JavaScript`() throws {
-    let value = try AppIntentValue(jsonValue: [
-      "string": "s",
-      "whole": 3.0,
-      "fraction": 1.5,
-      "bool": true,
-      "null": NSNull(),
-      "array": [1.0, "two", false] as [Any],
-      "object": ["nested": "value"],
-    ] as [String: Any])
+    let value = try AppIntentValue(
+      jsonValue: [
+        "string": "s",
+        "whole": 3.0,
+        "fraction": 1.5,
+        "bool": true,
+        "null": NSNull(),
+        "array": [1.0, "two", false] as [Any],
+        "object": ["nested": "value"],
+      ] as [String: Any]
+    )
 
     #expect(
       value
