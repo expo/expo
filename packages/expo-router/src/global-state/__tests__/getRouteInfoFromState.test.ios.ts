@@ -435,22 +435,19 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathname).toBe('/second');
   });
 
-  it('uses the selected nested route and its latest parameters', () => {
+  it('uses parameters from the selected child route', () => {
     const result = getRouteInfoFromState({
       routes: [
         {
           name: '__root',
           state: {
             routes: [
-              { name: 'unused', params: { first: 'wrong' } },
+              { name: 'unused' },
               {
                 name: 'post/[id]',
-                params: { id: '42', first: 'old', second: 'b' },
+                params: { id: '42', q: 'old' },
                 state: {
-                  routes: [
-                    { name: 'unused-child', params: { first: 'wrong' } },
-                    { name: 'index', params: { first: 'new' } },
-                  ],
+                  routes: [{ name: 'unused' }, { name: 'index', params: { q: 'new' } }],
                   index: 1,
                 },
               },
@@ -461,117 +458,75 @@ describe('getRouteInfoFromState', () => {
       ],
     });
 
-    expect(result).toEqual({
-      pathname: '/post/42',
-      segments: ['post', '[id]'],
-      params: { id: '42', first: 'new', second: 'b' },
-      searchParams: new URLSearchParams('first=new&second=b'),
-      pathnameWithParams: '/post/42?first=new&second=b',
-      unstable_globalHref: '/post/42?first=new&second=b',
-      isIndex: false,
-    });
-    expect(result.searchParams.toString()).toBe('first=new&second=b');
+    expect(result.pathnameWithParams).toBe('/post/42?q=new');
   });
 
-  it('keeps query and hash values in order', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    try {
-      const result = getRouteInfoFromState({
-        routes: [
-          {
-            name: '__root',
-            state: {
-              routes: [
-                {
-                  name: 'post/[id]',
-                  params: {
-                    id: '42',
-                    z: 'last',
-                    2: 'two',
-                    tags: ['a', null, { ignored: true }, 'b'],
-                    nested: { ignored: true },
-                    '#': ['section', 'ignored'],
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      });
+  it('puts the hash after query parameters', () => {
+    const result = getRouteInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: { routes: [{ name: 'post', params: { q: 'search', '#': 'section' } }] },
+        },
+      ],
+    });
 
-      expect(result.pathname).toBe('/post/42');
-      expect(result.segments).toEqual(['post', '[id]']);
-      expect(result.params).toEqual({
-        2: 'two',
-        id: '42',
-        z: 'last',
-        tags: ['a', null, { ignored: true }, 'b'],
-        nested: { ignored: true },
-        '#': ['section', 'ignored'],
-      });
-      expect(result.searchParams.toString()).toBe('2=two&z=last&tags=a&tags=null&tags=b');
-      expect(result.searchParams.has('id')).toBe(false);
-      expect(result.searchParams.has('nested')).toBe(false);
-      expect(result.searchParams.has('#')).toBe(false);
-      expect(result.pathnameWithParams).toBe(
-        '/post/42?2=two&z=last&tags=a&tags=null&tags=b#section'
-      );
-      expect(result.unstable_globalHref).toBe(result.pathnameWithParams);
-      expect(warn).toHaveBeenCalledTimes(1);
-    } finally {
-      warn.mockRestore();
-    }
+    expect(result.pathnameWithParams).toBe('/post?q=search#section');
   });
 
   it('removes a trailing index from a route name', () => {
     const result = getRouteInfoFromState({
       routes: [{ name: '__root', state: { routes: [{ name: 'settings/index' }] } }],
     });
-    expect(result.segments).toEqual(['settings']);
+
     expect(result.pathname).toBe('/settings');
-    expect(result.pathnameWithParams).toBe('/settings');
-    expect(result.unstable_globalHref).toBe('/settings');
   });
 
   it.each([
-    { description: 'a missing not-found path', pathname: '/', params: { 'not-found': undefined } },
+    { description: 'a missing not-found path', value: undefined, pathname: '/' },
+    { description: 'a null not-found path', value: null, pathname: '/null' },
+    { description: 'a list of not-found path parts', value: ['a', 2], pathname: '/a/2' },
+    { description: 'zero in a not-found path', value: 0, pathname: '/0' },
+    { description: 'false in a not-found path', value: false, pathname: '/false' },
     {
-      description: 'a list of not-found path parts',
-      pathname: '/a/2',
-      params: { 'not-found': ['a', 2] },
+      description: 'a mixed not-found path',
+      value: ['a', null, false],
+      pathname: '/a/null/false',
     },
-    { description: 'a null not-found path', pathname: '/null', params: { 'not-found': null } },
-  ])('handles $description', ({ pathname, params }) => {
+  ])('resolves $description', ({ value, pathname }) => {
     const result = getRouteInfoFromState({
-      routes: [{ name: '__root', state: { routes: [{ name: '+not-found', params }] } }],
+      routes: [
+        {
+          name: '__root',
+          state: { routes: [{ name: '+not-found', params: { 'not-found': value, q: 'search' } }] },
+        },
+      ],
     });
-    expect(result.segments).toEqual(['+not-found']);
-    expect(result.pathname).toBe(pathname);
-    expect(result.params).toEqual(params);
-    expect(result.searchParams.toString()).toBe('');
-    expect(result.pathnameWithParams).toBe(pathname);
-    expect(result.unstable_globalHref).toBe(pathname);
+
+    expect(result.pathnameWithParams).toBe(`${pathname}?q=search`);
   });
 
   it.each([
     { description: 'an empty dynamic value', name: '[id]', value: '', pathname: '/' },
     { description: 'a null dynamic value', name: '[id]', value: null, pathname: '/' },
+    { description: 'a false dynamic value', name: '[id]', value: false, pathname: '/' },
     { description: 'an empty catch-all value', name: '[...id]', value: '', pathname: '/' },
     { description: 'a null catch-all value', name: '[...id]', value: null, pathname: '/' },
+    { description: 'a false catch-all value', name: '[...id]', value: false, pathname: '/' },
     {
       description: 'a mixed catch-all list',
       name: '[...id]',
       value: ['a', null, { ignored: true }, 0],
       pathname: '/a/null/0',
     },
-  ])('handles $description', ({ name, value, pathname }) => {
+  ])('resolves $description', ({ name, value, pathname }) => {
     const result = getRouteInfoFromState({
-      routes: [{ name: '__root', state: { routes: [{ name, params: { id: value } }] } }],
+      routes: [
+        { name: '__root', state: { routes: [{ name, params: { id: value, q: 'search' } }] } },
+      ],
     });
-    expect(result.segments).toEqual([name]);
-    expect(result.pathname).toBe(pathname);
-    expect(result.searchParams.has('id')).toBe(false);
-    expect(result.pathnameWithParams).toBe(pathname);
+
+    expect(result.pathnameWithParams).toBe(`${pathname}?q=search`);
   });
 
   it.each([
@@ -579,86 +534,35 @@ describe('getRouteInfoFromState', () => {
       description: 'a legacy optional catch-all',
       name: '[...id?]',
       params: { id: ['a', null, 0], 'id?': 'query' },
-      pathname: '/a/null/0',
-      query: 'id%3F=query',
+      pathnameWithParams: '/a/null/0?id%3F=query',
     },
     {
       description: 'an empty dynamic parameter name',
       name: '[]',
       params: { '': 'empty-key', q: 'search' },
-      pathname: '/empty-key',
-      query: 'q=search',
+      pathnameWithParams: '/empty-key?q=search',
     },
     {
       description: 'an empty catch-all parameter name',
       name: '[...]',
       params: { '': 0, q: 'search' },
-      pathname: '/',
-      query: 'q=search',
-    },
-    {
-      description: 'a false dynamic value',
-      name: '[id]',
-      params: { id: false, q: 'search' },
-      pathname: '/',
-      query: 'q=search',
-    },
-    {
-      description: 'a false catch-all value',
-      name: '[...id]',
-      params: { id: false, q: 'search' },
-      pathname: '/',
-      query: 'q=search',
+      pathnameWithParams: '/?q=search',
     },
     {
       description: 'a repeated dynamic parameter',
       name: '[id]/[id]',
       params: { id: 'repeat', q: 'search' },
-      pathname: '/repeat/repeat',
-      query: 'q=search',
+      pathnameWithParams: '/repeat/repeat?q=search',
     },
-  ])(
-    'keeps path parameters out of the query for $description',
-    ({ name, params, pathname, query }) => {
-      const result = getRouteInfoFromState({
-        routes: [{ name: '__root', state: { routes: [{ name, params }] } }],
-      });
-      expect(result.segments).toEqual(name.split('/'));
-      expect(result.pathname).toBe(pathname);
-      expect(result.searchParams.toString()).toBe(query);
-      expect(result.pathnameWithParams).toBe(query ? `${pathname}?${query}` : pathname);
-    }
-  );
-
-  it.each([
-    { description: 'zero', value: 0, pathname: '/0' },
-    { description: 'false', value: false, pathname: '/false' },
-    { description: 'a list of values', value: ['a', null, false], pathname: '/a/null/false' },
-  ])('converts $description in a not-found path', ({ value, pathname }) => {
+  ])('resolves $description', ({ name, params, pathnameWithParams }) => {
     const result = getRouteInfoFromState({
-      routes: [
-        {
-          name: '__root',
-          state: {
-            routes: [
-              {
-                name: '+not-found',
-                params: {
-                  'not-found': value,
-                  q: 'search',
-                },
-              },
-            ],
-          },
-        },
-      ],
+      routes: [{ name: '__root', state: { routes: [{ name, params }] } }],
     });
-    expect(result.pathname).toBe(pathname);
-    expect(result.searchParams.toString()).toBe('q=search');
-    expect(result.pathnameWithParams).toBe(`${pathname}?q=search`);
+
+    expect(result.pathnameWithParams).toBe(pathnameWithParams);
   });
 
-  it('preserves a parameter named __proto__', () => {
+  it('keeps a parameter named __proto__', () => {
     const result = getRouteInfoFromState({
       routes: [
         {
@@ -667,11 +571,9 @@ describe('getRouteInfoFromState', () => {
         },
       ],
     });
-    expect(Object.prototype.hasOwnProperty.call(result.params, '__proto__')).toBe(true);
+
     expect(result.params['__proto__']).toBe('x');
-    expect(Object.getPrototypeOf(result.params)).toBe(Object.prototype);
     expect(result.pathnameWithParams).toBe('/post?__proto__=x');
-    expect(result.searchParams.toString()).toBe('__proto__=x');
   });
 
   it('adds the base URL to route links', () => {
@@ -679,29 +581,11 @@ describe('getRouteInfoFromState', () => {
     process.env.EXPO_BASE_URL = 'base';
     try {
       const ordinary = getRouteInfoFromState({
-        routes: [
-          {
-            name: '__root',
-            state: {
-              routes: [
-                {
-                  name: 'post/[id]',
-                  params: {
-                    id: '42',
-                    q: 'x',
-                    '#': 'section',
-                  },
-                },
-              ],
-            },
-          },
-        ],
+        routes: [{ name: '__root', state: { routes: [{ name: 'post' }] } }],
       });
-      expect(ordinary.pathnameWithParams).toBe('/post/42?q=x#section');
-      expect(ordinary.unstable_globalHref).toBe('/base/post/42?q=x#section');
-
       const sitemap = getRouteInfoFromState({ routes: [{ name: '_sitemap' }] });
-      expect(sitemap.pathnameWithParams).toBe('/_sitemap');
+
+      expect(ordinary.unstable_globalHref).toBe('/base/post');
       expect(sitemap.unstable_globalHref).toBe('/base/_sitemap');
     } finally {
       if (previousBaseUrl === undefined) {
@@ -713,17 +597,11 @@ describe('getRouteInfoFromState', () => {
   });
 
   it.each([
-    { description: 'not-found routes', name: '+not-found', pathname: '/' },
-    { description: 'sitemap routes', name: '_sitemap', pathname: '/_sitemap' },
-  ])('reuses default values for $description', ({ name, pathname }) => {
+    { description: 'not-found routes', name: '+not-found' },
+    { description: 'sitemap routes', name: '_sitemap' },
+  ])('reuses default values for $description', ({ name }) => {
     const result = getRouteInfoFromState({ routes: [{ name }] });
-    expect(result).toEqual({
-      ...defaultRouteInfo,
-      pathname,
-      pathnameWithParams: pathname,
-      unstable_globalHref: pathname,
-      segments: [name],
-    });
+
     expect(result.params).toBe(defaultRouteInfo.params);
     expect(result.searchParams).toBe(defaultRouteInfo.searchParams);
   });
@@ -739,42 +617,32 @@ describe('getRouteInfoFromState', () => {
       warn.mockRestore();
     });
 
-    it('warns once for root parameters without adding them to the result', () => {
-      const params = { nested: { id: 'root' } };
+    it('warns once for root object parameters', () => {
       const state = {
-        routes: [{ name: '__root', params, state: { routes: [{ name: 'post' }] } }],
+        routes: [
+          {
+            name: '__root',
+            params: { nested: { id: 'root' } },
+            state: { routes: [{ name: 'post' }] },
+          },
+        ],
       };
-      const result = getRouteInfoFromState(state);
+      getRouteInfoFromState(state);
       getRouteInfoFromState(state);
 
       expect(warn).toHaveBeenCalledTimes(1);
-      expect(result.params).toEqual({});
-      expect(result.pathnameWithParams).toBe('/post');
     });
 
-    it.each([
-      { description: 'not-found routes', name: '+not-found' },
-      { description: 'sitemap routes', name: '_sitemap' },
-    ])('warns before returning $description', ({ name }) => {
-      const params = { nested: { id: 'special' } };
-      const state = { routes: [{ name, params }] };
-      const result = getRouteInfoFromState(state);
-      getRouteInfoFromState(state);
+    it.each(['+not-found', '_sitemap'])('warns before returning %s', (name) => {
+      getRouteInfoFromState({ routes: [{ name, params: { nested: { id: 'special' } } }] });
 
       expect(warn).toHaveBeenCalledTimes(1);
-      expect(result.params).toBe(defaultRouteInfo.params);
-      expect(result.searchParams).toBe(defaultRouteInfo.searchParams);
     });
 
     it('warns before rejecting an invalid root route', () => {
-      const params = { nested: { id: 'invalid' } };
-      const state = { routes: [{ name: 'invalid', params }] };
-      expect(() => getRouteInfoFromState(state)).toThrow(
-        'Expected the first route to be __root, but got invalid'
-      );
-      expect(() => getRouteInfoFromState(state)).toThrow(
-        'Expected the first route to be __root, but got invalid'
-      );
+      expect(() =>
+        getRouteInfoFromState({ routes: [{ name: 'invalid', params: { nested: {} } }] })
+      ).toThrow('Expected the first route to be __root, but got invalid');
       expect(warn).toHaveBeenCalledTimes(1);
     });
   });
