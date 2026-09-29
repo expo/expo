@@ -25,5 +25,9 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "prepack": "expo-module prepack"
   }
 }

@@ -1,20 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-- [Android] Add configurable update cache retention with `expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP`. ([#50460](https://github.com/expo/expo/pull/50460) by [@kudo](https://github.com/kudo))
-- [iOS] Add configurable update cache retention with `EXUpdatesMaxUpdatesToKeep`. ([#50459](https://github.com/expo/expo/pull/50459) by [@kudo](https://github.com/kudo))
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
-- Cover configurable update cache retention in E2E tests. ([#50463](https://github.com/expo/expo/pull/50463) by [@kudo](https://github.com/kudo))
-
 ## 58.0.10 — 2026-09-28
 
 _This version does not introduce any user-facing changes._
