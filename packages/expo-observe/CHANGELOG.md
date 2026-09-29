@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added a privacy manifest describing required reason API usage and the collected data types. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
+
 ### 💡 Others
 
 ## 57.0.24 — 2026-09-24
