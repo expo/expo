@@ -3,7 +3,6 @@ import ExpoModulesCore
 
 public final class LocationModuleNext: Module {
   private lazy var permissions = LocationPermissionsDelegate(appContext: appContext)
-  private lazy var accessGuard = LocationAccessGuard(appContext: appContext)
 
   public func definition() -> ModuleDefinition {
     Name("LocationModuleNext")

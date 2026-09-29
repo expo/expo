@@ -1,24 +1,10 @@
 import ExpoModulesCore
 
-final class LocationServicesDisabledGlobally: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Location Services are turned off for the whole device, so no app can receive location updates. " +
-    "This is a system-wide setting the app cannot change or prompt for. Ask the user to enable it in " +
-    "Settings > Privacy & Security > Location Services"
-  }
-}
-
 final class PermissionsModuleUnavailable: Exception, @unchecked Sendable {
   override var reason: String {
     "Cannot check location permissions because the permissions service of 'expo-modules-core' is " +
     "missing from this app. The Expo module system registers it at startup, so this usually means " +
     "the app was built without 'expo-modules-core'. Reinstall the dependencies and rebuild the app"
-  }
-}
-
-final class MissingPermissionsException: GenericException<String>, @unchecked Sendable {
-  override var reason: String {
-    "\(param) permission is required to do this operation"
   }
 }
 
