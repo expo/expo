@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#50579](https://github.com/expo/expo/pull/50579), [#50693](https://github.com/expo/expo/pull/50693))
+  - @expo/plist@0.10.1
+  - @expo/ui@58.0.9
+
 ## 58.0.8 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

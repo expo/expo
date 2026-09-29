@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/dom-webview@58.0.2
+  - @expo/log-box-utils@58.0.1
+
 ## 58.0.6 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

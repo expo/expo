@@ -1,6 +1,6 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "58.0.0",
+  "version": "58.0.1",
   "description": "Provides function that let you generate an image from video.",
   "keywords": [
     "android",
