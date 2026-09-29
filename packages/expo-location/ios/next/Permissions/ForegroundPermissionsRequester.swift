@@ -3,9 +3,7 @@ import ExpoModulesCore
 
 final class ForegroundPermissionsRequester: NSObject, EXPermissionsRequester, CLLocationManagerDelegate {
   private lazy var locationManager: CLLocationManager = {
-    let locationManager = Thread.isMainThread
-      ? CLLocationManager()
-      : DispatchQueue.main.sync { CLLocationManager() }
+    let locationManager = CLLocationManager.makeOnMainThread()
     locationManager.delegate = self
     return locationManager
   }()
