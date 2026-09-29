@@ -8,6 +8,8 @@
 - Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
   - expo-updates-interface@58.0.1
 
+- [iOS] Remove the legacy `metrics.json` file left behind by the JSON storage that was replaced with SQLite. ([#50752](https://github.com/expo/expo/pull/50752) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.8 — 2026-09-28
 
 _This version does not introduce any user-facing changes._
