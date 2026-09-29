@@ -1,5 +1,6 @@
 import { Form } from '@expo/ui/swift-ui';
 
+import { EnsureHost, fullHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { FieldGroupProps } from './types';
 
@@ -23,5 +24,9 @@ export function FieldGroup({
     extraModifiers
   );
 
-  return <Form modifiers={modifiers}>{children}</Form>;
+  return (
+    <EnsureHost {...fullHostOptions(style)}>
+      <Form modifiers={modifiers}>{children}</Form>
+    </EnsureHost>
+  );
 }

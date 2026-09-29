@@ -16,6 +16,14 @@ export const UIUniversalScreens = [
     },
   },
   {
+    name: `${SCREEN_NAME_PREFIX}Host performance`,
+    route: 'ui-universal/host-performance',
+    options: { title: 'Host performance' },
+    getComponent() {
+      return optionalRequire(() => require('./HostPerformanceScreen'));
+    },
+  },
+  {
     name: `${SCREEN_NAME_PREFIX}Text`,
     route: 'ui-universal/text',
     options: { title: 'Text' },

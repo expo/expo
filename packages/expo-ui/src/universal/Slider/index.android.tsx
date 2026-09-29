@@ -1,6 +1,7 @@
 import { Slider as ComposeSlider } from '@expo/ui/jetpack-compose';
 import { testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import type { SliderProps } from './types';
 
 export function Slider({
@@ -28,15 +29,17 @@ export function Slider({
       : onValueChange;
 
   return (
-    <ComposeSlider
-      value={value}
-      onValueChange={handleValueChange}
-      min={min}
-      max={max}
-      steps={steps}
-      enabled={!disabled}
-      modifiers={[...(modifiers ?? []), ...(testID ? [testIDModifier(testID)] : [])]}
-    />
+    <EnsureHost {...intrinsicHostOptions}>
+      <ComposeSlider
+        value={value}
+        onValueChange={handleValueChange}
+        min={min}
+        max={max}
+        steps={steps}
+        enabled={!disabled}
+        modifiers={[...(modifiers ?? []), ...(testID ? [testIDModifier(testID)] : [])]}
+      />
+    </EnsureHost>
   );
 }
 

@@ -2,6 +2,7 @@ import { ListItem as ComposeListItem, Text } from '@expo/ui/jetpack-compose';
 import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 import { Children, type ReactNode } from 'react';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import { extractListItemSlots } from './ListItemSlots';
 import type { ListItemProps } from './types';
 
@@ -35,26 +36,28 @@ export function ListItem(props: ListItemProps) {
   const itemModifiers = [...(onPress ? [clickable(onPress)] : []), ...(modifiers ?? [])];
 
   return (
-    <ComposeListItem colors={colors} modifiers={itemModifiers.length ? itemModifiers : undefined}>
-      <ComposeListItem.HeadlineContent>
-        <>{wrapStrings(slots.headline)}</>
-      </ComposeListItem.HeadlineContent>
-      {supporting != null ? (
-        <ComposeListItem.SupportingContent>
-          {typeof supporting === 'string' || typeof supporting === 'number' ? (
-            <Text>{supporting}</Text>
-          ) : (
-            supporting
-          )}
-        </ComposeListItem.SupportingContent>
-      ) : null}
-      {leading != null ? (
-        <ComposeListItem.LeadingContent>{wrapStrings(leading)}</ComposeListItem.LeadingContent>
-      ) : null}
-      {trailing != null ? (
-        <ComposeListItem.TrailingContent>{wrapStrings(trailing)}</ComposeListItem.TrailingContent>
-      ) : null}
-    </ComposeListItem>
+    <EnsureHost {...intrinsicHostOptions}>
+      <ComposeListItem colors={colors} modifiers={itemModifiers.length ? itemModifiers : undefined}>
+        <ComposeListItem.HeadlineContent>
+          <>{wrapStrings(slots.headline)}</>
+        </ComposeListItem.HeadlineContent>
+        {supporting != null ? (
+          <ComposeListItem.SupportingContent>
+            {typeof supporting === 'string' || typeof supporting === 'number' ? (
+              <Text>{supporting}</Text>
+            ) : (
+              supporting
+            )}
+          </ComposeListItem.SupportingContent>
+        ) : null}
+        {leading != null ? (
+          <ComposeListItem.LeadingContent>{wrapStrings(leading)}</ComposeListItem.LeadingContent>
+        ) : null}
+        {trailing != null ? (
+          <ComposeListItem.TrailingContent>{wrapStrings(trailing)}</ComposeListItem.TrailingContent>
+        ) : null}
+      </ComposeListItem>
+    </EnsureHost>
   );
 }
 

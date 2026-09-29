@@ -1,4 +1,4 @@
-import { Column, Host, Picker, Row, ScrollView, Spacer, Text } from '@expo/ui';
+import { Column, Picker, Row, ScrollView, Spacer, Text } from '@expo/ui';
 import { useState } from 'react';
 
 const FLAVOURS = [
@@ -23,69 +23,67 @@ export default function PickerScreen() {
   const [disabledFlavour, setDisabledFlavour] = useState<Flavour>('strawberry');
 
   return (
-    <Host style={{ flex: 1 }}>
-      <ScrollView style={{ padding: 16 }}>
-        <Column spacing={24}>
-          <Column spacing={8}>
-            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Menu appearance (default)</Text>
-            <Row alignment="center" spacing={12}>
-              <Text>Flavour:</Text>
-              <Spacer flexible />
-              <Picker selectedValue={menuFlavour} onValueChange={setMenuFlavour}>
-                {FLAVOURS.map((f) => (
-                  <Picker.Item key={f.value} label={f.label} value={f.value} />
-                ))}
-              </Picker>
-            </Row>
-            <Text>{`Selected: ${menuFlavour}`}</Text>
-          </Column>
-
-          <Column spacing={8}>
-            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Wheel appearance</Text>
-            <Text textStyle={{ fontSize: 13, color: '#6c6c70' }}>
-              Renders as an inline scrollable rotor on iOS; Android falls back to the menu UI
-              (Material 3 has no wheel picker).
-            </Text>
-            <Picker selectedValue={wheelFlavour} onValueChange={setWheelFlavour} appearance="wheel">
+    <ScrollView style={{ padding: 16 }}>
+      <Column spacing={24}>
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Menu appearance (default)</Text>
+          <Row alignment="center" spacing={12}>
+            <Text>Flavour:</Text>
+            <Spacer flexible />
+            <Picker selectedValue={menuFlavour} onValueChange={setMenuFlavour}>
               {FLAVOURS.map((f) => (
                 <Picker.Item key={f.value} label={f.label} value={f.value} />
               ))}
             </Picker>
-            <Text>{`Selected: ${wheelFlavour}`}</Text>
-          </Column>
-
-          <Column spacing={8}>
-            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Numeric values</Text>
-            <Row alignment="center" spacing={12}>
-              <Text>Size:</Text>
-              <Spacer flexible />
-              <Picker selectedValue={size} onValueChange={setSize}>
-                {SIZES.map((s) => (
-                  <Picker.Item key={s.value} label={s.label} value={s.value} />
-                ))}
-              </Picker>
-            </Row>
-            <Text>{`Selected: ${size}`}</Text>
-          </Column>
-
-          <Column spacing={8}>
-            <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Disabled</Text>
-            <Row alignment="center" spacing={12}>
-              <Text>Flavour:</Text>
-              <Spacer flexible />
-              <Picker
-                selectedValue={disabledFlavour}
-                onValueChange={setDisabledFlavour}
-                enabled={false}>
-                {FLAVOURS.map((f) => (
-                  <Picker.Item key={f.value} label={f.label} value={f.value} />
-                ))}
-              </Picker>
-            </Row>
-          </Column>
+          </Row>
+          <Text>{`Selected: ${menuFlavour}`}</Text>
         </Column>
-      </ScrollView>
-    </Host>
+
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Wheel appearance</Text>
+          <Text textStyle={{ fontSize: 13, color: '#6c6c70' }}>
+            Renders as an inline scrollable rotor on iOS; Android falls back to the menu UI
+            (Material 3 has no wheel picker).
+          </Text>
+          <Picker selectedValue={wheelFlavour} onValueChange={setWheelFlavour} appearance="wheel">
+            {FLAVOURS.map((f) => (
+              <Picker.Item key={f.value} label={f.label} value={f.value} />
+            ))}
+          </Picker>
+          <Text>{`Selected: ${wheelFlavour}`}</Text>
+        </Column>
+
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Numeric values</Text>
+          <Row alignment="center" spacing={12}>
+            <Text>Size:</Text>
+            <Spacer flexible />
+            <Picker selectedValue={size} onValueChange={setSize}>
+              {SIZES.map((s) => (
+                <Picker.Item key={s.value} label={s.label} value={s.value} />
+              ))}
+            </Picker>
+          </Row>
+          <Text>{`Selected: ${size}`}</Text>
+        </Column>
+
+        <Column spacing={8}>
+          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Disabled</Text>
+          <Row alignment="center" spacing={12}>
+            <Text>Flavour:</Text>
+            <Spacer flexible />
+            <Picker
+              selectedValue={disabledFlavour}
+              onValueChange={setDisabledFlavour}
+              enabled={false}>
+              {FLAVOURS.map((f) => (
+                <Picker.Item key={f.value} label={f.label} value={f.value} />
+              ))}
+            </Picker>
+          </Row>
+        </Column>
+      </Column>
+    </ScrollView>
   );
 }
 

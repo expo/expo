@@ -1,5 +1,6 @@
 import { DisclosureGroup, Text } from '@expo/ui/swift-ui';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { CollapsibleProps } from './types';
 
@@ -18,12 +19,14 @@ export function Collapsible({
     : undefined;
 
   return (
-    <DisclosureGroup isExpanded={isOpen} onIsExpandedChange={onOpenChange}>
-      <DisclosureGroup.Label>
-        <Text modifiers={labelTextModifiers}>{label}</Text>
-      </DisclosureGroup.Label>
-      {children}
-    </DisclosureGroup>
+    <EnsureHost {...intrinsicHostOptions}>
+      <DisclosureGroup isExpanded={isOpen} onIsExpandedChange={onOpenChange}>
+        <DisclosureGroup.Label>
+          <Text modifiers={labelTextModifiers}>{label}</Text>
+        </DisclosureGroup.Label>
+        {children}
+      </DisclosureGroup>
+    </EnsureHost>
   );
 }
 

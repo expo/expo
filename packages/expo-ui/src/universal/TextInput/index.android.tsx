@@ -16,6 +16,7 @@ import {
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
+import { EnsureHost, layoutHostOptions } from '../autoHost';
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import { enterKeyHintToReturnKeyType, inputModeToKeyboardType, resolveEditable } from './utils';
@@ -155,66 +156,68 @@ export function TextInput({
     : undefined;
 
   return (
-    <BasicTextField
-      ref={innerRef}
-      modifiers={[
-        ...(userModifiers ?? []),
-        ...transformToModifiers(style, {}),
-        ...(testID ? [testIDModifier(testID)] : []),
-        ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
-        ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
-      ]}
-      value={state}
-      autoFocus={autoFocus}
-      readOnly={editable === false}
-      singleLine={!multiline}
-      maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      cursorColor={caretHidden ? 'transparent' : (cursorColor ?? selectionColor)}
-      textStyle={
-        textStyle || (textAlign && textAlign !== 'auto')
-          ? {
-              ...textStyle,
-              ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
-            }
-          : undefined
-      }
-      visualTransformation={secureTextEntry ? 'password' : undefined}
-      textSelectionColors={
-        selectionColor || selectionHandleColor
-          ? {
-              handleColor: selectionHandleColor ?? selectionColor,
-              backgroundColor: selectionColor,
-            }
-          : undefined
-      }
-      keyboardOptions={keyboardOptions}
-      keyboardActions={keyboardActions}
-      onValueChange={onChangeText}
-      maxLength={maxLength}
-      onFocusChanged={handleFocusChanged}
-      selection={selection as Parameters<typeof BasicTextField>[0]['selection']}
-      onSelectionChange={onSelectionChange}>
-      <BasicTextField.DecorationBox>
-        <Box
-          modifiers={[fillMaxWidth()]}
-          contentAlignment={
-            textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
-          }>
-          {placeholder != null ? (
-            <BasicTextField.Placeholder>
-              <Text
-                color={placeholderTextColor as string | undefined}
-                modifiers={[fillMaxWidth()]}
-                style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
-                {placeholder}
-              </Text>
-            </BasicTextField.Placeholder>
-          ) : null}
-          <BasicTextField.InnerTextField />
-        </Box>
-      </BasicTextField.DecorationBox>
-    </BasicTextField>
+    <EnsureHost {...layoutHostOptions(style)}>
+      <BasicTextField
+        ref={innerRef}
+        modifiers={[
+          ...(userModifiers ?? []),
+          ...transformToModifiers(style, {}),
+          ...(testID ? [testIDModifier(testID)] : []),
+          ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
+          ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
+        ]}
+        value={state}
+        autoFocus={autoFocus}
+        readOnly={editable === false}
+        singleLine={!multiline}
+        maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
+        minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
+        cursorColor={caretHidden ? 'transparent' : (cursorColor ?? selectionColor)}
+        textStyle={
+          textStyle || (textAlign && textAlign !== 'auto')
+            ? {
+                ...textStyle,
+                ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
+              }
+            : undefined
+        }
+        visualTransformation={secureTextEntry ? 'password' : undefined}
+        textSelectionColors={
+          selectionColor || selectionHandleColor
+            ? {
+                handleColor: selectionHandleColor ?? selectionColor,
+                backgroundColor: selectionColor,
+              }
+            : undefined
+        }
+        keyboardOptions={keyboardOptions}
+        keyboardActions={keyboardActions}
+        onValueChange={onChangeText}
+        maxLength={maxLength}
+        onFocusChanged={handleFocusChanged}
+        selection={selection as Parameters<typeof BasicTextField>[0]['selection']}
+        onSelectionChange={onSelectionChange}>
+        <BasicTextField.DecorationBox>
+          <Box
+            modifiers={[fillMaxWidth()]}
+            contentAlignment={
+              textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
+            }>
+            {placeholder != null ? (
+              <BasicTextField.Placeholder>
+                <Text
+                  color={placeholderTextColor as string | undefined}
+                  modifiers={[fillMaxWidth()]}
+                  style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+                  {placeholder}
+                </Text>
+              </BasicTextField.Placeholder>
+            ) : null}
+            <BasicTextField.InnerTextField />
+          </Box>
+        </BasicTextField.DecorationBox>
+      </BasicTextField>
+    </EnsureHost>
   );
 }
 

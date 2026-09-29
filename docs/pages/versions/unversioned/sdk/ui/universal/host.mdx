@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
-A container for universal `@expo/ui` content. On Android and iOS it re-exports the platform-native [`Host` for Jetpack Compose](../jetpack-compose/host)/[`Host` for SwiftUI](../swift-ui/host), so Jetpack Compose/SwiftUI children render exactly as they would in the platform-specific packages. On web, it falls back to a React Native [`View`](https://reactnative.dev/docs/view). Use `Host` as the root of any universal subtree so the same component tree works across all three platforms.
+A container for universal `@expo/ui` content. On Android and iOS it wraps the platform-native [`Host` for Jetpack Compose](../jetpack-compose/host)/[`Host` for SwiftUI](../swift-ui/host), so Jetpack Compose/SwiftUI children render exactly as they would in the platform-specific packages. On web, it falls back to a React Native [`View`](https://reactnative.dev/docs/view). Universal components create a `Host` automatically when needed, but an explicit `Host` lets you group a larger subtree into one platform-native host view.
 
 <PlatformTabsGroup>
 
@@ -70,6 +70,38 @@ export default function HostExample() {
 ```
 
 </ComponentExample>
+
+### Using components without `Host`
+
+On Android and iOS, a universal component without a parent `Host` creates its own `Host`. For most components, this `Host` has the same size as the component. For `List`, `ScrollView`, and `FieldGroup`, it fills the available space. For example, a standalone `Button` needs no explicit `Host`:
+
+```tsx StandaloneButtonExample.tsx
+import { Button } from '@expo/ui';
+
+export default function StandaloneButtonExample() {
+  return <Button label="Press me" onPress={() => alert('Pressed')} />;
+}
+```
+
+When rendering multiple adjacent universal components, prefer wrapping the group in one `Host`. This avoids creating one platform-native host view per standalone component.
+
+```tsx GroupedButtonsExample.tsx
+import { Host, Column, Button } from '@expo/ui';
+
+export default function GroupedButtonsExample() {
+  return (
+    <Host matchContents>
+      <Column spacing={8}>
+        <Button label="First" onPress={() => {}} />
+        <Button label="Second" onPress={() => {}} />
+        <Button label="Third" onPress={() => {}} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+A universal component inside a React Native view, such as `View` or `ScrollView`, that a `Host` wraps does not create its own `Host`. The component still detects the outer `Host`. See [Placing components inside React Native views](#placing-components-inside-react-native-views) for how to handle this case. Universal components inside an [`RNHostView`](rnhostview) do create their own `Host`.
 
 ### Placing components inside React Native views
 

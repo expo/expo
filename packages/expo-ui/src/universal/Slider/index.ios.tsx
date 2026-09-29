@@ -2,6 +2,7 @@ import { Slider as SwiftUISlider } from '@expo/ui/swift-ui';
 import { disabled as disabledMod } from '@expo/ui/swift-ui/modifiers';
 import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { EnsureHost, intrinsicHostOptions } from '../autoHost';
 import type { SliderProps } from './types';
 
 export function Slider({
@@ -19,15 +20,17 @@ export function Slider({
   if (extraModifiers) modifiers.push(...extraModifiers);
 
   return (
-    <SwiftUISlider
-      value={value}
-      onValueChange={onValueChange}
-      min={min}
-      max={max}
-      step={step}
-      modifiers={modifiers}
-      testID={testID}
-    />
+    <EnsureHost {...intrinsicHostOptions}>
+      <SwiftUISlider
+        value={value}
+        onValueChange={onValueChange}
+        min={min}
+        max={max}
+        step={step}
+        modifiers={modifiers}
+        testID={testID}
+      />
+    </EnsureHost>
   );
 }
 
