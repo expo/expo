@@ -1,3 +1,7 @@
+export type ChunkingStrategy = 'bitset' | 'legacy';
+export type AsyncModulePath = string | readonly string[];
+export type AsyncModulePaths = Record<string, AsyncModulePath>;
+
 export type SerialAsset = {
   // 'styles.css'
   originFilename: string;
@@ -8,12 +12,17 @@ export type SerialAsset = {
   type: 'css-external' | 'css' | 'js' | 'map' | 'json';
 
   metadata: {
+    chunkingStrategy?: ChunkingStrategy;
+    /** Absolute entry module paths represented by this file. Empty for runtime, shared, and worker chunks. */
+    entryPaths?: string[];
+    /** Entry module paths to required JS filenames, stored on the initial asset. */
+    entryChunks?: Record<string, string[]>;
     hmrId?: string;
     /** Media query baked into a `css-external` `<link>` tag (e.g. `screen and (min-width: 900px)`). */
     media?: string;
     isAsync?: boolean;
     modulePaths?: string[];
-    paths?: Record<string, Record<string, string>>;
+    paths?: Record<string, AsyncModulePaths>;
     // React server action reference from the static babel pass of client modules.
     reactServerReferences?: string[];
     // React client reference from the static babel pass.

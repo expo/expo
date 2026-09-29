@@ -86,6 +86,8 @@ export type Props = {
       };
   /** Enable or disable partial route type generation. Defaults to `true`. */
   partialRouteTypes?: boolean;
+  /** Opt into experimental production web app chunking. Defaults to false (legacy splitting). */
+  unstable_chunking?: boolean;
   /** Enable static redirects. Defaults to `true`. */
   redirects?: RedirectConfig[];
   /** Enable static rewrites */

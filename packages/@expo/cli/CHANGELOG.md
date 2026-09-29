@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [web] Add an experimental bundle splitting strategy for production app exports. ([#50536](https://github.com/expo/expo/pull/50536) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
