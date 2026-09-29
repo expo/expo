@@ -1,5 +1,6 @@
 import {
   findRouteNodeByName,
+  getValidInitialRoute,
   getValidInitialRouteName,
   sortRoutesWithInitial,
   type RouteNode,
@@ -12,11 +13,94 @@ import {
   createNavigatorStateKey,
   createRouteKeyMinter,
   getChainFromRouteKey,
+  getChainFromStateKey,
   ROOT_CHAIN,
 } from '../react-navigation/routers/stateKeys';
 import { getRootStackRouteNames } from './utils';
 
 type SeedState = NavigationState | PartialState<NavigationState>;
+
+// Only URL-seeded states may gain a late anchor. Navigation and restored states must not.
+const initialLayoutStates = new WeakMap<
+  RouteNode,
+  { state: NavigationState; target: SeedState | undefined; anchor: string | undefined }
+>();
+
+function trackInitialLayoutStates(state: NavigationState, node: RouteNode, target?: SeedState) {
+  initialLayoutStates.set(node, { state, target, anchor: node.initialRouteName });
+  for (const route of state.routes) {
+    const child = findRouteNodeByName(node, route.name);
+    if (child && route.state) {
+      trackInitialLayoutStates(
+        route.state as NavigationState,
+        child,
+        target?.routes.find((candidate) => candidate.name === route.name)?.state
+      );
+    }
+  }
+}
+
+/** Apply an async layout's anchor before its navigator adopts the initial state. */
+export function resolveInitialLayoutState(
+  state: NavigationState,
+  node: RouteNode | null | undefined
+): NavigationState {
+  const initial = node && initialLayoutStates.get(node);
+  const anchor = node && getValidInitialRoute(node);
+  if (!initial || !node || !anchor || initial.anchor === anchor.route) return state;
+  // Descendant repairs may replace the object, but navigation must cancel the initial repair.
+  const seeded = initial.state;
+  if (
+    state.key !== seeded.key ||
+    state.routeKeySeq !== seeded.routeKeySeq ||
+    state.index !== seeded.index ||
+    state.routes.length !== seeded.routes.length ||
+    state.routes.some(
+      (route, index) =>
+        route.key !== seeded.routes[index]?.key || route.params !== seeded.routes[index]?.params
+    )
+  ) {
+    return state;
+  }
+  if (!initial.target) {
+    if (state.routes[state.index]?.name === anchor.route) return state;
+    const resolved = createSeededNavigationState(undefined, node, getChainFromStateKey(state.key));
+    for (const route of resolved.routes) {
+      const child = findRouteNodeByName(node, route.name);
+      if (child && route.state) trackInitialLayoutStates(route.state as NavigationState, child);
+    }
+    return resolved;
+  }
+  const focusedKey = state.routes[state.index]?.key;
+  const routes = state.routes.filter(
+    (route) => route.name !== initial.anchor || route.key === focusedKey
+  );
+  const minter = createRouteKeyMinter(state);
+  if (!routes.some((route) => route.name === anchor.route)) {
+    const key = minter.mint(anchor.route);
+    const childState = anchor.children.length
+      ? createSeededNavigationState(undefined, anchor, getChainFromRouteKey(key))
+      : undefined;
+    if (childState) trackInitialLayoutStates(childState, anchor);
+    routes.unshift({
+      key,
+      name: anchor.route,
+      ...(childState ? { state: childState } : undefined),
+    });
+  }
+  if (
+    routes.length === state.routes.length &&
+    routes.every((route, index) => route === state.routes[index])
+  ) {
+    return state;
+  }
+  return {
+    ...state,
+    routes,
+    index: routes.findIndex((route) => route.key === focusedKey),
+    routeKeySeq: minter.routeKeySeq,
+  };
+}
 
 /**
  * Completes the partial state parsed from the initial URL by `getStateFromPath` with keys,
@@ -30,7 +114,7 @@ export function createSeededRootState(
   targetState: ResultState | undefined,
   rootRouteNode: RouteNode
 ): NavigationState {
-  return createSeededState({
+  const state = createSeededState({
     targetState,
     routeNames: getRootStackRouteNames(),
     initialRouteName: undefined,
@@ -38,6 +122,15 @@ export function createSeededRootState(
     parentChain: ROOT_CHAIN,
     findChildNode: (routeName) => (routeName === INTERNAL_SLOT_NAME ? rootRouteNode : undefined),
   });
+  const layoutState = state.routes.find((route) => route.name === INTERNAL_SLOT_NAME)?.state;
+  if (layoutState) {
+    trackInitialLayoutStates(
+      layoutState as NavigationState,
+      rootRouteNode,
+      targetState?.routes.find((route) => route.name === INTERNAL_SLOT_NAME)?.state
+    );
+  }
+  return state;
 }
 
 export function completeNavigationState(

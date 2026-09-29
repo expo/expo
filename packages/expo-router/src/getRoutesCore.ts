@@ -1,4 +1,5 @@
 import {
+  type LoadedRoute,
   getValidInitialRoute,
   type DynamicConvention,
   type MiddlewareNode,
@@ -888,12 +889,29 @@ function getLayoutNode(node: RouteNode, options: Options) {
     }
   }
 
-  return {
+  const layout: RouteNode = {
     ...node,
     route: node.route.replace(/\/?_layout$/, ''),
     children: [], // Each layout should have its own children
     initialRouteName: anchor,
   };
+  if (loaded && 'then' in loaded) {
+    layout.loadRoute = () =>
+      Promise.resolve(node.loadRoute()).then((module) => {
+        const settings = module.unstable_settings;
+        const groupSettings = groupName ? settings?.[groupName] : undefined;
+        layout.initialRouteName = getValidInitialRoute(
+          layout,
+          groupSettings?.anchor ??
+            groupSettings?.initialRouteName ??
+            settings?.anchor ??
+            settings?.initialRouteName ??
+            layout.initialRouteName
+        )?.route;
+        return module;
+      }) as unknown as LoadedRoute;
+  }
+  return layout;
 }
 
 function crawlAndAppendInitialRoutesAndEntryFiles(

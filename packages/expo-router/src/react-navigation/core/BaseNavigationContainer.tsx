@@ -94,15 +94,22 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const [registry, setRegistry] = React.useState<RouterRegistry>(() => new Map());
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
-    useNavigationTreeReducer({
-      initialState,
-      routeNode: UNSTABLE_routeNode,
-      registry,
-      routesWithRemovalPrevented,
-      linking: routerConfig?.linking,
-      redirects: routerConfig?.redirects,
-    });
+  const {
+    state,
+    report,
+    consumeReportEvents,
+    resetNavigator,
+    resolveInitialLayout,
+    handleAction,
+    processIntent,
+  } = useNavigationTreeReducer({
+    initialState,
+    routeNode: UNSTABLE_routeNode,
+    registry,
+    routesWithRemovalPrevented,
+    linking: routerConfig?.linking,
+    redirects: routerConfig?.redirects,
+  });
   const [browserHistory] = React.useState(createBrowserHistoryAdapter);
   useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
@@ -210,8 +217,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       addListener,
       handleAction,
       resetNavigator,
+      resolveInitialLayout,
     }),
-    [addListener, handleAction, resetNavigator]
+    [addListener, handleAction, resetNavigator, resolveInitialLayout]
   );
 
   const context = React.useMemo(

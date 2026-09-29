@@ -34,10 +34,7 @@ export function getNavigationConfig(
 
   return {
     screens: {
-      [INTERNAL_SLOT_NAME]: {
-        path: '',
-        ...config,
-      },
+      [INTERNAL_SLOT_NAME]: config,
       ...sitemapRoute,
       ...notFoundRoute,
     },
