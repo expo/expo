@@ -607,6 +607,8 @@ describe('getRouteInfoFromState', () => {
   });
 
   describe('warnings for object parameters', () => {
+    const nestedParamsWarning =
+      'Navigating with nested object params is not supported. Expo Router URL params must be serializable as strings. Use flat params or serialize the object value.';
     let warn: jest.SpyInstance;
 
     beforeEach(() => {
@@ -631,12 +633,14 @@ describe('getRouteInfoFromState', () => {
       getRouteInfoFromState(state);
 
       expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(nestedParamsWarning);
     });
 
     it.each(['+not-found', '_sitemap'])('warns before returning %s', (name) => {
       getRouteInfoFromState({ routes: [{ name, params: { nested: { id: 'special' } } }] });
 
       expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(nestedParamsWarning);
     });
 
     it('warns before rejecting an invalid root route', () => {
@@ -644,6 +648,7 @@ describe('getRouteInfoFromState', () => {
         getRouteInfoFromState({ routes: [{ name: 'invalid', params: { nested: {} } }] })
       ).toThrow('Expected the first route to be __root, but got invalid');
       expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(nestedParamsWarning);
     });
   });
 });
