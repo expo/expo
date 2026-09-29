@@ -550,9 +550,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/register-root-component/':
     '/versions/latest/sdk/expo/#registerrootcomponentcomponent',
 
-  // Temporary redirects
-  '/router/advanced/singular/': '/preview/singular/',
-
   // After adding System bars
   '/guides/configuring-statusbar/': '/develop/user-interface/system-bars/',
 

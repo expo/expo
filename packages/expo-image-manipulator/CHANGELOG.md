@@ -9,10 +9,15 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed `renderAsync()` rejecting with a `JobCancellationException` when the context is released while the render is still in flight — including the release `useImageManipulator` performs on unmount. ([#50218](https://github.com/expo/expo/pull/50218) by [@dev-eyoungmin](https://github.com/dev-eyoungmin))
-- [iOS] Fixed `renderAsync` failing with `ERR_IMAGE_CONTEXT_LOST` for 10-bit HDR images, such as HEIC screenshots. ([#50011](https://github.com/expo/expo/pull/50011) by [@expo-bot](https://github.com/expo-bot))
-- [iOS] Keep the full pixel resolution of images loaded with a scale factor greater than 1 instead of downscaling them to their point size. ([#50011](https://github.com/expo/expo/pull/50011) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+## 58.0.9 — 2026-09-28
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `renderAsync` failing with `ERR_IMAGE_CONTEXT_LOST` for 10-bit HDR images, such as HEIC screenshots. ([#50011](https://github.com/expo/expo/pull/50011) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Keep the full pixel resolution of images loaded with a scale factor greater than 1 instead of downscaling them to their point size. ([#50011](https://github.com/expo/expo/pull/50011) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.8 — 2026-09-25
 

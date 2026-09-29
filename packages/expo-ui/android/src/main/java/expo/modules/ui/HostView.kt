@@ -81,17 +81,33 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
 
   fun toColorScheme(context: Context): ColorScheme {
     return when (this) {
-      LIGHT -> if (isDynamicColorSupported) dynamicLightColorScheme(context) else lightColorScheme()
-      DARK -> if (isDynamicColorSupported) dynamicDarkColorScheme(context) else darkColorScheme()
+      LIGHT -> if (isDynamicColorSupported) {
+        dynamicLightColorScheme(context)
+      } else {
+        lightColorScheme()
+      }
+      DARK -> if (isDynamicColorSupported) {
+        dynamicDarkColorScheme(context)
+      } else {
+        darkColorScheme()
+      }
     }
   }
 
   companion object {
     fun defaultColorScheme(context: Context, isSystemInDarkTheme: Boolean): ColorScheme {
       return if (isDynamicColorSupported) {
-        if (isSystemInDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        if (isSystemInDarkTheme) {
+          dynamicDarkColorScheme(context)
+        } else {
+          dynamicLightColorScheme(context)
+        }
       } else {
-        if (isSystemInDarkTheme) darkColorScheme() else lightColorScheme()
+        if (isSystemInDarkTheme) {
+          darkColorScheme()
+        } else {
+          lightColorScheme()
+        }
       }
     }
   }
@@ -159,8 +175,20 @@ internal class HostView(context: Context, appContext: AppContext) :
 
     Layout(
       modifier = Modifier
-        .then(if (props.matchContentsHorizontal.value == true) Modifier.wrapContentWidth() else Modifier)
-        .then(if (props.matchContentsVertical.value == true) Modifier.wrapContentHeight() else Modifier)
+        .then(
+          if (props.matchContentsHorizontal.value == true) {
+            Modifier.wrapContentWidth()
+          } else {
+            Modifier
+          }
+        )
+        .then(
+          if (props.matchContentsVertical.value == true) {
+            Modifier.wrapContentHeight()
+          } else {
+            Modifier
+          }
+        )
         .onSizeChanged { size -> dispatchOnLayoutContent(size, density) },
       content = content
     ) { measurables, constraints ->
@@ -199,8 +227,16 @@ internal class HostView(context: Context, appContext: AppContext) :
           val heightDp = contentHeightPx.toDp().value.toDouble()
 
           shadowNodeProxy.setViewSize(
-            if (constraints.maxWidth == 0) widthDp else Double.NaN,
-            if (constraints.maxHeight == 0) heightDp else Double.NaN
+            if (constraints.maxWidth == 0) {
+              widthDp
+            } else {
+              Double.NaN
+            },
+            if (constraints.maxHeight == 0) {
+              heightDp
+            } else {
+              Double.NaN
+            }
           )
         }
       }
@@ -227,8 +263,16 @@ internal class HostView(context: Context, appContext: AppContext) :
       val height = size.height.toDp().value
 
       if (matchContentsHorizontal == true || matchContentsVertical == true) {
-        val styleWidth = if (matchContentsHorizontal == true && width > 0) width else null
-        val styleHeight = if (matchContentsVertical == true && height > 0) height else null
+        val styleWidth = if (matchContentsHorizontal == true && width > 0) {
+          width
+        } else {
+          null
+        }
+        val styleHeight = if (matchContentsVertical == true && height > 0) {
+          height
+        } else {
+          null
+        }
         shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
       }
 
@@ -263,8 +307,16 @@ internal class HostView(context: Context, appContext: AppContext) :
     val matchContentsVertical = props.matchContentsVertical.value
     val composeView = findComposeView()
     composeView.layoutParams = LayoutParams(
-      if (matchContentsHorizontal == true) LayoutParams.WRAP_CONTENT else LayoutParams.MATCH_PARENT,
-      if (matchContentsVertical == true) LayoutParams.WRAP_CONTENT else LayoutParams.MATCH_PARENT
+      if (matchContentsHorizontal == true) {
+        LayoutParams.WRAP_CONTENT
+      } else {
+        LayoutParams.MATCH_PARENT
+      },
+      if (matchContentsVertical == true) {
+        LayoutParams.WRAP_CONTENT
+      } else {
+        LayoutParams.MATCH_PARENT
+      }
     )
   }
 

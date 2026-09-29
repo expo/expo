@@ -67,6 +67,7 @@ import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.contentType
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.DpOffset
@@ -167,7 +168,9 @@ data class BackgroundParams(
 // Color animation specs reuse the JS `$type` shape from `@expo/ui/jetpack-compose/modifiers/animation` (spring / tween / snap).
 // Keyframes are float-only and aren't supported for colors.
 private fun parseColorAnimationSpec(raw: Any?): AnimationSpec<androidx.compose.ui.graphics.Color>? {
-  if (raw !is Map<*, *>) return null
+  if (raw !is Map<*, *>) {
+    return null
+  }
   return when (raw["\$type"]) {
     "spring" -> spring(
       dampingRatio = (raw["dampingRatio"] as? Number)?.toFloat() ?: Spring.DampingRatioNoBouncy,
@@ -408,7 +411,9 @@ object ModifierRegistry {
     scope: ComposableScope,
     eventDispatcher: ModifierEventDispatcher
   ): Modifier {
-    if (modifiers.isNullOrEmpty()) return Modifier
+    if (modifiers.isNullOrEmpty()) {
+      return Modifier
+    }
     return modifiers.fold(Modifier as Modifier) { acc, config ->
       val type = config["\$type"]?.asString() ?: return@fold acc
       val modifier = modifierFactories[type]?.invoke(config, scope, appContext, eventDispatcher)
@@ -681,9 +686,16 @@ object ModifierRegistry {
 
     register("semantics") { map, _, appContext, _ ->
       val params = recordFromMap<SemanticsParams>(map, appContext)
-      params.contentType.toContentType()?.let { ct ->
-        Modifier.semantics { contentType = ct }
-      } ?: Modifier
+      val type = params.contentType.toContentType()
+      val description = params.contentDescription
+      if (type == null && description == null) {
+        Modifier
+      } else {
+        Modifier.semantics {
+          type?.let { contentType = it }
+          description?.let { contentDescription = it }
+        }
+      }
     }
 
     register("clip") { map, _, appContext, _ ->

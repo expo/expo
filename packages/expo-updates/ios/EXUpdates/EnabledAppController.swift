@@ -56,7 +56,8 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
   private var selectionPolicy: SelectionPolicy {
     return SelectionPolicyFactory.filterAwarePolicy(
       withRuntimeVersion: config.runtimeVersion,
-      config: config
+      config: config,
+      embeddedUpdateId: getEmbeddedUpdate()?.updateId
     )
   }
 
