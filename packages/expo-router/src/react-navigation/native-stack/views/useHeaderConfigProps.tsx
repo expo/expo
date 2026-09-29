@@ -1,4 +1,5 @@
 'use client';
+import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { Platform, StyleSheet, type TextStyle, View } from 'react-native';
 import {
   type HeaderBarButtonItemMenuAction,
@@ -242,8 +243,8 @@ export function useHeaderConfigProps({
   const titleColor =
     'color' in headerTitleStyleFlattened
       ? headerTitleStyleFlattened.color
-      : Platform.OS === 'ios' && (headerTransparent || headerBackgroundColor === 'transparent')
-        ? // On iOS 26, we want header title to change color based on content underneath
+      : isLiquidGlassAvailable() && (headerTransparent || headerBackgroundColor === 'transparent')
+        ? // With Liquid Glass, we want header title to change color based on content underneath
           // So we don't set an explicit color when header is transparent
           // Unless a custom tint color is explicitly provided
           headerTintColor

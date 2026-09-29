@@ -10,6 +10,10 @@ import {
   getMocks,
 } from './useHeaderConfigProps-setup';
 
+jest.mock('expo-glass-effect', () => ({
+  isLiquidGlassAvailable: jest.fn(() => true),
+}));
+
 jest.mock('react-native-screens', () => {
   const MockedReact = require('react');
   const RN = require('react-native');
@@ -166,6 +170,18 @@ describe('titleColor', () => {
       )
     );
     expect(result.current.titleColor).toBe('orange');
+  });
+
+  test.each([
+    { name: 'headerTransparent', props: { headerTransparent: true } },
+    { name: 'headerLargeTitleEnabled', props: { headerLargeTitleEnabled: true } },
+    { name: 'headerBackground', props: { headerBackground: () => <View /> } },
+  ])('defaults to colors.text with $name when Liquid Glass is not available', ({ props }) => {
+    jest
+      .mocked(jest.requireMock<typeof import('expo-glass-effect')>('expo-glass-effect'))
+      .isLiquidGlassAvailable.mockReturnValueOnce(false);
+    const { result } = renderHook(() => useHeaderConfigProps(defaultProps(props)));
+    expect(result.current.titleColor).toBe(DEFAULT_COLORS.text);
   });
 
   test('defaults to colors.text with a large title and an opaque headerStyle.backgroundColor', () => {
