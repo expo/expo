@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 💡 Others
+
+- Added missing types to `modelId`. ([#50768](https://github.com/expo/expo/pull/50768) by [@zoontek](https://github.com/zoontek))
+
 ## 58.0.2 — 2026-09-22
 
 ### 🎉 New features
