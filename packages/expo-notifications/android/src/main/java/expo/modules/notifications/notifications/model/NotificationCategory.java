@@ -13,11 +13,6 @@ import java.util.List;
  * TODO vonovak: no need to implement serializable, parcelable is enough for storing
  */
 public class NotificationCategory implements Parcelable, Serializable {
-  // Categories are stored with Java serialization. Without a declared UID the
-  // computed one covers the synthetic constructor CREATOR calls, whose
-  // parameter type is a class the dexer synthesizes and R8 renames, so a build
-  // minified differently can't read the stored categories. This is the value
-  // non-minified (D8) builds compute, so their stored categories stay readable.
   private static final long serialVersionUID = -7231554903600752807L;
 
   private final String mIdentifier;
