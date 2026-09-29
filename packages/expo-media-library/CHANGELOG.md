@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
-- Add `album.getAlbumsMetadata()` for cheap bulk album listing and `album.getAssetCount()`. ([#47836](https://github.com/expo/expo/pull/47836) by [@Wenszel](https://github.com/Wenszel))
+- Add `Album.getAlbumsMetadata()` for cheap bulk album listing and `album.getAssetCount()`. ([#47903](https://github.com/expo/expo/pull/47903) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
 
