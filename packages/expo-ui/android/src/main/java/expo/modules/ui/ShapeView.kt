@@ -179,7 +179,9 @@ fun pathFromShapeRecord(record: ShapeRecord, size: Size, density: Density): Path
 }
 
 fun shapeFromShapeRecord(shapeRecord: ShapeRecord?): Shape? {
-  if (shapeRecord == null) return null
+  if (shapeRecord == null) {
+    return null
+  }
   return object : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
       val path = pathFromShapeRecord(shapeRecord, size, density)

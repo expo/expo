@@ -473,8 +473,6 @@ export function parseQueryParams(
 
 export function cleanPath(path: string) {
   path = path
-    // let remaining = path
-    // END FORK
     .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
     .replace(/^\//, '') // Remove extra leading slash
     .replace(/\?.*$/, ''); // Remove query params which we will handle later

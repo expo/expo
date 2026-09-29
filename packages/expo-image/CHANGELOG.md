@@ -1,17 +1,12 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
+## 58.0.7 — 2026-09-28
 
 ### 🐛 Bug fixes
 
 - [Android] Fixed native crashes when decoding and clearing some animated GIFs. ([#49533](https://github.com/expo/expo/pull/49533) by [@MangelSpec](https://github.com/MangelSpec))
 - [Android] Avoid reporting an image load error when displaying a placeholder without a source. ([#50668](https://github.com/expo/expo/pull/50668) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
+- [Android] Fixed a `You can't start or clear loads in RequestListener or Target callbacks` crash when an image fails to load while layout updates are pending, for example from `react-native-reanimated`. The `onError` event is now dispatched after Glide's failure callback returns, as `onLoad` already was. ([#50550](https://github.com/expo/expo/pull/50550) by [@Joozty](https://github.com/Joozty))
 
 ## 58.0.6 — 2026-09-25
 

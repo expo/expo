@@ -4,6 +4,11 @@
     "modules": ["BlurViewModule"]
   },
   "android": {
-    "modules": ["expo.modules.blur.BlurModule"]
+    "modules": ["expo.modules.blur.BlurModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.blur",
+      "repository": "local-maven-repo"
+    }
   }
 }

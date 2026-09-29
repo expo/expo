@@ -1,14 +1,8 @@
 # Changelog
 
-## Unpublished
+## 0.4.6 — 2026-09-28
 
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+_This version does not introduce any user-facing changes._
 
 ## 0.4.5 — 2026-09-25
 

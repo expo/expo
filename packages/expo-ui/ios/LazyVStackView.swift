@@ -10,6 +10,7 @@ public final class LazyVStackViewProps: UIBaseViewProps {
 
 public struct LazyVStackView: ExpoSwiftUI.View {
   @ObservedObject public var props: LazyVStackViewProps
+  @State private var crossAxisSize: CGFloat = 0
 
   public init(props: LazyVStackViewProps) {
     self.props = props
@@ -21,5 +22,7 @@ public struct LazyVStackView: ExpoSwiftUI.View {
       spacing: props.spacing.map { CGFloat($0) }) {
         Children()
     }
+    .onGeometryChange(for: CGFloat.self, of: { $0.size.width }, action: { crossAxisSize = $0 })
+    .environment(\.containerCrossAxisSize, crossAxisSize)
   }
 }

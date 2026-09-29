@@ -1,16 +1,10 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
+## 58.0.3 — 2026-09-28
 
 ### 🐛 Bug fixes
 
 - Replace, instead of duplicate, the generated section in files with CRLF line endings. ([#50381](https://github.com/expo/expo/pull/50381) by [@tahakocal](https://github.com/tahakocal))
-
-### 💡 Others
 
 ## 58.0.2 — 2026-09-16
 

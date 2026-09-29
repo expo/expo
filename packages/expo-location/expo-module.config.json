@@ -4,6 +4,11 @@
     "modules": ["LocationModule"]
   },
   "android": {
-    "modules": ["expo.modules.location.LocationModule"]
+    "modules": ["expo.modules.location.LocationModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.location",
+      "repository": "local-maven-repo"
+    }
   }
 }
