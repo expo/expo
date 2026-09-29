@@ -7,6 +7,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
 
   private let locationManager: CLLocationManager
   private var authorizationChanges: AsyncThrowingStream<Void, Error>.Continuation?
+  private var beginStatus: CLAuthorizationStatus?
 
   init(locationManager: CLLocationManager) {
     self.locationManager = locationManager
@@ -19,7 +20,9 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
     let authorizationChanges = makeAuthorizationChanges()
     let appWillResignActive = NotificationCenter.default.notifications(named: UIApplication.willResignActiveNotification)
     let appDidBecomeActive = NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification)
-    let isUpgradeFromWhenInUse = locationManager.authorizationStatus == .authorizedWhenInUse
+    let beginStatus = locationManager.authorizationStatus
+    self.beginStatus = beginStatus
+    let isUpgradeFromWhenInUse = beginStatus == .authorizedWhenInUse
 
     try await withThrowingTaskGroup(of: Void.self) { group in
       group.addTask {
@@ -90,7 +93,7 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
   }
 
   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-    guard manager.authorizationStatus != .notDetermined else {
+    guard manager.authorizationStatus != beginStatus else {
       return
     }
     authorizationChanges?.yield(())
