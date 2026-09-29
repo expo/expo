@@ -18,13 +18,13 @@ export default function MockTestsPage() {
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Experience the Real Test Before Your Exam
+              PREPARE WITH CONFIDENCE. TEST WITH PURPOSE.
             </h1>
             <p className="text-xl text-muted-foreground mb-6">
-              Realistic computer-based mock examinations with detailed performance feedback
+              Get familiar with the examination experience before the big day.
             </p>
             <p className="text-lg text-muted-foreground mb-8">
-              Our PTE Mock Tests are designed to simulate the actual PTE testing experience, helping candidates become familiar with the exam format, improve confidence, and identify areas for improvement before taking the official examination.
+              Our realistic computer-based practice tests help candidates understand exam formats, build confidence, manage time effectively, and identify areas for improvement before test day. PRACTICE • PREPARE • PERFORM. Your Gateway to Global Success.
             </p>
             <Link
               href="/register"
@@ -40,31 +40,35 @@ export default function MockTestsPage() {
       {/* What is Mock Test */}
       <section className="py-20 border-b border-border">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-foreground mb-8">What is a PTE Mock Test?</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8">WHAT IS AN EXAM MOCK TEST?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                A PTE Mock Test is a full-length practice examination that closely replicates the structure, timing, and question types of the official PTE examination.
-              </p>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                It allows candidates to evaluate their current performance, identify strengths and weaknesses, and gain valuable experience before test day.
-              </p>
+An Exam Mock Test is a practice examination designed to simulate the structure, timing, and testing conditions of an actual examination.
+                  </p>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    It helps candidates become familiar with the examination experience, evaluate their readiness, identify areas for improvement, and build confidence before test day.
+                  </p>
               <ul className="space-y-3">
                 <li className="flex gap-3">
                   <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Full-length exam simulation</span>
+                  <span className="text-muted-foreground">Realistic exam simulation</span>
                 </li>
                 <li className="flex gap-3">
                   <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Authentic question types</span>
+                  <span className="text-muted-foreground">Timed testing experience</span>
                 </li>
                 <li className="flex gap-3">
                   <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Real exam timing and conditions</span>
+                  <span className="text-muted-foreground">Performance assessment</span>
                 </li>
                 <li className="flex gap-3">
                   <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                  <span className="text-muted-foreground">Detailed performance analysis</span>
+                  <span className="text-muted-foreground">Identify strengths and areas for improvement</span>
+                </li>
+                <li className="flex gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-muted-foreground">Build confidence before test day</span>
                 </li>
               </ul>
             </div>

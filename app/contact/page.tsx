@@ -53,10 +53,10 @@ export default function ContactPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-1">Phone</h3>
                   <a
-                    href="tel:+2348147138191"
+                    href="tel:07026738900"
                     className="text-muted-foreground hover:text-primary transition"
                   >
-                    +234 814 713 8191
+                    07026738900
                   </a>
                 </div>
               </div>
@@ -172,7 +172,7 @@ Message:
 ${formData.message}`
 
     // WhatsApp Business Phone Number (Nigeria format)
-    const phoneNumber = '2348147138191' // Vertex WhatsApp number
+    const phoneNumber = '2347026738900' // Vertex WhatsApp number
     const encodedMessage = encodeURIComponent(whatsappMessage)
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`
 

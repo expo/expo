@@ -54,7 +54,7 @@ This registration was submitted through our website form.
 `
 
       const encodedMessage = encodeURIComponent(message)
-      const whatsappNumber = '+2348147138191'
+      const whatsappNumber = '2347026738900'
       const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
       
       // Open WhatsApp in new tab

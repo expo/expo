@@ -56,18 +56,18 @@ export default function AboutPage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <ValueCard
                   icon={Target}
-                  title="Our Mission"
-                  description="To provide reliable registration services, high-quality preparation programs, realistic mock testing, and exceptional customer support that help candidates achieve their educational, professional, and immigration aspirations."
+                  title="OUR MISSION"
+                  description="To provide reliable, professional, and accessible examination registration services that connect candidates to globally recognized academic, professional, and immigration opportunities. Through integrity, innovation, technology, and exceptional customer service, we are committed to simplifying the examination journey and helping individuals take confident steps toward their educational, career, and global aspirations."
                 />
                 <ValueCard
                   icon={Lightbulb}
-                  title="Our Vision"
-                  description="To become one of Africa's leading assessment and candidate support centres, recognized for professionalism, innovation, service excellence, and the delivery of world-class examination support solutions."
+                  title="OUR VISION"
+                  description="To become a leading global examination and assessment services brand, empowering individuals across Africa with seamless access to internationally recognized examinations and creating pathways to education, professional advancement, and global opportunities. We envision a future where technology, innovation, integrity, and exceptional service make every candidate’s journey simpler, smarter, and more successful. Your Gateway to Global Success."
                 />
                 <ValueCard
                   icon={Users}
-                  title="Our Focus"
-                  description="Professionalism, accuracy, innovation, and exceptional customer care. We believe success begins with proper preparation, integrity, and a commitment to excellence."
+                  title="OUR FOCUS"
+                  description="We focus on making international examination registration simple, reliable, accessible, and professional. From PTE, IELTS, TOEFL, GRE, GMAT and CELPIP to other globally recognized examinations, we are committed to providing candidates with accurate registration support, exceptional customer service, and a seamless experience. Through our connection with Proxy Coding School, we also embrace technology and innovation as essential tools for creating better opportunities for individuals across Africa and beyond. Integrity • Excellence • Innovation • Global Access."
                 />
               </div>
 
@@ -97,7 +97,7 @@ export default function AboutPage() {
                   />
                   <CoreValueCard
                     title="Customer Success"
-                    description="Our greatest achievement is helping our candidates succeed in their PTE journey and goals."
+                    description="Our greatest achievement is helping candidates navigate their examination journey with confidence, accuracy, and the right support from registration to completion."
                   />
                 </div>
               </div>
@@ -135,20 +135,23 @@ export default function AboutPage() {
 
               {/* Our Commitment */}
               <div className="bg-card border border-border rounded-xl p-8 md:p-12">
-                <h2 className="text-3xl font-bold text-foreground mb-6">Our Commitment</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-6">OUR COMMITMENT</h2>
                 <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-                  At Vertex Testing Services Limited, we are committed to creating an environment where every candidate feels confident, supported, and fully prepared to achieve their goals.
+                  At Vertex Testing Services Limited, we are committed to providing candidates with reliable, professional, and seamless access to leading international examinations and assessment services.
+                </p>
+                <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+                  We continuously strive to uphold the highest standards of integrity, accuracy, professionalism, technology, and customer service, ensuring that every candidate receives the support and experience they deserve.
                 </p>
                 <p className="text-lg text-muted-foreground leading-relaxed">
-                  Through continuous improvement, quality service, and a passion for excellence, we aim to become the preferred destination for assessment support services across Nigeria and beyond.
+                  As part of the Proxy Coding School Group, we remain committed to building a trusted assessment and examination network that connects candidates to global opportunities through world-class testing services.
                 </p>
               </div>
 
               {/* CTA */}
               <div className="text-center">
-                <h2 className="text-3xl font-bold text-foreground mb-6">Ready to Begin Your Journey?</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-6">READY TO BEGIN YOUR JOURNEY?</h2>
                 <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Join hundreds of successful candidates who have trusted Vertex Testing Services Limited for their PTE preparation and registration needs.
+                  Take the next step toward your academic, professional, and global goals. Access registration support for leading international examinations, including IELTS, PTE, TOEFL, GRE, GMAT, CELPIP, and more. Your Gateway to Global Success.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <Link
