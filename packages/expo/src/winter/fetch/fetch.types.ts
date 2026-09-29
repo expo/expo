@@ -16,6 +16,7 @@ export interface FetchRequestInit {
   integrity?: string;
   keepalive?: boolean;
   mode?: RequestMode;
+  priority?: 'high' | 'low' | 'auto';
   referrer?: string;
   referrerPolicy?: ReferrerPolicy;
   window?: any;

@@ -28,12 +28,23 @@ const NATIVE_DEVIATIONS = new Set([
   'Initialize Request\'s body with "[object FormData]", multipart/form-data',
 ]);
 
+// Test names starting with these are native deviations too. React Native apps set headers such as
+// `Cookie` or `Origin` on purpose, and `whatwg-fetch` allows it, so the native Request doesn't drop
+// forbidden request headers or filter headers in the `no-cors` mode.
+const NATIVE_DEVIATION_PREFIXES = [
+  'Adding invalid request header',
+  'Adding invalid no-cors request header',
+  'Check that request constructor is filtering headers',
+  'Check that no-cors request constructor is filtering headers',
+];
+
 // Where browsers fail WPT. On web, these tests run against the browser's own `Request`, not ours.
 // Checked with Chrome 140.
 const WEB_DEVIATIONS = new Set([
   'Check isReloadNavigation attribute',
   "RequestInit's window is not null",
   'Input request used for creating new request became disturbed',
+  'Adding valid request header "User-Agent: OK"',
 ]);
 
 // WPT expects the input request to be disturbed even when the init replaces its body, but the
@@ -46,7 +57,10 @@ const SPEC_CONFLICTS = new Set([
 export async function test({ describe, it, xit, expect }: JasmineInterface) {
   const isSkipped = (name: string) =>
     SPEC_CONFLICTS.has(name) ||
-    (Platform.OS === 'web' ? WEB_DEVIATIONS : NATIVE_DEVIATIONS).has(name);
+    (Platform.OS === 'web'
+      ? WEB_DEVIATIONS.has(name)
+      : NATIVE_DEVIATIONS.has(name) ||
+        NATIVE_DEVIATION_PREFIXES.some((prefix) => name.startsWith(prefix)));
   const wptIt = (name: string, fn: () => void | Promise<void>) =>
     (isSkipped(name) ? xit : it)(name, fn);
 
@@ -746,6 +760,161 @@ export async function test({ describe, it, xit, expect }: JasmineInterface) {
         expect(await req2.text()).toBe('req1');
       }
     );
+  });
+
+  // https://github.com/web-platform-tests/wpt/blob/master/fetch/api/request/request-headers.any.js
+  describe('headers', () => {
+    const validRequestHeaders = [
+      ['Content-Type', 'OK'],
+      ['Potato', 'OK'],
+      ['proxy', 'OK'],
+      ['proxya', 'OK'],
+      ['sec', 'OK'],
+      ['secb', 'OK'],
+      ['Set-Cookie2', 'OK'],
+      ['User-Agent', 'OK'],
+    ];
+    const invalidRequestHeaders = [
+      ['Accept-Charset', 'KO'],
+      ['accept-charset', 'KO'],
+      ['ACCEPT-ENCODING', 'KO'],
+      ['Accept-Encoding', 'KO'],
+      ['Access-Control-Request-Headers', 'KO'],
+      ['Access-Control-Request-Method', 'KO'],
+      ['Connection', 'KO'],
+      ['Content-Length', 'KO'],
+      ['Cookie', 'KO'],
+      ['Cookie2', 'KO'],
+      ['Date', 'KO'],
+      ['DNT', 'KO'],
+      ['Expect', 'KO'],
+      ['Host', 'KO'],
+      ['Keep-Alive', 'KO'],
+      ['Origin', 'KO'],
+      ['Referer', 'KO'],
+      ['Set-Cookie', 'KO'],
+      ['TE', 'KO'],
+      ['Trailer', 'KO'],
+      ['Transfer-Encoding', 'KO'],
+      ['Upgrade', 'KO'],
+      ['Via', 'KO'],
+      ['Proxy-', 'KO'],
+      ['proxy-a', 'KO'],
+      ['Sec-', 'KO'],
+      ['sec-b', 'KO'],
+    ];
+    const validRequestNoCorsHeaders = [
+      ['Accept', 'OK'],
+      ['Accept-Language', 'OK'],
+      ['content-language', 'OK'],
+      ['content-type', 'application/x-www-form-urlencoded'],
+      ['content-type', 'application/x-www-form-urlencoded;charset=UTF-8'],
+      ['content-type', 'multipart/form-data'],
+      ['content-type', 'multipart/form-data;charset=UTF-8'],
+      ['content-TYPE', 'text/plain'],
+      ['CONTENT-type', 'text/plain;charset=UTF-8'],
+    ];
+    const invalidRequestNoCorsHeaders = [
+      ['Content-Type', 'KO'],
+      ['Potato', 'KO'],
+      ['proxy', 'KO'],
+      ['proxya', 'KO'],
+      ['sec', 'KO'],
+      ['secb', 'KO'],
+      ['Empty-Value', ''],
+    ];
+
+    for (const [name, value] of validRequestHeaders) {
+      wptIt(`Adding valid request header "${name}: ${value}"`, () => {
+        const request = new Request(URL);
+        request.headers.set(name!, value!);
+        expect(request.headers.get(name!)).toBe(value!);
+      });
+    }
+    for (const [name, value] of invalidRequestHeaders) {
+      wptIt(`Adding invalid request header "${name}: ${value}"`, () => {
+        const request = new Request(URL);
+        request.headers.set(name!, value!);
+        expect(request.headers.get(name!)).toBeNull();
+      });
+    }
+    for (const [name, value] of validRequestNoCorsHeaders) {
+      wptIt(`Adding valid no-cors request header "${name}: ${value}"`, () => {
+        const request = new Request(URL, { mode: 'no-cors' });
+        request.headers.set(name!, value!);
+        expect(request.headers.get(name!)).toBe(value!);
+      });
+    }
+    for (const [name, value] of invalidRequestNoCorsHeaders) {
+      wptIt(`Adding invalid no-cors request header "${name}: ${value}"`, () => {
+        const request = new Request(URL, { mode: 'no-cors' });
+        request.headers.set(name!, value!);
+        expect(request.headers.get(name!)).toBeNull();
+      });
+    }
+
+    wptIt('Check that request constructor is filtering headers provided as init parameter', () => {
+      const request = new Request(URL, { headers: new Headers([['Cookie2', 'potato']]) });
+      expect(request.headers.get('Cookie2')).toBeNull();
+    });
+
+    wptIt(
+      'Check that no-cors request constructor is filtering headers provided as init parameter',
+      () => {
+        const request = new Request(URL, {
+          headers: new Headers([['Content-Type', 'potato']]),
+          mode: 'no-cors',
+        });
+        expect(request.headers.get('Content-Type')).toBeNull();
+      }
+    );
+
+    wptIt(
+      'Check that no-cors request constructor is filtering headers provided as part of request parameter',
+      () => {
+        const initialRequest = new Request(URL, {
+          headers: new Headers([['Content-Type', 'potato']]),
+        });
+        const request = new Request(initialRequest, { mode: 'no-cors' });
+        expect(request.headers.get('Content-Type')).toBeNull();
+      }
+    );
+  });
+
+  // The constructor part of
+  // https://github.com/web-platform-tests/wpt/blob/master/fetch/api/request/request-init-priority.any.js
+  describe('init: priority', () => {
+    for (const priority of ['high', 'low', 'auto']) {
+      wptIt(`new Request() with a '${priority}' priority does not throw an error`, () => {
+        new Request(URL, { priority } as RequestInit);
+      });
+    }
+
+    wptIt(
+      "new Request() throws a TypeError if any of RequestInit's members' values are invalid",
+      () => {
+        expectThrows(
+          () => new Request(URL, { priority: 'invalid' } as unknown as RequestInit),
+          TypeError
+        );
+      }
+    );
+  });
+
+  // https://github.com/web-platform-tests/wpt/blob/master/fetch/api/request/request-keepalive.any.js
+  describe('keepalive', () => {
+    wptIt('keepalive flag', () => {
+      expect(new Request(URL).keepalive).toBe(false);
+      expect(new Request(URL, { keepalive: true }).keepalive).toBe(true);
+      expect(new Request(URL, { keepalive: false }).keepalive).toBe(false);
+      expect(new Request(URL, { keepalive: 1 } as unknown as RequestInit).keepalive).toBe(true);
+      expect(new Request(URL, { keepalive: 0 } as unknown as RequestInit).keepalive).toBe(false);
+    });
+
+    wptIt('keepalive flag with stream body', () => {
+      const init = { method: 'POST', keepalive: true, body: new ReadableStream() };
+      expectThrows(() => new Request(URL, init as RequestInit), TypeError);
+    });
   });
 
   // https://github.com/web-platform-tests/wpt/blob/master/fetch/api/request/request-clone-readable-stream-body.any.js
