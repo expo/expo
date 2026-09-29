@@ -13,6 +13,11 @@ export interface HStackProps extends CommonViewModifierProps {
    * The vertical alignment of children within the stack.
    */
   alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
+  /**
+   * When `true`, a child percentage is a fraction of this stack.
+   * Universal `Row` sets this. Leave it unset to keep the SwiftUI `HStack`.
+   */
+  resolvesChildPercentages?: boolean;
 }
 
 const HStackNativeView: React.ComponentType<HStackProps> = requireNativeView(

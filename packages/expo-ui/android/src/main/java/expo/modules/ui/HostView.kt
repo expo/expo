@@ -216,6 +216,9 @@ internal class HostView(context: Context, appContext: AppContext) :
           constraints.maxHeight
         }
       )
+      // Host offers its size to children. A child percentage is parent data, so apply
+      // it here. A child without one is measured with these constraints unchanged.
+      // Compose Row and Column do not read that parent data.
       val definiteWidth = boundedConstraints.maxWidth.takeIf {
         it != Constraints.Infinity && (boundedConstraints.minWidth == it || useViewportSizeMeasurement)
       }

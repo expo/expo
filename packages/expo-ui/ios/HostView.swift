@@ -64,7 +64,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       // swiftlint:disable:next identifier_name
       let HostLayout = props.useViewportSizeMeasurement
         ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection, hostingView: props.hostingView))
-        : AnyLayout(ParentAwareHostLayout(layoutDirection: layoutDirection))
+        : AnyLayout(ZStackLayout(alignment: alignment))
       HostLayout {
         Children()
       }

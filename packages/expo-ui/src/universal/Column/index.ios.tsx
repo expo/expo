@@ -41,6 +41,7 @@ export function Column({
       alignment={alignmentMap[alignment]}
       spacing={spacing}
       modifiers={modifiers}
+      resolvesChildPercentages
       testID={testID}>
       {children}
     </VStack>

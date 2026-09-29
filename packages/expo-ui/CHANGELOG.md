@@ -29,7 +29,7 @@
 
 ### Patch Changes
 
-- Universal `style.width` and `style.height` accept a percentage of the parent, such as `'50%'`, on Android and iOS. ([#50750](https://github.com/expo/expo/pull/50750) by [@kudo](https://github.com/kudo))
+- Universal `style.width` and `style.height` accept a percentage of a universal `Row`, `Column`, or `Host`, such as `'50%'`, on Android and iOS. ([#50750](https://github.com/expo/expo/pull/50750) by [@kudo](https://github.com/kudo))
 - Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 - [iOS] Added `LazyVStack.ForEach` and `LazyHStack.ForEach`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large stacks only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50579](https://github.com/expo/expo/pull/50579) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [android] Fix `Switch` label rendering one letter per line inside a `Host` with `matchContents`. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
