@@ -47,7 +47,7 @@ export function AppIntentHandler() {
 
 ## Donating intents
 
-Donate an intent when the user performs its action inside your app, so Siri, Spotlight, and the Shortcuts app can suggest it later. Make the intent donatable in Swift and register it in the `OnCreate` of your `AppIntentsSetup` module, under the same name it dispatches:
+Donate an intent when the user performs its action inside your app, so the system can suggest it later on the Lock Screen, in Siri Suggestions, and in Spotlight. Make the intent donatable in Swift and register it in the `OnCreate` of your `AppIntentsSetup` module, under the same name it dispatches:
 
 ```swift
 extension SaveNoteIntent: DonatableAppIntent {

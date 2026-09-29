@@ -172,7 +172,7 @@ The kind string must match the value passed to `setEntityCatalogAsync()`. Each `
 
 ### Donate an intent
 
-A donation tells the system that the user performed an intent's action inside your app. Siri, Spotlight, and the Shortcuts app learn from donations and can suggest the action later. Only Swift can create an intent, so make the intent conform to `DonatableAppIntent` and build it from the params that JavaScript passes:
+A donation tells the system that the user performed an intent's action inside your app. The system learns from donations and can suggest the action later on the Lock Screen, in Siri Suggestions, and in Spotlight. Only Swift can create an intent, so make the intent conform to `DonatableAppIntent` and build it from the parameters that JavaScript passes:
 
 ```swift
 extension SaveNoteIntent: DonatableAppIntent {
@@ -199,7 +199,7 @@ await AppIntents.donateIntentAsync('saveNote', { text: 'Buy milk' });
 await AppIntents.deleteDonationsAsync({ intent: 'saveNote' });
 ```
 
-`donateIntentAsync()` also returns an id for the donation. Pass it to `deleteDonationsAsync({ ids })` to delete only that donation.
+`donateIntentAsync()` also returns an ID for the donation. Pass it to `deleteDonationsAsync({ ids })` to delete only that donation.
 
 ### Add shortcut phrases when needed
 

@@ -271,16 +271,17 @@ export async function refreshShortcutsAsync(): Promise<void> {
 /**
  * Tells the system that the user just performed an App Intent's action in your app, for example
  * ordering food from a screen rather than through Siri. The system learns from donations and can
- * suggest the action later in Siri, Spotlight, and the Shortcuts app.
+ * suggest the action later on the Lock Screen, in Siri Suggestions, and in Spotlight.
  *
  * The `name` must be registered from app-target Swift with
  * `AppIntentDonationRegistry.shared.register(_:as:)`, on an intent that conforms to
  * `DonatableAppIntent`. The intent builds itself from `params` in its `init(donationParams:)`.
  *
- * The returned promise is fulfilled with an id for the donation, which
- * [`deleteDonationsAsync()`](#appintentsdeletedonationsasyncfilter) accepts, or with `null` when App
- * Intents are unavailable. It is rejected when no intent is registered as `name`, when a param is
- * not a JSON value, or when the intent cannot be built from `params`.
+ * The returned promise is fulfilled with an ID for the donation, which
+ * [`deleteDonationsAsync()`](#appintentsdeletedonationsasyncfilter) accepts, or with `null` when
+ * App Intents are unavailable. It is rejected when no intent is registered as `name`, when a
+ * parameter is not a JSON value, when the intent cannot be built from `params`, or when the system
+ * fails to record the donation.
  *
  * @platform ios
  */
@@ -299,12 +300,12 @@ export async function donateIntentAsync(
  * the system stops suggesting them. Delete donations when what they refer to is gone, for example
  * after the user deletes an order, or when the user signs out.
  *
- * The returned promise is fulfilled with the ids of the deleted donations, or with an empty array
+ * The returned promise is fulfilled with the IDs of the deleted donations, or with an empty array
  * when App Intents are unavailable. It is rejected when `filter` names an intent or entity that is
- * not registered, contains an id that cannot be read, or contains an entity `id` that cannot be
- * converted to the id type of that entity. In those cases nothing is deleted. With `ids`, every id
+ * not registered, contains an ID that cannot be read, or contains an entity `id` that cannot be
+ * converted to the ID type of that entity. In those cases nothing is deleted. With `ids`, every ID
  * is attempted. When the system fails to delete one or more of them, the promise is rejected with
- * an error that lists the deleted ids and the ids that were not deleted. With `intent` or
+ * an error that lists the deleted IDs and the IDs that were not deleted. With `intent` or
  * `entity`, the promise is rejected with the system error when the system fails to delete.
  *
  * @platform ios
