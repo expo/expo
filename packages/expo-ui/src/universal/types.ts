@@ -21,9 +21,20 @@ export type UniversalStyle = Pick<
   | 'borderWidth'
   | 'borderColor'
   | 'opacity'
-  | 'width'
-  | 'height'
->;
+> & {
+  /**
+   * Numeric width in logical pixels. String values such as `"100%"` are not supported;
+   * use the `modifiers` prop with `fillMaxWidth()` (Android) or a SwiftUI
+   * `frame(maxWidth: .infinity)` modifier (iOS) for percentage sizing.
+   */
+  width?: number;
+  /**
+   * Numeric height in logical pixels. String values such as `"100%"` are not supported;
+   * use the `modifiers` prop with `fillMaxHeight()` (Android) or a SwiftUI
+   * `frame(maxHeight: .infinity)` modifier (iOS) for percentage sizing.
+   */
+  height?: number;
+};
 
 /**
  * Base props inherited by all universal components.
