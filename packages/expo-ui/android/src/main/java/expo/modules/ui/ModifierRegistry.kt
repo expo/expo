@@ -19,6 +19,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -73,6 +74,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.recordFromMap
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.ui.convertibles.AlignmentType
@@ -125,6 +127,21 @@ internal data class FillMaxHeightParams(
 @OptimizedRecord
 internal data class WidthParams(
   @Field val width: Int = 0
+) : Record
+
+internal enum class IntrinsicSizeType(val value: String) : Enumerable {
+  MIN("min"),
+  MAX("max");
+
+  fun toComposeIntrinsicSize(): IntrinsicSize = when (this) {
+    MIN -> IntrinsicSize.Min
+    MAX -> IntrinsicSize.Max
+  }
+}
+
+@OptimizedRecord
+internal data class ComposeWidthParams(
+  @Field val width: Either<Int, IntrinsicSizeType>? = null
 ) : Record
 
 @OptimizedRecord
@@ -453,8 +470,12 @@ object ModifierRegistry {
     }
 
     register("width") { map, _, _, _ ->
-      val params = recordFromMap<WidthParams>(map)
-      Modifier.width(params.width.dp)
+      val width = recordFromMap<ComposeWidthParams>(map).width
+      if (width?.`is`(IntrinsicSizeType::class) == true) {
+        Modifier.width(width.second().toComposeIntrinsicSize())
+      } else {
+        Modifier.width((width?.first() ?: 0).dp)
+      }
     }
 
     register("height") { map, _, _, _ ->
