@@ -39,7 +39,7 @@
     "prepack": "expo-module prepack"
   },
   "dependencies": {
-    "@react-native/normalize-colors": "0.88.0-rc.2",
+    "@react-native/normalize-colors": "0.88.0-rc.3",
     "debug": "^4.3.2"
   },
   "devDependencies": {
