@@ -18,6 +18,10 @@ final class LocationManagerAlwaysAuthorizationRequest: NSObject, CLLocationManag
   @MainActor
   func request() async throws {
     let authorizationChanges = makeAuthorizationChanges()
+    defer {
+      self.authorizationChanges?.finish()
+      self.authorizationChanges = nil
+    }
     let appWillResignActive = NotificationCenter.default.notifications(named: UIApplication.willResignActiveNotification)
     let appDidBecomeActive = NotificationCenter.default.notifications(named: UIApplication.didBecomeActiveNotification)
     let beginStatus = locationManager.authorizationStatus
