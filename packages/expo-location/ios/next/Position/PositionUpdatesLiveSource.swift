@@ -7,6 +7,9 @@ final class PositionUpdatesLiveSource {
       let providerTask = Task {
         do {
           for try await update in CLLocationUpdate.liveUpdates(profile.clLocationUpdateProfile()) {
+            guard !Task.isCancelled else {
+              break
+            }
             continuation.yield(update.location)
           }
           continuation.finish()
