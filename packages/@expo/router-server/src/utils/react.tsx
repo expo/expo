@@ -1,7 +1,11 @@
 import type { ServerFontResourceDescriptor } from 'expo-font';
 import { type ReactNode } from 'react';
 
-import { getHydrationFlagScriptContents, getLoaderDataScriptContents } from './html';
+import {
+  getHydrationFlagScriptContents,
+  getLayoutSettingsScriptContents,
+  getLoaderDataScriptContents,
+} from './html';
 
 type CreateNodeResult = {
   headNodes?: ReactNode[];
@@ -58,9 +62,11 @@ export function createInjectedScriptAsNodes(srcs: string[]): CreateNodeResult {
 export function getBootstrapContents({
   hydrate = true,
   loadedData,
+  layoutSettings,
 }: {
   hydrate: boolean;
   loadedData: Record<string, unknown> | null;
+  layoutSettings?: Record<string, unknown> | null;
 }): string {
   const parts = [];
 
@@ -70,6 +76,10 @@ export function getBootstrapContents({
 
   if (loadedData) {
     parts.push(getLoaderDataScriptContents(loadedData));
+  }
+
+  if (layoutSettings) {
+    parts.push(getLayoutSettingsScriptContents(layoutSettings));
   }
 
   return parts.join('\n');

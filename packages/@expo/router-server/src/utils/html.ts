@@ -115,6 +115,27 @@ export function createLoaderDataScriptAsString(data: Record<string, unknown>): s
   return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
 }
 
+/**
+ * Returns the string content of the layout settings script, which sets
+ * `globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__` to the anchor settings of every layout, keyed by
+ * the layout's context key. The client reads them when async routes are enabled and a layout
+ * module has not loaded when the route tree is built.
+ *
+ * @see {@link createLayoutSettingsScriptAsString} for the full `<script>` tag wrapper.
+ */
+export function getLayoutSettingsScriptContents(settings: Record<string, unknown>): string {
+  const safeJson = escapeUnsafeCharacters(JSON.stringify(settings));
+  return `globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__ = JSON.parse(${JSON.stringify(safeJson)});`;
+}
+
+/**
+ * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__`
+ * with the given settings, safely embedded as JSON.
+ */
+export function createLayoutSettingsScriptAsString(settings: Record<string, unknown>): string {
+  return `<script id="expo-router-layout-settings">${getLayoutSettingsScriptContents(settings)}</script>`;
+}
+
 export type StaticContentCssAsset =
   | { type: 'css'; href: string }
   | { type: 'inline'; source: string; hmrId?: string }

@@ -1,9 +1,11 @@
 import {
   getValidInitialRoute,
   type DynamicConvention,
+  type LoadedRoute,
   type MiddlewareNode,
   type RouteNode,
 } from './Route';
+import { readStaticLayoutSettings } from './layoutSettings';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -60,6 +62,14 @@ type DirectoryNode = {
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
+
+function isThenable(value: unknown): value is PromiseLike<unknown> {
+  return (
+    value != null &&
+    (typeof value === 'object' || typeof value === 'function') &&
+    typeof (value as { then?: unknown }).then === 'function'
+  );
+}
 
 export type RedirectConfig = {
   source: string;
@@ -858,19 +868,23 @@ function getLayoutNode(node: RouteNode, options: Options) {
   });
   let anchor = childMatchingGroup?.route;
   const loaded = node.loadRoute();
-  if (loaded?.unstable_settings) {
+  // In the `lazy` import mode a layout whose bundle has not loaded yet returns a promise. On web
+  // the server render inlines the settings the router needs into the HTML, so read them there.
+  const settings: LoadedRoute['unstable_settings'] = isThenable(loaded)
+    ? readStaticLayoutSettings(node.contextKey)
+    : loaded?.unstable_settings;
+  if (settings) {
     try {
       if (
         process.env.NODE_ENV !== 'production' &&
-        (loaded.unstable_settings.initialRouteName !== undefined ||
-          loaded.unstable_settings[groupName ?? '']?.initialRouteName !== undefined)
+        (settings.initialRouteName !== undefined ||
+          settings[groupName ?? '']?.initialRouteName !== undefined)
       ) {
         console.warn(
           '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
         );
       }
-      anchor =
-        loaded.unstable_settings.anchor ?? loaded.unstable_settings.initialRouteName ?? anchor;
+      anchor = settings.anchor ?? settings.initialRouteName ?? anchor;
     } catch (error: any) {
       if (error instanceof Error) {
         if (!error.message.match(/You cannot dot into a client module/)) {
@@ -881,8 +895,7 @@ function getLayoutNode(node: RouteNode, options: Options) {
 
     if (groupName) {
       const groupSpecificInitialRouteName =
-        loaded.unstable_settings?.[groupName]?.anchor ??
-        loaded.unstable_settings?.[groupName]?.initialRouteName;
+        settings[groupName]?.anchor ?? settings[groupName]?.initialRouteName;
 
       anchor = groupSpecificInitialRouteName ?? anchor;
     }

@@ -12,7 +12,11 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { ServerDocument } from 'expo-router/internal/server';
-import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import {
+  collectStaticLayoutSettings,
+  InnerRoot,
+  registerStaticRootComponent,
+} from 'expo-router/internal/static';
 import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -108,7 +112,11 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
       }
     : null;
 
-  return { headContext, element, getStyleElement, loadedData };
+  // The anchor settings of every layout, for the client to read when async routes are enabled
+  // and a layout module has not loaded when the route tree is built.
+  const layoutSettings = collectStaticLayoutSettings(ctx);
+
+  return { headContext, element, getStyleElement, loadedData, layoutSettings };
 }
 
 function FontResources() {
@@ -128,10 +136,8 @@ export async function getStreamingContent(
   options?: GetStreamingContentOptions
 ): Promise<ReadableStream<Uint8Array>> {
   return Font.withServerContext(() => {
-    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-      location,
-      options
-    );
+    const { headContext, element, getStyleElement, loadedData, layoutSettings } =
+      prepareRenderContext(location, options);
 
     const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
     const { headNodes: externalCssNodes } = createInjectedExternalCssAsNodes(
@@ -174,7 +180,7 @@ export async function getStreamingContent(
         // TODO(@hassankhan): Experiment and see if we can calculate a better default
         // We're doubling the default here so non-JavaScript renders show some content
         progressiveChunkSize: 12800 * 2,
-        bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
+        bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData, layoutSettings }),
         signal: options?.request?.signal,
         onError(error) {
           if (options?.request?.signal.aborted) {

@@ -2,6 +2,7 @@ import {
   createFaviconAsString,
   createInjectedCssAsString,
   createInjectedScriptsAsString,
+  createLayoutSettingsScriptAsString,
   createLoaderDataScriptAsString,
   escapeUnsafeCharacters,
   getHydrationFlagScriptAsString,
@@ -104,6 +105,26 @@ describe(getHydrationFlagScriptAsString, () => {
     expect(getHydrationFlagScriptAsString()).toBe(
       '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
     );
+  });
+});
+
+describe(createLayoutSettingsScriptAsString, () => {
+  it('returns the expected inline script markup', () => {
+    const settings = { './(app)/_layout.tsx': { anchor: 'index' } };
+
+    expect(createLayoutSettingsScriptAsString(settings)).toBe(
+      '<script id="expo-router-layout-settings">' +
+        'globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__ = JSON.parse("{\\"./(app)/_layout.tsx\\":{\\"anchor\\":\\"index\\"}}");' +
+        '</script>'
+    );
+  });
+
+  it('uses an escaped payload for unsafe HTML input', () => {
+    const settings = { './_layout.tsx': { anchor: '</script><script>alert("xss")</script>' } };
+    const result = createLayoutSettingsScriptAsString(settings);
+
+    expect(result).toContain('<script id="expo-router-layout-settings">');
+    expect(result).not.toContain('</script><script>');
   });
 });
 
