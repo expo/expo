@@ -8,7 +8,7 @@ hideTOC: true
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **warning** **Warning:** `unstable_settings` currently do not work with [async routes](/router/web/async-routes/) (development-only). This is why the feature is designated _unstable_.
+> **warning** **Warning:** On native, `unstable_settings` currently do not work with [async routes](/router/web/async-routes/) (development-only). This is why the feature is designated _unstable_. On web, the server render provides the settings to the client, so they work with async routes in development and production.
 
 <PaddedAPIBox header="anchor">
 
