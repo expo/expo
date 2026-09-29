@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added `useFileCoordination` option that opens the original files and copies each one to the cache with a coordinated read, so picked files that share a name are kept apart and cloud files are downloaded before they are copied. ([#50749](https://github.com/expo/expo/pull/50749) by [@safaiyeh](https://github.com/safaiyeh))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
