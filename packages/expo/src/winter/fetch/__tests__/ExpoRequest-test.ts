@@ -348,7 +348,7 @@ describe('Request', () => {
   });
 
   // Expected values follow the Fetch standard (https://fetch.spec.whatwg.org/#request-class) and
-  // match what spec-compliant implementations such as undici return.
+  // match what undici returns.
   describe('spec conformance', () => {
     describe('method', () => {
       it.each(['CONNECT', 'trace', 'Track'])('throws for the forbidden method %s', (method) => {

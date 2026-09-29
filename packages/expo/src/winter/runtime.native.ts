@@ -44,7 +44,7 @@ if (!useRnFetch) {
     );
   }
   install('fetch', () => require('./fetch').fetch);
-  // Replace React Native's `whatwg-fetch` Request with our own spec-compliant one so request
-  // bodies and metadata round-trip through `expo/fetch` predictably.
+  // Replace React Native's `whatwg-fetch` Request with our own, which follows the Fetch standard
+  // more closely, so request bodies and metadata round-trip through `expo/fetch` predictably.
   install('Request', () => require('./fetch/ExpoRequest').Request);
 }

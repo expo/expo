@@ -205,7 +205,10 @@ type RequestState = {
 };
 
 /**
- * A `Request` implementation for `expo/fetch` that follows the Fetch standard.
+ * A `Request` implementation for `expo/fetch` that follows the Fetch standard, with a few
+ * deviations kept for compatibility with `whatwg-fetch`: invalid URLs don't throw, stream bodies
+ * don't require `duplex`, a FormData body gets its Content-Type in `fetch()`, and forbidden or
+ * `no-cors` request headers aren't filtered.
  *
  * React Native installs the `whatwg-fetch` polyfill as the global `Request`, which is not fully
  * spec-compliant and forces `expo/fetch` to reach into its private fields to recover the body.
