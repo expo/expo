@@ -8,7 +8,7 @@ public typealias AppIntentParams = [String: AppIntentValue]
 /// A Codable, Sendable JSON value used to persist App Intent params while JS is cold.
 public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLiteral,
   ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByBooleanLiteral,
-  ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByNilLiteral
+  ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByNilLiteral, Convertible
 {
   // swiftlint:enable opening_brace
   case string(String)
@@ -33,6 +33,47 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
 
   public init(_ value: Bool) {
     self = .bool(value)
+  }
+
+  /// Converts a value passed from JavaScript, and throws for anything JSON cannot represent.
+  init(jsonValue value: Any?) throws {
+    guard let value, !(value is NSNull) else {
+      self = .null
+      return
+    }
+    switch value {
+    case let string as String:
+      self = .string(string)
+    // swiftlint:disable:next legacy_objc_type
+    case let number as NSNumber:
+      self = try AppIntentValue(jsonNumber: number)
+    case let array as [Any]:
+      self = .array(try array.map { try AppIntentValue(jsonValue: $0) })
+    case let object as [String: Any]:
+      self = .object(try object.mapValues { try AppIntentValue(jsonValue: $0) })
+    default:
+      throw AppIntentValueNotJSONException("a value of type \(type(of: value))")
+    }
+  }
+
+  // A Swift `Bool` bridges to `NSNumber` as well, and only its CoreFoundation type tells it apart.
+  // swiftlint:disable:next legacy_objc_type
+  private init(jsonNumber number: NSNumber) throws {
+    if CFGetTypeID(number) == CFBooleanGetTypeID() {
+      self = .bool(number.boolValue)
+      return
+    }
+    let value = number.doubleValue
+    guard value.isFinite else {
+      throw AppIntentValueNotJSONException("the number \(value)")
+    }
+    // JavaScript has one number type. Whole numbers become `.int`, as they do when stored params are
+    // decoded, so an intent sees the same case whichever way its params arrived.
+    self = Int(exactly: value).map(AppIntentValue.int) ?? .double(value)
+  }
+
+  public static func convert(from value: Any?, appContext: AppContext) throws -> AppIntentValue {
+    return try AppIntentValue(jsonValue: value)
   }
 
   /// Returns an equivalent value that JSON can represent.
@@ -143,5 +184,15 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
 
   public init(nilLiteral: ()) {
     self = .null
+  }
+}
+
+internal final class AppIntentValueNotJSONException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    return """
+      expo-app-intents cannot pass \(param) as an App Intent param, because params must be JSON \
+      values. Pass a string, a finite number, a boolean, null, or an array or object of those. For \
+      example, pass a date as an ISO 8601 string.
+      """
   }
 }

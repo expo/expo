@@ -1,4 +1,5 @@
 import { useTheme } from 'ThemeProvider';
+import * as AppIntents from 'expo-app-intents';
 import { useRoute } from 'expo-router';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -62,6 +63,30 @@ export default function AppIntentCounterScreen() {
                   error
                 );
               });
+            }}
+          />
+          <Button
+            title="Donate intent"
+            onPress={() => {
+              AppIntents.donateIntentAsync('increaseCounter').catch((error: unknown) => {
+                console.warn(
+                  'Could not donate the Increase Counter intent; check that AppIntentsSetup registers it with AppIntentDonationRegistry.',
+                  error
+                );
+              });
+            }}
+          />
+          <Button
+            title="Delete donations"
+            onPress={() => {
+              AppIntents.deleteDonationsAsync({ intent: 'increaseCounter' }).catch(
+                (error: unknown) => {
+                  console.warn(
+                    'Could not delete the Increase Counter donations; check that AppIntentsSetup registers the intent with AppIntentDonationRegistry.',
+                    error
+                  );
+                }
+              );
             }}
           />
         </View>

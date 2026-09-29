@@ -138,6 +138,14 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
     AsyncFunction("refreshShortcutsAsync") { () async throws in
       try await self.refreshShortcuts()
     }
+
+    AsyncFunction("donateIntentAsync") { (name: String, params: AppIntentParams?) async throws -> String in
+      return try await AppIntentDonationRegistry.shared.donate(name, params: params ?? [:])
+    }
+
+    AsyncFunction("deleteDonationsAsync") { (filter: AppIntentDonationFilterRecord) async throws -> [String] in
+      return try await AppIntentDonationRegistry.shared.deleteDonations(matching: filter.toFilter())
+    }
   }
 
   /// Installs the `appEntityIdentifier` factory. Both factories take the `AppContext` from the call

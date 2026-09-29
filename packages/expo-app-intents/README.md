@@ -45,6 +45,31 @@ export function AppIntentHandler() {
 }
 ```
 
+## Donating intents
+
+Donate an intent when the user performs its action inside your app, so Siri, Spotlight, and the Shortcuts app can suggest it later. Make the intent donatable in Swift and register it in the `OnCreate` of your `AppIntentsSetup` module, under the same name it dispatches:
+
+```swift
+extension SaveNoteIntent: DonatableAppIntent {
+  init(donationParams: AppIntentParams) {
+    self.init()
+    if case .string(let text) = donationParams["text"] {
+      self.text = text
+    }
+  }
+}
+
+AppIntentDonationRegistry.shared.register("saveNote", as: SaveNoteIntent.self)
+```
+
+Then donate it from JavaScript, and delete donations when they no longer apply:
+
+```ts
+await AppIntents.donateIntentAsync('saveNote', { text: 'Buy milk' });
+
+await AppIntents.deleteDonationsAsync({ intent: 'saveNote' });
+```
+
 ## Limitations
 
 - Shortcut phrases are compiled at build time and cannot be created from JavaScript at runtime. Only parameter values are dynamic.

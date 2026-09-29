@@ -70,6 +70,26 @@ struct ExpoAppIntentsModuleTests {
     }
   }
 
+  /// Each of these is rejected before anything reaches `IntentDonationManager`, so they are safe to run
+  /// against the shared registry. The message is checked because a missing function rejects too.
+  @Test(arguments: [
+    ("donateIntentAsync('testUnregisteredDonation')", "AppIntentDonationRegistry"),
+    ("donateIntentAsync('testUnregisteredDonation', { count: 1 })", "AppIntentDonationRegistry"),
+    ("deleteDonationsAsync({ intent: 'testUnregisteredDonation' })", "AppIntentDonationRegistry"),
+    ("deleteDonationsAsync({ ids: ['not an id'] })", "donation id"),
+    ("deleteDonationsAsync({ entity: 'testUnregisteredEntity', id: 'e1' })", "AppEntityIdentifierRegistry"),
+    ("deleteDonationsAsync({})", "exactly one"),
+    ("deleteDonationsAsync({ ids: [], intent: 'testUnregisteredDonation' })", "exactly one"),
+    ("deleteDonationsAsync({ entity: 'testUnregisteredEntity' })", "exactly one"),
+  ])
+  func `donation calls reject what they cannot act on`(call: String, expectedMessage: String) async throws {
+    let outcome = try await runtime.evalAsync(
+      "expo.modules.ExpoAppIntents.\(call).then(() => 'resolved', (error) => error.message)"
+    )
+
+    let message = outcome.getString()
+    #expect(message.contains(expectedMessage), "\(call) settled with: \(message)")
+  }
 }
 
 /// `ViewModifierRegistry` is process-wide, so keeping the `appEntityIdentifier` factory alive for
