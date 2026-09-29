@@ -5,7 +5,19 @@ internal import jsi
 /// and Swift, allowing you to access and manipulate JavaScript array elements from Swift code. It maintains a reference
 /// to the underlying JavaScript array and provides Swift-friendly APIs for common array operations.
 public struct JavaScriptArray: JavaScriptType, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  /// Handle to the runtime the array belongs to.
+  internal let runtimeHandle: JavaScriptRuntimeHandle
+
+  /// The runtime the array belongs to, or `nil` if it has been deallocated. Prefer ``jsiRuntime`` on
+  /// hot paths: it costs no reference counting.
+  internal var runtime: JavaScriptRuntime? {
+    return runtimeHandle.runtime
+  }
+
+  /// The engine runtime the array belongs to, or `nil` if the runtime has been deallocated.
+  internal var jsiRuntime: facebook.jsi.IRuntime? {
+    return runtimeHandle.pointee
+  }
   internal let pointee: facebook.jsi.Array
 
   /// Creates a new JavaScript array with the specified length.
@@ -53,7 +65,13 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// - Note: The `pointee` parameter uses consuming ownership, meaning the JSI array
   ///   object is moved into this structure and the caller's copy is invalidated.
   internal init(_ runtime: JavaScriptRuntime, _ pointee: consuming facebook.jsi.Array) {
-    self.runtime = runtime
+    self.runtimeHandle = runtime.handle
+    self.pointee = pointee
+  }
+
+  /// Creates an array from existing JSI array, which belongs to the runtime behind `runtimeHandle`.
+  internal init(_ runtimeHandle: JavaScriptRuntimeHandle, _ pointee: consuming facebook.jsi.Array) {
+    self.runtimeHandle = runtimeHandle
     self.pointee = pointee
   }
 
@@ -210,16 +228,16 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   providing the same semantics as `array.length = newValue` in JavaScript.
   public var length: Int {
     get {
-      guard let runtime else {
+      guard let jsiRuntime else {
         FatalError.runtimeLost()
       }
-      return pointee.size(runtime.pointee)
+      return pointee.size(jsiRuntime)
     }
     nonmutating set(newLength) {
-      guard let runtime else {
+      guard let jsiRuntime else {
         FatalError.runtimeLost()
       }
-      expo.setArrayLength(runtime.pointee, pointee, newLength)
+      expo.setArrayLength(jsiRuntime, pointee, newLength)
     }
   }
 
@@ -230,22 +248,22 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// - Throws: `JavaScriptArray.Errors.indexOutOfRange` if the index is negative or
   ///   greater than or equal to the array's length
   public func getValue(at index: Int) throws -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let length = self.length
     guard (0..<length).contains(index) else {
       throw Errors.indexOutOfRange(index: index, length: length)
     }
-    return JavaScriptValue(runtime, pointee.getValueAtIndex(runtime.pointee, index))
+    return JavaScriptValue(runtimeHandle, pointee.getValueAtIndex(jsiRuntime, index))
   }
 
   /// Returns the value at the given index without bounds-checking. Used by the iteration
   /// helpers (`map`, `forEach`, `reduce`, `filter`, `enumerated`) which iterate
   /// `0..<length` and never produce an out-of-range index. Skipping the redundant bounds
   /// check avoids a weak-runtime load on every element on the hot path.
-  internal func getValueUnchecked(at index: Int, in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    return JavaScriptValue(runtime, pointee.getValueAtIndex(runtime.pointee, index))
+  internal func getValueUnchecked(at index: Int, in jsiRuntime: facebook.jsi.IRuntime) -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, pointee.getValueAtIndex(jsiRuntime, index))
   }
 
   /// Sets the element at the specified index.
@@ -305,13 +323,13 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
       return (try? self.getValue(at: index)) ?? .undefined
     }
     nonmutating set {
-      guard let runtime else {
+      guard let jsiRuntime else {
         FatalError.runtimeLost()
       }
       if index >= length {
         self.length = index + 1
       }
-      expo.setValueAtIndex(runtime.pointee, pointee, index, newValue.pointee)
+      expo.setValueAtIndex(jsiRuntime, pointee, index, newValue.pointee)
     }
   }
 
@@ -401,18 +419,18 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   array elements by index, use the numeric subscript `array[0]` instead of `array["0"]`.
   public subscript(key: String) -> JavaScriptValue {
     get {
-      guard let runtime else {
+      guard let jsiRuntime else {
         FatalError.runtimeLost()
       }
-      let jsiValue = expo.getProperty(runtime.pointee, pointee, key.toJSIPropNameID(in: runtime.pointee))
-      return JavaScriptValue(runtime, jsiValue)
+      let jsiValue = expo.getProperty(jsiRuntime, pointee, key.toJSIPropNameID(in: jsiRuntime))
+      return JavaScriptValue(runtimeHandle, jsiValue)
     }
     nonmutating set(newValue) {
-      guard let runtime else {
+      guard let jsiRuntime else {
         FatalError.runtimeLost()
       }
-      let jsiValue = newValue.toJSIValue(in: runtime.pointee)
-      expo.setProperty(runtime.pointee, pointee, key.toJSIPropNameID(in: runtime.pointee), jsiValue)
+      let jsiValue = newValue.toJSIValue(in: jsiRuntime)
+      expo.setProperty(jsiRuntime, pointee, key.toJSIPropNameID(in: jsiRuntime), jsiValue)
     }
   }
 
@@ -429,14 +447,14 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// - Note: This method uses Swift's standard `map` semantics and follows the `rethrows`
   ///   pattern, meaning it only throws if the transform closure throws.
   public func map<T>(_ transform: (_ value: JavaScriptValue) throws -> T) rethrows -> [T] {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let count = self.length
     var result: [T] = []
     result.reserveCapacity(count)
     for index in 0..<count {
-      let value = getValueUnchecked(at: index, in: runtime)
+      let value = getValueUnchecked(at: index, in: jsiRuntime)
       result.append(try transform(value))
     }
     return result
@@ -449,10 +467,10 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   array, so modifications to the array in JavaScript will be reflected in the value.
   /// - SeeAlso: `JavaScriptValue.getArray()` for the inverse operation
   public func asValue() -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, expo.valueFromArray(runtime.pointee, pointee))
+    return JavaScriptValue(runtimeHandle, expo.valueFromArray(jsiRuntime, pointee))
   }
 
   /// Converts the array to a `JavaScriptObject`.
@@ -509,38 +527,38 @@ extension JavaScriptArray {
   ///
   /// - Note: Eagerly evaluates all elements. For large arrays, prefer `forEach(_:)`.
   public func enumerated() -> [(offset: Int, element: JavaScriptValue)] {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let count = self.length
     var result: [(offset: Int, element: JavaScriptValue)] = []
     result.reserveCapacity(count)
     for index in 0..<count {
-      result.append((offset: index, element: getValueUnchecked(at: index, in: runtime)))
+      result.append((offset: index, element: getValueUnchecked(at: index, in: jsiRuntime)))
     }
     return result
   }
 
   /// Calls the given closure on each element in the array.
   public func forEach(_ body: (JavaScriptValue) throws -> Void) rethrows {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let count = self.length
     for index in 0..<count {
-      try body(getValueUnchecked(at: index, in: runtime))
+      try body(getValueUnchecked(at: index, in: jsiRuntime))
     }
   }
 
   /// Returns an array of elements satisfying the given predicate.
   public func filter(_ isIncluded: (JavaScriptValue) throws -> Bool) rethrows -> [JavaScriptValue] {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let count = self.length
     var result: [JavaScriptValue] = []
     for index in 0..<count {
-      let value = getValueUnchecked(at: index, in: runtime)
+      let value = getValueUnchecked(at: index, in: jsiRuntime)
       if try isIncluded(value) {
         result.append(value)
       }
@@ -552,13 +570,13 @@ extension JavaScriptArray {
   public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, JavaScriptValue) throws -> Result)
     rethrows -> Result
   {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let count = self.length
     var result = initialResult
     for index in 0..<count {
-      result = try nextPartialResult(result, getValueUnchecked(at: index, in: runtime))
+      result = try nextPartialResult(result, getValueUnchecked(at: index, in: jsiRuntime))
     }
     return result
   }

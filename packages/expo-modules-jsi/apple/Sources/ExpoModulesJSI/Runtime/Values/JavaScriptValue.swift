@@ -305,11 +305,11 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   /// Returns the value as an array, or asserts if not an array.
   public func getArray() -> JavaScriptArray {
-    guard let runtime else {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }
     assert(isArray(), "Value is not an array")
-    return JavaScriptArray(runtime, pointee.getObject(runtime.pointee).getArray(runtime.pointee))
+    return JavaScriptArray(runtimeHandle, pointee.getObject(jsiRuntime).getArray(jsiRuntime))
   }
 
   /// Returns the value as a function, or asserts if not a function.

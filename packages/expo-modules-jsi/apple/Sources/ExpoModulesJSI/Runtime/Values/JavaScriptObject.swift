@@ -100,11 +100,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the object as an array, or asserts if not an array.
   public func getArray() -> JavaScriptArray {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     assert(isArray(), "Object is not an array")
-    return JavaScriptArray(runtime, pointee.getArray(runtime.pointee))
+    return JavaScriptArray(runtimeHandle, pointee.getArray(jsiRuntime))
   }
 
   /// Returns the object as a function, or asserts if not a function.
