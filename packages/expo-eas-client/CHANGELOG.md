@@ -1,17 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
-- [iOS] Add privacy manifest describing required reason API usage. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
-
 ## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
