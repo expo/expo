@@ -400,6 +400,7 @@ export declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEve
   /**
    * @hidden
    */
+  acknowledgeBackgroundCompletionAsync(): Promise<void>;
   cancel(): void;
 }
 

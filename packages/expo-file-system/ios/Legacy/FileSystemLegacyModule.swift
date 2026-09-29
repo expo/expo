@@ -287,26 +287,13 @@ public final class FileSystemLegacyModule: Module {
         localUrl: localUrl,
         shouldCalculateMd5: options.md5,
         onWriteCallback: onWrite,
-        onFinishCallback: { id, succeeded in
-          ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
-            .finishDownload(id, succeeded: succeeded)
-        },
         resumableManager: taskHandlersManager,
         uuid: uuid
       )
 
       sessionTaskDispatcher.register(taskDelegate, for: task)
       taskHandlersManager.register(task, uuid: uuid)
-      if options.deferBackgroundSessionCompletion, let identifier = session.configuration.identifier {
-        ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
-          .registerDownload(uuid, forSessionIdentifier: identifier)
-      }
       task.resume()
-    }
-
-    AsyncFunction("completeBackgroundSessionAsync") { (uuid: String) in
-      ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
-        .completeDownload(uuid)
     }
 
     AsyncFunction("downloadResumablePauseAsync") { (id: String) -> [String: String?] in
@@ -314,8 +301,6 @@ public final class FileSystemLegacyModule: Module {
         throw DownloadTaskNotFoundException(id)
       }
       let resumeData = await task.cancelByProducingResumeData()
-      ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
-        .discardDownload(id)
 
       return [
         "resumeData": resumeData?.base64EncodedString()
@@ -324,8 +309,6 @@ public final class FileSystemLegacyModule: Module {
 
     AsyncFunction("networkTaskCancelAsync") { (id: String) in
       taskHandlersManager.task(forId: id)?.cancel()
-      ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)?
-        .discardDownload(id)
     }
 
     AsyncFunction("getFreeDiskStorageAsync") { () -> Int64 in

@@ -7,7 +7,6 @@
 
 @property (strong, nonatomic) NSURL *localUrl;
 @property (nonatomic) BOOL shouldCalculateMd5;
-@property (nonatomic, readwrite) BOOL didSaveFile;
 
 @end
 
@@ -48,7 +47,6 @@
     return;
   }
 
-  self.didSaveFile = YES;
   self.resolve([self parseServerResponse:downloadTask.response]);
 }
 

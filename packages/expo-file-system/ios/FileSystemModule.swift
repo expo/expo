@@ -569,7 +569,7 @@ public final class FileSystemModule: Module {
       AsyncFunction("start") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) in
         try to.validatePermission(.write)
         task.start(url: url, to: to, options: options, promise: promise)
-      }
+      }.runOnQueue(.main)
 
       AsyncFunction("pause") { (task: FileSystemDownloadTask) -> [String: String?] in
         return await task.pause()
@@ -578,7 +578,11 @@ public final class FileSystemModule: Module {
       AsyncFunction("resume") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?, promise: Promise) in
         try to.validatePermission(.write)
         task.resume(url: url, to: to, resumeData: resumeData, options: options, promise: promise)
-      }
+      }.runOnQueue(.main)
+
+      AsyncFunction("acknowledgeBackgroundCompletionAsync") { (task: FileSystemDownloadTask) in
+        try task.acknowledgeBackgroundCompletion()
+      }.runOnQueue(.main)
 
       Function("cancel") { (task: FileSystemDownloadTask) in
         task.cancel()

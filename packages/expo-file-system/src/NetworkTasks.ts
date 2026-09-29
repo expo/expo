@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import type { EventSubscription } from 'expo-modules-core';
 
 import { Directory } from './Directory';
@@ -254,6 +255,27 @@ export class DownloadTask {
   }
 
   /**
+   * Acknowledges that processing this successful download has finished.
+   * Requires `deferBackgroundSessionCompletion`. Call after `downloadAsync()` or `resumeAsync()`
+   * resolves, normally in a `finally` block around processing. Early calls reject; repeated calls
+   * after completion are harmless. Android and foreground sessions require no acknowledgment.
+   * @platform ios
+   */
+  async acknowledgeBackgroundCompletionAsync(): Promise<void> {
+    if (
+      Platform.OS !== 'ios' ||
+      !this._options?.deferBackgroundSessionCompletion ||
+      this._options?.sessionType === 'foreground'
+    ) {
+      return;
+    }
+    if (this._state !== 'completed') {
+      throw new Error('Background completion can only be acknowledged after a successful download');
+    }
+    await this._nativeTask.acknowledgeBackgroundCompletionAsync();
+  }
+
+  /**
    * Starts the download operation.
    *
    * This method can only be called once, while the task is `idle`. The promise resolves with
@@ -272,6 +294,7 @@ export class DownloadTask {
       this._nativeTask.start(this._url, this._destination, {
         headers: this._options?.headers,
         sessionType: this._options?.sessionType,
+        deferBackgroundSessionCompletion: this._options?.deferBackgroundSessionCompletion,
       })
     );
     this._inFlightOperation = operation;
@@ -328,6 +351,7 @@ export class DownloadTask {
       this._nativeTask.resume(this._url, this._destination, this._resumeData!, {
         headers: this._options?.headers,
         sessionType: this._options?.sessionType,
+        deferBackgroundSessionCompletion: this._options?.deferBackgroundSessionCompletion,
       })
     );
     this._inFlightOperation = operation;
@@ -468,7 +492,10 @@ export class DownloadTask {
     // the event can race with promise resolution (listener removed before delivery).
     if (this._options?.onProgress) {
       if (fileSize > 0) {
-        this._options.onProgress({ bytesWritten: fileSize, totalBytes: fileSize });
+        this._options.onProgress({
+          bytesWritten: fileSize,
+          totalBytes: fileSize,
+        });
       }
     }
   }

@@ -210,3 +210,9 @@ internal final class FilePreviewInvalidInputException: GenericException<String>,
     param
   }
 }
+
+internal final class BackgroundDownloadNotFinishedException: Exception {
+  override var reason: String {
+    "Background completion can only be acknowledged after the download finishes"
+  }
+}
