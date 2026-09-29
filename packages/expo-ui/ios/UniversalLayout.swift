@@ -84,23 +84,39 @@ internal struct UniversalLayoutModifier: ViewModifier, Record {
 
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ResolvedUniversalLayout<Content: View>: View {
+  @Environment(\.universalPercentageParent) private var resolvesPercentages
   let dimensions: UniversalLayoutDimensions
   let content: Content
 
   var body: some View {
-    UniversalPercentageLayout(dimensions: dimensions) {
+    UniversalPercentageLayout(dimensions: dimensions, resolvesPercentages: resolvesPercentages) {
       content
     }
     .layoutValue(key: UniversalLayoutDimensionsKey.self, value: dimensions)
   }
 }
 
+private struct UniversalPercentageParentKey: EnvironmentKey {
+  static let defaultValue = false
+}
+
+extension EnvironmentValues {
+  /// Set by `Host` and by universal `Row` / `Column`.
+  /// A platform stack sets it back to false, so a percentage there keeps the child's own size.
+  var universalPercentageParent: Bool {
+    get { self[UniversalPercentageParentKey.self] }
+    set { self[UniversalPercentageParentKey.self] = newValue }
+  }
+}
+
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 internal struct UniversalPercentageLayout: Layout {
   let dimensions: UniversalLayoutDimensions
+  let resolvesPercentages: Bool
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     guard let subview = subviews.first else { return .zero }
+    guard resolvesPercentages else { return subview.sizeThatFits(proposal) }
     let resolvedProposal = proposal.resolving(dimensions)
     let childSize = subview.sizeThatFits(resolvedProposal)
     return CGSize(
@@ -111,20 +127,24 @@ internal struct UniversalPercentageLayout: Layout {
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
     guard let subview = subviews.first else { return }
-    subview.place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
+    let childProposal = resolvesPercentages ? ProposedViewSize(bounds.size) : proposal
+    subview.place(at: bounds.origin, proposal: childProposal)
   }
 }
 
 /**
- Opt-in replacement for `HStack`. Universal `Row` uses it so a child percentage is a fraction of this stack.
- A SwiftUI `HStack` does not. Children without a percentage keep their ideal size.
+ Opt-in replacement for `HStack`.
+ Universal `Row` uses it so a child percentage is a fraction of this stack.
+ A child that grows on the main axis, such as `Spacer`, shares the leftover space.
+ The cross axis gets the size this stack was offered, so text can wrap.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 internal struct ParentAwareHStackLayout: Layout {
   let alignment: VerticalAlignmentOptions
   let spacing: CGFloat?
-  let layoutDirection: LayoutDirection
   let ownDimensions: UniversalLayoutDimensions
+  // A fraction counts only after a universal parent has resolved it.
+  let resolvesOwnPercentage: Bool
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     measure(proposal: proposal, subviews: subviews).size
@@ -132,39 +152,33 @@ internal struct ParentAwareHStackLayout: Layout {
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
     let measurement = measure(proposal: ProposedViewSize(bounds.size), subviews: subviews)
-    var cursor = layoutDirection == .rightToLeft ? bounds.maxX : bounds.minX
+    // minX stays leading.
+    // SwiftUI mirrors a custom layout in right-to-left.
+    var cursor = bounds.minX
     for index in subviews.indices {
       let size = measurement.sizes[index]
-      if layoutDirection == .rightToLeft { cursor -= size.width }
       let y = bounds.minY + verticalOffset(
         for: index,
         containerHeight: bounds.height,
         measurement: measurement
       )
       subviews[index].place(at: CGPoint(x: cursor, y: y), proposal: measurement.proposals[index])
-      if layoutDirection == .rightToLeft {
-        cursor -= measurement.spacings[index]
-      } else {
-        cursor += size.width + measurement.spacings[index]
-      }
+      cursor += size.width + measurement.spacings[index]
     }
   }
 
   private func measure(proposal: ProposedViewSize, subviews: Subviews) -> StackMeasurement {
-    let definiteWidth = ownDimensions.hasWidth ? finite(proposal.width) : nil
-    let definiteHeight = ownDimensions.hasHeight ? finite(proposal.height) : nil
-    let proposals = subviews.map {
-      proposalForSubview(
-        $0,
-        parentWidth: definiteWidth,
-        parentHeight: definiteHeight,
-        unconstrainedAxis: .horizontal
-      )
-    }
-    let viewDimensions = zip(subviews, proposals).map { $0.dimensions(in: $1) }
-    let sizes = viewDimensions.map { CGSize(width: $0.width, height: $0.height) }
     let spacings = stackSpacings(subviews: subviews, axis: .horizontal, explicit: spacing)
-    let contentWidth = sizes.reduce(0) { $0 + $1.width } + spacings.reduce(0, +)
+    let measured = measureChildren(
+      subviews: subviews,
+      proposal: proposal,
+      ownDimensions: ownDimensions,
+      resolvesOwnPercentage: resolvesOwnPercentage,
+      spacings: spacings,
+      axis: .horizontal
+    )
+    let proposals = measured.children.map(\.proposal)
+    let viewDimensions = zip(subviews, proposals).map { $0.dimensions(in: $1) }
     let contentHeight: CGFloat
     if alignment == .firstTextBaseline || alignment == .lastTextBaseline {
       let guide = alignment.toVerticalAlignment()
@@ -172,11 +186,14 @@ internal struct ParentAwareHStackLayout: Layout {
       let below = viewDimensions.map { $0.height - $0[guide] }.max() ?? 0
       contentHeight = above + below
     } else {
-      contentHeight = sizes.map(\.height).max() ?? 0
+      contentHeight = measured.contentCross
     }
     return StackMeasurement(
-      size: CGSize(width: definiteWidth ?? contentWidth, height: definiteHeight ?? contentHeight),
-      sizes: sizes,
+      size: CGSize(
+        width: measured.definiteMain ?? measured.contentMain,
+        height: measured.definiteCross ?? contentHeight
+      ),
+      sizes: measured.children.map(\.size),
       proposals: proposals,
       spacings: spacings,
       dimensions: viewDimensions
@@ -211,8 +228,9 @@ internal struct ParentAwareHStackLayout: Layout {
 internal struct ParentAwareVStackLayout: Layout {
   let alignment: HorizontalAlignmentOptions
   let spacing: CGFloat?
-  let layoutDirection: LayoutDirection
   let ownDimensions: UniversalLayoutDimensions
+  // A fraction counts only after a universal parent has resolved it.
+  let resolvesOwnPercentage: Bool
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
     measure(proposal: proposal, subviews: subviews).size
@@ -230,38 +248,38 @@ internal struct ParentAwareVStackLayout: Layout {
   }
 
   private func measure(proposal: ProposedViewSize, subviews: Subviews) -> StackMeasurement {
-    let definiteWidth = ownDimensions.hasWidth ? finite(proposal.width) : nil
-    let definiteHeight = ownDimensions.hasHeight ? finite(proposal.height) : nil
-    let proposals = subviews.map {
-      proposalForSubview(
-        $0,
-        parentWidth: definiteWidth,
-        parentHeight: definiteHeight,
-        unconstrainedAxis: .vertical
-      )
-    }
-    let viewDimensions = zip(subviews, proposals).map { $0.dimensions(in: $1) }
-    let sizes = viewDimensions.map { CGSize(width: $0.width, height: $0.height) }
     let spacings = stackSpacings(subviews: subviews, axis: .vertical, explicit: spacing)
-    let contentWidth = sizes.map(\.width).max() ?? 0
-    let contentHeight = sizes.reduce(0) { $0 + $1.height } + spacings.reduce(0, +)
+    let measured = measureChildren(
+      subviews: subviews,
+      proposal: proposal,
+      ownDimensions: ownDimensions,
+      resolvesOwnPercentage: resolvesOwnPercentage,
+      spacings: spacings,
+      axis: .vertical
+    )
+    let proposals = measured.children.map(\.proposal)
     return StackMeasurement(
-      size: CGSize(width: definiteWidth ?? contentWidth, height: definiteHeight ?? contentHeight),
-      sizes: sizes,
+      size: CGSize(
+        width: measured.definiteCross ?? measured.contentCross,
+        height: measured.definiteMain ?? measured.contentMain
+      ),
+      sizes: measured.children.map(\.size),
       proposals: proposals,
       spacings: spacings,
-      dimensions: viewDimensions
+      dimensions: zip(subviews, proposals).map { $0.dimensions(in: $1) }
     )
   }
 
   private func horizontalOffset(childWidth: CGFloat, containerWidth: CGFloat) -> CGFloat {
+    // minX is leading.
+    // SwiftUI mirrors the layout in right-to-left.
     switch alignment {
     case .center:
       return (containerWidth - childWidth) / 2
     case .leading:
-      return layoutDirection == .rightToLeft ? containerWidth - childWidth : 0
+      return 0
     case .trailing:
-      return layoutDirection == .rightToLeft ? 0 : containerWidth - childWidth
+      return containerWidth - childWidth
     }
   }
 }
@@ -276,19 +294,135 @@ private struct StackMeasurement {
 }
 
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
-private func proposalForSubview(
-  _ subview: LayoutSubview,
-  parentWidth: CGFloat?,
-  parentHeight: CGFloat?,
-  unconstrainedAxis: Axis
-) -> ProposedViewSize {
-  let dimensions = subview[UniversalLayoutDimensionsKey.self]
-  let width = dimensions.widthFraction != nil ? parentWidth : nil
-  let height = dimensions.heightFraction != nil ? parentHeight : nil
-  return ProposedViewSize(
-    width: unconstrainedAxis == .horizontal && dimensions.widthFraction == nil ? nil : width,
-    height: unconstrainedAxis == .vertical && dimensions.heightFraction == nil ? nil : height
+private struct MeasuredChild {
+  var size: CGSize
+  var proposal: ProposedViewSize
+  /// Cross-axis size counted toward the stack.
+  /// A flexible child uses its ideal cross size, so `Spacer` does not stretch the other axis.
+  var crossContribution: CGFloat
+}
+
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private struct MeasuredChildren {
+  var children: [MeasuredChild]
+  var contentMain: CGFloat
+  var contentCross: CGFloat
+  var definiteMain: CGFloat?
+  var definiteCross: CGFloat?
+}
+
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private func measureChildren(
+  subviews: LayoutSubviews,
+  proposal: ProposedViewSize,
+  ownDimensions: UniversalLayoutDimensions,
+  resolvesOwnPercentage: Bool,
+  spacings: [CGFloat],
+  axis: Axis
+) -> MeasuredChildren {
+  let offeredMain = finite(axis == .horizontal ? proposal.width : proposal.height)
+  let offeredCross = finite(axis == .horizontal ? proposal.height : proposal.width)
+  // Points are this stack's fixed frame.
+  // A fraction is too, but only after a universal parent resolves it.
+  let ownMainPoints = axis == .horizontal ? ownDimensions.widthPoints : ownDimensions.heightPoints
+  let ownMainFraction = axis == .horizontal ? ownDimensions.widthFraction : ownDimensions.heightFraction
+  let ownCrossPoints = axis == .horizontal ? ownDimensions.heightPoints : ownDimensions.widthPoints
+  let ownCrossFraction = axis == .horizontal ? ownDimensions.heightFraction : ownDimensions.widthFraction
+  let definiteMain = (ownMainPoints != nil || (ownMainFraction != nil && resolvesOwnPercentage)) ? offeredMain : nil
+  let definiteCross = (ownCrossPoints != nil || (ownCrossFraction != nil && resolvesOwnPercentage)) ? offeredCross : nil
+
+  var children: [MeasuredChild] = []
+  children.reserveCapacity(subviews.count)
+  var flexibleIndices: [Int] = []
+
+  for index in subviews.indices {
+    let subview = subviews[index]
+    let dimensions = subview[UniversalLayoutDimensionsKey.self]
+    let mainFraction = axis == .horizontal ? dimensions.widthFraction : dimensions.heightFraction
+    let crossFraction = axis == .horizontal ? dimensions.heightFraction : dimensions.widthFraction
+    // A fraction resolves only against this stack's own size.
+    // Every other child still gets the offered cross size, so text can wrap.
+    let crossProposal = crossFraction != nil ? definiteCross : offeredCross
+
+    if mainFraction != nil, let definiteMain {
+      let childProposal = proposedSize(main: definiteMain, cross: crossProposal, axis: axis)
+      let size = subview.sizeThatFits(childProposal)
+      children.append(MeasuredChild(
+        size: size,
+        proposal: childProposal,
+        crossContribution: crossLength(size, axis: axis)
+      ))
+      continue
+    }
+
+    let idealProposal = proposedSize(main: nil, cross: crossProposal, axis: axis)
+    let ideal = subview.sizeThatFits(idealProposal)
+    let maxProposal = proposedSize(main: .infinity, cross: crossProposal, axis: axis)
+    let maxed = subview.sizeThatFits(maxProposal)
+    let idealMain = mainLength(ideal, axis: axis)
+    let maxMain = mainLength(maxed, axis: axis)
+    let flexible = offeredMain != nil && (maxMain.isInfinite || maxMain > idealMain + 1)
+    if flexible {
+      flexibleIndices.append(index)
+      let unspecified = subview.sizeThatFits(proposedSize(main: nil, cross: nil, axis: axis))
+      children.append(MeasuredChild(
+        size: ideal,
+        proposal: idealProposal,
+        crossContribution: crossLength(unspecified, axis: axis)
+      ))
+    } else {
+      children.append(MeasuredChild(
+        size: ideal,
+        proposal: idealProposal,
+        crossContribution: crossLength(ideal, axis: axis)
+      ))
+    }
+  }
+
+  if let offeredMain, !flexibleIndices.isEmpty {
+    let fixedMain = children.enumerated().reduce(CGFloat(0)) { total, item in
+      flexibleIndices.contains(item.offset) ? total : total + mainLength(item.element.size, axis: axis)
+    }
+    var remaining = max(0, offeredMain - fixedMain - spacings.reduce(0, +))
+    for (offset, index) in flexibleIndices.enumerated() {
+      let slotsLeft = flexibleIndices.count - offset
+      let share = slotsLeft == 1 ? remaining : (remaining / CGFloat(slotsLeft)).rounded(.down)
+      remaining -= share
+      let childProposal = proposedSize(main: share, cross: nil, axis: axis)
+      children[index].size = subviews[index].sizeThatFits(childProposal)
+      children[index].proposal = childProposal
+    }
+  }
+
+  let contentMain = children.reduce(CGFloat(0)) { $0 + mainLength($1.size, axis: axis) } + spacings.reduce(0, +)
+  let contentCross = children.map(\.crossContribution).max() ?? 0
+  return MeasuredChildren(
+    children: children,
+    contentMain: contentMain,
+    contentCross: contentCross,
+    definiteMain: definiteMain,
+    definiteCross: definiteCross
   )
+}
+
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private func proposedSize(main: CGFloat?, cross: CGFloat?, axis: Axis) -> ProposedViewSize {
+  switch axis {
+  case .horizontal:
+    return ProposedViewSize(width: main, height: cross)
+  case .vertical:
+    return ProposedViewSize(width: cross, height: main)
+  }
+}
+
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private func mainLength(_ size: CGSize, axis: Axis) -> CGFloat {
+  axis == .horizontal ? size.width : size.height
+}
+
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private func crossLength(_ size: CGSize, axis: Axis) -> CGFloat {
+  axis == .horizontal ? size.height : size.width
 }
 
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)

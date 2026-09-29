@@ -36,7 +36,8 @@ public final class HStackViewProps: UIBaseViewProps {
 
 public struct HStackView: ExpoSwiftUI.View {
   @ObservedObject public var props: HStackViewProps
-  @Environment(\.layoutDirection) private var layoutDirection
+  // A fraction on this stack is a real size only when the parent opted in.
+  @Environment(\.universalPercentageParent) private var resolvesOwnPercentage
 
   public init(props: HStackViewProps) {
     self.props = props
@@ -48,11 +49,12 @@ public struct HStackView: ExpoSwiftUI.View {
         ParentAwareHStackLayout(
           alignment: props.alignment ?? .center,
           spacing: props.spacing.map { CGFloat($0) },
-          layoutDirection: layoutDirection,
-          ownDimensions: universalLayoutDimensions(from: props.modifiers)
+          ownDimensions: universalLayoutDimensions(from: props.modifiers),
+          resolvesOwnPercentage: resolvesOwnPercentage
         ) {
           Children()
         }
+        .environment(\.universalPercentageParent, true)
       } else {
         platformStack
       }
@@ -68,5 +70,7 @@ public struct HStackView: ExpoSwiftUI.View {
     ) {
       Children()
     }
+    // Overrides a Host, so a percentage inside a SwiftUI stack keeps the child's own size.
+    .environment(\.universalPercentageParent, false)
   }
 }
