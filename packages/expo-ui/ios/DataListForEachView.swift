@@ -3,7 +3,26 @@
 import ExpoModulesCore
 import SwiftUI
 
+// The axis the rows scroll along: vertical in `List` and `LazyVStack`, horizontal in `LazyHStack`.
+enum DataListForEachAxis: String, Enumerable {
+  case vertical
+  case horizontal
+}
+
+private struct ContainerCrossAxisSizeKey: EnvironmentKey {
+  static let defaultValue: CGFloat = 0
+}
+
+extension EnvironmentValues {
+  // Set by `ListView`, `LazyVStackView` and `LazyHStackView`, so recycled rows reset their cached sizes when it changes.
+  var containerCrossAxisSize: CGFloat {
+    get { self[ContainerCrossAxisSizeKey.self] }
+    set { self[ContainerCrossAxisSizeKey.self] = newValue }
+  }
+}
+
 final class DataListForEachProps: UIBaseViewProps {
+  @Field var axis: DataListForEachAxis = .vertical
   @Field var itemKeys: [String] = []
   @Field var revision: Int = 0
   @Field var estimatedItemSize: Double = 64
@@ -79,6 +98,7 @@ private struct DataListForEachRow: View {
   @ObservedObject var listProps: DataListForEachProps
   @ObservedObject var poolProps: DataListForEachPoolProps
   let window: DataListForEachWindow
+  @Environment(\.containerCrossAxisSize) private var crossAxisSize
   @State private var appeared = false
   @State private var visibilityID = UUID()
 
@@ -99,31 +119,43 @@ private struct DataListForEachRow: View {
           itemKey: itemKey,
           index: index,
           revision: listProps.revision,
-          estimatedHeight: CGFloat(listProps.estimatedItemSize),
+          estimatedSize: CGFloat(listProps.estimatedItemSize),
+          axis: listProps.axis,
           window: window
         )
       } else {
-        Color.clear
-          .frame(height: window.height(for: itemKey, fallback: listProps.estimatedItemSize))
-          .accessibilityHidden(true)
+        DataListForEachPlaceholder(
+          size: window.size(for: itemKey, fallback: listProps.estimatedItemSize),
+          axis: listProps.axis
+        )
       }
     }
-    .frame(maxWidth: .infinity, alignment: .leading)
     .onAppear {
       appeared = true
+      window.updateCrossAxisSize(crossAxisSize)
       window.appear(itemKey, index: index, token: visibilityID, props: listProps)
     }
+    .onChange(of: crossAxisSize) { window.updateCrossAxisSize($0) }
     .onChange(of: listProps.revision) { _ in
       window.reset(listProps)
       if appeared { window.appear(itemKey, index: index, token: visibilityID, props: listProps) }
     }
-    .onGeometryChange(for: CGFloat.self, of: { $0.size.width }, action: { width in
-      window.updateWidth(width)
-    })
     .onDisappear {
       appeared = false
       window.disappear(itemKey, token: visibilityID)
     }
+  }
+}
+
+private struct DataListForEachPlaceholder: View {
+  let size: CGFloat
+  let axis: DataListForEachAxis
+
+  // Sized along the scroll axis only, so it never stretches a lazy stack across it.
+  var body: some View {
+    Color.clear
+      .frame(width: axis == .horizontal ? size : 0, height: axis == .horizontal ? 0 : size)
+      .accessibilityHidden(true)
   }
 }
 
@@ -132,7 +164,8 @@ private struct DataListForEachSlotContent: View {
   let itemKey: String
   let index: Int
   let revision: Int
-  let estimatedHeight: CGFloat
+  let estimatedSize: CGFloat
+  let axis: DataListForEachAxis
   let window: DataListForEachWindow
   // we use this state so swiftui re-layouts when the slot is reused for a different item
   @State private var showsContent = false
@@ -146,14 +179,17 @@ private struct DataListForEachSlotContent: View {
       if showsContent {
         DataListForEachItemView(props: props)
           .id(itemKey)
-          .onGeometryChange(for: CGFloat.self, of: { $0.size.height }, action: { height in
-            window.measure(height, for: itemKey, revision: revision)
-          })
+          .onGeometryChange(
+            for: CGFloat.self,
+            of: { axis == .horizontal ? $0.size.width : $0.size.height },
+            action: { size in window.measure(size, for: itemKey, revision: revision) }
+          )
       } else {
         // Hide the previous item while JS updates this slot.
-        Color.clear
-          .frame(height: window.height(for: itemKey, fallback: Double(estimatedHeight)))
-          .accessibilityHidden(true)
+        DataListForEachPlaceholder(
+          size: window.size(for: itemKey, fallback: Double(estimatedSize)),
+          axis: axis
+        )
       }
     }
     .onAppear { showsContent = matches }
@@ -166,8 +202,9 @@ private final class DataListForEachWindow: ObservableObject {
   private weak var props: DataListForEachProps?
   private var appeared: [String: Int] = [:]
   private var visibilityTokens: [String: UUID] = [:]
-  private var heights: [String: CGFloat] = [:]
-  private var width: CGFloat = 0
+  // Row sizes along the scroll axis.
+  private var sizes: [String: CGFloat] = [:]
+  private var crossAxisSize: CGFloat = 0
   private var revision = -1
   private var pending: DispatchWorkItem?
   private var lastSent: [Int] = []
@@ -182,7 +219,7 @@ private final class DataListForEachWindow: ObservableObject {
       return
     }
     revision = props.revision
-    heights.removeAll()
+    sizes.removeAll()
     let positions = Dictionary(uniqueKeysWithValues: props.itemKeys.enumerated().map { ($0.element, $0.offset) })
     appeared = positions.filter { appeared[$0.key] != nil }
     visibilityTokens = visibilityTokens.filter { positions[$0.key] != nil }
@@ -190,12 +227,12 @@ private final class DataListForEachWindow: ObservableObject {
     schedule()
   }
 
-  func updateWidth(_ newWidth: CGFloat) {
-    if width != newWidth {
-      if width > 0 {
-        heights.removeAll()
+  func updateCrossAxisSize(_ newSize: CGFloat) {
+    if crossAxisSize != newSize {
+      if crossAxisSize > 0 {
+        sizes.removeAll()
       }
-      width = newWidth
+      crossAxisSize = newSize
     }
   }
 
@@ -220,15 +257,15 @@ private final class DataListForEachWindow: ObservableObject {
     schedule()
   }
 
-  func height(for key: String, fallback: Double) -> CGFloat {
-    heights[key] ?? CGFloat(fallback)
+  func size(for key: String, fallback: Double) -> CGFloat {
+    sizes[key] ?? CGFloat(fallback)
   }
 
-  func measure(_ height: CGFloat, for key: String, revision: Int) {
-    guard revision == self.revision, height.isFinite, height > 0 else {
+  func measure(_ size: CGFloat, for key: String, revision: Int) {
+    guard revision == self.revision, size.isFinite, size > 0 else {
       return
     }
-    heights[key] = height
+    sizes[key] = size
   }
 
   private func schedule() {
