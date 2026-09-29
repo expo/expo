@@ -122,7 +122,12 @@ class EventDispatcher(
       .post(body.toRequestBody("application/json".toMediaType()))
       .build()
 
-    Log.d(OBSERVE_TAG, body)
+    // Only in debug builds, matching iOS (`#if DEBUG` in `DispatchUtils.swift`). The body carries
+    // every event in the batch, including error messages, so release builds must not write it
+    // to logcat.
+    if (BuildConfig.DEBUG) {
+      Log.d(OBSERVE_TAG, body)
+    }
 
     val call = httpClient.newCall(request)
 

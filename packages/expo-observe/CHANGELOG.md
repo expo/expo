@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Stop logging the full request payload to logcat in release builds. ([#50703](https://github.com/expo/expo/issues/50703) by [@ankeshshankar](https://github.com/ankeshshankar))
+
 ### 💡 Others
 
 ## 58.0.10 — 2026-09-28
