@@ -4,6 +4,8 @@ import ExpoModulesCore
 final class BackgroundPermissionsRequester: NSObject, EXPermissionsRequester {
   private let locationManager: CLLocationManager
   private var wasAsked = false
+  // Only accessed from the main thread, so it does not need to be synchronized
+  private var pendingRequests: [(resolve: EXPromiseResolveBlock, reject: EXPromiseRejectBlock)] = []
 
   private lazy var alwaysAuthorizationRequest = LocationManagerAlwaysAuthorizationRequest(locationManager: locationManager)
 
@@ -48,13 +50,27 @@ final class BackgroundPermissionsRequester: NSObject, EXPermissionsRequester {
       guard let self else {
         return
       }
+      let isPromptAlreadyRequested = !pendingRequests.isEmpty
+      pendingRequests.append((resolve, reject))
+      if isPromptAlreadyRequested {
+        return
+      }
       do {
-        try await self.alwaysAuthorizationRequest.request()
-        self.wasAsked = true
-        resolve(self.currentResponse().toDictionary())
+        try await alwaysAuthorizationRequest.request()
+        wasAsked = true
+        let response = currentResponse().toDictionary()
+        let requests = pendingRequests
+        pendingRequests = []
+        for request in requests {
+          request.resolve(response)
+        }
       } catch {
         let exception = PermissionRequestFailedException().causedBy(error)
-        reject(exception.code, exception.description, exception)
+        let requests = pendingRequests
+        pendingRequests = []
+        for request in requests {
+          request.reject(exception.code, exception.description, exception)
+        }
       }
     }
   }
