@@ -1,7 +1,7 @@
 import CoreLocation
 import ExpoModulesCore
 
-public final class LocationNextModule: Module {
+public final class LocationModuleNext: Module {
   private lazy var permissions = LocationPermissionsDelegate(appContext: appContext)
   private lazy var accessGuard = LocationAccessGuard(appContext: appContext)
 
