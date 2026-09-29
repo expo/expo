@@ -165,8 +165,8 @@ private:
   react::LayoutConstraints hostedContentConstraints(const react::ShadowNode &content) const {
     auto constraints = contentStyleConstraints(content);
 
-    // An unmatched axis has the native parent's size (from `setViewSize`), so lay the content out
-    // at exactly that size. This overrides the content's own min/max on that axis.
+    // An unmatched axis has the size SwiftUI or Compose gave the host (from `setViewSize`), so lay
+    // the content out at exactly that size. This overrides the content's own min/max on that axis.
     auto const &ownStyle = this->yogaNode_.style();
     constrainExactlyToPoints(ownStyle.dimension(facebook::yoga::Dimension::Width),
                              constraints.minimumSize.width, constraints.maximumSize.width);
