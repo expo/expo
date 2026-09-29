@@ -37,7 +37,8 @@ export function Icon({
   const modifiers = transformToModifiers(
     style,
     { onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Icon' }
   );
 
   return (

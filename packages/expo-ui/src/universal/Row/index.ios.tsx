@@ -33,7 +33,7 @@ export function Row({
     style,
     { onPress, onAppear, onDisappear, disabled, hidden, testID },
     extraModifiers,
-    { frameAlignment: frameAlignmentMap[alignment] }
+    { componentName: 'Row', frameAlignment: frameAlignmentMap[alignment] }
   );
 
   return (

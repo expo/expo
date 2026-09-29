@@ -4,14 +4,13 @@ package expo.modules.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -60,7 +59,7 @@ internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
     ?.let {
       FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
-  Row(
+  UniversalRow(
     horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
     verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
     modifier = ModifierRegistry
@@ -73,7 +72,7 @@ internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
         }
       )
   ) {
-    Children(UIComposableScope(rowScope = this@Row, nestedScrollConnection = scrollBehavior))
+    Children(UIComposableScope(nestedScrollConnection = scrollBehavior))
   }
 }
 
@@ -85,7 +84,11 @@ internal fun FunctionalComposableScope.FlowRowContent(props: LayoutProps) {
     modifier = ModifierRegistry
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(UIComposableScope(rowScope = this@FlowRow))
+    // FlowRow still uses RowScope. Clear the universal axis so weight and align
+    // keep the FlowRow scope instead of the surrounding stack's parent data.
+    CompositionLocalProvider(LocalUniversalStackAxis provides null) {
+      Children(UIComposableScope(rowScope = this@FlowRow))
+    }
   }
 }
 
@@ -96,7 +99,7 @@ internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
     ?.let {
       FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
-  Column(
+  UniversalColumn(
     verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
     horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
     modifier = ModifierRegistry
@@ -109,7 +112,7 @@ internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
         }
       )
   ) {
-    Children(UIComposableScope(columnScope = this@Column, nestedScrollConnection = scrollBehavior))
+    Children(UIComposableScope(nestedScrollConnection = scrollBehavior))
   }
 }
 
@@ -132,6 +135,8 @@ fun FunctionalComposableScope.BoxContent(props: LayoutProps) {
         }
       )
   ) {
-    Children(UIComposableScope(boxScope = this@Box, nestedScrollConnection = scrollBehavior))
+    CompositionLocalProvider(LocalUniversalStackAxis provides null) {
+      Children(UIComposableScope(boxScope = this@Box, nestedScrollConnection = scrollBehavior))
+    }
   }
 }
