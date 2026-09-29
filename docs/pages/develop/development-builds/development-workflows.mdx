@@ -38,7 +38,7 @@ To get your project's ID, use the URL in the [app config's `expo.updates.url`](/
 
 ### Deep linking to an update's URL
 
-You can load your app on a device that has a compatible build of your custom client by opening a launch URL. Launch URLs carry launcher commands in reserved query parameters that start with `__expo_`. Any URL that has at least one `__expo_*` parameter is handled by the launcher before it reaches your app.
+You can load your app on a device that has a compatible development build by opening a launch URL. In SDK 58 and later, launch URLs carry launcher commands in reserved query parameters that start with `__expo_`. The launcher handles any URL that has at least one `__expo_*` parameter before the URL reaches your app.
 
 ```text
 {scheme}://?__expo_url={manifestUrl}
@@ -66,15 +66,15 @@ All reserved parameters are optional and independent. The launcher removes them 
 | `__expo_disable_fab=1`         | Hides the Tools button (the floating button that opens the dev menu) for this launch.                   |
 | `__expo_disable_auto_launch=1` | Prevents the dev menu from opening when the app starts, for this launch.                                |
 
-`__expo_disable_fab` and `__expo_disable_auto_launch` apply to the launched process only and never change the saved dev menu settings, so a person who opens the app later still gets the menu and the Tools button. The legacy `disableFab=1` and `disableAutoLaunch=1` parameters keep updating the saved settings.
+`__expo_disable_fab` and `__expo_disable_auto_launch` apply to the launched process only and never change the saved dev menu settings. A person who opens the app later still gets the menu and the Tools button. The legacy `disableFab=1` and `disableAutoLaunch=1` parameters keep updating the saved settings.
 
 The same parameters work on Expo Go launch URLs, for example `exp://192.168.1.10:8081?__expo_disable_auto_launch=1`.
 
-> **Note:** The legacy form `{scheme}://expo-development-client/?url={manifestUrl}` keeps working, together with its `disableOnboarding=1`, `disableFab=1` and `disableAutoLaunch=1` parameters placed next to `url`. Starting with this SDK, `npx expo start` emits the `__expo_url` form.
+> **info** SDK 57 and earlier support only the legacy form `{scheme}://expo-development-client/?url={manifestUrl}`. The legacy form and its `disableOnboarding=1`, `disableFab=1`, and `disableAutoLaunch=1` parameters placed next to `url` keep working in SDK 58 and later, where `npx expo start` emits the `__expo_url` form.
 
 #### Using launch URLs in automation scenarios
 
-When launching a development build with automation, such as in a CI/CD workflow, an end-to-end test or an agent loop, add `__expo_disable_onboarding=1`, `__expo_disable_fab=1` and `__expo_disable_auto_launch=1` to the launch URL. Set `EXPO_NO_DEV_MENU=1` when you start Expo CLI to add these parameters to every launch URL, QR code and redirect for that session.
+When launching a development build with automation, such as in a CI/CD workflow, an end-to-end test, or an agent loop, add `__expo_disable_onboarding=1`, `__expo_disable_fab=1`, and `__expo_disable_auto_launch=1` to the launch URL. Set `EXPO_NO_DEV_MENU=1` when you start Expo CLI to add these parameters to every launch URL, QR code, and redirect for that session.
 
 #### App-specific deep links
 
