@@ -118,7 +118,11 @@ class DeviceModule : Module() {
 
     AsyncFunction<Double>("getMaxMemoryAsync") {
       val maxMemory = Runtime.getRuntime().maxMemory()
-      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1.0
+      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) {
+        maxMemory.toDouble()
+      } else {
+        -1.0
+      }
     }
 
     AsyncFunction<Boolean>("isRootedExperimentalAsync") {

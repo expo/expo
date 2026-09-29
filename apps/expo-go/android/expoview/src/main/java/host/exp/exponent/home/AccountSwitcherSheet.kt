@@ -164,7 +164,14 @@ private fun AccountSwitcherRowItem(
     modifier = Modifier
       .fillMaxWidth()
       .clip(shape)
-      .background(if (row.isSelected) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent, shape)
+      .background(
+        if (row.isSelected) {
+          MaterialTheme.colorScheme.surfaceVariant
+        } else {
+          Color.Transparent
+        },
+        shape
+      )
       .combinedClickable(onClick = onClick, onLongClick = onLongClick)
       .padding(8.dp)
   ) {
@@ -190,11 +197,21 @@ private fun AccountSwitcherRowItem(
 
     Icon(
       painter = painterResource(R.drawable.check),
-      contentDescription = if (row.isSelected) "Selected account" else null,
+      contentDescription = if (row.isSelected) {
+        "Selected account"
+      } else {
+        null
+      },
       tint = MaterialTheme.colorScheme.onSurfaceVariant,
       modifier = Modifier
         .size(16.dp)
-        .alpha(if (row.isSelected) 1f else 0f)
+        .alpha(
+          if (row.isSelected) {
+            1f
+          } else {
+            0f
+          }
+        )
     )
   }
 }

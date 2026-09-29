@@ -267,7 +267,11 @@ internal class FileSystemWatcher(
         isDirectory = isDirectory,
         nativeEventFlags = flags.rawValue,
         newPath = newPath,
-        newPathIsDirectory = if (newPath != null) newPathIsDirectory ?: isDirectory else null
+        newPathIsDirectory = if (newPath != null) {
+          newPathIsDirectory ?: isDirectory
+        } else {
+          null
+        }
       )
     )
   }
@@ -310,7 +314,11 @@ internal class FileSystemWatcher(
       get() = flags.isSelfEvent
 
     val selfEventType: WatchEventType
-      get() = if (flags.isSelfDelete) WatchEventType.DELETED else WatchEventType.RENAMED
+      get() = if (flags.isSelfDelete) {
+        WatchEventType.DELETED
+      } else {
+        WatchEventType.RENAMED
+      }
 
     fun resolveIsDirectory(watchedFile: File, defaultValue: Boolean): Boolean {
       return when {

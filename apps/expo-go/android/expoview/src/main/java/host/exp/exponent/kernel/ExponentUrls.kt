@@ -50,8 +50,16 @@ object ExponentUrls {
     }
     val authority = uri.rawAuthority ?: return rawUrl
     val secure = uri.scheme == "https" || uri.scheme == "exps"
-    val scheme = if (secure) "exps" else "exp"
-    val defaultPort = if (secure) ":443" else ":80"
+    val scheme = if (secure) {
+      "exps"
+    } else {
+      "exp"
+    }
+    val defaultPort = if (secure) {
+      ":443"
+    } else {
+      ":80"
+    }
     return "$scheme://${authority.removeSuffix(defaultPort)}" + rawUrl.removePrefix("${uri.scheme}://$authority")
   }
 

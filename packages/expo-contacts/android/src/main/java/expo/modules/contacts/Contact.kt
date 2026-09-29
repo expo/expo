@@ -177,16 +177,28 @@ class Contact(var contactId: String, var appContext: AppContext) {
   }
 
   fun getFinalFirstName(): String {
-    return firstName ?: if (displayName == null) "" else displayName!!
+    return firstName ?: if (displayName == null) {
+      ""
+    } else {
+      displayName!!
+    }
   }
 
   fun getFinalLastName(): String {
-    return lastName ?: if (displayName == null) "" else displayName!!
+    return lastName ?: if (displayName == null) {
+      ""
+    } else {
+      displayName!!
+    }
   }
 
   fun getFinalDisplayName(): String? {
     return if (displayName == null && firstName != null) {
-      if (lastName == null) firstName else String.format("%s %s", firstName, lastName).trim { it <= ' ' }
+      if (lastName == null) {
+        firstName
+      } else {
+        String.format("%s %s", firstName, lastName).trim { it <= ' ' }
+      }
     } else {
       displayName
     }
@@ -292,7 +304,14 @@ class Contact(var contactId: String, var appContext: AppContext) {
     }
     op = ContentProviderOperation.newUpdate(ContactsContract.Contacts.CONTENT_URI)
       .withSelection("${ContactsContract.Contacts._ID}=?", arrayOf(contactId))
-      .withValue(ContactsContract.Contacts.STARRED, if (isFavorite) 1 else 0)
+      .withValue(
+        ContactsContract.Contacts.STARRED,
+        if (isFavorite) {
+          1
+        } else {
+          0
+        }
+      )
     ops.add(op.build())
 
     // Flush all data from linked db
@@ -339,7 +358,14 @@ class Contact(var contactId: String, var appContext: AppContext) {
     val contact = Bundle().apply {
       putString("lookupKey", lookupKey)
       putString("id", contactId)
-      putString("name", if (!displayName.isNullOrEmpty()) displayName else "$firstName $lastName")
+      putString(
+        "name",
+        if (!displayName.isNullOrEmpty()) {
+          displayName
+        } else {
+          "$firstName $lastName"
+        }
+      )
 
       firstName
         ?.takeIf(String::isNotEmpty)
@@ -546,7 +572,14 @@ class Contact(var contactId: String, var appContext: AppContext) {
         contactData.add(image)
       }
       val isFavoriteValue = ContentValues().apply {
-        put("isFavorite", if (isFavorite) 1 else 0)
+        put(
+          "isFavorite",
+          if (isFavorite) {
+            1
+          } else {
+            0
+          }
+        )
       }
       contactData.add(isFavoriteValue)
       for (map in baseModels) {
