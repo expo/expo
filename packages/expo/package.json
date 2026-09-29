@@ -204,8 +204,10 @@
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest && jest --config scripts/spm/jest.config.js",
+    "test": "jest && jest --config scripts/spm/jest.config.js && pnpm test:templates",
     "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
+    "test:templates": "et check-template-packages",
+    "prepack": "et create-expo-template-tarball",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
