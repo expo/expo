@@ -434,6 +434,280 @@ describe('getRouteInfoFromState', () => {
     expect(result.segments).toEqual(['second']);
     expect(result.pathname).toBe('/second');
   });
+  const getNestedRouteInfo = (name: string, params?: object) =>
+    getRouteInfoFromState({
+      routes: [{ name: '__root', state: { routes: [{ name, params }] } }],
+    });
+
+  it('uses the active nested index and later params while retaining query key order', () => {
+    const result = getRouteInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              { name: 'unused', params: { first: 'wrong' } },
+              {
+                name: 'post/[id]',
+                params: { id: '42', first: 'old', second: 'b' },
+                state: {
+                  routes: [
+                    { name: 'unused-child', params: { first: 'wrong' } },
+                    { name: 'index', params: { first: 'new' } },
+                  ],
+                  index: 1,
+                },
+              },
+            ],
+            index: 1,
+          },
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      pathname: '/post/42',
+      segments: ['post', '[id]'],
+      params: { id: '42', first: 'new', second: 'b' },
+      searchParams: new URLSearchParams('first=new&second=b'),
+      pathnameWithParams: '/post/42?first=new&second=b',
+      unstable_globalHref: '/post/42?first=new&second=b',
+      isIndex: false,
+    });
+    expect(result.searchParams.toString()).toBe('first=new&second=b');
+  });
+
+  it('serializes mixed query and hash values in URLSearchParams order', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      const result = getNestedRouteInfo('post/[id]', {
+        id: '42',
+        z: 'last',
+        2: 'two',
+        tags: ['a', null, { ignored: true }, 'b'],
+        nested: { ignored: true },
+        '#': ['section', 'ignored'],
+      });
+
+      expect(result.pathname).toBe('/post/42');
+      expect(result.segments).toEqual(['post', '[id]']);
+      expect(result.params).toEqual({
+        2: 'two',
+        id: '42',
+        z: 'last',
+        tags: ['a', null, { ignored: true }, 'b'],
+        nested: { ignored: true },
+        '#': ['section', 'ignored'],
+      });
+      expect(result.searchParams.toString()).toBe('2=two&z=last&tags=a&tags=null&tags=b');
+      expect(result.searchParams.has('id')).toBe(false);
+      expect(result.searchParams.has('nested')).toBe(false);
+      expect(result.searchParams.has('#')).toBe(false);
+      expect(result.pathnameWithParams).toBe(
+        '/post/42?2=two&z=last&tags=a&tags=null&tags=b#section'
+      );
+      expect(result.unstable_globalHref).toBe(result.pathnameWithParams);
+      expect(warn).toHaveBeenCalledTimes(1);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('removes only the final index from slash-separated route names', () => {
+    const result = getNestedRouteInfo('settings/index');
+    expect(result.segments).toEqual(['settings']);
+    expect(result.pathname).toBe('/settings');
+    expect(result.pathnameWithParams).toBe('/settings');
+    expect(result.unstable_globalHref).toBe('/settings');
+  });
+
+  it.each([
+    { value: undefined, pathname: '/', params: { 'not-found': undefined } },
+    { value: ['a', 2], pathname: '/a/2', params: { 'not-found': ['a', 2] } },
+    { value: null, pathname: '/null', params: { 'not-found': null } },
+  ])('resolves nested +not-found param $value', ({ pathname, params }) => {
+    const result = getNestedRouteInfo('+not-found', params);
+    expect(result.segments).toEqual(['+not-found']);
+    expect(result.pathname).toBe(pathname);
+    expect(result.params).toEqual(params);
+    expect(result.searchParams.toString()).toBe('');
+    expect(result.pathnameWithParams).toBe(pathname);
+    expect(result.unstable_globalHref).toBe(pathname);
+  });
+
+  it.each([
+    { name: '[id]', value: '', pathname: '/' },
+    { name: '[id]', value: null, pathname: '/' },
+    { name: '[...id]', value: '', pathname: '/' },
+    { name: '[...id]', value: null, pathname: '/' },
+    {
+      name: '[...id]',
+      value: ['a', null, { ignored: true }, 0],
+      pathname: '/a/null/0',
+    },
+  ])('resolves optional or catch-all $name with $value', ({ name, value, pathname }) => {
+    const result = getNestedRouteInfo(name, { id: value });
+    expect(result.segments).toEqual([name]);
+    expect(result.pathname).toBe(pathname);
+    expect(result.searchParams.has('id')).toBe(false);
+    expect(result.pathnameWithParams).toBe(pathname);
+  });
+
+  it.each([
+    {
+      name: '[...id?]',
+      params: { id: ['a', null, 0], 'id?': 'query' },
+      pathname: '/a/null/0',
+      query: 'id%3F=query',
+    },
+    {
+      name: '[]',
+      params: { '': 'empty-key', q: 'search' },
+      pathname: '/empty-key',
+      query: 'q=search',
+    },
+    {
+      name: '[...]',
+      params: { '': 0, q: 'search' },
+      pathname: '/',
+      query: 'q=search',
+    },
+    {
+      name: '[id]',
+      params: { id: false, q: 'search' },
+      pathname: '/',
+      query: 'q=search',
+    },
+    {
+      name: '[...id]',
+      params: { id: false, q: 'search' },
+      pathname: '/',
+      query: 'q=search',
+    },
+    {
+      name: '[id]/[id]',
+      params: { id: 'repeat', q: 'search' },
+      pathname: '/repeat/repeat',
+      query: 'q=search',
+    },
+  ])('preserves path key handling for $name with $params', ({ name, params, pathname, query }) => {
+    const result = getNestedRouteInfo(name, params);
+    expect(result.segments).toEqual(name.split('/'));
+    expect(result.pathname).toBe(pathname);
+    expect(result.searchParams.toString()).toBe(query);
+    expect(result.pathnameWithParams).toBe(query ? `${pathname}?${query}` : pathname);
+  });
+
+  it.each([
+    { value: 0, pathname: '/0' },
+    { value: false, pathname: '/false' },
+    { value: ['a', null, false], pathname: '/a/null/false' },
+  ])('stringifies nested +not-found $value', ({ value, pathname }) => {
+    const result = getNestedRouteInfo('+not-found', {
+      'not-found': value,
+      q: 'search',
+    });
+    expect(result.pathname).toBe(pathname);
+    expect(result.searchParams.toString()).toBe('q=search');
+    expect(result.pathnameWithParams).toBe(`${pathname}?q=search`);
+  });
+
+  it('preserves an own __proto__ param and returns an ordinary params object', () => {
+    const result = getNestedRouteInfo('post', JSON.parse('{"__proto__":"x"}'));
+    expect(Object.prototype.hasOwnProperty.call(result.params, '__proto__')).toBe(true);
+    expect(result.params['__proto__']).toBe('x');
+    expect(Object.getPrototypeOf(result.params)).toBe(Object.prototype);
+    expect(result.pathnameWithParams).toBe('/post?__proto__=x');
+    expect(result.searchParams.toString()).toBe('__proto__=x');
+  });
+
+  it('uses the current base URL for ordinary and special routes', () => {
+    const previousBaseUrl = process.env.EXPO_BASE_URL;
+    process.env.EXPO_BASE_URL = 'base';
+    try {
+      const ordinary = getNestedRouteInfo('post/[id]', {
+        id: '42',
+        q: 'x',
+        '#': 'section',
+      });
+      expect(ordinary.pathnameWithParams).toBe('/post/42?q=x#section');
+      expect(ordinary.unstable_globalHref).toBe('/base/post/42?q=x#section');
+
+      const sitemap = getRouteInfoFromState({ routes: [{ name: '_sitemap' }] });
+      expect(sitemap.pathnameWithParams).toBe('/_sitemap');
+      expect(sitemap.unstable_globalHref).toBe('/base/_sitemap');
+    } finally {
+      if (previousBaseUrl === undefined) {
+        delete process.env.EXPO_BASE_URL;
+      } else {
+        process.env.EXPO_BASE_URL = previousBaseUrl;
+      }
+    }
+  });
+
+  it.each([
+    { name: '+not-found', pathname: '/' },
+    { name: '_sitemap', pathname: '/_sitemap' },
+  ])('shares default objects for the special $name route', ({ name, pathname }) => {
+    const result = getRouteInfoFromState({ routes: [{ name }] });
+    expect(result).toEqual({
+      ...defaultRouteInfo,
+      pathname,
+      pathnameWithParams: pathname,
+      unstable_globalHref: pathname,
+      segments: [name],
+    });
+    expect(result.params).toBe(defaultRouteInfo.params);
+    expect(result.searchParams).toBe(defaultRouteInfo.searchParams);
+  });
+
+  describe('root object-param warnings', () => {
+    let warn: jest.SpyInstance;
+
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it('warns once for __root original params while leaving them unmerged', () => {
+      const params = { nested: { id: 'root' } };
+      const state = {
+        routes: [{ name: '__root', params, state: { routes: [{ name: 'post' }] } }],
+      };
+      const result = getRouteInfoFromState(state);
+      getRouteInfoFromState(state);
+
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(result.params).toEqual({});
+      expect(result.pathnameWithParams).toBe('/post');
+    });
+
+    it.each(['+not-found', '_sitemap'])('warns before returning special %s', (name) => {
+      const params = { nested: { id: 'special' } };
+      const state = { routes: [{ name, params }] };
+      const result = getRouteInfoFromState(state);
+      getRouteInfoFromState(state);
+
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(result.params).toBe(defaultRouteInfo.params);
+      expect(result.searchParams).toBe(defaultRouteInfo.searchParams);
+    });
+
+    it('warns before throwing for an invalid root', () => {
+      const params = { nested: { id: 'invalid' } };
+      const state = { routes: [{ name: 'invalid', params }] };
+      expect(() => getRouteInfoFromState(state)).toThrow(
+        'Expected the first route to be __root, but got invalid'
+      );
+      expect(() => getRouteInfoFromState(state)).toThrow(
+        'Expected the first route to be __root, but got invalid'
+      );
+      expect(warn).toHaveBeenCalledTimes(1);
+    });
+  });
 });
 
 describe(areUrlObjectsEqual, () => {
