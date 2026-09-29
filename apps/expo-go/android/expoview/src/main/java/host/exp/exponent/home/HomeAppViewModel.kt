@@ -72,10 +72,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.typeOf
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import kotlin.time.toJavaDuration
 
 enum class DevSessionPlatform {
   Native,
@@ -127,8 +125,6 @@ data class FeedbackBody(
   val metadata: Map<String, String?>
 )
 
-fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
-
 class HomeAppViewModelFactory(
   private val exponentHistoryService: ExponentHistoryService,
   private val expoViewKernel: ExpoViewKernel,
@@ -177,9 +173,9 @@ class HomeAppViewModel(
 
   private val client = OkHttpClient
     .Builder()
-    .connectTimeout(10.toJDuration(DurationUnit.SECONDS))
-    .readTimeout(10.toJDuration(DurationUnit.SECONDS))
-    .writeTimeout(10.toJDuration(DurationUnit.SECONDS))
+    .connectTimeout(10, TimeUnit.SECONDS)
+    .readTimeout(10, TimeUnit.SECONDS)
+    .writeTimeout(10, TimeUnit.SECONDS)
     .build()
 
   val recents = exponentHistoryService.history
