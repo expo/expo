@@ -1,5 +1,37 @@
 export const TALKS = [
   {
+    title: 'The future of mobile development with Expo',
+    event: 'Chain React 2026',
+    description: 'Charlie Cheever',
+    videoId: 'jTZWOS9-JTw',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'How is your app actually doing in production',
+    event: 'Chain React 2026',
+    description: 'Kadi Kraman',
+    videoId: 'G9RoD_QpJYQ',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'Go All The Way',
+    event: 'Chain React 2026',
+    description: 'Seth Webster',
+    videoId: 'SWQtWHsAMk0',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'Prompt Once: Scaling Expo Brownfield Across 100+ Apps',
+    event: 'Chain React 2026',
+    description: 'Gabriel Donadel',
+    videoId: 'Yk5KjVx6i54',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
     title: 'Expo keynote',
     event: 'App.js Conf 2026',
     description: 'Charlie Cheever',
@@ -306,6 +338,12 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'How is your app actually doing in production? | Introducing Observe',
+    event: 'Expo Live Stream',
+    videoId: 'INfXyyspMWA',
+    uploadDate: '2026-08-28',
+  },
   {
     title: 'Closing the loop: How to turn your website into a mobile app with AI',
     event: 'Expo Live Stream',

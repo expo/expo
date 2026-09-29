@@ -14,6 +14,7 @@ import type {
 } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { StandardNavigatorEmit } from '../../standard-navigation';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -815,12 +816,9 @@ export type NativeStackNavigationOptions = {
    * Only supported on iOS and Android.
    */
   orientation?: ScreenProps['screenOrientation'];
+  // TODO(@ubax): Remove this prop
   /**
-   * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-   * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-   * Requires `react-native-screens` version >=3.16.0.
-   *
-   * Only supported on iOS and Android.
+   * @deprecated This option has no effect in Expo Router.
    */
   freezeOnBlur?: boolean;
   /**
@@ -1219,20 +1217,7 @@ export type NativeStackHeaderItem =
 
 export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
 
-export type NativeStackViewEmit = (
-  event:
-    | {
-        type: 'transitionStart' | 'transitionEnd';
-        target?: string;
-        data: { closing: boolean };
-      }
-    | { type: 'gestureCancel'; target?: string; data?: undefined }
-    | {
-        type: 'sheetDetentChange';
-        target?: string;
-        data: { index: number; stable: boolean };
-      }
-) => void;
+export type NativeStackViewEmit = StandardNavigatorEmit<NativeStackNavigationEventMap>;
 
 /**
  * The navigator-level state consumed by `NativeStackView`.

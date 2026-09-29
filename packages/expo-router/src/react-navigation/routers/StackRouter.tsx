@@ -1,8 +1,8 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
+import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
+import { extendRouter, type RouterExtensionContext } from './extendRouter';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -10,18 +10,20 @@ import type {
   ParamListBase,
   Route,
   Router,
+  RouterBrowserHistoryAction,
+  NavigationAction,
 } from './types';
 
 export type StackActionType =
   | {
       type: 'REPLACE';
-      payload: { name: string; params?: object };
+      payload: { name: string; params?: object; state?: RouteState };
       source?: string;
       target?: string;
     }
   | {
       type: 'PUSH';
-      payload: { name: string; params?: object };
+      payload: { name: string; params?: object; state?: RouteState };
       source?: string;
       target?: string;
     }
@@ -42,6 +44,7 @@ export type StackActionType =
         name: string;
         params?: object;
         merge?: boolean;
+        state?: RouteState;
       };
       source?: string;
       target?: string;
@@ -69,6 +72,31 @@ export function getStackRoutes<ParamList extends ParamListBase>(
   };
 }
 
+function markPreloadedRoutes<ParamList extends ParamListBase>(
+  state: StackNavigationState<ParamList>
+) {
+  let changed = false;
+  const routes = state.routes.map((route, index) => {
+    if (index > state.index) {
+      if (route.isPreloaded) {
+        return route;
+      }
+      changed = true;
+      return { ...route, isPreloaded: true as const };
+    }
+
+    if (route.isPreloaded) {
+      changed = true;
+      const { isPreloaded, ...activeRoute } = route;
+      return activeRoute;
+    }
+
+    return route;
+  });
+
+  return changed ? { ...state, routes } : state;
+}
+
 function reconcileStackRoutes<ParamList extends ParamListBase>(
   state: StackNavigationState<ParamList>,
   activeRoutes: Route<string>[],
@@ -81,6 +109,39 @@ function reconcileStackRoutes<ParamList extends ParamListBase>(
     index: activeRoutes.length - 1,
     routes: activeRoutes.concat(preloadedRoutes.filter((route) => !activeKeys.has(route.key))),
   };
+}
+
+/** Uses the active index change, except NAVIGATE can create a visit without growing the stack. */
+export function getStackBrowserHistoryAction(
+  previous: NavigationState,
+  next: NavigationState,
+  action: NavigationAction
+): RouterBrowserHistoryAction | undefined {
+  switch (action.type) {
+    case 'NAVIGATE': {
+      // Moving a singular route to the top is a new visit even when filtering keeps
+      // the stack the same size. NAVIGATE(pop) is an explicit traversal instead.
+      const isPop = action.payload && 'pop' in action.payload && action.payload.pop;
+      if (!isPop) {
+        return next.routes[next.index]?.key !== previous.routes[previous.index]?.key
+          ? { type: 'push' }
+          : undefined;
+      }
+      break;
+    }
+  }
+  const delta = next.index - previous.index;
+  if (delta > 0) {
+    return { type: 'push' };
+  }
+  if (delta < 0) {
+    return {
+      type: 'pop',
+      count: -delta,
+      target: { navigatorKey: next.key, routeKey: next.routes[next.index]!.key },
+    };
+  }
+  return undefined;
 }
 
 export type StackActionHelpers<ParamList extends ParamListBase> = {
@@ -179,70 +240,28 @@ export const StackActions = {
   },
 };
 
-/**
- * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function StackRouter(options: StackRouterOptions) {
-  const { initialRouteName } = options;
-  const router: Router<
-    StackNavigationState<ParamListBase>,
-    CommonNavigationAction | StackActionType
+function stackRouterExtension({
+  baseRouter,
+  nextKey,
+  options: { initialRouteName },
+}: RouterExtensionContext<
+  StackNavigationState<ParamListBase>,
+  CommonNavigationAction | StackActionType,
+  StackRouterOptions
+>) {
+  const router: Omit<
+    Router<StackNavigationState<ParamListBase>, CommonNavigationAction | StackActionType>,
+    'shouldActionChangeFocus'
   > = {
-    ...BaseRouter,
+    normalizeState: markPreloadedRoutes,
+    getBrowserHistoryForAction: getStackBrowserHistoryAction,
 
-    type: 'stack',
-
-    getRehydratedState(partialState, { routeNames }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state;
-      }
-
-      const index = state.index ?? state.routes.length - 1;
-      const activeRoutes = state.routes.slice(0, index + 1);
-      const stalePreloadedRoutes = state.routes.slice(index + 1);
-
-      const routes: Route<string>[] = activeRoutes
-        .filter((route) => routeNames.includes(route.name))
-        .map((route) => ({
-          ...route,
-          key: route.key || `${route.name}-${nanoid()}`,
-        }));
-
-      const preloadedRoutes =
-        stalePreloadedRoutes
-          ?.filter((route) => routeNames.includes(route.name))
-          .map(
-            (route) =>
-              ({
-                ...route,
-                key: route.key || `${route.name}-${nanoid()}`,
-              }) as Route<string>
-          ) ?? [];
-
-      if (routes.length === 0) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
-
-        routes.push({
-          key: `${initialRouteName}-${nanoid()}`,
-          name: initialRouteName,
-        });
-      }
-
-      return {
-        stale: false,
-        type: 'stack',
-        key: `stack-${nanoid()}`,
-        index: routes.length - 1,
-        routeNames,
-        routes: routes.concat(preloadedRoutes),
-      };
+    getBrowserHistoryForRouteFocus(previous, next) {
+      return getStackBrowserHistoryAction(previous, next, { type: 'POP' });
     },
 
     getStateForDeclaredRoutes(state, routeNames) {
-      const filteredState = BaseRouter.getStateForDeclaredRoutes(state, routeNames);
+      const filteredState = baseRouter.getStateForDeclaredRoutes(state, routeNames);
 
       if (filteredState === state || filteredState.routes.length === 0) {
         return filteredState;
@@ -281,7 +300,7 @@ export function StackRouter(options: StackRouterOptions) {
           const routeNames = action.payload.routeNames;
 
           if (isArrayEqual(state.routeNames, routeNames)) {
-            return state;
+            return { state, affectedRouteKey: activeRoutes[state.index]?.key };
           }
 
           const routes = activeRoutes.filter((route) => routeNames.includes(route.name));
@@ -301,7 +320,7 @@ export function StackRouter(options: StackRouterOptions) {
             const fallbackRoute =
               preloadedIndex === -1
                 ? {
-                    key: `${fallbackName}-${nanoid()}`,
+                    key: nextKey(fallbackName),
                     name: fallbackName,
                   }
                 : filteredPreloadedRoutes[preloadedIndex]!;
@@ -309,10 +328,11 @@ export function StackRouter(options: StackRouterOptions) {
             routes.push(fallbackRoute);
           }
 
-          return {
+          const result = {
             ...reconcileStackRoutes(state, routes, filteredPreloadedRoutes),
             routeNames,
           };
+          return { state: result, affectedRouteKey: result.routes[result.index]?.key };
         }
 
         case 'REPLACE': {
@@ -339,14 +359,20 @@ export function StackRouter(options: StackRouterOptions) {
           );
 
           if (!route) {
-            route = createRouteFromAction({ action });
+            route = createRouteFromAction({ action, key: nextKey(action.payload.name) });
           }
+          route = attachRouteState(route, action);
 
-          return reconcileStackRoutes(
-            state,
-            activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
-            preloadedRoutes.filter((r) => r.key !== route.key)
-          );
+          return {
+            state: {
+              ...reconcileStackRoutes(
+                state,
+                activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
+                preloadedRoutes.filter((r) => r.key !== route.key)
+              ),
+            },
+            affectedRouteKey: route.key,
+          };
         }
 
         case 'PUSH':
@@ -381,6 +407,10 @@ export function StackRouter(options: StackRouterOptions) {
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
+          }
+
+          if (route) {
+            route = attachRouteState(route, action);
           }
 
           let params;
@@ -439,78 +469,29 @@ export function StackRouter(options: StackRouterOptions) {
           } else {
             routes = [
               ...activeRoutes,
-              {
-                key: `${action.payload.name}-${nanoid()}`,
-                name: action.payload.name,
-                path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
-                params,
-              },
+              attachRouteState(
+                {
+                  key: nextKey(action.payload.name),
+                  name: action.payload.name,
+                  path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
+                  params,
+                },
+                action
+              ),
             ];
           }
 
-          return reconcileStackRoutes(
-            state,
-            routes,
-            preloadedRoutes.filter((route) => routes[routes.length - 1]!.key !== route.key)
-          );
-        }
-
-        case 'NAVIGATE_DEPRECATED': {
-          if (!state.routeNames.includes(action.payload.name)) {
-            return null;
-          }
-
-          const getId = options.routeGetIdList[action.payload.name];
-          const id = getId?.({ params: action.payload.params });
-
-          if (
-            preloadedRoutes.find(
-              (route) =>
-                route.name === action.payload.name && id === getId?.({ params: route.params })
-            )
-          ) {
-            return null;
-          }
-
-          // If the route already exists, navigate to that
-          let index = -1;
-
-          if (id !== undefined) {
-            index = activeRoutes.findIndex(
-              (route) =>
-                route.name === action.payload.name && id === getId?.({ params: route.params })
-            );
-          } else if (activeRoutes[state.index]!.name === action.payload.name) {
-            index = state.index;
-          } else {
-            index = activeRoutes.findLastIndex((route) => route.name === action.payload.name);
-          }
-
-          if (index === -1) {
-            const routes = [...activeRoutes, createRouteFromAction({ action })];
-            return reconcileStackRoutes(state, routes);
-          }
-
-          const route = activeRoutes[index]!;
-
-          let params;
-
-          if (action.payload.merge) {
-            params =
-              action.payload.params !== undefined
-                ? {
-                    ...route.params,
-                    ...action.payload.params,
-                  }
-                : route.params;
-          } else {
-            params = action.payload.params;
-          }
-
-          return reconcileStackRoutes(state, [
-            ...activeRoutes.slice(0, index),
-            params !== route.params ? { ...route, params } : activeRoutes[index]!,
-          ]);
+          const affectedRouteKey = routes[routes.length - 1]!.key;
+          return {
+            state: {
+              ...reconcileStackRoutes(
+                state,
+                routes,
+                preloadedRoutes.filter((route) => affectedRouteKey !== route.key)
+              ),
+            },
+            affectedRouteKey,
+          };
         }
 
         case 'REMOVE_ROUTES': {
@@ -527,10 +508,13 @@ export function StackRouter(options: StackRouterOptions) {
             routes.length === activeRoutes.length &&
             nextPreloadedRoutes.length === preloadedRoutes.length
           ) {
-            return state;
+            return { state, affectedRouteKey: focusedRoute.key };
           }
 
-          return reconcileStackRoutes(state, routes, nextPreloadedRoutes);
+          return {
+            state: reconcileStackRoutes(state, routes, nextPreloadedRoutes),
+            affectedRouteKey: focusedRoute.key,
+          };
         }
 
         case 'POP': {
@@ -545,7 +529,8 @@ export function StackRouter(options: StackRouterOptions) {
               .slice(0, count)
               .concat(activeRoutes.slice(currentIndex + 1));
 
-            return reconcileStackRoutes(state, routes);
+            const result = reconcileStackRoutes(state, routes);
+            return { state: result, affectedRouteKey: result.routes[result.index]?.key };
           }
 
           return null;
@@ -606,19 +591,25 @@ export function StackRouter(options: StackRouterOptions) {
             );
 
             if (!route) {
-              route = createRouteFromAction({ action });
+              route = createRouteFromAction({ action, key: nextKey(action.payload.name) });
             }
+            route = attachRouteState(route, action);
 
             const routes = activeRoutes.slice(0, currentIndex).concat(route);
 
-            return reconcileStackRoutes(
-              state,
-              routes,
-              preloadedRoutes.filter((r) => r.key !== route.key)
-            );
+            return {
+              state: {
+                ...reconcileStackRoutes(
+                  state,
+                  routes,
+                  preloadedRoutes.filter((r) => r.key !== route.key)
+                ),
+              },
+              affectedRouteKey: route.key,
+            };
           }
 
-          const route = activeRoutes[index]!;
+          const route = attachRouteState(activeRoutes[index]!, action);
 
           let params;
 
@@ -634,10 +625,13 @@ export function StackRouter(options: StackRouterOptions) {
             params = action.payload.params;
           }
 
-          return reconcileStackRoutes(state, [
-            ...activeRoutes.slice(0, index),
-            params !== route.params ? { ...route, params } : activeRoutes[index]!,
-          ]);
+          return {
+            state: reconcileStackRoutes(state, [
+              ...activeRoutes.slice(0, index),
+              params !== route.params ? { ...route, params } : route,
+            ]),
+            affectedRouteKey: route.key,
+          };
         }
 
         case 'GO_BACK':
@@ -671,36 +665,47 @@ export function StackRouter(options: StackRouterOptions) {
 
           if (route) {
             return {
-              ...state,
-              type: 'stack',
-              routes: state.routes.map((r) => {
-                if (r.key !== route?.key) {
-                  return r;
-                }
-                return {
-                  ...r,
-                  params: action.payload.params,
-                };
-              }),
+              state: {
+                ...state,
+                routes: state.routes.map((r) => {
+                  if (r.key !== route?.key) {
+                    return r;
+                  }
+                  return attachRouteState(
+                    {
+                      ...r,
+                      params: action.payload.params,
+                    },
+                    action
+                  );
+                }),
+              },
+              affectedRouteKey: route.key,
             };
           } else {
+            const preloadedRoute = attachRouteState(
+              createRouteFromAction({ action, key: nextKey(action.payload.name) }),
+              action
+            );
             return {
-              ...reconcileStackRoutes(
-                state,
-                activeRoutes,
-                preloadedRoutes
-                  .filter(
-                    (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
-                  )
-                  .concat(createRouteFromAction({ action }))
-              ),
-              type: 'stack',
+              state: {
+                ...reconcileStackRoutes(
+                  state,
+                  activeRoutes,
+                  preloadedRoutes
+                    .filter(
+                      (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
+                    )
+                    .concat(preloadedRoute)
+                ),
+              },
+              affectedRouteKey: preloadedRoute.key,
             };
           }
         }
 
         default:
-          return BaseRouter.getStateForAction(state, action);
+          return baseRouter.getStateForAction(state, action, options);
       }
     },
 
@@ -709,3 +714,8 @@ export function StackRouter(options: StackRouterOptions) {
 
   return router;
 }
+
+/**
+ * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export const StackRouter = extendRouter(BaseRouter, stackRouterExtension, { type: 'stack' });

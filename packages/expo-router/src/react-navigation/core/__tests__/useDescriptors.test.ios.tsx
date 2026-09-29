@@ -636,7 +636,7 @@ test('returns true for canGoBack when current router handles GO_BACK', () => {
 
       getStateForAction(state, action, options) {
         if (action.type === 'GO_BACK') {
-          return state;
+          return { state, affectedRouteKey: state.routes[state.index]?.key };
         }
 
         return CurrentMockRouter.getStateForAction(state, action, options);
@@ -709,7 +709,7 @@ test('returns true for canGoBack when parent router handles GO_BACK', () => {
 
       getStateForAction(state, action, options) {
         if (action.type === 'GO_BACK') {
-          return state;
+          return { state, affectedRouteKey: state.routes[state.index]?.key };
         }
 
         return CurrentMockRouter.getStateForAction(state, action, options);

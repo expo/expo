@@ -48,6 +48,9 @@ export type FontObject = {
 
 export type Font = string | FontObject;
 
+// NOTE(@vonovak): `@expo/fingerprint` reads these props to hash the font files this plugin embeds
+// (see `getExpoConfigSourcesAsync` in `packages/@expo/fingerprint/src/sourcer/Expo.ts`).
+// When a new way to declare a font file path is added here, teach the sourcer to read it too.
 export type FontProps = {
   /**
    * An array of font file paths to link to the native project, relative to the project root.

@@ -37,6 +37,21 @@ struct JavaScriptPropNameIDTests {
     #expect(propName.utf16() == key)
   }
 
+  @Test
+  func `round-trips an empty string`() {
+    let propName = JavaScriptPropNameID(runtime, string: "")
+    #expect(propName.utf8() == "")
+    #expect(propName.utf16() == "")
+  }
+
+  @Test
+  func `round-trips a long non-ASCII string`() {
+    let key = String(repeating: "ą", count: 2000)
+    let propName = JavaScriptPropNameID(runtime, string: key)
+    #expect(propName.utf8() == key)
+    #expect(propName.utf16() == key)
+  }
+
   // MARK: - Caching
 
   @Test
@@ -74,6 +89,20 @@ struct JavaScriptPropNameIDTests {
     #expect(object.getProperty(JavaScriptPropNameID(runtime, string: "naïve")).isUndefined() == true)
   }
 
+  @Test
+  func `property type errors report the non-ASCII property name`() throws {
+    let object = try runtime.eval("({ 'café': 42 })").getObject()
+    let propName = JavaScriptPropNameID(runtime, string: "café")
+    let notObject = #expect(throws: JavaScriptObject.PropertyNotObjectError.self) {
+      try object.getPropertyAsObject(propName)
+    }
+    #expect(notObject?.description == "Property 'café' is not an object")
+    let notFunction = #expect(throws: JavaScriptObject.PropertyNotFunctionError.self) {
+      try object.getPropertyAsFunction(propName)
+    }
+    #expect(notFunction?.description == "Property 'café' is not a function")
+  }
+
   // Second `forUtf8(pointer, length)` call site: the array's string-keyed subscript getter.
   @Test
   func `array string subscript reads a non-ASCII custom property`() throws {
@@ -82,5 +111,13 @@ struct JavaScriptPropNameIDTests {
 
     #expect(array["café"].getInt() == 42)
     #expect(array["🎉"].getString() == "party")
+  }
+
+  @Test
+  func `array string subscript writes a non-ASCII custom property`() throws {
+    let array = try runtime.eval("[1, 2]").getArray()
+    array["café"] = JavaScriptValue(runtime, "party")
+    runtime.global().setProperty("arr", value: array.asValue())
+    #expect(try runtime.eval("arr['café'] === 'party'").getBool() == true)
   }
 }

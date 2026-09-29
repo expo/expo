@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import SwiftUI
 import UIKit
 
 @objc public class ExpoGoHomeBridge: NSObject {
@@ -35,6 +36,23 @@ import UIKit
       return
     }
 
+    let expiredMessage = consumeExpiredSessionMessage()
+
+    if presentDeviceLoginIfPending(
+      appUrl: appUrl,
+      url: url,
+      snackParams: snackParams,
+      completion: completion
+    ) {
+      return
+    }
+
+    if let expiredMessage {
+      showError(expiredMessage)
+      completion(false, nil)
+      return
+    }
+
     // Determine status text based on what we're opening
     let isLesson = (snackParams?["isLesson"] as? Bool) == true
     let isPlayground = (snackParams?["isPlayground"] as? Bool) == true
@@ -46,9 +64,9 @@ import UIKit
       let icon = Self.makeLoadingIcon(sfSymbol: sfSymbol)
       let fixedDelay = snackParams?["loadingFixedDelay"] as? Double ?? 0
       let minDuration = fixedDelay > 0 ? 0 : 0.5  // Use minimum display duration unless a fixed delay is set
-      EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: "Preparing playground...", iconImage: icon, dismissDelay: minDuration, fixedDismissDelay: fixedDelay)
+      EXKernel.sharedInstance().browserController?.showAppLoadingOverlay(withStatusText: "Preparing playground...", iconImage: icon, dismissDelay: minDuration, fixedDismissDelay: fixedDelay)
     } else {
-      EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: "Opening project...")
+      EXKernel.sharedInstance().browserController?.showAppLoadingOverlay(withStatusText: "Opening project...")
     }
 
     // For non-snack apps, open synchronously to avoid timing issues with native module registration.
@@ -73,10 +91,8 @@ import UIKit
     if params["code"] == nil {
       // Not an embedded snack — require login at minimum
       guard let currentUser = authenticatedUsername() else {
-        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
-        DispatchQueue.main.async { [weak self] in
-          self?.homeViewModel?.showError("Sign in to Expo Go to open your Snack playgrounds.")
-        }
+        EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
+        showError("Sign in to Expo Go to open your Snack playgrounds.")
         completion(false, nil)
         return
       }
@@ -85,12 +101,8 @@ import UIKit
       if let snackId = params["snackId"] as? String,
          let owner = ownerUsername(fromSnackId: snackId),
          owner != currentUser {
-        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
-        DispatchQueue.main.async { [weak self] in
-          self?.homeViewModel?.showError(
-            "This playground belongs to @\(owner). Sign in as @\(owner) to open it, or open one of your own."
-          )
-        }
+        EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
+        showError("This playground belongs to @\(owner). Sign in as @\(owner) to open it, or open one of your own.")
         completion(false, nil)
         return
       }
@@ -155,6 +167,52 @@ import UIKit
     }
   }
 
+  private func consumeExpiredSessionMessage() -> String? {
+    guard let message = sessionExpiredMessage() else {
+      return nil
+    }
+    AuthenticationService.deactivateExpiredSession()
+    return message
+  }
+
+  /// True when a sign in has taken over the open, so the caller should stop and let it finish.
+  private func presentDeviceLoginIfPending(
+    appUrl: URL,
+    url: String,
+    snackParams: NSDictionary?,
+    completion: @escaping (Bool, String?) -> Void
+  ) -> Bool {
+    let verificationURI = PendingDeviceLogin.shared.verificationURI(forProjectURL: appUrl)
+    let alreadyGranted = verificationURI?.host.map {
+      AuthenticationService.isDeviceLoginAlreadyGranted(forVerificationHost: $0)
+    } ?? false
+
+    guard !alreadyGranted, PendingDeviceLogin.shared.offerOnce(forProjectURL: appUrl) else {
+      return false
+    }
+
+    UserDefaults.standard.set(true, forKey: "ExpoGoOnboardingFinished")
+
+    Task { @MainActor in
+      guard let homeViewModel else {
+        // Home is not up yet, so leave the pending sign in for the next attempt.
+        print("[DeviceLogin] Home is not ready, so the sign in sheet could not be presented yet.")
+        completion(false, nil)
+        return
+      }
+
+      // Declining still opens the project. The mismatch error then explains why it failed.
+      if await homeViewModel.presentDeviceLogin(verificationURI: verificationURI) {
+        if let host = verificationURI?.host, let username = AuthenticationService.currentUsername {
+          AuthenticationService.recordDeviceLoginGrant(username: username, forVerificationHost: host)
+        }
+        PendingDeviceLogin.shared.clear()
+      }
+      self.openApp(url: url, snackParams: snackParams, completion: completion)
+    }
+    return true
+  }
+
   /// Convenience overload for non-snack apps (no session setup needed)
   @objc public func openApp(url: String, completion: @escaping (Bool, String?) -> Void) {
     openApp(url: url, snackParams: nil, completion: completion)
@@ -200,15 +258,94 @@ import UIKit
     return String(snackId[snackId.index(after: snackId.startIndex)..<slashIndex])
   }
 
+  static let expiredSessionMessage =
+    "Your Expo Go session has expired. Reload your project's preview and scan the new QR code to continue."
+
+  /// Non-nil when the stored session has expired, which only device auth sessions record.
+  @objc public func sessionExpiredMessage() -> String? {
+    return AuthenticationService.isSessionExpired() ? Self.expiredSessionMessage : nil
+  }
+
+  @objc public func showError(_ message: String) {
+    DispatchQueue.main.async { [weak self] in
+      self?.homeViewModel?.showError(message)
+    }
+  }
+
+  /// Only signs in. The error screen's Try Again is what reloads the project.
+  @objc(offerDeviceLoginWithVerificationURI:)
+  public func offerDeviceLogin(verificationURI: URL?) {
+    Task { @MainActor in
+      let signedIn = await self.homeViewModel?.presentDeviceLogin(verificationURI: verificationURI) ?? false
+      if signedIn {
+        if let host = verificationURI?.host, let username = AuthenticationService.currentUsername {
+          AuthenticationService.recordDeviceLoginGrant(username: username, forVerificationHost: host)
+        }
+        PendingDeviceLogin.shared.clear()
+      }
+    }
+  }
+
   @objc public func isAuthenticated() -> Bool {
-    return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
+    AuthenticationService.currentUsername != nil
+  }
+
+  func accountMismatchActionTitle(forUsername username: String) -> String? {
+    let store = SessionStore.shared
+    return AccountMismatchAction
+      .resolve(username: username, sessions: store.sessions, activeSessionId: store.activeSession?.id)?
+      .title(for: username)
+  }
+
+  @MainActor
+  func resolveAccountMismatch(forUsername username: String, from presenter: UIViewController?) async -> Bool {
+    guard let homeViewModel else {
+      return false
+    }
+    let store = SessionStore.shared
+    switch AccountMismatchAction.resolve(username: username, sessions: store.sessions, activeSessionId: store.activeSession?.id) {
+    case .switchTo(let sessionId):
+      await homeViewModel.switchToSession(id: sessionId)
+      return true
+    case .signIn:
+      guard let presenter else {
+        return false
+      }
+      return await presentAccountMismatchSignIn(username: username, viewModel: homeViewModel, from: presenter)
+    case nil:
+      return false
+    }
+  }
+
+  @MainActor
+  private func presentAccountMismatchSignIn(
+    username: String,
+    viewModel: HomeViewModel,
+    from presenter: UIViewController
+  ) async -> Bool {
+    guard presenter.presentedViewController == nil else {
+      return false
+    }
+    return await withCheckedContinuation { continuation in
+      weak var presented: UIViewController?
+      let signIn = AccountMismatchSignInView(
+        username: username,
+        viewModel: viewModel,
+        completion: DeviceLoginCompletion { signedIn in
+          continuation.resume(returning: signedIn)
+        },
+        onFinish: {
+          presented?.dismiss(animated: true)
+        }
+      )
+      let controller = UIHostingController(rootView: signIn)
+      presented = controller
+      presenter.present(controller, animated: true)
+    }
   }
 
   @objc public func authenticatedUsername() -> String? {
-    guard UserDefaults.standard.string(forKey: "expo-session-secret") != nil else {
-      return nil
-    }
-    return UserDefaults.standard.string(forKey: "expo-username")
+    AuthenticationService.currentUsername
   }
 
   @objc public func addHistoryItem(withUrl url: String, name: String, iconUrl: String?) {
@@ -225,7 +362,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
-          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+          EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }
@@ -238,7 +375,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
-          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+          EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }

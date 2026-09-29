@@ -60,6 +60,7 @@ class AudioPlayer(
 ),
   LockScreenPlayable {
   var preservesPitch = true
+  var keepAudioSessionActive = false
 
   // Lock screen controls
   override var isActiveForLockScreen = false

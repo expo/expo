@@ -27,12 +27,12 @@ const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof Scre
 
 type StackItemProps = Parameters<typeof ScreenStackItem>[0];
 
-/** Latest rendered props of the `ScreenStackItem` whose route key starts with `${routeName}-`. */
+/** Latest rendered props of the `ScreenStackItem` whose route key starts with `${routeName}:`. */
 function latestStackItemProps(routeName: string): StackItemProps | undefined {
   return MockedScreenStackItem.mock.calls
     .map((call) => call[0])
     .filter(
-      (props) => typeof props.screenId === 'string' && props.screenId.startsWith(`${routeName}-`)
+      (props) => typeof props.screenId === 'string' && props.screenId.startsWith(`${routeName}:`)
     )
     .at(-1);
 }
@@ -157,6 +157,22 @@ describe('screen lifecycle events', () => {
       { type: 'gestureCancel' },
       { type: 'sheetDetentChange', data: { index: 1, stable: true } },
     ]);
+  });
+});
+
+describe('preloaded screens', () => {
+  it('detaches a preloaded route until it is focused', () => {
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    act(() => router.prefetch('/second'));
+    expect(latestStackItemProps('second')?.activityState).toBe(0);
+
+    act(() => router.push('/second'));
+    expect(latestStackItemProps('second')?.activityState).toBe(2);
   });
 });
 

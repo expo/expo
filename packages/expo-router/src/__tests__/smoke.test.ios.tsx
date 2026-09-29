@@ -1,12 +1,16 @@
 import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { Slot, router, useGlobalSearchParams, usePathname } from '../exports';
+import { NativeStackView, Slot, router, useGlobalSearchParams, usePathname } from '../exports';
 import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
 import { renderRouter } from '../testing-library';
+
+it('exports NativeStackView', () => {
+  expect(NativeStackView).toBeDefined();
+});
 
 it('404', () => {
   renderRouter(

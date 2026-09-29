@@ -2,8 +2,8 @@
  * Agent feedback instructions appended into per-page .md files.
  *
  * Each page's generated markdown includes an <AgentInstructions> block (placed
- * right after the frontmatter) telling LLM-based agents how to submit feedback
- * with the Expo feedback CLI or direct HTTP fallback.
+ * directly below the page's first H1) telling LLM-based agents how to submit
+ * feedback with the Expo feedback CLI or direct HTTP fallback.
  *
  * Intentionally isolated in its own module so the experiment can be tweaked or
  * removed without touching the broader markdown generation utilities.
@@ -48,7 +48,7 @@ export function buildAgentInstructions(pathname: string): string {
 
 /**
  * Page-specific notes injected as bare blockquotes into per-page index.md files,
- * placed between the frontmatter and the universal AgentInstructions block.
+ * placed right after the frontmatter, before the page content.
  * Keys are URL paths matching urlPathFromHtmlPath output.
  *
  * These notes appear only in the markdown output served via Accept: text/markdown,

@@ -361,8 +361,8 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 }
 
-function createAbortError(reason?: string): Error {
-  const error = new Error(reason ?? 'The operation was aborted.');
+function createAbortError(reason?: unknown): Error {
+  const error = new Error(typeof reason === 'string' ? reason : 'The operation was aborted.');
   error.name = 'AbortError';
   return error;
 }

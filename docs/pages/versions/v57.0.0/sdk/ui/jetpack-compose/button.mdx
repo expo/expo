@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Button`](../universal/button) — it renders the appropriate native component per platform.
@@ -40,7 +41,13 @@ Expo UI provides five button components that match the official Jetpack Compose 
 
 A filled button is the default, high-emphasis button for primary actions.
 
-```tsx BasicButtonExample.tsx
+<ComponentExample
+  title="BasicButtonExample.tsx"
+  src="/static/images/expo-ui/examples/compose-button-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/compose-button-basic-android-dark.webp"
+  alt="A filled Material 3 button labelled Press me">
+
+```tsx
 import { Host, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function BasicButtonExample() {
@@ -54,11 +61,19 @@ export default function BasicButtonExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Button variants
 
 Use different button components to convey varying levels of emphasis.
 
-```tsx ButtonVariantsExample.tsx
+<ComponentExample
+  title="ButtonVariantsExample.tsx"
+  src="/static/images/expo-ui/examples/compose-button-variants-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/compose-button-variants-android-dark.webp"
+  alt="Filled, filled tonal, outlined, elevated, and text buttons stacked in a column">
+
+```tsx
 import {
   Host,
   Button,
@@ -95,16 +110,25 @@ export default function ButtonVariantsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Button with icons
 
 Since buttons accept composable children, you can add leading and trailing icons using the `Icon` component. This follows the [Material 3 buttons with icon](https://m3.material.io/components/buttons/guidelines) pattern ([official sample](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/material3/material3/samples/src/main/java/androidx/compose/material3/samples/ButtonSamples.kt;l=179?q=ButtonWithIconSample)), use 18dp icon size, 8dp spacing between the icon and label.
 
-```tsx ButtonWithIconsExample.tsx
+<ComponentExample
+  title="ButtonWithIconsExample.tsx"
+  src="/static/images/expo-ui/examples/compose-button-icons-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/compose-button-icons-android-dark.webp"
+  alt="Three buttons showing a leading icon, a trailing icon, and both icons at once">
+
+```tsx
 import {
   Host,
   Button,
   OutlinedButton,
   FilledTonalButton,
+  Column,
   Icon,
   Spacer,
   Text,
@@ -117,44 +141,59 @@ const sendIcon = require('./assets/send.png');
 export default function ButtonWithIconsExample() {
   return (
     <Host matchContents>
-      {/* Leading icon */}
-      <Button onClick={() => {}}>
-        <Icon source={addIcon} size={18} tint="#FFFFFF" />
-        <Spacer modifiers={[width(8)]} />
-        <Text>Add item</Text>
-      </Button>
+      <Column verticalArrangement={{ spacedBy: 8 }}>
+        {/* Leading icon */}
+        <Button onClick={() => {}}>
+          <Icon source={addIcon} size={18} tint="#FFFFFF" />
+          <Spacer modifiers={[width(8)]} />
+          <Text>Add item</Text>
+        </Button>
 
-      {/* Trailing icon */}
-      <OutlinedButton onClick={() => {}}>
-        <Text>Send</Text>
-        <Spacer modifiers={[width(8)]} />
-        <Icon source={sendIcon} size={18} />
-      </OutlinedButton>
+        {/* Trailing icon */}
+        <OutlinedButton onClick={() => {}}>
+          <Text>Send</Text>
+          <Spacer modifiers={[width(8)]} />
+          <Icon source={sendIcon} size={18} />
+        </OutlinedButton>
 
-      {/* Both leading and trailing icons */}
-      <FilledTonalButton onClick={() => {}}>
-        <Icon source={addIcon} size={18} />
-        <Spacer modifiers={[width(8)]} />
-        <Text>Create & Send</Text>
-        <Spacer modifiers={[width(8)]} />
-        <Icon source={sendIcon} size={18} />
-      </FilledTonalButton>
+        {/* Both leading and trailing icons */}
+        <FilledTonalButton onClick={() => {}}>
+          <Icon source={addIcon} size={18} />
+          <Spacer modifiers={[width(8)]} />
+          <Text>Create & Send</Text>
+          <Spacer modifiers={[width(8)]} />
+          <Icon source={sendIcon} size={18} />
+        </FilledTonalButton>
+      </Column>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Custom colors
 
 Override container and content colors using the `colors` prop.
 
-```tsx CustomColorsExample.tsx
+<ComponentExample
+  title="CustomColorsExample.tsx"
+  src="/static/images/expo-ui/examples/compose-button-custom-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/compose-button-custom-colors-android-dark.webp"
+  alt="A purple button with white text, overriding the theme container and content colors">
+
+```tsx
 import { Host, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function CustomColorsExample() {
   return (
     <Host matchContents>
-      <Button onClick={() => {}} colors={{ containerColor: '#6200EE', contentColor: '#FFFFFF' }}>
+      <Button
+        onClick={() => {}}
+        colors={{
+          containerColor: '#6200EE',
+          contentColor: '#FFFFFF',
+        }}>
         <Text>Purple Button</Text>
       </Button>
     </Host>
@@ -162,23 +201,40 @@ export default function CustomColorsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom shape
 
-```tsx CustomShapeExample.tsx
-import { Host, Button, Shape, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="CustomShapeExample.tsx"
+  src="/static/images/expo-ui/examples/compose-button-custom-shape-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/compose-button-custom-shape-android-dark.webp"
+  alt="A button with rounded top start and bottom end corners and square opposite corners">
+
+```tsx
+import {
+  Host,
+  Button,
+  Shape,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function CustomShapeExample() {
   return (
     <Host matchContents>
       <Button
         onClick={() => {}}
-        shape={Shape.RoundedCorner({ cornerRadii: { topStart: 16, bottomEnd: 16 } })}>
+        shape={Shape.RoundedCorner({
+          cornerRadii: { topStart: 16, bottomEnd: 16 },
+        })}>
         <Text>Custom Shape</Text>
       </Button>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -192,4 +248,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/button" apiName="Button" />
+<APISection
+  packageName="expo-ui/jetpack-compose/button"
+  apiName="Button"
+/>

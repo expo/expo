@@ -57,8 +57,8 @@ struct AppContextTests {
   @Test
   func `preserves order and emits both candidates when CFBundleExecutable differs from CFBundleName`() {
     // When CFBundleExecutable differs from CFBundleName (e.g. dotted bundle name), both
-    // candidates are emitted with the executable-derived one first, since it is the Swift
-    // module name by construction.
+    // candidates are emitted with the executable-derived one first, since the Swift module name
+    // is derived from it.
     let classNames = AppContext.moduleProviderClassNames(
       withName: "ExpoModulesProvider",
       bundleNames: ["Universal_internal", "Universal.internal"]
@@ -68,6 +68,49 @@ struct AppContextTests {
       "Universal_internal.ExpoModulesProvider",
       "Universal.internal.ExpoModulesProvider"
     ])
+  }
+
+  @Test
+  func `also emits the c99-mangled candidate for a digit-first bundle name`() {
+    // `CFBundleExecutable` is the raw product name, but Xcode derives the Swift module name from
+    // `$(PRODUCT_NAME:c99extidentifier)`, so an app named `123myapp` builds into the module
+    // `_23myapp` and the unmangled candidate misses the generated provider entirely.
+    let classNames = AppContext.moduleProviderClassNames(
+      withName: "ExpoModulesProvider",
+      bundleNames: ["123myapp"]
+    )
+
+    #expect(classNames == [
+      "123myapp.ExpoModulesProvider",
+      "_23myapp.ExpoModulesProvider"
+    ])
+  }
+
+  // MARK: - appIdentifier
+
+  @Test
+  func `app contexts get increasing indices`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(second.appIndex > first.appIndex)
+  }
+
+  @Test
+  func `app contexts get distinct identifiers`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(first.appIdentifier != second.appIdentifier)
+  }
+
+  @Test
+  func `the first app context has no identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 0) == nil)
+  }
+
+  @Test
+  func `later app contexts use their index as the identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 1) == "1")
+    #expect(AppContext.appIdentifier(forIndex: 42) == "42")
   }
 
   // MARK: - NativeState
@@ -125,7 +168,7 @@ struct AppContextTests {
       coreObject.setNativeState(nativeState)
 
       coreObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage { deallocatorCallCount == 1 }
 
       #expect(deallocatorCallCount == 1)
     }
@@ -144,13 +187,16 @@ struct AppContextTests {
       secondObject.setNativeState(nativeState)
 
       // Releasing the first holder must not fire the deallocator while the second still holds it.
+      // `secondObject` keeps a strong ref, so no number of collections may release the pointee;
+      // this assertion needs a fixed number of passes, not a retry loop, because it is waiting for
+      // something that must never happen.
       firstObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage()
       #expect(deallocatorCallCount == 0)
 
       // Releasing the last holder fires it exactly once.
       secondObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage { deallocatorCallCount == 1 }
       #expect(deallocatorCallCount == 1)
     }
 
@@ -189,7 +235,7 @@ struct AppContextTests {
 
       // Tear the subordinate runtime down.
       try subordinateRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try subordinateRuntime.eval("gc() && gc() && gc()")
+      subordinateRuntime.collectGarbage()
 
       // The app context survived: its main runtime is still recoverable.
       #expect(throws: Never.self) {
@@ -209,7 +255,7 @@ struct AppContextTests {
 
       // Tearing it down runs `destroy()`, which unpins the app context's runtime.
       try mainRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try mainRuntime.eval("gc() && gc() && gc()")
+      mainRuntime.collectGarbage { (try? appContext.runtime) == nil }
 
       #expect(throws: Exceptions.RuntimeLost.self) {
         _ = try appContext.runtime
@@ -239,7 +285,7 @@ struct AppContextTests {
 
       // Tear the subordinate down first: it must not destroy the shared app context.
       try subordinateRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try subordinateRuntime.eval("gc() && gc() && gc()")
+      subordinateRuntime.collectGarbage()
 
       #expect(throws: Never.self) {
         _ = try appContext.runtime
@@ -248,7 +294,7 @@ struct AppContextTests {
 
       // Now tear the main runtime down: this one owns the lifecycle, so it destroys the context.
       try mainRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try mainRuntime.eval("gc() && gc() && gc()")
+      mainRuntime.collectGarbage { (try? appContext.runtime) == nil }
 
       #expect(throws: Exceptions.RuntimeLost.self) {
         _ = try appContext.runtime

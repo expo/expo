@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 58.0.2 — 2026-09-22
+
+### 🎉 New features
+
+- [iOS] Added 2026 iPhone models. ([#49924](https://github.com/expo/expo/pull/49924) by [@fobos531](https://github.com/fobos531))
+
+## 58.0.1 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [Android] `isSideLoadingEnabledAsync` no longer surfaces a raw `SecurityException` when the app does not declare `REQUEST_INSTALL_PACKAGES` - it now throws a coded error explaining the requirement. ([#50265](https://github.com/expo/expo/pull/50265) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

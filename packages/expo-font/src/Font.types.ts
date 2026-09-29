@@ -21,10 +21,84 @@ export type FontResource = {
   display?: FontDisplay;
   default?: string;
   /**
-   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver).
+   * Sets the face's `weight` when the resource is the `path` of a
+   * [`FontFaceDefinition`](#fontfacedefinition) and the face doesn't declare its own. Outside of
+   * a font family definition, only the browser uses this value, as the CSS `font-weight` property.
+   */
+  weight?: number | string;
+  /**
+   * Sets the face's `style` when the resource is the `path` of a
+   * [`FontFaceDefinition`](#fontfacedefinition) and the face doesn't declare its own. Outside of
+   * a font family definition, only the browser uses this value, as the CSS `font-style` property.
+   */
+  style?: 'normal' | 'italic' | 'oblique';
+};
+
+// @needsAudit
+/**
+ * A single font face that belongs to a [`FontFamilyDefinition`](#fontfamilydefinition). Use
+ * `weight` and `style` to distinguish faces of the same `fontFamily`, for example the bold or
+ * italic cut of a typeface.
+ */
+export type FontFaceDefinition = {
+  /**
+   * The font asset to load for this face, in any format accepted by [`FontSource`](#fontsource).
+   */
+  path: FontSource;
+  /**
+   * On Android, the declared weight used to select this face. When unset, the weight read from
+   * the font file applies, and a variable font face keeps its whole `wght` axis &mdash;
+   * `fontWeight` renders the matching instance. Setting a weight on a variable font face pins it
+   * to that single instance. On API levels below 29, only the family's default face (closest to
+   * a regular, upright weight and style) is loaded.
+   *
+   * On iOS, this value isn't used to select the face; iOS reads the weight embedded in the font
+   * file's own metadata instead.
+   *
+   * On web, maps to the CSS `font-weight` property. A variable font file can also declare a
+   * weight range as `'<min> <max>'`, for example `'100 900'`. Leave unset for a variable font
+   * file that covers its full range of weights &mdash; a single value restricts the face to only
+   * that weight. A range is ignored on Android, which keeps the variable font's whole `wght`
+   * axis, and on iOS, which reads the weight from the font file instead.
+   */
+  weight?: number | string;
+  /**
+   * On Android, the declared style used to select this face. When unset, the style read from
+   * the font file applies. On API levels below 29, only the family's default face (closest to a
+   * regular, upright weight and style) is loaded.
+   *
+   * On iOS, this value isn't used to select the face; iOS reads the style embedded in the font
+   * file's own metadata instead.
+   *
+   * On web, maps to the CSS `font-style` property. Leave unset for a variable font file that
+   * covers both upright and italic/oblique styles &mdash; a single value restricts the face to
+   * only that style.
+   */
+  style?: 'normal' | 'italic' | 'oblique';
+  /**
+   * Sets the [`font-display`](#fontdisplay) property for this face in the browser.
    * @platform web
    */
-  testString?: string;
+  display?: FontDisplay;
+};
+
+// @needsAudit
+/**
+ * Groups one or more [`FontFaceDefinition`](#fontfacedefinition)s under a single `fontFamily`
+ * name. Use this to load multiple weights or styles (for example regular, bold, and italic) of
+ * the same typeface so the browser can select the correct face with the CSS `font-weight` and
+ * `font-style` properties.
+ */
+export type FontFamilyDefinition = {
+  /**
+   * The name used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
+   * with React Native `Text` elements.
+   */
+  fontFamily: string;
+  /**
+   * The faces (for example different weights or styles) that make up `fontFamily`.
+   */
+  fontDefinitions: FontFaceDefinition[];
 };
 
 // @needsAudit
@@ -75,9 +149,17 @@ export enum FontDisplay {
  * Object used to query fonts for unloading.
  * @hidden
  */
-export type UnloadFontOptions = Pick<FontResource, 'display'>;
+export type UnloadFontOptions = Pick<FontResource, 'display' | 'weight' | 'style'>;
 
-export type UseFontHook = (map: string | Record<string, FontSource>) => [boolean, Error | null];
+// @needsAudit
+/**
+ * The value accepted by [`useFonts`](#usefonts) and [`loadAsync`](#loadasyncfontfamilyorfontmap-source):
+ * a single `fontFamily` name, a map of `fontFamily` names to [`FontSource`](#fontsource)s, or an
+ * array of [`FontFamilyDefinition`](#fontfamilydefinition)s for loading multiple faces per family.
+ */
+export type FontMap = string | Record<string, FontSource> | FontFamilyDefinition[];
+
+export type UseFontHook = (map: FontMap) => [boolean, Error | null];
 
 export type ServerFontResourceDescriptor =
   | {

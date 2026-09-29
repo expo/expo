@@ -5,7 +5,7 @@ sidebar_title: Navigation
 hasVideoLink: true
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { DocsLogo, RouterLogo } from '@expo/styleguide';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { FileTree } from '~/ui/components/FileTree';
@@ -45,7 +45,7 @@ With Expo Router, you refer to pages by their URL, or their position relative to
   title="Router imperative navigation API reference"
   description="Learn how to use all the functions available for imperative navigation."
   href="/versions/latest/sdk/router/#imperativerouter"
-  Icon={BookOpen02Icon}
+  Icon={DocsLogo}
 />
 
 ## Links and buttons
@@ -94,14 +94,14 @@ export default function Page() {
   title="Link API reference"
   description="Learn the options available when using Links for navigation."
   href="/versions/latest/sdk/router/link/#link"
-  Icon={BookOpen02Icon}
+  Icon={DocsLogo}
 />
 
 <BoxLink
   title="Link preview"
   description="Learn how to add a preview to your link on iOS when using Expo Router."
   href="/router/reference/link-preview/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Relative routes
@@ -235,7 +235,7 @@ Query parameters can be updated without navigating to a new page. This can be do
   title="Using URL parameters"
   description="Learn more about how to set and use URL parameters in Expo Router."
   href="/router/reference/url-parameters/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Redirects
@@ -319,9 +319,9 @@ Assuming your `scheme` is `myapp`, here are some examples of how you would link 
 
 With app links and universal links, you can also link to your app with an `https` URL. For more information, see [Universal linking](/linking/overview/#universal-linking).
 
-## Initial routes
+## Anchor routes
 
-When opening a deep link to a page in your app, you will likely want back navigation to work as if the user navigated to the page from your home page. To do this, you can specify an `initialRouteName` configuration, which defines the page in a layout that should be loaded before the deep linked page.
+When opening a deep link to a page in your app, you will likely want back navigation to work as if the user navigated to the page from your home page. To do this, you can specify an `anchor` configuration, which defines the page in a layout that should be loaded before the deep linked page.
 
 Consider the following file structure:
 
@@ -336,16 +336,16 @@ Consider the following file structure:
 
 `stack` is a stack navigator, and `/stack/index` is always the first route in the stack.
 
-To ensure that `/stack/index` is always loaded first, even if the user deep links to `/stack/second`, you can set the `initialRouteName` in **src/app/stack/\_layout.tsx**:
+To ensure that `/stack/index` is always loaded first, even if the user deep links to `/stack/second`, you can set the `anchor` in **src/app/stack/\_layout.tsx**:
 
 ```tsx
 export const unstable_settings = {
   // Ensure any route can link back to `/`
-  initialRouteName: 'index',
+  anchor: 'index',
 };
 ```
 
-By default, the `initialRouteName` is only considered when deep linking and not during navigation within your app. However, you can use the `withAnchor` prop on `Link` to force the initial route to be loaded when navigating directly into another stack inside your app.
+By default, the `anchor` is only considered when deep linking and not during navigation within your app. However, you can use the `withAnchor` prop on `Link` to force the anchor route to be loaded when navigating directly into another stack inside your app.
 
 So, if **src/app/index.tsx** contained a link to `/stack/second`, add the `withAnchor` prop to ensure that `/stack/index` is loaded first, which will cause the user to go back to `/stack/index` when they press the back button from `/stack/second`:
 
@@ -355,4 +355,4 @@ So, if **src/app/index.tsx** contained a link to `/stack/second`, add the `withA
 </Link>
 ```
 
-> **info** If you are missing a back button when testing deep links, this can often be fixed by setting an `initialRouteName`.
+> **info** If you are missing a back button when testing deep links, this can often be fixed by setting an `anchor`.

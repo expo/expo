@@ -1,9 +1,18 @@
 {
-    "compilerOptions": {
-        "allowJs": true,
-        "allowSyntheticDefaultImports": true
-    },
-    "exclude": [
-        "node_modules"
-    ]
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "checkJs": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "target": "esnext",
+    "jsx": "react-native",
+    "baseUrl": "."
+  },
+  "exclude": [
+    "node_modules",
+    "example/node_modules",
+    "example/ios",
+    "example/android"
+  ]
 }

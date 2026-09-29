@@ -3,7 +3,8 @@ title: Develop an app with Expo
 description: An overview of the development process of building an Expo app to help build a mental model of the core development loop.
 ---
 
-import { DocsLogo } from '@expo/styleguide';
+import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
+import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrowserIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -106,28 +107,28 @@ The following three commands result in more or less the same project:
 <Terminal
   cmd={{
     npm: [
-      '$ npx create-expo-app@latest --template default@sdk-57 MyApp && cd MyApp && npx expo prebuild',
+      '$ npx create-expo-app@latest MyApp && cd MyApp && npx expo prebuild',
       '',
       '$ npx create-expo-app --template bare-minimum',
       '',
       '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
     ],
     yarn: [
-      '$ yarn create expo-app --template default@sdk-57 MyApp && cd MyApp && yarn expo prebuild',
+      '$ yarn create expo-app MyApp && cd MyApp && yarn expo prebuild',
       '',
       '$ yarn create expo-app --template bare-minimum',
       '',
       '$ yarn dlx @react-native-community/cli@latest init MyApp && cd MyApp && yarn dlx install-expo-modules',
     ],
     pnpm: [
-      '$ pnpm create expo-app --template default@sdk-57 MyApp && cd MyApp && pnpm expo prebuild',
+      '$ pnpm create expo-app MyApp && cd MyApp && pnpm expo prebuild',
       '',
       '$ pnpm create expo-app --template bare-minimum',
       '',
       '$ pnpm dlx @react-native-community/cli@latest init MyApp && cd MyApp && pnpm dlx install-expo-modules',
     ],
     bun: [
-      '$ bun create expo --template default@sdk-57 MyApp && cd MyApp && bun expo prebuild',
+      '$ bun create expo MyApp && cd MyApp && bun expo prebuild',
       '',
       '$ bun create expo --template bare-minimum',
       '',
@@ -190,14 +191,14 @@ In most cases, you will create and use a development build of your project. You 
   title="Create a development build using EAS"
   description="Learn how to a create development build for your project using EAS."
   href="/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build"
-  Icon={DocsLogo}
+  Icon={TerminalBrowserIcon}
 />
 
 <BoxLink
   title="Create a development build locally"
   description="Learn how to compile your app locally using your own machine, Android Studio and Xcode."
   href="/guides/local-app-development/#local-builds-with-expo-dev-client"
-  Icon={DocsLogo}
+  Icon={CodeSquare01Icon}
 />
 
 ## The core development loop

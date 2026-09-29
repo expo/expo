@@ -1,5 +1,10 @@
 import type { NativeModule } from 'expo';
-import type { LogAttributeValue, LogEventOptions, MetricAttributes } from 'expo-app-metrics';
+import type {
+  LogAttributeValue,
+  LogEventOptions,
+  MetricAttributes,
+  NetworkRequestFilter,
+} from 'expo-app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the
@@ -81,6 +86,33 @@ export type ObserveConfig = {
    * [integrate your own package](/eas/observe/integrations/third-party/).
    */
   integrations?: ObserveIntegrationsConfig;
+  /**
+   * Whether network requests are recorded as trace spans. Pass `true` to record every request,
+   * or an object to record only the ones matching a filter.
+   *
+   * Off by default, because each recorded span counts toward your event quota. This controls
+   * recording, not just export: a request that's turned off or filtered out never reaches the
+   * local database. It applies to future requests only, so anything recorded earlier in the
+   * launch still gets sent. The setting persists across launches.
+   *
+   * @default false
+   */
+  networkTraces?: boolean | ObserveNetworkTracesConfig;
+};
+
+export type ObserveNetworkTracesConfig = {
+  /**
+   * Whether network requests are recorded at all. Set it to `false` to keep a filter configured
+   * while recording nothing.
+   *
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted field matches every request; an
+   * empty array matches none.
+   */
+  filter?: NetworkRequestFilter | null;
 };
 
 export type ObserveNavigationIntegrationConfig = {
@@ -133,6 +165,32 @@ export type ObserveModuleEvents = {
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   /**
+   * The EAS client id: a random, pseudonymous identifier for this app installation, shared by all
+   * EAS client libraries. Observe records it on every metric and log event as the
+   * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
+   *
+   * The id is stored in native preferences and is stable across app launches and app updates. It
+   * changes when the app's data is cleared or the app is reinstalled, although a backup restore
+   * can carry the previous id over. It identifies an installation, not a user or a device.
+   *
+   * `null` on web, where there is no EAS client id.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * // Attach the same id to data you send elsewhere to line it up with Observe.
+   * await fetch('https://example.com/events', {
+   *   method: 'POST',
+   *   body: JSON.stringify({ easClientId: Observe.clientId }),
+   * });
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  readonly clientId: string | null;
+  /**
    * Dispatches pending events to the server immediately.
    *
    * Events are dispatched automatically when the app moves to the background. On Android,
@@ -141,7 +199,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * this method to flush events manually, for example, during testing or to ensure events
    * are sent before a specific point.
    *
-   * @returns A promise that resolves when the pending events have been dispatched.
+   * @returns A promise that resolves once the events have been dispatched. A call made while
+   * another dispatch is running waits for it to finish first.
    *
    * @example
    * ```ts

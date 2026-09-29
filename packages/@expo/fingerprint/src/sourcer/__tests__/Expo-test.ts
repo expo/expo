@@ -172,7 +172,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   it('should contain expo autolinking projects', async () => {
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     expect(sources).toContainEqual(
@@ -185,7 +185,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
 
     sources = await getExpoAutolinkingIosSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     expect(sources).toContainEqual(
@@ -197,7 +197,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   it('should not contain absolute path in contents', async () => {
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     for (const source of sources) {
@@ -208,7 +208,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
 
     sources = await getExpoAutolinkingIosSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     for (const source of sources) {
@@ -216,6 +216,47 @@ describe('getExpoAutolinkingSourcesAsync', () => {
         expect(source.contents.indexOf('/app/')).toBe(-1);
       }
     }
+  });
+
+  it('should keep autolinking projects and strip path fields when SourceSkips.AutolinkingConfigPaths is set', async () => {
+    const options = await normalizeOptionsAsync('/app', {
+      sourceSkips: SourceSkips.AutolinkingConfigPaths,
+    });
+
+    let sources = await getExpoAutolinkingAndroidSourcesAsync(
+      '/app',
+      options,
+      expoAutolinkingVersion
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: 'node_modules/expo-modules-core/android',
+      })
+    );
+    const androidConfig = sources.find(
+      (source) => source.type === 'contents' && source.id === 'expoAutolinkingConfig:android'
+    );
+    expect(androidConfig?.type).toBe('contents');
+    if (androidConfig?.type !== 'contents') {
+      throw new Error('expected expoAutolinkingConfig:android contents source');
+    }
+    expect(androidConfig.contents).toContain('expo-modules-core');
+    expect(androidConfig.contents).not.toContain('node_modules');
+
+    sources = await getExpoAutolinkingIosSourcesAsync('/app', options, expoAutolinkingVersion);
+    expect(sources).toContainEqual(
+      expect.objectContaining({ type: 'dir', filePath: 'node_modules/expo-modules-core' })
+    );
+    const iosConfig = sources.find(
+      (source) => source.type === 'contents' && source.id === 'expoAutolinkingConfig:ios'
+    );
+    expect(iosConfig?.type).toBe('contents');
+    if (iosConfig?.type !== 'contents') {
+      throw new Error('expected expoAutolinkingConfig:ios contents source');
+    }
+    expect(iosConfig.contents).toContain('expo-modules-core');
+    expect(iosConfig.contents).not.toContain('node_modules');
   });
 });
 
@@ -424,6 +465,8 @@ describe(getExpoConfigSourcesAsync, () => {
         'assets/fonts/SF-Pro.ttf': 'sf pro data',
         'assets/fonts/Roboto-Regular.ttf': 'roboto regular data',
         'assets/fonts/Roboto-Bold.ttf': 'roboto bold data',
+        'assets/fonts/RobotoFlex.ttf': 'roboto flex data',
+        'assets/fonts/RobotoFlex-Italic.ttf': 'roboto flex italic data',
       };
       const pluginProps = {
         fonts: ['./assets/fonts/SpaceMono-Regular.ttf'],
@@ -437,6 +480,17 @@ describe(getExpoConfigSourcesAsync, () => {
                 { path: './assets/fonts/Roboto-Bold.ttf', weight: 700 },
               ],
             },
+            {
+              // A family may name its file once instead of each definition repeating it.
+              fontFamily: 'Roboto Flex',
+              path: './assets/fonts/RobotoFlex.ttf',
+              fontDefinitions: [
+                { weight: 400 },
+                { weight: 700, axes: { wght: 650 } },
+                // A definition may still name a file of its own.
+                { path: './assets/fonts/RobotoFlex-Italic.ttf', weight: 400, style: 'italic' },
+              ],
+            },
           ],
         },
       };
@@ -446,11 +500,14 @@ describe(getExpoConfigSourcesAsync, () => {
       expectFontSource(iosSources, 'assets/fonts/SF-Pro.ttf');
       expectNoFontSource(iosSources, 'assets/fonts/Roboto-Regular.ttf');
       expectNoFontSource(iosSources, 'assets/fonts/Roboto-Bold.ttf');
+      expectNoFontSource(iosSources, 'assets/fonts/RobotoFlex.ttf');
 
       const androidSources = await getFontSources(files, pluginProps, 'android');
       expectFontSource(androidSources, 'assets/fonts/SpaceMono-Regular.ttf');
       expectFontSource(androidSources, 'assets/fonts/Roboto-Regular.ttf');
       expectFontSource(androidSources, 'assets/fonts/Roboto-Bold.ttf');
+      expectFontSource(androidSources, 'assets/fonts/RobotoFlex.ttf');
+      expectFontSource(androidSources, 'assets/fonts/RobotoFlex-Italic.ttf');
       expectNoFontSource(androidSources, 'assets/fonts/SF-Pro.ttf');
     });
 

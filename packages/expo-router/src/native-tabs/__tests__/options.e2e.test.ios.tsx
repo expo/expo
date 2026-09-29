@@ -477,6 +477,80 @@ describe('Icons', () => {
       expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual(expectedIcon);
     }
   );
+
+  // React Native Screens throws when `icon` and `selectedIcon` have different types, so both
+  // states have to use the same rendering mode — the one resolved for the normal state.
+  describe('rendering mode', () => {
+    let warnSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warnSpy.mockRestore();
+    });
+
+    it.each([
+      {
+        name: 'only selectedIconColor is set',
+        iconColor: { selected: 'red' } as const,
+        expectedType: 'imageSource',
+        expectsWarning: true,
+      },
+      {
+        // `iconColor` applies to every state, so both icons agree without a warning.
+        name: 'only iconColor is set',
+        iconColor: { default: 'red' } as const,
+        expectedType: 'templateSource',
+        expectsWarning: false,
+      },
+      {
+        name: 'both icon colors are set',
+        iconColor: { default: 'blue', selected: 'red' } as const,
+        expectedType: 'templateSource',
+        expectsWarning: false,
+      },
+      {
+        name: 'no icon color is set',
+        iconColor: undefined,
+        expectedType: 'imageSource',
+        expectsWarning: false,
+      },
+    ])(
+      'icon and selectedIcon are $expectedType when $name',
+      ({ iconColor, expectedType, expectsWarning }) => {
+        renderRouter({
+          _layout: () => (
+            <NativeTabs iconColor={iconColor}>
+              <NativeTabs.Trigger name="index">
+                <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
+              </NativeTabs.Trigger>
+            </NativeTabs>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(TabsScreen).toHaveBeenCalledTimes(1);
+        const { icon, selectedIcon } = TabsScreen.mock.calls[0][0].ios ?? {};
+        expect(icon?.type).toBe(expectedType);
+        expect(selectedIcon?.type).toBe(expectedType);
+
+        if (expectsWarning) {
+          expect(warnSpy).toHaveBeenCalledWith(
+            expect.stringContaining(
+              'NativeTabs does not currently support rendering icons in different modes'
+            )
+          );
+          // The warning names the tab so it can be found in a layout with many triggers.
+          expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"index" tab'));
+        } else {
+          expect(warnSpy).not.toHaveBeenCalled();
+        }
+      }
+    );
+  });
 });
 
 describe('Badge', () => {

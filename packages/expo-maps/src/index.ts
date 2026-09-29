@@ -28,6 +28,8 @@ export namespace GoogleMaps {
   export type MapView = GoogleTypes.GoogleMapsViewType;
 
   export type StreetViewProps = GoogleTypes.GoogleStreetViewProps;
+
+  export type Circle = GoogleTypes.GoogleMapsCircle;
 }
 
 /**

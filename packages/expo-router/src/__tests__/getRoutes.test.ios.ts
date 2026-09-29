@@ -555,6 +555,29 @@ describe('entry points', () => {
 });
 
 describe('anchor', () => {
+  it('warns when using the deprecated initialRouteName setting', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const routes = getRoutes(
+      inMemoryContext({
+        _layout: {
+          unstable_settings: { initialRouteName: 'a' },
+          default: () => null,
+        },
+        a: () => null,
+        b: () => null,
+      }),
+      { skipGenerated: true }
+    );
+
+    expect(routes?.initialRouteName).toBe('a');
+    expect(warn).toHaveBeenCalledWith(
+      '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
+    );
+
+    warn.mockRestore();
+  });
+
   it(`should append entry points for all parent _layouts`, () => {
     expect(
       getRoutes(
@@ -614,7 +637,7 @@ describe('anchor', () => {
         { skipGenerated: true }
       )
     ).toThrow(
-      'The initial route name "c" was not found in the layout at "./_layout.js". Available routes are: "a", "b". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+      'The initial route name "c" was not found in the layout at "./_layout.js". Available routes are: "a", "b". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 
@@ -638,7 +661,7 @@ describe('anchor', () => {
         { skipGenerated: true }
       )
     ).toThrow(
-      'The initial route name "d" for group "b" was not found in the layout at "./(a,b)/_layout.js". Available routes are: "c". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+      'The initial route name "d" for group "b" was not found in the layout at "./(a,b)/_layout.js". Available routes are: "c". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 

@@ -209,7 +209,11 @@ class ExponentNotificationManager(private val context: Context) {
     }
 
     // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      PendingIntent.FLAG_MUTABLE
+    } else {
+      0
+    }
     val pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     if (interval != null) {
@@ -236,7 +240,11 @@ class ExponentNotificationManager(private val context: Context) {
       action = id.toString()
     }
     // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      PendingIntent.FLAG_MUTABLE
+    } else {
+      0
+    }
     val pendingIntent = PendingIntent.getBroadcast(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     alarmManager.cancel(pendingIntent)

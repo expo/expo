@@ -15,6 +15,8 @@ import {
   getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
+  getUpdatesMaxUpdatesToKeep,
+  getUpdatesExcludeFromBackup,
   getUpdatesUseEmbeddedUpdate,
   getUpdateUrl,
   FINGERPRINT_RUNTIME_VERSION_SENTINEL,
@@ -231,6 +233,20 @@ describe(getUpdatesUseEmbeddedUpdate, () => {
   });
 });
 
+describe(getUpdatesExcludeFromBackup, () => {
+  it('returns true if updates.excludeFromBackup is true', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: { excludeFromBackup: true } })).toBe(true);
+  });
+
+  it('returns false if updates.excludeFromBackup is false', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: { excludeFromBackup: false } })).toBe(false);
+  });
+
+  it('returns false if updates.excludeFromBackup is undefined', () => {
+    expect(getUpdatesExcludeFromBackup({ updates: {} })).toBe(false);
+  });
+});
+
 describe(getRuntimeVersionAsync, () => {
   it('works if the top level runtimeVersion is a string', async () => {
     const runtimeVersion = '42';
@@ -315,4 +331,24 @@ describe(getRuntimeVersionAsync, () => {
       getRuntimeVersionAsync('', { runtimeVersion: { policy: 'unsupportedPlugin' } } as any, 'ios')
     ).rejects.toThrow(`"unsupportedPlugin" is not a valid runtime version policy type.`);
   });
+});
+
+describe('getUpdatesMaxUpdatesToKeep', () => {
+  it('leaves the native default unset', () => {
+    expect(getUpdatesMaxUpdatesToKeep({})).toBeUndefined();
+    expect(getUpdatesMaxUpdatesToKeep({ updates: {} })).toBeUndefined();
+  });
+
+  it.each([2, 5, 2147483647])('accepts %s', (maxUpdatesToKeep) => {
+    expect(getUpdatesMaxUpdatesToKeep({ updates: { maxUpdatesToKeep } })).toBe(maxUpdatesToKeep);
+  });
+
+  it.each([0, 1, -1, 2.5, NaN, Infinity, 2147483648, '3', null, true])(
+    'rejects invalid value %s before generating native config',
+    (maxUpdatesToKeep) => {
+      expect(() =>
+        getUpdatesMaxUpdatesToKeep({ updates: { maxUpdatesToKeep: maxUpdatesToKeep as any } })
+      ).toThrow('updates.maxUpdatesToKeep must be an integer between 2 and 2147483647');
+    }
+  );
 });

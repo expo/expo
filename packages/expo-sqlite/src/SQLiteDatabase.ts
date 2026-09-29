@@ -143,7 +143,12 @@ export class SQLiteDatabase {
       await task();
       await this.execAsync('COMMIT');
     } catch (e) {
-      await this.execAsync('ROLLBACK');
+      try {
+        await this.execAsync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back (for example, after an interrupted write).
+        // Preserve the original error if rollback also fails.
+      }
       throw e;
     }
   }
@@ -185,7 +190,11 @@ export class SQLiteDatabase {
       await task(transaction);
       await transaction.execAsync('COMMIT');
     } catch (e) {
-      await transaction.execAsync('ROLLBACK');
+      try {
+        await transaction.execAsync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back; preserve the original error.
+      }
       error = e;
     } finally {
       await transaction.closeAsync();
@@ -200,6 +209,28 @@ export class SQLiteDatabase {
    */
   public isInTransactionSync(): boolean {
     return this.nativeDatabase.isInTransactionSync();
+  }
+
+  /**
+   * Interrupt running async operations on this connection. Returns immediately; await the operations
+   * to observe their errors before closing or reusing the connection.
+   *
+   * Affects all running statements on the connection, including shared cached handles. Interrupting
+   * a write rolls back its entire explicit transaction. Has no effect when idle; an operation that
+   * is nearly finished may still complete successfully.
+   *
+   * Throws if closing is already in progress. Interrupt and await pending operations before calling
+   * `closeAsync()` or `closeSync()`. Closing does not automatically cancel operations.
+   * For `withExclusiveTransactionAsync()`, call this on the callback's `txn` connection.
+   *
+   * @see https://www.sqlite.org/c3ref/interrupt.html
+   * @platform android
+   * @platform ios
+   * @platform macos
+   * @platform tvos
+   */
+  public interruptSync(): void {
+    return this.nativeDatabase.interruptSync();
   }
 
   /**
@@ -301,7 +332,11 @@ export class SQLiteDatabase {
       task();
       this.execSync('COMMIT');
     } catch (e) {
-      this.execSync('ROLLBACK');
+      try {
+        this.execSync('ROLLBACK');
+      } catch {
+        // SQLite may already have rolled back; preserve the original error.
+      }
       throw e;
     }
   }

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 58.0.0 — 2026-09-10
+
+### 💡 Others
+
 - [iOS] Resolved the review prompt's scene through the shared scene geometry helper, which also fixes a foreground scene being missed when another scene type sorted ahead of it. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.1 - 2026-07-15

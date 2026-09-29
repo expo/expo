@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI Group matches the official SwiftUI [Group API](https://developer.apple.com/documentation/swiftui/group) and groups views together without introducing additional layout structure.
 
@@ -21,22 +22,32 @@ Expo UI Group matches the official SwiftUI [Group API](https://developer.apple.c
 
 Groups are useful for applying modifiers to multiple views at once or organizing views without affecting layout.
 
-```tsx BasicGroupExample.tsx
-import { Host, Group, Text } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="BasicGroupExample.tsx"
+  src="/static/images/expo-ui/examples/group-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/group-basic-ios-dark.webp"
+  alt="Three lines of blue text stacked vertically: First item, Second item, and Third item.">
+
+```tsx
+import { Group, Host, Text, VStack } from '@expo/ui/swift-ui';
 import { foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function BasicGroupExample() {
   return (
-    <Host matchContents>
-      <Group modifiers={[foregroundStyle('blue')]}>
-        <Text>First item</Text>
-        <Text>Second item</Text>
-        <Text>Third item</Text>
-      </Group>
+    <Host matchContents style={{ alignSelf: 'center' }}>
+      <VStack spacing={8}>
+        <Group modifiers={[foregroundStyle('blue')]}>
+          <Text>First item</Text>
+          <Text>Second item</Text>
+          <Text>Third item</Text>
+        </Group>
+      </VStack>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

@@ -8,7 +8,7 @@ import { unstable_navigationEvents } from '../navigationEvents';
 import type { PageFocusedEvent } from '../navigationEvents/types';
 import { renderRouter } from '../testing-library';
 
-describe('AnalyticsListeners pageFocused timing', () => {
+describe('AnalyticsListeners event timing', () => {
   const cleanups: (() => void)[] = [];
 
   beforeAll(() => {
@@ -31,6 +31,34 @@ describe('AnalyticsListeners pageFocused timing', () => {
     cleanups.push(cleanup);
     return events;
   }
+
+  it('emits pagePreloaded after the preloaded screen content has committed', () => {
+    const order: string[] = [];
+    const cleanup = unstable_navigationEvents.addListener('pagePreloaded', () =>
+      order.push('pagePreloaded')
+    );
+    cleanups.push(cleanup);
+
+    function DetailsScreen() {
+      useLayoutEffect(() => {
+        order.push('details-committed');
+      });
+      return <Text testID="details-content">Details</Text>;
+    }
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+      details: DetailsScreen,
+    });
+
+    act(() => router.prefetch('/details'));
+
+    const preloadIdx = order.indexOf('pagePreloaded');
+    const commitIdx = order.indexOf('details-committed');
+    expect(commitIdx).toBeGreaterThanOrEqual(0);
+    expect(preloadIdx).toBeGreaterThan(commitIdx);
+  });
 
   it('emits pageFocused after the focused screen content has committed', () => {
     const order: string[] = [];

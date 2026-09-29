@@ -38,6 +38,13 @@ export const CameraScreens = [
     },
   },
   {
+    name: 'Recording progress',
+    route: 'camera/expo-camera-recording-progress',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenRecordingProgress'));
+    },
+  },
+  {
     name: 'Camera Image Ref',
     route: 'camera/expo-camera-image-ref',
     getComponent() {

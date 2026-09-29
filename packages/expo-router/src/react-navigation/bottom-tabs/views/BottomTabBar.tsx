@@ -167,18 +167,14 @@ export function BottomTabBar({ state, descriptors, emitter, navigateToTab, inset
 
   const shouldShowTabBar = !(tabBarHideOnKeyboard && isKeyboardShown);
 
-  const visibilityAnimationConfigRef = React.useRef(tabBarVisibilityAnimationConfig);
-
-  React.useEffect(() => {
-    visibilityAnimationConfigRef.current = tabBarVisibilityAnimationConfig;
-  });
+  const getVisibilityAnimationConfig = React.useEffectEvent(() => tabBarVisibilityAnimationConfig);
 
   const [isTabBarHidden, setIsTabBarHidden] = React.useState(!shouldShowTabBar);
 
   const [visible] = React.useState(() => new Animated.Value(shouldShowTabBar ? 1 : 0));
 
   React.useEffect(() => {
-    const visibilityAnimationConfig = visibilityAnimationConfigRef.current;
+    const visibilityAnimationConfig = getVisibilityAnimationConfig();
 
     if (shouldShowTabBar) {
       const animation =

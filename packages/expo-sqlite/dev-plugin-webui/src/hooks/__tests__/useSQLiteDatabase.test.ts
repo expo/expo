@@ -25,6 +25,12 @@ jest.mock('../../../../src/ExpoSQLite', () =>
 // Mock sqliteDump
 jest.mock('@/lib/sqliteDump');
 
+// `openDatabaseAsync` registers the database with devtools without awaiting it.
+// Left unmocked, that opens a real WebSocket whose retry timers outlive the test.
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
+
 const mockImportDatabase = sqliteDump.importDatabase as jest.MockedFunction<
   typeof sqliteDump.importDatabase
 >;

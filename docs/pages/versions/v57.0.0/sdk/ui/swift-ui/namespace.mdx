@@ -55,12 +55,20 @@ function MatchedGeometryExample() {
       }}>
       <VStack
         spacing={60}
-        modifiers={[animation(Animation.spring({ duration: 0.8 }), isGlassExpanded)]}>
+        modifiers={[
+          animation(
+            Animation.spring({ duration: 0.8 }),
+            isGlassExpanded
+          ),
+        ]}>
         <Namespace id={namespaceId}>
           <GlassEffectContainer
             spacing={30}
             modifiers={[
-              animation(Animation.spring({ duration: 0.8 }), isGlassExpanded),
+              animation(
+                Animation.spring({ duration: 0.8 }),
+                isGlassExpanded
+              ),
               padding({ all: 30 }),
               cornerRadius(20),
             ]}>
@@ -196,4 +204,7 @@ function MatchedGeometryExample() {
 import { Namespace } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/namespace" apiName="Namespace" />
+<APISection
+  packageName="expo-ui/swift-ui/namespace"
+  apiName="Namespace"
+/>

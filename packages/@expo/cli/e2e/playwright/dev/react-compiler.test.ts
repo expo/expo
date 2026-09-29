@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 import klawSync from 'klaw-sync';
-import { assert } from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -49,16 +48,13 @@ test.describe(baseDir, () => {
     });
 
     test('bundle contains live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const commonChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      });
-      const bundleFile = jsFiles[0]?.path;
+      }).filter((file) => /^__common-.*\.js$/.test(path.basename(file.path)));
+      expect(commonChunkJsFiles).toHaveLength(1);
 
-      // Sanity check
-      assert(jsFiles.length === 1, 'This test expects a single JS bundle file to be generated.');
-      assert(bundleFile, 'No JS bundle file found.');
-
-      const bundleContent = fs.readFileSync(bundleFile, 'utf8');
+      // The fixture's shared hooks are emitted in the common chunk.
+      const bundleContent = fs.readFileSync(commonChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
       expect(bundleContent).toMatch(
@@ -116,16 +112,13 @@ test.describe(baseDir, () => {
     });
 
     test('bundle does not have live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const commonChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      });
-      const bundleFile = jsFiles[0]?.path;
+      }).filter((file) => /^__common-.*\.js$/.test(path.basename(file.path)));
+      expect(commonChunkJsFiles).toHaveLength(1);
 
-      // Sanity check
-      assert(jsFiles.length === 1, 'This test expects a single JS bundle file to be generated.');
-      assert(bundleFile, 'No JS bundle file found.');
-
-      const bundleContent = fs.readFileSync(bundleFile, 'utf8');
+      // The fixture's shared hooks are emitted in the common chunk.
+      const bundleContent = fs.readFileSync(commonChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which causes the application to crash uses static bindings.
       expect(bundleContent).not.toMatch(

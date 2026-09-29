@@ -27,7 +27,7 @@ const server :Workerd.Worker = (
   ],
   bindings = [
     (name = "TEST_SECRET_RUNTIME_KEY", text = "runtime-secret-value"),
-    (name = "E2E_ROUTER_SERVER_RENDERING", text = "true"),
+    (name = "EXPO_USE_STATIC", text = "server"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [

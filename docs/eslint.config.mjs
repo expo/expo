@@ -63,6 +63,8 @@ export default defineConfig([
     'pages/versions/latest',
     'types/global.d.ts',
     'README.md',
+    'AGENTS.md',
+    'CLAUDE.md',
     'next-env.d.ts',
   ]),
   universeWebConfig,

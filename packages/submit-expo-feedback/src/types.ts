@@ -1,3 +1,4 @@
+export const CLI_FEEDBACK_MIN_LENGTH = 40;
 export const CLI_FEEDBACK_MAX_LENGTH = 5_000;
 export const CLI_FEEDBACK_CATEGORIES = [
   'skills',

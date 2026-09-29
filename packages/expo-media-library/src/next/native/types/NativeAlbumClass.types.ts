@@ -1,3 +1,4 @@
+import type { AlbumType } from '../../types';
 import type { NativeAssetClass } from './NativeAssetClass.types';
 
 export declare class NativeAlbumClass {
@@ -5,6 +6,7 @@ export declare class NativeAlbumClass {
   id: string;
   getAssets(): Promise<NativeAssetClass[]>;
   getTitle(): Promise<string>;
+  getType(): Promise<AlbumType>;
   delete(): Promise<void>;
   add(assets: NativeAssetClass | NativeAssetClass[]): Promise<void>;
   removeAssets(assets: NativeAssetClass[]): Promise<void>;
@@ -16,4 +18,5 @@ export declare class NativeAlbumClass {
   static delete(albums: NativeAlbumClass[], deleteAssets?: boolean): Promise<void>;
   static get(title: string): Promise<NativeAlbumClass | null>;
   static getAll(): Promise<NativeAlbumClass[]>;
+  static getSmartAlbums(): Promise<NativeAlbumClass[]>;
 }

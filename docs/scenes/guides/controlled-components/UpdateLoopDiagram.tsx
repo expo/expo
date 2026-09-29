@@ -62,7 +62,7 @@ const CONNECTORS = [
 export function UpdateLoopDiagram() {
   return (
     <div
-      className="my-5 rounded-lg border border-default bg-default p-4"
+      className="my-5 rounded-3xl border border-default bg-default p-4"
       data-md="diagram"
       data-md-alt={DIAGRAM_ALT}>
       <div className="flex gap-3">

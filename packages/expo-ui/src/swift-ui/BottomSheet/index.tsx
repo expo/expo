@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import { useState, type ComponentType, type ReactNode } from 'react';
 import { type NativeSyntheticEvent } from 'react-native';
 
+import { PresentedContent } from '../../PresentedContentContext';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -76,7 +77,9 @@ function BottomSheet(props: BottomSheetProps) {
         onDismiss?.();
       }}>
       {anchor != null ? <Slot name="anchor">{anchor}</Slot> : null}
-      {isMounted ? children : null}
+      {/* Only the sheet's content is presented in its own view controller. The anchor renders in
+          place, in the React Native surface, so it stays outside `PresentedContent`. */}
+      {isMounted ? <PresentedContent>{children}</PresentedContent> : null}
     </BottomSheetNativeView>
   );
 }

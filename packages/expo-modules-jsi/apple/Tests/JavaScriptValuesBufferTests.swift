@@ -55,7 +55,7 @@ struct JavaScriptValuesBufferTests {
     _ = JavaScriptValuesBuffer.allocate(in: runtime, with: object.asValue())
     _ = consume object
 
-    runtime.collectGarbage()
+    runtime.collectGarbage { weak.lock() == nil }
 
     let stillAlive = weak.lock() != nil
     #expect(stillAlive == false)

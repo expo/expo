@@ -4,6 +4,36 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 58.0.3 — 2026-09-28
+
+### 🐛 Bug fixes
+
+- [Android] Added missing permission checks to upload tasks and to file watchers. ([#50582](https://github.com/expo/expo/pull/50582) by [@barthap](https://github.com/barthap))
+- [iOS] Added a missing permission check when opening a file handle. ([#50583](https://github.com/expo/expo/pull/50583) by [@barthap](https://github.com/barthap))
+- [Android] Check permissions for `content://` URIs served by the app's own file providers. ([#50584](https://github.com/expo/expo/pull/50584) by [@barthap](https://github.com/barthap))
+
+## 58.0.2 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [iOS] Include the privacy manifest in prebuilt frameworks. ([#50503](https://github.com/expo/expo/pull/50503) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.1 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Anchored the file picker popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50434](https://github.com/expo/expo/pull/50434) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
 - `File.write()` is now asynchronous and returns a Promise. Use `File.writeSync()` for synchronous behavior. ([#45992](https://github.com/expo/expo/pull/45992) by [@wh201906](https://github.com/wh201906))
 - `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
 
@@ -14,6 +44,10 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `File.downloadFileAsync()` returning a runtime-specific error message when canceled with an `AbortSignal`. ([#49856](https://github.com/expo/expo/pull/49856) by [@Ubax](https://github.com/Ubax))
+- Fix `File.readableStream()` returning zeroed bytes and writing past the requested region when a BYOB read targets a view that starts at a non-zero offset. ([#49234](https://github.com/expo/expo/pull/49234) by [@dennytosp](https://github.com/dennytosp))
+- [Android][iOS] Fix `File.size` returning `null` for a missing or unreadable file. ([#49086](https://github.com/expo/expo/pull/49086)) by [@ACHP](https://github.com/ACHP))
+- [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
 - Fixed `copyAsync` on iOS copying the unedited original when a `ph://` asset has edits applied in Photos. ([#48248](https://github.com/expo/expo/pull/48248) by [@CoffeeFlux](https://github.com/CoffeeFlux))
 - Fixed iOS file previews rejecting a new preview while the previous Quick Look dismissal animation is still finishing. ([#47947](https://github.com/expo/expo/pull/47947) by [@eliotgevers](https://github.com/eliotgevers))
 - Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
@@ -21,6 +55,7 @@
 - Fixed potential file offset races when asynchronous and synchronous `FileHandle` operations overlap on Android and iOS. ([#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
 - Fixed `readAsStringAsync` to respect `position` and `length` when reading UTF-8 strings. ([#20291](https://github.com/expo/expo/issues/20291) by [@mvincentong](https://github.com/mvincentong)) ([#45714](https://github.com/expo/expo/pull/45714) by [@mvincentong](https://github.com/mvincentong))
 - [android] Fixed `rename()` storing an unencoded URI, so reading `.uri` afterwards threw for names containing a space. ([#48496](https://github.com/expo/expo/issues/48496) by [@yagiz2000](https://github.com/yagiz2000), [#48510](https://github.com/expo/expo/pull/48510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [android] Fixed slow uploads of SAF-backed `content://` files by resolving the request body's content length once, instead of querying it through `ContentResolver` for every 8 KiB written. ([#49206](https://github.com/expo/expo/pull/49206) by [@gmaclennan](https://github.com/gmaclennan))
 
 ### 💡 Others
 

@@ -33,13 +33,13 @@ export default function ContactDetailScreen(props: any) {
           <HeaderIconButton
             name="share"
             onPress={async () => {
-              Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
+              Contacts.shareContactAsync(props.route.params.contactId, 'Call me :]');
             }}
           />
           <HeaderIconButton
             name="open"
             onPress={async () => {
-              await Contacts.presentFormAsync(props.route.params.id, undefined, {
+              await Contacts.presentFormAsync(props.route.params.contactId, undefined, {
                 cancelButtonTitle: 'Exit',
                 message: 'Message below name',
                 allowsEditing: true,
@@ -51,7 +51,7 @@ export default function ContactDetailScreen(props: any) {
             <HeaderIconButton
               name="copy"
               onPress={async () => {
-                await ContactUtils.cloneAsync(props.route.params.id);
+                await ContactUtils.cloneAsync(props.route.params.contactId);
                 props.navigation.goBack();
               }}
             />
@@ -71,13 +71,21 @@ export default function ContactDetailScreen(props: any) {
     );
   }
 
+  if (!props.route?.params?.contactId) {
+    return (
+      <View style={styles.permissionContainer}>
+        <Text>Access this screen from the "Contacts" screen.</Text>
+      </View>
+    );
+  }
+
   return <ContactDetailView navigation={props.navigation} route={props.route} />;
 }
 
 function ContactDetailView({
   navigation,
   route: {
-    params: { id },
+    params: { contactId: id },
   },
 }: any) {
   const [contact, setContact] = React.useState<Contacts.Contact | null>(null);

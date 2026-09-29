@@ -10,7 +10,7 @@ import {
   type StackRouterOptions,
 } from '../../react-navigation/native';
 import { act, renderRouter } from '../../testing-library';
-import { unstable_createStandardRouterNavigator } from '../index';
+import { createStandardRouterNavigator } from '../index';
 
 type EventMap = Record<string, { data: object | undefined; canPreventDefault: boolean }>;
 
@@ -23,7 +23,7 @@ function Content(args: NavigatorArgs<object, EventMap>) {
   ));
 }
 
-const Stack = unstable_createStandardRouterNavigator<
+const Stack = createStandardRouterNavigator<
   object,
   StackNavigationState<ParamListBase>,
   EventMap,

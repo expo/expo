@@ -3,7 +3,7 @@ import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Label, Icon, Badge, VectorIcon } from '../../primitives';
-import type { NativeTabsLabelStyle } from '../types';
+import type { IconRenderingMode, NativeTabsLabelStyle } from '../types';
 
 export interface NativeTabsTriggerLabelProps {
   /**
@@ -66,7 +66,7 @@ export interface SrcIcon {
    *
    * @platform ios
    */
-  renderingMode?: 'template' | 'original';
+  renderingMode?: IconRenderingMode;
 }
 
 export interface SFSymbolIcon {
@@ -212,7 +212,7 @@ export const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps> = Icon;
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * export default Layout(){
@@ -264,7 +264,7 @@ export interface NativeTabsBottomAccessoryProps {
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default Layout(){
  *   return (

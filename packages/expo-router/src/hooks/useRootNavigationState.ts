@@ -1,8 +1,9 @@
 'use client';
 
-import { INTERNAL_SLOT_NAME } from '../constants';
-import type { NavigationProp, NavigationState } from '../react-navigation/native';
-import { useNavigation } from '../react-navigation/native';
+import { use } from 'react';
+
+import { RootNavigationStateContext } from '../react-navigation/core/RootNavigationStateContext';
+import type { NavigationState } from '../react-navigation/native';
 
 /**
  * Returns the navigation state of the root navigator — the top-level navigator that
@@ -25,14 +26,11 @@ import { useNavigation } from '../react-navigation/native';
  * reference for the shape of the returned object.
  */
 export function useRootNavigationState(): NavigationState {
-  const parent =
-    // We assume that this is called from routes in __root
-    // Users cannot customize the generated Sitemap or NotFound routes, so we should be safe
-    useNavigation<NavigationProp<object, never, string>>().getParent(INTERNAL_SLOT_NAME);
-  if (!parent) {
+  const state = use(RootNavigationStateContext);
+  if (state === undefined) {
     throw new Error(
       'useRootNavigationState was called from a generated route. This is likely a bug in Expo Router.'
     );
   }
-  return parent.getState();
+  return state;
 }

@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI TabView matches the official SwiftUI [TabView API](https://developer.apple.com/documentation/swiftui/tabview) and switches between styles via the [`tabViewStyle`](modifiers/#tabviewstyleconfig) modifier.
@@ -34,8 +35,20 @@ Each page is a `<TabView.Tab>` child, identified by a `value` prop. `TabView` do
 
 Use `tabViewStyle({ type: 'page' })` for a horizontal pager with optional dot indicators. Pass `defaultSelection` to start the pager on a specific page without controlling it from React.
 
-```tsx PagerExample.tsx
-import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="PagerExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-pager-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-pager-ios-dark.webp"
+  alt="A teal pager page labeled Page 2, with three dot indicators and the middle dot active">
+
+```tsx
+import {
+  Host,
+  Spacer,
+  TabView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 import {
   background,
   font,
@@ -44,13 +57,18 @@ import {
   tabViewStyle,
 } from '@expo/ui/swift-ui/modifiers';
 
-const fillFrame = frame({ maxWidth: Infinity, maxHeight: Infinity });
+const fillFrame = frame({
+  maxWidth: Infinity,
+  maxHeight: Infinity,
+});
 const pageFrame = frame({ minHeight: 320, maxHeight: 320 });
 
 export default function PagerExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <TabView defaultSelection="1" modifiers={[pageFrame, tabViewStyle({ type: 'page' })]}>
+      <TabView
+        defaultSelection="1"
+        modifiers={[pageFrame, tabViewStyle({ type: 'page' })]}>
         <TabView.Tab value="0">
           <Page label="Page 1" color="#6200EE" />
         </TabView.Tab>
@@ -67,9 +85,15 @@ export default function PagerExample() {
 
 function Page({ label, color }: { label: string; color: string }) {
   return (
-    <VStack alignment="center" modifiers={[fillFrame, background(color)]}>
+    <VStack
+      alignment="center"
+      modifiers={[fillFrame, background(color)]}>
       <Spacer />
-      <Text modifiers={[font({ size: 28, weight: 'bold' }), foregroundStyle('#FFFFFF')]}>
+      <Text
+        modifiers={[
+          font({ size: 28, weight: 'bold' }),
+          foregroundStyle('#FFFFFF'),
+        ]}>
         {label}
       </Text>
       <Spacer />
@@ -78,13 +102,28 @@ function Page({ label, color }: { label: string; color: string }) {
 }
 ```
 
+</ComponentExample>
+
 ### Controlled selection
 
 Pass `selection` and `onSelectionChange` to drive the active tab from React state. Each `<TabView.Tab>`'s `value` is matched against `selection`. Add the [`animation`](modifiers/#animationanimationobject-animatedvalue) modifier to animate transitions when `selection` changes from JS.
 
-```tsx ControlledTabViewExample.tsx
+<ComponentExample
+  title="ControlledTabViewExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-controlled-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-controlled-ios-dark.webp"
+  alt="A Selected 0 readout and a Go to page 3 button above a purple pager page labeled Page 1">
+
+```tsx
 import { useState } from 'react';
-import { Button, Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  Button,
+  Host,
+  Spacer,
+  TabView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 import {
   animation,
   Animation,
@@ -95,7 +134,10 @@ import {
   tabViewStyle,
 } from '@expo/ui/swift-ui/modifiers';
 
-const fillFrame = frame({ maxWidth: Infinity, maxHeight: Infinity });
+const fillFrame = frame({
+  maxWidth: Infinity,
+  maxHeight: Infinity,
+});
 const pageFrame = frame({ minHeight: 320, maxHeight: 320 });
 
 export default function ControlledTabViewExample() {
@@ -105,7 +147,10 @@ export default function ControlledTabViewExample() {
     <Host style={{ flex: 1 }}>
       <VStack>
         <Text>Selected: {selected}</Text>
-        <Button label="Go to page 3" onPress={() => setSelected('2')} />
+        <Button
+          label="Go to page 3"
+          onPress={() => setSelected('2')}
+        />
         <TabView
           selection={selected}
           onSelectionChange={setSelected}
@@ -131,9 +176,15 @@ export default function ControlledTabViewExample() {
 
 function Page({ label, color }: { label: string; color: string }) {
   return (
-    <VStack alignment="center" modifiers={[fillFrame, background(color)]}>
+    <VStack
+      alignment="center"
+      modifiers={[fillFrame, background(color)]}>
       <Spacer />
-      <Text modifiers={[font({ size: 28, weight: 'bold' }), foregroundStyle('#FFFFFF')]}>
+      <Text
+        modifiers={[
+          font({ size: 28, weight: 'bold' }),
+          foregroundStyle('#FFFFFF'),
+        ]}>
         {label}
       </Text>
       <Spacer />
@@ -142,12 +193,26 @@ function Page({ label, color }: { label: string; color: string }) {
 }
 ```
 
+</ComponentExample>
+
 ### Page indicator dots
 
 Use the [`indexViewStyle`](modifiers/#indexviewstyleconfig) modifier together with `tabViewStyle({ type: 'page' })` to control the dot indicators. Set `indexDisplayMode` to `'always'`, `'never'`, or `'automatic'`, and `backgroundDisplayMode` to render a translucent pill behind the dots.
 
-```tsx PageIndicatorExample.tsx
-import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="PageIndicatorExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-page-indicator-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-page-indicator-ios-dark.webp"
+  alt="A blue pager page labeled Page 1 with three dots inside a translucent pill">
+
+```tsx
+import {
+  Host,
+  Spacer,
+  TabView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 import {
   background,
   font,
@@ -157,7 +222,10 @@ import {
   tabViewStyle,
 } from '@expo/ui/swift-ui/modifiers';
 
-const fillFrame = frame({ maxWidth: Infinity, maxHeight: Infinity });
+const fillFrame = frame({
+  maxWidth: Infinity,
+  maxHeight: Infinity,
+});
 const pageFrame = frame({ minHeight: 320, maxHeight: 320 });
 
 export default function PageIndicatorExample() {
@@ -166,7 +234,10 @@ export default function PageIndicatorExample() {
       <TabView
         modifiers={[
           pageFrame,
-          tabViewStyle({ type: 'page', indexDisplayMode: 'always' }),
+          tabViewStyle({
+            type: 'page',
+            indexDisplayMode: 'always',
+          }),
           indexViewStyle({ backgroundDisplayMode: 'always' }),
         ]}>
         <TabView.Tab value="0">
@@ -185,9 +256,15 @@ export default function PageIndicatorExample() {
 
 function Page({ label, color }: { label: string; color: string }) {
   return (
-    <VStack alignment="center" modifiers={[fillFrame, background(color)]}>
+    <VStack
+      alignment="center"
+      modifiers={[fillFrame, background(color)]}>
       <Spacer />
-      <Text modifiers={[font({ size: 28, weight: 'bold' }), foregroundStyle('#FFFFFF')]}>
+      <Text
+        modifiers={[
+          font({ size: 28, weight: 'bold' }),
+          foregroundStyle('#FFFFFF'),
+        ]}>
         {label}
       </Text>
       <Spacer />
@@ -196,15 +273,29 @@ function Page({ label, color }: { label: string; color: string }) {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom tab bar
 
 Use `tabViewStyle({ type: 'automatic' })` for the SwiftUI default tab bar. Each tab's `label` and `systemImage` populate the bar item. Use the [`badge`](modifiers/#badgevalue) modifier on a tab to attach a badge to its bar item.
 
 > **Note:** For routed bottom-tab navigation across full-screen routes, use [`expo-router/unstable-native-tabs`](/router/advanced/native-tabs/) instead.
 
-```tsx BottomTabsExample.tsx
+<ComponentExample
+  title="BottomTabsExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-bottom-tabs-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-bottom-tabs-ios-dark.webp"
+  alt="A blue Inbox page above a tab bar with Inbox, Sent, and Drafts, where Inbox carries a red badge reading 3">
+
+```tsx
 import { useState } from 'react';
-import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Spacer,
+  TabView,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
 import {
   background,
   badge,
@@ -214,7 +305,10 @@ import {
   tabViewStyle,
 } from '@expo/ui/swift-ui/modifiers';
 
-const fillFrame = frame({ maxWidth: Infinity, maxHeight: Infinity });
+const fillFrame = frame({
+  maxWidth: Infinity,
+  maxHeight: Infinity,
+});
 
 export default function BottomTabsExample() {
   const [selected, setSelected] = useState('inbox');
@@ -225,13 +319,23 @@ export default function BottomTabsExample() {
         selection={selected}
         onSelectionChange={setSelected}
         modifiers={[tabViewStyle({ type: 'automatic' })]}>
-        <TabView.Tab value="inbox" label="Inbox" systemImage="tray.fill" modifiers={[badge('3')]}>
+        <TabView.Tab
+          value="inbox"
+          label="Inbox"
+          systemImage="tray.fill"
+          modifiers={[badge('3')]}>
           <Page label="Inbox" color="#4F8DF6" />
         </TabView.Tab>
-        <TabView.Tab value="sent" label="Sent" systemImage="paperplane.fill">
+        <TabView.Tab
+          value="sent"
+          label="Sent"
+          systemImage="paperplane.fill">
           <Page label="Sent" color="#34C759" />
         </TabView.Tab>
-        <TabView.Tab value="drafts" label="Drafts" systemImage="square.and.pencil">
+        <TabView.Tab
+          value="drafts"
+          label="Drafts"
+          systemImage="square.and.pencil">
           <Page label="Drafts" color="#FF9F0A" />
         </TabView.Tab>
       </TabView>
@@ -241,9 +345,15 @@ export default function BottomTabsExample() {
 
 function Page({ label, color }: { label: string; color: string }) {
   return (
-    <VStack alignment="center" modifiers={[fillFrame, background(color)]}>
+    <VStack
+      alignment="center"
+      modifiers={[fillFrame, background(color)]}>
       <Spacer />
-      <Text modifiers={[font({ size: 28, weight: 'bold' }), foregroundStyle('#FFFFFF')]}>
+      <Text
+        modifiers={[
+          font({ size: 28, weight: 'bold' }),
+          foregroundStyle('#FFFFFF'),
+        ]}>
         {label}
       </Text>
       <Spacer />
@@ -252,10 +362,15 @@ function Page({ label, color }: { label: string; color: string }) {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { TabView } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/tabview" apiName="TabView" />
+<APISection
+  packageName="expo-ui/swift-ui/tabview"
+  apiName="TabView"
+/>

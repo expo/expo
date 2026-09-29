@@ -109,7 +109,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       return
     }
     if delegate.active {
-      if !self.session.isRunning {
+      if hasAvailableCameraDevice && !self.session.isRunning {
         self.session.startRunning()
       }
     } else {
@@ -275,12 +275,20 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
   }
 
   func stopSession() {
+    runtimeErrorTask?.cancel()
+    runtimeErrorTask = nil
+
+    // Stop before deconfiguring. Removing inputs and outputs from a session that is still
+    // running rebuilds the capture graph just to tear it down, and that rebuild waits out
+    // its own deadline when the graph never started in the first place.
+    if session.isRunning {
+      session.stopRunning()
+    }
+
     guard hasAvailableCameraDevice else {
       return
     }
 
-    runtimeErrorTask?.cancel()
-    runtimeErrorTask = nil
     session.beginConfiguration()
     for input in self.session.inputs {
       session.removeInput(input)
@@ -290,10 +298,6 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       session.removeOutput(output)
     }
     session.commitConfiguration()
-
-    if session.isRunning {
-      session.stopRunning()
-    }
   }
 
   func addErrorNotification() {

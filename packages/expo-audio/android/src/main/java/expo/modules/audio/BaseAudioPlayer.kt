@@ -40,6 +40,7 @@ abstract class BaseAudioPlayer(
   override var isMuted = false
   override var previousVolume = 1f
   override var onPlaybackStateChange: ((Boolean) -> Unit)? = null
+  override var onRelease: (() -> Unit)? = null
   override val player get() = ref
 
   protected var playerScope = CoroutineScope(Dispatchers.Main)
@@ -152,6 +153,8 @@ abstract class BaseAudioPlayer(
 
   @OptIn(DelicateCoroutinesApi::class)
   override fun sharedObjectDidRelease() {
+    onRelease?.invoke()
+    onRelease = null
     super.sharedObjectDidRelease()
     // Run on GlobalScope (not appContext.mainQueue) so that reloading doesn't cancel the release process
     GlobalScope.launch(Dispatchers.Main) {

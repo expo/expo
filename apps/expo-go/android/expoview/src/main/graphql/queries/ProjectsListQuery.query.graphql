@@ -1,10 +1,18 @@
-query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!, $platform: AppPlatform!) {
+query Home_AccountApps($accountName: String!, $first: Int!, $after: String, $platform: AppPlatform!) {
   account {
     byName(accountName: $accountName) {
       id
       appCount
-      apps(limit: $limit, offset: $offset, includeUnpublished: true) {
-        ...CommonAppData
+      appsPaginated(first: $first, after: $after) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          node {
+            ...CommonAppData
+          }
+        }
       }
     }
   }

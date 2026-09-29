@@ -19,7 +19,8 @@ begin
   if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
     project_root = ENV['PROJECT_ROOT'] || Pod::Config.instance.installation_root.to_s
     dev_client_package = podfile_properties['expo.updates.devClientPackage'] || 'expo-dev-client'
-    use_dev_client = File.dirname(`node --print "require.resolve('#{dev_client_package}/package.json', { paths: ['#{__dir__}', '#{project_root}'] })"`).length > 0
+    dev_client_package_json_path = `node --print "require.resolve('#{dev_client_package}/package.json', { paths: ['#{__dir__}', '#{project_root}'] })" 2>/dev/null`.strip
+    use_dev_client = !dev_client_package_json_path.empty?
   end
 rescue
   use_dev_client = false
@@ -77,6 +78,11 @@ Pod::Spec.new do |s|
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
   ex_updates_custom_init = ENV['EX_UPDATES_CUSTOM_INIT'] == '1'
   ex_updates_copy_embedded_assets = ENV['EX_UPDATES_COPY_EMBEDDED_ASSETS'] == '1'
+  # If set, the state machine traps when it drops an event that is not allowed from the current
+  # state, instead of only logging a warning. E2E tests turn this on so an invalid transition fails
+  # the test run rather than passing unnoticed. Both '1' and 'true' are accepted, so the same value
+  # works here and in the Android Gradle build.
+  ex_updates_assert_invalid_state = ['1', 'true'].include?(ENV['EX_UPDATES_ASSERT_INVALID_STATE'].to_s.downcase)
   if ex_updates_native_debug
     other_debug_c_flags << ' -DEX_UPDATES_NATIVE_DEBUG=1'
     other_debug_swift_flags << ' -DEX_UPDATES_NATIVE_DEBUG'
@@ -92,6 +98,12 @@ Pod::Spec.new do |s|
     other_debug_swift_flags << ' -DEX_UPDATES_COPY_EMBEDDED_ASSETS'
     other_release_c_flags << ' -DEX_UPDATES_COPY_EMBEDDED_ASSETS=1'
     other_release_swift_flags << ' -DEX_UPDATES_COPY_EMBEDDED_ASSETS'
+  end
+  if ex_updates_assert_invalid_state
+    other_debug_c_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE=1'
+    other_debug_swift_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE'
+    other_release_c_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE=1'
+    other_release_swift_flags << ' -DEX_UPDATES_ASSERT_INVALID_STATE'
   end
   if use_dev_client
     other_debug_c_flags << ' -DUSE_DEV_CLIENT=1'
@@ -122,11 +134,14 @@ Pod::Spec.new do |s|
   end
 
   if $expo_updates_create_updates_resources != false
-    project_root_env_var = ENV['PROJECT_ROOT'] ? "export PROJECT_ROOT=#{ENV['PROJECT_ROOT']}\n" : ""
+    # `bash -l -c` re-parses its argument as a fresh command line, so the script path has to stay
+    # quoted through that second round of parsing - otherwise a project path containing a space is
+    # word-split and the phase fails.
+    project_root_env_var = ENV['PROJECT_ROOT'] ? "export PROJECT_ROOT=\"#{ENV['PROJECT_ROOT']}\"\n" : ""
     force_bundling_flag = ex_updates_native_debug ? "export FORCE_BUNDLING=1\n" : ""
     script_phase = {
       :name => 'Generate updates resources for expo-updates',
-      :script => project_root_env_var + force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh"',
+      :script => project_root_env_var + force_bundling_flag + 'bash -l -c "\"$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh\""',
       :execution_position => :before_compile
     }
     # :always_out_of_date is only available in CocoaPods 1.13.0 and later

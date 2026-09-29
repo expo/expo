@@ -67,7 +67,7 @@ internal extension Image {
         )
       }
 
-      if #available(iOS 18.0, *),
+      if #available(iOS 18.0, macOS 15.0, *),
          let modifierConfig = modifiers.first(where: { $0["$type"] as? String == "widgetAccentedRenderingMode" }),
          let modifier = try? WidgetAccentedRenderingModeModifier(from: modifierConfig, appContext: appContext) {
         modifier.apply(to: image)

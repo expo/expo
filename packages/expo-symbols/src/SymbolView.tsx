@@ -21,7 +21,6 @@ export function SymbolView(props: SymbolViewProps): JSX.Element {
     loadAsync({
       [font.name]: {
         uri: font.font,
-        testString: name ? androidSymbolToString(name) : undefined,
       } as FontSource,
     })
       .then(() => setLoaded(true))

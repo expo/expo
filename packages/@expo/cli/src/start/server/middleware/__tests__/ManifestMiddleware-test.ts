@@ -70,6 +70,33 @@ describe('checkBrowserRequestAsync', () => {
   const createConstructUrl = () =>
     jest.fn(({ scheme, hostname }) => `${scheme}://${hostname ?? 'localhost'}:8080`);
 
+  it.each(['static', 'server'] as const)(
+    'serves the browser template for non-Router apps with %s output',
+    async (output) => {
+      jest.mocked(getConfig).mockReturnValueOnce({
+        pkg: {},
+        exp: {
+          name: 'test',
+          slug: 'test',
+          platforms: ['web'],
+          web: { bundler: 'metro', output },
+        },
+      } as ReturnType<typeof getConfig>);
+      const middleware = new MockManifestMiddleware('/', {
+        constructUrl: createConstructUrl(),
+        mode: 'development',
+      });
+      const res = new MockServerResponse();
+      const body = new Response(res.toWeb());
+      const next = jest.fn();
+
+      await middleware.checkBrowserRequestAsync(asReq({ url: '/', headers: {} }), asRes(res), next);
+
+      expect(next).not.toHaveBeenCalled();
+      expect(await body.text()).toBe('<html />');
+    }
+  );
+
   it('handles browser requests when the web bundler is "metro" and no platform is specified', async () => {
     jest.mocked(getPlatformBundlers).mockReturnValueOnce({
       web: 'metro',
@@ -258,7 +285,7 @@ describe('_resolveProjectSettingsAsync', () => {
     const settings = await middleware._resolveProjectSettingsAsync({
       hostname: 'localhost',
       platform: 'android',
-      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: true },
     } as any);
 
     expect(settings.bundleUrl).toBe(
@@ -267,6 +294,34 @@ describe('_resolveProjectSettingsAsync', () => {
 
     const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
     await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+  });
+  it(`returns absolute bundle and asset URLs when only a proxy added forwarding headers`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    jest.mocked(getConfig).mockClear();
+    jest.mocked(resolveManifestAssets).mockClear();
+
+    middleware._getBundleUrl = jest.fn(
+      () => 'http://fake.mock/index.bundle?platform=android&dev=true'
+    );
+
+    const settings = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: false },
+    } as any);
+
+    // The client didn't report the authority itself, so it may not resolve relative URLs.
+    expect(settings.bundleUrl).toBe('http://fake.mock/index.bundle?platform=android&dev=true');
+    expect(settings.hostUri).toBe('proxy.test:4443');
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe(
+      'http://fake.mock/assets/assets/icon.png'
+    );
   });
   it(`returns the forwarded authority as hostUri and debuggerHost`, async () => {
     const constructUrl = jest.fn(() => 'http://fake.mock');
@@ -295,7 +350,7 @@ describe('_resolveProjectSettingsAsync', () => {
       hostname: 'localhost',
       platform: 'android',
       protocol: 'https',
-      forwarded: { authority: undefined, protocol: 'https' },
+      forwarded: { authority: undefined, protocol: 'https', viaForwardedHeader: false },
     });
 
     expect(settings.hostUri).toBe('fake.mock:8081');
@@ -315,7 +370,7 @@ describe('_resolveProjectSettingsAsync', () => {
     await middleware._resolveProjectSettingsAsync({
       hostname: 'localhost',
       platform: 'android',
-      forwarded: { authority: 'proxy.test' },
+      forwarded: { authority: 'proxy.test', viaForwardedHeader: true },
     } as any);
 
     const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;

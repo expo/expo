@@ -4,7 +4,7 @@ sidebar_title: Introduction
 description: An introduction to EAS Workflows tutorial and the core concepts for setting up a CI/CD pipeline for Expo and React Native apps.
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BuildsVsUpdates } from '~/ui/components/FlowDiagram/Diagrams/BuildsVsUpdates';
@@ -125,10 +125,10 @@ To create a new Expo project, run the following command:
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
-    yarn: ['$ yarn create expo-app --template default@sdk-57'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
-    bun: ['$ bun create expo --template default@sdk-57'],
+    npm: ['$ npx create-expo-app@latest'],
+    yarn: ['$ yarn create expo-app'],
+    pnpm: ['$ pnpm create expo-app'],
+    bun: ['$ bun create expo'],
   }}
 />
 
@@ -179,6 +179,6 @@ With our project set up, we can move to the first chapter and write our first wo
 <BoxLink
   title="Start"
   description="Create and run our first workflow with EAS Workflows."
-  Icon={BookOpen02Icon}
+  Icon={Dataflow03Icon}
   href="/tutorial/cicd/first-workflow/"
 />

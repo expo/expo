@@ -37,6 +37,7 @@ function SecureStoreView() {
   const [value, setValue] = React.useState<string | undefined>();
   const [service, setService] = React.useState<string | undefined>();
   const [requireAuth, setRequireAuth] = React.useState<boolean>(false);
+  const [requireConfirmation, setRequireConfirmation] = React.useState<boolean>(true);
   const [byteSize, setByteSize] = React.useState<string>('4096');
 
   const storeOptions = React.useMemo<SecureStore.SecureStoreOptions>(
@@ -44,17 +45,14 @@ function SecureStoreView() {
       keychainService: service,
       requireAuthentication: requireAuth,
       authenticationPrompt: requireAuth ? 'Authenticate' : undefined,
+      ...(Platform.OS === 'android' ? { requireConfirmation } : {}),
     }),
-    [requireAuth, service]
+    [requireAuth, requireConfirmation, service]
   );
 
   async function storeValueAsync(value: string, key: string) {
     try {
-      await SecureStore.setItemAsync(key, value, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      await SecureStore.setItemAsync(key, value, storeOptions);
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -65,11 +63,7 @@ function SecureStoreView() {
 
   function storeValue(value: string, key: string) {
     try {
-      SecureStore.setItem(key, value, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      SecureStore.setItem(key, value, storeOptions);
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -80,11 +74,7 @@ function SecureStoreView() {
 
   async function getValueAsync(key: string) {
     try {
-      const fetchedValue = await SecureStore.getItemAsync(key, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      const fetchedValue = await SecureStore.getItemAsync(key, storeOptions);
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -95,11 +85,7 @@ function SecureStoreView() {
 
   function getValue(key: string) {
     try {
-      const fetchedValue = SecureStore.getItem(key, {
-        keychainService: service,
-        requireAuthentication: requireAuth,
-        authenticationPrompt: 'Authenticate',
-      });
+      const fetchedValue = SecureStore.getItem(key, storeOptions);
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -184,10 +170,18 @@ function SecureStoreView() {
         Can use biometric authentication: {SecureStore.canUseBiometricAuthentication().toString()}
       </BodyText>
       {SecureStore.canUseBiometricAuthentication() && (
-        <View style={styles.authToggleContainer}>
-          <BodyText>Requires authentication:</BodyText>
-          <Switch value={requireAuth} onValueChange={setRequireAuth} />
-        </View>
+        <>
+          <View style={styles.authToggleContainer}>
+            <BodyText>Requires authentication:</BodyText>
+            <Switch value={requireAuth} onValueChange={setRequireAuth} />
+          </View>
+          {Platform.OS === 'android' && requireAuth && (
+            <View style={styles.authToggleContainer}>
+              <BodyText>Requires confirmation:</BodyText>
+              <Switch value={requireConfirmation} onValueChange={setRequireConfirmation} />
+            </View>
+          )}
+        </>
       )}
       {value && key && (
         <ListButton onPress={() => storeValueAsync(value, key)} title="Store value with key" />

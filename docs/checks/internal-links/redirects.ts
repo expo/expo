@@ -56,7 +56,13 @@ export function validateRedirectTargets(
       continue;
     }
     const destination = normalizePath(rule.destination.split(/[#?]/)[0]);
-    if (!pages.has(destination) && !files.has(destination) && !redirects.literal.has(destination)) {
+    const servesMarkdown = destination.endsWith('.md') && pages.has(destination.slice(0, -3));
+    if (
+      !pages.has(destination) &&
+      !files.has(destination) &&
+      !servesMarkdown &&
+      !redirects.literal.has(destination)
+    ) {
       dangling.push(rule);
     }
   }

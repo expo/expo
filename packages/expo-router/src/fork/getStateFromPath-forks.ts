@@ -1,8 +1,8 @@
-import escape from 'escape-string-regexp';
 import type * as queryString from 'query-string';
 
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import type { InitialState } from '../react-navigation/native';
+import { escapeStringRegexp as escape } from '../utils/escapeStringRegexp';
 import { parseUrlUsingCustomBase } from '../utils/url';
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 
@@ -473,8 +473,6 @@ export function parseQueryParams(
 
 export function cleanPath(path: string) {
   path = path
-    // let remaining = path
-    // END FORK
     .replace(/\/+/g, '/') // Replace multiple slash (//) with single ones
     .replace(/^\//, '') // Remove extra leading slash
     .replace(/\?.*$/, ''); // Remove query params which we will handle later

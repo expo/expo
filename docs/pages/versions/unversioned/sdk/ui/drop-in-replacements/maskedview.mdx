@@ -8,6 +8,8 @@ platforms: ['android', 'ios']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A `MaskedView` component with an API compatible with `@react-native-masked-view/masked-view`. The opaque pixels of `maskElement` reveal the masked content behind it; transparent pixels hide it.
 
@@ -15,6 +17,21 @@ Under the hood this component bridges arbitrary React Native children into the p
 
 - **Android**: Jetpack Compose graphics layer compositing with `BlendMode.DstIn`.
 - **iOS**: SwiftUI [`.mask`](<https://developer.apple.com/documentation/swiftui/view/mask(alignment:_:)>) modifier.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/community-maskedview/android-light.webp',
+    darkSrc: '/static/images/expo-ui/community-maskedview/android-dark.webp',
+    alt: 'The word EXPO filled with a rainbow gradient',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/community-maskedview/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/community-maskedview/ios-dark.webp',
+    alt: 'The word EXPO filled with a rainbow gradient',
+  }}
+/>
 
 ## Installation
 
@@ -31,7 +48,20 @@ Under the hood this component bridges arbitrary React Native children into the p
 
 ## Basic usage
 
-```tsx MaskedViewExample.tsx
+<ComponentExample
+  title="MaskedViewExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-maskedview-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-maskedview-basic-android-dark.webp',
+    alt: 'The word EXPO filled with a rainbow gradient',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-maskedview-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-maskedview-basic-ios-dark.webp',
+    alt: 'The word EXPO filled with a rainbow gradient',
+  }}>
+
+```tsx
 import { MaskedView } from '@expo/ui/community/masked-view';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -58,11 +88,26 @@ export default function MaskedViewExample() {
 }
 ```
 
+</ComponentExample>
+
 ## Alpha-fade mask
 
 Only the alpha channel of the `maskElement` matters: opaque pixels reveal content, transparent pixels hide it. Use a `LinearGradient` (from `expo-linear-gradient`) that goes from opaque to transparent — `'black'` (for example) to `'transparent'` below — to fade content out along an axis.
 
-```tsx AlphaFadeExample.tsx
+<ComponentExample
+  title="AlphaFadeExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/community-maskedview-alpha-fade-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-maskedview-alpha-fade-android-dark.webp',
+    alt: 'Three color bands fading out from left to right',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/community-maskedview-alpha-fade-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/community-maskedview-alpha-fade-ios-dark.webp',
+    alt: 'Three color bands fading out from left to right',
+  }}>
+
+```tsx
 import { MaskedView } from '@expo/ui/community/masked-view';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View } from 'react-native';
@@ -87,6 +132,8 @@ export default function AlphaFadeExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -94,3 +141,5 @@ import { MaskedView } from '@expo/ui/community/masked-view';
 ```
 
 <APISection packageName="expo-ui/community/masked-view" apiName="MaskedView" />
+
+</PlatformTabsGroup>

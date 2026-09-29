@@ -1,13 +1,72 @@
-diff --git a/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts b/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts
-index 06b8e7fbedb213fdb1bf15458ccbf025f5c77503..228cbef99e5eeaad756f0d8cd77c3cbcc6a5e319 100644
---- a/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts
-+++ b/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts
-@@ -123,7 +123,7 @@ export type StackHeaderToolbarMenuElementOptionsAndroid = Partial<
+diff --git a/src/fabric/SearchBarNativeComponent.ts b/src/fabric/SearchBarNativeComponent.ts
+index f73aa6fb523e6b030769eb17336d2151985049b2..1ea595968a869eead33d3819fd9954c123fa4d67 100644
+--- a/src/fabric/SearchBarNativeComponent.ts
++++ b/src/fabric/SearchBarNativeComponent.ts
+@@ -76,15 +76,15 @@ export interface NativeProps extends ViewProps {
+ type ComponentType = HostComponent<NativeProps>;
  
- export interface NativeCommands {
-   setToolbarMenuElementOptions: (
+ interface NativeCommands {
+-  blur: (instance: React.ComponentRef<ComponentType>) => void;
+-  focus: (instance: React.ComponentRef<ComponentType>) => void;
+-  clearText: (instance: React.ComponentRef<ComponentType>) => void;
++  blur: (instance: React.ElementRef<ComponentType>) => void;
++  focus: (instance: React.ElementRef<ComponentType>) => void;
++  clearText: (instance: React.ElementRef<ComponentType>) => void;
+   toggleCancelButton: (
+-    instance: React.ComponentRef<ComponentType>,
++    instance: React.ElementRef<ComponentType>,
+     flag: boolean,
+   ) => void;
+-  setText: (instance: React.ComponentRef<ComponentType>, text: string) => void;
+-  cancelSearch: (instance: React.ComponentRef<ComponentType>) => void;
++  setText: (instance: React.ElementRef<ComponentType>, text: string) => void;
++  cancelSearch: (instance: React.ElementRef<ComponentType>) => void;
+ }
+ 
+ export const Commands: NativeCommands = codegenNativeCommands<NativeCommands>({
+diff --git a/src/fabric/gamma/split/SplitHostNativeComponent.ts b/src/fabric/gamma/split/SplitHostNativeComponent.ts
+index b3dfa2d5231aea5ec33cb8d889d2510ca459f960..c206c1088b9052de60a9f3923d3808cd2c5b3c67 100644
+--- a/src/fabric/gamma/split/SplitHostNativeComponent.ts
++++ b/src/fabric/gamma/split/SplitHostNativeComponent.ts
+@@ -112,7 +112,7 @@ type ComponentType = HostComponent<NativeProps>;
+ 
+ interface NativeCommands {
+   showColumn: (
 -    viewRef: React.ComponentRef<ComponentType>,
 +    viewRef: React.ElementRef<ComponentType>,
-     id: string,
-     // We use the array here only due to codegen limitation. We're using only
-     // the first index of the array.
+     column: string,
+   ) => void;
+ }
+diff --git a/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts b/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts
+index ee30d551450ec3d3092e3f3ff9059eeecf850e30..b87cc4471553042b668ed8219c25766d2abf9655 100644
+--- a/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts
++++ b/src/fabric/gamma/stack/StackHeaderConfigAndroidNativeComponent.ts
+@@ -127,7 +127,7 @@ type StackHeaderToolbarMenuElementUpdateNativeAndroid =
+ 
+ export interface NativeCommands {
+   updateToolbarMenuElements: (
+-    viewRef: React.ComponentRef<ComponentType>,
++    viewRef: React.ElementRef<ComponentType>,
+     updates: StackHeaderToolbarMenuElementUpdateNativeAndroid[],
+   ) => void;
+ }
+diff --git a/src/fabric/gamma/stack/StackHeaderConfigIOSNativeComponent.ts b/src/fabric/gamma/stack/StackHeaderConfigIOSNativeComponent.ts
+index a1d1eaab0e305ab5d32e5c8f315234a32c3a520f..3e80d58d05475ea191c45f985df426980947b6dd 100644
+--- a/src/fabric/gamma/stack/StackHeaderConfigIOSNativeComponent.ts
++++ b/src/fabric/gamma/stack/StackHeaderConfigIOSNativeComponent.ts
+@@ -48,13 +48,13 @@ export interface NativeMenuElementOptionsIOS {
+ 
+ export interface NativeCommands {
+   setMenuItemOptions: (
+-    viewRef: React.ComponentRef<ComponentType>,
++    viewRef: React.ElementRef<ComponentType>,
+     menuElementId: string,
+     // Array wrapper due to codegen limitation — only the first element is used.
+     options: NativeMenuElementOptionsIOS[],
+   ) => void;
+   setMenuOptions: (
+-    viewRef: React.ComponentRef<ComponentType>,
++    viewRef: React.ElementRef<ComponentType>,
+     menuElementId: string,
+     // Array wrapper due to codegen limitation — only the first element is used.
+     options: NativeMenuElementOptionsIOS[],

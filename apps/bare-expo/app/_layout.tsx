@@ -54,6 +54,10 @@ const getSearchScreenOptions = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 )?.getSearchScreenOptions;
 
+const AppIntentsNavigationHandler = optionalRequire(() =>
+  require('native-component-list/src/screens/AppIntents/AppIntentsNavigationHandler')
+)?.AppIntentsNavigationHandler;
+
 function useLoaded() {
   const [isLoaded, setLoaded] = React.useState(false);
   React.useEffect(() => {
@@ -100,6 +104,7 @@ function RootLayout() {
         <Stack.Screen name="redirect" />
         <Stack.Screen name="search" options={getSearchScreenOptions?.(theme)} />
       </Stack>
+      {AppIntentsNavigationHandler ? <AppIntentsNavigationHandler /> : null}
       <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
     </GestureHandlerRootView>
   );

@@ -8,6 +8,7 @@ export interface ProfilePreflightFacts {
   hasForOf: boolean;
   hasPrivateSyntax: boolean;
   hasRegexpLiteral: boolean;
+  hasSpread: boolean;
   hasStaticBlock: boolean;
 }
 

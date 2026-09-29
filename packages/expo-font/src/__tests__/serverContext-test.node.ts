@@ -1,4 +1,9 @@
-import { addServerFont, getServerResourceDescriptors, withServerContext } from '../serverContext';
+import {
+  addServerFont,
+  getLoadedServerFonts,
+  getServerResourceDescriptors,
+  withServerContext,
+} from '../serverContext';
 
 const fontA = { name: 'A', css: '@font-face{font-family:"A"}', resourceId: 'a.ttf' };
 
@@ -18,6 +23,16 @@ it('deduplicates identical font entries within one scope', () => {
   expect(descriptors).toHaveLength(2);
   expect(descriptors[0]).toMatchObject({ type: 'style', css: fontA.css });
   expect(descriptors[1]).toMatchObject({ type: 'link', href: fontA.resourceId });
+});
+
+it('reports a multi-face family once from getLoadedServerFonts', () => {
+  const names = withServerContext(() => {
+    addServerFont({ name: 'A', css: '@font-face{font-weight:400}', resourceId: 'a.ttf' });
+    addServerFont({ name: 'A', css: '@font-face{font-weight:700}', resourceId: 'b.ttf' });
+    return getLoadedServerFonts();
+  });
+
+  expect(names).toEqual(['A']);
 });
 
 it('keeps separate entries for the same family loaded with different CSS', () => {

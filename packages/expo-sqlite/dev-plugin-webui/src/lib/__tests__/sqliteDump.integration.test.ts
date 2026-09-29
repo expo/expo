@@ -8,6 +8,12 @@ jest.mock('../../../../src/ExpoSQLite', () =>
   require('../../../../src/__mocks__/ExpoSQLite')
 );
 
+// `openDatabaseAsync` registers the database with devtools without awaiting it.
+// Left unmocked, that opens a real WebSocket whose retry timers outlive the test.
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
+
 const originalConsoleError = console.error;
 const originalConsoleWarn = console.warn;
 const originalConsoleLog = console.log;

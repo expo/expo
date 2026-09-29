@@ -62,5 +62,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "metro.config.js",
   "package.json",
   "pnpm-lock.yaml",
+  "pnpm-workspace.yaml",
 ]
 `;

@@ -9,8 +9,8 @@
 			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
 			<key>NSPrivacyAccessedAPITypeReasons</key>
 			<array>
-				<string>0A2A.1</string>
 				<string>C617.1</string>
+				<string>0A2A.1</string>
 				<string>3B52.1</string>
 			</array>
 		</dict>
