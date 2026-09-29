@@ -8,7 +8,7 @@ Expo Router turns app files into routes for React Native and web. Judge features
 - `ios/` contains Swift modules, native views, and tests; `android/` contains the Kotlin module and Android build configuration.
 - `plugin/` contains the Expo config plugin and its tests.
 - [`@expo/router-server`](../@expo/router-server/package.json) uses Router internals for route manifests, typed routes, and server rendering
-- [`@expo/cli`](../@expo/cli/package.json) depends on it for development and export. 
+- [`@expo/cli`](../@expo/cli/package.json) depends on it for development and export.
 
 ## Conventions
 
@@ -21,7 +21,6 @@ Run focused package scripts from `packages/expo-router` as needed:
 
 - `pnpm test <test-file>` for relevant Jest tests; `pnpm test` for the full package suite.
 - `pnpm typecheck` for TypeScript checks, `pnpm lint` for lint, and `pnpm build` for package builds. If files were moved or removed, consider `pnpm clean` before building.
-
 
 ## Testing
 
