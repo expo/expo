@@ -1,15 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
 ## 58.0.4 — 2026-09-25
 
 ### 🐛 Bug fixes

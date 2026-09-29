@@ -1,17 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
-- [iOS] Load the Swift macros plugin from `expo-modules-macros` and its renamed `ExpoModulesMacros` binary. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
-
 ## 58.0.5 — 2026-09-28
 
 ### 🎉 New features
