@@ -5,6 +5,7 @@ import { navigationRef } from '../global-state/navigationRef';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
 
 /**
@@ -277,5 +278,88 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
     stale: false,
     routeKeySeq: expect.any(Number),
     type: 'stack',
+  });
+});
+
+describe('async routes', () => {
+  const routes = {
+    _layout: () => <Stack />,
+    '(tabs)/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="anchored" />
+      </Tabs>
+    ),
+    '(tabs)/index': () => <Text>home</Text>,
+    '(tabs)/anchored/_layout': {
+      unstable_settings: { anchor: 'index' },
+      default: () => <Stack />,
+    },
+    '(tabs)/anchored/index': () => <Text>anchored</Text>,
+    '(tabs)/anchored/details': () => <Text>details</Text>,
+  };
+
+  afterEach(() => {
+    delete globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__;
+  });
+
+  it('seeds the anchor below a deep-linked screen from the server-rendered settings', () => {
+    // With async routes the route tree is built before any layout module has loaded, so the
+    // server render inlines the anchor settings into the HTML.
+    globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__ = {
+      './(tabs)/anchored/_layout.js': { anchor: 'index' },
+    };
+
+    renderRouter(routes, { initialUrl: '/anchored/details', importMode: 'lazy' });
+
+    expect(navigationRef.getRootState()).toMatchObject({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: '(tabs)',
+                state: {
+                  routes: [
+                    {
+                      name: 'anchored',
+                      state: {
+                        index: 1,
+                        routes: [{ name: 'index' }, { name: 'details' }],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      ],
+    });
+  });
+
+  it('has no anchor below a deep-linked screen without the server-rendered settings', () => {
+    renderRouter(routes, { initialUrl: '/anchored/details', importMode: 'lazy' });
+
+    expect(navigationRef.getRootState()).toMatchObject({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: '(tabs)',
+                state: {
+                  routes: [
+                    { name: 'anchored', state: { index: 0, routes: [{ name: 'details' }] } },
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      ],
+    });
   });
 });

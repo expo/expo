@@ -2,13 +2,14 @@ import { test, expect, type Page } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
-import { createExpoStart } from '../../utils/expo';
+import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
 
-// NOTE: This is the development-mode half of the `navigator-browser-history` suite. It runs the
-// fixture with `expo start`, async routes enabled (the web default), and both server-rendered
-// outputs. The production-mode half lives in `../prod/navigator-browser-history.test.ts` and
-// exports the same fixture. The test cases must be kept in sync between the two files by hand.
+// NOTE: This is the production-mode half of the `navigator-browser-history` suite. It exports the
+// fixture with async routes enabled (the web default) for both server-rendered outputs and serves
+// the result with `expo serve`. The development-mode half lives in
+// `../dev/navigator-browser-history.test.ts` and runs the same fixture with `expo start`. The test
+// cases must be kept in sync between the two files by hand.
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -19,9 +20,8 @@ const inputDir = 'navigator-browser-history';
 test.setTimeout(560 * 1000);
 
 /**
- * The server-rendered HTML is interactive only once the client has committed. With async routes
- * the client first loads the layout chunks for the URL, which Metro bundles on demand, so wait for
- * the router to write its browser history entry before interacting with the page.
+ * The server-rendered HTML is interactive only once the client has committed, so wait for the
+ * router to write its browser history entry before interacting with the page.
  */
 async function waitForClientCommit(page: Page, previousEntryId?: string) {
   await expect
@@ -35,30 +35,37 @@ async function waitForClientCommit(page: Page, previousEntryId?: string) {
 }
 
 for (const outputMode of ['static', 'server'] as const) {
-  test.describe(`${inputDir} in development (${outputMode})`, () => {
-    const expoStart = createExpoStart({
+  test.describe(`${inputDir} in production (${outputMode})`, () => {
+    const outputDir = `dist-${inputDir}-${outputMode}-playwright`;
+    const expoServe = createExpoServe({
       cwd: projectRoot,
       env: {
-        NODE_ENV: 'development',
-        EXPO_USE_STATIC: outputMode,
-        E2E_ROUTER_SRC: inputDir,
-        E2E_ROUTER_ASYNC: 'true',
-
-        // Ensure CI is disabled otherwise the file watcher won't run.
-        CI: '0',
+        NODE_ENV: 'production',
       },
     });
 
     test.beforeAll(async () => {
-      await expoStart.startAsync();
-      await expoStart.fetchBundleAsync('/');
+      console.time('expo export');
+      await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputDir], {
+        env: {
+          NODE_ENV: 'production',
+          EXPO_USE_STATIC: outputMode,
+          E2E_ROUTER_SRC: inputDir,
+          E2E_ROUTER_ASYNC: 'true',
+        },
+      });
+      console.timeEnd('expo export');
+
+      console.time('expo serve');
+      await expoServe.startAsync([outputDir]);
+      console.timeEnd('expo serve');
     });
 
     test.afterAll(async () => {
-      await expoStart.stopAsync();
+      await expoServe.stopAsync();
     });
 
-    const baseUrl = () => expoStart.url.href;
+    const baseUrl = () => expoServe.url.href;
 
     // Test expo router history by navigating through <Link>,
     // then using the browser back/forward actions

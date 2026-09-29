@@ -1,3 +1,4 @@
+import { findRouteNodeByName } from '../Route';
 import { getRoutes } from '../getRoutes';
 import type { RewriteConfig } from '../getRoutesCore';
 import { inMemoryContext } from '../testing-library/context-stubs';
@@ -524,5 +525,55 @@ describe('loaders', () => {
         }
       );
     }).toThrow('Route "./(app)/index.js" exports a loader that is not a function.');
+  });
+});
+
+describe('lazy import mode', () => {
+  const routes = {
+    _layout: () => null,
+    index: () => null,
+    'anchored/_layout': { default: () => null, unstable_settings: { anchor: 'index' } },
+    'anchored/index': () => null,
+    'anchored/details': () => null,
+    '(a,b)/_layout': {
+      default: () => null,
+      unstable_settings: { anchor: 'index', b: { anchor: 'other' } },
+    },
+    '(a,b)/index': () => null,
+    '(a,b)/other': () => null,
+  };
+  const options = { skipGenerated: true, ignoreEntryPoints: true, importMode: 'lazy' };
+
+  afterEach(() => {
+    delete globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__;
+  });
+
+  it('has no anchor for a layout that has not loaded', () => {
+    const routeNode = getRoutes(inMemoryContext(routes, { lazy: true }), options)!;
+    expect(findRouteNodeByName(routeNode, 'anchored')!.initialRouteName).toBeUndefined();
+  });
+
+  it('reads the anchor from the settings inlined by the server render', () => {
+    globalThis.__EXPO_ROUTER_LAYOUT_SETTINGS__ = {
+      './anchored/_layout.js': { anchor: 'index' },
+      './(a,b)/_layout.js': { anchor: 'index', b: { anchor: 'other' } },
+    };
+
+    const routeNode = getRoutes(inMemoryContext(routes, { lazy: true }), options)!;
+    expect(findRouteNodeByName(routeNode, 'anchored')!.initialRouteName).toBe('index');
+    expect(findRouteNodeByName(routeNode, '(a)')!.initialRouteName).toBe('index');
+    expect(findRouteNodeByName(routeNode, '(b)')!.initialRouteName).toBe('other');
+  });
+
+  it('reads the anchor from the module once it has loaded', async () => {
+    const context = inMemoryContext(routes, { lazy: true });
+    getRoutes(context, options);
+
+    // The in-memory modules resolve on the next microtask.
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const routeNode = getRoutes(context, options)!;
+    expect(findRouteNodeByName(routeNode, 'anchored')!.initialRouteName).toBe('index');
   });
 });
