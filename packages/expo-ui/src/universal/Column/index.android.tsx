@@ -31,7 +31,8 @@ export function Column({
   const modifiers = transformToModifiers(
     style,
     { onPress: disabled ? undefined : onPress, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Column' }
   );
 
   return (

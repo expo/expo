@@ -505,6 +505,11 @@ object ModifierRegistry {
       Modifier.height(params.height.dp)
     }
 
+    register("universalLayout") { map, _, appContext, _ ->
+      val params = recordFromMap<UniversalLayoutParams>(map, appContext)
+      UniversalLayoutElement(params.toDimensions())
+    }
+
     register("defaultMinSize") { map, _, appContext, _ ->
       val params = recordFromMap<DefaultMinSizeParams>(map, appContext)
       Modifier.defaultMinSize(
@@ -673,22 +678,33 @@ object ModifierRegistry {
     // Scope-dependent modifiers
     register("weight") { map, scope, appContext, _ ->
       val params = recordFromMap<WeightParams>(map, appContext)
-      scope?.rowScope?.run {
-        Modifier.weight(params.weight)
-      } ?: scope?.columnScope?.run {
-        Modifier.weight(params.weight)
-      } ?: Modifier
+      val weight = params.weight.takeIf { it.isFinite() && it > 0f }
+      when (LocalUniversalStackAxis.current) {
+        UniversalStackAxis.Horizontal, UniversalStackAxis.Vertical ->
+          weight?.let { UniversalWeightElement(it) } ?: Modifier
+        null -> scope?.rowScope?.run {
+          weight?.let { Modifier.weight(it) }
+        } ?: scope?.columnScope?.run {
+          weight?.let { Modifier.weight(it) }
+        } ?: Modifier
+      }
     }
 
     register("align") { map, scope, appContext, _ ->
       val params = recordFromMap<AlignParams>(map, appContext)
-      scope?.boxScope?.run {
-        params.alignment?.toAlignment()?.let { alignment -> Modifier.align(alignment) }
-      } ?: scope?.rowScope?.run {
-        params.alignment?.toVerticalAlignment()?.let { alignment -> Modifier.align(alignment) }
-      } ?: scope?.columnScope?.run {
-        params.alignment?.toHorizontalAlignment()?.let { alignment -> Modifier.align(alignment) }
-      } ?: Modifier
+      when (LocalUniversalStackAxis.current) {
+        UniversalStackAxis.Horizontal ->
+          UniversalAlignElement(vertical = params.alignment?.toVerticalAlignment())
+        UniversalStackAxis.Vertical ->
+          UniversalAlignElement(horizontal = params.alignment?.toHorizontalAlignment())
+        null -> scope?.boxScope?.run {
+          params.alignment?.toAlignment()?.let { alignment -> Modifier.align(alignment) }
+        } ?: scope?.rowScope?.run {
+          params.alignment?.toVerticalAlignment()?.let { alignment -> Modifier.align(alignment) }
+        } ?: scope?.columnScope?.run {
+          params.alignment?.toHorizontalAlignment()?.let { alignment -> Modifier.align(alignment) }
+        } ?: Modifier
+      }
     }
 
     register("matchParentSize") { _, scope, _, _ ->

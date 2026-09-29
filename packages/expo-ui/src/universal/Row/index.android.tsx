@@ -31,7 +31,8 @@ export function Row({
   const modifiers = transformToModifiers(
     style,
     { onPress: disabled ? undefined : onPress, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Row' }
   );
 
   return (

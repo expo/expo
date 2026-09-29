@@ -27,16 +27,29 @@ public final class VStackViewProps: UIBaseViewProps {
 
 public struct VStackView: ExpoSwiftUI.View {
   @ObservedObject public var props: VStackViewProps
+  @Environment(\.layoutDirection) private var layoutDirection
 
   public init(props: VStackViewProps) {
     self.props = props
   }
 
   public var body: some View {
-    VStack(
-      alignment: props.alignment?.toHorizontalAlignment() ?? .center,
-      spacing: props.spacing.map { CGFloat($0) }) {
+    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+      ParentAwareVStackLayout(
+        alignment: props.alignment ?? .center,
+        spacing: props.spacing.map { CGFloat($0) },
+        layoutDirection: layoutDirection,
+        ownDimensions: universalLayoutDimensions(from: props.modifiers)
+      ) {
         Children()
+      }
+    } else {
+      VStack(
+        alignment: props.alignment?.toHorizontalAlignment() ?? .center,
+        spacing: props.spacing.map { CGFloat($0) }
+      ) {
+        Children()
+      }
     }
   }
 }

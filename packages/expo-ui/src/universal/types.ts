@@ -1,10 +1,16 @@
 import type { ViewStyle } from 'react-native';
 
 import type { ModifierConfig } from '../types';
+import type { UniversalDimension } from './modifierUtils';
+
+export type { UniversalDimension } from './modifierUtils';
 
 /**
  * Subset of React Native `ViewStyle` that maps cleanly to both SwiftUI modifiers
  * and Jetpack Compose modifiers. On web, passes through to React Native StyleSheet.
+ *
+ * `width` and `height` also accept a percentage of the parent, such as `'50%'`.
+ * A percentage resolves only when that parent already has a size on the same axis.
  * @docsInline
  */
 export type UniversalStyle = Pick<
@@ -21,9 +27,18 @@ export type UniversalStyle = Pick<
   | 'borderWidth'
   | 'borderColor'
   | 'opacity'
-  | 'width'
-  | 'height'
->;
+> & {
+  /**
+   * Fixed size in density-independent pixels, or a percentage of the parent's content width.
+   * Percentages resolve only when the parent already has a defined width.
+   */
+  width?: UniversalDimension;
+  /**
+   * Fixed size in density-independent pixels, or a percentage of the parent's content height.
+   * Percentages resolve only when the parent already has a defined height.
+   */
+  height?: UniversalDimension;
+};
 
 /**
  * Base props inherited by all universal components.

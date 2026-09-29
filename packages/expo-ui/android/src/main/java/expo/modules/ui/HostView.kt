@@ -216,7 +216,15 @@ internal class HostView(context: Context, appContext: AppContext) :
           constraints.maxHeight
         }
       )
-      val placeables = measurables.map { it.measure(boundedConstraints) }
+      val definiteWidth = boundedConstraints.maxWidth.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minWidth == it || useViewportSizeMeasurement)
+      }
+      val definiteHeight = boundedConstraints.maxHeight.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minHeight == it || useViewportSizeMeasurement)
+      }
+      val placeables = measurables.map {
+        measureUniversalChild(it, boundedConstraints, definiteWidth, definiteHeight)
+      }
 
       val contentWidthPx = placeables.maxOfOrNull { it.width } ?: 0
       val contentHeightPx = placeables.maxOfOrNull { it.height } ?: 0
