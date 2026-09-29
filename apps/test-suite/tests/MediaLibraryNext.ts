@@ -275,15 +275,15 @@ export async function test(t: any) {
     });
   });
 
-  t.describe('Album getAllMetadata', () => {
+  t.describe('Album getAlbumsMetadata', () => {
     t.it('includes metadata for a newly created album', async () => {
       // given
-      const albumName = createAlbumName('getAllMetadata includes new album');
+      const albumName = createAlbumName('getAlbumsMetadata includes new album');
       const album = await Album.create(albumName, [jpgFileLocalUri], true);
       albumsContainer.push(album);
 
       // when
-      const metadata = await Album.getAllMetadata();
+      const metadata = await Album.getAlbumsMetadata();
 
       // then
       const entry = metadata.find((m) => m.id === album.id);
