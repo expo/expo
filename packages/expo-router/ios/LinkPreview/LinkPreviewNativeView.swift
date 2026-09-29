@@ -12,6 +12,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
       performUpdateOfPreloadedView()
     }
   }
+  var previewCornerRadius: Double?
   private var actions: [LinkPreviewNativeActionView] = []
 
   private lazy var linkPreviewNativeNavigation: LinkPreviewNativeNavigation = {
@@ -142,6 +143,12 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
 
       let parameters = UIPreviewParameters()
       parameters.backgroundColor = triggerView.backgroundColor ?? .clear
+      if let previewCornerRadius {
+        parameters.visiblePath = UIBezierPath(
+          roundedRect: triggerView.bounds,
+          cornerRadius: CGFloat(previewCornerRadius)
+        )
+      }
 
       return UITargetedPreview(view: triggerView, parameters: parameters, target: target)
     }

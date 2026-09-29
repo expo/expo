@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [ios] Add `previewCornerRadius` to `Link.Trigger` so a lifted trigger can keep its own corners. ([#50669](https://github.com/expo/expo/pull/50669) by [@oscnord](https://github.com/oscnord))
+
 ### 🐛 Bug fixes
 
 - Ignore the reserved `__expo_*` launch URL params on Expo Go and development build launch URLs, so they no longer become route search params. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))

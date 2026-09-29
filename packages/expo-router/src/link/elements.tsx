@@ -357,6 +357,15 @@ export interface LinkTriggerProps extends PropsWithChildren {
    * @platform ios 18+
    */
   withAppleZoom?: boolean;
+  /**
+   * The corner radius of the trigger while it is lifted to show the preview or menu.
+   *
+   * By default, the system clips the lifted trigger to its own rounded rectangle, whatever the
+   * trigger's shape. Set this to keep the trigger's corners instead.
+   *
+   * @platform ios
+   */
+  previewCornerRadius?: number;
 }
 
 /**
@@ -376,7 +385,7 @@ export interface LinkTriggerProps extends PropsWithChildren {
  *
  * @platform ios
  */
-export function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps) {
+export function LinkTrigger({ withAppleZoom, previewCornerRadius, ...props }: LinkTriggerProps) {
   if (React.Children.count(props.children) > 1 || !isValidElement(props.children)) {
     // If onPress is passed, this means that Link passed props to this component.
     // We can assume that asChild is used, so we throw an error, because link will not work in this case.
