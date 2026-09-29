@@ -7,6 +7,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { Globe01Icon } from '@expo/styleguide-icons/outline/Globe01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -220,7 +221,7 @@ For more options, see [e2e's debugging guide](https://e2e.tester.army/docs/debug
 
 </Step>
 
-### Tips for Expo apps
+<Collapsible summary="Tips for Expo apps">
 
 - **Native tabs:** The role that Expo Router [native tabs](/router/advanced/native-tabs/) report depends on the platform and the simulator runtime. Use `screen.getByText('Explore')` to find a tab on both platforms.
 - **Pressable elements:** A `Pressable` without an `accessibilityRole` combines the labels of its children. For example, a row with a chevron icon and a title has the label "Forward, File-based routing". Use `{ exact: false }`, or set `accessibilityRole` and `accessibilityLabel` on the `Pressable`.
@@ -268,11 +269,15 @@ test(
 </Tab>
 </Tabs>
 
-### Use e2e with a coding agent
+</Collapsible>
+
+<Collapsible summary="Use e2e with a coding agent">
 
 The e2e skill in **.agents/skills/e2e/** tells coding agents such as Claude Code, Codex, and Cursor how to write and run e2e tests. The `e2e mcp` server lets an agent open the app and check a locator before it adds the locator to a test. For more information, see [e2e's coding agents guide](https://e2e.tester.army/docs/coding-agents).
 
-### Run e2e on EAS Workflows
+</Collapsible>
+
+<Collapsible summary="Run e2e on EAS Workflows">
 
 [EAS Workflows](/eas/workflows/introduction/) can run e2e on a macOS worker with an iOS Simulator. The following workflow builds your app, boots a simulator on the worker, installs the app, and runs the tests.
 
@@ -364,6 +369,8 @@ Tests with only exact steps need no model. Agent steps need a model on the worke
 - A subscription login is stored on your computer, so it is not available on the worker. Use an API key from your provider, and add an agent for it to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
 - Store the API key as an [EAS environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
 - Agent steps recorded on your own simulator may not replay on the worker. The simulator on the worker can report a different accessibility tree, so the agent calls the model again.
+
+</Collapsible>
 
 ## Run TesterArmy tests on EAS Workflows
 
