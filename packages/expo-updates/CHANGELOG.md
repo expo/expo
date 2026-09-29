@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the embedded manifest giving every duplicate asset scale the same `packagerHash`, which made updates download assets already in the binary.
+
 ### 💡 Others
 
 - Cover configurable update cache retention in E2E tests. ([#50463](https://github.com/expo/expo/pull/50463) by [@kudo](https://github.com/kudo))
