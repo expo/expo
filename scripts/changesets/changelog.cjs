@@ -61,7 +61,30 @@ function formatListItem(lines) {
   return `- ${punctuated[0]}${punctuated.slice(1).map((line) => `\n  ${line}`).join('')}`;
 }
 
-async function resolveMetadata(changeset) {
+function getPullRequestReference(reference) {
+  if (!reference) return;
+  if (SAFE_GITHUB_REFERENCE.test(reference)) {
+    return { repo: REPOSITORY, pull: Number(reference.slice(1)) };
+  }
+  const url = reference.match(/^\[[^\]]+\]\((https:\/\/[^)]+)\)$/)?.[1] || reference;
+  const match = url.match(
+    /^https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)\/?(?:[?#].*)?$/i
+  );
+  if (match) return { repo: match[1], pull: Number(match[2]) };
+}
+
+async function resolveMetadata(changeset, reference) {
+  const pullRequest = getPullRequestReference(reference);
+  if (pullRequest) {
+    try {
+      const { getPullRequestInfo } = await import('@changesets/get-github-info');
+      const info = await getPullRequestInfo(pullRequest);
+      return { author: info?.author?.markdownLink };
+    } catch {
+      // An explicit PR must never be credited to the changeset's own commit author.
+      return {};
+    }
+  }
   if (!changeset.commit) return {};
   try {
     const { getCommitInfo } = await import('@changesets/get-github-info');
@@ -86,7 +109,7 @@ function appendAttribution(line, reference, author) {
 
 async function getReleaseLine(changeset) {
   const { body, reference: override } = parseSummary(changeset.summary);
-  const metadata = await resolveMetadata(changeset);
+  const metadata = await resolveMetadata(changeset, override);
   return appendAttribution(formatListItem(body), override || metadata.reference, metadata.author);
 }
 
@@ -96,8 +119,7 @@ async function getDependencyReleaseLine(changesets, dependenciesUpdated) {
   const references = [];
   for (const changeset of changesets) {
     const { reference: override } = parseSummary(changeset.summary);
-    const metadata = await resolveMetadata(changeset);
-    const reference = override || metadata.reference;
+    const reference = override || (await resolveMetadata(changeset)).reference;
     if (reference && !references.includes(reference)) references.push(reference);
   }
 
