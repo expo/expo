@@ -6,6 +6,10 @@ import android.os.Parcel;
  * A class representing a single direct reply notification action.
  */
 public class TextInputNotificationAction extends NotificationAction {
+  // Declared for the same reason as NotificationCategory's: the value
+  // non-minified (D8) builds compute.
+  private static final long serialVersionUID = 8821343572336637405L;
+
   private final String mPlaceholder;
 
   public TextInputNotificationAction(String identifier, String title, boolean opensAppToForeground, String placeholder) {
