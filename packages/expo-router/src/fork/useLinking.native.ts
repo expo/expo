@@ -118,7 +118,7 @@ export function useLinking(
       const routeNode = routerConfig?.routeNode;
       return routeNode
         ? createSeededRootState(parsedState, routeNode)
-        : completeParsedState(parsedState, ROOT_CHAIN);
+        : completeParsedState(parsedState, ROOT_CHAIN, config?.screens);
     };
 
     if (url != null && typeof url !== 'string') {

@@ -553,7 +553,7 @@ test('does not reseed state when a raw navigator without a route node unmounts',
   expect(onStateChange).toHaveBeenCalledTimes(1);
 });
 
-test('reconciles state when a conditional navigator changes', () => {
+test('keeps canonical state when a raw conditional navigator changes its local screens', () => {
   const TestNavigatorA = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -622,8 +622,11 @@ test('reconciles state when a conditional navigator changes', () => {
     type: 'test',
     index: 0,
     key: '2',
-    routeNames: ['bar', 'baz'],
-    routes: [{ key: 'bar-1', name: 'bar' }],
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo-0', name: 'foo' },
+      { key: 'bar-1', name: 'bar' },
+    ],
   });
 });
 
@@ -643,7 +646,6 @@ test('resets state when a conditional navigator changes router type', () => {
               state: {
                 ...result.state,
                 type,
-                ...(action.type === 'ROUTE_NAMES_CHANGED' ? { history: [type] } : null),
               },
             }
           );
@@ -699,9 +701,8 @@ test('resets state when a conditional navigator changes router type', () => {
     key: 'navigator',
     type: 'test-b',
     index: 0,
-    routeNames: ['bar', 'baz'],
+    routeNames: ['foo', 'bar'],
     routes: [{ key: 'bar-key', name: 'bar', params: { id: '123' } }],
-    history: ['test-b'],
   });
 });
 
@@ -852,9 +853,10 @@ test('updates route params with setParams applied to parent', () => {
   });
 });
 
-test('handles change in route names', () => {
+test('keeps raw declared membership changes local', () => {
+  const projection = jest.fn();
   const TestNavigator = (props: any): any => {
-    useNavigationBuilder(MockRouter, props);
+    projection(useNavigationBuilder(MockRouter, props).state);
     return null;
   };
 
@@ -879,20 +881,20 @@ test('handles change in route names', () => {
     </BaseNavigationContainer>
   );
 
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'baz', 'qux'],
-    routes: [{ key: 'foo-0', name: 'foo' }],
-  });
+  expect(onStateChange).not.toHaveBeenCalled();
+  expect(projection).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      routeNames: ['foo', 'baz', 'qux'],
+      routes: [],
+      index: -1,
+    })
+  );
 });
 
-test('reconciles route names when no previous route survives', () => {
+test('projects an empty raw screen subset without changing canonical state', () => {
+  const projection = jest.fn();
   const TestNavigator = (props: any): any => {
-    useNavigationBuilder(MockRouter, props);
+    projection(useNavigationBuilder(MockRouter, props).state);
     return null;
   };
 
@@ -915,15 +917,14 @@ test('reconciles route names when no previous route survives', () => {
     </BaseNavigationContainer>
   );
 
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['baz', 'qux'],
-    routes: [{ key: 'baz-0', name: 'baz' }],
-  });
+  expect(onStateChange).not.toHaveBeenCalled();
+  expect(projection).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      routeNames: ['baz', 'qux'],
+      routes: [],
+      index: -1,
+    })
+  );
 });
 
 test('does not clear params if there is no nested navigator', () => {

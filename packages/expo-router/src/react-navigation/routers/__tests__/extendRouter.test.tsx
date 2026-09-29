@@ -49,6 +49,7 @@ const TestRouter: RouterFactory<
   DefaultRouterOptions
 > = () => ({
   type: 'test',
+  getStateForRouteConfigChange: (state) => state,
   getStateForDeclaredRoutes: (state) => state,
   getStateForRouteFocus: (state) => state,
   getStateForAction: (state) => ({ state, affectedRouteKey: undefined }),
@@ -494,4 +495,31 @@ describe('extendRouterActions', () => {
     expect(result).not.toBeNull();
     expect(invalidResult).not.toBeNull();
   });
+});
+
+test('shares key allocation and normalization across custom structural repair and delegation', () => {
+  const Custom = extendRouter(StackRouter, ({ baseRouter, nextKey }) => ({
+    getStateForRouteConfigChange(input, config) {
+      nextKey('discarded');
+      const repaired = baseRouter.getStateForRouteConfigChange(input, config);
+      return {
+        ...repaired,
+        routes: [...repaired.routes, { key: nextKey('extra'), name: 'extra' }],
+      };
+    },
+  }));
+  const input = Object.freeze({
+    ...stackState,
+    routes: Object.freeze(stackState.routes) as unknown as typeof stackState.routes,
+  });
+  const result = Custom({}).getStateForRouteConfigChange(input, {
+    routeNames: ['replacement', 'extra'],
+    declaredRouteNames: ['extra', 'replacement'],
+  });
+  expect(result.routeKeySeq).toBe(input.routeKeySeq + 3);
+  expect(new Set(result.routes.map((route) => route.key)).size).toBe(2);
+  expect(result.routes[0]!.name).toBe('replacement');
+  expect(result.routes[1]!.isPreloaded).toBe(true);
+  expect(result.type).toBe('stack');
+  expect(input.routeKeySeq).toBe(2);
 });

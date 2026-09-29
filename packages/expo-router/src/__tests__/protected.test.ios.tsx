@@ -50,9 +50,10 @@ it('redirects a guarded route to the anchor default during the initial load', ()
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
+  // Root state retains RouteNode order; the protected screen declaration only affects local rendering.
   expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
-    'a',
     'index',
+    'a',
     'b',
     'c',
   ]);
@@ -144,11 +145,12 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen.getByTestId('c')).toBeVisible();
   expect(screen).toHavePathname('/c');
 
+  // Guard changes redirect routes without reordering canonical root-state membership.
   expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'index',
     'a',
     'b',
     'c',
-    'index',
   ]);
 });
 
@@ -198,10 +200,11 @@ it('defaults a guarded route to the navigator anchor', () => {
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
+  // The anchor and protected declaration do not reorder the RouteNode's names.
   expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
-    'a',
     'b',
     'index',
+    'a',
   ]);
 });
 

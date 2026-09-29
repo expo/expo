@@ -22,6 +22,7 @@ export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<
  */
 export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
+  canNavigatorGoBack?: (stateKey: string) => boolean | undefined;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
   addListener?: AddListener;
 }>({

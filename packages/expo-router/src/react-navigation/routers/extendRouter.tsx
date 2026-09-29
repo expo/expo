@@ -121,9 +121,21 @@ export function extendRouter<
       return normalizeState ? normalizeState(typed) : typed;
     };
 
-    const delegate: RouterExtensionContext<State, Action, Options>['baseRouter'] = {
+    const delegate = {
       ...baseRouter,
-      getStateForAction(state, action, config = current.config) {
+      getStateForRouteConfigChange(
+        state: State,
+        config: Parameters<Router<State, Action>['getStateForRouteConfigChange']>[1]
+      ) {
+        const result = baseRouter.getStateForRouteConfigChange(stamp(state), config);
+        current.routeKeySeq = Math.max(current.routeKeySeq, result.routeKeySeq);
+        return result;
+      },
+      getStateForAction(
+        state: State,
+        action: Action,
+        config: RouterConfigOptions | undefined = current.config
+      ) {
         if (config === undefined) {
           throw new Error(
             '`baseRouter.getStateForAction` needs the `config` argument when it is called outside of `getStateForAction`, because only that method receives one from the navigator. Pass the config explicitly.'
@@ -135,7 +147,7 @@ export function extendRouter<
         }
         return result;
       },
-    };
+    } as RouterExtensionContext<State, Action, Options>['baseRouter'];
     const nextKey = (name: string) => {
       const minter = createRouteKeyMinter(current);
       const key = minter.mint(name);
@@ -156,9 +168,12 @@ export function extendRouter<
         // Render-phase fallback: the seeded state keeps its own `type` until an action stamps it.
         return finish(router.getStateForDeclaredRoutes(start(state), routeNames), state.type);
       },
-      getStateForRouteFocus(state, key) {
+      getStateForRouteConfigChange(state, config) {
+        return finish(router.getStateForRouteConfigChange(start(state), config), state.type);
+      },
+      getStateForRouteFocus(state, key, config) {
         const typedState = ensureType(start(state));
-        return finish(router.getStateForRouteFocus(typedState, key), typedState.type);
+        return finish(router.getStateForRouteFocus(typedState, key, config), typedState.type);
       },
       getStateForAction(state, action, config) {
         const typedState = ensureType(start(state, config));
@@ -173,7 +188,8 @@ export function extendRouter<
           const browserHistory = router.getBrowserHistoryForAction(
             typedState,
             finishedState,
-            action
+            action,
+            config
           );
           if (browserHistory !== result.browserHistory) {
             return { ...result, state: finishedState, browserHistory };

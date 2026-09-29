@@ -27,6 +27,19 @@ import {
   createSeededNavigationState,
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
+import {
+  initialHistoryOrders,
+  prepareHistory,
+  observeHistoryOrders,
+  baselineExternalReset,
+  recordHistoryResult,
+  type HistoryOrders,
+} from './historyOrder';
+import {
+  findCurrentRouteNode,
+  reconcileRouteConfig,
+  type PendingRouteConfig,
+} from './reconcileRouteConfig';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import type { RoutingIntent } from './routingQueue';
@@ -46,6 +59,7 @@ type ReducerConfig = {
 };
 
 type TreeOperation =
+  | { type: 'ROUTE_CONFIG_CHANGED' | 'ROUTERS_REGISTERED' }
   | Exclude<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }>
   | (Extract<RoutingIntent, { type: 'BROWSER_HISTORY_CHANGED' }> & {
       /**
@@ -113,16 +127,16 @@ export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
   id: number;
 };
 
-type NavigationTreeResult = {
+export type NavigationTreeResult = {
+  historyOrders?: HistoryOrders;
   state: NavigationState;
+  pendingRouteConfig?: PendingRouteConfig;
   report: NavigationTreeReport | undefined;
   eventSeq: number;
   // Web only; browser entries tracked by this page.
   history: BrowserHistory | undefined;
   browserHistoryAction?: RouterBrowserHistoryAction;
 };
-
-const ACTIONS_WITHOUT_REMOVAL_PREVENTION = new Set(['ROUTE_NAMES_CHANGED']);
 
 function warnIfStaleState(state: NavigationState) {
   if (process.env.NODE_ENV !== 'development') {
@@ -141,7 +155,24 @@ function warnIfStaleState(state: NavigationState) {
 
 // Browser changes restore a saved navigation state. Other operations update navigation first,
 // then queue the matching browser command to run after React commits.
-function navigationTreeReducer(
+export function navigationTreeReducer(
+  result: NavigationTreeResult,
+  operation: TreeOperation,
+  config: ReducerConfig
+): NavigationTreeResult {
+  // Capture once at reduction time: mount effects can enqueue actions before registration commits.
+  const snapshot = { ...config, registry: new Map(config.registry) };
+  const next = reduceNavigationResult(result, operation, snapshot);
+  const historyOrders = observeHistoryOrders(
+    next.historyOrders ?? new Map(),
+    next.state,
+    snapshot.registry,
+    next.history
+  );
+  return historyOrders === next.historyOrders ? next : { ...next, historyOrders };
+}
+
+function reduceNavigationResult(
   result: NavigationTreeResult,
   operation: TreeOperation,
   config: ReducerConfig
@@ -159,7 +190,42 @@ function navigationTreeReducer(
       result,
       operation.payload,
       config,
-      (current, intent) => reduceTree(current, intent, config)
+      (current, intent) => {
+        // Saved browser entries may predate HMR. Repair before RESET validates membership.
+        if (
+          config.routeNode &&
+          intent.type === 'ACTION' &&
+          intent.payload.action.type === 'RESET'
+        ) {
+          const payload = intent.payload.action.payload as NavigationState;
+          let historyOrders = current.historyOrders ?? new Map();
+          const repaired = reconcileRouteConfig(
+            payload,
+            config.routeNode,
+            config.registry,
+            current.pendingRouteConfig,
+            false,
+            (previous, next, entry, computed) => {
+              historyOrders = recordHistoryResult(historyOrders, previous, next, entry, computed);
+            }
+          );
+          const reduced = reduceTree(
+            { ...current, historyOrders },
+            {
+              ...intent,
+              payload: {
+                ...intent.payload,
+                action: { ...intent.payload.action, payload: repaired.state },
+              },
+            },
+            config
+          );
+          return reduced.state === current.state
+            ? reduced
+            : { ...reduced, pendingRouteConfig: repaired.pending };
+        }
+        return reduceTree(current, intent, config);
+      }
     );
     return appendReportEvents({ ...restored.result, history: restored.history }, restored.events);
   }
@@ -170,7 +236,10 @@ function navigationTreeReducer(
   }
   // Structural repairs are not navigations, so they never move the browser.
   const projected =
-    operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
+    operation.type === 'NAVIGATOR_UNMOUNTED' ||
+    operation.type === 'NAVIGATOR_CHANGED' ||
+    operation.type === 'ROUTE_CONFIG_CHANGED' ||
+    operation.type === 'ROUTERS_REGISTERED'
       ? updateCurrentHistoryEntry(next.history, next.state, config)
       : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
@@ -186,6 +255,9 @@ function reduceTree(
   const state = result.state;
 
   switch (operation.type) {
+    case 'ROUTE_CONFIG_CHANGED':
+    case 'ROUTERS_REGISTERED':
+      return reconcileResult(result, config, operation.type === 'ROUTERS_REGISTERED');
     case 'NAVIGATE_TO_HREF': {
       const { href, options } = operation.payload;
       let resolution: ReturnType<typeof getNavigateAction>;
@@ -256,9 +328,29 @@ function reduceTree(
         return reportUnhandledAction(result, operation.payload.action);
       }
 
-      const reduction = reduceNavigationTree(operation.payload.action, config.registry, {
+      const action = operation.payload.action;
+      let historyOrders = observeHistoryOrders(
+        result.historyOrders ?? new Map(),
+        state,
+        config.registry,
+        result.history
+      );
+      if (
+        action.type === 'RESET' &&
+        action.payload &&
+        'stale' in action.payload &&
+        action.payload.stale === false
+      ) {
+        historyOrders = baselineExternalReset(
+          historyOrders,
+          action.payload as NavigationState,
+          result.historyOrders
+        );
+      }
+      const reduction = reduceNavigationTree(action, config.registry, {
         origin,
         tree,
+        historyOrders,
       });
       if (!reduction.handled) {
         return reportUnhandledAction(result, operation.payload.action);
@@ -271,9 +363,9 @@ function reduceTree(
       }
 
       const removedRoutes = getRemovedRouteKeys(state, nextState);
-      const preventedRoutes = ACTIONS_WITHOUT_REMOVAL_PREVENTION.has(operation.payload.action.type)
-        ? []
-        : removedRoutes.filter((routeKey) => config.routesWithRemovalPrevented.has(routeKey));
+      const preventedRoutes = removedRoutes.filter((routeKey) =>
+        config.routesWithRemovalPrevented.has(routeKey)
+      );
       const committedState = preventedRoutes.length > 0 ? state : deepFreeze(nextState);
       // TODO(@ubax): add dev-only diagnostics to events for dev-tools.
       const eventsWithoutIds: NavigationTreeReportEventData[] =
@@ -312,7 +404,12 @@ function reduceTree(
               },
             ];
       return appendReportEvents(
-        { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
+        {
+          ...result,
+          state: committedState,
+          historyOrders: preventedRoutes.length ? result.historyOrders : reduction.historyOrders,
+          browserHistoryAction: preventedRoutes.length ? undefined : reduction.browserHistory,
+        },
         eventsWithoutIds
       );
     }
@@ -321,28 +418,40 @@ function reduceTree(
       if (config.registry.has(operation.stateKey) || !findStateByKey(state, operation.stateKey)) {
         return result;
       }
+      const currentNode = config.routeNode
+        ? findCurrentRouteNode(state, config.routeNode, operation.stateKey)
+        : operation.routeNode;
+      if (!currentNode) return reconcileResult(result, config);
       const replacement = createSeededNavigationState(
         undefined,
-        operation.routeNode,
-        getChainFromStateKey(operation.stateKey)
+        currentNode,
+        getChainFromStateKey(operation.stateKey),
+        findStateByKey(state, operation.stateKey)!.routeKeySeq
       );
       const nextState = replaceNavigationState(state, operation.stateKey, replacement);
-      const completeState = config.routeNode
-        ? completeNavigationState(nextState, config.routeNode)
-        : nextState;
-      return { ...result, state: deepFreeze(completeState) };
+      return reconcileResult({ ...result, state: nextState }, config);
     }
     case 'NAVIGATOR_CHANGED': {
       const navigatorState = findStateByKey(state, operation.stateKey);
       if (!navigatorState) {
         return result;
       }
+      const entry = config.registry.get(operation.stateKey);
+      if (
+        config.routeNode &&
+        operation.stateKey !== state.key &&
+        !findCurrentRouteNode(state, config.routeNode, operation.stateKey)
+      ) {
+        return reconcileResult(result, config);
+      }
+      if (entry && entry.routerType !== operation.routerType)
+        return reconcileResult(result, config);
+      if (navigatorState.type === operation.routerType) return reconcileResult(result, config);
       const replacement = resetNavigatorState(navigatorState, operation.routerType);
       const nextState = replaceNavigationState(state, operation.stateKey, replacement);
-      const completeState = config.routeNode
-        ? completeNavigationState(nextState, config.routeNode)
-        : nextState;
-      return { ...result, state: deepFreeze(completeState) };
+      const pendingRouteConfig = new Map(result.pendingRouteConfig);
+      pendingRouteConfig.set(operation.stateKey, undefined);
+      return reconcileResult({ ...result, state: nextState, pendingRouteConfig }, config, true);
     }
     case 'REPORT_CONSUMED': {
       if (!result.report) {
@@ -356,6 +465,45 @@ function reduceTree(
       return { ...result, report: events.length > 0 ? { events } : undefined };
     }
   }
+}
+
+function reconcileResult(
+  result: NavigationTreeResult,
+  config: ReducerConfig,
+  adopt = false,
+  previous = result.state
+): NavigationTreeResult {
+  if (!config.routeNode) {
+    deepFreeze(result.state);
+    return result;
+  }
+  let historyOrders = result.historyOrders ?? new Map();
+  const repaired = reconcileRouteConfig(
+    result.state,
+    config.routeNode,
+    config.registry,
+    result.pendingRouteConfig,
+    adopt,
+    (previous, next, entry, computed) => {
+      historyOrders = recordHistoryResult(historyOrders, previous, next, entry, computed);
+    }
+  );
+  const repairedState = deepFreeze(repaired.state);
+  const next =
+    repairedState === result.state && repaired.pending === result.pendingRouteConfig
+      ? result
+      : {
+          ...result,
+          state: repairedState,
+          pendingRouteConfig: repaired.pending,
+          historyOrders,
+        };
+  const removed = getRemovedRouteKeys(previous, repaired.state);
+  return removed.length
+    ? appendReportEvents(next, [
+        { type: 'removed-routes', routeKeys: removed, action: { type: 'HMR_CONFIG_CHANGED' } },
+      ])
+    : next;
 }
 
 function reportUnhandledAction(
@@ -419,14 +567,31 @@ export function useNavigationTreeReducer({
       const state = deepFreeze(value);
       const initial = createBrowserHistory(state, config);
       return appendReportEvents(
-        { state, report: undefined, eventSeq: 0, history: initial.history },
+        {
+          state,
+          report: undefined,
+          eventSeq: 0,
+          history: initial.history,
+          historyOrders: observeHistoryOrders(
+            initialHistoryOrders(state),
+            state,
+            registry,
+            initial.history
+          ),
+        },
         initial.events
       );
     }
   );
+  const [previousRouteNode, setPreviousRouteNode] = React.useState(routeNode);
+  if (previousRouteNode !== routeNode) {
+    setPreviousRouteNode(routeNode);
+    reactDispatch({ type: 'ROUTE_CONFIG_CHANGED' });
+  }
   const [previousRegistry, setPreviousRegistry] = React.useState(registry);
   if (previousRegistry !== registry) {
     setPreviousRegistry(registry);
+    reactDispatch({ type: 'ROUTERS_REGISTERED' });
     // Reconcile before commit so registry membership and navigation state stay in sync.
     for (const [stateKey, entry] of previousRegistry) {
       if (!registry.has(stateKey) && entry.routeNode) {
@@ -438,6 +603,18 @@ export function useNavigationTreeReducer({
       }
     }
   }
+  const canNavigatorGoBack = useLatestCallback((stateKey: string): boolean | undefined => {
+    const state = findStateByKey(result.state, stateKey);
+    const entry = registry.get(stateKey);
+    if (!state || !entry) return undefined;
+    const orders = observeHistoryOrders(
+      result.historyOrders ?? new Map(),
+      result.state,
+      registry,
+      result.history
+    );
+    return entry.reduce(prepareHistory(state, entry, orders), { type: 'GO_BACK' }) !== null;
+  });
   const handleAction = useLatestCallback((action: NavigationAction, originKey?: string) => {
     const payload =
       typeof action.payload === 'object' && action.payload !== null ? action.payload : undefined;
@@ -477,6 +654,7 @@ export function useNavigationTreeReducer({
     state: result.state,
     report: result.report,
     consumeReportEvents,
+    canNavigatorGoBack,
     resetNavigator,
     handleAction,
     processIntent,

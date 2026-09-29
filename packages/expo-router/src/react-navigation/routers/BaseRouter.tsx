@@ -1,3 +1,4 @@
+import { isArrayEqual } from '../core/isArrayEqual';
 import { NoopRouter } from './NoopRouter';
 import { extendRouter } from './extendRouter';
 import { createRouteKeyMinter } from './stateKeys';
@@ -15,7 +16,51 @@ import type {
  */
 export const BaseRouter = extendRouter(
   NoopRouter,
-  ({ baseRouter }): Partial<Router<NavigationState, CommonNavigationAction>> => ({
+  ({
+    baseRouter,
+    nextKey,
+    options: { initialRouteName },
+  }): Partial<Router<NavigationState, CommonNavigationAction>> => ({
+    getStateForRouteConfigChange(state, { routeNames }) {
+      if (
+        isArrayEqual(state.routeNames, routeNames) &&
+        state.routes.every((route) => routeNames.includes(route.name))
+      )
+        return state;
+      let routes = state.routes.filter((route) => routeNames.includes(route.name));
+      if (!routes.length && routeNames.length) {
+        const name =
+          initialRouteName && routeNames.includes(initialRouteName)
+            ? initialRouteName
+            : routeNames[0]!;
+        routes = [{ key: nextKey(name), name }];
+      }
+      const index = routes.length
+        ? Math.max(
+            0,
+            routes.findIndex((route) => route.key === state.routes[state.index]?.key)
+          )
+        : -1;
+      const keys = new Set(routes.map((route) => route.key));
+      return {
+        ...state,
+        routeNames,
+        routes,
+        index,
+        ...(state.history
+          ? {
+              history: state.history.filter(
+                (item) =>
+                  typeof item !== 'object' ||
+                  item === null ||
+                  !('type' in item) ||
+                  item.type !== 'route' ||
+                  ('key' in item && typeof item.key === 'string' && keys.has(item.key))
+              ),
+            }
+          : undefined),
+      };
+    },
     getStateForDeclaredRoutes(state, routeNames) {
       const declaredRouteNames = new Set(routeNames);
       const routes = state.routes.filter((route) => declaredRouteNames.has(route.name));

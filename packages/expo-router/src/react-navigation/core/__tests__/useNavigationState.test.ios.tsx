@@ -163,20 +163,7 @@ test('updates a memoized consumer', () => {
 });
 
 test('keeps filtered state stable when the container rerenders', () => {
-  const TestRouter = (options: any) => {
-    const router = MockRouter(options);
-
-    return {
-      ...router,
-      getStateForAction(state: NavigationState, action: any) {
-        if (action.type === 'ROUTE_NAMES_CHANGED') {
-          return null;
-        }
-
-        return router.getStateForAction(state, action, options);
-      },
-    };
-  };
+  const TestRouter = MockRouter;
 
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(TestRouter, props);

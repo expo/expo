@@ -11,6 +11,7 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
+import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -23,6 +24,7 @@ type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
   handleAction: (action: NavigationAction) => void;
   state: State;
+  routeNames?: string[];
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
 };
@@ -36,7 +38,9 @@ export function useNavigationHelpers<
   ActionHelpers extends Record<string, () => void>,
   Action extends NavigationAction,
   EventMap extends Record<string, any>,
->({ id: navigatorId, handleAction, state, emitter, router }: Options<State, Action>) {
+>({ id: navigatorId, handleAction, state, routeNames, emitter, router }: Options<State, Action>) {
+  const { canNavigatorGoBack } = use(NavigationBuilderContext);
+  const getRouteNames = useLatestCallback(() => routeNames ?? state.routeNames);
   const parentNavigationHelpers = use(NavigationContext);
   const enqueue = useEnqueueRoutingIntent();
   // Unlike handler-only Effect Events, the public accessor can be called during render.
@@ -76,10 +80,11 @@ export function useNavigationHelpers<
         const state = getState();
 
         return (
-          router.getStateForAction(state, CommonActions.goBack() as Action, {
-            routeNames: state.routeNames,
-            routeGetIdList: {},
-          }) !== null ||
+          (canNavigatorGoBack?.(state.key) ??
+            router.getStateForAction(state, CommonActions.goBack() as Action, {
+              routeNames: getRouteNames(),
+              routeGetIdList: {},
+            }) !== null) ||
           parentNavigationHelpers?.canGoBack() ||
           false
         );
@@ -104,5 +109,13 @@ export function useNavigationHelpers<
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
-  }, [enqueue, router, parentNavigationHelpers, emitter.emit, handleAction, navigatorId]);
+  }, [
+    enqueue,
+    router,
+    parentNavigationHelpers,
+    emitter.emit,
+    handleAction,
+    navigatorId,
+    canNavigatorGoBack,
+  ]);
 }

@@ -4,6 +4,7 @@ import type {
   PartialState,
   RouterBrowserHistoryAction,
 } from '../react-navigation/routers';
+import { prepareHistory, recordHistoryResult, type HistoryOrders } from './historyOrder';
 import type { RouterRegistry } from './routerRegistry';
 
 export type TreeNode = {
@@ -21,6 +22,7 @@ type Handler = {
   node: TreeNode;
   nextSlice: NavigationState;
   shouldFocus: boolean;
+  accepted: boolean;
   browserHistory?: RouterBrowserHistoryAction;
   affectedRouteKey: string | undefined;
 };
@@ -30,6 +32,7 @@ export type NavigationTreeReduction =
   | {
       handled: true;
       nextState: NavigationState;
+      historyOrders?: HistoryOrders;
       browserHistory?: RouterBrowserHistoryAction;
       affectedRouteKey: string | undefined;
     };
@@ -92,7 +95,8 @@ function findActionHandler(
   origin: TreeNode,
   nodes: Map<string, TreeNode>,
   action: NavigationAction,
-  registry: RouterRegistry
+  registry: RouterRegistry,
+  histories: { orders: HistoryOrders }
 ): Handler | undefined {
   let handler: Handler | undefined;
   const attempt = (node: TreeNode): boolean => {
@@ -101,9 +105,21 @@ function findActionHandler(
       return false;
     }
 
-    const result = entry.reduce(node.state, action);
+    // Preparation is local until this attempt is accepted; a targeted null keeps the original.
+    const previous = prepareHistory(node.state, entry, histories.orders);
+    const result = entry.reduce(previous, action);
+    if (result) {
+      histories.orders = recordHistoryResult(histories.orders, node.state, previous, entry, true);
+      histories.orders = recordHistoryResult(
+        histories.orders,
+        previous,
+        result.state,
+        entry,
+        action.type !== 'RESET' || (action.payload as NavigationState | undefined)?.history == null
+      );
+    }
     // Unsupported untargeted actions bubble. An action explicitly addressed to this navigator
-    // stops here as a handled no-op instead of escaping to another navigator.
+    // stops here; ancestor focus can still change, but the rejected slice stays unchanged.
     if (result === null && action.target !== node.state.key) {
       return false;
     }
@@ -114,6 +130,7 @@ function findActionHandler(
       nextSlice,
       browserHistory: result?.browserHistory,
       shouldFocus: entry.shouldActionChangeFocus?.(action) ?? false,
+      accepted: result !== null,
       affectedRouteKey: result?.affectedRouteKey,
     };
     return true;
@@ -133,7 +150,11 @@ function findActionHandler(
   return undefined;
 }
 
-function rebuildTreeWithSlice(handler: Handler, registry: RouterRegistry) {
+function rebuildTreeWithSlice(
+  handler: Handler,
+  registry: RouterRegistry,
+  histories: { orders: HistoryOrders }
+) {
   let browserHistory = handler.browserHistory;
   let nextState = handler.nextSlice;
   let child = handler.node;
@@ -151,11 +172,30 @@ function rebuildTreeWithSlice(handler: Handler, registry: RouterRegistry) {
             ),
           };
 
-    if (handler.shouldFocus) {
+    if (
+      handler.shouldFocus &&
+      (handler.accepted || nextParent.routes[nextParent.index]?.key !== route.key)
+    ) {
       const entry = registry.get(parent.state.key);
       if (entry?.getStateForRouteFocus) {
-        const previousParent = nextParent;
-        nextParent = entry.getStateForRouteFocus(nextParent, route.key);
+        const previousParent = handler.accepted
+          ? prepareHistory(nextParent, entry, histories.orders)
+          : nextParent;
+        nextParent = entry.getStateForRouteFocus(previousParent, route.key);
+        histories.orders = recordHistoryResult(
+          histories.orders,
+          parent.state,
+          previousParent,
+          entry,
+          true
+        );
+        histories.orders = recordHistoryResult(
+          histories.orders,
+          previousParent,
+          nextParent,
+          entry,
+          true
+        );
         const focusHistory = entry.getBrowserHistoryForRouteFocus?.(
           previousParent,
           nextParent,
@@ -173,16 +213,22 @@ function rebuildTreeWithSlice(handler: Handler, registry: RouterRegistry) {
 export function reduceNavigationTree(
   action: NavigationAction,
   registry: RouterRegistry,
-  { origin, tree }: { origin: TreeNode; tree: NavigationTreeIndex }
+  {
+    origin,
+    tree,
+    historyOrders = new Map(),
+  }: { origin: TreeNode; tree: NavigationTreeIndex; historyOrders?: HistoryOrders }
 ): NavigationTreeReduction {
-  const handler = findActionHandler(origin, tree.nodes, action, registry);
+  const histories = { orders: historyOrders };
+  const handler = findActionHandler(origin, tree.nodes, action, registry, histories);
   if (!handler) {
     return { handled: false };
   }
 
   return {
     handled: true,
-    ...rebuildTreeWithSlice(handler, registry),
+    ...rebuildTreeWithSlice(handler, registry, histories),
+    historyOrders: histories.orders,
     affectedRouteKey: handler.affectedRouteKey,
   };
 }

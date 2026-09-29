@@ -239,8 +239,7 @@ function createDestinationState(
 ): NavigationState {
   const targetRoute = getFocusedRoute(targetState);
   const initialRouteName = getValidInitialRouteName(routeNode);
-  // Sort like a mounted navigator does, so the route names match on mount and no
-  // ROUTE_NAMES_CHANGED action is queued.
+  // Destination state uses canonical file-tree order; mounted screen order stays local.
   const routeNames = [...routeNode.children]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);

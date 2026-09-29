@@ -6,8 +6,8 @@ import { isValidElementType } from 'react-is';
 
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
+import { effectiveRouteNames } from '../../global-state/historyOrder';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
-import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -255,7 +255,6 @@ export function useNavigationBuilder<
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
-  const enqueue = useEnqueueRoutingIntent();
 
   const {
     children,
@@ -309,13 +308,23 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
+  const nextRouteGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
     (acc, curr) =>
       Object.assign(acc, {
         [curr]: screens[curr]!.props.getId,
       }),
     {}
   );
+
+  const [routeGetIdList, setRouteGetIdList] = React.useState(nextRouteGetIdList);
+  if (
+    Object.keys(routeGetIdList).length !== routeNames.length ||
+    routeNames.some(
+      (name) => routeGetIdList[name] !== nextRouteGetIdList[name] || !(name in routeGetIdList)
+    )
+  ) {
+    setRouteGetIdList(nextRouteGetIdList);
+  }
 
   if (!routeNames.length) {
     throw new Error(
@@ -356,13 +365,6 @@ export function useNavigationBuilder<
       ? declaredState
       : { ...declaredState, routeNames };
   }, [committedState, routeNamesKey, router]);
-  const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
-    // The registry stores states from different router types; this entry only receives its own state key.
-    router.getStateForAction(registryState as State, action, {
-      routeNames,
-      routeGetIdList,
-    })
-  );
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
 
@@ -439,15 +441,40 @@ export function useNavigationBuilder<
 
   const registryEntry = React.useMemo<RouterRegistryEntry>(
     () => ({
-      reduce,
+      declaredRouteNames: routeNames,
+      reduce: (registryState, action) =>
+        router.getStateForAction(registryState as State, action, {
+          routeNames: effectiveRouteNames(registryState.routeNames, routeNames),
+          routeGetIdList,
+        }),
+      prepareHistory: (registryState) =>
+        router.getStateForRouteConfigChange(registryState as State, {
+          routeNames: registryState.routeNames,
+          declaredRouteNames: effectiveRouteNames(registryState.routeNames, routeNames),
+          repairHistory: true,
+          orderOnly: true,
+        }),
+      routerType: router.type,
+      getStateForRouteConfigChange: (registryState, validNames, repairHistory) => {
+        const declaredRouteNames = effectiveRouteNames(validNames, routeNames);
+        return router.getStateForRouteConfigChange(registryState as State, {
+          routeNames: validNames,
+          declaredRouteNames,
+          repairHistory,
+        });
+      },
       shouldActionChangeFocus: router.shouldActionChangeFocus,
       getStateForRouteFocus: (registryState, routeKey) =>
-        router.getStateForRouteFocus(registryState as State, routeKey),
+        router.getStateForRouteFocus(registryState as State, routeKey, {
+          routeNames: effectiveRouteNames(registryState.routeNames, routeNames),
+        }),
       getBrowserHistoryForRouteFocus: (previous, next, childAction) =>
-        router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
+        router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction, {
+          routeNames: effectiveRouteNames(previous.routeNames, routeNames),
+        }),
       routeNode: routeNode ?? undefined,
     }),
-    [reduce, routeNode, router]
+    [routeNode, router, routeNamesKey, routeGetIdList]
   );
 
   useRegisterRouter(committedState.key, registryEntry);
@@ -458,37 +485,11 @@ export function useNavigationBuilder<
     }
   });
 
-  const pendingRouteNamesRef = React.useRef<string[] | undefined>(undefined);
-
-  useClientLayoutEffect(() => {
-    // Wait for the type reset to commit so route-name changes use the mounting router's registry entry.
-    if (isForeignType) {
-      return;
-    }
-    const committed = committedState;
-
-    if (isArrayEqual(committed.routeNames, routeNames)) {
-      pendingRouteNamesRef.current = undefined;
-    } else if (!isArrayEqual(pendingRouteNamesRef.current ?? [], routeNames)) {
-      pendingRouteNamesRef.current = routeNames;
-      enqueue({
-        type: 'ACTION',
-        payload: {
-          action: {
-            type: 'ROUTE_NAMES_CHANGED',
-            payload: { routeNames },
-            target: committed.key,
-          },
-          originKey: committed.key,
-        },
-      });
-    }
-  });
-
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
     handleAction: onAction,
     state: committedState,
+    routeNames,
     emitter,
     router,
   });

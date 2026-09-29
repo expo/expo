@@ -1,3 +1,5 @@
+import isEqual from 'react-fast-compare';
+
 import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
@@ -13,6 +15,7 @@ import type {
   Route,
   Router,
   RouterBrowserHistoryAction,
+  RouterConfigOptions,
 } from './types';
 
 export type TabActionType =
@@ -224,14 +227,15 @@ const getRouteHistory = (
 export const ensureStateHistory = (
   state: TabNavigationState<ParamListBase>,
   backBehavior: BackBehavior,
-  initialRouteName: string | undefined
+  initialRouteName: string | undefined,
+  routeNames: string[]
 ): TabNavigationStateWithHistory => {
   if (state.history != null) {
     // The null check narrows the optional property, but TypeScript doesn't narrow the object type.
     return state as TabNavigationStateWithHistory;
   }
 
-  const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+  const routes = orderRoutesByRouteNames(state.routes, routeNames);
   const focusedRoute = state.routes[state.index];
   const index = routes.findIndex((route) => route.key === focusedRoute?.key);
 
@@ -258,7 +262,8 @@ const changeIndex = (
   state: TabNavigationStateWithHistory,
   index: number,
   backBehavior: BackBehavior,
-  initialRouteName: string | undefined
+  initialRouteName: string | undefined,
+  routeNames: string[]
 ) => {
   if (state.routes.length === 0) {
     return { ...state, index: -1, history: [] };
@@ -291,7 +296,7 @@ const changeIndex = (
       params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
     });
   } else {
-    const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+    const routes = orderRoutesByRouteNames(state.routes, routeNames);
     const orderedIndex = routes.findIndex((route) => route.key === state.routes[index]!.key);
     history = getRouteHistory(routes, orderedIndex, backBehavior, initialRouteName);
   }
@@ -315,7 +320,8 @@ function tabRouterExtension({
   const getBrowserHistoryForAction = (
     previous: TabNavigationState<ParamListBase>,
     next: TabNavigationState<ParamListBase>,
-    action: Pick<TabActionType | CommonNavigationAction, 'type'>
+    action: Pick<TabActionType | CommonNavigationAction, 'type'>,
+    config?: Pick<RouterConfigOptions, 'routeNames'>
   ): RouterBrowserHistoryAction | undefined => {
     switch (action.type) {
       case 'PUSH':
@@ -338,7 +344,12 @@ function tabRouterExtension({
     // URL-derived state may have no history yet. Action/focus handling already fills in `next`.
     // Reconstruct `previous` too, so that initialization is not counted as a new browser visit.
     return getBrowserHistoryForHistoryChange(
-      ensureStateHistory(previous, backBehavior, initialRouteName),
+      ensureStateHistory(
+        previous,
+        backBehavior,
+        initialRouteName,
+        config?.routeNames ?? previous.routeNames
+      ),
       next
     );
   };
@@ -352,121 +363,135 @@ function tabRouterExtension({
 
     getBrowserHistoryForAction,
 
-    getBrowserHistoryForRouteFocus: (previous, next) =>
-      getBrowserHistoryForAction(previous, next, { type: 'JUMP_TO' }),
+    getBrowserHistoryForRouteFocus: (previous, next, _childAction, config) =>
+      getBrowserHistoryForAction(previous, next, { type: 'JUMP_TO' }, config),
 
-    getStateForRouteFocus(inputState, key) {
-      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
+    getStateForRouteFocus(inputState, key, config) {
+      const state = ensureStateHistory(
+        inputState,
+        backBehavior,
+        initialRouteName,
+        config?.routeNames ?? inputState.routeNames
+      );
       const index = state.routes.findIndex((r) => r.key === key);
 
       if (index === -1 || index === state.index) {
         return state;
       }
 
-      return changeIndex(state, index, backBehavior, initialRouteName);
+      return changeIndex(
+        state,
+        index,
+        backBehavior,
+        initialRouteName,
+        config?.routeNames ?? inputState.routeNames
+      );
+    },
+
+    getStateForRouteConfigChange(
+      inputState,
+      { routeNames, declaredRouteNames, repairHistory, orderOnly }
+    ) {
+      if (
+        orderOnly &&
+        (backBehavior === 'history' || backBehavior === 'fullHistory' || backBehavior === 'none')
+      )
+        return inputState;
+      const validKeys = new Set(inputState.routes.map((route) => route.key));
+      if (
+        isArrayEqual(inputState.routeNames, routeNames) &&
+        inputState.routes.every((route) => routeNames.includes(route.name)) &&
+        (inputState.routes.length === 0
+          ? routeNames.length === 0 && inputState.index === -1
+          : inputState.routes[inputState.index] !== undefined &&
+            !inputState.routes[inputState.index]?.isPreloaded) &&
+        (!inputState.history ||
+          (!repairHistory &&
+            inputState.history.every((item) => item.type !== 'route' || validKeys.has(item.key))))
+      ) {
+        return inputState;
+      }
+      const state = ensureStateHistory(
+        inputState,
+        backBehavior,
+        initialRouteName,
+        declaredRouteNames
+      );
+      const routes = addFallbackRouteIfEmpty(
+        state.routes.filter((route) => routeNames.includes(route.name)),
+        routeNames,
+        initialRouteName,
+        nextKey
+      );
+
+      if (routes.length === 0) {
+        return { ...state, routeNames, routes, index: -1, history: [] };
+      }
+
+      const focusedKey = state.routes[state.index]?.key;
+      const focusedIndex = routes.findIndex((route) => route.key === focusedKey);
+      const index = Math.max(focusedIndex, 0);
+      const routeKeys = routes.map((route) => route.key);
+      let history = state.history.filter(
+        (item) => item.type !== 'route' || routeKeys.includes(item.key)
+      );
+
+      if (
+        (focusedIndex === -1 || repairHistory) &&
+        (backBehavior === 'history' || backBehavior === 'fullHistory')
+      ) {
+        const currentRoute = routes[index]!;
+        const nonRouteHistory = history.filter((item) => item.type !== 'route');
+        let routeHistory = history.filter((item) => item.type === 'route');
+
+        if (backBehavior === 'history') {
+          routeHistory = routeHistory.filter((item) => item.key !== currentRoute.key);
+        } else if (routeHistory[routeHistory.length - 1]?.key === currentRoute.key) {
+          routeHistory = routeHistory.slice(0, -1);
+        }
+
+        history = [
+          ...routeHistory,
+          {
+            type: TYPE_ROUTE,
+            key: currentRoute.key,
+            params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
+          },
+          ...nonRouteHistory,
+        ];
+      }
+
+      if (
+        backBehavior === 'firstRoute' ||
+        backBehavior === 'initialRoute' ||
+        backBehavior === 'order'
+      ) {
+        const orderedRoutes = orderRoutesByRouteNames(routes, declaredRouteNames);
+        const orderedIndex = orderedRoutes.findIndex((route) => route.key === routes[index]!.key);
+        history = [
+          ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+          ...history.filter((item) => item.type !== 'route'),
+        ];
+      } else if (!history.some((item) => item.type === 'route')) {
+        history = [
+          ...getRouteHistory(routes, index, backBehavior, initialRouteName),
+          ...history.filter((item) => item.type !== 'route'),
+        ];
+      }
+
+      const result = { ...state, history, routeNames, routes, index };
+      return isEqual(result, inputState) ? inputState : result;
     },
 
     getStateForAction(inputState, action, options) {
-      const { routeGetIdList } = options;
-      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
+      const { routeGetIdList, routeNames } = options;
+      const state = ensureStateHistory(inputState, backBehavior, initialRouteName, routeNames);
 
       if (action.target && action.target !== state.key) {
         return null;
       }
 
       switch (action.type) {
-        case 'ROUTE_NAMES_CHANGED': {
-          const routeNames = action.payload.routeNames;
-
-          if (isArrayEqual(state.routeNames, routeNames)) {
-            return { state, affectedRouteKey: state.routes[state.index]?.key };
-          }
-
-          const routes = addFallbackRouteIfEmpty(
-            state.routes.filter((route) => routeNames.includes(route.name)),
-            routeNames,
-            initialRouteName,
-            nextKey
-          );
-
-          if (routes.length === 0) {
-            return {
-              state: {
-                ...state,
-                routeNames,
-                routes,
-                index: -1,
-                history: [],
-              },
-              affectedRouteKey: undefined,
-            };
-          }
-
-          const focusedKey = state.routes[state.index]?.key;
-          const focusedIndex = routes.findIndex((route) => route.key === focusedKey);
-          const index = Math.max(focusedIndex, 0);
-          const routeKeys = routes.map((route) => route.key);
-          let history = state.history.filter(
-            (item) => item.type !== 'route' || routeKeys.includes(item.key)
-          );
-
-          if (
-            focusedIndex === -1 &&
-            (backBehavior === 'history' || backBehavior === 'fullHistory')
-          ) {
-            const currentRoute = routes[index]!;
-            const nonRouteHistory = history.filter((item) => item.type !== 'route');
-            let routeHistory = history.filter((item) => item.type === 'route');
-
-            if (backBehavior === 'history') {
-              routeHistory = routeHistory.filter((item) => item.key !== currentRoute.key);
-            } else if (routeHistory[routeHistory.length - 1]?.key === currentRoute.key) {
-              routeHistory = routeHistory.slice(0, -1);
-            }
-
-            history = [
-              ...routeHistory,
-              {
-                type: TYPE_ROUTE,
-                key: currentRoute.key,
-                params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
-              },
-              ...nonRouteHistory,
-            ];
-          }
-
-          if (
-            backBehavior === 'firstRoute' ||
-            backBehavior === 'initialRoute' ||
-            backBehavior === 'order'
-          ) {
-            const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
-            const orderedIndex = orderedRoutes.findIndex(
-              (route) => route.key === routes[index]!.key
-            );
-            history = [
-              ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
-              ...history.filter((item) => item.type !== 'route'),
-            ];
-          } else if (!history.some((item) => item.type === 'route')) {
-            history = [
-              ...getRouteHistory(routes, index, backBehavior, initialRouteName),
-              ...history.filter((item) => item.type !== 'route'),
-            ];
-          }
-
-          return {
-            state: {
-              ...state,
-              history,
-              routeNames,
-              routes,
-              index,
-            },
-            affectedRouteKey: routes[index]!.key,
-          };
-        }
-
         case 'PUSH':
         case 'REPLACE':
         case 'JUMP_TO':
@@ -529,7 +554,8 @@ function tabRouterExtension({
             },
             index,
             backBehavior,
-            initialRouteName
+            initialRouteName,
+            routeNames
           );
 
           const result =
@@ -588,15 +614,15 @@ function tabRouterExtension({
           let backTargetName: string | undefined;
 
           if (backBehavior === 'firstRoute') {
-            backTargetName = state.routeNames[0];
+            backTargetName = routeNames[0];
           } else if (backBehavior === 'initialRoute') {
             backTargetName =
               initialRouteName !== undefined && state.routeNames.includes(initialRouteName)
                 ? initialRouteName
-                : state.routeNames[0];
+                : routeNames[0];
           } else if (backBehavior === 'order') {
-            const declaredIndex = state.routeNames.indexOf(focusedRoute.name);
-            backTargetName = declaredIndex > 0 ? state.routeNames[declaredIndex - 1] : undefined;
+            const declaredIndex = routeNames.indexOf(focusedRoute.name);
+            backTargetName = declaredIndex > 0 ? routeNames[declaredIndex - 1] : undefined;
           }
 
           if (backTargetName !== undefined && backTargetName !== focusedRoute.name) {
@@ -610,7 +636,8 @@ function tabRouterExtension({
                 { ...state, routes },
                 index,
                 backBehavior,
-                initialRouteName
+                initialRouteName,
+                routeNames
               );
               return { state: result, affectedRouteKey: result.routes[result.index]?.key };
             }
@@ -722,7 +749,7 @@ function tabRouterExtension({
               );
             }
           } else {
-            const orderedRoutes = orderRoutesByRouteNames(routes, state.routeNames);
+            const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
             const focusedKey = routes[state.index]?.key;
             const focusedIndex = orderedRoutes.findIndex((route) => route.key === focusedKey);
             const routeHistory =
@@ -753,7 +780,7 @@ function tabRouterExtension({
 
           return {
             ...result,
-            state: ensureStateHistory(result.state, backBehavior, initialRouteName),
+            state: ensureStateHistory(result.state, backBehavior, initialRouteName, routeNames),
           };
         }
       }

@@ -39,6 +39,7 @@ export const ExpoTabRouter = extendRouterActions(
     {
       baseRouter,
       options,
+      routeNames,
     }: RouterActionContext<
       TabNavigationState<ParamListBase>,
       ExpoTabActionType,
@@ -76,7 +77,8 @@ export const ExpoTabRouter = extendRouterActions(
         state = ensureStateHistory(
           state,
           options.backBehavior ?? 'firstRoute',
-          options.initialRouteName
+          options.initialRouteName,
+          routeNames
         );
         return { state, affectedRouteKey: route.key };
       }

@@ -1,4 +1,9 @@
 import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState';
+import {
+  StackRouter,
+  type ParamListBase,
+  type StackNavigationState,
+} from '../../react-navigation/routers';
 import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import {
   completeNavigationState,
@@ -153,6 +158,36 @@ test('completes parsed routes without a route tree', () => {
       },
     ],
   });
+});
+
+test('can navigate to unvisited linking siblings without a RouteNode', () => {
+  const state = completeParsedState(
+    {
+      routes: [{ name: 'a', state: { routes: [{ name: 'b', params: { id: 'apple' } }] } }],
+    },
+    ROOT_CHAIN,
+    { a: { screens: { b: 'bar/:id', c: { path: 'baz', exact: true } } }, other: 'other' }
+  )!;
+  const nested = state.routes[0]!.state as StackNavigationState<ParamListBase>;
+  const parsedRoute = nested.routes[0];
+  const next = StackRouter({}).getStateForAction(
+    nested,
+    { type: 'NAVIGATE', payload: { name: 'c' } },
+    { routeNames: nested.routeNames, routeGetIdList: {} }
+  );
+
+  expect(next).not.toBeNull();
+  expect(next!.state.routes[next!.state.index]!.name).toBe('c');
+  expect(next!.state.routes[0]).toBe(parsedRoute);
+  expect(parsedRoute).toMatchObject({ name: 'b', params: { id: 'apple' } });
+  expect(state.routeNames).toEqual(['a', 'other']);
+  expect(nested.routeNames).toEqual(['b', 'c']);
+
+  const completedAgain = completeParsedState(state, ROOT_CHAIN, {
+    a: { screens: { replacement: 'replacement' } },
+  })!;
+  expect(completedAgain.routeNames).toBe(state.routeNames);
+  expect(completedAgain.routes[0]!.state!.routeNames).toBe(nested.routeNames);
 });
 
 test('creates the same state for the same parsed routes', () => {

@@ -119,7 +119,7 @@ test('renders correct focus state', () => {
   expect(root).toMatchInlineSnapshot(`"focused"`);
 });
 
-test('returns correct focus state after conditional rendering', () => {
+test('preserves canonical focus while conditional declarations hide and restore it', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
     const focusedRouteKey = state.routes[state.index]?.key;
@@ -167,7 +167,12 @@ test('returns correct focus state after conditional rendering', () => {
 
   expect(element).toMatchInlineSnapshot(`"foo, focused"`);
 
+  const before = navigation.getRootState();
   act(() => update(true));
 
-  expect(element).toMatchInlineSnapshot(`"bar, focused"`);
+  expect(element.toJSON()).toBeNull();
+  expect(navigation.getRootState()).toBe(before);
+  act(() => update(false));
+  expect(element).toMatchInlineSnapshot(`"foo, focused"`);
+  expect(navigation.getRootState()).toBe(before);
 });

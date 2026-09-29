@@ -292,49 +292,51 @@ function stackRouterExtension({
       };
     },
 
+    getStateForRouteConfigChange(state, { routeNames }) {
+      const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
+      if (
+        isArrayEqual(state.routeNames, routeNames) &&
+        state.routes.every((route) => routeNames.includes(route.name)) &&
+        (activeRoutes.length > 0 || routeNames.length === 0)
+      ) {
+        return state;
+      }
+      const routes = activeRoutes.filter((route) => routeNames.includes(route.name));
+      const filteredPreloadedRoutes = preloadedRoutes.filter((route) =>
+        routeNames.includes(route.name)
+      );
+
+      if (routes.length === 0 && routeNames.length > 0) {
+        const fallbackName =
+          initialRouteName !== undefined && routeNames.includes(initialRouteName)
+            ? initialRouteName
+            : routeNames[0]!;
+
+        const preloadedIndex = filteredPreloadedRoutes.findIndex(
+          (route) => route.name === fallbackName
+        );
+        const fallbackRoute =
+          preloadedIndex === -1
+            ? {
+                key: nextKey(fallbackName),
+                name: fallbackName,
+              }
+            : filteredPreloadedRoutes[preloadedIndex]!;
+
+        routes.push(fallbackRoute);
+      }
+
+      const result = {
+        ...reconcileStackRoutes(state, routes, filteredPreloadedRoutes),
+        routeNames,
+      };
+      return result;
+    },
+
     getStateForAction(state, action, options) {
       const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
 
       switch (action.type) {
-        case 'ROUTE_NAMES_CHANGED': {
-          const routeNames = action.payload.routeNames;
-
-          if (isArrayEqual(state.routeNames, routeNames)) {
-            return { state, affectedRouteKey: activeRoutes[state.index]?.key };
-          }
-
-          const routes = activeRoutes.filter((route) => routeNames.includes(route.name));
-          const filteredPreloadedRoutes = preloadedRoutes.filter((route) =>
-            routeNames.includes(route.name)
-          );
-
-          if (routes.length === 0) {
-            const fallbackName =
-              initialRouteName !== undefined && routeNames.includes(initialRouteName)
-                ? initialRouteName
-                : routeNames[0]!;
-
-            const preloadedIndex = filteredPreloadedRoutes.findIndex(
-              (route) => route.name === fallbackName
-            );
-            const fallbackRoute =
-              preloadedIndex === -1
-                ? {
-                    key: nextKey(fallbackName),
-                    name: fallbackName,
-                  }
-                : filteredPreloadedRoutes[preloadedIndex]!;
-
-            routes.push(fallbackRoute);
-          }
-
-          const result = {
-            ...reconcileStackRoutes(state, routes, filteredPreloadedRoutes),
-            routeNames,
-          };
-          return { state: result, affectedRouteKey: result.routes[result.index]?.key };
-        }
-
         case 'REPLACE': {
           const currentIndex =
             action.target === state.key && action.source

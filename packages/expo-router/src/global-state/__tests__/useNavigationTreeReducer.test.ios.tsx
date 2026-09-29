@@ -189,30 +189,6 @@ test('prevents moving an active route into the preloaded region', () => {
   ]);
 });
 
-test('does not veto route name changes', () => {
-  const action = { type: 'ROUTE_NAMES_CHANGED' };
-  const result = renderReducer({
-    registry: new Map([
-      [
-        'root',
-        entry((state) => ({
-          state: { ...state, index: 0, routes: state.routes.slice(0, 1) },
-          affectedRouteKey: state.routes[0]!.key,
-        })),
-      ],
-    ]),
-    routesWithRemovalPrevented: new Set(['third']),
-  });
-
-  act(() => result.result.current.handleAction(action));
-
-  expect(result.result.current.state.routes).toHaveLength(1);
-  expect(result.reports.at(-1)?.events).toEqual([
-    { id: 0, type: 'removed-routes', routeKeys: ['third', 'second'], action },
-    expect.objectContaining({ id: 1, type: 'action-dispatched', action }),
-  ]);
-});
-
 it('reduces consecutive actions against accumulated state with one committed update', () => {
   const reduce = jest.fn((state: NavigationState) => ({
     state: { ...state, index: state.index + 1 },

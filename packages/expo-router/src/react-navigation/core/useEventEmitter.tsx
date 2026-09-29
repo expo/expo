@@ -6,6 +6,8 @@ import type { EventArg, EventConsumer, EventEmitter } from './types';
 
 export type NavigationEventEmitter<T extends Record<string, any>> = EventEmitter<T> & {
   create: (target: string) => EventConsumer<T>;
+  /** Captures subscribers for delivery after their route unmounts. */
+  snapshot: (type: string, target: string) => EventEmitter<T>['emit'];
 };
 
 type Listeners = Set<(e: any) => void>;
@@ -52,27 +54,31 @@ export function useEventEmitter<T extends Record<string, any>>(
     };
   }, []);
 
-  const emit = React.useCallback(
-    ({
-      type,
-      data,
-      target,
-      canPreventDefault,
-      preventDefault,
-    }: {
-      type: string;
-      data?: any;
-      target?: string;
-      canPreventDefault?: boolean;
-      preventDefault?: () => void;
-    }) => {
+  const emitWithListeners = React.useCallback(
+    (
+      {
+        type,
+        data,
+        target,
+        canPreventDefault,
+        preventDefault,
+      }: {
+        type: string;
+        data?: any;
+        target?: string;
+        canPreventDefault?: boolean;
+        preventDefault?: () => void;
+      },
+      capturedListeners?: ((event: any) => void)[]
+    ) => {
       const items = listeners.current[type] || {};
 
       // Copy the current list of callbacks in case they are mutated during execution
       const callbacks =
-        target !== undefined
+        capturedListeners ??
+        (target !== undefined
           ? [...(items[target] ?? [])]
-          : [...new Set(Object.keys(items).flatMap((target) => [...items[target]!]))];
+          : [...new Set(Object.keys(items).flatMap((target) => [...items[target]!]))]);
 
       const event: EventArg<any, any, any> = {
         get type() {
@@ -137,5 +143,18 @@ export function useEventEmitter<T extends Record<string, any>>(
     [latestListen]
   );
 
-  return React.useMemo(() => ({ create, emit }), [create, emit]);
+  const emit = React.useCallback<EventEmitter<T>['emit']>(
+    (options) => emitWithListeners(options),
+    [emitWithListeners]
+  );
+
+  const snapshot = React.useCallback(
+    (type: string, target: string) => {
+      const callbacks = [...(listeners.current[type]?.[target] ?? [])];
+      return ((options) => emitWithListeners(options, callbacks)) as EventEmitter<T>['emit'];
+    },
+    [emitWithListeners]
+  );
+
+  return React.useMemo(() => ({ create, emit, snapshot }), [create, emit, snapshot]);
 }

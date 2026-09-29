@@ -36,7 +36,6 @@ describe('state without router type', () => {
     CommonActions.goBack(),
     CommonActions.preload('bar', { id: 'one' }),
     CommonActions.preload('baz', { id: 'new' }),
-    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: options.routeNames } } as const,
   ])('$type returns stack state', (action) => {
     expect(StackRouter({}).getStateForAction(createState(), action, options)?.state.type).toBe(
       'stack'
@@ -110,7 +109,7 @@ test('gets state on route names change', () => {
   const router = StackRouter({});
 
   expect(
-    router.getStateForAction(
+    router.getStateForRouteConfigChange(
       {
         index: 2,
         key: 'navigator:stack',
@@ -124,12 +123,8 @@ test('gets state on route names change', () => {
         routeKeySeq: 0,
         type: 'stack',
       },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
-      {
-        routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeGetIdList: {},
-      }
-    )?.state
+      { routeNames: ['qux', 'baz', 'foo', 'fiz'], declaredRouteNames: ['qux', 'baz', 'foo', 'fiz'] }
+    )
   ).toEqual({
     index: 1,
     key: 'navigator:stack',
@@ -144,7 +139,7 @@ test('gets state on route names change', () => {
   });
 
   expect(
-    router.getStateForAction(
+    router.getStateForRouteConfigChange(
       {
         index: 1,
         key: 'navigator:stack',
@@ -157,12 +152,8 @@ test('gets state on route names change', () => {
         routeKeySeq: 0,
         type: 'stack',
       },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
-      {
-        routeNames: ['baz', 'qux'],
-        routeGetIdList: {},
-      }
-    )?.state
+      { routeNames: ['baz', 'qux'], declaredRouteNames: ['baz', 'qux'] }
+    )
   ).toEqual({
     index: 0,
     key: 'navigator:stack',
@@ -178,7 +169,7 @@ test('gets state on route names change with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'qux' });
 
   expect(
-    router.getStateForAction(
+    router.getStateForRouteConfigChange(
       {
         index: 1,
         key: 'navigator:stack',
@@ -191,12 +182,8 @@ test('gets state on route names change with initialRouteName', () => {
         routeKeySeq: 0,
         type: 'stack',
       },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
-      {
-        routeNames: ['baz', 'qux'],
-        routeGetIdList: {},
-      }
-    )?.state
+      { routeNames: ['baz', 'qux'], declaredRouteNames: ['baz', 'qux'] }
+    )
   ).toEqual({
     index: 0,
     key: 'navigator:stack',
@@ -219,11 +206,10 @@ test('returns the same complete stack state when route names already match', () 
   };
 
   expect(
-    router.getStateForAction(
-      state,
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
-      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
-    )?.state
+    router.getStateForRouteConfigChange(state, {
+      routeNames: ['bar', 'baz'],
+      declaredRouteNames: ['bar', 'baz'],
+    })
   ).toBe(state);
 });
 
@@ -244,11 +230,10 @@ test('promotes a surviving preloaded route when every active route is removed', 
   };
 
   expect(
-    router.getStateForAction(
-      state,
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
-      { routeNames: ['preloaded', 'new'], routeGetIdList: {} }
-    )?.state
+    router.getStateForRouteConfigChange(state, {
+      routeNames: ['preloaded', 'new'],
+      declaredRouteNames: ['preloaded', 'new'],
+    })
   ).toEqual({
     ...state,
     index: 0,

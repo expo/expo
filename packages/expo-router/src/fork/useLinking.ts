@@ -72,7 +72,7 @@ export function useLinking(
       const routeNode = routerConfig?.routeNode;
       const state = routeNode
         ? createSeededRootState(parsedState, routeNode)
-        : completeParsedState(parsedState, ROOT_CHAIN);
+        : completeParsedState(parsedState, ROOT_CHAIN, config?.screens);
 
       return state;
     };

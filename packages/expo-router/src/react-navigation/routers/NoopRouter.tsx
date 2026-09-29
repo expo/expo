@@ -14,6 +14,7 @@ export const NoopRouter: RouterFactory<
   NavigationAction,
   DefaultRouterOptions
 > = () => ({
+  getStateForRouteConfigChange: (state) => state,
   getStateForDeclaredRoutes: (state) => state,
   getStateForRouteFocus: (state) => state,
   getStateForAction: () => null,

@@ -107,16 +107,17 @@ export function useDescriptors<
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { handleAction, resetNavigator } = use(NavigationBuilderContext);
+  const { handleAction, resetNavigator, canNavigatorGoBack } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
       handleAction,
       resetNavigator,
+      canNavigatorGoBack,
       addListener,
     }),
-    [navigation, handleAction, resetNavigator, addListener]
+    [navigation, handleAction, resetNavigator, canNavigatorGoBack, addListener]
   );
 
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
@@ -133,6 +134,15 @@ export function useDescriptors<
   const emitRemovalEvent = React.useCallback(
     (routeKey: string, type: 'removePrevented' | 'removed', action: NavigationAction) =>
       emitter.emit({ type, target: routeKey, data: { action } }),
+    [emitter]
+  );
+
+  const snapshotRemovalEvent = React.useCallback(
+    (routeKey: string) => {
+      const emit = emitter.snapshot('removed', routeKey);
+      return (type: 'removePrevented' | 'removed', action: NavigationAction) =>
+        emit({ type, target: routeKey, data: { action } });
+    },
     [emitter]
   );
 
@@ -219,6 +229,7 @@ export function useDescriptors<
         options={customOptions}
         clearOptions={clearOptions}
         emitRemovalEvent={emitRemovalEvent}
+        snapshotRemovalEvent={snapshotRemovalEvent}
       />
     );
 

@@ -167,43 +167,13 @@ test('returns correct value for isFocused', () => {
   expect(navigation.isFocused()).toBe(true);
 });
 
-test('returns correct value for isFocused after changing screens', () => {
-  const TestRouter = (options: Parameters<typeof MockRouter>[0]): ReturnType<typeof MockRouter> => {
-    const router = MockRouter(options);
-
-    return {
-      ...router,
-
-      getStateForAction(state, action, options) {
-        if (action.type !== 'ROUTE_NAMES_CHANGED') {
-          return router.getStateForAction(state, action, options);
-        }
-
-        const { routeNames } = action.payload;
-        const routes = routeNames.map(
-          (name) =>
-            state.routes.find((r) => r.name === name) || {
-              name,
-              key: name,
-            }
-        );
-
-        return {
-          state: {
-            ...state,
-            routeNames,
-            routes,
-            index: routes.length - 1,
-          },
-          affectedRouteKey: routes[routes.length - 1]?.key,
-        };
-      },
-    };
-  };
+test('preserves focused route when raw screen declarations change order', () => {
+  const TestRouter = MockRouter;
 
   const TestNavigator = (props: any): any => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(TestRouter, props);
 
+    focusedName = state.routes[state.index]?.name;
     return (
       <NavigationContent>
         {state.routes.map((route) => descriptors[route.key]!.render())}
@@ -212,6 +182,7 @@ test('returns correct value for isFocused after changing screens', () => {
   };
 
   let navigation: any;
+  let focusedName: string | undefined;
 
   const Test = (props: any) => {
     navigation = props.navigation;
@@ -234,6 +205,7 @@ test('returns correct value for isFocused after changing screens', () => {
   );
 
   expect(navigation.isFocused()).toBe(false);
+  expect(focusedName).toBe('first');
 
   root.update(
     <BaseNavigationContainer>
@@ -245,7 +217,8 @@ test('returns correct value for isFocused after changing screens', () => {
     </BaseNavigationContainer>
   );
 
-  expect(navigation.isFocused()).toBe(true);
+  expect(navigation.isFocused()).toBe(false);
+  expect(focusedName).toBe('first');
 
   root.update(
     <BaseNavigationContainer>
@@ -258,7 +231,8 @@ test('returns correct value for isFocused after changing screens', () => {
     </BaseNavigationContainer>
   );
 
-  expect(navigation.isFocused()).toBe(true);
+  expect(navigation.isFocused()).toBe(false);
+  expect(focusedName).toBe('first');
 
   root.update(
     <BaseNavigationContainer>
@@ -272,6 +246,7 @@ test('returns correct value for isFocused after changing screens', () => {
   );
 
   expect(navigation.isFocused()).toBe(false);
+  expect(focusedName).toBe('first');
 });
 
 test('uses a no-op navigation object for a preloaded stack screen', () => {

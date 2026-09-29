@@ -252,7 +252,7 @@ function parseNavigationStateFromPath(
   }
   return config.routeNode
     ? createSeededRootState(parsed, config.routeNode)
-    : completeParsedState(parsed, ROOT_CHAIN);
+    : completeParsedState(parsed, ROOT_CHAIN, config.linking?.config?.screens);
 }
 
 function restoreUntrackedEntry<Result extends { state: NavigationState }>(

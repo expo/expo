@@ -139,11 +139,10 @@ test('handles empty tab states', () => {
     routeGetIdList: {},
   });
 
-  const emptyState = router.getStateForAction(
-    state,
-    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: [] } },
-    emptyOptions
-  )!.state;
+  const emptyState = router.getStateForRouteConfigChange(state, {
+    routeNames: [],
+    declaredRouteNames: [],
+  });
   expect(emptyState).toMatchObject({ index: -1, routes: [], history: [] });
   expect(router.getStateForAction(emptyState, CommonActions.goBack(), emptyOptions)).toBeNull();
 });
@@ -620,7 +619,7 @@ test('gets state on route names change', () => {
   const router = TabRouter({});
 
   expect(
-    router.getStateForAction(
+    router.getStateForRouteConfigChange(
       {
         index: 0,
         key: 'navigator:tab',
@@ -635,12 +634,8 @@ test('gets state on route names change', () => {
         routeKeySeq: 0,
         type: 'tab',
       },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
-      {
-        routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeGetIdList: {},
-      }
-    )?.state
+      { routeNames: ['qux', 'baz', 'foo', 'fiz'], declaredRouteNames: ['qux', 'baz', 'foo', 'fiz'] }
+    )
   ).toEqual({
     index: 0,
     key: 'navigator:tab',
@@ -659,7 +654,7 @@ test('gets state on route names change', () => {
   });
 
   expect(
-    router.getStateForAction(
+    router.getStateForRouteConfigChange(
       {
         index: 0,
         key: 'navigator:tab',
@@ -673,12 +668,8 @@ test('gets state on route names change', () => {
         routeKeySeq: 0,
         type: 'tab',
       },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['foo', 'fiz'] } },
-      {
-        routeNames: ['foo', 'fiz'],
-        routeGetIdList: {},
-      }
-    )?.state
+      { routeNames: ['foo', 'fiz'], declaredRouteNames: ['foo', 'fiz'] }
+    )
   ).toEqual({
     index: 0,
     key: 'navigator:tab',
@@ -695,7 +686,7 @@ test('preserves focused route on route names change', () => {
   const router = TabRouter({});
 
   expect(
-    router.getStateForAction(
+    router.getStateForRouteConfigChange(
       {
         index: 1,
         key: 'navigator:tab',
@@ -710,12 +701,8 @@ test('preserves focused route on route names change', () => {
         routeKeySeq: 0,
         type: 'tab',
       },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz', 'baz'] } },
-      {
-        routeNames: ['qux', 'foo', 'fiz', 'baz'],
-        routeGetIdList: {},
-      }
-    )?.state
+      { routeNames: ['qux', 'foo', 'fiz', 'baz'], declaredRouteNames: ['qux', 'foo', 'fiz', 'baz'] }
+    )
   ).toEqual({
     index: 0,
     key: 'navigator:tab',
@@ -738,7 +725,7 @@ test('falls back to first route if route is removed on route names change', () =
   const router = TabRouter({});
 
   expect(
-    router.getStateForAction(
+    router.getStateForRouteConfigChange(
       {
         index: 1,
         key: 'navigator:tab',
@@ -753,12 +740,8 @@ test('falls back to first route if route is removed on route names change', () =
         routeKeySeq: 0,
         type: 'tab',
       },
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz'] } },
-      {
-        routeNames: ['qux', 'foo', 'fiz'],
-        routeGetIdList: {},
-      }
-    )?.state
+      { routeNames: ['qux', 'foo', 'fiz'], declaredRouteNames: ['qux', 'foo', 'fiz'] }
+    )
   ).toEqual({
     index: 0,
     key: 'navigator:tab',
@@ -787,14 +770,10 @@ test('falls back to the first surviving route in state order', () => {
     index: 1,
   };
 
-  const result = router.getStateForAction(
-    state,
-    {
-      type: 'ROUTE_NAMES_CHANGED',
-      payload: { routeNames: options.routeNames },
-    },
-    options
-  )!.state;
+  const result = router.getStateForRouteConfigChange(state, {
+    routeNames: options.routeNames,
+    declaredRouteNames: options.routeNames,
+  });
 
   expect(result.routes[result.index!]!.name).toBe('bar');
 });
@@ -808,11 +787,10 @@ test('returns the same tab state when route names already match', () => {
   const state = createTabState(options);
 
   expect(
-    router.getStateForAction(
-      state,
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
-      options
-    )?.state
+    router.getStateForRouteConfigChange(state, {
+      routeNames: ['bar', 'baz'],
+      declaredRouteNames: ['bar', 'baz'],
+    })
   ).toBe(state);
 });
 
@@ -846,11 +824,10 @@ test.each<[Parameters<typeof TabRouter>[0]['backBehavior'], string[]]>([
     };
 
     expect(
-      router.getStateForAction(
-        state,
-        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'bar'] } },
-        { ...options, routeNames: ['qux', 'baz', 'bar'] }
-      )?.state
+      router.getStateForRouteConfigChange(state, {
+        routeNames: ['qux', 'baz', 'bar'],
+        declaredRouteNames: ['qux', 'baz', 'bar'],
+      })
     ).toMatchObject({
       index: 1,
       routeNames: ['qux', 'baz', 'bar'],
@@ -887,11 +864,10 @@ test.each<['history' | 'fullHistory', string[]]>([
     };
 
     expect(
-      router.getStateForAction(
-        state,
-        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'qux'] } },
-        { ...options, routeNames: ['bar', 'qux'] }
-      )?.state
+      router.getStateForRouteConfigChange(state, {
+        routeNames: ['bar', 'qux'],
+        declaredRouteNames: ['bar', 'qux'],
+      })
     ).toMatchObject({
       index: 0,
       history: expectedHistory.map((key) => ({ type: 'route', key })),
@@ -935,7 +911,10 @@ test('handles navigate action', () => {
       { key: 'baz', name: 'baz', params: { answer: 42 } },
       { key: 'bar', name: 'bar' },
     ],
-    history: [{ type: 'route', key: 'baz' }],
+    history: [
+      { type: 'route', key: 'bar' },
+      { type: 'route', key: 'baz' },
+    ],
   });
 });
 
@@ -975,7 +954,10 @@ test('merges params on navigate when specified', () => {
       { key: 'baz', name: 'baz', params: { color: 'tomato', answer: 42 } },
       { key: 'bar', name: 'bar' },
     ],
-    history: [{ type: 'route', key: 'baz' }],
+    history: [
+      { type: 'route', key: 'bar' },
+      { type: 'route', key: 'baz' },
+    ],
   });
 });
 
@@ -1141,10 +1123,7 @@ test('handles jump to action', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
     ],
-    history: [
-      { type: 'route', key: 'baz' },
-      { type: 'route', key: 'bar' },
-    ],
+    history: [{ type: 'route', key: 'bar' }],
   });
 });
 
@@ -2982,16 +2961,15 @@ describe('state without history', () => {
     expect(result?.state.history).toBeDefined();
   });
 
-  test('handles ROUTE_NAMES_CHANGED', () => {
+  test('repairs history during structural changes', () => {
     const router = TabRouter({ backBehavior: 'history' });
     const routeNames = ['qux', 'baz', 'bar'];
-    const result = router.getStateForAction(
-      createState(),
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames } },
-      { ...options, routeNames }
-    );
+    const result = router.getStateForRouteConfigChange(createState(), {
+      routeNames,
+      declaredRouteNames: routeNames,
+    });
 
-    expect(result?.state.history).toBeDefined();
+    expect(result.history).toBeDefined();
   });
 
   test.each<

@@ -1,8 +1,14 @@
 import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
-import type { NavigationState, Router } from '../../routers';
+import {
+  GlobalRemovalEventEmitterRegistryContext,
+  RemovalPreventionProvider,
+  PreventRemovalProvider,
+} from '../../../global-state/removalPrevention';
+import type { NavigationAction, NavigationState, Router } from '../../routers';
 import { Screen } from '../Screen';
+import type { EventEmitter } from '../types';
 import { useEventEmitter } from '../useEventEmitter';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
@@ -883,4 +889,97 @@ test('removes only one listener when unsubscribe is called multiple times', () =
 
   expect(firstCallback).toHaveBeenCalledTimes(0);
   expect(secondCallback).toHaveBeenCalledTimes(1);
+});
+
+test('delivers a post-commit HMR removal after a child unsubscribes from a surviving emitter', async () => {
+  const callback = jest.fn();
+  type Events = { removed: { data: { action: { type: string } } } };
+  let emitter!: ReturnType<typeof useEventEmitter<Events>>;
+  let emitRetired!: (action: NavigationAction) => void;
+  function Listener() {
+    React.useLayoutEffect(() => emitter.create('child').addListener('removed', callback), []);
+    return null;
+  }
+  function Owner({ show }: { show: boolean }) {
+    const currentEmitter = useEventEmitter<Events>();
+    emitter = currentEmitter;
+    const registry = React.use(GlobalRemovalEventEmitterRegistryContext)!;
+    emitRetired = (action) => registry.emitRemovalEvent('child', 'removed', action);
+    const emitRemovalEvent = React.useCallback(
+      (routeKey: string, _type: 'removed' | 'removePrevented', action: NavigationAction) => {
+        currentEmitter.emit({ type: 'removed', target: routeKey, data: { action } });
+      },
+      [currentEmitter]
+    );
+    const snapshotRemovalEvent = React.useCallback(
+      (routeKey: string) => {
+        const emit = currentEmitter.snapshot('removed', routeKey);
+        return (_type: 'removed' | 'removePrevented', action: NavigationAction) =>
+          emit({ type: 'removed', target: routeKey, data: { action } });
+      },
+      [currentEmitter]
+    );
+    React.useLayoutEffect(() => {
+      if (!show) {
+        registry.emitRemovalEvent('child', 'removed', { type: 'HMR_CONFIG_CHANGED' });
+      }
+    }, [registry, show]);
+    return show ? (
+      <PreventRemovalProvider
+        routeKey="child"
+        emitRemovalEvent={emitRemovalEvent}
+        snapshotRemovalEvent={snapshotRemovalEvent}>
+        <Listener />
+      </PreventRemovalProvider>
+    ) : null;
+  }
+  const root = render(
+    <RemovalPreventionProvider>
+      <Owner show />
+    </RemovalPreventionProvider>
+  );
+  const mountedEmitter = emitter;
+  root.rerender(
+    <RemovalPreventionProvider>
+      <Owner show={false} />
+    </RemovalPreventionProvider>
+  );
+  expect(emitter).toBe(mountedEmitter);
+  expect(callback).toHaveBeenCalledTimes(1);
+  emitRetired({ type: 'REMOVE' });
+  expect(callback).toHaveBeenCalledTimes(1);
+  await act(async () => {});
+  emitRetired({ type: 'HMR_CONFIG_CHANGED' });
+  expect(callback).toHaveBeenCalledTimes(1);
+});
+
+test('allows public navigation.emit to be used as an array callback', () => {
+  const callback = jest.fn();
+  const ref = React.createRef<EventEmitter<{ batch: { data: number } }>>();
+  const TestNavigator = React.forwardRef<
+    EventEmitter<{ batch: { data: number } }>,
+    { children: React.ReactNode }
+  >(function TestNavigator(props, ref) {
+    const { navigation } = useNavigationBuilder(MockRouter, props);
+    React.useImperativeHandle(ref, () => navigation, [navigation]);
+    return null;
+  });
+  render(
+    <BaseNavigationContainer>
+      <TestNavigator ref={ref}>
+        <Screen name="first" component={React.Fragment} listeners={{ batch: callback }} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+  const events = [
+    { type: 'batch' as const, data: 1 },
+    { type: 'batch' as const, data: 2 },
+  ];
+
+  act(() => events.forEach(ref.current!.emit));
+
+  expect(callback).toHaveBeenCalledTimes(2);
+  expect(callback.mock.calls.map(([event]) => ({ type: event.type, data: event.data }))).toEqual(
+    events
+  );
 });

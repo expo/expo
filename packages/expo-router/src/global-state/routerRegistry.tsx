@@ -12,6 +12,15 @@ import type {
 } from '../react-navigation/routers';
 
 export type RouterRegistryEntry = {
+  routerType?: string;
+  /** Immutable declaration snapshot shared by this entry's callbacks. */
+  declaredRouteNames?: readonly string[];
+  prepareHistory?: (state: NavigationState) => NavigationState;
+  getStateForRouteConfigChange?: (
+    state: NavigationState,
+    routeNames: string[],
+    repairHistory?: boolean
+  ) => NavigationState;
   reduce: (
     state: NavigationState,
     action: NavigationAction

@@ -2,7 +2,10 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { PreventRemovalProvider } from '../../global-state/removalPrevention';
+import {
+  PreventRemovalProvider,
+  type RemovalEventEmitter,
+} from '../../global-state/removalPrevention';
 import type {
   NavigationAction,
   NavigationState,
@@ -28,6 +31,7 @@ type Props<State extends NavigationState, ScreenOptions extends object> = {
   routeState: NavigationState | PartialState<NavigationState> | undefined;
   options: object;
   clearOptions: () => void;
+  snapshotRemovalEvent: (routeKey: string) => RemovalEventEmitter;
   emitRemovalEvent: (
     routeKey: string,
     type: 'removePrevented' | 'removed',
@@ -47,6 +51,7 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   options,
   clearOptions,
   emitRemovalEvent,
+  snapshotRemovalEvent,
 }: Props<State, ScreenOptions>) {
   const { addOptionsGetter } = useOptionsGetters({
     key: route.key,
@@ -106,7 +111,10 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;
   return (
     <IsPreloadedContext value={isPreloaded}>
-      <PreventRemovalProvider routeKey={route.key} emitRemovalEvent={emitRemovalEvent}>
+      <PreventRemovalProvider
+        routeKey={route.key}
+        emitRemovalEvent={emitRemovalEvent}
+        snapshotRemovalEvent={snapshotRemovalEvent}>
         <NavigationStateContext.Provider value={context}>
           <NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
             <EnsureSingleNavigator>

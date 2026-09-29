@@ -8,7 +8,7 @@ import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutE
 import type { NavigationAction } from '../react-navigation/routers';
 
 type RemovalEventType = 'removePrevented' | 'removed';
-type RemovalEventEmitter = (type: RemovalEventType, action: NavigationAction) => void;
+export type RemovalEventEmitter = (type: RemovalEventType, action: NavigationAction) => void;
 type RouteRemovalEventEmitter = (
   routeKey: string,
   type: RemovalEventType,
@@ -16,7 +16,11 @@ type RouteRemovalEventEmitter = (
 ) => void;
 type RemovalEventEmitterRegistry = {
   registerRouteEmitter: (routeKey: string, emitter: RemovalEventEmitter) => void;
-  unregisterRouteEmitter: (routeKey: string, emitter: RemovalEventEmitter) => void;
+  unregisterRouteEmitter: (
+    routeKey: string,
+    emitter: RemovalEventEmitter,
+    snapshot?: RemovalEventEmitter
+  ) => void;
   emitRemovalEvent: (routeKey: string, type: RemovalEventType, action: NavigationAction) => void;
 };
 
@@ -46,11 +50,16 @@ function RemovalEventEmitterRegistryProvider({ children }: PropsWithChildren) {
       registerRouteEmitter(routeKey, emitter) {
         emitters.current.set(routeKey, emitter);
       },
-      unregisterRouteEmitter(routeKey, emitter) {
-        // Route providers unmount before post-commit `removed` delivery. Keep this emitter through
-        // the current task, unless another provider has already registered for the same route.
+      unregisterRouteEmitter(routeKey, emitter, snapshot) {
+        if (emitters.current.get(routeKey) !== emitter) return;
+        // Capture listeners before child cleanup; the live emitter loses them on unmount.
+        const retained = snapshot
+          ? (type: RemovalEventType, action: NavigationAction) =>
+              action.type === 'HMR_CONFIG_CHANGED' ? snapshot(type, action) : emitter(type, action)
+          : emitter;
+        emitters.current.set(routeKey, retained);
         queueMicrotask(() => {
-          if (emitters.current.get(routeKey) === emitter) {
+          if (emitters.current.get(routeKey) === retained) {
             emitters.current.delete(routeKey);
           }
         });
@@ -117,11 +126,29 @@ export function RemovalPreventionProvider({ children }: PropsWithChildren) {
   );
 }
 
-function useRegisterRouteEmitter(routeKey: string, emitRemovalEvent?: RouteRemovalEventEmitter) {
+function useRegisterRouteEmitter(
+  routeKey: string,
+  emitRemovalEvent?: RouteRemovalEventEmitter,
+  snapshotRemovalEvent?: (routeKey: string) => RemovalEventEmitter
+) {
   const emitterRegistry = use(GlobalRemovalEventEmitterRegistryContext);
   const routeEmitter = React.useCallback<RemovalEventEmitter>(
     (type, action) => emitRemovalEvent?.(routeKey, type, action),
     [emitRemovalEvent, routeKey]
+  );
+
+  // Capture before descendant layout and passive subscriptions are cleaned up.
+  React.useInsertionEffect(
+    () => () => {
+      if (snapshotRemovalEvent) {
+        emitterRegistry?.unregisterRouteEmitter(
+          routeKey,
+          routeEmitter,
+          snapshotRemovalEvent(routeKey)
+        );
+      }
+    },
+    [emitterRegistry, routeEmitter, routeKey, snapshotRemovalEvent]
   );
 
   useClientLayoutEffect(() => {
@@ -153,12 +180,14 @@ function useRouteRemovalPreventionSetter(routeKey: string) {
 export function PreventRemovalProvider({
   routeKey,
   emitRemovalEvent,
+  snapshotRemovalEvent,
   children,
 }: PropsWithChildren<{
   routeKey: string;
   emitRemovalEvent?: RouteRemovalEventEmitter;
+  snapshotRemovalEvent?: (routeKey: string) => RemovalEventEmitter;
 }>) {
-  useRegisterRouteEmitter(routeKey, emitRemovalEvent);
+  useRegisterRouteEmitter(routeKey, emitRemovalEvent, snapshotRemovalEvent);
   const setPrevented = useRouteRemovalPreventionSetter(routeKey);
 
   return (

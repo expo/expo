@@ -237,7 +237,9 @@ const screenProps = MockedComponent.mock.calls[1][0];
 - Evaluate all features exclusively from the Expo Router perspective. If a behavior is unavailable through Expo Router, React Navigation support for that behavior is irrelevant.
 - `expo-router/react-navigation` is only a compatibility layer. Do not treat its capabilities as Expo Router features unless Expo Router exposes them.
 - Protected routes are implemented as redirects and do not depend on `routeNames`.
-- `routeNames` are stable in Expo Router except during HMR.
+- State `routeNames` follow the file tree. Navigators apply declaration order locally.
+- The global reducer repairs HMR membership and nested state before rendering descendants. Routers implement `getStateForRouteConfigChange` for structural repair.
+- Registry callbacks capture committed declarations and mount-scoped options. Keep history-order provenance in the reducer, outside navigation state and browser snapshots.
 
 ### File-Based Routing Conventions
 

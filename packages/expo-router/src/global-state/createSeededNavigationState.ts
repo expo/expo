@@ -7,7 +7,8 @@ import {
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { createInitialState } from '../react-navigation/core/createInitialState';
-import type { NavigationState, PartialState } from '../react-navigation/routers';
+import type { PathConfigMap } from '../react-navigation/core/types';
+import type { NavigationState, ParamListBase, PartialState } from '../react-navigation/routers';
 import {
   createNavigatorStateKey,
   createRouteKeyMinter,
@@ -51,7 +52,8 @@ export function completeNavigationState(
 
 export function completeParsedState(
   targetState: SeedState | undefined,
-  parentChain: string
+  parentChain: string,
+  screens?: PathConfigMap<ParamListBase>
 ): NavigationState | undefined {
   if (!targetState) {
     return undefined;
@@ -61,11 +63,18 @@ export function completeParsedState(
   const minter = createRouteKeyMinter({ key, routeKeySeq: targetState.routeKeySeq ?? 0 });
   const routes = targetState.routes.map((route) => {
     const routeKey = route.key ?? minter.mint(route.name);
+    const screen = screens?.[route.name];
     return {
       ...route,
       key: routeKey,
       ...(route.state
-        ? { state: completeParsedState(route.state, getChainFromRouteKey(routeKey)) }
+        ? {
+            state: completeParsedState(
+              route.state,
+              getChainFromRouteKey(routeKey),
+              typeof screen === 'object' ? screen.screens : undefined
+            ),
+          }
         : undefined),
     };
   });
@@ -76,7 +85,10 @@ export function completeParsedState(
     key,
     routeKeySeq: minter.routeKeySeq,
     index: targetState.index ?? routes.length - 1,
-    routeNames: targetState.routeNames ?? [...new Set(routes.map((route) => route.name))],
+    // Without a RouteNode, linking supplies siblings that aren't present in the parsed URL.
+    routeNames: targetState.routeNames ?? [
+      ...new Set([...Object.keys(screens ?? {}), ...routes.map((route) => route.name)]),
+    ],
     routes,
   };
 }
@@ -84,7 +96,8 @@ export function completeParsedState(
 export function createSeededNavigationState(
   targetState: SeedState | undefined,
   routeNode: RouteNode,
-  parentChain: string
+  parentChain: string,
+  routeKeySeq = 0
 ): NavigationState {
   const initialRouteName = getValidInitialRouteName(routeNode);
   const routeNames = [...routeNode.children]
@@ -97,6 +110,7 @@ export function createSeededNavigationState(
     initialRouteName,
     targetInitialRouteName: routeNode.initialRouteName,
     parentChain,
+    routeKeySeq,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
 }
@@ -172,6 +186,7 @@ function completeExistingState(
 
 type CreateSeededStateOptions = {
   targetState: SeedState | undefined;
+  routeKeySeq?: number;
   routeNames: string[];
   initialRouteName: string | undefined;
   targetInitialRouteName: string | undefined;
@@ -186,6 +201,7 @@ function createSeededState({
   initialRouteName,
   targetInitialRouteName,
   parentChain,
+  routeKeySeq = 0,
   findChildNode,
 }: CreateSeededStateOptions): NavigationState {
   const initialState = createInitialState({ routeNames: [], parentChain });
@@ -220,7 +236,7 @@ function createSeededState({
       : defaultRouteName === undefined
         ? []
         : [{ name: defaultRouteName }];
-  const minter = createRouteKeyMinter(initialState);
+  const minter = createRouteKeyMinter({ ...initialState, routeKeySeq });
   const routes = routesToCreate.map((targetRoute) => {
     const key = minter.mint(targetRoute.name);
     const childNode = findChildNode(targetRoute.name);

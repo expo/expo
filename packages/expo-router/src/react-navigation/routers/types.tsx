@@ -1,8 +1,6 @@
 import type * as CommonActions from './CommonActions';
 
-export type CommonNavigationAction =
-  | CommonActions.Action
-  | CommonActions.InternalRouteNamesChangedAction;
+export type CommonNavigationAction = CommonActions.Action;
 
 export type NavigationRoute<
   ParamList extends ParamListBase,
@@ -144,6 +142,17 @@ export type RouterFactory<
   RouterOptions extends DefaultRouterOptions,
 > = (options: RouterOptions) => Router<State, Action>;
 
+export type RouteConfigChangeOptions = {
+  /** Canonical membership from the current file tree. */
+  routeNames: string[];
+  /** Committed declaration order, then remaining valid names. */
+  declaredRouteNames: string[];
+  /** @internal Finish history repair after an unregistered structural change. */
+  repairHistory?: boolean;
+  /** @internal Prepare stale declared-order history for an actual navigation attempt. */
+  orderOnly?: boolean;
+};
+
 export type RouterConfigOptions = {
   routeNames: string[];
   routeGetIdList: Record<
@@ -169,17 +178,18 @@ export type Router<
 > = RouterType<State> & {
   /**
    * Take the current state and the route names the navigator declares, and return the state to
-   * render until `ROUTE_NAMES_CHANGED` has been reconciled.
+   * render using the locally declared screens.
    *
    * This is a render-phase fallback, not a state change. Return `state` when nothing was removed,
    * and set `index` to `-1` when no declared route is left to focus.
-   *
-   * This function will only be called in development, when route file is removed.
    *
    * @param state State object to filter.
    * @param routeNames Route names currently declared by the navigator.
    */
   getStateForDeclaredRoutes(state: State, routeNames: string[]): State;
+
+  /** Repairs file membership without dispatching navigation or initializing valid absent history. */
+  getStateForRouteConfigChange(state: State, config: RouteConfigChangeOptions): State;
 
   /**
    * Take the current state and key of a route, and return a new state with the route focused
@@ -187,7 +197,11 @@ export type Router<
    * @param state State object to apply the action on.
    * @param key Key of the route to focus.
    */
-  getStateForRouteFocus(state: State, key: string): State;
+  getStateForRouteFocus(
+    state: State,
+    key: string,
+    config?: Pick<RouterConfigOptions, 'routeNames'>
+  ): State;
 
   /**
    * Adjusts browser history when navigation inside a child also changes its parent.
@@ -197,13 +211,14 @@ export type Router<
   getBrowserHistoryForRouteFocus?(
     previous: State,
     next: State,
-    childAction?: RouterBrowserHistoryAction
+    childAction?: RouterBrowserHistoryAction,
+    config?: Pick<RouterConfigOptions, 'routeNames'>
   ): RouterBrowserHistoryAction | undefined;
 
   /**
    * Take the current state and action, and return a new state and the affected route key.
-   * If the action cannot be handled, return `null`. Custom routers must explicitly handle
-   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
+   * If the action cannot be handled, return `null`. Structural changes use
+   * `getStateForRouteConfigChange` separately from navigation.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.
@@ -240,7 +255,8 @@ export type Router<
   getBrowserHistoryForAction?(
     previous: State,
     next: State,
-    action: Action
+    action: Action,
+    config?: Pick<RouterConfigOptions, 'routeNames'>
   ): RouterBrowserHistoryAction | undefined;
 
   /**
