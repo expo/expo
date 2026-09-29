@@ -50,6 +50,14 @@ export type SharingOptions = {
     width?: number;
     height?: number;
   };
+  /**
+   * Heads the share sheet with the given title and a thumbnail of the file, instead of the
+   * file's name and size. For example, `{ title: 'Video' }` shows a video the way Photos does.
+   * @platform ios
+   */
+  preview?: {
+    title: string;
+  };
 };
 
 // MARK: - Share into types

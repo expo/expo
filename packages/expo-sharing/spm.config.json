@@ -23,7 +23,7 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": ["Foundation", "UIKit"]
+          "linkedFrameworks": ["Foundation", "UIKit", "LinkPresentation", "QuickLookThumbnailing"]
         }
       ]
     }
