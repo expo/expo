@@ -14,12 +14,18 @@ import { Row } from '../Row';
 import { ScrollView } from '../ScrollView';
 import { Slider } from '../Slider';
 import { Spacer } from '../Spacer';
+import { useNativeState } from '../State';
 import { Switch } from '../Switch';
 import { Text } from '../Text';
 import { TextInput } from '../TextInput';
 import { describeAutoHostBehavior, type AutoHostTestCase } from './autoHost-test.shared';
 
 jest.mock('expo', () => require('./expoUIMock').createExpoUIMock());
+
+function TextInputWithState() {
+  const value = useNativeState('Text');
+  return <TextInput value={value} onChangeText={jest.fn()} />;
+}
 
 const nativeComponentCases: AutoHostTestCase[] = [
   { name: 'Button', render: () => <Button label="Press me" /> },
@@ -28,7 +34,7 @@ const nativeComponentCases: AutoHostTestCase[] = [
   { name: 'Switch', render: () => <Switch value={false} onValueChange={jest.fn()} /> },
   { name: 'Checkbox', render: () => <Checkbox value={false} onValueChange={jest.fn()} /> },
   { name: 'Slider', render: () => <Slider value={0.5} onValueChange={jest.fn()} /> },
-  { name: 'TextInput', render: () => <TextInput value="Text" onChangeText={jest.fn()} /> },
+  { name: 'TextInput', render: () => <TextInputWithState /> },
   {
     name: 'Picker',
     render: () => (

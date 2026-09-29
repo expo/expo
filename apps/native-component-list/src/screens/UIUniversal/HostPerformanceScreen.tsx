@@ -8,7 +8,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { InteractionManager, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const BUTTON_COUNT = 100;
 const COMPARISON_SAMPLE_COUNT = 10;
@@ -148,7 +148,7 @@ function BenchmarkProbe({
 
     let interactionFrame = 0;
 
-    const interaction = InteractionManager.runAfterInteractions(() => {
+    const idleCallback = requestIdleCallback(() => {
       interactionFrame = requestAnimationFrame(() => {
         onMetric(sample.id, 'settledMs', now());
       });
@@ -156,7 +156,7 @@ function BenchmarkProbe({
 
     return () => {
       cancelAnimationFrame(interactionFrame);
-      interaction.cancel();
+      cancelIdleCallback(idleCallback);
     };
   }, [onMetric, sample.id]);
 
