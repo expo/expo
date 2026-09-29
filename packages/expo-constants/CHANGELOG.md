@@ -1,18 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-- [iOS] Load app config and `.env` files in the build's mode: development for configurations containing `Debug`, production otherwise. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
-- [Android] Load app config and `.env` files in each build variant's mode: development for `debug` and `debugOptimized` build types, production otherwise. ([#50661](https://github.com/expo/expo/pull/50661) by [@ramonclaudio](https://github.com/ramonclaudio))
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
 ## 58.0.8 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

@@ -3,16 +3,6 @@
 This is the log of notable changes to the Expo client that are developer-facing.
 Package-specific changes not released in any SDK will be added here just before the release. Until then, you can find them in changelogs of the individual packages (see [packages](./packages) directory).
 
-## Unpublished
-
-### 📚 3rd party library updates
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
 ## 57.0.0 — 2026-07-08
 
 ### 🛠 Breaking changes
