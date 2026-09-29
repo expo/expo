@@ -68,9 +68,7 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     });
 
     it('returns xcasset icon even when a renderingMode override is passed, so symbol sets still resolve via imageNamed:', () => {
-      expect(
-        convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' }, 'template')
-      ).toEqual({
+      expect(convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' }, 'template')).toEqual({
         type: 'xcasset',
         name: 'custom-icon',
       });
