@@ -134,7 +134,7 @@ export default function PreparationPage() {
       {/* Key Features */}
       <section className="py-20 border-b border-border">
         <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-foreground mb-12">Why Our Preparation Works</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-12">WHAT WE OFFER</h2>
           <div className="space-y-4">
             <FeatureItem
               title="Experienced Instructors"
