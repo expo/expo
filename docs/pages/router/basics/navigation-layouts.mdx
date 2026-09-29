@@ -80,7 +80,7 @@ export default function StackLayout() {
 
 When you navigate to `/products`, it will first go to the default route, which is **products/index.tsx**. If you navigate to `/products/123`, then that page will be pushed onto the stack. By default, the stack will render a back button in the header that will pop the current page off the stack, returning the user to the previous page. Even when a page isn't visible, if it is still pushed onto the stack, it is still being rendered.
 
-The `Stack` component arranges routes in a stack. Files inside the directory automatically become eligible routes, so you do not have to define every screen in the navigator. To set screen options, add a `Stack.Screen` component inside the `Stack` component. Its `name` prop should match the route name; Expo Router maps the route to its component automatically. See [Stack](/router/advanced/stack/) for more options:
+The `Stack` component arranges routes in a stack. Files inside the directory automatically become eligible routes, so you do not have to define every screen in the navigator. To set screen options, add a `Stack.Screen` component inside the `Stack` component. Its `name` prop should match the route name so that Expo Router can map the route to its component automatically. See [Stack](/router/advanced/stack/) for more options:
 
 ```tsx src/app/products/_layout.tsx
 import { Stack } from 'expo-router';
