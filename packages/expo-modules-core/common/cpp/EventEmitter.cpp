@@ -181,31 +181,42 @@ size_t getListenerCount(jsi::Runtime &runtime, const jsi::Object &emitter, const
   return 0;
 }
 
-jsi::Value createEventSubscription(jsi::Runtime &runtime, const std::string &eventName, const jsi::Object &emitter, const jsi::Function &listener) {
-  jsi::Object subscription(runtime);
-  jsi::PropNameID removeProp = jsi::PropNameID::forAscii(runtime, "remove", 6);
-  std::shared_ptr<jsi::Value> emitterValue = std::make_shared<jsi::Value>(runtime, emitter);
-  std::shared_ptr<jsi::Value> listenerValue = std::make_shared<jsi::Value>(runtime, listener);
+jsi::Value removeEventSubscription(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) {
+  jsi::Object state = thisValue.asObject(runtime);
+  jsi::Value emitterValue = state.getProperty(runtime, "emitter");
 
-  jsi::HostFunctionType removeSubscription = [eventName, emitterValue, listenerValue](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-    if (!listenerValue->isObject()) {
-      // The subscription has already been removed.
-      return jsi::Value::undefined();
-    }
-    jsi::Object emitter = emitterValue->getObject(runtime);
-    jsi::Function listener = listenerValue->getObject(runtime).getFunction(runtime);
-
-    removeListener(runtime, emitter, eventName, listener);
-
-    // Values held by this host function are GC roots. The listener's closure often references the subscription
-    // (e.g. a React effect returning `() => subscription.remove()`), so keeping them after the removal would form
-    // a cycle through a root that the garbage collector can never break, leaking the listener and the emitter.
-    *emitterValue = jsi::Value::undefined();
-    *listenerValue = jsi::Value::undefined();
+  if (!emitterValue.isObject()) {
+    // The subscription has already been removed.
     return jsi::Value::undefined();
-  };
+  }
+  std::string eventName = state.getProperty(runtime, "eventName").asString(runtime).utf8(runtime);
+  jsi::Function listener = state.getProperty(runtime, "listener").asObject(runtime).asFunction(runtime);
 
-  subscription.setProperty(runtime, removeProp, jsi::Function::createFromHostFunction(runtime, removeProp, 0, removeSubscription));
+  // Clear the state before removing the listener, as the observing functions it calls may throw or remove the subscription again.
+  state.setProperty(runtime, "emitter", jsi::Value::undefined());
+  state.setProperty(runtime, "listener", jsi::Value::undefined());
+
+  removeListener(runtime, emitterValue.getObject(runtime), eventName, listener);
+  return jsi::Value::undefined();
+}
+
+jsi::Value createEventSubscription(jsi::Runtime &runtime, const jsi::Function &removeSubscription, const jsi::String &eventName, const jsi::Object &emitter, const jsi::Function &listener) {
+  // The state is kept in a JS object rather than captured by a host function, because values held in C++ are GC roots.
+  // The listener's closure often references the subscription (e.g. a React effect returning `() => subscription.remove()`),
+  // which would form a cycle through a root that the garbage collector can never break, leaking the listener and the emitter
+  // even after the listener is removed by other means, such as `removeListener` or `removeAllListeners`.
+  jsi::Object state(runtime);
+  state.setProperty(runtime, "emitter", emitter);
+  state.setProperty(runtime, "eventName", eventName);
+  state.setProperty(runtime, "listener", listener);
+
+  // Bind the state, so `remove` also works when called without the subscription as `this`.
+  jsi::Value remove = removeSubscription
+    .getPropertyAsFunction(runtime, "bind")
+    .callWithThis(runtime, removeSubscription, state);
+
+  jsi::Object subscription(runtime);
+  subscription.setProperty(runtime, "remove", remove);
 
   return jsi::Value(runtime, subscription);
 }
@@ -242,8 +253,15 @@ void installClass(jsi::Runtime &runtime) {
   });
   jsi::Object prototype = eventEmitterClass.getPropertyAsObject(runtime, "prototype");
 
-  jsi::HostFunctionType addListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
-    std::string eventName = args[0].asString(runtime).utf8(runtime);
+  // A single `remove` function shared by all subscriptions, each one binds it to its own state.
+  jsi::PropNameID removeProp = jsi::PropNameID::forAscii(runtime, "remove", 6);
+  std::shared_ptr<jsi::Function> removeSubscription = std::make_shared<jsi::Function>(
+    jsi::Function::createFromHostFunction(runtime, removeProp, 0, removeEventSubscription)
+  );
+
+  jsi::HostFunctionType addListenerHost = [removeSubscription](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {
+    jsi::String eventNameString = args[0].asString(runtime);
+    std::string eventName = eventNameString.utf8(runtime);
     jsi::Function listener = args[1].asObject(runtime).asFunction(runtime);
     jsi::Object thisObject = thisValue.getObject(runtime);
 
@@ -252,7 +270,7 @@ void installClass(jsi::Runtime &runtime) {
     const jsi::Object &emitter = LazyObject::unwrapObjectIfNecessary(runtime, thisObject);
 
     addListener(runtime, emitter, eventName, listener);
-    return createEventSubscription(runtime, eventName, emitter, listener);
+    return createEventSubscription(runtime, *removeSubscription, eventNameString, emitter, listener);
   };
 
   jsi::HostFunctionType removeListenerHost = [](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count) -> jsi::Value {

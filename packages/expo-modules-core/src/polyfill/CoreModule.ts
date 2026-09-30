@@ -29,8 +29,15 @@ export class EventEmitter<TEventsMap extends EventsMap> implements EventEmitterT
       this.startObserving(eventName);
     }
 
+    let isRemoved = false;
+
     return {
       remove: () => {
+        // Removing the same subscription again must not remove the same listener added later.
+        if (isRemoved) {
+          return;
+        }
+        isRemoved = true;
         this.removeListener(eventName, listener);
       },
     };

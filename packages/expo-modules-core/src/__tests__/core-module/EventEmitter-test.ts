@@ -31,6 +31,17 @@ describe(`EventEmitter`, () => {
     expect(listener).not.toHaveBeenCalled();
   });
 
+  it(`does not remove a listener added again after its subscription was removed`, () => {
+    const emitter = getSampleEmitter();
+    const listener = jest.fn();
+    const subscription = emitter.addListener('testEventName', listener);
+    subscription.remove();
+    emitter.addListener('testEventName', listener);
+    subscription.remove();
+    emitter.emit('testEventName');
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
   it(`doesn't emit events to other emitters' listeners`, () => {
     const emitter1 = getSampleEmitter();
     const emitter2 = getSampleEmitter();
