@@ -36,6 +36,11 @@ export function Picker<T extends PickerItemValue>(props: PickerProps<T>) {
   const selectedLabel = selectedItem?.label ?? '';
   const labelState = useNativeState(selectedLabel);
 
+  // `useNativeState` only captures its initial value, so push later changes to the field.
+  React.useEffect(() => {
+    labelState.set(selectedLabel);
+  }, [labelState, selectedLabel]);
+
   return (
     <Host style={style} matchContents={{ vertical: true }}>
       <ExposedDropdownMenuBox

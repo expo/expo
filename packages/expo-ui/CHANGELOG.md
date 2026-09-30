@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [android] Fix `Switch` label rendering one letter per line inside a `Host` with `matchContents`. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+- [android] Fix `community/picker` `Picker` not updating its displayed label after a selection or a `selectedValue` change. ([#50801](https://github.com/expo/expo/pull/50801) by [@RaddishIoW](https://github.com/RaddishIoW))
 
 ### 💡 Others
 
