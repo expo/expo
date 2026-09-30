@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Lay out `RNHostView` hosted content at the size SwiftUI or Compose gives it on an axis that `matchContents` does not match. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
