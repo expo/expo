@@ -61,9 +61,7 @@ extension String: JavaScriptCodable {
   public static func encode(_ value: String, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    // The `JavaScriptValue(_:_:)` initializer takes the runtime by owned convention (it stores it),
-    // so an owned copy is needed from the borrowed parameter.
-    return JavaScriptValue(copy runtime, value)
+    return JavaScriptValue(runtime, value)
   }
 }
 
@@ -281,7 +279,7 @@ extension Int64: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Int64, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    return JavaScriptValue(copy runtime, bigInt: value)
+    return JavaScriptValue(runtime, bigInt: value)
   }
 }
 
@@ -405,7 +403,7 @@ extension UInt64: JavaScriptCodable {
   public static func encode(_ value: UInt64, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    return JavaScriptValue(copy runtime, bigInt: value)
+    return JavaScriptValue(runtime, bigInt: value)
   }
 }
 
@@ -457,7 +455,7 @@ func decodeWideInteger<T: FixedWidthInteger>(
       // constructing `TypeError` here, which this inlinable helper can't reference.
       return try decodeInteger(value.asDouble(), as: T.self)
     }
-    return try decodeBigInt(value.copied(in: copy runtime).getBigInt(), as: T.self)
+    return try decodeBigInt(value.copied(in: runtime).getBigInt(), as: T.self)
   }
   return try decodeInteger(value.getDouble(), as: T.self)
 }

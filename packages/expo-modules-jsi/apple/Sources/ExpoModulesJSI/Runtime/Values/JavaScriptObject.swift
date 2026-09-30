@@ -22,18 +22,21 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   /// Creates a new object in the given runtime.
-  public init(_ runtime: JavaScriptRuntime) {
+  public init(_ runtime: borrowing JavaScriptRuntime) {
     self.init(runtime, facebook.jsi.Object(runtime.pointee))
   }
 
   /// Creates a new object from the dictionary whose values are representable in JS.
-  public init<DictValue: JavaScriptRepresentable>(_ runtime: JavaScriptRuntime, _ dictionary: [String: DictValue]) {
+  public init<DictValue: JavaScriptRepresentable>(
+    _ runtime: borrowing JavaScriptRuntime,
+    _ dictionary: [String: DictValue]
+  ) {
     self.runtimeHandle = runtime.handle
     self.pointee = dictionary.toJavaScriptValue(in: runtime).getObject().pointee
   }
 
   /// Creates a new object from existing JSI object.
-  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
     self.runtimeHandle = runtime.handle
     self.pointee = object
   }

@@ -12,7 +12,6 @@ jest.mock('expo/config/paths', () => ({
   resolveEntryPoint: () => 'index.js',
 }));
 jest.mock('expo/internal/unstable-expo-updates-cli-exports', () => ({
-  drawableFileTypes: new Set(['png']),
   createMetroServerAndBundleRequestAsync: jest.fn(),
   exportEmbedAssetsAsync: jest.fn(),
 }));
@@ -100,6 +99,24 @@ describe(createManifestForBuildAsync, () => {
       [2, 'hash-2x'],
       [3, 'hash-3x'],
       [4, 'hash-4x'],
+    ]);
+  });
+
+  it('names Android resources the way React Native resolves them at runtime', async () => {
+    jest.mocked(exportEmbedAssetsAsync).mockResolvedValue([
+      {
+        ...assetWithNonIosScales,
+        httpServerLocation: '/assets?unstable_path=../../icons',
+        scales: [1],
+        fileHashes: ['hash-1x'],
+      },
+    ] as any);
+    const manifest = await createManifestAsync('android');
+    expect(manifest.assets).toEqual([
+      expect.objectContaining({
+        resourcesFilename: '_icons_checksmall',
+        resourcesFolder: 'drawable',
+      }),
     ]);
   });
 

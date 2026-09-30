@@ -45,7 +45,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// - Note: This initializer creates a new JavaScript array object in the runtime's heap.
   ///   The array's length can be modified later using the `length` property.
   /// - SeeAlso: `init(_:items:)` for creating arrays with initial values
-  public init(_ runtime: JavaScriptRuntime, length: Int = 0) {
+  public init(_ runtime: borrowing JavaScriptRuntime, length: Int = 0) {
     self.init(runtime, facebook.jsi.Array(runtime.pointee, length))
   }
 
@@ -64,7 +64,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   by library consumers.
   /// - Note: The `pointee` parameter uses consuming ownership, meaning the JSI array
   ///   object is moved into this structure and the caller's copy is invalidated.
-  internal init(_ runtime: JavaScriptRuntime, _ pointee: consuming facebook.jsi.Array) {
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ pointee: consuming facebook.jsi.Array) {
     self.runtimeHandle = runtime.handle
     self.pointee = pointee
   }
@@ -103,7 +103,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   implementation creates an empty array first and then populates it element by element,
   ///   rather than using JSI's `createWithElements` method directly.
   /// - SeeAlso: `init(_:items:)` for the variadic argument version
-  public init(_ runtime: JavaScriptRuntime, items: [JavaScriptValue]) {
+  public init(_ runtime: borrowing JavaScriptRuntime, items: [JavaScriptValue]) {
     self.init(runtime, length: items.count)
 
     for (i, item) in items.enumerated() {
@@ -139,7 +139,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   array-based initializer. If you already have an array of values, consider using
   ///   `init(_:items:)` directly for cleaner syntax.
   /// - SeeAlso: `init(_:items:)` for the array version
-  public init(_ runtime: JavaScriptRuntime, items: JavaScriptValue...) {
+  public init(_ runtime: borrowing JavaScriptRuntime, items: JavaScriptValue...) {
     self.init(runtime, items: items)
   }
 
@@ -177,7 +177,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   /// - Note: Unlike the `JavaScriptValue` variadic initializer, this version accepts heterogeneous
   ///   types directly without requiring explicit `JavaScriptValue` wrapping.
   /// - SeeAlso: `init(_:items:)` for the `JavaScriptValue` array version
-  public init<each T: JavaScriptRepresentable>(_ runtime: JavaScriptRuntime, items: repeat each T) {
+  public init<each T: JavaScriptRepresentable>(_ runtime: borrowing JavaScriptRuntime, items: repeat each T) {
     var length: Int = 0
     for _ in repeat each items {
       length += 1
