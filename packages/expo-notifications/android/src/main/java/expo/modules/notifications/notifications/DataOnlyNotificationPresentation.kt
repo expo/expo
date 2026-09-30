@@ -27,29 +27,25 @@ internal enum class DataOnlyPresentationSetting {
   val shouldPresent: Boolean get() = this != DISABLED
 
   fun deprecationWarning(presented: Boolean): String? {
-    val firstSentence = if (presented) {
-      "expo-notifications presented a notification from a data-only FCM message because its `data` contains `title` or `message`"
+    val received = if (presented) {
+      "expo-notifications presented a notification from a data-only FCM message because its `data` contains `title` or `message`. " +
+        "This happens only on Android, and only when the app is not in the foreground."
     } else {
       "expo-notifications received a data-only FCM message whose `data` contains `title` or `message`. " +
         "It was not presented because the app is in the foreground; " +
         "on Android, such messages are presented only when the app is not in the foreground."
     }
-    return when (this) {
-      UNSET -> {
-        val opening = if (presented) "$firstSentence. This happens only on Android, and only when the app is not in the foreground." else firstSentence
-        "$opening This behavior is deprecated: in SDK 59 these messages will no longer be presented by default. " +
-          "$SEND_NOTIFICATION_MESSAGE $USE_TASK " +
-          "To adopt the new behavior now, set `presentDataOnlyNotificationsWithTitle: false` in the expo-notifications config plugin. " +
-          LEARN_MORE
-      }
-      ENABLED -> {
-        val opening = if (presented) "$firstSentence, and `presentDataOnlyNotificationsWithTitle` is `true`." else firstSentence
-        "$opening This option will be removed in SDK 60, and these messages will then no longer be presented. " +
-          "$SEND_NOTIFICATION_MESSAGE $USE_TASK " +
-          LEARN_MORE
-      }
-      DISABLED -> null
+    val status = when (this) {
+      UNSET -> "This behavior is deprecated: in SDK 59 these messages will no longer be presented by default."
+      ENABLED -> "`presentDataOnlyNotificationsWithTitle` is `true`. This option will be removed in SDK 60, and these messages will then no longer be presented."
+      DISABLED -> return null
     }
+    val optIn = if (this == UNSET) {
+      " To adopt the new behavior now, set `presentDataOnlyNotificationsWithTitle: false` in the expo-notifications config plugin."
+    } else {
+      ""
+    }
+    return "$received $status $SEND_NOTIFICATION_MESSAGE $USE_TASK$optIn $LEARN_MORE"
   }
 
   companion object {

@@ -132,13 +132,17 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       getListeners().forEach {
         it.onNotificationReceived(notification)
       }
-    } else if (notification.notificationRequest.content.hasTitleOrText() && DataOnlyPresentationSetting.read(context).shouldPresent) {
+    } else if (notification.notificationRequest.content.hasTitleOrText()) {
       // only data-only notifications reach this point and we present them if they fall into the documented exception:
       // https://docs.expo.dev/push-notifications/what-you-need-to-know/#headless-background-notifications
       // this call can not be triggered by expo push service, only when using FCM directly.
       // We keep this because we used to document this as a valid use case.
+      val setting = DataOnlyPresentationSetting.read(context)
+      if (!setting.shouldPresent) {
+        return
+      }
       NotificationsService.present(context, notification)
-      DataOnlyPresentationSetting.read(context).deprecationWarning(presented = true)?.let {
+      setting.deprecationWarning(presented = true)?.let {
         Log.w("expo-notifications", it)
         PendingDataOnlyPresentationWarning(context).record()
       }
