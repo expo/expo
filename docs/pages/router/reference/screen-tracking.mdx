@@ -1,10 +1,10 @@
 ---
 title: Screen tracking for analytics
 description: Learn how to enable screen tracking for analytics when using Expo Router.
-hideTOC: true
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
+import { Step } from '~/ui/components/Step';
 
 Unlike React Navigation, Expo Router always has access to a URL. This means screen tracking is as easy as the web.
 
@@ -36,3 +36,94 @@ Now when the user changes routes, the analytics provider will be notified.
 ## Migrating from React Navigation
 
 React Navigation's [screen tracking guide](https://reactnavigation.org/docs/screen-tracking/) cannot make the same assumptions about the navigation state that Expo Router can. As a result, the implementation requires the use of `onReady` and `onStateChange` callbacks. Avoid using these methods if possible as the root `<NavigationContainer />` is not directly exposed and allows cascading in Expo Router.
+
+## Integrate an analytics tool
+
+The `usePathname` approach above works when you only need the current URL. An analytics tool that needs screen lifecycle or navigation action events can subscribe to `unstable_navigationEvents` instead. This is an unstable API: check its version and review changes when upgrading Expo Router.
+
+<Step label="1">
+
+### Enable events before rendering
+
+Call `enable()` at module scope in a module loaded before the root layout renders. Enabling after rendering has started gives partial events. It can also produce misleading events, such as `pagePreloaded` for a screen that was not preloaded.
+
+</Step>
+
+<Step label="2">
+
+### Subscribe and clean up
+
+Use `addListener` for each event you need and return its unsubscribe function from an effect. In a root layout, subscribe in `useLayoutEffect` so the listener is ready before descendant screens emit their initial `pageFocused` from passive effects:
+
+```tsx src/app/_layout.tsx
+import { useLayoutEffect } from 'react';
+import { Slot, unstable_navigationEvents } from 'expo-router';
+
+unstable_navigationEvents.enable();
+
+export default function Layout() {
+  useLayoutEffect(
+    () =>
+      unstable_navigationEvents.addListener('pageFocused', event => {
+        analytics.track('screen_view', {
+          pathname: event.pathname,
+          params: event.params,
+        });
+      }),
+    []
+  );
+
+  return <Slot />;
+}
+```
+
+`addListener` returns an unsubscribe function. The layout effect calls it when the layout unmounts. Layout effects run on the client before descendant passive effects, which is why this root layout listener can receive the initial screen event. An event callback receives the payload shown below; the event name is selected by `addListener`.
+
+</Step>
+
+<Step label="3">
+
+### Handle event versions
+
+`unstable_navigationEvents.version` is `1`. A tool can attach to an older Expo Router where the property is missing, or to a version it supports. If the version is newer than your integration supports, skip the subscription and update the integration for that contract.
+
+```ts
+const events = unstable_navigationEvents;
+const version = 'version' in events ? events.version : undefined;
+
+if (version === undefined || version <= 1) {
+  const unsubscribe = events.addListener('pageFocused', event => {
+    // Send the event to your analytics tool.
+  });
+  // Call unsubscribe when the integration is disposed.
+}
+```
+
+The version increments when an event or payload field is removed or renamed, or when a documented firing rule changes. New events and optional payload fields do not increment it. Check for an additive field directly when you need it, for example, `'segments' in event`.
+
+</Step>
+
+## Events and payloads
+
+| Event              | Payload fields                               | When it fires                                                                                                                                                                                 |
+| ------------------ | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pagePreloaded`    | `pathname`, `params`, `screenId`, `segments` | A screen mounts without focus, for example after `router.prefetch()`.                                                                                                                         |
+| `pageFocused`      | `pathname`, `params`, `screenId`, `segments` | A screen gains focus, including when it regains focus after navigation. Plain re-renders do not repeat it.                                                                                    |
+| `pageBlurred`      | `pathname`, `params`, `screenId`, `segments` | The previously focused screen blurs during navigation.                                                                                                                                        |
+| `pageRemoved`      | `pathname`, `params`, `screenId`, `segments` | A screen is removed, or its route information changes while it remains mounted. A params change reports the old params and does not cause a new `pageFocused` while the screen stays focused. |
+| `actionDispatched` | `actionType`, `payload`, `state`             | A navigation action appears in the navigation report.                                                                                                                                         |
+| `routePreloaded`   | `routeKey`, `state`                          | A preload action changes navigation state.                                                                                                                                                    |
+
+For page events, `pathname` is a string, `params` is a record of string or string-array values, `screenId` is a string, and `segments` is a string array. The `actionDispatched` payload contains the navigation action type and payload plus its navigation state. The `routePreloaded` payload contains the route key and navigation state.
+
+In the tested iOS navigation cases, `pagePreloaded` follows the preloaded screen's commit, and `pageFocused` follows the focused screen's commit. Do not assume an order between `actionDispatched` and `pageFocused` when pushing a route. Tests also cover page focus and blur payloads on web. All platforms use the same JavaScript event emitter, while their navigators can differ.
+
+Listeners run in registration order. If one throws or returns a rejected thenable, other listeners still run and Expo Router calls `console.warn` with the event name and error object. Keep your own listener work small; you can create a performance entry from a listener if your tool needs one:
+
+```ts
+unstable_navigationEvents.addListener('pageFocused', event => {
+  performance.mark('analytics:page-focused', { detail: { pathname: event.pathname } });
+});
+```
+
+Only subscribe with `addListener`; do not call `emit()` from an analytics integration. [EAS Observe's Expo Router integration](/eas/observe/integrations/expo-router/) is a reference consumer of these events.

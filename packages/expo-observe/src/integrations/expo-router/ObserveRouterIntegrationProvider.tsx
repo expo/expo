@@ -3,6 +3,7 @@ import { createContext, type PropsWithChildren, useEffect, useRef, useState } fr
 import { initListeners, isInitialized } from './init';
 import { optionalRouter } from './router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from './storage';
+import { isSupportedRouterEventsVersion, warnUnsupportedRouterEventsVersion } from './version';
 
 export const ObserveRouterIntegrationContext = createContext<RouterIntegrationStorage | null>(null);
 
@@ -12,7 +13,12 @@ export function ObserveRouterIntegrationProvider({ children }: PropsWithChildren
   );
   const [listenersCleanup] = useState(() => {
     if (!storage || !optionalRouter) return;
-    return initListeners(storage, optionalRouter.unstable_navigationEvents);
+    const events = optionalRouter.unstable_navigationEvents;
+    if (!isSupportedRouterEventsVersion(events.version)) {
+      warnUnsupportedRouterEventsVersion(events.version!);
+      return;
+    }
+    return initListeners(storage, events);
   });
 
   const prevInitialized = useRef(isInitialized());

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { render } from '@testing-library/react-native';
-import { use } from 'react';
+import { StrictMode, use } from 'react';
 import { Text } from 'react-native';
 
 import {
@@ -8,6 +8,7 @@ import {
   ObserveRouterIntegrationProvider,
 } from '../ObserveRouterIntegrationProvider';
 import * as initModule from '../init';
+import { optionalRouter } from '../router';
 
 jest.mock('expo-app-metrics', () => ({
   __esModule: true,
@@ -38,6 +39,18 @@ jest.mock('../router', () => ({
   isRouterInstalled: true,
 }));
 
+const navigationEvents = optionalRouter!.unstable_navigationEvents as NonNullable<
+  typeof optionalRouter
+>['unstable_navigationEvents'] & {
+  version?: number;
+};
+
+function observeWarnings() {
+  return (console.warn as jest.Mock).mock.calls.filter(
+    ([message]) => typeof message === 'string' && message.startsWith('[expo-observe]')
+  );
+}
+
 const mockIsInitialized = initModule.isInitialized as jest.Mock;
 const mockInitListeners = initModule.initListeners as jest.Mock;
 const mockInitListenersCleanup = (initModule as unknown as { __initListenersCleanup: jest.Mock })
@@ -57,7 +70,59 @@ beforeEach(() => {
   jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
+afterEach(() => {
+  delete navigationEvents.version;
+  jest.restoreAllMocks();
+});
+
 describe('ObserveRouterIntegrationProvider', () => {
+  it('attaches listeners when router event version is missing', () => {
+    (console.warn as jest.Mock).mockClear();
+    render(
+      <ObserveRouterIntegrationProvider>
+        <Text>child</Text>
+      </ObserveRouterIntegrationProvider>
+    );
+    expect(mockInitListeners).toHaveBeenCalledTimes(1);
+    expect(mockInitListeners.mock.calls[0][1]).toBe(navigationEvents);
+    expect(observeWarnings()).toHaveLength(0);
+  });
+
+  it('attaches listeners when router event version is supported', () => {
+    navigationEvents.version = 1;
+    (console.warn as jest.Mock).mockClear();
+    render(
+      <ObserveRouterIntegrationProvider>
+        <Text>child</Text>
+      </ObserveRouterIntegrationProvider>
+    );
+    expect(mockInitListeners).toHaveBeenCalledTimes(1);
+    expect(mockInitListeners.mock.calls[0][1]).toBe(navigationEvents);
+    expect(observeWarnings()).toHaveLength(0);
+  });
+
+  it('warns once and skips listeners for a newer router event version under StrictMode and remount', () => {
+    expect(__DEV__).toBe(true);
+    navigationEvents.version = 2;
+    (console.warn as jest.Mock).mockClear();
+    const first = render(
+      <StrictMode>
+        <ObserveRouterIntegrationProvider>
+          <Text>child</Text>
+        </ObserveRouterIntegrationProvider>
+      </StrictMode>
+    );
+    first.unmount();
+    render(
+      <ObserveRouterIntegrationProvider>
+        <Text>child</Text>
+      </ObserveRouterIntegrationProvider>
+    );
+    expect(mockInitListeners).not.toHaveBeenCalled();
+    expect(observeWarnings()).toHaveLength(1);
+    expect(observeWarnings()[0][0]).toContain('2');
+    expect(observeWarnings()[0][0]).toContain('1');
+  });
   it('exposes a non-null storage on first render when isInitialized() is true at mount', () => {
     const reads: unknown[] = [];
     render(

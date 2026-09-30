@@ -5,7 +5,11 @@ import { Text } from 'react-native';
 import { router } from '../exports';
 import { Stack } from '../layouts/Stack';
 import { unstable_navigationEvents } from '../navigationEvents';
-import type { PageFocusedEvent } from '../navigationEvents/types';
+import type {
+  ActionDispatchedEvent,
+  BasePageEvent,
+  PageFocusedEvent,
+} from '../navigationEvents/types';
 import { renderRouter } from '../testing-library';
 
 describe('AnalyticsListeners event timing', () => {
@@ -31,6 +35,135 @@ describe('AnalyticsListeners event timing', () => {
     cleanups.push(cleanup);
     return events;
   }
+
+  it('continues delivering pageFocused when a listener throws during render', () => {
+    const error = new Error('analytics failed');
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    cleanups.push(() => warn.mockRestore());
+    cleanups.push(
+      unstable_navigationEvents.addListener('pageFocused', () => {
+        throw error;
+      })
+    );
+    const received = listenForPageFocused();
+
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text testID="home-content">Home</Text>,
+    });
+
+    expect(screen.getByTestId('home-content')).toBeVisible();
+    expect(received).toHaveLength(1);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('pageFocused'), error);
+  });
+
+  it('delivers the initial pageFocused to a root layout subscription', () => {
+    const focused: BasePageEvent[] = [];
+
+    function Layout() {
+      useLayoutEffect(
+        () => unstable_navigationEvents.addListener('pageFocused', (event) => focused.push(event)),
+        []
+      );
+      return <Stack />;
+    }
+
+    renderRouter({
+      _layout: Layout,
+      index: () => <Text testID="home-content">Home</Text>,
+    });
+
+    expect(screen.getByTestId('home-content')).toBeVisible();
+    expect(focused).toEqual([
+      expect.objectContaining({
+        pathname: '/',
+        params: {},
+        segments: [],
+        screenId: expect.any(String),
+      }),
+    ]);
+  });
+
+  it('reports the previous screen when it blurs on push', () => {
+    const blurred: BasePageEvent[] = [];
+    cleanups.push(
+      unstable_navigationEvents.addListener('pageBlurred', (event) => blurred.push(event))
+    );
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text>Home</Text>,
+      details: () => <Text>Details</Text>,
+    });
+    act(() => router.push('/details'));
+    expect(blurred).toEqual([
+      expect.objectContaining({
+        pathname: '/',
+        params: {},
+        segments: [],
+        screenId: expect.any(String),
+      }),
+    ]);
+  });
+
+  it('reports removal on pop and route-info changes', () => {
+    const removed: BasePageEvent[] = [];
+    cleanups.push(
+      unstable_navigationEvents.addListener('pageRemoved', (event) => removed.push(event))
+    );
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text>Home</Text>,
+      details: () => <Text>Details</Text>,
+    });
+    act(() => router.push('/details'));
+    act(() => router.setParams({ ping: '1' }));
+    expect(removed).toContainEqual(
+      expect.objectContaining({
+        pathname: '/details',
+        params: {},
+        segments: ['details'],
+        screenId: expect.any(String),
+      })
+    );
+    act(() => router.back());
+    expect(removed).toContainEqual(
+      expect.objectContaining({
+        pathname: '/details',
+        params: { ping: '1' },
+        segments: ['details'],
+        screenId: expect.any(String),
+      })
+    );
+  });
+
+  it('reports focus and action events for a push', () => {
+    const actions: Omit<ActionDispatchedEvent, 'type'>[] = [];
+    const focused = listenForPageFocused();
+    cleanups.push(
+      unstable_navigationEvents.addListener('actionDispatched', (event) => actions.push(event))
+    );
+    renderRouter({
+      _layout: () => <Stack />,
+      index: () => <Text>Home</Text>,
+      details: () => <Text>Details</Text>,
+    });
+    act(() => router.push('/details'));
+    expect(focused).toContainEqual(
+      expect.objectContaining({
+        pathname: '/details',
+        params: {},
+        segments: ['details'],
+        screenId: expect.any(String),
+      })
+    );
+    expect(actions).toContainEqual(
+      expect.objectContaining({
+        actionType: 'PUSH',
+        payload: expect.objectContaining({ name: 'details' }),
+        state: expect.objectContaining({ routes: expect.any(Array) }),
+      })
+    );
+  });
 
   it('emits pagePreloaded after the preloaded screen content has committed', () => {
     const order: string[] = [];

@@ -12,6 +12,7 @@ interface RouterActionDispatchedEvent {
 }
 
 interface RouterNavigationEvents {
+  readonly version?: number;
   addListener(
     eventType: 'actionDispatched',
     callback: (event: RouterActionDispatchedEvent) => void

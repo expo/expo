@@ -35,6 +35,8 @@ const availableEvents: AnalyticsEvent['type'][] = [
   'routePreloaded',
 ];
 
+const NAVIGATION_EVENTS_API_VERSION = 1;
+
 type EventTypeName = AnalyticsEvent['type'];
 type Payload<T extends EventTypeName> = Omit<Extract<AnalyticsEvent, { type: T }>, 'type'>;
 
@@ -65,7 +67,24 @@ export function emit<EventType extends EventTypeName>(type: EventType, event: Pa
   const subscribersForEvent = subscribers[type];
   if (subscribersForEvent) {
     for (const callback of subscribersForEvent) {
-      callback(event);
+      const onError = (error: unknown) => {
+        console.warn(`An error occurred in a navigation event listener for ${type}`, error);
+      };
+      try {
+        const result: unknown = callback(event);
+        if (
+          result != null &&
+          (typeof result === 'object' || typeof result === 'function') &&
+          'then' in result &&
+          typeof result.then === 'function'
+        ) {
+          // The callable `then` check above requires a cast to invoke it as a PromiseLike.
+          const thenable = result as PromiseLike<unknown>;
+          thenable.then(undefined, onError);
+        }
+      } catch (error) {
+        onError(error);
+      }
     }
   }
 }
@@ -73,6 +92,14 @@ export function emit<EventType extends EventTypeName>(type: EventType, event: Pa
 let enabled = false;
 
 export const unstable_navigationEvents = {
+  /**
+   * The analytics event contract version. It increments when an event or payload
+   * field is removed or renamed, or when a documented firing rule changes.
+   * Additive optional fields and new events do not increment it.
+   */
+  get version(): number {
+    return NAVIGATION_EVENTS_API_VERSION;
+  },
   addListener,
   emit,
   enable: () => {
