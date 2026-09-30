@@ -1,8 +1,12 @@
 package expo.modules.medialibrary.next.permissions
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Process
+import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
@@ -53,9 +57,27 @@ class MediaStorePermissionsDelegate(val appContext: AppContext) {
     writeLauncher = registerForActivityResult(WriteContract(appContextProvider))
   }
 
+  // Don't test write access by opening the file for writing: closing it makes
+  // MediaProvider scan the file in the background. When the asset is moved right
+  // after the check, that scan can run after the rename, find the old path empty
+  // and delete the asset's row, so the moved file disappears from the library.
+  @RequiresApi(Build.VERSION_CODES.R)
   private fun hasWritePermissionForUri(uri: Uri): Boolean =
+    isOwnedByApp(uri) ||
+      context.checkUriPermission(
+        uri,
+        Process.myPid(),
+        Process.myUid(),
+        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+      ) == PackageManager.PERMISSION_GRANTED
+
+  // Apps can modify the media they created without a write request.
+  @RequiresApi(Build.VERSION_CODES.R)
+  private fun isOwnedByApp(uri: Uri): Boolean =
     runCatching {
-      context.contentResolver.openOutputStream(uri, "rw")?.close()
-      return true
+      context.contentResolver
+        .query(uri, arrayOf(MediaStore.MediaColumns.OWNER_PACKAGE_NAME), null, null, null)
+        ?.use { cursor -> cursor.moveToFirst() && cursor.getString(0) == context.packageName }
+        ?: false
     }.getOrDefault(false)
 }
