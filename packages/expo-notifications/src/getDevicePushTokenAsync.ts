@@ -22,10 +22,15 @@ export async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
     // Reuse existing Promise
     devicePushToken = await nativeTokenPromise;
   } else {
-    // Create a new Promise and clear it afterwards
-    nativeTokenPromise = PushTokenManager.getDevicePushTokenAsync();
-    devicePushToken = await nativeTokenPromise;
-    nativeTokenPromise = null;
+    const currentNativeTokenPromise = PushTokenManager.getDevicePushTokenAsync();
+    nativeTokenPromise = currentNativeTokenPromise;
+    try {
+      devicePushToken = await currentNativeTokenPromise;
+    } finally {
+      if (nativeTokenPromise === currentNativeTokenPromise) {
+        nativeTokenPromise = null;
+      }
+    }
   }
 
   // @ts-ignore: TS thinks Platform.OS could be anything and can't decide what type is it
