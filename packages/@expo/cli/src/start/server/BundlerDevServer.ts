@@ -62,6 +62,8 @@ export type DevServerInstance = {
 };
 
 export interface BundlerStartOptions {
+  /** Tunnel provider. Defaults to Expo. */
+  tunnelProvider?: 'expo' | 'ngrok';
   /** Should the dev server use `https` protocol. */
   https?: boolean;
   /** Should start the dev servers in development mode (minify). */
@@ -267,9 +269,9 @@ export abstract class BundlerDevServer {
       // This is a hack to prevent using tunnel on web since we block it upstream for some reason.
       this.isTargetingNative()
     ) {
-      await this._startTunnelAsync();
+      await this._startTunnelAsync(options.tunnelProvider);
     } else if (envIsWebcontainer()) {
-      await this._startTunnelAsync();
+      await this._startTunnelAsync(options.tunnelProvider);
     }
 
     if (!options.isExporting) {
@@ -287,23 +289,27 @@ export abstract class BundlerDevServer {
   }
 
   /** Create the tunnel instance and start the tunnel server. Exposed for testing. */
-  public async _startTunnelAsync(): Promise<AsyncNgrok | AsyncWsTunnel | null> {
+  public async _startTunnelAsync(
+    provider?: BundlerStartOptions['tunnelProvider']
+  ): Promise<AsyncNgrok | AsyncWsTunnel | null> {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
-    this.tunnel = this._createTunnel(port);
+    this.tunnel = this._createTunnel(port, provider);
     await this.tunnel.startAsync();
     return this.tunnel;
   }
 
   /** Resolve which tunnel implementation to use, without starting it. */
-  private _createTunnel(port: number): AsyncNgrok | AsyncWsTunnel {
-    const useV2Tunnel = env.EXPO_UNSTABLE_TUNNEL_V2 || envIsWebcontainer();
-    if (useV2Tunnel) {
-      const useExpoAccount = !!env.EXPO_UNSTABLE_TUNNEL_V2;
-      return new AsyncWsTunnel(this.projectRoot, port, { useExpoAccount });
+  private _createTunnel(
+    port: number,
+    provider?: BundlerStartOptions['tunnelProvider']
+  ): AsyncNgrok | AsyncWsTunnel {
+    if (provider === 'ngrok') {
+      return new AsyncNgrok(this.projectRoot, port);
     }
-
-    return new AsyncNgrok(this.projectRoot, port);
+    return new AsyncWsTunnel(this.projectRoot, port, {
+      useExpoAccount: !envIsWebcontainer(),
+    });
   }
 
   protected async startDevSessionAsync() {
