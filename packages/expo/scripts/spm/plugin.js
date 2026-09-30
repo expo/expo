@@ -61,6 +61,7 @@ const {
   realPathOrSelf,
   renderExtraPodsWarning,
   renderLeftOutCompanionWarning,
+  renderPartlyProvidedPackageWarning,
   renderRootConflictWarning,
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
@@ -539,6 +540,9 @@ function summarizeRecords(
     leftOutCompanions: unchecked.leftOutCompanions,
     unexportedCompanions,
     unmappedDeps,
+    partlyProvidedPackages: emitted.flatMap(({ identity: { packageName, moduleRoot }, emission }) =>
+      emission.partlyProvidedPackages.map((pkg) => ({ packageName, moduleRoot, ...pkg }))
+    ),
     xcconfigLinkage,
     precompiledPods: podNames(precompiled),
     manifestPackages: emitted
@@ -666,6 +670,7 @@ module.exports = function expoSpmPlugin(context) {
     (a, b) => byteOrder(a.id, b.id)
   );
   assertDistinctFlavoredFrameworks(flavoredFrameworks);
+  const satisfiedDependencies = new Set(dependencyFrameworks.map((f) => f.frameworkName));
   const frameworkSearchPath =
     precompiled.length > 0
       ? prepareCompileInterfaces(flavoredFrameworks, path.join(outDir, 'compile-interfaces'))
@@ -682,6 +687,7 @@ module.exports = function expoSpmPlugin(context) {
       outDir,
       codegenPkgPath,
       minimumIosDeploymentTarget: core.iosDeploymentTarget,
+      satisfiedDependencies,
       // Every emitted target may use the macros (CocoaPods' "is core or depends on core" gate).
       // Lazy: an install that emits no source package needs no macro plugin.
       get macroFlags() {
@@ -697,7 +703,7 @@ module.exports = function expoSpmPlugin(context) {
     precompiled,
     ...sourceModules,
     react,
-    satisfiedDependencies: new Set(dependencyFrameworks.map((f) => f.frameworkName)),
+    satisfiedDependencies,
     autolinkConditions,
     gatedCompanions: indexGatedCompanions(metadata, records),
     autolinkGate,
@@ -715,6 +721,9 @@ module.exports = function expoSpmPlugin(context) {
   );
   if (summary.unmappedDeps.length > 0) {
     console.warn(renderUnmappedDependencyWarning(summary.unmappedDeps));
+  }
+  if (summary.partlyProvidedPackages.length > 0) {
+    console.warn(renderPartlyProvidedPackageWarning(summary.partlyProvidedPackages));
   }
   if (summary.xcconfigLinkage.length > 0) {
     console.warn(renderXcconfigLinkerWarning(summary.xcconfigLinkage));

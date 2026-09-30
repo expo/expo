@@ -788,6 +788,67 @@ function resolveTargetPaths(targets, moduleRoot) {
 }
 
 /**
+ * A precompiled framework already links these products; declaring them again would
+ * link a second copy. `spmProductNames` still names them, as the module links them
+ * all the same. SwiftPM can still build a provided product through a package kept for
+ * its other products, so `partlyProvidedPackages` returns each such package and, once,
+ * every package kept while the module named a provided product without a package.
+ */
+function withoutSatisfiedProducts(manifest, satisfiedDependencies) {
+  const targetNames = new Set(manifest.targets.map((t) => t.name));
+  // A byName that names no sibling target resolves to a product of a declared package.
+  const bareProductName = (dep) => {
+    const name = typeof dep === 'string' ? dep : dep.byName;
+    return name != null && !targetNames.has(name) ? name : null;
+  };
+  const isSatisfied = (dep) => satisfiedDependencies.has(dep.product ?? bareProductName(dep));
+  const skipped = manifest.targets.flatMap((t) => t.dependencies).filter(isSatisfied);
+  if (skipped.length === 0) return { manifest, partlyProvidedPackages: [] };
+  const targets = manifest.targets.map((t) => ({
+    ...t,
+    dependencies: t.dependencies.filter((dep) => !isSatisfied(dep)),
+  }));
+  const remaining = targets.flatMap((t) => t.dependencies);
+  const unique = (names) => [...new Set(names)];
+  const productsFrom = (deps, key) =>
+    unique(
+      deps
+        .filter((dep) => dep.product != null && dep.package.toLowerCase() === key)
+        .map((dep) => dep.product)
+    );
+  const bareNamesIn = (deps) => unique(deps.map(bareProductName).filter((name) => name != null));
+  // Which package a bare name comes from is unknown: a skipped one may have been any
+  // package's last use, and a remaining one may still use any of them.
+  const skippedBareNames = bareNamesIn(skipped);
+  const remainingBareNames = bareNamesIn(remaining);
+  const packageDeps = [];
+  const partlyProvidedPackages = [];
+  for (const pkg of manifest.packageDeps) {
+    const key = pkg.identity?.toLowerCase();
+    const providedProducts = key != null ? productsFrom(skipped, key) : [];
+    const lost = key != null && (providedProducts.length > 0 || skippedBareNames.length > 0);
+    const keptProducts = productsFrom(remaining, key);
+    if (lost && !keptProducts.length && !remainingBareNames.length) continue;
+    packageDeps.push(pkg);
+    if (providedProducts.length) {
+      partlyProvidedPackages.push({
+        url: pkg.url,
+        providedProducts,
+        keptProducts,
+        ...(remainingBareNames.length > 0 ? { unattributedNames: remainingBareNames } : {}),
+      });
+    }
+  }
+  if (skippedBareNames.length && packageDeps.length) {
+    partlyProvidedPackages.push({
+      providedProducts: skippedBareNames,
+      keptPackages: packageDeps.map((pkg) => pkg.url),
+    });
+  }
+  return { manifest: { ...manifest, targets, packageDeps }, partlyProvidedPackages };
+}
+
+/**
  * Render `manifest` against Expo's binary-free framework interface tree, with RN's
  * invariant React products injected and its floor raised to the minimum, and write it
  * to `<outDir>/expo-source/<name>` beside a `root` symlink to the real module source,
@@ -803,12 +864,17 @@ function emitPackage(
     codegenPkgPath = null,
     minimumIosDeploymentTarget = null,
     macroFlags = [],
+    satisfiedDependencies = new Set(),
   }
 ) {
   const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
+  const { manifest: linked, partlyProvidedPackages } = withoutSatisfiedProducts(
+    manifest,
+    satisfiedDependencies
+  );
   const manifestSwift = renderSourceManifest({
     manifest: {
-      ...manifest,
+      ...linked,
       iosDeploymentTarget: raiseFloor(manifest.iosDeploymentTarget, minimumIosDeploymentTarget),
     },
     pkgDeps,
@@ -829,6 +895,7 @@ function emitPackage(
       packageDep: { name: manifest.name, path: pkgDir },
       productDeps: manifest.products.map((p) => ({ name: p.name, package: manifest.name })),
       spmProductNames: manifest.spmProductNames,
+      partlyProvidedPackages,
     },
   };
 }

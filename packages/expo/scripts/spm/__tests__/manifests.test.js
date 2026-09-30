@@ -1319,21 +1319,49 @@ describe('SwiftPM package coordinates', () => {
   });
 
   describe('the emitted manifest', () => {
-    const emit = (spmPackages, react = null) => {
+    const emitWith = (spmPackages, { react = null, satisfiedDependencies } = {}) => {
       const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-packages-emit-'));
       const moduleRoot = path.join(tmp, 'module');
       const outDir = path.join(tmp, 'out');
       fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
       fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
-      emitPureSwiftSourcePackage(
+      const result = emitPureSwiftSourcePackage(
         { moduleRoot, product: 'ExpoImage', iosDeploymentTarget: '16.4', spmPackages },
-        { react, frameworkSearchPath: '/abs/interfaces', outDir }
+        { react, frameworkSearchPath: '/abs/interfaces', outDir, satisfiedDependencies }
       );
-      return fs.readFileSync(
+      const manifest = fs.readFileSync(
         path.join(outDir, 'expo-source', 'ExpoImage', 'Package.swift'),
         'utf8'
       );
+      return { result, manifest };
     };
+    const emit = (spmPackages, react = null) => emitWith(spmPackages, { react }).manifest;
+
+    // The precompiled framework is already in the app; a source copy would duplicate it.
+    it('leaves out a package whose product a precompiled framework already provides', () => {
+      const { result, manifest } = emitWith(
+        [
+          sdWebImage,
+          {
+            url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+            productName: 'libavif',
+            version: { exact: '1.0.0' },
+          },
+        ],
+        { satisfiedDependencies: new Set(['SDWebImage']) }
+      );
+
+      expect(manifest).not.toContain(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git"'
+      );
+      expect(manifest).not.toContain('.product(name: "SDWebImage"');
+      expect(manifest).toContain(
+        '.package(url: "https://github.com/SDWebImage/libavif-Xcode.git", exact: "1.0.0"),'
+      );
+      expect(manifest).toContain('.product(name: "libavif", package: "libavif-Xcode"),');
+      expect(result.ok.spmProductNames).toEqual(['SDWebImage', 'libavif']);
+      expect(result.ok.partlyProvidedPackages).toEqual([]);
+    });
 
     it('declares each package and depends the target on its product', () => {
       const manifest = emit([
@@ -1865,14 +1893,237 @@ let package = Package(
     const emittedManifestPath = () =>
       path.join(outDir, 'expo-source', 'TestModule', 'Package.swift');
     const emittedManifest = () => fs.readFileSync(emittedManifestPath(), 'utf8');
-    const emit = (dump, react) => {
+    const emit = (dump, react, satisfiedDependencies) => {
       runDumpPackage.mockReturnValue(dump);
       return emitSourceManifestPackage(moduleRoot, {
         react,
         frameworkSearchPath: '/abs/interfaces',
         outDir,
+        satisfiedDependencies,
       });
     };
+
+    // A package can export several products; only the ones a precompiled framework
+    // provides go, and the package stays while anything still depends on it.
+    it('leaves out the products a precompiled framework already provides', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE, LIBAVIF],
+          targetDeps: [
+            { product: ['SDWebImage', 'SDWebImage', null, null] },
+            { product: ['SDWebImageMapKit', 'SDWebImage', null, null] },
+            { product: ['libavif', 'libavif-Xcode', null, null] },
+          ],
+        }),
+        null,
+        new Set(['SDWebImage', 'libavif'])
+      );
+
+      expect(result.refusal).toBeUndefined();
+      const manifest = emittedManifest();
+      expect(manifest).not.toContain('.product(name: "SDWebImage"');
+      expect(manifest).toContain('.product(name: "SDWebImageMapKit", package: "SDWebImage"),');
+      expect(manifest).toContain(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
+      );
+      expect(manifest).not.toContain('.product(name: "libavif"');
+      expect(manifest).not.toContain('libavif-Xcode.git');
+      expect(result.ok.spmProductNames).toEqual(['SDWebImage', 'SDWebImageMapKit', 'libavif']);
+      expect(result.ok.partlyProvidedPackages).toEqual([
+        {
+          url: 'https://github.com/SDWebImage/SDWebImage.git',
+          providedProducts: ['SDWebImage'],
+          keptProducts: ['SDWebImageMapKit'],
+        },
+      ]);
+    });
+
+    it('leaves out a provided product in every target, keeping the package another uses', () => {
+      const result = emit(
+        JSON.stringify({
+          name: 'TestModule',
+          dependencies: [SDWEB_IMAGE],
+          products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
+          targets: [
+            {
+              name: 'Main',
+              type: 'regular',
+              path: 'ios/Main',
+              dependencies: [{ product: ['SDWebImage', 'SDWebImage', null, null] }],
+            },
+            {
+              name: 'Helper',
+              type: 'regular',
+              path: 'ios/Helper',
+              dependencies: [
+                { product: ['SDWebImage', 'SDWebImage', null, null] },
+                { product: ['SDWebImageMapKit', 'SDWebImage', null, null] },
+              ],
+            },
+          ],
+        }),
+        null,
+        new Set(['SDWebImage'])
+      );
+
+      const manifest = emittedManifest();
+      expect(manifest).not.toContain('.product(name: "SDWebImage"');
+      expect(manifest).toContain('.product(name: "SDWebImageMapKit", package: "SDWebImage"),');
+      expect(manifest).toContain(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
+      );
+      expect(result.ok.partlyProvidedPackages).toEqual([
+        {
+          url: 'https://github.com/SDWebImage/SDWebImage.git',
+          providedProducts: ['SDWebImage'],
+          keptProducts: ['SDWebImageMapKit'],
+        },
+      ]);
+    });
+
+    it('leaves out a package once every product taken from it is provided', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE],
+          targetDeps: [{ product: ['SDWebImage', 'SDWebImage', null, null] }],
+        }),
+        null,
+        new Set(['SDWebImage'])
+      );
+
+      expect(emittedManifest()).not.toContain('SDWebImage.git');
+      expect(emittedManifest()).not.toContain('.product(name: "SDWebImage"');
+      expect(result.ok.partlyProvidedPackages).toEqual([]);
+    });
+
+    it('leaves out a byName dependency on a product a precompiled framework provides', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE],
+          targetDeps: [
+            { byName: ['SDWebImage', null] },
+            { byName: ['SDWebImage', { platformNames: ['ios'] }] },
+          ],
+        }),
+        null,
+        new Set(['SDWebImage'])
+      );
+
+      expect(emittedManifest()).not.toContain('"SDWebImage"');
+      expect(emittedManifest()).not.toContain('SDWebImage.git');
+      expect(result.ok.spmProductNames).toEqual(['SDWebImage']);
+      expect(result.ok.partlyProvidedPackages).toEqual([]);
+    });
+
+    // Which package a bare name comes from is unknown, so its loss names no package.
+    it('reports a skipped byName dependency once, with every package still declared', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE, LIBAVIF],
+          targetDeps: [
+            { byName: ['SDWebImage', null] },
+            { product: ['libavif', 'libavif-Xcode', null, null] },
+          ],
+        }),
+        null,
+        new Set(['SDWebImage'])
+      );
+
+      expect(emittedManifest()).not.toContain('"SDWebImage"');
+      expect(emittedManifest()).not.toContain('SDWebImage.git');
+      expect(emittedManifest()).toContain('libavif-Xcode.git');
+      expect(result.ok.partlyProvidedPackages).toEqual([
+        {
+          providedProducts: ['SDWebImage'],
+          keptPackages: ['https://github.com/SDWebImage/libavif-Xcode.git'],
+        },
+      ]);
+    });
+
+    // A bare name does not say which package it comes from, so it keeps them all.
+    it('keeps a package a remaining byName dependency may take a product from', () => {
+      const result = emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE],
+          targetDeps: [
+            { product: ['SDWebImage', 'SDWebImage', null, null] },
+            { byName: ['SDWebImageMapKit', null] },
+          ],
+        }),
+        null,
+        new Set(['SDWebImage'])
+      );
+
+      expect(emittedManifest()).not.toContain('.product(name: "SDWebImage"');
+      expect(emittedManifest()).toContain('"SDWebImageMapKit",');
+      expect(emittedManifest()).toContain(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
+      );
+      expect(result.ok.partlyProvidedPackages).toEqual([
+        {
+          url: 'https://github.com/SDWebImage/SDWebImage.git',
+          providedProducts: ['SDWebImage'],
+          keptProducts: [],
+          unattributedNames: ['SDWebImageMapKit'],
+        },
+      ]);
+    });
+
+    it('does not attribute a remaining byName dependency to a package that lost a product', () => {
+      const LOTTIE = remote('lottie-spm', 'https://github.com/airbnb/lottie-spm.git', {
+        exact: ['4.5.0'],
+      });
+      const result = emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE, LOTTIE],
+          targetDeps: [
+            { product: ['SDWebImage', 'SDWebImage', null, null] },
+            { byName: ['Lottie', null] },
+          ],
+        }),
+        null,
+        new Set(['SDWebImage'])
+      );
+
+      expect(emittedManifest()).toContain('SDWebImage.git');
+      expect(emittedManifest()).toContain('lottie-spm.git');
+      expect(result.ok.partlyProvidedPackages).toEqual([
+        {
+          url: 'https://github.com/SDWebImage/SDWebImage.git',
+          providedProducts: ['SDWebImage'],
+          keptProducts: [],
+          unattributedNames: ['Lottie'],
+        },
+      ]);
+    });
+
+    it('keeps the packages for a remaining byName dependency with a condition', () => {
+      emit(
+        dumpWith({
+          dependencies: [SDWEB_IMAGE],
+          targetDeps: [
+            { product: ['SDWebImage', 'SDWebImage', null, null] },
+            { byName: ['SDWebImageMapKit', { platformNames: ['ios'] }] },
+          ],
+        }),
+        null,
+        new Set(['SDWebImage'])
+      );
+
+      expect(emittedManifest()).not.toContain('.product(name: "SDWebImage"');
+      expect(emittedManifest()).toContain('.byName(name: "SDWebImageMapKit", condition:');
+      expect(emittedManifest()).toContain(
+        '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
+      );
+    });
+
+    it('keeps a dependency on a sibling target named like a provided product', () => {
+      emit(dumpWith({ targetDeps: [{ byName: ['Helper', null] }] }), null, new Set(['Helper']));
+
+      expect(emittedManifest()).toContain(
+        'dependencies: [\n                "Helper",\n            ],'
+      );
+    });
 
     it('carries the module packages and their products into the emitted manifest', () => {
       const result = emit(
@@ -1887,6 +2138,7 @@ let package = Package(
         '.package(url: "https://github.com/SDWebImage/SDWebImage.git", exact: "5.21.6"),'
       );
       expect(emittedManifest()).toContain('.product(name: "SDWebImage", package: "SDWebImage"),');
+      expect(result.ok.partlyProvidedPackages).toEqual([]);
     });
 
     it('skips the module instead of emitting a manifest missing a package it declares', () => {

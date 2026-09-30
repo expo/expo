@@ -16,6 +16,7 @@ const {
   collectDuplicatePods,
   collectRootConflicts,
   renderRootConflictWarning,
+  renderPartlyProvidedPackageWarning,
   renderExtraPodsWarning,
 } = require('../diagnostics');
 const { resolvePodIdentities, uncoveredPod } = require('../plugin');
@@ -769,6 +770,104 @@ describe('a module installed twice', () => {
 
   it('renders nothing when no module is installed twice', () => {
     expect(renderRootConflictWarning([])).toBe('');
+  });
+});
+
+describe('a package kept for more than the products a precompiled framework provides', () => {
+  it('names the package, both sets of products, why that can duplicate one, and the fixes', () => {
+    const report = renderPartlyProvidedPackageWarning([
+      {
+        packageName: 'expo-maps-extra',
+        moduleRoot: '/app/node_modules/expo-maps-extra',
+        url: 'https://github.com/SDWebImage/SDWebImage.git',
+        providedProducts: ['SDWebImage'],
+        keptProducts: ['SDWebImageMapKit'],
+      },
+    ]);
+    expect(report).toMatch(
+      /^warning: Expo module "expo-maps-extra" still declares https:\/\/github\.com\/SDWebImage\/SDWebImage\.git for "SDWebImageMapKit"/
+    );
+    expect(report).toContain('"SDWebImage" comes from a precompiled framework');
+    expect(report).toContain('second copy');
+    expect(report).toContain('stop using "SDWebImageMapKit"');
+    expect(report).toContain('from source');
+    expect(report).toContain('Module path: /app/node_modules/expo-maps-extra');
+  });
+
+  it('names a product depended on by name without a package, and every package kept', () => {
+    const report = renderPartlyProvidedPackageWarning([
+      {
+        packageName: 'expo-maps-extra',
+        moduleRoot: '/app/node_modules/expo-maps-extra',
+        providedProducts: ['SDWebImage'],
+        keptPackages: ['https://github.com/SDWebImage/libavif-Xcode.git'],
+      },
+    ]);
+    expect(report).toMatch(
+      /^warning: Expo module "expo-maps-extra" names "SDWebImage" without a package, and it comes from a precompiled framework\./
+    );
+    expect(report).toContain(
+      'may still build it from https://github.com/SDWebImage/libavif-Xcode.git, which'
+    );
+    expect(report).toContain('stop using https://github.com/SDWebImage/libavif-Xcode.git');
+    expect(report).toContain('from source');
+    expect(report).toContain('Module path: /app/node_modules/expo-maps-extra');
+  });
+
+  it('says "one of" only when more than one package is still declared', () => {
+    const report = renderPartlyProvidedPackageWarning([
+      {
+        packageName: 'expo-maps-extra',
+        moduleRoot: '/app/node_modules/expo-maps-extra',
+        providedProducts: ['SDWebImage'],
+        keptPackages: [
+          'https://github.com/SDWebImage/libavif-Xcode.git',
+          'https://github.com/airbnb/lottie-spm.git',
+        ],
+      },
+    ]);
+    expect(report).toContain(
+      'may still build it from one of https://github.com/SDWebImage/libavif-Xcode.git, https://github.com/airbnb/lottie-spm.git, which'
+    );
+  });
+
+  // Only the package's own products can be attributed to it.
+  it('names a remaining byName dependency as possibly, not certainly, from the package', () => {
+    const report = renderPartlyProvidedPackageWarning([
+      {
+        packageName: 'expo-maps-extra',
+        moduleRoot: '/app/node_modules/expo-maps-extra',
+        url: 'https://github.com/SDWebImage/SDWebImage.git',
+        providedProducts: ['SDWebImage'],
+        keptProducts: [],
+        unattributedNames: ['Lottie'],
+      },
+    ]);
+    expect(report).toMatch(
+      /^warning: Expo module "expo-maps-extra" still declares https:\/\/github\.com\/SDWebImage\/SDWebImage\.git, while "SDWebImage" comes from a precompiled framework\./
+    );
+    expect(report).not.toContain('for "Lottie"');
+    expect(report).not.toContain('for ""');
+    expect(report).toContain('names "Lottie" without a package, which may come from it');
+  });
+
+  it('names each product the module uses once, joined as alternatives', () => {
+    const report = renderPartlyProvidedPackageWarning([
+      {
+        packageName: 'expo-maps-extra',
+        moduleRoot: '/app/node_modules/expo-maps-extra',
+        url: 'https://github.com/SDWebImage/SDWebImage.git',
+        providedProducts: ['SDWebImage'],
+        keptProducts: ['SDWebImageMapKit'],
+        unattributedNames: ['SDWebImageMapKit', 'Lottie'],
+      },
+    ]);
+    expect(report).toContain('If "SDWebImageMapKit" or "Lottie" depends on "SDWebImage"');
+    expect(report).toContain('stop using "SDWebImageMapKit" or "Lottie" in "expo-maps-extra"');
+  });
+
+  it('renders nothing when every such package was left out', () => {
+    expect(renderPartlyProvidedPackageWarning([])).toBe('');
   });
 });
 

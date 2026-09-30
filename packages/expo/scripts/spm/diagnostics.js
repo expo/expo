@@ -717,6 +717,53 @@ function renderRootConflictWarning(entries) {
     .join('\n\n');
 }
 
+/**
+ * Packages a source module still declares after the products a precompiled framework
+ * provides were left out. Whether a kept product depends on a provided one inside the
+ * package is invisible to the plugin, so this warns rather than fails.
+ */
+function renderPartlyProvidedPackageWarning(entries) {
+  if (!entries.length) return '';
+  const quoted = (names, separator = ', ') => names.map((name) => `"${name}"`).join(separator);
+  return entries
+    .map((entry) => {
+      const { packageName, moduleRoot, url, providedProducts, keptProducts, keptPackages } = entry;
+      const provided = quoted(providedProducts);
+      const one = providedProducts.length === 1;
+      const fix = (used) =>
+        `If it does, stop using ${used} in "${packageName}", or build the Expo module that links the precompiled ${provided} from source too, so both use one copy of the package.`;
+      if (url == null) {
+        const packages = keptPackages.join(', ');
+        const source = keptPackages.length === 1 ? packages : `one of ${packages}`;
+        return renderBlock(
+          `warning: Expo module "${packageName}" names ${provided} without a package, and ${one ? 'it comes' : 'they come'} from a precompiled framework.`,
+          [
+            `Swift Package Manager may still build ${one ? 'it' : 'them'} from ${source}, which the module still declares, and the app would then link a second copy.`,
+            fix(packages),
+          ],
+          moduleRoot
+        );
+      }
+      const unattributedNames = entry.unattributedNames ?? [];
+      const users = [...new Set([...keptProducts, ...unattributedNames])];
+      const kept = keptProducts.length ? ` for ${quoted(keptProducts)}` : '';
+      return renderBlock(
+        `warning: Expo module "${packageName}" still declares ${url}${kept}, while ${provided} ${one ? 'comes' : 'come'} from a precompiled framework.`,
+        [
+          ...(unattributedNames.length
+            ? [
+                `The module ${kept ? 'also ' : ''}names ${quoted(unattributedNames)} without a package, which may come from it.`,
+              ]
+            : []),
+          `If ${quoted(users, ' or ')} depends on ${provided} inside that package, Swift Package Manager builds a second copy of ${one ? 'it' : 'them'} from source, and the app links both.`,
+          fix(quoted(users, ' or ')),
+        ],
+        moduleRoot
+      );
+    })
+    .join('\n\n');
+}
+
 // CocoaPods accepts only one ref; a pod carrying two is named by the most specific.
 const GIT_REFS = ['commit', 'tag', 'branch'];
 
@@ -768,6 +815,7 @@ module.exports = {
   renderLeftOutCompanionWarning,
   renderXcconfigLinkerWarning,
   renderRootConflictWarning,
+  renderPartlyProvidedPackageWarning,
   renderExtraPodsWarning,
   reportUnsupported,
 };

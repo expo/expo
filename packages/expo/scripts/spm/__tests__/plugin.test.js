@@ -1503,6 +1503,203 @@ describe('the SwiftPM packages a source-emitted module declares', () => {
   });
 });
 
+describe('a source-emitted module depending on a package a precompiled module links', () => {
+  captureConsole();
+  let manifest;
+  let result;
+  let compiled;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-satisfied-deps-plugin-');
+    const outDir = path.join(tmp, 'out');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const imageRoot = path.join(tmp, 'expo-image');
+    const imagePodspecDir = mixedModule(imageRoot, 'ExpoImage');
+    const fooRoot = path.join(tmp, 'expo-foo');
+    const foo = pureSwiftModule(fooRoot, 'ExpoFoo', spec("  s.dependency 'ExpoModulesCore'"));
+    const sdWebImage = {
+      url: 'https://github.com/SDWebImage/SDWebImage.git',
+      productName: 'SDWebImage',
+      version: { exact: '5.21.6' },
+    };
+    const libavif = {
+      url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+      productName: 'libavif',
+      version: { exact: '1.0.0' },
+    };
+
+    resolveExpoModules.mockReturnValue(
+      modulesOf([
+        coreAt(core),
+        ['expo-image', [['ExpoImage', imagePodspecDir]]],
+        ['expo-foo', [['ExpoFoo', foo]]],
+      ])
+    );
+    prebuiltMetadata.mockReturnValue({
+      ExpoImage: { packageRoot: imageRoot, productName: 'ExpoImage', spmPackages: [sdWebImage] },
+      ExpoFoo: {
+        packageRoot: fooRoot,
+        productName: 'ExpoFoo',
+        sourceOnly: true,
+        spmPackages: [sdWebImage, libavif],
+      },
+    });
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' || frameworkName === 'ExpoImage'
+        ? { id: frameworkName === 'ExpoImage' ? 'expo-image' : 'expo-modules-core', frameworkName }
+        : null
+    );
+    resolveSpmDependencyFrameworks.mockReturnValue([
+      {
+        id: 'expo-sd-web-image',
+        frameworkName: 'SDWebImage',
+        linkage: 'dynamic',
+        flavors: {
+          debug: '/abs/debug/SDWebImage.xcframework',
+          release: '/abs/release/SDWebImage.xcframework',
+        },
+      },
+    ]);
+    prepareCompileInterfaces.mockImplementation((frameworks) => {
+      compiled = frameworks.map((framework) => framework.frameworkName);
+      return '/abs/interfaces';
+    });
+    providerWrittenTo(outDir);
+    result = runPlugin(tmp);
+    manifest = fs.readFileSync(
+      path.join(outDir, 'expo', 'expo-source', 'ExpoFoo', 'Package.swift'),
+      'utf8'
+    );
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('links the precompiled framework instead of declaring a second copy', () => {
+    expect(manifest).not.toContain('SDWebImage.git');
+    expect(manifest).not.toContain('.product(name: "SDWebImage"');
+    expect(result.flavoredFrameworks).toContainEqual(
+      expect.objectContaining({ frameworkName: 'SDWebImage' })
+    );
+    expect(compiled).toContain('SDWebImage');
+    expect(manifest).toContain('cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])],');
+    expect(manifest).toContain('swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces",');
+  });
+
+  it('still declares the packages nothing precompiled provides', () => {
+    expect(manifest).toContain(
+      '.package(url: "https://github.com/SDWebImage/libavif-Xcode.git", exact: "1.0.0"),'
+    );
+    expect(manifest).toContain('.product(name: "libavif", package: "libavif-Xcode"),');
+  });
+});
+
+// A kept product can depend on the provided one inside its package, which the plugin
+// cannot see, so the sync warns instead of failing.
+describe('a source-emitted module keeping a package whose other product is precompiled', () => {
+  const logs = captureConsole();
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-partly-provided-plugin-');
+    const outDir = path.join(tmp, 'out');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const imageRoot = path.join(tmp, 'expo-image');
+    const imagePodspecDir = mixedModule(imageRoot, 'ExpoImage');
+    const mapsRoot = path.join(tmp, 'expo-maps-extra');
+    const maps = pureSwiftModule(
+      mapsRoot,
+      'ExpoMapsExtra',
+      spec("  s.dependency 'ExpoModulesCore'")
+    );
+    fs.writeFileSync(
+      path.join(mapsRoot, 'Package.swift'),
+      '// swift-tools-version: 6.0\n// checked in by the module\n'
+    );
+    runDumpPackage.mockReturnValue(
+      JSON.stringify({
+        name: 'ExpoMapsExtra',
+        dependencies: [
+          {
+            sourceControl: [
+              {
+                identity: 'sdwebimage',
+                location: {
+                  remote: [{ urlString: 'https://github.com/SDWebImage/SDWebImage.git' }],
+                },
+                productFilter: null,
+                requirement: { exact: ['5.21.6'] },
+              },
+            ],
+          },
+        ],
+        products: [
+          { name: 'ExpoMapsExtra', type: { library: ['automatic'] }, targets: ['ExpoMapsExtra'] },
+        ],
+        targets: [
+          {
+            name: 'ExpoMapsExtra',
+            type: 'regular',
+            path: 'ios',
+            dependencies: [
+              { product: ['SDWebImage', 'SDWebImage', null, null] },
+              { product: ['SDWebImageMapKit', 'SDWebImage', null, null] },
+              { byName: ['SDWebImage', null] },
+            ],
+          },
+        ],
+      })
+    );
+
+    resolveExpoModules.mockReturnValue(
+      modulesOf([
+        coreAt(core),
+        ['expo-image', [['ExpoImage', imagePodspecDir]]],
+        ['expo-maps-extra', [['ExpoMapsExtra', maps]]],
+      ])
+    );
+    prebuiltMetadata.mockReturnValue({
+      ExpoImage: {
+        packageRoot: imageRoot,
+        productName: 'ExpoImage',
+        spmPackages: [
+          {
+            url: 'https://github.com/SDWebImage/SDWebImage.git',
+            productName: 'SDWebImage',
+            version: { exact: '5.21.6' },
+          },
+        ],
+      },
+    });
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      frameworkName === 'ExpoModulesCore' || frameworkName === 'ExpoImage'
+        ? { id: frameworkName === 'ExpoImage' ? 'expo-image' : 'expo-modules-core', frameworkName }
+        : null
+    );
+    resolveSpmDependencyFrameworks.mockReturnValue([
+      { id: 'expo-sd-web-image', frameworkName: 'SDWebImage' },
+    ]);
+    providerWrittenTo(outDir);
+    runPlugin(tmp);
+  });
+
+  afterAll(restoreModuleMocks);
+
+  it('warns once, naming the package and its products, and the product named without one', () => {
+    const warnings = logs.warn.mock.calls
+      .map(([text]) => text)
+      .filter((text) => text.includes('from a precompiled framework'));
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain(
+      'Expo module "expo-maps-extra" still declares https://github.com/SDWebImage/SDWebImage.git for "SDWebImageMapKit", while "SDWebImage" comes from a precompiled framework.'
+    );
+    expect(warnings[0]).toContain(
+      'Expo module "expo-maps-extra" names "SDWebImage" without a package'
+    );
+    expect(warnings[0]).toContain(
+      'may still build it from https://github.com/SDWebImage/SDWebImage.git, which'
+    );
+  });
+});
+
 describe('a pod name two packages both list', () => {
   captureConsole();
   let result;
