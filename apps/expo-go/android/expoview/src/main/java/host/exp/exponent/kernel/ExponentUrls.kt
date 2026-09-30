@@ -63,6 +63,15 @@ object ExponentUrls {
     return "$scheme://${authority.removeSuffix(defaultPort)}" + rawUrl.removePrefix("${uri.scheme}://$authority")
   }
 
+  @JvmStatic fun isHomeUrl(rawUrl: String): Boolean {
+    val scheme = rawUrl.substringBefore(':', missingDelimiterValue = "").lowercase()
+    if (scheme != "exp" && scheme != "exps") {
+      return false
+    }
+    val host = rawUrl.substringAfter(':').removePrefix("//").takeWhile { it !in "/?#" }
+    return host.isEmpty()
+  }
+
   @JvmStatic fun resolveManifestUrl(rawUrl: String, manifestUrl: String): String {
     val baseUrl = ExponentManifest.httpManifestUrl(manifestUrl).toString()
     return try {
