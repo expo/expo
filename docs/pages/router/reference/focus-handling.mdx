@@ -1,0 +1,141 @@
+---
+title: Focus handling
+description: Run effects, render UI, and respond to navigation events when an Expo Router screen is focused.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+Expo Router provides several ways to respond to screen focus. Choose the hook or event listener that matches what your screen needs to do.
+
+## Run an effect when a screen is focused
+
+Use `useFocusEffect` to start work when a screen is focused and clean it up when focus is lost. Pass one callback wrapped in `useCallback`. The callback can return a cleanup function or return nothing.
+
+<FileTree files={['src/app/profile.tsx']} />
+
+```tsx src/app/profile.tsx
+import { useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
+
+export default function Profile() {
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = subscribeToProfileUpdates();
+
+      return () => subscription.unsubscribe();
+    }, [])
+  );
+
+  return null;
+}
+```
+
+`useFocusEffect` waits until navigation has loaded before it first runs the callback. It then runs the callback when the screen gains focus, or when the effect runs while the screen is already focused. The cleanup runs on blur and when the effect is torn down, for example, when the callback changes or the component unmounts. If the memoized callback changes while the screen is focused, the previous cleanup runs before the new callback runs.
+
+### Pass dependencies to `useFocusEffect`
+
+`useFocusEffect` accepts only the callback. Put dependencies in the `useCallback` dependency array instead of passing a second argument to `useFocusEffect`:
+
+```tsx
+useFocusEffect(
+  useCallback(() => {
+    const subscription = subscribeToProfileUpdates(profileId);
+    return () => subscription.unsubscribe();
+  }, [profileId])
+);
+```
+
+### Run async work in `useFocusEffect`
+
+The callback itself must not be `async`: an async function returns a Promise, but `useFocusEffect` expects it to return a cleanup function or nothing. Define and call an async function inside the callback. Ignore the result after cleanup if the work cannot be canceled:
+
+```tsx
+useFocusEffect(
+  useCallback(() => {
+    let active = true;
+
+    async function loadProfile() {
+      const profile = await fetchProfile(profileId);
+      if (active) {
+        setProfile(profile);
+      }
+    }
+
+    loadProfile();
+    return () => {
+      active = false;
+    };
+  }, [profileId])
+);
+```
+
+## Render based on focus
+
+`useIsFocused` returns a boolean that changes when the screen gains or loses focus. It re-renders the component on focus changes. Call it inside a route screen or another component in the route tree.
+
+```tsx
+import { useIsFocused } from 'expo-router';
+
+export default function Profile() {
+  const isFocused = useIsFocused();
+
+  return <ProfileContent showLiveStatus={isFocused} />;
+}
+```
+
+Calling `useIsFocused` outside the route tree throws an error.
+
+## Listen for focus and blur events
+
+Use `useNavigation` when you need a specific navigation event. Subscribe to `focus` or `blur` in an effect, and return the unsubscribe function from `addListener`. Include the memoized listener callback in the effect's dependency list.
+
+```tsx
+import { useCallback, useEffect } from 'react';
+import { useNavigation } from 'expo-router';
+
+export default function Profile() {
+  const navigation = useNavigation();
+  const onFocus = useCallback(() => {
+    recordProfileView();
+  }, []);
+  const onBlur = useCallback(() => {
+    pauseProfileUpdates();
+  }, []);
+
+  useEffect(() => navigation.addListener('focus', onFocus), [navigation, onFocus]);
+  useEffect(() => navigation.addListener('blur', onBlur), [navigation, onBlur]);
+
+  return null;
+}
+```
+
+For imperative code outside a route component, a reference to a screen navigation object can also provide `focus` and `blur` events. Subscribe with `addListener` and retain the returned unsubscribe function. The root `NavigationContainerRef` exposes only the `state` event, so it cannot listen for screen focus or blur. Inside a route component, `useNavigation` provides the screen navigation object shown above.
+
+## When to use which
+
+| Need                                                                 | Use                           |
+| -------------------------------------------------------------------- | ----------------------------- |
+| Start work while a screen is focused and clean it up when focus ends | `useFocusEffect`              |
+| Render different UI based on current focus                           | `useIsFocused`                |
+| Respond to a specific focus or blur navigation event                 | `useNavigation().addListener` |
+
+## Use the active route for route-aware effects
+
+Focus describes a screen's navigation state. When an effect depends on the active route, [`useSegments`](/versions/latest/sdk/router/#usesegments) reads its file-based segments and [`usePathname`](/versions/latest/sdk/router/#usepathname) reads its URL pathname. Use either value as an effect dependency when route changes should trigger the work:
+
+```tsx
+import { useEffect } from 'react';
+import { usePathname } from 'expo-router';
+
+export default function RouteObserver() {
+  const pathname = usePathname();
+
+  useEffect(() => {
+    recordRoute(pathname);
+  }, [pathname]);
+
+  return null;
+}
+```
+
+`useStateForPath` is exported only by the `expo-router/react-navigation` compatibility entry; it is not exported from `expo-router` and is not an Expo Router feature.
