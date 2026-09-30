@@ -17,6 +17,13 @@ const path = require('path');
 
 const FLAVORS = ['debug', 'release'];
 
+/**
+ * Byte order, the order CocoaPods sorts in. Declaration order reaches the build:
+ * it decides which contributor a colliding artifact is taken from, so it must not
+ * vary with the machine's locale.
+ */
+const byteOrder = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
 function stableFrameworkId(frameworkName) {
   const kebab = frameworkName
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
@@ -45,16 +52,26 @@ function existingArtifactSource(baseDir, flavor, frameworkName) {
   return null;
 }
 
-function artifactBaseDirs(packageName, moduleRoot) {
+/**
+ * Candidate directories for precompiled output, in lookup order: the path
+ * override, the monorepo prebuild output, then the copy bundled into the npm
+ * package at `moduleRoot`. `buildPath` is relative to a prebuild output root,
+ * `bundledPath` to the package's `prebuilds` directory.
+ */
+function precompiledBaseDirs(buildPath, moduleRoot, bundledPath) {
   const bases = [];
   if (process.env.EXPO_PRECOMPILED_MODULES_PATH) {
-    bases.push(path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, packageName, 'output'));
+    bases.push(path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, ...buildPath));
   }
   bases.push(
-    path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', packageName, 'output'),
-    path.join(moduleRoot, 'prebuilds', 'output')
+    path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
+    path.join(moduleRoot, 'prebuilds', ...bundledPath)
   );
   return Array.from(new Set(bases));
+}
+
+function artifactBaseDirs(packageName, moduleRoot) {
+  return precompiledBaseDirs([packageName, 'output'], moduleRoot, ['output']);
 }
 
 /**
@@ -248,6 +265,196 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
   return null;
 }
 
+/**
+ * Candidate parents (each holding `<flavor>/<Dep>.xcframework`) for a SwiftPM
+ * package a precompiled module links. The bundled copy lives in the npm package
+ * of the module that links it.
+ */
+function spmDependencyBaseDirs(depName, ownerModuleRoot) {
+  return precompiledBaseDirs(['.spm-deps', depName], ownerModuleRoot, ['spm-deps', depName]);
+}
+
+/**
+ * A dependency copied verbatim from an upstream `.binaryTarget` can be a static
+ * library, and one built from a package whose product is named differently ships
+ * a differently named framework. Both reach RN and the interface tree as a slice
+ * that is not `<Dep>.framework`, and fail there with a message naming neither the
+ * dependency nor the module that pulled it in — so they are rejected here.
+ */
+function readXcframeworkPlist(plistPath) {
+  try {
+    return JSON.parse(
+      execFileSync('plutil', ['-convert', 'json', '-o', '-', plistPath], { encoding: 'utf8' })
+    );
+  } catch (error) {
+    throw new Error(
+      `[expo-spm-plugin] ${plistPath} could not be read as a property list: ${error.message}. ` +
+        'An XCFramework keeps the list of what it holds there, so this one is damaged or was ' +
+        'never an XCFramework. Delete it and rebuild the dependency with the Expo prebuild ' +
+        'pipeline, or reinstall the package that ships it.',
+      { cause: error }
+    );
+  }
+}
+
+function assertEmbeddableFramework(depName, xcframeworkPath) {
+  const plistPath = path.join(xcframeworkPath, 'Info.plist');
+  const plist = readXcframeworkPlist(plistPath);
+  if (plist.AvailableLibraries != null && !Array.isArray(plist.AvailableLibraries)) {
+    throw new Error(
+      `[expo-spm-plugin] ${plistPath} lists AvailableLibraries as something other than a list of ` +
+        'slices, so the plugin cannot tell what the XCFramework holds. The artifact is damaged. ' +
+        'Delete it and rebuild the dependency with the Expo prebuild pipeline, or reinstall the ' +
+        'package that ships it.'
+    );
+  }
+  const libraries = plist.AvailableLibraries ?? [];
+  const expected = `${depName}.framework`;
+  const unusable = libraries
+    .map((library) => library?.LibraryPath)
+    .filter((libraryPath) => libraryPath !== expected);
+  if (libraries.length === 0 || unusable.length > 0) {
+    const found =
+      unusable.map((libraryPath) => libraryPath ?? 'a slice with no LibraryPath').join(', ') ||
+      'no library slices';
+    throw new Error(
+      `[expo-spm-plugin] ${depName} does not ship a ${expected}: ${xcframeworkPath} holds ` +
+        `${found}. React Native links and embeds Expo's precompiled dependencies as dynamic ` +
+        'frameworks named after the product, so a static library, a differently named framework ' +
+        'and an XCFramework without slices are all unusable. Rebuild the dependency with the ' +
+        "Expo prebuild pipeline, or exclude the Expo module that links it in your app's " +
+        'package.json: "expo": { "autolinking": { "exclude": [...] } }.'
+    );
+  }
+}
+
+/**
+ * XCFrameworks are directories; a stale file of the same name is not one. Only an
+ * absent path counts as "not built here" — swallowing every error would make an
+ * unreadable one look identical to a missing artifact, and the app would be built
+ * without a dependency it links.
+ */
+function isDirectory(candidate) {
+  try {
+    return fs.statSync(candidate).isDirectory();
+  } catch (error) {
+    if (error.code === 'ENOENT' || error.code === 'ENOTDIR') {
+      return false;
+    }
+    throw new Error(
+      `[expo-spm-plugin] ${candidate} could not be read: ${error.message}. The plugin cannot ` +
+        'tell whether a precompiled dependency is there, and it will not silently build an app ' +
+        'without one. Make that path readable — or delete it and rebuild the dependency with ' +
+        'the Expo prebuild pipeline — then run `npx react-native spm update` again.',
+      { cause: error }
+    );
+  }
+}
+
+/**
+ * RN embeds every flavored framework into the app bundle, so it rejects the whole
+ * autolinking result when two declarations share an id or a framework name. Two
+ * distinct products can collide after `stableFrameworkId` (Foo and ExpoFoo both
+ * become expo-foo), and a dependency can carry the name of a module, so the check
+ * belongs on the combined array rather than on either source.
+ */
+function assertDistinctFlavoredFrameworks(frameworks) {
+  const describe = (framework) =>
+    framework.flavors?.debug != null
+      ? `${framework.frameworkName} (${framework.flavors.debug})`
+      : framework.frameworkName;
+  for (const [key, label] of [
+    ['id', 'framework id'],
+    ['frameworkName', 'framework name'],
+  ]) {
+    const seen = new Map();
+    for (const framework of frameworks) {
+      const previous = seen.get(framework[key]);
+      if (previous != null) {
+        throw new Error(
+          `[expo-spm-plugin] ${describe(previous)} and ${describe(framework)} both declare the ` +
+            `${label} "${framework[key]}". React Native embeds each flavored framework once and ` +
+            'rejects the whole autolinking graph over a collision, so no Expo module would ' +
+            'build. ' +
+            "Exclude the Expo module that brings in one of the two in your app's package.json: " +
+            '"expo": { "autolinking": { "exclude": [...] } }, and report the pair at ' +
+            'https://github.com/expo/expo/issues — one of the two products has to be renamed.'
+        );
+      }
+      seen.set(framework[key], framework);
+    }
+  }
+}
+
+/**
+ * Returns null when the dependency has no artifact anywhere. Each flavor walks
+ * the full candidate list on its own, so a partial monorepo build cannot shadow
+ * a complete bundled copy — CocoaPods resolves it the same way in
+ * `expo-modules-autolinking/scripts/ios/precompiled_modules.rb`.
+ */
+function resolveSpmDependencyFramework(depName, ownerModuleRoot) {
+  const bases = spmDependencyBaseDirs(depName, ownerModuleRoot);
+  const flavors = {};
+  for (const flavor of FLAVORS) {
+    const base = bases.find((dir) => isDirectory(path.join(dir, flavor, `${depName}.xcframework`)));
+    if (base != null) flavors[flavor] = path.join(base, flavor, `${depName}.xcframework`);
+  }
+  const resolved = FLAVORS.filter((flavor) => flavors[flavor] != null);
+  if (resolved.length === 0) {
+    return null;
+  }
+  for (const flavor of FLAVORS) {
+    if (flavors[flavor] == null) {
+      throw new Error(
+        `[expo-spm-plugin] ${depName} has no ${flavor} XCFramework, although its ` +
+          `${resolved[0]} one resolved. Expo declares its precompiled dependencies as immutable ` +
+          'pairs, so half a pair would link in one configuration and fail to launch in the other ' +
+          `with dyld "Library not loaded: @rpath/${depName}.framework/${depName}". Build the ` +
+          'dependency for both flavors with the Expo prebuild pipeline, or install a package ' +
+          `that ships both. Searched: ${bases.join(', ')}.`
+      );
+    }
+  }
+  const framework = validateFlavoredFramework({
+    id: stableFrameworkId(depName),
+    frameworkName: depName,
+    linkage: 'dynamic',
+    flavors,
+  });
+  for (const flavor of FLAVORS) {
+    assertEmbeddableFramework(depName, framework.flavors[flavor]);
+  }
+  return framework;
+}
+
+/**
+ * The SwiftPM packages the precompiled modules link (SDWebImage, ZXingObjC, …),
+ * each shipped as its own XCFramework beside the module.
+ *
+ * Two modules can link the same package, and RN's flavored frameworks are a flat
+ * app-wide array that rejects a repeated id or framework name, so each dependency
+ * is declared exactly once. Its owner — the first consuming pod name in byte
+ * order, as CocoaPods' `ensure_shared_spm_deps` picks it — is also the npm
+ * package searched for a bundled copy, so the two installers must order names
+ * identically. The other consumers need nothing: one declaration serves the whole
+ * app.
+ */
+function resolveSpmDependencyFrameworks(consumers) {
+  const owners = new Map();
+  for (const consumer of consumers) {
+    for (const depName of consumer.spmDependencies ?? []) {
+      const owner = owners.get(depName);
+      if (owner == null || consumer.podName < owner.podName) {
+        owners.set(depName, consumer);
+      }
+    }
+  }
+  return [...owners.keys()]
+    .sort()
+    .map((depName) => resolveSpmDependencyFramework(depName, owners.get(depName).moduleRoot))
+    .filter((framework) => framework != null);
+}
+
 function copyFileIfLarger(source, destination) {
   let shouldCopy = true;
   try {
@@ -263,7 +470,7 @@ function mergeDirectory(source, destination) {
   if (!fs.existsSync(source)) return;
   for (const entry of fs
     .readdirSync(source, { withFileTypes: true })
-    .sort((a, b) => a.name.localeCompare(b.name))) {
+    .sort((a, b) => byteOrder(a.name, b.name))) {
     const src = path.join(source, entry.name);
     const dst = path.join(destination, entry.name);
     if (entry.isDirectory()) {
@@ -282,7 +489,7 @@ function mergeDirectory(source, destination) {
  */
 function prepareCompileInterfaces(frameworks, destination) {
   replaceDirectory(destination, (temp) => {
-    for (const framework of [...frameworks].sort((a, b) => a.id.localeCompare(b.id))) {
+    for (const framework of [...frameworks].sort((a, b) => byteOrder(a.id, b.id))) {
       const source = framework.flavors.debug;
       const sliceFrameworks = fs
         .readdirSync(source, { withFileTypes: true })
@@ -311,8 +518,11 @@ function prepareCompileInterfaces(frameworks, destination) {
 module.exports = {
   FLAVORS,
   artifactBaseDirs,
+  assertDistinctFlavoredFrameworks,
+  byteOrder,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
+  resolveSpmDependencyFrameworks,
   stableFrameworkId,
   validateFlavoredFramework,
 };
