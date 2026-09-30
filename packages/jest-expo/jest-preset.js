@@ -29,6 +29,7 @@ const { resolveBabelOptions } = require('./src/resolveBabelOptions');
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
   '^react-native/asset-registry$': 'react-native/src/asset-registry',
+  '^react-native/unstable-internals-do-not-use$': 'react-native/src/unstable-internals-do-not-use',
   ...(jestPreset.moduleNameMapper || {}),
   '^react-native-vector-icons$': '@expo/vector-icons',
   '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',

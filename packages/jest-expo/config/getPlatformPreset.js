@@ -104,6 +104,8 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     // extensions for runtime ESM compatibility.
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^react-native/asset-registry$': 'react-native/src/asset-registry',
+    '^react-native/unstable-internals-do-not-use$':
+      'react-native/src/unstable-internals-do-not-use',
     ...preset.moduleNameMapper,
   };
 
