@@ -15,17 +15,17 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 [TesterArmy](https://tester.army/) builds tools that test your app with AI agents. An agent opens your app, taps through a flow like a user does, and checks the result. **You can use TesterArmy with an Expo app in two ways:**
 
-|                       | Open source e2e                                                     | TesterArmy platform                                                                         |
-| --------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| What it is            | An open source end-to-end (E2E) testing framework                   | A hosted testing service                                                                    |
-| Where tests run       | On your Android Emulator or iOS Simulator, or on your CI machine    | On TesterArmy's cloud Android Emulators and iOS Simulators                                  |
-| What you need         | A model for agent steps, such as a subscription you already have    | A TesterArmy account and API key                                                            |
-| How tests are written | Test files with agent steps and exact assertions                    | Saved tests in the TesterArmy dashboard, plus an agent that tests each pull request         |
-| Expo setup            | A release build installed on your Android Emulator or iOS Simulator | EAS Build profiles and a workflow in EAS Workflows that builds, uploads, and tests your app |
+|                       | Open source e2e                                                       | TesterArmy platform                                                                         |
+| --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| What it is            | An open source end-to-end (E2E) testing framework                     | A hosted testing service                                                                    |
+| Where tests run       | On your Android Emulator or iOS Simulator, or on your CI machine      | On TesterArmy's cloud Android Emulators and iOS Simulators                                  |
+| What you need         | A model only for agent steps, such as a subscription you already have | A TesterArmy account and API key                                                            |
+| How tests are written | Test files with agent steps and exact assertions                      | Saved tests in the TesterArmy dashboard, plus an agent that tests each pull request         |
+| Expo setup            | A release build installed on your Android Emulator or iOS Simulator   | EAS Build profiles and a workflow in EAS Workflows that builds, uploads, and tests your app |
 
 This guide shows how to set up e2e in an Expo project and run it on your computer. It also shares an example on how to build your app with [EAS Build](/build/introduction/) and run TesterArmy platform tests on each push and pull request with [EAS Workflows](/eas/workflows/introduction/).
 
-## Run E2E tests with e2e framework
+## Run E2E tests with the e2e framework
 
 [e2e](https://e2e.tester.army/docs) is TesterArmy's open source E2E testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
 
@@ -50,7 +50,7 @@ This guide shows how to set up e2e in an Expo project and run it on your compute
 
 ### Build and install a release build
 
-Set `android.package`and `ios.bundleIdentifier` in your [app config](/workflow/configuration/). e2e uses these values to open your app.
+Set `android.package` and `ios.bundleIdentifier` in your [app config](/workflow/configuration/). e2e uses these values to open your app.
 
 ```json app.json
 {
@@ -295,7 +295,7 @@ Start by adding an iOS Simulator build profile to **eas.json**:
 }
 ```
 
-Then, create **e2e.ci.config.ts** with one iOS target. It does not set `device`, because the worker has one simulator:
+Then, create **e2e.ci.config.ts** with one iOS target. It does not set `device`, because the worker has one booted simulator:
 
 ```ts e2e.ci.config.ts
 import type { E2EConfig } from 'e2e';
@@ -714,10 +714,10 @@ To start the workflow without a push, run:
 
 ### Skip native builds with fingerprint and repack
 
-A full native build on each run is slow. When a change only touches JavaScript, the workflow can reuse an existing build instead. Add these jobs before each `build` job:
+A full native build on each run is slow. When a change only touches JavaScript, the workflow can reuse an existing build instead. Add these jobs before the `build` jobs:
 
-1. The [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) job calculates a hash of your app's native code.
-2. The [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) job looks for an existing build with the same hash and build profile.
+1. One [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) job calculates a hash of your app's native code for each platform.
+2. For each platform, a [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) job looks for an existing build with the same hash and build profile.
 3. When a build exists, the [`repack`](/eas/workflows/pre-packaged-jobs/#repack) job adds the current JavaScript bundle to it. Otherwise, the `build` job runs and creates a new build.
 
 The upload jobs then run after `repack` or `build`, whichever created the build. Keep the `environment` of the `fingerprint` job the same as the environment your build profile uses.
@@ -1087,9 +1087,9 @@ jobs:
           npx --yes testerarmy@latest "${args[@]}"
 ```
 
-Before a run starts, TesterArmy checks the changes. A pull request may have no change that users can see, such as a docs or config change. Then the check shows "Tests skipped" with the reason. TesterArmy decides this for each platform.
+Before a run starts, TesterArmy checks the changes. A pull request may have no change that users can see, such as a docs or config change. Then the check shows "Tests skipped" with the reason. TesterArmy decides this for each platform. TesterArmy checks do not block merges by default.
 
-TesterArmy checks do not block merges by default. If a coding agent writes your pull requests, add the [TesterArmy testing instructions](https://docs.tester.army/run/pull-request-testing#guide-the-planner-from-your-pr-description) to your **AGENTS.md** or **CLAUDE.md**. The agent then ends each pull request description with steps the exploration agent can follow.
+If a coding agent writes your pull requests, add the [TesterArmy testing instructions](https://docs.tester.army/run/pull-request-testing#guide-the-planner-from-your-pr-description) to your **AGENTS.md** or **CLAUDE.md**. The agent then ends each pull request description with steps the exploration agent can follow.
 
 </Step>
 
