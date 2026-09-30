@@ -12,6 +12,7 @@
 
 - [android] Fix `Switch` label rendering one letter per line inside a `Host` with `matchContents`. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
 - [android] Fix `community/picker` `Picker` not updating its displayed label after a selection or a `selectedValue` change. ([#50801](https://github.com/expo/expo/pull/50801) by [@RaddishIoW](https://github.com/RaddishIoW))
+- [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

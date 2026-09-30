@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.22 — 2026-09-29

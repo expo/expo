@@ -201,7 +201,6 @@ public final class ExpoUIModule: Module {
     ExpoUIView(BackgroundView.self)
     ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
-    ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
     ExpoUIView(TabView.self)
     ExpoUIView(Tab.self)

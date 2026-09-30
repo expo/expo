@@ -1529,6 +1529,8 @@ public class ViewModifierRegistry {
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
 
+  public static var widgetKit: WidgetKitModifiers?
+
   private init() {
     registerBuiltInModifiers()
   }
@@ -2389,14 +2391,6 @@ extension ViewModifierRegistry {
       return try ContentTransitionModifier(from: params, appContext: appContext)
     }
 
-    register("widgetURL") { params, appContext, _ in
-      return try WidgetURLModifier(from: params, appContext: appContext)
-    }
-
-    register("activityBackgroundTint") { params, appContext, _ in
-      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
-    }
-
     register("keyboardType") { params, appContext, _ in
       return try KeyboardTypeModifier(from: params, appContext: appContext)
     }
@@ -2410,7 +2404,11 @@ extension ViewModifierRegistry {
     }
 
     register("containerBackground") { params, appContext, _ in
-      return try ContainerBackgroundModifier(from: params, appContext: appContext)
+      let modifier = try ContainerBackgroundModifier(from: params, appContext: appContext)
+      #if DEBUG
+      modifier.warnIfWidgetPlacementIsUnavailable()
+      #endif
+      return modifier
     }
 
     register("symbolEffect") { params, appContext, _ in

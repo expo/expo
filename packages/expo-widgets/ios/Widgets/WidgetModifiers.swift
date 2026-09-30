@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoUI
 import SwiftUI
 #if !os(tvOS)
 import WidgetKit
@@ -66,5 +67,36 @@ internal struct ActivityBackgroundTintModifier: ViewModifier, Record {
 #else
     content
 #endif
+  }
+}
+
+/**
+ * Registers the modifiers that need WidgetKit. They live here rather than in ExpoUI,
+ * so apps that use ExpoUI without widgets do not link WidgetKit.
+ * See: https://github.com/expo/expo/issues/50777
+ */
+internal func registerWidgetModifiers() {
+  ViewModifierRegistry.register("widgetURL") { params, appContext, _ in
+    return try WidgetURLModifier(from: params, appContext: appContext)
+  }
+  ViewModifierRegistry.register("activityBackgroundTint") { params, appContext, _ in
+    return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
+  }
+  ViewModifierRegistry.widgetKit = WidgetKitModifiersImpl()
+}
+
+private struct WidgetKitModifiersImpl: WidgetKitModifiers {
+  func containerBackground(_ view: AnyView, style: AnyShapeStyle) -> AnyView {
+    guard #available(iOS 17.0, *) else {
+      return view
+    }
+    return AnyView(view.containerBackground(style, for: .widget))
+  }
+
+  func widgetAccentedRenderingMode(_ image: Image, params: [String: Any], appContext: AppContext) -> AnyView? {
+    guard #available(iOS 18.0, *), let modifier = try? WidgetAccentedRenderingModeModifier(from: params, appContext: appContext) else {
+      return nil
+    }
+    return AnyView(modifier.apply(to: image))
   }
 }
