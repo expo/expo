@@ -176,10 +176,10 @@ internal class RNHostView(context: Context, appContext: AppContext) :
             .fillMaxSize()
             .then(reportSizeToYogaNodeModifier())
       }
-      // Origin last: a chain applies outside-in, so a caller `padding` or `offset` has to shift the
-      // content before it is read.
-      val modifiers = sizingModifier
-        .then(ModifierRegistry.applyModifiers(props.modifiers.value, appContext, scope, globalEventDispatcher))
+      // A chain applies outside-in. Caller modifiers go first so a `padding` or `border` shrinks the
+      // box before its size is reported and its origin is read.
+      val modifiers = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, scope, globalEventDispatcher)
+        .then(sizingModifier)
         .then(publishContentOriginModifier())
 
       AndroidView(
