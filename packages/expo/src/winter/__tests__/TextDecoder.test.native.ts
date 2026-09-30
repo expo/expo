@@ -1,8 +1,16 @@
+// Native Node errors originate outside Jest's VM; compare their names across realms.
 describe('TextDecoder', () => {
-  // https://github.com/inexorabletash/text-encoding/blob/master/test/test-big5.js
+  it('preserves the runtime TextDecoder', () => {
+    expect(TextDecoder).toBe(require('node:util').TextDecoder);
+  });
 
-  it(`uses the Expo built-in APIs`, () => {
-    expect((TextDecoder as any)[Symbol.for('expo.builtin')]).toBe(true);
+  it.each([
+    ['latin1', [0x63, 0x61, 0x66, 0xe9], 'café'],
+    ['windows-1252', [0x63, 0x61, 0x66, 0xe9], 'café'],
+    ['utf-16le', [0x63, 0, 0x61, 0, 0x66, 0, 0xe9, 0], 'café'],
+    ['utf-16be', [0, 0x63, 0, 0x61, 0, 0x66, 0, 0xe9], 'café'],
+  ])('decodes %s using the runtime implementation', (encoding, bytes, expected) => {
+    expect(new TextDecoder(encoding).decode(new Uint8Array(bytes))).toBe(expected);
   });
 
   // https://github.com/inexorabletash/text-encoding/blob/3f330964c0e97e1ed344c2a3e963f4598610a7ad/test/test-misc.js#L34C1-L47C18
@@ -75,7 +83,7 @@ describe('TextDecoder', () => {
       it(`should throw a TypeError for encoding ${t.encoding} and input ${t.input}`, () => {
         expect(() => {
           new TextDecoder(t.encoding, { fatal: true }).decode(new Uint8Array(t.input));
-        }).toThrow(TypeError);
+        }).toThrow(expect.objectContaining({ name: 'TypeError' }));
       });
     });
   });
@@ -182,7 +190,7 @@ describe('TextDecoder', () => {
     it('should throw TypeError for fatal utf-8', () => {
       expect(() =>
         new TextDecoder('utf-8', { fatal: true }).decode(new Uint8Array([0xff]))
-      ).toThrow(TypeError);
+      ).toThrow(expect.objectContaining({ name: 'TypeError' }));
       new TextDecoder('utf-8').decode(new Uint8Array([0xff]));
     });
   });
@@ -206,9 +214,13 @@ describe('TextDecoder', () => {
         ).encoding
       ).toBe('utf-8');
 
-      expect(() => new TextDecoder(encoding, { fatal: true })).toThrow(RangeError);
+      expect(() => new TextDecoder(encoding, { fatal: true })).toThrow(
+        expect.objectContaining({ name: 'RangeError' })
+      );
 
-      expect(() => new TextDecoder(encoding, { fatal: false })).toThrow(RangeError);
+      expect(() => new TextDecoder(encoding, { fatal: false })).toThrow(
+        expect.objectContaining({ name: 'RangeError' })
+      );
     });
   });
 
@@ -261,18 +273,18 @@ describe('TextDecoder', () => {
         () =>
           // @ts-expect-error
           new TextDecoder(null)
-      ).toThrow(RangeError);
+      ).toThrow(expect.objectContaining({ name: 'RangeError' }));
 
       expect(
         () =>
           // @ts-expect-error
           new TextDecoder('utf-8', '')
-      ).toThrow(TypeError);
+      ).toThrow(expect.objectContaining({ name: 'TypeError' }));
 
       expect(() =>
         // @ts-expect-error
         new TextDecoder('utf-8').decode(null, '')
-      ).toThrow(TypeError);
+      ).toThrow(expect.objectContaining({ name: 'TypeError' }));
     });
   });
 
@@ -420,7 +432,9 @@ describe('TextDecoder', () => {
     it('recovers cleanly after a fatal streaming error', () => {
       const decoder = new TextDecoder('utf-8', { fatal: true });
       expect(decoder.decode(new Uint8Array([0xe2]), { stream: true })).toBe('');
-      expect(() => decoder.decode(new Uint8Array([0x41]), { stream: true })).toThrow(TypeError);
+      expect(() => decoder.decode(new Uint8Array([0x41]), { stream: true })).toThrow(
+        expect.objectContaining({ name: 'TypeError' })
+      );
       expect(decoder.decode(new Uint8Array([0x42]))).toBe('B');
     });
   });
