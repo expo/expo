@@ -3,6 +3,7 @@
 /**
  * This script is used to reset the project to a blank state.
  * It deletes or moves the /src and /scripts directories to /example based on user input and creates a new /src/app directory with an index.tsx and _layout.tsx file.
+ * Demo images in /assets/images are deleted or moved along with them.
  * You can remove the `reset-project` script from package.json and safely delete this file after running it.
  */
 
@@ -15,6 +16,18 @@ const oldDirs = ["src", "scripts"];
 const exampleDir = "example";
 const newAppDir = "src/app";
 const exampleDirPath = path.join(root, exampleDir);
+// Demo images used only by the files in /src
+const exampleImages = [
+  "expo-badge.png",
+  "expo-badge-white.png",
+  "expo-logo.png",
+  "logo-glow.png",
+  "react-logo.png",
+  "react-logo@2x.png",
+  "react-logo@3x.png",
+  "tutorial-web.png",
+  "tabIcons",
+];
 
 const indexContent = `import { Text, View, StyleSheet } from "react-native";
 
@@ -69,6 +82,24 @@ const moveDirectories = async (userInput) => {
         }
       } else {
         console.log(`➡️ /${dir} does not exist, skipping.`);
+      }
+    }
+
+    // Move demo images to /example or delete them
+    for (const image of exampleImages) {
+      const imagePath = path.join(root, "assets/images", image);
+      if (fs.existsSync(imagePath)) {
+        if (userInput === "y") {
+          const newImagePath = path.join(exampleDirPath, "assets/images", image);
+          await fs.promises.mkdir(path.dirname(newImagePath), { recursive: true });
+          await fs.promises.rename(imagePath, newImagePath);
+          console.log(
+            `➡️ /assets/images/${image} moved to /${exampleDir}/assets/images/${image}.`
+          );
+        } else {
+          await fs.promises.rm(imagePath, { recursive: true, force: true });
+          console.log(`❌ /assets/images/${image} deleted.`);
+        }
       }
     }
 
