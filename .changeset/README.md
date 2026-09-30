@@ -23,3 +23,8 @@ See: [#123](https://github.com/expo/expo/pull/123)
 ```
 
 Documentation, tests, apps, CI, and private tooling do not need a changeset. Do not add entries directly to package `CHANGELOG.md` files.
+
+For pull requests targeting `main`, code review checks the release policy in [`expo.json`](./expo.json):
+
+- When `branches.main.allowMajor` is `false`, major bumps are not currently allowed and produce an error.
+- When `branches.main.publish` is set, major and minor bumps produce warnings because these releases may not be accepted during a beta period. Use `patch` instead of `minor` during this period.
