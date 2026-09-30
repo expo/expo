@@ -102,7 +102,9 @@ export type AppIntentJSONValue =
  * Selects the donations that `deleteDonationsAsync()` deletes. Pass one of these shapes:
  *
  * - `{ ids }` deletes the donations with the given IDs, as returned by `donateIntentAsync()`.
- * - `{ intent }` deletes every donation of the intent registered under that name.
+ * - `{ intent }` deletes every donation of the intent type registered under that name. When
+ *   several names are registered for one intent type, this also deletes the donations made under
+ *   the other names.
  * - `{ entity, id }` deletes every donation that refers to the given entity. The `entity` value
  *   must be registered with `AppEntityIdentifierRegistry.shared.register(_:as:)` or
  *   `AppEntityIdentifierRegistry.shared.registerIndexed(_:as:)`.

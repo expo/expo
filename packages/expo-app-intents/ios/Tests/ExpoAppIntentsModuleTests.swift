@@ -1,3 +1,4 @@
+import AppIntents
 import Foundation
 import Testing
 
@@ -89,6 +90,41 @@ struct ExpoAppIntentsModuleTests {
 
     let message = outcome.getString()
     #expect(message.contains(expectedMessage), "\(call) settled with: \(message)")
+  }
+
+  /// Params that do not fit the intent's `DonationParams` record are rejected before anything reaches
+  /// `IntentDonationManager`, so these are safe to run against the shared registry too.
+  @Test(arguments: [
+    ("donateIntentAsync('testRequiredParamDonation')", "amount"),
+    ("donateIntentAsync('testRequiredParamDonation', {})", "amount"),
+    ("donateIntentAsync('testRequiredParamDonation', { amount: 'five' })", "amount"),
+  ])
+  func `donating rejects params that do not fit the record`(call: String, expectedMessage: String) async throws {
+    AppIntentDonationRegistry.shared.register("testRequiredParamDonation", as: RequiredParamDonationIntent.self)
+
+    let outcome = try await runtime.evalAsync(
+      "expo.modules.ExpoAppIntents.\(call).then(() => 'resolved', (error) => error.message)"
+    )
+
+    let message = outcome.getString()
+    #expect(message.contains("DonationParams"), "\(call) settled with: \(message)")
+    #expect(message.contains(expectedMessage), "\(call) settled with: \(message)")
+  }
+}
+
+private struct RequiredParamDonationIntent: DonatableAppIntent {
+  struct DonationParams: Record {
+    @Field(.required) var amount: Int = 0
+  }
+
+  static var title: LocalizedStringResource { "Required param donation" }
+
+  init() {}
+
+  init(donationParams: DonationParams) {}
+
+  func perform() async throws -> some IntentResult {
+    return .result()
   }
 }
 

@@ -275,13 +275,19 @@ export async function refreshShortcutsAsync(): Promise<void> {
  *
  * The `name` must be registered from app-target Swift with
  * `AppIntentDonationRegistry.shared.register(_:as:)`, on an intent that conforms to
- * `DonatableAppIntent`. The intent builds itself from `params` in its `init(donationParams:)`.
+ * `DonatableAppIntent`. Native code converts `params` to the `DonationParams` record of that intent,
+ * and the intent builds itself from the record in its `init(donationParams:)`.
  *
  * The returned promise is fulfilled with an ID for the donation, which
  * [`deleteDonationsAsync()`](#appintentsdeletedonationsasyncfilter) accepts, or with `null` when
- * App Intents are unavailable. It is rejected when no intent is registered as `name`, when a
- * parameter is not a JSON value, when the intent cannot be built from `params`, or when the system
- * fails to record the donation.
+ * App Intents are unavailable. It is rejected when no intent is registered as `name`, when `params`
+ * misses a required field of the record or has a field of the wrong type, when the intent cannot be
+ * built from the record, or when the system fails to record the donation.
+ *
+ * > **Note:** The ID is the system's donation identifier in its encoded form. Store it only for as
+ * > long as you need it. An iOS update may change how the system encodes identifiers, and an ID
+ * > stored before such an update may then be rejected. To delete donations without stored IDs,
+ * > delete by `intent` or by `entity`.
  *
  * @platform ios
  */

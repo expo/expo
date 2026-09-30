@@ -1,5 +1,4 @@
 import { useTheme } from 'ThemeProvider';
-import * as AppIntents from 'expo-app-intents';
 import { useRoute } from 'expo-router';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -7,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import { ScrollPage, Section } from '../../components/Page';
+import { AppIntentDonationButtons } from './AppIntentDonationButtons';
 import { AppIntentExitButton } from './AppIntentExitButton';
 import { getCounterState, resetCounterState, type AppIntentCounterState } from './AppIntentsStore';
 import { useAppIntentState } from './useAppIntentState';
@@ -25,7 +25,6 @@ export default function AppIntentCounterScreen() {
   const { theme } = useTheme();
   const counterState = useAppIntentState(getCounterState, initialCounterState);
   const openedBySiri = route.params?.source === 'siri';
-  const [donationResult, setDonationResult] = React.useState('None');
 
   return (
     <ScrollPage>
@@ -41,7 +40,7 @@ export default function AppIntentCounterScreen() {
           <BodyText style={styles.count}>{counterState.count}</BodyText>
           <BodyText>
             {openedBySiri
-              ? 'Opened after the Increase Counter intent ran.'
+              ? 'Opened after a counter intent ran.'
               : 'Opened manually from the API list.'}
           </BodyText>
         </View>
@@ -66,40 +65,18 @@ export default function AppIntentCounterScreen() {
               });
             }}
           />
-          <Button
-            title="Donate intent"
-            onPress={() => {
-              AppIntents.donateIntentAsync('donationProbe')
-                .then((id) => setDonationResult(`Donated: ${id ?? 'unavailable'}`))
-                .catch((error: unknown) => {
-                  console.warn(
-                    'Could not donate the Donation Probe intent; check that AppIntentsSetup registers it with AppIntentDonationRegistry.',
-                    error
-                  );
-                });
-            }}
-          />
-          <Button
-            title="Delete donations"
-            onPress={() => {
-              AppIntents.deleteDonationsAsync({ intent: 'donationProbe' })
-                .then((ids) =>
-                  setDonationResult(`Deleted: ${ids.length > 0 ? ids.join(', ') : 'none'}`)
-                )
-                .catch((error: unknown) => {
-                  console.warn(
-                    'Could not delete the Donation Probe donations; check that AppIntentsSetup registers the intent with AppIntentDonationRegistry.',
-                    error
-                  );
-                });
-            }}
-          />
+        </View>
+      </Section>
+
+      <Section title="Donations">
+        <View style={styles.controls}>
           <BodyText>
-            {
-              'Tap Donate intent, then Delete donations. The delete returns the donated id.\nA second delete returns none.'
-            }
+            Donation Probe has no params and is not an App Shortcut, so the system suggests it only
+            after a donation. Add to Counter takes an amount, which the donation passes as its
+            DonationParams record.
           </BodyText>
-          <BodyText>Last donation result: {donationResult}</BodyText>
+          <AppIntentDonationButtons title="Donation Probe" intent="donationProbe" />
+          <AppIntentDonationButtons title="Add 5" intent="addToCounter" params={{ amount: 5 }} />
         </View>
       </Section>
     </ScrollPage>

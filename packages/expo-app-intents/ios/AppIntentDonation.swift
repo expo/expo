@@ -8,8 +8,27 @@ import Foundation
 /// Shortcuts app can suggest it later. The system needs a real intent value to learn from, and only
 /// the app target can build one, so each donatable intent builds itself from the params that
 /// JavaScript passed.
+///
+/// The params arrive as the intent's `DonationParams` record, so each field already has the type the
+/// intent declares, and a missing required field is rejected before the intent is built. An intent
+/// that takes no params from JavaScript can leave out both `DonationParams` and `init(donationParams:)`.
 public protocol DonatableAppIntent: AppIntent {
-  init(donationParams: AppIntentParams) async throws
+  associatedtype DonationParams: Record = NoDonationParams
+
+  init(donationParams: DonationParams) async throws
+}
+
+/// The `DonationParams` of an intent that takes no params from JavaScript. Any params passed are
+/// ignored.
+public struct NoDonationParams: Record {
+  public init() {}
+}
+
+extension DonatableAppIntent where DonationParams == NoDonationParams {
+  /// An intent without params needs no donation code of its own: conforming is enough.
+  public init(donationParams: NoDonationParams) {
+    self.init()
+  }
 }
 
 internal enum AppIntentDonationFilter {
@@ -52,14 +71,24 @@ internal struct SystemAppIntentDonor: AppIntentDonor {
 
 /// Maps the names JavaScript donates by to the app-target intent types that can be donated.
 ///
-/// Register each intent in the `OnCreate` of the `AppIntentsSetup` inline module, under the same name
-/// its `perform()` passes to `AppIntentDispatcher.shared.dispatch(name:params:)`.
+/// Register each intent in the `OnCreate` of the `AppIntentsSetup` inline module. The name only has to
+/// match what JavaScript passes to `donateIntentAsync()` and `deleteDonationsAsync({ intent })`.
+/// Nothing links it to the name the intent passes to `AppIntentDispatcher.shared.dispatch(name:params:)`,
+/// but reusing that name, where there is one, gives JavaScript one name per intent.
 public final class AppIntentDonationRegistry: Sendable {
   public static let shared = AppIntentDonationRegistry()
 
+  /// What `register(_:as:)` keeps for one name. The intent type is erased so that intents with
+  /// different `DonationParams` can share the registry, and `makeIntent` keeps the concrete type
+  /// that converting the params needs.
+  private struct Registration: Sendable {
+    let intentType: any AppIntent.Type
+    let makeIntent: @Sendable ([String: Any], AppContext) async throws -> any AppIntent
+  }
+
   /// Registration happens on the main actor from `OnCreate`, while lookups come from the module's
   /// async functions at the same time.
-  private let intentTypes = Mutex<[String: any DonatableAppIntent.Type]>([:])
+  private let registrations = Mutex<[String: Registration]>([:])
   private let donor: any AppIntentDonor
   private let entities: AppEntityIdentifierRegistry
 
@@ -71,20 +100,34 @@ public final class AppIntentDonationRegistry: Sendable {
     self.entities = entities
   }
 
+  /// Registering a name again replaces its earlier intent. Deleting by `{ intent }` deletes by intent
+  /// type, so when two names are registered for one type, deleting by either name deletes the
+  /// donations made under both.
   public func register<Intent: DonatableAppIntent>(_ name: String, as intentType: Intent.Type) {
-    intentTypes.withLock { $0[name] = intentType }
+    let registration = Registration(intentType: intentType) { params, appContext in
+      let donationParams: Intent.DonationParams
+      do {
+        donationParams = try Intent.DonationParams.from(dictionary: params, appContext: appContext)
+      } catch {
+        throw InvalidDonationParamsException((intent: name, paramsType: "\(Intent.DonationParams.self)")).causedBy(
+          error
+        )
+      }
+      do {
+        return try await Intent(donationParams: donationParams)
+      } catch {
+        throw DonationIntentInitException((intent: name, error: error))
+      }
+    }
+    registrations.withLock {
+      $0[name] = registration
+    }
   }
 
   /// Builds the intent registered as `name` from `params`, donates it, and returns the donation id
   /// JavaScript can later delete it by.
-  internal func donate(_ name: String, params: AppIntentParams) async throws -> String {
-    let intentType = try intentType(named: name)
-    let intent: any DonatableAppIntent
-    do {
-      intent = try await intentType.init(donationParams: params)
-    } catch {
-      throw DonationIntentInitException((intent: name, error: error))
-    }
+  internal func donate(_ name: String, params: [String: Any], appContext: AppContext) async throws -> String {
+    let intent = try await registration(named: name).makeIntent(params, appContext)
     return try encode(await donor.donate(intent))
   }
 
@@ -95,7 +138,7 @@ public final class AppIntentDonationRegistry: Sendable {
       // Every id is read before anything is deleted, so an unreadable id deletes nothing.
       return try await deleteEach(ids.map { (id: $0, identifier: try decode($0)) })
     case .intent(let name):
-      return try await donor.deleteDonations(matching: .intentType(intentType(named: name))).map(encode)
+      return try await donor.deleteDonations(matching: .intentType(registration(named: name).intentType)).map(encode)
     case .entity(let entity, let id):
       guard let identifier = entities.identifier(for: entity, id: id) else {
         throw UnregisteredDonationEntityException((entity, id))
@@ -120,16 +163,16 @@ public final class AppIntentDonationRegistry: Sendable {
     }
     let deletedIds = try deleted.map(encode)
     if let firstError {
-      throw PartialDonationDeletionException((deleted: deletedIds, failed: failed, error: firstError))
+      throw PartialDonationDeletionException((deleted: deletedIds, failed: failed)).causedBy(firstError)
     }
     return deletedIds
   }
 
-  private func intentType(named name: String) throws -> any DonatableAppIntent.Type {
-    guard let intentType = intentTypes.withLock({ $0[name] }) else {
+  private func registration(named name: String) throws -> Registration {
+    guard let registration = registrations.withLock({ $0[name] }) else {
       throw UnregisteredDonationIntentException(name)
     }
-    return intentType
+    return registration
   }
 
   private func encode(_ identifier: IntentDonationIdentifier) throws -> String {
@@ -204,6 +247,22 @@ internal final class UnregisteredDonationEntityException: GenericException<(Stri
   }
 }
 
+/// The record's own exception, which names the field, is the cause.
+internal final class InvalidDonationParamsException: GenericException<(intent: String, paramsType: String)>,
+  @unchecked Sendable
+{
+  override var reason: String {
+    return """
+      expo-app-intents could not donate the '\(param.intent)' intent, because the params passed to \
+      donateIntentAsync() do not fit its DonationParams record \(param.paramsType). Nothing was \
+      donated. Pass every required field of that record, with the type the record declares.
+      """
+  }
+}
+
+/// Keeps the app's error in the reason rather than using `causedBy(_:)`: a cause that is not an
+/// `Exception` is described by its `localizedDescription`, which drops the text of a plain Swift error
+/// such as a `CustomStringConvertible` struct, and this error comes from app code.
 internal final class DonationIntentInitException: GenericException<(intent: String, error: any Error)>,
   @unchecked Sendable
 {
@@ -217,15 +276,15 @@ internal final class DonationIntentInitException: GenericException<(intent: Stri
   }
 }
 
-internal final class PartialDonationDeletionException: GenericException<
-  (deleted: [String], failed: [String], error: any Error)
->, @unchecked Sendable
+/// The first error the system reported is the cause.
+internal final class PartialDonationDeletionException: GenericException<(deleted: [String], failed: [String])>,
+  @unchecked Sendable
 {
   override var reason: String {
     return """
       expo-app-intents could not delete every donation. Deleted: \(list(param.deleted)). Not \
-      deleted: \(list(param.failed)). The system reported: \(param.error). Call \
-      deleteDonationsAsync() again with the ids that were not deleted.
+      deleted: \(list(param.failed)). Call deleteDonationsAsync() again with the ids that were not \
+      deleted.
       """
   }
 
