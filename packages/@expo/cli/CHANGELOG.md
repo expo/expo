@@ -1,14 +1,29 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964), [#49791](https://github.com/expo/expo/pull/49791))
+  - @expo/config@58.0.1
+  - @expo/config-plugins@58.0.4
+  - @expo/env@2.5.1
+  - @expo/image-utils@0.12.2
+  - @expo/inline-modules@0.2.1
+  - @expo/json-file@11.2.1
+  - @expo/log-box@58.0.7
+  - @expo/log-box-utils@58.0.1
+  - @expo/metro-config@58.0.6
+  - @expo/metro-file-map@58.0.3
+  - @expo/osascript@2.8.1
+  - @expo/package-manager@1.14.1
+  - @expo/plist@0.10.1
+  - @expo/prebuild-config@58.0.6
+  - @expo/require-utils@58.0.2
+  - @expo/router-server@58.0.4
+  - @expo/schema-utils@58.0.1
+  - expo-server@58.0.2
 
 ## 58.0.8 — 2026-09-28
 

@@ -1,14 +1,13 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Fix `Album.getAll()` not returning albums nested inside folders. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- Add `Album.getAlbumsMetadata()` for cheap bulk album listing and `album.getAssetCount()`. ([#47903](https://github.com/expo/expo/pull/47903) by [@Wenszel](https://github.com/Wenszel))
 
 ## 58.0.3 — 2026-09-28
 

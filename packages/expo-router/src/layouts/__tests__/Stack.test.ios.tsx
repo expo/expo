@@ -43,6 +43,36 @@ beforeEach(() => {
 
 afterEach(() => jest.useRealTimers());
 
+describe('native header user interface style', () => {
+  it('applies screenOptions, per-screen overrides, and the theme fallback independently', () => {
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack
+            screenOptions={({ route }) =>
+              route.name === 'c' ? {} : { headerUserInterfaceStyle: 'dark' }
+            }>
+            <Stack.Screen name="b" options={{ headerUserInterfaceStyle: 'light' }} />
+          </Stack>
+        ),
+        a: () => <View testID="a" />,
+        b: () => <View testID="b" />,
+        c: () => <View testID="c" />,
+      },
+      { initialUrl: '/a' }
+    );
+
+    expect(latestStackItemProps('a')?.headerConfig?.experimental_userInterfaceStyle).toBe('dark');
+
+    act(() => router.push('/b'));
+    expect(latestStackItemProps('b')?.headerConfig?.experimental_userInterfaceStyle).toBe('light');
+
+    act(() => router.push('/c'));
+    expect(latestStackItemProps('c')?.headerConfig?.experimental_userInterfaceStyle).toBe('light');
+    expect(latestStackItemProps('a')?.headerConfig?.experimental_userInterfaceStyle).toBe('dark');
+  });
+});
+
 describe('native dismissal', () => {
   it('pops one screen when the native header back button is clicked', () => {
     renderRouter({

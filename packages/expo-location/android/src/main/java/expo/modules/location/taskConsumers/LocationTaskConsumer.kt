@@ -99,7 +99,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
    * or deferring for battery optimization (background).
    */
   private fun handleLocationUpdate(locations: List<Location>) {
-    if (locations.isEmpty()) return
+    if (locations.isEmpty()) {
+      return
+    }
 
     // Foreground: report immediately for responsive UI (matches iOS behavior)
     if (!mIsHostPaused) {
@@ -245,7 +247,9 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
    * Used in foreground mode to provide responsive location updates (matches iOS behavior).
    */
   private fun reportLocationsImmediately(locations: List<Location>) {
-    if (locations.isEmpty()) return
+    if (locations.isEmpty()) {
+      return
+    }
     val context = context.applicationContext
     val data: MutableList<PersistableBundle> = ArrayList()
     var lastReported: Location? = null
@@ -268,7 +272,11 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
   private fun deferLocations(locations: List<Location>) {
     val size = mDeferredLocations.size
-    var lastLocation = if (size > 0) mDeferredLocations[size - 1] else mLastReportedLocation
+    var lastLocation = if (size > 0) {
+      mDeferredLocations[size - 1]
+    } else {
+      mLastReportedLocation
+    }
     for (location in locations) {
       if (lastLocation != null) {
         mDeferredDistance += abs(location.distanceTo(lastLocation)).toDouble()

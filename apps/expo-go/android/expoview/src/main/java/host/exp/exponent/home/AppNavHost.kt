@@ -5,12 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -88,9 +90,24 @@ fun RootNavigation(
   val navController = rememberNavController()
 
   val themeSetting by viewModel.selectedTheme.collectAsStateWithLifecycle()
+  var openUriError by remember { mutableStateOf<String?>(null) }
 
   HomeAppTheme(themeSetting = themeSetting) {
-    CompositionLocalProvider(LocalUriHandler provides rememberLocalNetworkGatedUriHandler(viewModel)) {
+    openUriError?.let { error ->
+      AlertDialog(
+        onDismissRequest = { openUriError = null },
+        title = { Text("Can't open this project") },
+        text = { Text(error) },
+        confirmButton = {
+          TextButton(onClick = { openUriError = null }) {
+            Text("OK")
+          }
+        }
+      )
+    }
+    CompositionLocalProvider(
+      LocalUriHandler provides rememberLocalNetworkGatedUriHandler(viewModel, onOpenError = { openUriError = it })
+    ) {
       Box(
         modifier = Modifier
           .fillMaxSize()

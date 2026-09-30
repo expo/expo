@@ -58,7 +58,6 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      // See React Navigation documentation for more information on available screenOptions: https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -98,6 +97,27 @@ export default function Layout() {
   );
 }
 ```
+
+### Set the native header's interface style
+
+> **info** This option is available only on iOS in **SDK 58 and later**.
+
+Use `headerUserInterfaceStyle` to set a screen's native header to `'light'` or `'dark'` without changing the navigation theme. For example, a detail screen can use a dark header while the rest of the stack keeps its theme-based style:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerLargeTitleEnabled: true }} />
+      <Stack.Screen name="details" options={{ headerUserInterfaceStyle: 'dark' }} />
+    </Stack>
+  );
+}
+```
+
+You can also set this option in `screenOptions` for the whole stack. A `Stack.Screen` option overrides it for that screen. When the option is omitted, the native header follows the navigation theme. The native header does not support changes to this option while the screen is visible. This option affects the native header only. Set header colors separately if needed.
 
 ### Set screen options dynamically
 
@@ -186,8 +206,6 @@ const styles = StyleSheet.create({
 The `Stack` navigator supports comprehensive header configuration options. Below are all the header-related options available:
 
 <ReactNavigationOptions category="header" />
-
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
 
 ### Header buttons
 
@@ -287,8 +305,6 @@ const styles = StyleSheet.create({
 For a complete list of all available other screen options including animations, gestures, and other configurations:
 
 <ReactNavigationOptions excludeCategories={['header']} />
-
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
 
 ## Custom push behavior
 
@@ -405,7 +421,7 @@ export default function Settings() {
 
 ### `dismissAll` action
 
-To return to the first screen in the closest stack. This is similar to [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
+The `dismissAll` action dismisses every screen above the first screen in the closest stack, returning to that first screen.
 
 For example, the `home` route is the first screen, and the `settings` is the last. To go from `settings` to `home` route you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
 

@@ -1,14 +1,16 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Added `updates.maxUpdatesToKeep` support for expo-updates native configuration. ([#45964](https://github.com/expo/expo/pull/45964) by [@Kudo](https://github.com/Kudo))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/config-types@58.0.2
+  - @expo/json-file@11.2.1
+  - @expo/plist@0.10.1
+  - @expo/require-utils@58.0.2
 
 ## 58.0.3 — 2026-09-28
 

@@ -1,14 +1,16 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#49511](https://github.com/expo/expo/pull/49511), [#50661](https://github.com/expo/expo/pull/50661), [#50289](https://github.com/expo/expo/pull/50289))
+  - expo-application@58.0.2
+  - expo-constants@58.0.9
+  - expo-crypto@58.0.3
+  - expo-linking@58.0.9
+  - expo-web-browser@58.0.3
 
 ## 58.0.5 — 2026-09-25
 

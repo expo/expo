@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { collectIgnoredDirs } = require('./classify');
+const { appleSourceDir, collectIgnoredDirs } = require('./classify');
 const { reactProductDependencies, reactPackageDeclarations } = require('./react-descriptor');
 const { runDumpPackage } = require('./cli');
 
@@ -304,7 +304,13 @@ function renderFileRules(target) {
 }
 
 /** Source-with-manifest: mirror the parsed targets/products, inject the given deps. */
-function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) {
+function renderSourceManifest({
+  manifest,
+  pkgDeps = [],
+  injectedTargetDeps = [],
+  frameworkSearchPath,
+  extraSwiftFlags = [],
+}) {
   const targetsSwift = manifest.targets
     .map((t) => {
       if (t.path == null) {
@@ -314,7 +320,7 @@ function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) 
             'would point at nothing. Resolve target paths with resolveTargetPaths before rendering.'
         );
       }
-      const deps = [...t.siblingDeps.map(renderSiblingDependency), ...injected];
+      const deps = [...t.siblingDeps.map(renderSiblingDependency), ...injectedTargetDeps];
       const depsSwift = deps.length
         ? `\n${deps.map((dep) => `                ${dep},`).join('\n')}\n            `
         : '';
@@ -324,7 +330,7 @@ function renderSourceManifest(manifest, pkgDeps, injected, frameworkSearchPath) 
       return `        .target(
             name: "${t.name}",
             dependencies: [${depsSwift}],
-            path: "root/${t.path}",${renderFileRules(t)}${headers}${renderTargetSettings(frameworkSearchPath, t.settings, t.name)}
+            path: "root/${t.path}",${renderFileRules(t)}${headers}${renderTargetSettings(frameworkSearchPath, t.settings, t.name, extraSwiftFlags)}
         )`;
     })
     .join(',\n');
@@ -347,7 +353,7 @@ import PackageDescription
 
 let package = Package(
     name: "${manifest.name}",
-    platforms: ${renderPlatforms(manifest.iosDeploymentTarget ?? null)},
+    platforms: ${renderPlatforms(manifest.iosDeploymentTarget)},
     products: [
 ${productsSwift}
     ],
@@ -368,16 +374,17 @@ const PRIVACY_MANIFEST = 'PrivacyInfo.xcprivacy';
  * Pure-Swift source: single Swift target over the module's `ios`/`apple` sources, on
  * the deployment floor the plugin read from the module's podspec.
  */
-function renderPureSwiftManifest(
+function renderPureSwiftManifest({
   product,
   srcRel,
-  pkgDeps,
-  targetDeps,
+  pkgDeps = [],
+  targetDeps = [],
   frameworkSearchPath,
   excludes = [],
   iosDeploymentTarget = null,
-  hasPrivacyManifest = false
-) {
+  hasPrivacyManifest = false,
+  extraSwiftFlags = [],
+}) {
   const packageDepsSwift = pkgDeps.length
     ? `\n${pkgDeps.map((dep) => `        ${dep},`).join('\n')}\n    `
     : '';
@@ -409,7 +416,7 @@ let package = Package(
         .target(
             name: "${product}",
             dependencies: [${targetDepsSwift}],
-            path: "root/${srcRel}",${excludeSwift}${resourcesSwift}${renderTargetSettings(frameworkSearchPath, [], product)}
+            path: "root/${srcRel}",${excludeSwift}${resourcesSwift}${renderTargetSettings(frameworkSearchPath, [], product, extraSwiftFlags)}
         ),
     ],
     swiftLanguageModes: [.v5],
@@ -426,8 +433,12 @@ function escapeSwiftString(value) {
  * A target's `*Settings:` arguments: Expo's binary-free interface tree first, then
  * whatever the module itself declared, in its own order.
  */
-function renderTargetSettings(frameworkSearchPath, settings, targetName) {
-  const interfaceFlags = `.unsafeFlags(["-F", "${escapeSwiftString(frameworkSearchPath)}"])`;
+function renderTargetSettings(frameworkSearchPath, settings, targetName, extraSwiftFlags = []) {
+  const unsafeFlags = (flags) =>
+    `.unsafeFlags([${flags.map((f) => `"${escapeSwiftString(f)}"`).join(', ')}])`;
+  const interfaceFlags = unsafeFlags(['-F', frameworkSearchPath]);
+  // `-Xfrontend` is a Swift driver flag; clang rejects it, so it stays out of c/cxxSettings.
+  const swiftInterfaceFlags = unsafeFlags(['-F', frameworkSearchPath, ...extraSwiftFlags]);
   for (const setting of settings ?? []) {
     if (!SETTING_TOOLS.has(setting.tool)) {
       throw new Error(
@@ -442,7 +453,8 @@ function renderTargetSettings(frameworkSearchPath, settings, targetName) {
     const own = (settings ?? [])
       .filter((s) => s.tool === tool)
       .map((s) => renderSetting(s, targetName));
-    const values = tool === 'linker' ? own : [interfaceFlags, ...own];
+    const injected = tool === 'swift' ? swiftInterfaceFlags : interfaceFlags;
+    const values = tool === 'linker' ? own : [injected, ...own];
     return values.length ? `\n            ${label}: [${values.join(', ')}],` : '';
   }).join('');
 }
@@ -450,6 +462,26 @@ function renderTargetSettings(frameworkSearchPath, settings, targetName) {
 /** Only iOS is mirrored: React Native's Swift Package Manager support is iOS-only. */
 function renderPlatforms(iosDeploymentTarget) {
   return iosDeploymentTarget != null ? `[.iOS("${iosDeploymentTarget}")]` : '[.iOS(.v15)]';
+}
+
+/**
+ * The higher of two iOS floors, or null when neither side declares one.
+ *
+ * CocoaPods raises every Expo pod to ExpoModulesCore's deployment target after
+ * install (`reconcile_expo_module_deployment_targets`). Under SwiftPM the
+ * generated manifest is the only place to do that, because importing a module
+ * built for a higher floor than the importer is a compile error.
+ */
+function raiseFloor(declared, minimum) {
+  if (declared == null) return minimum ?? null;
+  if (minimum == null) return declared;
+  const components = (version) => version.split('.').map(Number);
+  const [left, right] = [components(declared), components(minimum)];
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const delta = (left[i] ?? 0) - (right[i] ?? 0);
+    if (delta !== 0) return delta > 0 ? declared : minimum;
+  }
+  return declared;
 }
 
 // ---------------------------------------------------------------------------
@@ -523,15 +555,15 @@ function linkRoot(pkgDir, moduleRoot) {
  * ExpoModulesCore loads its Clang module map, which declares `use React`.
  */
 function sourceDependencies(react, codegenPkgPath) {
-  const wireReact = react != null;
+  if (react == null) return { targetDeps: [], pkgDeps: [] };
   return {
-    targetDeps: wireReact ? reactProductDependencies(react) : [],
-    pkgDeps: wireReact ? reactPackageDeclarations(react, codegenPkgPath) : [],
+    targetDeps: reactProductDependencies(react),
+    pkgDeps: reactPackageDeclarations(react, codegenPkgPath),
   };
 }
 
 /**
- * Option A: emit a CONSUMPTION Package.swift for a source module that ships a
+ * Emit a CONSUMPTION Package.swift for a source module that ships a
  * checked-in Package.swift. Re-declares its library targets against the real source
  * (via a `root` symlink), injects RN's invariant React product set, and points
  * compilation at Expo's binary-free framework interface tree. RN owns the merge;
@@ -542,12 +574,24 @@ function sourceDependencies(react, codegenPkgPath) {
  * sources cannot be located — the module is then skipped and diagnosed rather than
  * emitted broken.
  */
-function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDir, codegenPkgPath) {
+function emitSourceManifestPackage({
+  moduleRoot,
+  react = null,
+  frameworkSearchPath,
+  outDir,
+  codegenPkgPath = null,
+  minimumIosDeploymentTarget = null,
+  macroFlags = [],
+}) {
   const { unsupportedTargetDeps, ...dumped } = parseDumpedManifest(runDumpPackage(moduleRoot));
   if (unsupportedTargetDeps.length) return { unsupportedTargetDeps };
   const { targets, unresolvedTargets } = resolveTargetPaths(dumped.targets, moduleRoot);
   if (unresolvedTargets.length) return { unresolvedTargets };
-  const manifest = { ...dumped, targets };
+  const manifest = {
+    ...dumped,
+    targets,
+    iosDeploymentTarget: raiseFloor(dumped.iosDeploymentTarget, minimumIosDeploymentTarget),
+  };
   const pkgDir = path.join(outDir, 'expo-source', manifest.name);
   fs.mkdirSync(pkgDir, { recursive: true });
   linkRoot(pkgDir, moduleRoot);
@@ -555,7 +599,13 @@ function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDi
   const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
   fs.writeFileSync(
     path.join(pkgDir, 'Package.swift'),
-    renderSourceManifest(manifest, pkgDeps, targetDeps, frameworkSearchPath)
+    renderSourceManifest({
+      manifest,
+      pkgDeps,
+      injectedTargetDeps: targetDeps,
+      frameworkSearchPath,
+      extraSwiftFlags: macroFlags,
+    })
   );
 
   return {
@@ -567,21 +617,20 @@ function emitSourceManifestPackage(moduleRoot, react, frameworkSearchPath, outDi
 /**
  * Emit a source consumption package for a module WITHOUT a checked-in Package.swift,
  * from its resolved descriptor. Pure-Swift modules only (single Swift target over the
- * module's `ios` sources). It compiles against Expo's invariant interface tree,
+ * module's `ios` or `apple` sources). It compiles against Expo's invariant interface tree,
  * plus RN's invariant React products.
  */
-function emitPureSwiftSourcePackage(
+function emitPureSwiftSourcePackage({
   moduleRoot,
   product,
-  react,
+  react = null,
   frameworkSearchPath,
   outDir,
-  codegenPkgPath,
-  iosDeploymentTarget = null
-) {
-  const srcDir = ['ios', 'apple']
-    .map((s) => path.join(moduleRoot, s))
-    .find((d) => fs.existsSync(d));
+  codegenPkgPath = null,
+  iosDeploymentTarget = null,
+  macroFlags = [],
+}) {
+  const srcDir = appleSourceDir(moduleRoot);
   if (srcDir == null) return null;
   const srcRel = path.relative(moduleRoot, srcDir); // e.g. "ios"
   const pkgDir = path.join(outDir, 'expo-source', product);
@@ -591,16 +640,17 @@ function emitPureSwiftSourcePackage(
   const { targetDeps, pkgDeps } = sourceDependencies(react, codegenPkgPath);
   fs.writeFileSync(
     path.join(pkgDir, 'Package.swift'),
-    renderPureSwiftManifest(
+    renderPureSwiftManifest({
       product,
       srcRel,
       pkgDeps,
       targetDeps,
       frameworkSearchPath,
-      collectIgnoredDirs(srcDir),
+      excludes: collectIgnoredDirs(srcDir),
       iosDeploymentTarget,
-      fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST))
-    )
+      hasPrivacyManifest: fs.existsSync(path.join(srcDir, PRIVACY_MANIFEST)),
+      extraSwiftFlags: macroFlags,
+    })
   );
 
   return {
@@ -614,6 +664,7 @@ module.exports = {
   resolveTargetPaths,
   renderSourceManifest,
   renderPureSwiftManifest,
+  raiseFloor,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
 };

@@ -13,6 +13,7 @@ const {
   renderPureSwiftManifest,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
+  raiseFloor,
 } = require('../manifests');
 
 describe('parseDumpedManifest', () => {
@@ -134,12 +135,12 @@ describe('renderSourceManifest', () => {
       },
     ],
   };
-  const out = renderSourceManifest(
+  const out = renderSourceManifest({
     manifest,
-    ['.package(name: "ReactNative", path: "/abs/rn")'],
-    ['.product(name: "ReactHeaders", package: "ReactNative")'],
-    '/abs/interfaces'
-  );
+    pkgDeps: ['.package(name: "ReactNative", path: "/abs/rn")'],
+    injectedTargetDeps: ['.product(name: "ReactHeaders", package: "ReactNative")'],
+    frameworkSearchPath: '/abs/interfaces',
+  });
 
   it('mirrors targets with sibling deps first, then injected deps', () => {
     expect(out).toContain('name: "ExpoFileSystem"');
@@ -170,7 +171,11 @@ describe('renderSourceManifest', () => {
 });
 
 describe('renderPureSwiftManifest', () => {
-  const out = renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces');
+  const out = renderPureSwiftManifest({
+    product: 'ExpoAsset',
+    srcRel: 'ios',
+    frameworkSearchPath: '/abs/interfaces',
+  });
 
   it('emits a single target over the source dir with the given deps', () => {
     expect(out).toContain('.library(name: "ExpoAsset", targets: ["ExpoAsset"])');
@@ -180,20 +185,125 @@ describe('renderPureSwiftManifest', () => {
     expect(out).not.toMatch(/\[\s*,\s*\]/);
     expect(out).toContain('swiftLanguageModes: [.v5],\n    cxxLanguageStandard: .cxx20');
   });
+
+  it('loads no macro plugin when no macro flags are given', () => {
+    expect(out).not.toContain('-Xfrontend');
+  });
+});
+
+// Expo modules use Swift macros (@Field, @Record, @OptimizedFunction). A macro only
+// expands when the compiler is handed the macro plugin executable, the same way
+// `project_integrator.rb#integrate_core_macro_plugins` hands it to CocoaPods.
+describe('macro plugin flags', () => {
+  const MACRO_FLAGS = [
+    '-Xfrontend',
+    '-load-plugin-executable',
+    '-Xfrontend',
+    '/abs/macros/ExpoModulesMacros#ExpoModulesMacros',
+  ];
+  const EXPECTED_SWIFT =
+    'swiftSettings: [.unsafeFlags(["-F", "/abs/interfaces", "-Xfrontend", ' +
+    '"-load-plugin-executable", "-Xfrontend", ' +
+    '"/abs/macros/ExpoModulesMacros#ExpoModulesMacros"])]';
+
+  describe('renderPureSwiftManifest', () => {
+    const out = renderPureSwiftManifest({
+      product: 'ExpoCrypto',
+      srcRel: 'ios',
+      frameworkSearchPath: '/abs/interfaces',
+      extraSwiftFlags: MACRO_FLAGS,
+    });
+
+    it('loads the macro plugin from swiftSettings', () => {
+      expect(out).toContain(EXPECTED_SWIFT);
+    });
+
+    it('never hands the Swift-only frontend flags to clang', () => {
+      expect(out).toContain('cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+      expect(out).toContain('cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+    });
+  });
+
+  describe('renderSourceManifest', () => {
+    const out = renderSourceManifest({
+      manifest: {
+        name: 'TestModule',
+        products: [{ name: 'TestModule', targets: ['Main'] }],
+        targets: [{ name: 'Main', path: 'Main', publicHeadersPath: null, siblingDeps: [] }],
+      },
+      frameworkSearchPath: '/abs/interfaces',
+      extraSwiftFlags: MACRO_FLAGS,
+    });
+
+    it('loads the macro plugin from swiftSettings', () => {
+      expect(out).toContain(EXPECTED_SWIFT);
+    });
+
+    it('never hands the Swift-only frontend flags to clang', () => {
+      expect(out).toContain('cSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+      expect(out).toContain('cxxSettings: [.unsafeFlags(["-F", "/abs/interfaces"])]');
+    });
+  });
+
+  // The emit functions are what the plugin actually calls, so the flags have to
+  // survive the whole way to the file on disk, not just the render call.
+  describe('the emitted file', () => {
+    let moduleRoot;
+    let outDir;
+
+    beforeEach(() => {
+      const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-macro-emit-'));
+      moduleRoot = path.join(tmp, 'module');
+      outDir = path.join(tmp, 'out');
+      fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
+    });
+
+    it('carries the flags through emitSourceManifestPackage', () => {
+      runDumpPackage.mockReturnValue(
+        JSON.stringify({
+          name: 'TestModule',
+          products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
+          targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [] }],
+        })
+      );
+      emitSourceManifestPackage({
+        moduleRoot,
+        frameworkSearchPath: '/abs/interfaces',
+        outDir,
+        macroFlags: MACRO_FLAGS,
+      });
+
+      expect(
+        fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
+      ).toContain(EXPECTED_SWIFT);
+    });
+
+    it('carries the flags through emitPureSwiftSourcePackage', () => {
+      emitPureSwiftSourcePackage({
+        moduleRoot,
+        product: 'ExpoCrypto',
+        frameworkSearchPath: '/abs/interfaces',
+        outDir,
+        macroFlags: MACRO_FLAGS,
+      });
+
+      expect(
+        fs.readFileSync(path.join(outDir, 'expo-source', 'ExpoCrypto', 'Package.swift'), 'utf8')
+      ).toContain(EXPECTED_SWIFT);
+    });
+  });
 });
 
 describe('renderSourceManifest target dependency conditions', () => {
   const render = (siblingDeps) =>
-    renderSourceManifest(
-      {
+    renderSourceManifest({
+      manifest: {
         name: 'TestModule',
         products: [{ name: 'TestModule', targets: ['Main'] }],
         targets: [{ name: 'Main', path: 'Main', publicHeadersPath: null, siblingDeps }],
       },
-      [],
-      [],
-      '/abs/interfaces'
-    );
+      frameworkSearchPath: '/abs/interfaces',
+    });
 
   it('renders a conditioned sibling dependency with its platform condition', () => {
     expect(render([{ name: 'Helper', platforms: ['ios', 'macos'] }])).toContain(
@@ -232,7 +342,8 @@ describe('implicit target source paths', () => {
     fs.mkdirSync(outDir, { recursive: true });
   });
 
-  const emit = () => emitSourceManifestPackage(moduleRoot, null, '/abs/interfaces', outDir, null);
+  const emit = () =>
+    emitSourceManifestPackage({ moduleRoot, frameworkSearchPath: '/abs/interfaces', outDir });
   const emittedManifest = () =>
     fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
 
@@ -276,48 +387,50 @@ describe('implicit target source paths', () => {
 
   it('refuses to render a target whose path was never resolved', () => {
     expect(() =>
-      renderSourceManifest(
-        {
+      renderSourceManifest({
+        manifest: {
           name: 'TestModule',
           products: [{ name: 'TestModule', targets: ['Example'] }],
           targets: [{ name: 'Example', path: null, publicHeadersPath: null, siblingDeps: [] }],
         },
-        [],
-        [],
-        '/abs/interfaces'
-      )
+        frameworkSearchPath: '/abs/interfaces',
+      })
     ).toThrow(/Example/);
   });
 });
 
 describe('renderPureSwiftManifest excludes', () => {
   it('excludes the directories classification ignores, in the given order', () => {
-    const out = renderPureSwiftManifest('ExpoClipboard', 'ios', [], [], '/abs/interfaces', [
-      'Feature/Tests',
-      'Tests',
-    ]);
+    const out = renderPureSwiftManifest({
+      product: 'ExpoClipboard',
+      srcRel: 'ios',
+      frameworkSearchPath: '/abs/interfaces',
+      excludes: ['Feature/Tests', 'Tests'],
+    });
     expect(out).toContain('path: "root/ios",\n            exclude: ["Feature/Tests", "Tests"],');
   });
 
   it('emits no exclude key when nothing is ignored', () => {
     expect(
-      renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces', [])
+      renderPureSwiftManifest({
+        product: 'ExpoAsset',
+        srcRel: 'ios',
+        frameworkSearchPath: '/abs/interfaces',
+        excludes: [],
+      })
     ).not.toContain('exclude:');
   });
 });
 
 describe('renderPureSwiftManifest privacy manifest', () => {
   it('copies the privacy manifest into the target resources, after the excludes', () => {
-    const out = renderPureSwiftManifest(
-      'ExpoDevice',
-      'ios',
-      [],
-      [],
-      '/abs/interfaces',
-      ['Tests'],
-      null,
-      true
-    );
+    const out = renderPureSwiftManifest({
+      product: 'ExpoDevice',
+      srcRel: 'ios',
+      frameworkSearchPath: '/abs/interfaces',
+      excludes: ['Tests'],
+      hasPrivacyManifest: true,
+    });
     expect(out).toContain(
       'exclude: ["Tests"],\n            resources: [.copy("PrivacyInfo.xcprivacy")],'
     );
@@ -325,11 +438,20 @@ describe('renderPureSwiftManifest privacy manifest', () => {
 
   it('emits no resources key when the module ships no privacy manifest', () => {
     expect(
-      renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces', [], null, false)
+      renderPureSwiftManifest({
+        product: 'ExpoAsset',
+        srcRel: 'ios',
+        frameworkSearchPath: '/abs/interfaces',
+        hasPrivacyManifest: false,
+      })
     ).not.toContain('resources:');
-    expect(renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces')).not.toContain(
-      'resources:'
-    );
+    expect(
+      renderPureSwiftManifest({
+        product: 'ExpoAsset',
+        srcRel: 'ios',
+        frameworkSearchPath: '/abs/interfaces',
+      })
+    ).not.toContain('resources:');
   });
 });
 
@@ -342,7 +464,12 @@ describe('emitPureSwiftSourcePackage', () => {
     fs.mkdirSync(path.join(moduleRoot, 'ios', '__tests__'), { recursive: true });
     fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
 
-    emitPureSwiftSourcePackage(moduleRoot, 'ExpoAsset', null, '/abs/interfaces', outDir, null);
+    emitPureSwiftSourcePackage({
+      moduleRoot,
+      product: 'ExpoAsset',
+      frameworkSearchPath: '/abs/interfaces',
+      outDir,
+    });
     const manifest = fs.readFileSync(
       path.join(outDir, 'expo-source', 'ExpoAsset', 'Package.swift'),
       'utf8'
@@ -360,7 +487,12 @@ describe('emitPureSwiftSourcePackage', () => {
       if (withPrivacyManifest) {
         fs.writeFileSync(path.join(moduleRoot, 'ios', 'PrivacyInfo.xcprivacy'), '<plist/>\n');
       }
-      emitPureSwiftSourcePackage(moduleRoot, 'ExpoDevice', null, '/abs/interfaces', outDir, null);
+      emitPureSwiftSourcePackage({
+        moduleRoot,
+        product: 'ExpoDevice',
+        frameworkSearchPath: '/abs/interfaces',
+        outDir,
+      });
       return fs.readFileSync(
         path.join(outDir, 'expo-source', 'ExpoDevice', 'Package.swift'),
         'utf8'
@@ -401,7 +533,8 @@ describe('single-target packages with sources directly in a predefined directory
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, content);
   };
-  const emit = () => emitSourceManifestPackage(moduleRoot, null, '/abs/interfaces', outDir, null);
+  const emit = () =>
+    emitSourceManifestPackage({ moduleRoot, frameworkSearchPath: '/abs/interfaces', outDir });
 
   it('resolves the only target to the bare predefined directory holding its sources', () => {
     write('Sources/File.swift');
@@ -479,8 +612,8 @@ describe('sibling dependencies on non-regular targets', () => {
 describe('unsupported platform conditions', () => {
   it('refuses a freebsd-only condition instead of widening the dependency', () => {
     expect(() =>
-      renderSourceManifest(
-        {
+      renderSourceManifest({
+        manifest: {
           name: 'TestModule',
           products: [{ name: 'TestModule', targets: ['Main'] }],
           targets: [
@@ -492,10 +625,8 @@ describe('unsupported platform conditions', () => {
             },
           ],
         },
-        [],
-        [],
-        '/abs/interfaces'
-      )
+        frameworkSearchPath: '/abs/interfaces',
+      })
     ).toThrow(/"Helper".*freebsd/s);
   });
 });
@@ -522,7 +653,8 @@ describe('mirrored target file rules', () => {
       },
     ],
   });
-  const render = (manifest) => renderSourceManifest(manifest, [], [], '/abs/interfaces');
+  const render = (manifest) =>
+    renderSourceManifest({ manifest, frameworkSearchPath: '/abs/interfaces' });
 
   it('carries exclude/sources/resources through parsing', () => {
     const [main] = parseDumpedManifest(dumped).targets;
@@ -620,12 +752,10 @@ describe('mirrored target build settings', () => {
       targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [], settings }],
     });
   const render = (settings) =>
-    renderSourceManifest(
-      parseDumpedManifest(dumpWithSettings(settings)),
-      [],
-      [],
-      '/abs/interfaces'
-    );
+    renderSourceManifest({
+      manifest: parseDumpedManifest(dumpWithSettings(settings)),
+      frameworkSearchPath: '/abs/interfaces',
+    });
 
   const settings = [
     { kind: { define: { _0: 'RCT_NEW_ARCH_ENABLED=1' } }, tool: 'c' },
@@ -835,7 +965,7 @@ describe('deployment target', () => {
       ])
     );
     expect(manifest.iosDeploymentTarget).toBe('16.4');
-    const out = renderSourceManifest(manifest, [], [], '/abs/interfaces');
+    const out = renderSourceManifest({ manifest, frameworkSearchPath: '/abs/interfaces' });
     expect(out).toContain('platforms: [.iOS("16.4")],');
     expect(out).not.toContain('.macOS');
   });
@@ -845,29 +975,36 @@ describe('deployment target', () => {
       dumpWithPlatforms([{ options: [], platformName: 'macos', version: '13.4' }])
     );
     expect(manifest.iosDeploymentTarget).toBeNull();
-    expect(renderSourceManifest(manifest, [], [], '/abs/interfaces')).toContain(
+    expect(renderSourceManifest({ manifest, frameworkSearchPath: '/abs/interfaces' })).toContain(
       'platforms: [.iOS(.v15)],'
     );
   });
 
   it('falls back to the plugin floor when the manifest declares no platforms at all', () => {
     expect(
-      renderSourceManifest(
-        parseDumpedManifest(dumpWithPlatforms(undefined)),
-        [],
-        [],
-        '/abs/interfaces'
-      )
+      renderSourceManifest({
+        manifest: parseDumpedManifest(dumpWithPlatforms(undefined)),
+        frameworkSearchPath: '/abs/interfaces',
+      })
     ).toContain('platforms: [.iOS(.v15)],');
   });
 
   it('takes the pure-Swift floor the plugin read from the podspec', () => {
     expect(
-      renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces', [], '16.4')
+      renderPureSwiftManifest({
+        product: 'ExpoAsset',
+        srcRel: 'ios',
+        frameworkSearchPath: '/abs/interfaces',
+        iosDeploymentTarget: '16.4',
+      })
     ).toContain('platforms: [.iOS("16.4")],');
-    expect(renderPureSwiftManifest('ExpoAsset', 'ios', [], [], '/abs/interfaces')).toContain(
-      'platforms: [.iOS(.v15)],'
-    );
+    expect(
+      renderPureSwiftManifest({
+        product: 'ExpoAsset',
+        srcRel: 'ios',
+        frameworkSearchPath: '/abs/interfaces',
+      })
+    ).toContain('platforms: [.iOS(.v15)],');
   });
 
   it('emits the floor the emit layer was given, and never linker settings', () => {
@@ -877,21 +1014,95 @@ describe('deployment target', () => {
     fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
     fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
 
-    emitPureSwiftSourcePackage(
+    emitPureSwiftSourcePackage({
       moduleRoot,
-      'ExpoAsset',
-      null,
-      '/abs/interfaces',
+      product: 'ExpoAsset',
+      frameworkSearchPath: '/abs/interfaces',
       outDir,
-      null,
-      '16.4'
-    );
+      iosDeploymentTarget: '16.4',
+    });
     const manifest = fs.readFileSync(
       path.join(outDir, 'expo-source', 'ExpoAsset', 'Package.swift'),
       'utf8'
     );
     expect(manifest).toContain('platforms: [.iOS("16.4")],');
     expect(manifest).not.toContain('linkerSettings:');
+  });
+});
+
+describe('raiseFloor', () => {
+  it('keeps the higher of the two floors', () => {
+    expect(raiseFloor('15.0', '16.4')).toBe('16.4');
+    expect(raiseFloor('17.0', '16.4')).toBe('17.0');
+  });
+
+  it('keeps the declared floor when both are the same', () => {
+    expect(raiseFloor('16.4', '16.4')).toBe('16.4');
+  });
+
+  it('compares components numerically, not as text', () => {
+    expect(raiseFloor('16.10', '16.9')).toBe('16.10');
+    expect(raiseFloor('16.9', '16.10')).toBe('16.10');
+  });
+
+  it('reads a missing component as zero', () => {
+    expect(raiseFloor('16', '16.0')).toBe('16');
+    expect(raiseFloor('16', '16.4')).toBe('16.4');
+  });
+
+  it('falls back to whichever floor is present', () => {
+    expect(raiseFloor(null, '16.4')).toBe('16.4');
+    expect(raiseFloor('16.4', null)).toBe('16.4');
+    expect(raiseFloor(undefined, '16.4')).toBe('16.4');
+    expect(raiseFloor('16.4', undefined)).toBe('16.4');
+  });
+
+  it('has no floor to report when neither side declares one', () => {
+    expect(raiseFloor(null, null)).toBeNull();
+    expect(raiseFloor(undefined, undefined)).toBeNull();
+  });
+});
+
+describe('the minimum floor a checked-in manifest is raised to', () => {
+  const dumpWithIos = (version) =>
+    JSON.stringify({
+      name: 'TestModule',
+      platforms: [{ options: [], platformName: 'ios', version }],
+      products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
+      targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [] }],
+    });
+
+  let moduleRoot;
+  let outDir;
+
+  beforeEach(() => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-minimum-'));
+    moduleRoot = path.join(tmp, 'module');
+    outDir = path.join(tmp, 'out');
+    fs.mkdirSync(moduleRoot, { recursive: true });
+  });
+
+  const emitted = (declared, minimum) => {
+    runDumpPackage.mockReturnValue(dumpWithIos(declared));
+    emitSourceManifestPackage({
+      moduleRoot,
+      frameworkSearchPath: '/abs/interfaces',
+      outDir,
+      minimumIosDeploymentTarget: minimum,
+    });
+    return fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
+  };
+
+  it('raises a module declaring less than the minimum', () => {
+    expect(emitted('15.0', '16.4')).toContain('platforms: [.iOS("16.4")],');
+  });
+
+  it('leaves a module declaring more than the minimum alone', () => {
+    expect(emitted('17.0', '16.4')).toContain('platforms: [.iOS("17.0")],');
+  });
+
+  it('keeps the declared floor when there is no minimum', () => {
+    expect(emitted('16.4', null)).toContain('platforms: [.iOS("16.4")],');
   });
 });
 
@@ -1002,7 +1213,11 @@ describe('dependencies on targets the generated package cannot declare', () => {
     fs.mkdirSync(path.join(moduleRoot, 'ios', 'Src'), { recursive: true });
     runDumpPackage.mockReturnValue(dumpWithBinaryTarget);
 
-    const result = emitSourceManifestPackage(moduleRoot, null, '/abs/interfaces', outDir, null);
+    const result = emitSourceManifestPackage({
+      moduleRoot,
+      frameworkSearchPath: '/abs/interfaces',
+      outDir,
+    });
 
     expect(result.packageDep).toBeUndefined();
     expect(result.unsupportedTargetDeps).toEqual([

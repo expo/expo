@@ -1,14 +1,13 @@
 # Changelog
 
-## Unpublished
+## 58.0.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964))
+  - @expo/config-plugins@58.0.4
+  - @expo/image-utils@0.12.2
 
 ## 58.0.1 — 2026-09-21
 

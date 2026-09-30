@@ -1,0 +1,35 @@
+name: Changesets Precompile Android
+
+defaults:
+  tools:
+    pnpm: "12.2.1"
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: ["changeset-release/*"]
+
+concurrency:
+  group: ${{ workflow.filename }}-${{ github.ref }}
+  cancel_in_progress: true
+
+jobs:
+  precompile_android:
+    name: Changesets native precompile (Android)
+    runs_on: linux-large
+    image: ubuntu-26.04-jdk-17-ndk-r27b-sdk-57
+    environment: production
+    env:
+      RCT_HERMES_V1_ENABLED: "1"
+      TURBO_TEAM: expo
+    steps:
+      - uses: eas/checkout
+      - name: Verify Turbo cache credentials
+        run: test -n "$TURBO_TOKEN" || (echo "TURBO_TOKEN is not configured in the EAS production environment" >&2; exit 1)
+      - uses: eas/use_npm_token
+      - uses: eas/install_node_modules
+      - name: Precompile embedded Maven repositories
+        working_directory: ../..
+        run: |
+          echo "Precompiling commit ${{ github.sha }}"
+          bin/expo-turbo run precompile-android

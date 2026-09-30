@@ -1,14 +1,20 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Add configurable update cache retention with `EXUpdatesMaxUpdatesToKeep`. ([#50459](https://github.com/expo/expo/pull/50459) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add configurable update cache retention with `expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP`. ([#50460](https://github.com/expo/expo/pull/50460) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Cover configurable update cache retention in E2E tests. ([#50463](https://github.com/expo/expo/pull/50463) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Fix the embedded manifest giving every duplicate asset scale the same `packagerHash`, which made updates download assets already in the binary. ([#50757](https://github.com/expo/expo/pull/50757) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/plist@0.10.1
+  - expo-eas-client@58.0.1
+  - expo-manifests@58.0.1
+  - expo-structured-headers@58.0.1
+  - expo-updates-interface@58.0.1
 
 ## 58.0.10 — 2026-09-28
 

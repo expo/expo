@@ -228,6 +228,26 @@ inline void getStringData(
 #endif
 }
 
+/**
+ Same as `getStringData`, but for a `jsi::PropNameID`.
+ */
+inline void getPropNameIdData(
+  jsi::IRuntime &runtime,
+  const jsi::PropNameID &propNameId,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  runtime.getPropNameIdData(propNameId, ctx, callback);
+#else
+  auto forward = [ctx, callback](bool ascii, const void *data, size_t num) {
+    callback(ctx, ascii, data, num);
+  };
+  propNameId.getPropNameIdData(runtime, forward);
+#endif
+}
+
 // MARK: - ArrayBuffer
 
 /**

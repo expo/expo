@@ -469,6 +469,37 @@ describe('direction', () => {
 // ─── experimental_userInterfaceStyle ────────────────────────────────────────────
 
 describe('experimental_userInterfaceStyle', () => {
+  test('uses dark option with a light theme', () => {
+    const { result } = renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerUserInterfaceStyle: 'dark' }))
+    );
+    expect(result.current.experimental_userInterfaceStyle).toBe('dark');
+  });
+
+  test('uses light option with a dark theme', () => {
+    mockedUseTheme.mockReturnValue({
+      dark: true,
+      colors: DEFAULT_COLORS,
+      fonts: DEFAULT_FONTS,
+    } as any);
+    const { result } = renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerUserInterfaceStyle: 'light' }))
+    );
+    expect(result.current.experimental_userInterfaceStyle).toBe('light');
+  });
+
+  test('allows unstable native header props to override the option', () => {
+    const { result } = renderHook(() =>
+      useHeaderConfigProps(
+        defaultProps({
+          headerUserInterfaceStyle: 'dark',
+          unstable_nativeProps: { headerConfig: { experimental_userInterfaceStyle: 'light' } },
+        })
+      )
+    );
+    expect(result.current.experimental_userInterfaceStyle).toBe('light');
+  });
+
   test('returns dark when theme is dark', () => {
     mockedUseTheme.mockReturnValue({
       dark: true,

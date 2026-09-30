@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-test-core",
-  "version": "58.0.1",
+  "version": "58.0.2",
   "description": "Module providing native testing utilities for testing Expo modules",
   "keywords": [
     "expo",

@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.0-preview.8",
+  "version": "58.0.0",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -204,8 +204,10 @@
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest && jest --config scripts/spm/jest.config.js",
+    "test": "jest && jest --config scripts/spm/jest.config.js && pnpm test:templates",
     "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
+    "test:templates": "et check-template-packages",
+    "prepack": "et create-expo-template-tarball",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
@@ -245,7 +247,7 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.2",
+    "react-native": "0.88.0-rc.3",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },

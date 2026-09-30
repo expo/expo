@@ -24,7 +24,9 @@ describe('BottomSheet', () => {
       </BottomSheet>
     );
 
-    expect(findNativeViewProps('RNHostView')?.matchContents).toBe(true);
+    expect(findNativeViewProps('RNHostView')).toEqual(
+      expect.objectContaining({ matchContentsHorizontal: true, matchContentsVertical: true })
+    );
     expect(hostedViewStyle()?.width).toBe(Dimensions.get('window').width);
   });
 
@@ -35,7 +37,9 @@ describe('BottomSheet', () => {
       </BottomSheet>
     );
 
-    expect(findNativeViewProps('RNHostView')?.matchContents).toBe(false);
+    expect(findNativeViewProps('RNHostView')).toEqual(
+      expect.objectContaining({ matchContentsHorizontal: false, matchContentsVertical: false })
+    );
     expect(hostedViewStyle()).toEqual(expect.objectContaining({ flexGrow: 1, height: 0 }));
   });
 });

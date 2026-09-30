@@ -1,16 +1,14 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-- [Android] Register optional worklet argument converters before exporting functions that accept serializable values.
-
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Depend on `expo-modules-macros`, the new name of the `@expo/expo-modules-macros-plugin` package. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a crash (`The app context has been lost`) when an Expo view mounts during a reload. ([#50721](https://github.com/expo/expo/pull/50721) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-modules-jsi@58.0.5
 
 ## 58.0.8 — 2026-09-28
 
