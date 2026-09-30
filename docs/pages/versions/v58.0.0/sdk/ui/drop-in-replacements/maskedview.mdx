@@ -46,6 +46,10 @@ Under the hood this component bridges arbitrary React Native children into the p
   - **Alpha fade** — `mask-image: linear-gradient(...)` (or `WebkitMaskImage`) directly on the content view.
   - **Shape mask** (circle, rounded rectangle, and so on) — `clip-path: circle(...)` / `inset(...)` / `path(...)`, or `border-radius` + `overflow: 'hidden'`.
 
+## Android screen capture
+
+On Android, native screenshot and session replay integrations must capture `MaskedView` on the [UI thread](https://developer.android.com/topic/performance/threads#main). Drawing its Jetpack Compose layout from a background thread can crash the app with `IllegalArgumentException: Detected multithreaded access to SnapshotStateObserver`. Image processing and encoding can run on a background thread.
+
 ## Basic usage
 
 <ComponentExample
