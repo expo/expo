@@ -538,6 +538,7 @@ public final class ImageView: ExpoView {
   }
 
   private func setImage(_ image: UIImage?, contentFit: ContentFit, isPlaceholder: Bool) {
+    let isNewPlaceholder = isPlaceholder && image != nil && sdImageView.image !== image
     sdImageView.contentMode = contentFit.toContentMode()
 
     if isPlaceholder {
@@ -581,7 +582,7 @@ public final class ImageView: ExpoView {
 
     if !isPlaceholder {
       onDisplay()
-    } else if image != nil {
+    } else if isNewPlaceholder {
       onPlaceholderDisplay()
     }
 
