@@ -59,6 +59,36 @@ internal suspend fun Permissions.requestBackgroundPermissions() {
   requestPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
 }
 
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+private fun supportsNotificationPermission(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
+internal suspend fun Permissions.requestNotificationPermissions() {
+  if (!supportsNotificationPermission()) {
+    return
+  }
+
+  requestPermissions(Manifest.permission.POST_NOTIFICATIONS)
+}
+
+internal suspend fun Permissions.getNotificationPermissions(): NotificationPermissionResponse {
+  if (!supportsNotificationPermission()) {
+    return NotificationPermissionResponse(
+      status = LocationPermissionStatus.GRANTED,
+      granted = true,
+      canAskAgain = true
+    )
+  }
+
+  val permission = queryPermissions(Manifest.permission.POST_NOTIFICATIONS)
+    .responseFor(Manifest.permission.POST_NOTIFICATIONS)
+
+  return NotificationPermissionResponse(
+    status = LocationPermissionStatus.fromString(permission.status.status),
+    granted = permission.status == PermissionsStatus.GRANTED,
+    canAskAgain = permission.canAskAgain
+  )
+}
+
 internal suspend fun Permissions.requestForegroundPermissions(options: RequestPermissionsOptions?) {
   val permissions = when (options?.accuracy ?: LocationAccuracyOption.FULL) {
     LocationAccuracyOption.FULL -> FOREGROUND_PERMISSIONS

@@ -3,7 +3,7 @@ package expo.modules.location.next
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
-import android.os.Bundle
+import android.os.Build
 import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -14,9 +14,6 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.sharedobjects.SharedRef
 import expo.modules.location.next.locationProviders.AndroidLocationProvider
@@ -32,12 +29,11 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.withTimeoutOrNull
 import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
-
-class BackgroundSessionRequiresForegroundException : CodedException("Need to be in foreground to ask for starting the background session.")
-class ServicePromotionFailedException(cause: Throwable) : CodedException(cause.localizedMessage, cause)
-class ServicePromotionTimedOutException : CodedException("Service promotion has timed out, need to check the background activity status to check if the service actually promoted in a later time.")
-class NoNotificationIconException : CodedException("No notification icon was configured.")
 class TaskManagerNotFoundException : CodedException("TaskManager module not found")
 
 class LocationModuleNext : Module() {
@@ -72,10 +68,23 @@ class LocationModuleNext : Module() {
 
   @Volatile
   private var locationServicesPrompt: CompletableDeferred<Boolean>? = null
+
+  @Volatile
   var isForegrounded = false
 
+  private fun shouldWatchersRun() = isForegrounded || LocationForegroundService.isBackgroundLocationUnthrottled()
+
+  private fun updateWatchSessions() = synchronized(watchSessions) {
+    watchSessions.removeIf { it.get() == null }
+    val areUpdatesAllowed = shouldWatchersRun()
+    for (session in watchSessions) {
+      session.get()?.setUpdatesAllowed(areUpdatesAllowed)
+    }
+  }
+
   fun createPositionWatchHandle(initialParameters: WatchPositionParameters, session: PositionUpdatesSession): PositionWatchHandle = synchronized(watchSessions) {
-    val pausableSession = PausableWatchSession(initialParameters, session)
+    val areUpdatesAllowed = shouldWatchersRun()
+    val pausableSession = PausableWatchSession(initialParameters, session, areUpdatesAllowed)
     watchSessions.add(WeakReference(pausableSession))
     return@synchronized PositionWatchHandle(pausableSession)
   }
@@ -108,6 +117,15 @@ class LocationModuleNext : Module() {
 
     AsyncFunction("getBackgroundPermissions") Coroutine { ->
       return@Coroutine permissionsManager.getLocationPermissions(background = true)
+    }
+
+    AsyncFunction("requestNotificationPermissions") Coroutine { ->
+      permissionsManager.requestNotificationPermissions()
+      return@Coroutine permissionsManager.getNotificationPermissions()
+    }
+
+    AsyncFunction("getNotificationPermissions") Coroutine { ->
+      return@Coroutine permissionsManager.getNotificationPermissions()
     }
 
     // Location providers
@@ -204,31 +222,32 @@ class LocationModuleNext : Module() {
     }
 
     Class("BackgroundSession") {
-      StaticAsyncFunction("ensureStarted") Coroutine { options: BackgroundSessionOptions ->
-        if (LocationForegroundService.isBackgroundLocationUnthrottled()) {
-          return@Coroutine
-        }
-        if (LocationForegroundService.updateForegroundServiceIfPromoted(context, options)) {
-          return@Coroutine
-        }
-        if (!isForegrounded) {
-          throw BackgroundSessionRequiresForegroundException()
+      StaticAsyncFunction("ensureStarted") Coroutine { backgroundSessionOptions: BackgroundSessionOptions? ->
+        if (!LocationForegroundService.canPostNotifications(context)) {
+          throw MissingNotificationPermissionException()
         }
 
-        val deferredPromotionResult = LocationForegroundService.preRequestServicePromotion()
-        val serviceIntent = Intent(context, LocationForegroundService::class.java).apply {
-          putExtras(options.toBundle())
+        val options = backgroundSessionOptions ?: BackgroundSessionOptions()
+        BackgroundSessionOptions.persist(context, options)
+
+        val sessionState = LocationForegroundService.startOrUpdate(context, options, updateOnly = !isForegrounded)
+        if (sessionState !is SessionState.Starting) {
+          return@Coroutine
         }
-        context.startService(serviceIntent)
-        val result = withTimeoutOrNull(4.seconds) { deferredPromotionResult.await() }
-        when (result) {
-          is ServicePromotionResult.Failed -> throw ServicePromotionFailedException(result.cause)
+
+        when (val result = withTimeoutOrNull(4.seconds) { sessionState.promotion.await() }) {
+          is ServicePromotionResult.Failed ->
+            throw result.cause as? CodedException ?: ServicePromotionFailedException(result.cause)
           ServicePromotionResult.Promoted -> {}
           null -> throw ServicePromotionTimedOutException()
         }
       }
 
-      StaticFunction("stop") {
+      StaticAsyncFunction("stop") Coroutine { ->
+        (LocationForegroundService.state as? SessionState.Starting)?.promotion?.let {
+          withTimeoutOrNull(4.seconds) { it.await() }
+        }
+        BackgroundSessionOptions.clearPersisted(context)
         context.stopService(Intent(context, LocationForegroundService::class.java))
       }
 
@@ -276,6 +295,7 @@ class LocationModuleNext : Module() {
 
     OnDestroy {
       modulesStarted.decrementAndGet()
+      pollForegroundServiceJob?.cancel()
       synchronized(watchSessions) {
         for (session in watchSessions) {
           session.get()?.release()
@@ -285,20 +305,54 @@ class LocationModuleNext : Module() {
 
     OnActivityEntersForeground {
       isForegrounded = true
-      synchronized(watchSessions) {
-        for (session in watchSessions) {
-          session.get()?.onLifecycleChange(true)
+      updateWatchSessions()
+
+      if (!LocationForegroundService.canPostNotifications(context)) {
+        return@OnActivityEntersForeground
+      }
+      appContext.backgroundCoroutineScope.launch {
+        runCatching {
+          BackgroundSessionOptions.readPersisted(context)?.let {
+            val sessionState = LocationForegroundService.startOrUpdate(context, it, updateOnly = !isForegrounded)
+            if (sessionState is SessionState.Starting) {
+              sessionState.promotion.await()
+              updateWatchSessions()
+            }
+          }
         }
       }
     }
 
     OnActivityEntersBackground {
       isForegrounded = false
-      synchronized(watchSessions) {
-        watchSessions.removeIf { it.get() == null }
-        for (session in watchSessions) {
-          session.get()?.onLifecycleChange(false)
+      updateWatchSessions()
+      startPollingForegroundService()
+    }
+  }
+
+  private var pollForegroundServiceJob: Job? = null
+
+  // Poll the foreground service so that if it promotes or dies we can update the watch sessions.
+  private fun startPollingForegroundService() {
+    if (pollForegroundServiceJob != null || Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return
+    }
+    pollForegroundServiceJob = appContext.mainQueue.launch {
+      var previousAreUpdatesAllowed: Boolean? = null
+      while (isActive) {
+        val areUpdatesAllowed = shouldWatchersRun()
+
+        if (areUpdatesAllowed != previousAreUpdatesAllowed) {
+          updateWatchSessions()
         }
+
+        if (LocationForegroundService.status().state == BackgroundSessionState.NOT_RUNNING || isForegrounded) {
+          pollForegroundServiceJob = null
+          return@launch
+        }
+
+        previousAreUpdatesAllowed = areUpdatesAllowed
+        delay(1.seconds)
       }
     }
   }
@@ -306,36 +360,8 @@ class LocationModuleNext : Module() {
   private fun hasLocationServicesEnabled(): Boolean {
     return LocationManagerCompat.isLocationEnabled(locationManager)
   }
+
   companion object {
     @Volatile var modulesStarted = AtomicInteger(0)
-  }
-}
-
-@OptimizedRecord
-class BackgroundSessionOptions(
-  @Field val notificationTitle: String? = null,
-  @Field val notificationBody: String? = null,
-  @Field val notificationColor: Int? = null,
-  @Field val stopOnTaskRemoved: Boolean = false
-) : Record {
-  fun toBundle(): Bundle = Bundle().apply {
-    putString(KEY_TITLE, notificationTitle)
-    putString(KEY_BODY, notificationBody)
-    notificationColor?.let { putInt(KEY_COLOR, it) }
-    putBoolean(KEY_STOP_ON_TASK_REMOVED, stopOnTaskRemoved)
-  }
-
-  companion object {
-    private const val KEY_TITLE = "notificationTitle"
-    private const val KEY_BODY = "notificationBody"
-    private const val KEY_COLOR = "notificationColor"
-    private const val KEY_STOP_ON_TASK_REMOVED = "stopOnTaskRemoved"
-
-    fun fromBundle(bundle: Bundle) = BackgroundSessionOptions(
-      notificationTitle = bundle.getString(KEY_TITLE),
-      notificationBody = bundle.getString(KEY_BODY),
-      notificationColor = if (bundle.containsKey(KEY_COLOR)) bundle.getInt(KEY_COLOR) else null,
-      stopOnTaskRemoved = bundle.getBoolean(KEY_STOP_ON_TASK_REMOVED)
-    )
   }
 }
