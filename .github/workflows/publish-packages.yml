@@ -94,7 +94,8 @@ jobs:
     name: Publish stable packages
     needs: stable-mode
     if: needs.stable-mode.outputs.mode == 'publish'
-    runs-on: macos-26
+    runs-on:
+      group: macos-publishing
     timeout-minutes: 180
     environment: npm-publish-stable
     concurrency:
@@ -138,7 +139,8 @@ jobs:
     if: >-
       github.repository == 'expo/expo' &&
       (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-    runs-on: macos-26
+    runs-on:
+      group: macos-publishing
     timeout-minutes: 180
     environment: npm-publish-canary
     concurrency:
