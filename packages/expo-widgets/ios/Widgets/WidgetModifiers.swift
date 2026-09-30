@@ -70,36 +70,6 @@ internal struct ActivityBackgroundTintModifier: ViewModifier, Record {
   }
 }
 
-internal struct WidgetContainerBackgroundModifier: ViewModifier, Record {
-  @Field var style: ShapeStyleValue?
-  @Field var container: ContainerBackgroundPlacementOptions?
-
-  func body(content: Content) -> some View {
-    if let shapeStyle = style?.toAnyShapeStyle(), let container {
-      if #available(iOS 18.0, *) {
-        content.containerBackground(shapeStyle, for: container.toContainerBackgroundPlacement)
-      } else if #available(iOS 17.0, *) {
-        content.containerBackground(shapeStyle, for: .widget)
-      } else {
-        content
-      }
-    } else {
-      content
-    }
-  }
-}
-
-private extension ContainerBackgroundPlacementOptions {
-  @available(iOS 18.0, *)
-  var toContainerBackgroundPlacement: ContainerBackgroundPlacement {
-    switch self {
-    case .widget: return .widget
-    case .navigation: return .navigation
-    case .navigationSplitView: return .navigationSplitView
-    }
-  }
-}
-
 /**
  * Registers the modifiers that need WidgetKit. They live here rather than in ExpoUI,
  * so apps that use ExpoUI without widgets do not link WidgetKit.
@@ -112,12 +82,18 @@ internal func registerWidgetModifiers() {
   ViewModifierRegistry.register("activityBackgroundTint") { params, appContext, _ in
     return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
   }
-  // Replaces ExpoUI's modifier, which does not support the `widget` placement.
-  ViewModifierRegistry.unregister("containerBackground")
-  ViewModifierRegistry.register("containerBackground") { params, appContext, _ in
-    return try WidgetContainerBackgroundModifier(from: params, appContext: appContext)
+  ViewModifierRegistry.widgetKit = WidgetKitModifiersImpl()
+}
+
+private struct WidgetKitModifiersImpl: WidgetKitModifiers {
+  func containerBackground(_ view: AnyView, style: AnyShapeStyle) -> AnyView {
+    guard #available(iOS 17.0, *) else {
+      return view
+    }
+    return AnyView(view.containerBackground(style, for: .widget))
   }
-  ViewModifierRegistry.widgetAccentedRenderingModeHandler = { image, params, appContext in
+
+  func widgetAccentedRenderingMode(_ image: Image, params: [String: Any], appContext: AppContext) -> AnyView? {
     guard #available(iOS 18.0, *), let modifier = try? WidgetAccentedRenderingModeModifier(from: params, appContext: appContext) else {
       return nil
     }

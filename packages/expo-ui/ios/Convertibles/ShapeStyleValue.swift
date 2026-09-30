@@ -80,7 +80,7 @@ internal enum MaterialOptions: String, Enumerable {
  `AnyShapeStyle` because the concrete type is only known at runtime — an opaque `some ShapeStyle`
  would have to be a single type across all the branches below.
  */
-public struct ShapeStyleValue: Record {
+internal struct ShapeStyleValue: Record {
   @Field var type: ShapeStyleType = .color
   @Field var color: Color?
   @Field var hierarchical: HierarchicalShapeStyleOptions?
@@ -92,13 +92,11 @@ public struct ShapeStyleValue: Record {
   @Field var startRadius: CGFloat?
   @Field var endRadius: CGFloat?
 
-  public init() {}
-
   /**
    Resolves the style, or returns `nil` when the fields it needs are missing or the style is not
    available on the running platform. Callers leave the view untouched in that case.
    */
-  public func toAnyShapeStyle() -> AnyShapeStyle? {
+  func toAnyShapeStyle() -> AnyShapeStyle? {
     switch type {
     case .color:
       guard let color else {

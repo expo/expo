@@ -67,9 +67,9 @@ internal extension Image {
         )
       }
 
-      if let handler = ViewModifierRegistry.widgetAccentedRenderingModeHandler,
+      if let widgetKit = ViewModifierRegistry.widgetKit,
          let modifierConfig = modifiers.first(where: { $0["$type"] as? String == "widgetAccentedRenderingMode" }),
-         let view = handler(image, modifierConfig, appContext) {
+         let view = widgetKit.widgetAccentedRenderingMode(image, params: modifierConfig, appContext: appContext) {
         view
       } else {
         image
