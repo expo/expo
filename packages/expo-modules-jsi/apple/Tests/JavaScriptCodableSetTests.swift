@@ -15,6 +15,18 @@ struct JavaScriptCodableSetTests {
   }
 
   @Test
+  func `decodes a set from a subclass of Set`() throws {
+    let decoded = try Set<Int>.decode(runtime.eval("new (class extends Set {})([1, 2])"), in: runtime)
+    #expect(decoded == [1, 2])
+  }
+
+  @Test
+  func `arrayizes a non-set object into a single-element set`() throws {
+    let decoded = try Set<[String: Int]>.decode(runtime.eval("({ a: 1 })"), in: runtime)
+    #expect(decoded == [["a": 1]])
+  }
+
+  @Test
   func `decodes a set from an array, collapsing duplicates`() throws {
     let decoded = try Set<Int>.decode(runtime.eval("[1, 2, 2, 3, 1]"), in: runtime)
     #expect(decoded == [1, 2, 3])
