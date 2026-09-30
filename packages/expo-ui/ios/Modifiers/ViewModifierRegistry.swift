@@ -2311,6 +2311,10 @@ extension ViewModifierRegistry {
       return try ScrollDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("preferredColorScheme") { params, appContext, _ in
+      return try PreferredColorSchemeModifier(from: params, appContext: appContext)
+    }
+
     register("scrollClipDisabled") { params, appContext, _ in
       return try ScrollClipDisabledModifier(from: params, appContext: appContext)
     }
