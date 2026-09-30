@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Allow native push token requests to retry after a transient failure while preserving shared in-flight requests. ([#50848](https://github.com/expo/expo/pull/50848) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
+
 ### 💡 Others
 
 ## 57.0.21 — 2026-09-24
