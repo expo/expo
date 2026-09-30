@@ -13,6 +13,7 @@
 - [Android][iOS] Keep connections usable and cached after a failed close, allowing statement cleanup and another close attempt.
 - [Android][iOS] Mark statements as finalized even when SQLite returns an earlier execution error, preventing access to freed statements.
 - [Android][iOS] Invalidate statement wrappers during automatic close cleanup and synchronize preparation and finalization with cleanup.
+- [Android] Keep a prepared statement's native binding alive until `sqlite3_finalize`, including after JavaScript releases the statement. ([#50825](https://github.com/expo/expo/pull/50825) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
