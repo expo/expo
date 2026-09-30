@@ -199,7 +199,6 @@ _This version does not introduce any user-facing changes._
 - Prevent `useLoaderData()` from re-rendering readers of unrelated loader paths ([#48523](https://github.com/expo/expo/pull/48523) by [@hassankhan](https://github.com/hassankhan))
 - Fix package export for `expo-router/unstable-split-view` ([#49001](https://github.com/expo/expo/pull/49001) by [@hassankhan](https://github.com/hassankhan))
 - [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when the normal and selected icons resolved to different rendering modes. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
-- [ios][native-tabs] Resolve `Icon` `xcasset` names through the asset catalog so symbol sets render. ([#48301](https://github.com/expo/expo/pull/48301) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 
 ### 💡 Others
 
