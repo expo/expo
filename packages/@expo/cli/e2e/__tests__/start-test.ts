@@ -74,6 +74,14 @@ it('runs `npx expo start --help`', async () => {
         
         --private-key-path <path>       Path to private key for code signing. Required to sign development manifests when the project is configured with an expo-updates code signing certificate.
         -h, --help                      Usage info
+
+      AGENTS:
+
+      Setting CI=1 turns off file watching and Fast Refresh, so code changes won't reach
+      the app until the dev server restarts. Don't set it for local development.
+
+      Run without the interactive UI and keep Fast Refresh by redirecting output:
+        $ npx expo start > expo.log 2>&1
     "
   `);
 });
