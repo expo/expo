@@ -368,12 +368,15 @@ class SQLiteModule : Module() {
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
     synchronized(database.statementLifecycleLock) {
-      maybeThrowForFinalizedStatement(statement)
-      maybeThrowForClosedDatabase(database)
-      if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+      synchronized(statement) {
+        maybeThrowForFinalizedStatement(statement)
+        maybeThrowForClosedDatabase(database)
+        if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
+          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        }
+        statement.isPrepared = true
+        database.statements.add(statement)
       }
-      database.statements.add(statement)
     }
   }
 
@@ -491,6 +494,9 @@ class SQLiteModule : Module() {
         // SQLite destroys the statement even when returning an earlier execution error.
         statement.isFinalized = true
         database.statements.removeAll { it === statement }
+        if (statement.releasedByJavaScript) {
+          statement.ref.close()
+        }
         if (ret != NativeDatabaseBinding.SQLITE_OK) {
           throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
         }
