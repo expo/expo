@@ -14,9 +14,12 @@ import React from 'react';
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
 
 import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';
+import { warnAboutDeprecation } from './deprecationWarning';
 
 const ExpoCheckbox = React.forwardRef(
   ({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps, ref) => {
+    warnAboutDeprecation();
+
     const handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
       const value = event.nativeEvent.target.checked;
       event.nativeEvent.value = value;
