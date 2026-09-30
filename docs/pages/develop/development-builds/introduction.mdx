@@ -1,49 +1,1174 @@
----
-title: Introduction to development builds
-sidebar_title: Introduction and setup
-description: Learn how to create a development build in your Expo project and why use a development build instead of Expo Go.
-searchRank: 98
-searchPosition: 1
-hideTOC: true
-hasVideoLink: true
----
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07182d">
+<title>MÉCA AI — Diagnostic mécanique intelligent</title>
 
-import { BuildMethodForm } from '~/scenes/develop/development-builds/BuildMethodForm';
-import { DevelopmentBuildInstructions } from '~/scenes/develop/development-builds/DevelopmentBuildInstructions';
-import DevelopmentBuildAgentPrompt from '~/scenes/develop/development-builds/instructions/agent-prompt.mdx';
-import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,Helvetica,sans-serif;
+}
 
-<DevelopmentBuildAgentPrompt />
+body{
+  background:#eef1f5;
+  color:#17202a;
+  padding-bottom:80px;
+}
 
-When you create a new Expo app with [`create-expo-app`](/get-started/create-a-project/), you start with a project where you update TypeScript/JavaScript code on your local machine and view the changes in the Expo Go app. A **development build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native configuration.
+header{
+  background:linear-gradient(135deg,#06152b,#0d3158);
+  color:white;
+  padding:22px 18px 28px;
+  border-radius:0 0 25px 25px;
+  box-shadow:0 5px 18px #0002;
+}
 
-A **development build is recommended when you want to create your own app and release to app stores**. It includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which augments the built-in React Native development tooling. The tooling also includes support for inspecting network requests and a ["launcher" UI](/develop/development-builds/use-development-builds/#the-launcher-screen) that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with [EAS Update](/eas-update/introduction/)).
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
 
-<VideoBoxLink
-  videoId="FdjczjkwQKE"
-  title="Expo Go & Development Builds: which should you use?"
-  description="In this tutorial video, Beto explains what each of them is and when to choose a development build."
-/>
+.logoIcon{
+  width:55px;
+  height:55px;
+  border-radius:16px;
+  background:#f5b400;
+  color:#07182d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  font-weight:bold;
+}
 
-## How would you like to build your development build?
+.logo h1{
+  font-size:25px;
+}
 
-All three methods produce the same development build. They differ in where the app compiles and what you need to have installed on your machine.
+.logo p{
+  font-size:12px;
+  opacity:.8;
+  margin-top:3px;
+}
 
-<BuildMethodForm />
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:18px;
+}
 
----
+.hero{
+  margin-top:15px;
+  background:white;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 5px 18px #0001;
+}
 
-<DevelopmentBuildInstructions />
+.hero h2{
+  color:#092544;
+  margin-bottom:8px;
+}
 
----
+.hero p{
+  color:#66717d;
+  line-height:1.5;
+}
 
-## After you install the development build
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:13px;
+  margin-top:16px;
+}
 
-Launch the development build from your device's Home screen and connect to a development server from the launcher screen to start working on your app. To learn how to use your new build, including the launcher screen, rebuilding, and debugging, see [Use a development build](/develop/development-builds/use-development-builds/). For common questions about development builds and Expo Go, including what you can't do in Expo Go and why, see the [FAQ](/develop/development-builds/faq/).
+.card{
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  border:1px solid #e4e7eb;
+  box-shadow:0 4px 12px #0000000c;
+  cursor:pointer;
+  transition:.2s;
+}
 
-### Expo Skills for AI agents
+.card:hover{
+  transform:translateY(-2px);
+}
 
-If you use an AI agent, install [Expo Skills](/skills/) to teach it the workflows on this page:
+.cardIcon{
+  font-size:30px;
+  margin-bottom:10px;
+}
 
-<RelatedSkills names={['expo-dev-client', 'eas-simulator']} />
+.card h3{
+  color:#092544;
+  margin-bottom:5px;
+}
+
+.card p{
+  font-size:13px;
+  color:#707982;
+  line-height:1.4;
+}
+
+.primary{
+  width:100%;
+  border:0;
+  padding:15px;
+  border-radius:13px;
+  background:#f5b400;
+  color:#07182d;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:15px;
+}
+
+.secondary{
+  width:100%;
+  border:1px solid #d8dee5;
+  padding:13px;
+  border-radius:13px;
+  background:white;
+  color:#092544;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.section{
+  display:none;
+}
+
+.section.active{
+  display:block;
+}
+
+.sectionTitle{
+  margin:8px 0 15px;
+  color:#092544;
+}
+
+.formBox{
+  background:white;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 4px 15px #0001;
+  margin-bottom:15px;
+}
+
+label{
+  display:block;
+  font-weight:bold;
+  font-size:14px;
+  margin-top:13px;
+  margin-bottom:6px;
+}
+
+input,select,textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #d8dee5;
+  border-radius:10px;
+  outline:none;
+  font-size:15px;
+  background:#fafbfc;
+}
+
+textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:#f5b400;
+}
+
+.cameraBox{
+  background:#081b31;
+  border-radius:18px;
+  overflow:hidden;
+  margin-top:15px;
+}
+
+video{
+  width:100%;
+  display:block;
+  max-height:420px;
+  object-fit:cover;
+  background:#000;
+}
+
+.cameraButtons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:10px;
+}
+
+.cameraButtons button{
+  padding:12px;
+  border:0;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.result{
+  background:#fff;
+  border-left:5px solid #f5b400;
+  border-radius:15px;
+  padding:18px;
+  margin-top:15px;
+  line-height:1.6;
+  box-shadow:0 4px 12px #0001;
+}
+
+.result h3{
+  color:#092544;
+  margin-bottom:10px;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  background:#fff1bf;
+  font-size:12px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.historyItem{
+  background:white;
+  padding:16px;
+  border-radius:15px;
+  margin-bottom:10px;
+  box-shadow:0 3px 10px #0001;
+}
+
+.historyItem strong{
+  color:#092544;
+}
+
+.library{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+
+.libraryItem{
+  background:white;
+  border-radius:15px;
+  padding:17px;
+  border:1px solid #e2e5e9;
+}
+
+.libraryItem b{
+  color:#092544;
+}
+
+.warning{
+  background:#fff5d6;
+  border-left:5px solid #f5b400;
+  padding:14px;
+  border-radius:10px;
+  font-size:13px;
+  line-height:1.5;
+  margin-top:15px;
+}
+
+footer{
+  text-align:center;
+  color:#68727d;
+  font-size:12px;
+  padding:25px 15px;
+}
+
+nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:68px;
+  background:white;
+  box-shadow:0 -4px 15px #0002;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:100;
+}
+
+nav button{
+  background:none;
+  border:0;
+  color:#66717d;
+  font-size:11px;
+  cursor:pointer;
+}
+
+nav button span{
+  display:block;
+  font-size:22px;
+  margin-bottom:2px;
+}
+
+nav button.active{
+  color:#092544;
+  font-weight:bold;
+}
+
+@media(min-width:700px){
+  .grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .library{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logoIcon">⚙️</div>
+    <div>
+      <h1>MÉCA AI</h1>
+      <p>Le diagnostic mécanique intelligent à portée de main.</p>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+<!-- ACCUEIL -->
+<section id="home" class="section active">
+
+  <div class="hero">
+    <h2>Bonjour, mécanicien 👋</h2>
+    <p>
+      Analysez un véhicule, recherchez une panne, écoutez un bruit
+      ou consultez votre bibliothèque mécanique.
+    </p>
+  </div>
+
+  <div class="grid">
+
+    <div class="card" onclick="showSection('scan')">
+      <div class="cardIcon">📷</div>
+      <h3>Scanner</h3>
+      <p>Photographiez ou filmez une pièce ou un véhicule.</p>
+    </div>
+
+    <div class="card" onclick="showSection('diagnostic')">
+      <div class="cardIcon">🔧</div>
+      <h3>Diagnostic</h3>
+      <p>Décrivez les symptômes et obtenez une analyse préliminaire.</p>
+    </div>
+
+    <div class="card" onclick="startAudio()">
+      <div class="cardIcon">🔊</div>
+      <h3>Analyser un bruit</h3>
+      <p>Enregistrez un bruit moteur ou mécanique.</p>
+    </div>
+
+    <div class="card" onclick="showSection('voyant')">
+      <div class="cardIcon">⚠️</div>
+      <h3>Voyant</h3>
+      <p>Identifiez les principaux voyants du tableau de bord.</p>
+    </div>
+
+    <div class="card" onclick="showSection('library')">
+      <div class="cardIcon">📚</div>
+      <h3>Bibliothèque</h3>
+      <p>Consultez les informations mécaniques.</p>
+    </div>
+
+    <div class="card" onclick="showSection('history')">
+      <div class="cardIcon">📋</div>
+      <h3>Historique</h3>
+      <p>Retrouvez vos diagnostics précédents.</p>
+    </div>
+
+  </div>
+
+  <button class="primary" onclick="showSection('diagnostic')">
+    ＋ NOUVEAU DIAGNOSTIC
+  </button>
+
+</section>
+
+
+<!-- SCANNER -->
+<section id="scan" class="section">
+
+  <h2 class="sectionTitle">📷 Scanner le véhicule</h2>
+
+  <div class="formBox">
+
+    <label>Type de véhicule</label>
+    <select id="vehicleType">
+      <option>Voiture</option>
+      <option>Moto</option>
+      <option>Camion</option>
+      <option>Autre</option>
+    </select>
+
+    <label>Marque</label>
+    <input id="brand" placeholder="Exemple : Toyota">
+
+    <label>Modèle</label>
+    <input id="model" placeholder="Exemple : Corolla">
+
+    <label>Année</label>
+    <input id="year" type="number" placeholder="Exemple : 2018">
+
+    <div class="cameraBox">
+      <video id="camera" autoplay playsinline></video>
+
+      <div class="cameraButtons">
+        <button onclick="openCamera()">📷 Ouvrir caméra</button>
+        <button onclick="takePhoto()">📸 Capturer</button>
+      </div>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <button class="primary" onclick="simulateScan()">
+      🤖 ANALYSER LA CAPTURE
+    </button>
+
+    <div id="scanResult"></div>
+
+  </div>
+
+  <button class="secondary" onclick="showSection('home')">← Retour</button>
+
+</section>
+
+
+<!-- DIAGNOSTIC -->
+<section id="diagnostic" class="section">
+
+  <h2 class="sectionTitle">🔧 Diagnostic guidé</h2>
+
+  <div class="formBox">
+
+    <label>Type</label>
+    <select id="diagType">
+      <option>Voiture</option>
+      <option>Moto</option>
+    </select>
+
+    <label>Marque et modèle</label>
+    <input id="diagVehicle" placeholder="Exemple : Toyota Corolla">
+
+    <label>Motorisation</label>
+    <select id="engine">
+      <option>Essence</option>
+      <option>Diesel</option>
+      <option>Hybride</option>
+      <option>Électrique</option>
+      <option>Je ne sais pas</option>
+    </select>
+
+    <label>Problème constaté</label>
+    <select id="problem">
+      <option>Ne démarre pas</option>
+      <option>Démarrage difficile</option>
+      <option>Moteur qui tremble</option>
+      <option>Perte de puissance</option>
+      <option>Surchauffe</option>
+      <option>Bruit moteur</option>
+      <option>Fumée</option>
+      <option>Problème de freinage</option>
+      <option>Problème électrique</option>
+      <option>Batterie</option>
+      <option>Embrayage</option>
+      <option>Suspension</option>
+      <option>Direction</option>
+      <option>Autre</option>
+    </select>
+
+    <label>Décrivez les symptômes</label>
+    <textarea id="symptoms"
+      placeholder="Décrivez précisément ce qui se passe..."></textarea>
+
+    <button class="primary" onclick="runDiagnosis()">
+      🤖 LANCER LE DIAGNOSTIC
+    </button>
+
+  </div>
+
+  <div id="diagnosisResult"></div>
+
+  <button class="secondary" onclick="showSection('home')">← Retour</button>
+
+</section>
+
+
+<!-- VOYANT -->
+<section id="voyant" class="section">
+
+  <h2 class="sectionTitle">⚠️ Analyse des voyants</h2>
+
+  <div class="formBox">
+
+    <label>Choisissez le voyant</label>
+
+    <select id="warningLight">
+      <option>Voyant moteur</option>
+      <option>Voyant batterie</option>
+      <option>Voyant huile</option>
+      <option>Voyant frein</option>
+      <option>Voyant ABS</option>
+      <option>Voyant airbag</option>
+      <option>Voyant température</option>
+      <option>Voyant pression des pneus</option>
+    </select>
+
+    <button class="primary" onclick="analyzeWarning()">
+      🔍 ANALYSER
+    </button>
+
+  </div>
+
+  <div id="warningResult"></div>
+
+  <button class="secondary" onclick="showSection('home')">← Retour</button>
+
+</section>
+
+
+<!-- BIBLIOTHÈQUE -->
+<section id="library" class="section">
+
+  <h2 class="sectionTitle">📚 Bibliothèque mécanique</h2>
+
+  <div class="library">
+
+    <div class="libraryItem">
+      ⚙️ <b>Moteur</b>
+      <p>Combustion, lubrification, distribution et refroidissement.</p>
+    </div>
+
+    <div class="libraryItem">
+      🔋 <b>Électricité</b>
+      <p>Batterie, alternateur, démarreur et circuits électriques.</p>
+    </div>
+
+    <div class="libraryItem">
+      🛑 <b>Freinage</b>
+      <p>Disques, plaquettes, tambours et liquide de frein.</p>
+    </div>
+
+    <div class="libraryItem">
+      🔄 <b>Transmission</b>
+      <p>Embrayage, boîte, cardans et transmission.</p>
+    </div>
+
+    <div class="libraryItem">
+      🛞 <b>Suspension</b>
+      <p>Amortisseurs, ressorts, rotules et silentblocs.</p>
+    </div>
+
+    <div class="libraryItem">
+      🏍️ <b>Moto</b>
+      <p>Moteur, chaîne, embrayage, freinage et injection.</p>
+    </div>
+
+    <div class="libraryItem">
+      🌡️ <b>Refroidissement</b>
+      <p>Radiateur, thermostat, pompe à eau et ventilateur.</p>
+    </div>
+
+    <div class="libraryItem">
+      ⛽ <b>Carburant</b>
+      <p>Pompe, injecteurs, filtre et alimentation.</p>
+    </div>
+
+    <div class="libraryItem">
+      💻 <b>Diagnostic électronique</b>
+      <p>OBD, calculateurs et codes défaut.</p>
+    </div>
+
+  </div>
+
+  <button class="secondary" onclick="showSection('home')">← Retour</button>
+
+</section>
+
+
+<!-- HISTORIQUE -->
+<section id="history" class="section">
+
+  <h2 class="sectionTitle">📋 Mes diagnostics</h2>
+
+  <div id="historyList"></div>
+
+  <button class="secondary" onclick="showSection('home')">← Retour</button>
+
+</section>
+
+
+<!-- PROFIL -->
+<section id="profile" class="section">
+
+  <h2 class="sectionTitle">👤 Profil professionnel</h2>
+
+  <div class="formBox">
+
+    <label>Nom du mécanicien / garage</label>
+    <input id="mechanicName" placeholder="Nom du garage">
+
+    <label>Téléphone</label>
+    <input placeholder="+226...">
+
+    <label>Ville</label>
+    <input placeholder="Ouagadougou">
+
+    <button class="primary" onclick="saveProfile()">
+      💾 ENREGISTRER
+    </button>
+
+  </div>
+
+  <div class="result">
+    <h3>MÉCA AI</h3>
+    <p><b>Créateur :</b> Architecte Wendlasida Acture Junior Roamba</p>
+    <p><b>Téléphone :</b> +226 73 24 61 44 / 65 41 45 10</p>
+    <p><b>E-mail :</b> Juniorroamba5@gmail.com</p>
+    <p><b>Conçu au Burkina Faso 🇧🇫</b></p>
+  </div>
+
+</section>
+
+<footer>
+  MÉCA AI © 2026<br>
+  Le diagnostic mécanique intelligent à portée de main.
+</footer>
+
+</main>
+
+
+<nav>
+
+  <button class="active" onclick="showSection('home',this)">
+    <span>🏠</span>Accueil
+  </button>
+
+  <button onclick="showSection('scan',this)">
+    <span>📷</span>Scanner
+  </button>
+
+  <button onclick="showSection('diagnostic',this)">
+    <span>🔧</span>Diagnostic
+  </button>
+
+  <button onclick="showSection('library',this)">
+    <span>📚</span>Bibliothèque
+  </button>
+
+  <button onclick="showSection('profile',this)">
+    <span>👤</span>Profil
+  </button>
+
+</nav>
+
+
+<script>
+
+let cameraStream = null;
+let lastPhoto = null;
+
+
+/* NAVIGATION */
+
+function showSection(id,btn){
+
+  document.querySelectorAll('.section').forEach(section=>{
+    section.classList.remove('active');
+  });
+
+  const section=document.getElementById(id);
+
+  if(section){
+    section.classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  if(btn){
+    document.querySelectorAll('nav button').forEach(b=>{
+      b.classList.remove('active');
+    });
+
+    btn.classList.add('active');
+  }
+}
+
+
+/* CAMERA */
+
+async function openCamera(){
+
+  try{
+
+    cameraStream=await navigator.mediaDevices.getUserMedia({
+      video:{
+        facingMode:"environment"
+      },
+      audio:false
+    });
+
+    document.getElementById("camera").srcObject=cameraStream;
+
+  }catch(error){
+
+    alert(
+      "Impossible d'accéder à la caméra. Vérifiez les permissions du navigateur."
+    );
+
+  }
+}
+
+
+function takePhoto(){
+
+  const video=document.getElementById("camera");
+  const canvas=document.getElementById("canvas");
+
+  if(!video.srcObject){
+
+    alert("Ouvrez d'abord la caméra.");
+
+    return;
+  }
+
+  canvas.width=video.videoWidth;
+  canvas.height=video.videoHeight;
+
+  const ctx=canvas.getContext("2d");
+
+  ctx.drawImage(video,0,0);
+
+  lastPhoto=canvas.toDataURL("image/jpeg");
+
+  alert("Photo capturée avec succès.");
+
+}
+
+
+/* SIMULATION SCAN */
+
+function simulateScan(){
+
+  const brand=document.getElementById("brand").value;
+  const model=document.getElementById("model").value;
+
+  const result=document.getElementById("scanResult");
+
+  result.innerHTML=`
+  <div class="result">
+
+    <span class="badge">ANALYSE PRÉLIMINAIRE</span>
+
+    <h3>🤖 Analyse MÉCA AI</h3>
+
+    <p>
+    Véhicule analysé :
+    <b>${brand || "Non renseigné"} ${model || ""}</b>
+    </p>
+
+    <br>
+
+    <p><b>Observation :</b></p>
+
+    <p>
+    L'image a été capturée correctement.
+    Une analyse IA réelle pourra être connectée au serveur
+    dans la prochaine version.
+    </p>
+
+    <br>
+
+    <p><b>Contrôles recommandés :</b></p>
+
+    <ol>
+      <li>Inspecter visuellement la pièce.</li>
+      <li>Vérifier les connexions.</li>
+      <li>Effectuer les mesures nécessaires.</li>
+      <li>Comparer avec les spécifications du constructeur.</li>
+    </ol>
+
+    <div class="warning">
+    ⚠️ Cette version utilise une analyse de démonstration.
+    Une véritable analyse IA nécessite un moteur d'intelligence
+    artificielle connecté à un serveur.
+    </div>
+
+  </div>
+  `;
+
+}
+
+
+/* DIAGNOSTIC */
+
+function runDiagnosis(){
+
+  const vehicle=document.getElementById("diagVehicle").value;
+  const problem=document.getElementById("problem").value;
+  const symptoms=document.getElementById("symptoms").value;
+
+  let causes=[];
+  let checks=[];
+
+  if(problem==="Ne démarre pas"){
+
+    causes=[
+      "Batterie faible ou déchargée",
+      "Problème de démarreur",
+      "Alimentation en carburant",
+      "Problème d'allumage ou de gestion moteur"
+    ];
+
+    checks=[
+      "Mesurer la tension de la batterie",
+      "Contrôler les connexions électriques",
+      "Vérifier le démarreur",
+      "Effectuer un diagnostic électronique si disponible"
+    ];
+
+  }else if(problem==="Surchauffe"){
+
+    causes=[
+      "Niveau de liquide de refroidissement insuffisant",
+      "Thermostat défectueux",
+      "Ventilateur ou commande du ventilateur",
+      "Radiateur obstrué",
+      "Pompe à eau"
+    ];
+
+    checks=[
+      "Contrôler le niveau du liquide",
+      "Rechercher les fuites",
+      "Contrôler le ventilateur",
+      "Contrôler le thermostat",
+      "Vérifier la circulation du liquide"
+    ];
+
+  }else if(problem==="Moteur qui tremble"){
+
+    causes=[
+      "Défaut d'allumage",
+      "Bougie ou bobine",
+      "Injecteur",
+      "Prise d'air",
+      "Support moteur"
+    ];
+
+    checks=[
+      "Lire les codes défaut",
+      "Contrôler les bougies",
+      "Contrôler les bobines",
+      "Contrôler les injecteurs",
+      "Inspecter les supports moteur"
+    ];
+
+  }else if(problem==="Problème de freinage"){
+
+    causes=[
+      "Plaquettes usées",
+      "Disques usés ou endommagés",
+      "Niveau de liquide insuffisant",
+      "Circuit hydraulique",
+      "Étrier de frein"
+    ];
+
+    checks=[
+      "Contrôler les plaquettes",
+      "Contrôler les disques",
+      "Contrôler le niveau du liquide",
+      "Rechercher une fuite"
+    ];
+
+  }else{
+
+    causes=[
+      "Plusieurs causes mécaniques ou électriques sont possibles.",
+      "Un contrôle physique est nécessaire.",
+      "Un diagnostic électronique peut être utile."
+    ];
+
+    checks=[
+      "Reproduire précisément le symptôme",
+      "Effectuer une inspection visuelle",
+      "Effectuer les mesures nécessaires",
+      "Consulter les données constructeur"
+    ];
+
+  }
+
+  const result=document.getElementById("diagnosisResult");
+
+  result.innerHTML=`
+
+  <div class="result">
+
+    <span class="badge">DIAGNOSTIC PRÉLIMINAIRE</span>
+
+    <h3>🔧 MÉCA AI</h3>
+
+    <p>
+      <b>Véhicule :</b>
+      ${vehicle || "Non renseigné"}
+    </p>
+
+    <p>
+      <b>Problème :</b>
+      ${problem}
+    </p>
+
+    <p>
+      <b>Symptômes :</b>
+      ${symptoms || "Non renseignés"}
+    </p>
+
+    <br>
+
+    <h3>Causes possibles</h3>
+
+    <ul>
+      ${causes.map(c=>`<li>${c}</li>`).join("")}
+    </ul>
+
+    <br>
+
+    <h3>Contrôles recommandés</h3>
+
+    <ol>
+      ${checks.map(c=>`<li>${c}</li>`).join("")}
+    </ol>
+
+    <div class="warning">
+      ⚠️ Les résultats sont une aide au diagnostic et ne remplacent
+      pas les mesures, essais et contrôles réalisés par un professionnel.
+      Pour les freins, la direction, les airbags et les systèmes haute
+      tension, appliquer les procédures de sécurité appropriées.
+    </div>
+
+    <button class="primary" onclick="saveDiagnosis()">
+      📋 ENREGISTRER LE DIAGNOSTIC
+    </button>
+
+  </div>
+
+  `;
+
+}
+
+
+/* ENREGISTREMENT */
+
+function saveDiagnosis(){
+
+  const vehicle=document.getElementById("diagVehicle").value || "Véhicule non renseigné";
+  const problem=document.getElementById("problem").value;
+
+  const history=JSON.parse(
+    localStorage.getItem("mecaHistory") || "[]"
+  );
+
+  history.unshift({
+
+    date:new Date().toLocaleString("fr-FR"),
+
+    vehicle:vehicle,
+
+    problem:problem
+
+  });
+
+  localStorage.setItem(
+    "mecaHistory",
+    JSON.stringify(history)
+  );
+
+  alert("Diagnostic enregistré.");
+
+  loadHistory();
+
+}
+
+
+/* HISTORIQUE */
+
+function loadHistory(){
+
+  const history=JSON.parse(
+    localStorage.getItem("mecaHistory") || "[]"
+  );
+
+  const list=document.getElementById("historyList");
+
+  if(history.length===0){
+
+    list.innerHTML=`
+      <div class="result">
+        Aucun diagnostic enregistré pour le moment.
+      </div>
+    `;
+
+    return;
+  }
+
+  list.innerHTML=history.map((item,index)=>`
+
+    <div class="historyItem">
+
+      <strong>${item.vehicle}</strong>
+
+      <p>Problème : ${item.problem}</p>
+
+      <small>${item.date}</small>
+
+    </div>
+
+  `).join("");
+
+}
+
+
+/* VOYANTS */
+
+function analyzeWarning(){
+
+  const light=document.getElementById("warningLight").value;
+
+  let text="";
+
+  if(light==="Voyant moteur"){
+
+    text=`
+      Ce voyant indique généralement qu'un défaut a été détecté
+      dans le système de gestion du moteur.
+      Une lecture des codes OBD peut être nécessaire.
+    `;
+
+  }else if(light==="Voyant huile"){
+
+    text=`
+      Ce voyant peut indiquer un problème de pression ou de niveau
+      d'huile. Arrêtez le moteur si le voyant reste allumé et
+      effectuez les contrôles appropriés.
+    `;
+
+  }else if(light==="Voyant batterie"){
+
+    text=`
+      Ce voyant peut être lié au système de charge :
+      alternateur, courroie, batterie ou circuit électrique.
+    `;
+
+  }else{
+
+    text=`
+      Le voyant indique qu'un système du véhicule a signalé
+      une anomalie ou une condition nécessitant une vérification.
+      Consultez la documentation du véhicule et effectuez
+      un diagnostic adapté.
+    `;
+
+  }
+
+  document.getElementById("warningResult").innerHTML=`
+
+    <div class="result">
+
+      <span class="badge">ANALYSE</span>
+
+      <h3>${light}</h3>
+
+      <p>${text}</p>
+
+      <div class="warning">
+        ⚠️ L'interprétation exacte dépend du véhicule et de son système
+        électronique. Utilisez un outil de diagnostic lorsque nécessaire.
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* AUDIO */
+
+async function startAudio(){
+
+  try{
+
+    const stream=await navigator.mediaDevices.getUserMedia({
+      audio:true
+    });
+
+    alert(
+      "Microphone activé. Enregistrez maintenant le bruit du véhicule."
+    );
+
+    setTimeout(()=>{
+
+      stream.getTracks().forEach(track=>track.stop());
+
+      alert(
+        "Enregistrement terminé. L'analyse sonore IA pourra être connectée dans la prochaine version."
+      );
+
+    },5000);
+
+  }catch(error){
+
+    alert(
+      "Accès au microphone refusé ou non disponible."
+    );
+
+  }
+
+}
+
+
+/* PROFIL */
+
+function saveProfile(){
+
+  const name=document.getElementById("mechanicName").value;
+
+  localStorage.setItem(
+    "mecaMechanicName",
+    name
+  );
+
+  alert("Profil enregistré.");
+
+}
+
+
+/* INITIALISATION */
+
+loadHistory();
+
+</script>
+
+</body>
+</html>
