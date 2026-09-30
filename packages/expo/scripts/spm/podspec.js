@@ -29,7 +29,7 @@ const syntaxError = (file, line, reason) =>
 const sourceLines = (text) => text.replace(/\r\n/g, '\n').split('\n');
 
 // ---------------------------------------------------------------------------
-// Dependency scanning for diagnostics (warning-only, best effort)
+// Line reading: the podspec body outside `test_spec` blocks, comments stripped
 // ---------------------------------------------------------------------------
 
 /**

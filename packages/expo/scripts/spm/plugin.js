@@ -26,8 +26,11 @@
  * everything shells out via `execFileSync` (see cli.js) rather than awaiting.
  *
  * The logic is split across sibling modules — cli.js (I/O), classify.js
- * (discovery), react-descriptor.js + manifests.js (rendering) — with unit tests
- * in __tests__/. This file is just the orchestrator.
+ * (discovery), app-target.js (the app's Xcode target), flavored-frameworks.js
+ * (precompiled frameworks), react-descriptor.js + manifests.js (rendering),
+ * podspec.js (podspec reading),
+ * script-phases.js (build script phases), diagnostics.js (errors and
+ * warnings) — with unit tests in __tests__/. This file is just the orchestrator.
  */
 
 'use strict';
@@ -37,7 +40,14 @@ const path = require('path');
 
 const { resolveAppTarget } = require('./app-target');
 const { resolveExpoModules, generateModulesProvider } = require('./cli');
-const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
+const {
+  APPLE_SOURCE_DIRS,
+  appleSourceDir,
+  collectWatchPaths,
+  findModuleRoot,
+  moduleNeedsReact,
+  isPureSwift,
+} = require('./classify');
 const {
   classifyUnsupported,
   collectUnmappedDependencies,
@@ -128,14 +138,14 @@ module.exports = function expoSpmPlugin(context) {
       const moduleRoot = findModuleRoot(pod.podspecDir);
 
       if (fs.existsSync(path.join(moduleRoot, 'Package.swift'))) {
-        // (A) module ships a checked-in Package.swift → mirror its targets + inject deps.
-        const e = emitSourceManifestPackage(
+        // Module ships a checked-in Package.swift → mirror its targets + inject deps.
+        const e = emitSourceManifestPackage({
           moduleRoot,
           react,
           frameworkSearchPath,
           outDir,
-          codegenPkgPath
-        );
+          codegenPkgPath,
+        });
         if (e.unsupportedTargetDeps != null) {
           unsupportedTargetDeps.set(moduleRoot, e.unsupportedTargetDeps);
         } else if (e.unresolvedTargets != null) {
@@ -157,8 +167,7 @@ module.exports = function expoSpmPlugin(context) {
             pod.podName,
             [
               pod.podspecDir,
-              path.join(moduleRoot, 'ios'),
-              path.join(moduleRoot, 'apple'),
+              ...APPLE_SOURCE_DIRS.map((dir) => path.join(moduleRoot, dir)),
               moduleRoot,
             ].filter(Boolean)
           );
@@ -170,15 +179,15 @@ module.exports = function expoSpmPlugin(context) {
         const e =
           podspecs == null || podspecs.linkage != null
             ? null
-            : emitPureSwiftSourcePackage(
+            : emitPureSwiftSourcePackage({
                 moduleRoot,
-                pod.podName,
+                product: pod.podName,
                 react,
                 frameworkSearchPath,
                 outDir,
                 codegenPkgPath,
-                podspecs.iosDeploymentTarget
-              );
+                iosDeploymentTarget: podspecs.iosDeploymentTarget,
+              });
         if (e != null) {
           packageDependencies.push(e.packageDep);
           productDependencies.push(e.productDep);
@@ -222,7 +231,7 @@ module.exports = function expoSpmPlugin(context) {
         packageName: mod.packageName,
         moduleRoot,
         pureSwift: isPureSwift(moduleRoot),
-        hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
+        hasSources: appleSourceDir(moduleRoot) != null,
         unsupportedTargetDeps: unsupportedTargetDeps.get(moduleRoot) ?? null,
         unresolvedTargets: unresolvedTargets.get(moduleRoot) ?? null,
         podspecError: podspecErrors.get(moduleRoot) ?? null,

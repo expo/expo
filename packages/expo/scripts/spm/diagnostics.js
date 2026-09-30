@@ -95,23 +95,16 @@ function classifyUnsupported({ pending, coreAvailable }) {
     return [{ reason: 'core-unavailable', pods: pending.map((p) => p.podName) }];
   }
   return pending.map((p) => {
+    const subject = { podName: p.podName, packageName: p.packageName, moduleRoot: p.moduleRoot };
     const prebuildable = p.prebuildProduct != null && !p.prebuildProduct.sourceOnly;
     if (prebuildable) {
-      return {
-        reason: 'prebuild-available',
-        podName: p.podName,
-        packageName: p.packageName,
-        moduleRoot: p.moduleRoot,
-        productName: p.prebuildProduct.name,
-      };
+      return { reason: 'prebuild-available', ...subject, productName: p.prebuildProduct.name };
     }
     if (p.podspecError != null) {
       const { file, line, snippet, reason } = p.podspecError;
       return {
         reason: 'unsupported-podspec-syntax',
-        podName: p.podName,
-        packageName: p.packageName,
-        moduleRoot: p.moduleRoot,
+        ...subject,
         file,
         line,
         snippet,
@@ -120,39 +113,21 @@ function classifyUnsupported({ pending, coreAvailable }) {
     }
     if (p.podspecLinkage != null) {
       const { file, line, snippet } = p.podspecLinkage;
-      return {
-        reason: 'needs-manifest-for-linkage',
-        podName: p.podName,
-        packageName: p.packageName,
-        moduleRoot: p.moduleRoot,
-        file,
-        line,
-        snippet,
-      };
+      return { reason: 'needs-manifest-for-linkage', ...subject, file, line, snippet };
     }
     if (p.unsupportedTargetDeps?.length) {
       return {
         reason: 'unsupported-target-dependency',
-        podName: p.podName,
-        packageName: p.packageName,
-        moduleRoot: p.moduleRoot,
+        ...subject,
         dependencies: p.unsupportedTargetDeps,
       };
     }
     if (p.unresolvedTargets?.length) {
-      return {
-        reason: 'unresolvable-target-path',
-        podName: p.podName,
-        packageName: p.packageName,
-        moduleRoot: p.moduleRoot,
-        targetNames: p.unresolvedTargets,
-      };
+      return { reason: 'unresolvable-target-path', ...subject, targetNames: p.unresolvedTargets };
     }
     return {
       reason: p.hasSources === false ? 'no-apple-sources' : 'mixed-no-manifest',
-      podName: p.podName,
-      packageName: p.packageName,
-      moduleRoot: p.moduleRoot,
+      ...subject,
       productName: p.prebuildProduct?.name ?? null,
     };
   });
