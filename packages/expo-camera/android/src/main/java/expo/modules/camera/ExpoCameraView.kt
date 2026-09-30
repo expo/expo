@@ -50,6 +50,7 @@ import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toDrawable
+import androidx.lifecycle.Observer
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
@@ -137,6 +138,13 @@ class ExpoCameraView(
 
   private var previewView = PreviewView(context).apply {
     elevation = 0f
+    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+  }
+  private val previewStreamObserver = Observer<PreviewView.StreamState> { state ->
+    if (state == PreviewView.StreamState.STREAMING && glSurfaceTexture == null) {
+      // Setting the current value makes CameraX redraw the new stream's scale transform.
+      previewView.scaleType = previewView.scaleType
+    }
   }
   private val scope = CoroutineScope(
     Dispatchers.Main + SupervisorJob() + CoroutineExceptionHandler { _, throwable ->
@@ -862,6 +870,7 @@ class ExpoCameraView(
 
   init {
     orientationEventListener.enable()
+    previewView.previewStreamState.observe(currentActivity, previewStreamObserver)
     previewView.setOnHierarchyChangeListener(object : OnHierarchyChangeListener {
       override fun onChildViewRemoved(parent: View?, child: View?) = Unit
       override fun onChildViewAdded(parent: View?, child: View?) {
@@ -893,6 +902,7 @@ class ExpoCameraView(
 
   fun cleanupCamera() {
     orientationEventListener.disable()
+    previewView.previewStreamState.removeObserver(previewStreamObserver)
     cancelCoroutineScope()
     cameraProvider?.unbindAll()
     glSurfaceTexture?.release()
