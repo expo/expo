@@ -278,8 +278,16 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     return Modifier.onSizeChanged { size ->
       with(density) {
         shadowNodeProxy.setViewSize(
-          if (reportWidth) size.width.toDp().value.toDouble() else Double.NaN,
-          if (reportHeight) size.height.toDp().value.toDouble() else Double.NaN
+          if (reportWidth) {
+            size.width.toDp().value.toDouble()
+          } else {
+            Double.NaN
+          },
+          if (reportHeight) {
+            size.height.toDp().value.toDouble()
+          } else {
+            Double.NaN
+          }
         )
       }
     }
