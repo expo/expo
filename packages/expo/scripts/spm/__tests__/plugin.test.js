@@ -2723,11 +2723,11 @@ describe('a product gated by an autolinkWhen condition', () => {
   });
 
   /** The properties are read off a real file, through the real reader. */
-  const run = ({ metadata, properties = null }) => {
+  const run = ({ metadata, properties = null, autolinking }) => {
     withPodfileProperties(tmp, properties);
     prebuiltMetadata.mockReturnValue(metadata);
     providerWrittenTo(path.join(tmp, 'out'));
-    const result = runPlugin(tmp);
+    const result = runPlugin(tmp, autolinking ? { autolinking } : {});
     return { result, report: printed(logs.log) };
   };
 
@@ -2806,6 +2806,17 @@ describe('a product gated by an autolinkWhen condition', () => {
       withheldBy: 'react-native-worklets',
     },
     {
+      // As CocoaPods, which reads the React Native config: the key alone counts,
+      // whether or not its root is on disk.
+      title: 'wires a product gated on an npm package React Native autolinks',
+      metadata: () => cameraMetadata({ npmPackage: 'react-native-worklets' }),
+      properties: null,
+      autolinking: {
+        dependencies: { 'react-native-worklets': { root: '/nonexistent/react-native-worklets' } },
+      },
+      withheldBy: null,
+    },
+    {
       title: 'matches the entry by its product name, not by its pod key',
       metadata: () => ({
         ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
@@ -2831,8 +2842,8 @@ describe('a product gated by an autolinkWhen condition', () => {
       properties: null,
       withheldBy: 'unrecognized condition',
     },
-  ])('$title', ({ metadata, properties, withheldBy }) => {
-    const { result, report } = run({ metadata: metadata(), properties });
+  ])('$title', ({ metadata, properties, autolinking, withheldBy }) => {
+    const { result, report } = run({ metadata: metadata(), properties, autolinking });
 
     if (withheldBy == null) {
       expect(result.productDependencies).toEqual([cameraProduct, scannerProduct]);

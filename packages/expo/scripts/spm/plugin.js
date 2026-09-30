@@ -578,7 +578,11 @@ module.exports = function expoSpmPlugin(context) {
     // Every pod the install DECLARES, not the ones linked: a declared pod
     // CocoaPods links is a satisfied condition here too.
     declaredPodNames: new Set(metadata.keys()),
-    autolinkedPackages: new Set(modules.map((m) => m.packageName)),
+    // CocoaPods counts React Native's autolinked packages by key, root on disk or not.
+    autolinkedPackages: new Set([
+      ...modules.map((m) => m.packageName),
+      ...Object.keys(autolinking?.dependencies ?? {}),
+    ]),
     podfileProperties: readPodfileProperties(appTarget.podfilePropertiesPath),
   };
   const outDir = path.join(outputDir, 'expo');
