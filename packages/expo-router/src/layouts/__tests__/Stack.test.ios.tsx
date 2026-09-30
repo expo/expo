@@ -204,6 +204,37 @@ describe('preloaded screens', () => {
     act(() => router.push('/second'));
     expect(latestStackItemProps('second')?.activityState).toBe(2);
   });
+
+  it('restores the animation of a prefetched route in the render that pushes it', () => {
+    renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="second" options={{ animation: 'fade' }} />
+        </Stack>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    act(() => router.prefetch('/second'));
+    expect(latestStackItemProps('second')).toMatchObject({
+      activityState: 0,
+      stackAnimation: 'none',
+    });
+
+    MockedScreenStackItem.mockClear();
+    act(() => router.push('/second'));
+
+    // Native reads the animation when the screen becomes active, so both must change together
+    const renders = MockedScreenStackItem.mock.calls
+      .map(([props]) => props)
+      .filter((props) => typeof props.screenId === 'string' && props.screenId.startsWith('second:'))
+      .map(({ activityState, stackAnimation }) => ({ activityState, stackAnimation }));
+    expect(renders.length).toBeGreaterThan(0);
+    for (const render of renders) {
+      expect(render).toEqual({ activityState: 2, stackAnimation: 'fade' });
+    }
+  });
 });
 
 describe('tabPress', () => {
