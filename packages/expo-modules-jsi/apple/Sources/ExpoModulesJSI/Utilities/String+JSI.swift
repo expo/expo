@@ -25,6 +25,16 @@ extension String {
     self = result
   }
 
+  /// Builds a Swift `String` from a `jsi::PropNameID` the same way as `init(jsiString:in:)`, reading
+  /// the engine's internal representation without materializing a `std::string` first.
+  internal init(jsiPropNameID: borrowing facebook.jsi.PropNameID, in runtime: facebook.jsi.IRuntime) {
+    var result = ""
+    withUnsafeMutablePointer(to: &result) { resultPtr in
+      expo.getPropNameIdData(runtime, jsiPropNameID, UnsafeMutableRawPointer(resultPtr), appendEngineStringChunk)
+    }
+    self = result
+  }
+
   /// Builds a `jsi::PropNameID` from the string's UTF-8 bytes. This is how every String-keyed
   /// property API turns its name into a key: JSI's `const char*` overloads treat the bytes as ASCII
   /// and would mangle any non-ASCII name.
