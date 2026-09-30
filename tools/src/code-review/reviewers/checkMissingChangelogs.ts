@@ -1,9 +1,10 @@
 import minimatch from 'minimatch';
 import path from 'node:path';
 
+import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
-import { readChangedChangesetsAsync } from '../Changesets';
+import { isChangesetPath, readChangedChangesetsAsync } from '../Changesets';
 import { ReviewInput, ReviewOutput, ReviewStatus } from '../types';
 
 const IGNORED_PATHS = ['**/expo/bundledNativeModules.json'];
@@ -15,6 +16,23 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   }
   if (pullRequest.head.ref.startsWith('changeset-release/')) {
     return null;
+  }
+
+  const changesPackageOrTemplate = diff.some((file) =>
+    /^(packages|templates)\//.test(path.relative(EXPO_DIR, file.path))
+  );
+  const addsChangeset = diff.some(
+    (file) => file.new && !file.deleted && isChangesetPath(path.relative(EXPO_DIR, file.path))
+  );
+  if (changesPackageOrTemplate && !addsChangeset) {
+    return {
+      status: ReviewStatus.WARN,
+      title: 'Missing Changesets entries',
+      body:
+        'This pull request changes `packages` or `templates` without adding a changeset. ' +
+        'Run `pnpm changeset` to record any user-visible changes. ' +
+        'A changeset is unnecessary when these edits do not affect a published release.',
+    };
   }
 
   const allPackages = await getListOfPackagesAsync();

@@ -49,7 +49,9 @@ export async function getStablePublishArgsAsync(
   return ['publish', '--tag', tag];
 }
 
-async function getExpoBranchPolicyAsync(branchName: string): Promise<ExpoBranchPolicy | null> {
+export async function getExpoBranchPolicyAsync(
+  branchName: string
+): Promise<ExpoBranchPolicy | null> {
   const config = JSON.parse(
     await fs.promises.readFile(EXPO_CHANGESETS_CONFIG, 'utf8')
   ) as ExpoChangesetsConfig;
