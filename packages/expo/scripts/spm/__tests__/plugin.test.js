@@ -2888,6 +2888,72 @@ describe('a product gated by an autolinkWhen condition', () => {
     }
   );
 
+  describe('when the manifest does not export the gated companion', () => {
+    beforeEach(() => {
+      const dumped = JSON.parse(runDumpPackage());
+      const isCamera = ({ name }) => name === 'ExpoCamera';
+      runDumpPackage.mockReturnValue(
+        JSON.stringify({
+          ...dumped,
+          products: dumped.products.filter(isCamera),
+          targets: dumped.targets.filter(isCamera),
+        })
+      );
+    });
+
+    const refusedCompanion = expect.objectContaining({
+      reason: 'companion-not-exported-by-manifest',
+      podName: 'ExpoCameraBarcodeScanning',
+      productName: 'ExpoCameraBarcodeScanning',
+      packageName: 'expo-camera',
+    });
+
+    // CocoaPods would link the companion here, so building without it would drop a
+    // feature the app has under CocoaPods.
+    it.each([
+      { gate: 'a Podfile property', autolinkWhen: barcodeGate, properties: enabled },
+      { gate: 'an npm package', autolinkWhen: { npmPackage: 'expo-modules-core' } },
+      { gate: 'a pod', autolinkWhen: { podName: 'ExpoCamera' } },
+    ])('fails the sync when its condition on $gate is met', ({ autolinkWhen, properties }) => {
+      const thrown = thrownBy(() => run({ metadata: cameraMetadata(autolinkWhen), properties }));
+
+      expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+      expect(thrown.unsupported).toEqual([refusedCompanion]);
+      expect(printed(logs.error)).toContain('"ExpoCameraBarcodeScanning"');
+      expect(printed(logs.error)).toContain('"expo-camera"');
+    });
+
+    it.each([
+      { gate: 'a Podfile property', autolinkWhen: barcodeGate, properties: disabled },
+      { gate: 'an npm package', autolinkWhen: { npmPackage: 'react-native-worklets' } },
+      { gate: 'a pod', autolinkWhen: { podName: 'RNWorklets' } },
+    ])(
+      'links the rest of the manifest when its condition on $gate is not met',
+      ({ autolinkWhen, properties }) => {
+        const { result } = run({ metadata: cameraMetadata(autolinkWhen), properties });
+
+        expect(result.productDependencies).toEqual([cameraProduct]);
+        expect(logs.error).not.toHaveBeenCalled();
+      }
+    );
+
+    it('fails the sync when the companion documents its package through a symlink', () => {
+      const alias = path.join(tmp, 'expo-camera-alias');
+      fs.symlinkSync(cameraRoot, alias, 'dir');
+      const metadata = {
+        ExpoCamera: metadataEntry(cameraRoot, 'ExpoCamera'),
+        ExpoCameraBarcodeScanning: metadataEntry(alias, 'ExpoCameraBarcodeScanning', {
+          autolinkWhen: barcodeGate,
+        }),
+      };
+
+      const thrown = thrownBy(() => run({ metadata, properties: enabled }));
+
+      expect(thrown).toBeInstanceOf(UnsupportedModulesError);
+      expect(thrown.unsupported).toEqual([refusedCompanion]);
+    });
+  });
+
   // A properties file nobody can read leaves every gate unset, and an unset gate
   // links the product. Guessing it open would link what this app may exclude.
   it('fails instead of linking the gated product when the properties file is unusable', () => {

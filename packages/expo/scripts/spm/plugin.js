@@ -54,6 +54,7 @@ const {
   collectDuplicatePods,
   collectRootConflicts,
   pluginError,
+  realPathOrSelf,
   renderExtraPodsWarning,
   renderRootConflictWarning,
   renderUnmappedDependencyWarning,
@@ -214,6 +215,40 @@ function uncheckedAutolinkConditions(linked, { gatedCompanions, manifestRoots, a
       .map((companion) => ({ ...refusal, ...companion, linkedThrough: podName }));
     return [...own, ...companions];
   });
+}
+
+/**
+ * The gated companions a checked-in manifest does not export, where their condition
+ * is met: there CocoaPods would link them. Matched by real path, because a companion's
+ * documented root and its module's root can reach one directory through different
+ * symlinks.
+ */
+function companionsNotExportedByManifests(emitted, { gatedCompanions, autolinkGate }) {
+  const companionsByRealRoot = new Map();
+  for (const [root, companions] of gatedCompanions) {
+    const realRoot = realPathOrSelf(root);
+    companionsByRealRoot.set(realRoot, [
+      ...(companionsByRealRoot.get(realRoot) ?? []),
+      ...companions,
+    ]);
+  }
+  return emitted
+    .filter((r) => r.linkedAs === 'manifest')
+    .flatMap(({ identity: { packageName, moduleRoot }, emission }) => {
+      const exported = new Set(emission.productDeps.map((dep) => dep.name));
+      return (companionsByRealRoot.get(realPathOrSelf(moduleRoot)) ?? [])
+        .filter(
+          (companion) =>
+            !exported.has(companion.productName) &&
+            autolinkConditionMet(companion.autolinkWhen, autolinkGate)
+        )
+        .map((companion) => ({
+          reason: 'companion-not-exported-by-manifest',
+          packageName,
+          moduleRoot,
+          ...companion,
+        }));
+    });
 }
 
 /**
@@ -467,6 +502,10 @@ function summarizeRecords(
     ),
     autolinkGate,
   });
+  const unexportedCompanions = companionsNotExportedByManifests(emitted, {
+    gatedCompanions,
+    autolinkGate,
+  });
   const xcconfigLinkage = pureSwift
     .filter(({ identity }) => identity.podspec.linkerFlags != null)
     .map(({ identity }) => ({
@@ -486,6 +525,7 @@ function summarizeRecords(
     ...gateProducts(emitted, autolinkConditions, autolinkGate),
     pending,
     uncheckedConditions,
+    unexportedCompanions,
     unmappedDeps,
     xcconfigLinkage,
     precompiledPods: podNames(precompiled),
@@ -683,6 +723,7 @@ module.exports = function expoSpmPlugin(context) {
   const unsupported = reportUnsupported([
     ...classifyUnsupported({ pending: summary.pending, coreAvailable }),
     ...summary.uncheckedConditions,
+    ...summary.unexportedCompanions,
   ]);
   if (unsupported != null) {
     throw unsupported;
