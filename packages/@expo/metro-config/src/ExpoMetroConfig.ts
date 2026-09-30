@@ -366,7 +366,8 @@ export function getDefaultConfig(
           // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
           // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
           require.resolve(
-            path.join(getReactNativeHostPath(projectRoot), 'Libraries/Core/InitializeCore')
+            resolveFrom.silent(projectRoot, 'react-native/setup-env') ??
+              path.join(getReactNativeHostPath(projectRoot), 'Libraries/Core/InitializeCore')
           ),
         ];
 
