@@ -124,6 +124,33 @@ it('renders a Link with a slot and array style', () => {
   );
 });
 
+it('moves a style function from the child onto the Slot when the Link has no style', () => {
+  const { getByTestId } = render(
+    <Link asChild testID="link" href="/foo">
+      <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
+        <Text>Foo</Text>
+      </Pressable>
+    </Link>
+  );
+  const node = getByTestId('link');
+  expect(node).toBeDefined();
+  expect(node.props.style).toStrictEqual({ opacity: 1 });
+});
+
+it('throws when the child has a style function and the Link has a style', () => {
+  expect(() =>
+    render(
+      <Link asChild href="/foo" style={{ color: 'red' }}>
+        <Pressable style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
+          <Text>Button</Text>
+        </Pressable>
+      </Link>
+    )
+  ).toThrow(
+    '[expo-router]: You are passing a style function to a child of <Slot> while <Slot> also has a style. Consider combining both in the child function.'
+  );
+});
+
 xit('renders a Link with a slot', () => {
   const { getByText, getByTestId } = render(
     <Link asChild href="/foo">
