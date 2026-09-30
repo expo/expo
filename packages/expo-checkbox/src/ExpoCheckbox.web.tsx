@@ -14,7 +14,7 @@ import React from 'react';
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native-web';
 
 import type { CheckboxProps, CheckboxEvent } from './Checkbox.types';
-import { warnAboutDeprecation } from './deprecationWarning';
+import { warnAboutDeprecation } from './warnAboutDeprecation';
 
 const ExpoCheckbox = React.forwardRef(
   ({ color, disabled, onChange, onValueChange, style, value, ...other }: CheckboxProps, ref) => {
