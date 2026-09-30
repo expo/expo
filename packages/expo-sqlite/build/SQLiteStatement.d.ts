@@ -8,7 +8,17 @@ type ValuesOf<T extends object> = T[keyof T][];
 export declare class SQLiteStatement {
     private readonly nativeDatabase;
     private readonly nativeStatement;
+    /**
+     * The cursor that currently owns the underlying `sqlite3_stmt`. A prepared statement has exactly
+     * one cursor, so running the statement again invalidates the cursor of every earlier run.
+     */
+    private currentCursor;
     constructor(nativeDatabase: NativeDatabase, nativeStatement: NativeStatement);
+    /**
+     * Make the run that just finished the owner of the statement cursor, and return a predicate
+     * that tells whether it still is.
+     */
+    private claimCursor;
     /**
      * Run the prepared statement and return the [`SQLiteExecuteAsyncResult`](#sqliteexecuteasyncresult) instance.
      * @param params The parameters to bind to the prepared statement. You can pass values in array, object, or variadic arguments. See [`SQLiteBindValue`](#sqlitebindvalue) for more information about binding values.

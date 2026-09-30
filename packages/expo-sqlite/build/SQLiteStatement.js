@@ -5,9 +5,23 @@ import { composeRow, composeRows, normalizeParams } from './paramUtils';
 export class SQLiteStatement {
     nativeDatabase;
     nativeStatement;
+    /**
+     * The cursor that currently owns the underlying `sqlite3_stmt`. A prepared statement has exactly
+     * one cursor, so running the statement again invalidates the cursor of every earlier run.
+     */
+    currentCursor = null;
     constructor(nativeDatabase, nativeStatement) {
         this.nativeDatabase = nativeDatabase;
         this.nativeStatement = nativeStatement;
+    }
+    /**
+     * Make the run that just finished the owner of the statement cursor, and return a predicate
+     * that tells whether it still is.
+     */
+    claimCursor() {
+        const cursor = {};
+        this.currentCursor = cursor;
+        return () => this.currentCursor === cursor;
     }
     async executeAsync(...params) {
         const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(this.nativeDatabase, ...normalizeParams(...params));
@@ -15,7 +29,7 @@ export class SQLiteStatement {
             rawResult: false,
             lastInsertRowId,
             changes,
-        });
+        }, this.claimCursor());
     }
     async executeForRawResultAsync(...params) {
         const { lastInsertRowId, changes, firstRowValues } = await this.nativeStatement.runAsync(this.nativeDatabase, ...normalizeParams(...params));
@@ -23,7 +37,7 @@ export class SQLiteStatement {
             rawResult: true,
             lastInsertRowId,
             changes,
-        });
+        }, this.claimCursor());
     }
     /**
      * Get the column names of the prepared statement.
@@ -48,7 +62,7 @@ export class SQLiteStatement {
             rawResult: false,
             lastInsertRowId,
             changes,
-        });
+        }, this.claimCursor());
     }
     executeForRawResultSync(...params) {
         const { lastInsertRowId, changes, firstRowValues } = this.nativeStatement.runSync(this.nativeDatabase, ...normalizeParams(...params));
@@ -56,7 +70,7 @@ export class SQLiteStatement {
             rawResult: true,
             lastInsertRowId,
             changes,
-        });
+        }, this.claimCursor());
     }
     /**
      * Get the column names of the prepared statement.
@@ -77,14 +91,18 @@ export class SQLiteStatement {
         this.nativeStatement.finalizeSync(this.nativeDatabase);
     }
 }
+const SUPERSEDED_CURSOR_MESSAGE = 'This result is no longer readable because the prepared statement ran again. ' +
+    'A prepared statement holds a single SQLite cursor, so a later run rebinds the parameters and moves that cursor, ' +
+    'and this result would return the rows of the later run. ' +
+    'Read a result to the end before you run the same statement again, or prepare a separate statement for each reader.';
 /**
  * Create the `SQLiteExecuteAsyncResult` instance.
  *
  * NOTE: Since Hermes does not support the `Symbol.asyncIterator` feature, we have to use an AsyncGenerator to implement the `AsyncIterableIterator` interface.
  * This is done by `Object.defineProperties` to add the properties to the AsyncGenerator.
  */
-async function createSQLiteExecuteAsyncResult(database, statement, firstRowValues, options) {
-    const instance = new SQLiteExecuteAsyncResultImpl(database, statement, firstRowValues ? processNativeRow(firstRowValues) : null, options);
+async function createSQLiteExecuteAsyncResult(database, statement, firstRowValues, options, isCursorOwner) {
+    const instance = new SQLiteExecuteAsyncResultImpl(database, statement, firstRowValues ? processNativeRow(firstRowValues) : null, options, isCursorOwner);
     const generator = instance.generatorAsync();
     Object.defineProperties(generator, {
         lastInsertRowId: {
@@ -118,8 +136,8 @@ async function createSQLiteExecuteAsyncResult(database, statement, firstRowValue
 /**
  * Create the `SQLiteExecuteSyncResult` instance.
  */
-function createSQLiteExecuteSyncResult(database, statement, firstRowValues, options) {
-    const instance = new SQLiteExecuteSyncResultImpl(database, statement, firstRowValues ? processNativeRow(firstRowValues) : firstRowValues, options);
+function createSQLiteExecuteSyncResult(database, statement, firstRowValues, options, isCursorOwner) {
+    const instance = new SQLiteExecuteSyncResultImpl(database, statement, firstRowValues ? processNativeRow(firstRowValues) : firstRowValues, options, isCursorOwner);
     const generator = instance.generatorSync();
     Object.defineProperties(generator, {
         lastInsertRowId: {
@@ -155,13 +173,21 @@ class SQLiteExecuteAsyncResultImpl {
     statement;
     firstRowValues;
     options;
+    isCursorOwner;
     columnNames = null;
     isStepCalled = false;
-    constructor(database, statement, firstRowValues, options) {
+    constructor(database, statement, firstRowValues, options, isCursorOwner) {
         this.database = database;
         this.statement = statement;
         this.firstRowValues = firstRowValues;
         this.options = options;
+        this.isCursorOwner = isCursorOwner;
+    }
+    /** Throw rather than step a cursor that a later run of the same statement has taken over. */
+    assertCursorOwner() {
+        if (!this.isCursorOwner()) {
+            throw new Error(SUPERSEDED_CURSOR_MESSAGE);
+        }
     }
     async getFirstAsync() {
         if (this.isStepCalled) {
@@ -173,6 +199,7 @@ class SQLiteExecuteAsyncResultImpl {
         if (firstRowValues != null) {
             return composeRowIfNeeded(this.options.rawResult, columnNames, firstRowValues);
         }
+        this.assertCursorOwner();
         const firstRow = await this.statement.stepAsync(this.database);
         return firstRow != null
             ? composeRowIfNeeded(this.options.rawResult, columnNames, processNativeRow(firstRow))
@@ -189,9 +216,10 @@ class SQLiteExecuteAsyncResultImpl {
             return [];
         }
         const columnNames = await this.getColumnNamesAsync();
+        this.assertCursorOwner();
         const nativeRows = await this.statement.getAllAsync(this.database);
         const allRows = processNativeRows(nativeRows);
-        if (firstRowValues != null && firstRowValues.length > 0) {
+        if (firstRowValues.length > 0) {
             return composeRowsIfNeeded(this.options.rawResult, columnNames, [
                 firstRowValues,
                 ...allRows,
@@ -208,16 +236,18 @@ class SQLiteExecuteAsyncResultImpl {
         }
         let result;
         do {
+            this.assertCursorOwner();
             result = await this.statement.stepAsync(this.database);
             if (result != null) {
                 yield composeRowIfNeeded(this.options.rawResult, columnNames, processNativeRow(result));
             }
         } while (result != null);
     }
-    resetAsync() {
-        const result = this.statement.resetAsync(this.database);
+    async resetAsync() {
+        // Resetting a superseded result would rewind the cursor of the run that owns it now.
+        this.assertCursorOwner();
+        await this.statement.resetAsync(this.database);
         this.isStepCalled = false;
-        return result;
     }
     popFirstRowValues() {
         if (this.firstRowValues != null) {
@@ -239,13 +269,21 @@ class SQLiteExecuteSyncResultImpl {
     statement;
     firstRowValues;
     options;
+    isCursorOwner;
     columnNames = null;
     isStepCalled = false;
-    constructor(database, statement, firstRowValues, options) {
+    constructor(database, statement, firstRowValues, options, isCursorOwner) {
         this.database = database;
         this.statement = statement;
         this.firstRowValues = firstRowValues;
         this.options = options;
+        this.isCursorOwner = isCursorOwner;
+    }
+    /** Throw rather than step a cursor that a later run of the same statement has taken over. */
+    assertCursorOwner() {
+        if (!this.isCursorOwner()) {
+            throw new Error(SUPERSEDED_CURSOR_MESSAGE);
+        }
     }
     getFirstSync() {
         if (this.isStepCalled) {
@@ -256,6 +294,7 @@ class SQLiteExecuteSyncResultImpl {
         if (firstRowValues != null) {
             return composeRowIfNeeded(this.options.rawResult, columnNames, firstRowValues);
         }
+        this.assertCursorOwner();
         const firstRow = this.statement.stepSync(this.database);
         return firstRow != null
             ? composeRowIfNeeded(this.options.rawResult, columnNames, processNativeRow(firstRow))
@@ -271,6 +310,7 @@ class SQLiteExecuteSyncResultImpl {
             return [];
         }
         const columnNames = this.getColumnNamesSync();
+        this.assertCursorOwner();
         const nativeRows = this.statement.getAllSync(this.database);
         const allRows = processNativeRows(nativeRows);
         if (firstRowValues != null && firstRowValues.length > 0) {
@@ -289,6 +329,7 @@ class SQLiteExecuteSyncResultImpl {
         }
         let result;
         do {
+            this.assertCursorOwner();
             result = this.statement.stepSync(this.database);
             if (result != null) {
                 yield composeRowIfNeeded(this.options.rawResult, columnNames, processNativeRow(result));
@@ -296,9 +337,10 @@ class SQLiteExecuteSyncResultImpl {
         } while (result != null);
     }
     resetSync() {
-        const result = this.statement.resetSync(this.database);
+        // Resetting a superseded result would rewind the cursor of the run that owns it now.
+        this.assertCursorOwner();
+        this.statement.resetSync(this.database);
         this.isStepCalled = false;
-        return result;
     }
     popFirstRowValues() {
         if (this.firstRowValues != null) {

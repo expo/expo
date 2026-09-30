@@ -45,14 +45,16 @@ async function createManifestForBuildAsync(platform, projectRoot, destinationDir
         if (!asset.fileHashes) {
             throw new Error('The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/main/packages/expo-updates/README.md#metroconfigjs for an example.');
         }
-        (0, filterPlatformAssetScales_1.filterPlatformAssetScales)(platform, asset.scales).forEach(function (scale) {
+        const platformScales = new Set((0, filterPlatformAssetScales_1.filterPlatformAssetScales)(platform, asset.scales));
+        asset.scales.forEach(function (scale, index) {
+            if (!platformScales.has(scale)) {
+                return;
+            }
             const baseAssetInfoForManifest = {
                 name: asset.name,
                 type: asset.type,
                 scale,
-                // `fileHashes` is parallel to the unfiltered `asset.scales`, so it must be indexed by the
-                // scale's position there rather than by its position in the filtered list.
-                packagerHash: asset.fileHashes[asset.scales.indexOf(scale)],
+                packagerHash: asset.fileHashes[index],
                 subdirectory: asset.httpServerLocation,
             };
             if (platform === 'ios') {
