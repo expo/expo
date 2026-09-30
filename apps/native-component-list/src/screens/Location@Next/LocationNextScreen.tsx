@@ -290,8 +290,8 @@ export default function LocationNextScreen() {
                     }),
                   onError: (error) =>
                     setOutput({
-                      actual: `[watcher] ${error}`,
-                      expected: 'An error string from the provider.',
+                      actual: `[watcher] ${error.code}: ${error.message}`,
+                      expected: 'An error code and message from the provider.',
                     }),
                 });
                 // The profile caps out at 1s; withInterval stages a faster one and restart

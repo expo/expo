@@ -32,7 +32,14 @@ export type GetPositionOptions = {
   profile?: LocationProfile;
 };
 
-export type PositionUpdate = { data: Position; error: null } | { data: null; error: string };
+export type PositionWatchError = {
+  code: string;
+  message: string;
+};
+
+export type PositionUpdate =
+  | { data: Position; error: null }
+  | { data: null; error: PositionWatchError };
 
 export type PositionWatchStatus = {
   /** Whether the provider is feeding positions right now. */
@@ -47,5 +54,5 @@ export type PositionWatchStatus = {
 export type WatchPositionParams = {
   profile?: LocationProfile;
   onPosition: (position: Position) => void;
-  onError?: (error: string) => void;
+  onError?: (error: PositionWatchError) => void;
 };

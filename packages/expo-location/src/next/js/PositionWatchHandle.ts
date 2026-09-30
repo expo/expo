@@ -3,7 +3,12 @@ import type { EventSubscription } from 'expo';
 import { NativeLocationModuleNext } from '../native';
 import type { NativePositionWatchHandleClass } from '../native';
 import { LocationProfile } from '../types';
-import type { Position, PositionWatchStatus, WatchPositionParams } from '../types';
+import type {
+  Position,
+  PositionWatchError,
+  PositionWatchStatus,
+  WatchPositionParams,
+} from '../types';
 
 export class PositionWatchHandle {
   private readonly nativeHandle: NativePositionWatchHandleClass;
@@ -45,7 +50,7 @@ export class PositionWatchHandle {
 
   addListener(
     onPosition: (position: Position) => void,
-    onError?: (error: string) => void
+    onError?: (error: PositionWatchError) => void
   ): EventSubscription {
     return this.nativeHandle.addListener('positionChanged', ({ data, error }) => {
       if (error != null) {

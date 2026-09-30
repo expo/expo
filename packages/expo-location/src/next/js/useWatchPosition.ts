@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { LocationProfile, Position } from '../types';
+import type { LocationProfile, Position, PositionWatchError } from '../types';
 import { watchPosition } from './PositionWatchHandle';
 
 export type UseWatchPositionOptions = {
@@ -14,7 +14,7 @@ export type UseWatchPositionResult =
     }
   | {
       position: null;
-      error: string;
+      error: PositionWatchError;
     }
   | {
       position: null;
