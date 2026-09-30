@@ -38,6 +38,11 @@ export default function ExamplesIndex() {
         description="Generate high-volume log events"
         onPress={() => router.push('/examples/event-flood')}
       />
+      <Button
+        title="Reanimated"
+        description="Report Reanimated warnings and errors from both runtimes"
+        onPress={() => router.push('/examples/reanimated')}
+      />
     </ScrollView>
   );
 }
