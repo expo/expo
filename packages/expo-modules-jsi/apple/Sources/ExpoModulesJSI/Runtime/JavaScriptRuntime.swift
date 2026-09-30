@@ -185,11 +185,18 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
     ) -> Bool {
       let propertyName = String(cString: propertyName)
+      #if compiler(>=6.3)
       nonisolated(unsafe) let resultPtr = resultPtr
+      #else
+      let resultBox = CallScoped(resultPtr)
+      #endif
 
       return withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
         return JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
+            #if !compiler(>=6.3)
+            let resultPtr = resultBox.value
+            #endif
             try context.get(propertyName).writeJSIValue(to: resultPtr)
           }
         }
@@ -864,15 +871,22 @@ private func createFunctionClosure(
     // synchronous call, so the `nonisolated(unsafe)` capture is sound. This removes a per-call class
     // allocation + retain/release + dealloc that profiling showed dominating the no-op `@JS` host-call
     // floor.
+    #if compiler(>=6.3)
     nonisolated(unsafe) let thisPtr = thisPtr
     nonisolated(unsafe) let argumentsPtr = argumentsPtr
     nonisolated(unsafe) let resultPtr = resultPtr
+    #else
+    let pointers = CallScoped((thisPtr, argumentsPtr, resultPtr))
+    #endif
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: HostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
+          #if !compiler(>=6.3)
+          let (thisPtr, argumentsPtr, resultPtr) = pointers.value
+          #endif
           let this = UnsafeMutablePointer(mutating: thisPtr).move()
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
           let thisValue = JavaScriptValue(runtime, this)
@@ -908,15 +922,22 @@ private func createFunctionClosure(
     // handed in as a borrowed `JavaScriptUnownedValue` pointing straight at the C++-owned `this` slot:
     // it is not moved out and no owning `JavaScriptValue` is allocated, so the closure avoids the
     // per-call `weak`-runtime form/destroy and heap object that the owning `this` pays.
+    #if compiler(>=6.3)
     nonisolated(unsafe) let thisPtr = thisPtr
     nonisolated(unsafe) let argumentsPtr = argumentsPtr
     nonisolated(unsafe) let resultPtr = resultPtr
+    #else
+    let pointers = CallScoped((thisPtr, argumentsPtr, resultPtr))
+    #endif
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: UnownedThisHostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
+          #if !compiler(>=6.3)
+          let (thisPtr, argumentsPtr, resultPtr) = pointers.value
+          #endif
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
           let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
           try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
@@ -946,3 +967,17 @@ extension JavaScriptRuntime {
     }
   }
 }
+
+#if !compiler(>=6.3)
+/// Swift 6.2 (Xcode 26.3 and older) does not honour `nonisolated(unsafe) let` for a pointer
+/// captured by the `assumeIsolated` closures above and reports "sending ... risks causing data
+/// races". This box states the same call-scoped guarantee in a form it accepts; being a struct,
+/// it adds no allocation to the host-call path.
+private struct CallScoped<Value>: @unchecked Sendable {
+  let value: Value
+
+  init(_ value: Value) {
+    self.value = value
+  }
+}
+#endif
