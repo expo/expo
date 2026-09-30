@@ -154,7 +154,9 @@ export default function ExpoImage({
             onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
             onMount: [onMount],
             onTransitionEnd: [onAnimationFinished],
-            onDisplay: [onDisplay],
+            ...(selectedSource
+              ? { onDisplay: [onDisplay] }
+              : { onPlaceholderDisplay: [onPlaceholderDisplay] }),
           }}
           style={{
             objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
