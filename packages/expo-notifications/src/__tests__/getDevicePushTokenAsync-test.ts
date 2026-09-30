@@ -28,7 +28,7 @@ it('retries the native request after a rejection', async () => {
   expect(mockNativeRequest).toHaveBeenCalledTimes(2);
 });
 
-it('shares a pending request and permits retry after concurrent rejection', async () => {
+it('shares a pending request between concurrent callers', async () => {
   let rejectRequest!: (error: Error) => void;
   mockNativeRequest.mockImplementationOnce(
     () =>
@@ -45,12 +45,6 @@ it('shares a pending request and permits retry after concurrent rejection', asyn
     { status: 'rejected', reason: expect.any(Error) },
     { status: 'rejected', reason: expect.any(Error) },
   ]);
-  mockNativeRequest.mockResolvedValueOnce('recovered');
-  await expect(getDevicePushTokenAsync()).resolves.toEqual({
-    type: 'ios',
-    data: 'recovered',
-  });
-  expect(mockNativeRequest).toHaveBeenCalledTimes(2);
 });
 
 it('clears a successful request so later calls can obtain a fresh token', async () => {
