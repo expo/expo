@@ -66,6 +66,30 @@ describe(getAssetLocalPath, () => {
       ).toBeFalsy();
     });
 
+    it('should map non-standard scales to a density folder', () => {
+      const asset = {
+        name: 'icon',
+        type: 'png',
+        httpServerLocation: '/assets/test',
+      };
+
+      expect(getAssetLocalPath(asset, { scale: 2.5, platform: 'android' })).toBe(
+        path.normalize('drawable-400dpi/test_icon.png')
+      );
+    });
+
+    it('should remove `assets?unstable_path=` prefix', () => {
+      const asset = {
+        name: 'icon',
+        type: 'png',
+        httpServerLocation: '/assets?unstable_path=../../test',
+      };
+
+      expect(getAssetLocalPath(asset, { scale: 1, platform: 'android' })).toBe(
+        path.normalize('drawable-mdpi/_test_icon.png')
+      );
+    });
+
     it('should put non-drawable resources to `raw/`', () => {
       const asset = {
         name: 'video',
