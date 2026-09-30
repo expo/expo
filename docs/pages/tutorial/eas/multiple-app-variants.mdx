@@ -63,7 +63,7 @@ export default ({ config }) => ({
 
 ## Update dynamic values based on environment
 
-To identify the build type, let's add two environment variables called `IS_DEV` and`IS_PREVIEW` for `development` and `preview` build profiles in **app.config.js**:
+To identify the build type, let's add two environment variables called `IS_DEV` and `IS_PREVIEW` for `development` and `preview` build profiles in **app.config.js**:
 
 ```js app.config.js
 const IS_DEV = process.env.APP_VARIANT === 'development';
