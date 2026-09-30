@@ -91,6 +91,49 @@ The rule of thumb is to prefer a regular Notification Message if you don't requi
 
 \* The exception is when you send directly through FCM (not the Expo Push Service) and specify `title` or `message` inside [`data`](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidConfig). In that case, `expo-notifications` presents the notification on Android when the app is not in the foreground. JS listeners do not receive it. We plan to make this behavior more consistent across platforms in a future release.
 
+#### Migrating from presenting data-only messages on Android
+
+The Android behavior described in the footnote above is removed over three SDK releases:
+
+- **SDK 58:** The behavior is unchanged. `expo-notifications` logs a deprecation warning when it presents such a message, or when the app is in the foreground and skips it.
+- **SDK 59:** These messages are not presented by default. You can set `presentDataOnlyNotificationsWithTitle` to `true` in the config plugin to keep the old behavior.
+- **SDK 60:** These messages are never presented. The `presentDataOnlyNotificationsWithTitle` option is removed.
+
+To migrate, use one of these options:
+
+- **Send a Notification Message.** Use the Expo Push Service, or set `android.notification` in the FCM request. The system presents the notification.
+- **Present the notification from a background task.** Register a task with [`registerTaskAsync`](/versions/latest/sdk/notifications/#notificationsregistertaskasynctaskname) and call `scheduleNotificationAsync` in it. On Android, the `title` and `message` keys are in `data`:
+
+```ts
+import * as Notifications from 'expo-notifications';
+import * as TaskManager from 'expo-task-manager';
+
+const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
+
+TaskManager.defineTask<Notifications.NotificationTaskPayload>(
+  BACKGROUND_NOTIFICATION_TASK,
+  async ({ data }) => {
+    if ('actionIdentifier' in data) {
+      return;
+    }
+    const { title, message } = data.data;
+    if (typeof title === 'string' || typeof message === 'string') {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: typeof title === 'string' ? title : undefined,
+          body: typeof message === 'string' ? message : undefined,
+        },
+        trigger: null,
+      });
+    }
+  }
+);
+
+Notifications.registerTaskAsync(BACKGROUND_NOTIFICATION_TASK);
+```
+
+To opt in to the new behavior before SDK 59, set `presentDataOnlyNotificationsWithTitle` to `false` in the `expo-notifications` [config plugin](/versions/latest/sdk/notifications/#app-config).
+
 ### Data-only notifications
 
 Android has a concept of [Data Messages](https://firebase.google.com/docs/cloud-messaging/customize-messages/set-message-type#data-messages). iOS does not have exactly the same concept, but a close equivalent is [Headless Background Notifications](#headless-background-notifications).
