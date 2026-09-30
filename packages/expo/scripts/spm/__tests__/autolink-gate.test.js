@@ -1,6 +1,10 @@
 'use strict';
 
-const { autolinkConditionLabel, autolinkConditionMet } = require('../autolink-gate');
+const {
+  autolinkConditionKey,
+  autolinkConditionLabel,
+  autolinkConditionMet,
+} = require('../autolink-gate');
 
 /** expo-camera's barcode scanner, the only gated product shipping today. */
 const BARCODE_SCANNER = {
@@ -165,5 +169,20 @@ describe('the label of a condition', () => {
   it('is null when it names nothing', () => {
     expect(autolinkConditionLabel({})).toBeNull();
     expect(autolinkConditionLabel(undefined)).toBeNull();
+  });
+});
+
+describe('the key that decides a condition', () => {
+  it('is the first one it declares', () => {
+    expect(autolinkConditionKey({ podName: 'ExpoCamera', ...BARCODE_SCANNER })).toBe('podName');
+    expect(autolinkConditionKey({ npmPackage: 'expo-camera', ...BARCODE_SCANNER })).toBe(
+      'npmPackage'
+    );
+    expect(autolinkConditionKey(BARCODE_SCANNER)).toBe('podfileProperty');
+  });
+
+  it('is null when it names nothing', () => {
+    expect(autolinkConditionKey({ disabledValue: 'false' })).toBeNull();
+    expect(autolinkConditionKey(undefined)).toBeNull();
   });
 });

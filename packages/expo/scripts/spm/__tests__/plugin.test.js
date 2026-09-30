@@ -3052,29 +3052,29 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
 
   // expo-camera's real shape: `apple.podspecPath` lists ExpoCamera alone, and only the
   // document knows the barcode scanner.
-  const cameraCompanion = ({ precompiled = [] } = {}) => ({
+  const cameraCompanion = ({ precompiled = [], autolinkWhen = barcodeGate } = {}) => ({
     packages: ['expo-camera'],
     metadata: {
       ExpoCamera: documented('expo-camera', 'ExpoCamera'),
       ExpoCameraBarcodeScanning: documented(
         'expo-camera',
         'ExpoCameraBarcodeScanning',
-        barcodeGate
+        autolinkWhen
       ),
     },
     precompiled,
   });
   const precompiledCompanion = () => cameraCompanion({ precompiled: ['ExpoCamera'] });
 
-  const sourceGated = () => ({
+  const sourceGated = (autolinkWhen = barcodeGate) => ({
     packages: ['expo-scanner'],
-    metadata: { ExpoScanner: documented('expo-scanner', 'ExpoScanner', barcodeGate) },
+    metadata: { ExpoScanner: documented('expo-scanner', 'ExpoScanner', autolinkWhen) },
   });
 
   const refusedPods = [
     {
       linked: 'resolved as a precompiled framework',
-      gated: () => ({ ...sourceGated(), precompiled: ['ExpoScanner'] }),
+      gated: (autolinkWhen) => ({ ...sourceGated(autolinkWhen), precompiled: ['ExpoScanner'] }),
       podName: 'ExpoScanner',
       packageName: 'expo-scanner',
       precompiled: true,
@@ -3089,6 +3089,7 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
       reported: 'without a checked-in Package.swift',
     },
   ];
+  // Unlike a companion's, the pod's own condition is refused whatever key decides it.
   it.each(
     refusedPods.flatMap((pod) => [
       { ...pod, condition: 'met', properties: { 'expo.camera.barcode-scanner-enabled': 'true' } },
@@ -3097,11 +3098,17 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
         condition: 'not met',
         properties: { 'expo.camera.barcode-scanner-enabled': 'false' },
       },
+      { ...pod, condition: 'on a pod and not met', autolinkWhen: { podName: 'RNWorklets' } },
+      {
+        ...pod,
+        condition: 'on an npm package and not met',
+        autolinkWhen: { npmPackage: 'react-native-worklets' },
+      },
     ])
   )(
     'refuses a gated pod $linked when the condition is $condition',
-    ({ gated, podName, packageName, precompiled, reported, properties }) => {
-      const { result, thrown, report } = run({ ...gated(), properties });
+    ({ gated, autolinkWhen, podName, packageName, precompiled, reported, properties }) => {
+      const { result, thrown, report } = run({ ...gated(autolinkWhen), properties });
 
       expect(result).toBeNull();
       expect(thrown).toBeInstanceOf(UnsupportedModulesError);
@@ -3187,6 +3194,53 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
     }
   );
 
+  // The app cannot switch a pod or npm package gate off, so refusing such a companion
+  // would block every app that installs what it names.
+  it.each(
+    companionPaths.flatMap((companionPath) => [
+      { ...companionPath, gate: 'an npm package', autolinkWhen: { npmPackage: 'expo-camera' } },
+      {
+        ...companionPath,
+        gate: 'a pod before a Podfile property',
+        autolinkWhen: { podName: 'ExpoCamera', ...barcodeGate },
+      },
+    ])
+  )(
+    'leaves out a companion gated on $gate of a module $linked with a warning when the condition is met',
+    ({ precompiled, autolinkWhen }) => {
+      const { result, thrown } = run({
+        ...cameraCompanion({ precompiled, autolinkWhen }),
+        properties: scannerEnabled,
+      });
+
+      expect(thrown).toBeNull();
+      expect(JSON.stringify(result)).not.toContain('ExpoCameraBarcodeScanning');
+      expect(logs.error).not.toHaveBeenCalled();
+      expect(printed(logs.warn)).toContain('"ExpoCameraBarcodeScanning"');
+      expect(printed(logs.warn)).toContain('"expo-camera"');
+    }
+  );
+
+  it.each(
+    companionPaths.flatMap((companionPath) => [
+      {
+        ...companionPath,
+        gate: 'an npm package',
+        autolinkWhen: { npmPackage: 'react-native-worklets' },
+      },
+      { ...companionPath, gate: 'a pod', autolinkWhen: { podName: 'RNWorklets' } },
+    ])
+  )(
+    'omits a companion gated on $gate of a module $linked without a warning when the condition is not met',
+    ({ precompiled, autolinkWhen }) => {
+      const { result, thrown } = run({ ...cameraCompanion({ precompiled, autolinkWhen }) });
+
+      expect(thrown).toBeNull();
+      expect(JSON.stringify(result)).not.toContain('ExpoCameraBarcodeScanning');
+      expect(printed(logs.warn)).not.toContain('ExpoCameraBarcodeScanning');
+    }
+  );
+
   // expo-modules-core ships one too, and every sync precompiles that module. The
   // document declares RNWorklets whenever react-native-worklets is installed.
   describe("expo-modules-core's worklets adapter", () => {
@@ -3205,8 +3259,8 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
       expect(thrown).toBeNull();
     });
 
-    it('is refused where the app declares RNWorklets', () => {
-      const { thrown } = run({
+    it('is left out with a warning where the app declares RNWorklets', () => {
+      const { result, thrown } = run({
         packages: [],
         metadata: {
           ExpoModulesWorkletsAdapter: adapter(),
@@ -3214,15 +3268,59 @@ describe('a gated pod linked where its autolinkWhen condition is not checked', (
         },
       });
 
+      expect(thrown).toBeNull();
+      expect(result.productDependencies.map((dep) => dep.name)).not.toContain(
+        'ExpoModulesWorkletsAdapter'
+      );
+      expect(printed(logs.warn)).toContain('"ExpoModulesWorkletsAdapter"');
+      expect(printed(logs.warn)).toContain('"expo-modules-core"');
+    });
+
+    it('is named in the same warning as every other companion left out', () => {
+      const camera = cameraCompanion({ autolinkWhen: { npmPackage: 'expo-camera' } });
+      const { thrown } = run({
+        ...camera,
+        metadata: {
+          ...camera.metadata,
+          ExpoModulesWorkletsAdapter: adapter(),
+          RNWorklets: documented('react-native-worklets', 'RNWorklets'),
+        },
+      });
+
+      expect(thrown).toBeNull();
+      const companionWarnings = logs.warn.mock.calls
+        .map(([text]) => text)
+        .filter(
+          (text) =>
+            text.includes('ExpoModulesWorkletsAdapter') ||
+            text.includes('ExpoCameraBarcodeScanning')
+        );
+      expect(companionWarnings).toHaveLength(1);
+      expect(companionWarnings[0]).toContain('"ExpoModulesWorkletsAdapter"');
+      expect(companionWarnings[0]).toContain('"ExpoCameraBarcodeScanning"');
+    });
+
+    it('is still named when a companion gated on a Podfile property fails the sync', () => {
+      const camera = cameraCompanion();
+      const { thrown } = run({
+        ...camera,
+        metadata: {
+          ...camera.metadata,
+          ExpoModulesWorkletsAdapter: adapter(),
+          RNWorklets: documented('react-native-worklets', 'RNWorklets'),
+        },
+        properties: scannerEnabled,
+      });
+
       expect(thrown).toBeInstanceOf(UnsupportedModulesError);
       expect(thrown.unsupported).toEqual([
         expect.objectContaining({
           reason: 'unchecked-autolink-condition',
-          podName: 'ExpoModulesWorkletsAdapter',
-          packageName: 'expo-modules-core',
-          precompiled: true,
+          podName: 'ExpoCameraBarcodeScanning',
         }),
       ]);
+      expect(printed(logs.warn)).toContain('"ExpoModulesWorkletsAdapter"');
+      expect(printed(logs.warn)).not.toContain('ExpoCameraBarcodeScanning');
     });
   });
 

@@ -40,7 +40,11 @@ const fs = require('fs');
 const path = require('path');
 
 const { readPodfileProperties, resolveAppTarget } = require('./app-target');
-const { autolinkConditionLabel, autolinkConditionMet } = require('./autolink-gate');
+const {
+  autolinkConditionKey,
+  autolinkConditionLabel,
+  autolinkConditionMet,
+} = require('./autolink-gate');
 const { resolveExpoModules, generateModulesProvider } = require('./cli');
 const {
   collectWatchPaths,
@@ -56,6 +60,7 @@ const {
   pluginError,
   realPathOrSelf,
   renderExtraPodsWarning,
+  renderLeftOutCompanionWarning,
   renderRootConflictWarning,
   renderUnmappedDependencyWarning,
   renderXcconfigLinkerWarning,
@@ -191,30 +196,36 @@ function indexGatedCompanions(metadata, records) {
 /**
  * Only a checked-in manifest's products have their autolinkWhen checked. A gated pod
  * linked any other way fails the sync whichever way its condition falls. Its module's
- * gated companions are left out, so each fails the sync only where its condition is
- * met: there CocoaPods would link it.
+ * gated companions are left out, which differs from CocoaPods only where a companion's
+ * condition is met. Such a companion fails the sync only when a Podfile property
+ * decides it, because the app can switch that off; a pod or npm package condition is
+ * met by what the app installs for its own reasons, so refusing it would block the app.
  *
  * @param linked the precompiled and pure-Swift records, in pass order.
+ * @returns the `refusals` that fail the sync, and the `leftOutCompanions` to warn about.
  */
 function uncheckedAutolinkConditions(linked, { gatedCompanions, manifestRoots, autolinkGate }) {
   const companionRootsSeen = new Set();
-  return linked.flatMap(({ identity, linkedAs }) => {
+  const refusals = [];
+  const leftOutCompanions = [];
+  for (const { identity, linkedAs } of linked) {
     const { podName, packageName, moduleRoot, productName, autolinkWhen } = identity;
-    const refusal = {
-      reason: 'unchecked-autolink-condition',
-      packageName,
-      moduleRoot,
-      precompiled: linkedAs === 'precompiled',
-    };
-    const own = autolinkWhen != null ? [{ ...refusal, podName, productName }] : [];
+    const subject = { packageName, moduleRoot, precompiled: linkedAs === 'precompiled' };
+    const refusal = { reason: 'unchecked-autolink-condition', ...subject };
+    if (autolinkWhen != null) refusals.push({ ...refusal, podName, productName });
     const root = path.resolve(moduleRoot);
-    if (manifestRoots.has(root) || companionRootsSeen.has(root)) return own;
+    if (manifestRoots.has(root) || companionRootsSeen.has(root)) continue;
     companionRootsSeen.add(root);
-    const companions = (gatedCompanions.get(root) ?? [])
-      .filter((companion) => autolinkConditionMet(companion.autolinkWhen, autolinkGate))
-      .map((companion) => ({ ...refusal, ...companion, linkedThrough: podName }));
-    return [...own, ...companions];
-  });
+    for (const companion of gatedCompanions.get(root) ?? []) {
+      if (!autolinkConditionMet(companion.autolinkWhen, autolinkGate)) continue;
+      if (autolinkConditionKey(companion.autolinkWhen) === 'podfileProperty') {
+        refusals.push({ ...refusal, ...companion, linkedThrough: podName });
+      } else {
+        leftOutCompanions.push({ ...subject, ...companion, linkedThrough: podName });
+      }
+    }
+  }
+  return { refusals, leftOutCompanions };
 }
 
 /**
@@ -493,7 +504,7 @@ function summarizeRecords(
       ),
     }))
     .filter((entry) => entry.pods.length > 0);
-  const uncheckedConditions = uncheckedAutolinkConditions([...precompiled, ...pureSwift], {
+  const unchecked = uncheckedAutolinkConditions([...precompiled, ...pureSwift], {
     gatedCompanions,
     manifestRoots: new Set(
       emitted
@@ -524,7 +535,8 @@ function summarizeRecords(
     packageDependencies: emitted.map((r) => r.emission.packageDep),
     ...gateProducts(emitted, autolinkConditions, autolinkGate),
     pending,
-    uncheckedConditions,
+    uncheckedConditions: unchecked.refusals,
+    leftOutCompanions: unchecked.leftOutCompanions,
     unexportedCompanions,
     unmappedDeps,
     xcconfigLinkage,
@@ -706,6 +718,9 @@ module.exports = function expoSpmPlugin(context) {
   }
   if (summary.xcconfigLinkage.length > 0) {
     console.warn(renderXcconfigLinkerWarning(summary.xcconfigLinkage));
+  }
+  if (summary.leftOutCompanions.length > 0) {
+    console.warn(renderLeftOutCompanionWarning(summary.leftOutCompanions));
   }
   const rootConflicts = collectRootConflicts(identities);
   if (rootConflicts.length > 0) {

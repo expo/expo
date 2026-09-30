@@ -30,4 +30,11 @@ function autolinkConditionLabel(condition) {
   return condition?.podName ?? condition?.npmPackage ?? condition?.podfileProperty ?? null;
 }
 
-module.exports = { autolinkConditionLabel, autolinkConditionMet };
+/** Which kind of condition it is: the name of the key that decides it. */
+function autolinkConditionKey(condition) {
+  return (
+    ['podName', 'npmPackage', 'podfileProperty'].find((key) => condition?.[key] != null) ?? null
+  );
+}
+
+module.exports = { autolinkConditionKey, autolinkConditionLabel, autolinkConditionMet };
