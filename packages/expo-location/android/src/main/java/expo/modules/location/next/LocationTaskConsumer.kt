@@ -14,7 +14,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 abstract class LocationTaskConsumer(
   context: Context,
-  taskManagerUtils: TaskManagerUtilsInterface?,
+  taskManagerUtils: TaskManagerUtilsInterface?
 ) : TaskConsumer(context, taskManagerUtils) {
   var mTask: TaskInterface? = null
   var mPendingIntent: PendingIntent? = null
@@ -81,7 +81,7 @@ abstract class LocationTaskConsumer(
 
 class BatchedPositions(
   @Field val data: List<Position>? = null,
-  @Field val error: String? = null,
+  @Field val error: String? = null
 ) : Record {
   fun toBundle(): Bundle {
     val bundle = Bundle()
@@ -109,6 +109,6 @@ fun List<PersistableBundle>.toBatchedPositions(): BatchedPositions = if (isEmpty
 } else {
   BatchedPositions(
     map { it.toPosition() },
-    null,
+    null
   )
 }

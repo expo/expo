@@ -313,6 +313,7 @@ const withLocation: ConfigPlugin<Props | void> = (
       isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
       enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE',
       enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE_LOCATION',
+      enableAndroidForegroundService && 'android.permission.POST_NOTIFICATIONS',
       isAndroidMotionActivityEnabled && 'android.permission.ACTIVITY_RECOGNITION',
       isAndroidMotionActivityEnabled && 'com.google.android.gms.permission.ACTIVITY_RECOGNITION',
     ].filter(Boolean) as string[]
