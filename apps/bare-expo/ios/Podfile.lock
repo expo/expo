@@ -2368,7 +2368,7 @@ PODS:
     - Yoga
   - react-native-segmented-control (2.5.7):
     - React-Core
-  - react-native-skia (2.11.2):
+  - react-native-skia (2.13.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3506,7 +3506,7 @@ DEPENDENCIES:
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@9.0.4_react-native@0.88.0-rc.3_@babel+core@7.29.7_@react-native_899b82d2d92929a9dd4aa1e99cd859b9/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.9.1_react-native@0.88.0-rc.3_@babel+core@7.29.7_@react_870e5800f4bffb02ac451ff3b45bd7f8/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.88.0-rc.3_@babel_66d36e66f82eda21b0931a3fcac9404e/node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.11.2_4665e846e61e9618a79ecc4bdbc36abd/node_modules/@shopify/react-native-skia`)"
+  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.13.1_4665e846e61e9618a79ecc4bdbc36abd/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider`)"
   - "react-native-view-shot (from `../../../node_modules/.pnpm/react-native-view-shot@5.1.1_react-native@0.88.0-rc.3_@babel+core@7.29.7_@react-native+_66a9bcf1de73dc38db4ea1a262577ee0/node_modules/react-native-view-shot`)"
   - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@14.0.1_react-native@0.88.0-rc.3_@babel+core@7.29.7_@react-native+m_5d2028cfb3f869357b2a47dc87bb04e6/node_modules/react-native-webview`)"
@@ -3953,7 +3953,7 @@ EXTERNAL SOURCES:
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.88.0-rc.3_@babel_66d36e66f82eda21b0931a3fcac9404e/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.11.2_4665e846e61e9618a79ecc4bdbc36abd/node_modules/@shopify/react-native-skia"
+    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.13.1_4665e846e61e9618a79ecc4bdbc36abd/node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -4216,7 +4216,7 @@ SPEC CHECKSUMS:
   react-native-pager-view: b2cfbcf15e2b412171a7bfa512ca6e9a47abf930
   react-native-safe-area-context: 949375a80dca43886b96574e6c97a0c5b37a479c
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
-  react-native-skia: 7c104dfc3a1e6c425da46ac61f24bcf122e5c5f2
+  react-native-skia: c3b6af86e9957a781a6b3bb4edea5d50abe97730
   react-native-slider: 92596cf8c74eb17d7c7879a277a7a5488a3e06f2
   react-native-view-shot: 7cd983712b63348b1527ae6e85bc064bc3aa7997
   react-native-webview: 3a3d1fd130d39e4dcabeebe89e6b245478ee177e
