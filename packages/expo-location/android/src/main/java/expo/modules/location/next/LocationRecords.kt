@@ -45,10 +45,20 @@ enum class LocationAccuracyOption(val value: String) : Enumerable {
   REDUCED("reduced")
 }
 
+@OptimizedRecord
 class RequestForegroundPermissionsOptions(
   @Field val accuracy: LocationAccuracyOption? = null
 ) : Record
 
+@OptimizedRecord
+class NotificationPermissionResponse(
+  @Field val status: LocationPermissionStatus,
+  @Field val granted: Boolean,
+  @Field val canAskAgain: Boolean,
+  @Field val expires: String = "never"
+) : Record
+
+@OptimizedRecord
 class LocationPermissionResponse(
   @Field val status: LocationPermissionStatus,
   @Field val granted: Boolean,
@@ -123,7 +133,7 @@ class Coordinates(
 
 fun PersistableBundle.toCoordinates(): Coordinates = Coordinates(
   getDouble("lat"),
-  getDouble("lon"),
+  getDouble("lon")
 )
 
 @OptimizedRecord
@@ -189,7 +199,7 @@ fun PersistableBundle.toPosition(): Position = Position(
   horizontalAccuracy = getDoubleOrNull("horizontalAccuracy"),
   verticalAccuracy = getDoubleOrNull("verticalAccuracy"),
   speedAccuracy = getDoubleOrNull("speedAccuracy"),
-  headingAccuracy = getDoubleOrNull("headingAccuracy"),
+  headingAccuracy = getDoubleOrNull("headingAccuracy")
 )
 
 fun Location.mslAltitude(): Double? {
