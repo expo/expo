@@ -537,7 +537,11 @@ class ExpoCameraView(
       .filter(cameraProvider.availableCameraInfos)
       .firstOrNull()
     val videoCapture = createVideoCapture(selectedCameraInfo)
-    imageAnalysisUseCase = if (shouldScanBarcodes) createImageAnalyzer() else null
+    imageAnalysisUseCase = if (shouldScanBarcodes) {
+      createImageAnalyzer()
+    } else {
+      null
+    }
 
     val useCases = UseCaseGroup.Builder().apply {
       addUseCase(preview)
