@@ -1262,6 +1262,38 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
     });
   });
 
+  describe('Virtual tables', () => {
+    for (const moduleName of ['fts5', 'fts4']) {
+      nativeIt(`should close a ${moduleName} database after the query is finalized`, async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        await db.execAsync(`
+          CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
+          INSERT INTO fts_probe(body) VALUES ('hello world');
+        `);
+        expect(
+          await db.getFirstAsync("SELECT rowid AS id FROM fts_probe WHERE fts_probe MATCH 'hello'")
+        ).toEqual({ id: 1 });
+        await db.closeAsync();
+      });
+
+      nativeIt(
+        `should close a ${moduleName} database while a query statement is still open`,
+        async () => {
+          const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+          await db.execAsync(`
+            CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
+            INSERT INTO fts_probe(body) VALUES ('hello world');
+          `);
+          const statement = await db.prepareAsync(
+            "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
+          );
+          await db.closeAsync();
+          expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
+        }
+      );
+    }
+  });
+
   describe('Database - serialize / deserialize', () => {
     it('serialize / deserialize in between should keep the data', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
