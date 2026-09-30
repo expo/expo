@@ -11,6 +11,7 @@ declare class ExpoAppIntentsNativeModule extends NativeModule<ExpoAppIntentsModu
   removePendingInvocationAsync(id: string): Promise<void>;
   clearPendingInvocationsAsync(): Promise<void>;
   setEntityCatalogAsync(kind: string, entities: AppIntentEntity[]): Promise<void>;
+  reindexEntitiesAsync(kind: string | null): Promise<void>;
   getEntityCatalogAsync(kind: string): Promise<AppIntentEntity[]>;
   refreshShortcutsAsync(): Promise<void>;
 }

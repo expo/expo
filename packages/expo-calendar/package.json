@@ -1,6 +1,6 @@
 {
   "name": "expo-calendar",
-  "version": "57.0.1",
+  "version": "58.0.5",
   "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "keywords": [
     "calendar",
@@ -53,6 +53,7 @@
     }
   },
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -62,7 +63,8 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

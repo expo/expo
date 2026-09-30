@@ -1,6 +1,36 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the `.swiftinterface` failing to compile with Xcode 27 (Swift 6.4), because a C++ type extension was no longer stripped from it. ([#50569](https://github.com/expo/expo/pull/50569) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix the xcframework build phase failing iOS archives under Xcode 27. ([#50587](https://github.com/expo/expo/pull/50587) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the xcframework build warning about jsi headers missing from the umbrella header. ([#50588](https://github.com/expo/expo/pull/50588) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.3 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `pod install` failing when the Command Line Tools SDK is newer than the selected Xcode. ([#50316](https://github.com/expo/expo/pull/50316) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [iOS] Add a `JavaScriptRuntime.collectGarbage(passes:cause:until:)` overload that collects repeatedly until the given condition holds, for tests asserting on a release that a single collection doesn't always complete. ([#50188](https://github.com/expo/expo/pull/50188) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 

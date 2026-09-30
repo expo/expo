@@ -253,7 +253,11 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       val latitudeDelta = bounds.northeast.latitude - bounds.southwest.latitude
       val rawLongitudeDelta = bounds.northeast.longitude - bounds.southwest.longitude
       // We need to subtract 360 from longitude delta when crossing the antimeridian to get the correct value
-      val longitudeDelta = if (rawLongitudeDelta < 0) rawLongitudeDelta + 360.0 else rawLongitudeDelta
+      val longitudeDelta = if (rawLongitudeDelta < 0) {
+        rawLongitudeDelta + 360.0
+      } else {
+        rawLongitudeDelta
+      }
 
       onCameraMove(
         CameraMoveEvent(

@@ -726,3 +726,21 @@ struct JavaScriptValueTests {
     #expect(pointee1 == pointee2)
   }
 }
+
+@Suite
+@JavaScriptActor
+struct JavaScriptValueRuntimeLifetimeTests {
+  @Test
+  func `runtime-free value kinds keep working after the runtime is gone`() throws {
+    var runtime: JavaScriptRuntime? = JavaScriptRuntime()
+    let bool = JavaScriptValue(runtime!, true)
+
+    // Values don't keep the runtime alive, so this deallocates it.
+    runtime = nil
+
+    // A boolean doesn't need the runtime, so these take the runtime-free paths instead of trapping.
+    #expect(try bool.jsonStringify() == "true")
+    #expect(bool.copy().getBool() == true)
+    #expect(bool.isEqual(to: .true()))
+  }
+}

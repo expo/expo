@@ -1,6 +1,6 @@
 {
   "name": "expo-image-loader",
-  "version": "57.0.1",
+  "version": "58.0.2",
   "description": "Image loader",
   "main": "index.js",
   "keywords": [
@@ -25,5 +25,9 @@
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "prepack": "expo-module prepack"
   }
 }

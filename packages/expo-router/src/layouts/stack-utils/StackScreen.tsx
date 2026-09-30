@@ -25,6 +25,14 @@ export interface StackScreenProps extends PropsWithChildren {
   name?: StackBaseScreenProps['name'];
 
   /**
+   * Overrides React Activity behavior inherited from the stack. A number specifies how many
+   * screens must be above this route before its content is hidden.
+   *
+   * Only supported when used inside a Layout component.
+   */
+  activityEnabled?: StackBaseScreenProps['activityEnabled'];
+
+  /**
    * Options to configure the screen.
    *
    * Accepts an object or a function returning an object.

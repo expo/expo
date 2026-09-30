@@ -10,6 +10,7 @@
 #include <react/renderer/core/LayoutableShadowNode.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
@@ -104,7 +105,7 @@ public:
       return ConcreteViewShadowNode::measureContent(layoutContext, layoutConstraints);
     }
 
-    auto const *content = hostedContent();
+    auto const content = hostedContent();
 
     if (content == nullptr) {
       return {};
@@ -122,7 +123,7 @@ public:
       return;
     }
 
-    auto const *content = hostedContent();
+    auto const content = hostedContent();
 
     if (content == nullptr) {
       return;
@@ -144,12 +145,15 @@ public:
   }
 
 private:
-  const react::LayoutableShadowNode *hostedContent() const {
+  // Owning on purpose: `layout()` calls `replaceChild()`, which overwrites this node's only strong
+  // reference to the content — `RNHostView` is a leaf Yoga node, so Yoga keeps no second one, and
+  // `YogaLayoutableShadowNode::replaceChild()` reads `oldChild` right after.
+  std::shared_ptr<const react::LayoutableShadowNode> hostedContent() const {
     auto const &children = this->getChildren();
 
     return children.empty()
       ? nullptr
-      : dynamic_cast<const react::LayoutableShadowNode *>(children.front().get());
+      : std::dynamic_pointer_cast<const react::LayoutableShadowNode>(children.front());
   }
 
   react::LayoutDirection resolvedLayoutDirection() const {
@@ -159,6 +163,20 @@ private:
   }
 
   react::LayoutConstraints hostedContentConstraints(const react::ShadowNode &content) const {
+    auto constraints = contentStyleConstraints(content);
+
+    // An unmatched axis has the size SwiftUI or Compose gave the host (from `setViewSize`), so lay
+    // the content out at exactly that size. This overrides the content's own min/max on that axis.
+    auto const &ownStyle = this->yogaNode_.style();
+    constrainExactlyToPoints(ownStyle.dimension(facebook::yoga::Dimension::Width),
+                             constraints.minimumSize.width, constraints.maximumSize.width);
+    constrainExactlyToPoints(ownStyle.dimension(facebook::yoga::Dimension::Height),
+                             constraints.minimumSize.height, constraints.maximumSize.height);
+
+    return constraints;
+  }
+
+  react::LayoutConstraints contentStyleConstraints(const react::ShadowNode &content) const {
     react::LayoutConstraints constraints{};
     constraints.layoutDirection = resolvedLayoutDirection();
 
@@ -180,6 +198,14 @@ private:
                       constraints.maximumSize.height);
 
     return constraints;
+  }
+
+  static void constrainExactlyToPoints(facebook::yoga::StyleSizeLength length,
+                                       react::Float &minimum,
+                                       react::Float &maximum) {
+    if (length.isPoints() && length.value().isDefined()) {
+      minimum = maximum = std::max<react::Float>(0, length.value().unwrap());
+    }
   }
 
   static void constrainToPoints(facebook::yoga::StyleSizeLength length, react::Float &constraint) {

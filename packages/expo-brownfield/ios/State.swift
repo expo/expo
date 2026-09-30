@@ -78,19 +78,32 @@ public final class BrownfieldStateInternal {
   }
 
   public func maybeNotifyKeyRecreated(_ key: String) {
-    lock.lock()
-    if !deletedKeys.contains(key) {
-      lock.unlock()
-      return
+    let module: ExpoBrownfieldStateModule?
+    do {
+      lock.lock()
+      defer { lock.unlock() }
+      if !deletedKeys.contains(key) {
+        return
+      }
+      deletedKeys.remove(key)
+      module = expoModule
     }
-    deletedKeys.remove(key)
-    lock.unlock()
 
-    expoModule?.notifyKeyRecreated(key)
+    module?.notifyKeyRecreated(key)
   }
 
-  public func setExpoModule(_ expoModule: ExpoBrownfieldStateModule?) {
+  public func setExpoModule(_ expoModule: ExpoBrownfieldStateModule) {
+    lock.lock()
     self.expoModule = expoModule
+    lock.unlock()
+  }
+
+  public func clearExpoModule(_ expoModule: ExpoBrownfieldStateModule) {
+    lock.lock()
+    if self.expoModule === expoModule {
+      self.expoModule = nil
+    }
+    lock.unlock()
   }
 
   public func notifySubscribers(_ key: String, _ value: Any?) {

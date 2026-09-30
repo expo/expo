@@ -7,7 +7,7 @@ platforms: ['server']
 isNew: true
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { RouterLogo } from '@expo/styleguide';
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
@@ -25,7 +25,7 @@ To use `expo-server` in your project, you need to configure your Expo Router pro
   title="API Routes"
   description="Learn how to create server endpoints with Expo Router."
   href="/router/web/api-routes"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 ## Usage
@@ -83,7 +83,7 @@ To learn how to host API routes on different third-party services, follow the in
   title="API Routes"
   description="Learn how to host API Routes on third-party services."
   href="/router/web/api-routes#hosting-on-third-party-services"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 By convention, all adapters export a `createRequestHandler` function that accepts a parameters object. This accepts a `build` parameter that must be set to the relative path to the `dist/server` output directory that `npx expo export` created. Some adapters may also accept more values to configure the runtime API.

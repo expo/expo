@@ -18,6 +18,7 @@ test.describe('server loaders in production', () => {
     cwd: projectRoot,
     env: {
       NODE_ENV: 'production',
+      EXPO_USE_STATIC: 'server',
       TEST_SECRET_KEY: 'test-secret-key',
       TEST_THROW_ERROR: 'true',
     },
@@ -30,8 +31,6 @@ test.describe('server loaders in production', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'server',
         E2E_ROUTER_SRC: 'server-loader',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     });
     console.timeEnd('expo export');

@@ -66,6 +66,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     <Screen
       key={tab.name}
       name={tab.name}
+      routeKey={tab.routeKey}
       options={tab.options}
       isFocused={selectedScreenKey === tab.name}
       standardAppearance={iosAppearances[index]!.standardAppearance}
@@ -101,6 +102,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 }
 
 interface InternalTabScreenProps extends SharedInternalTabScreenProps {
+  routeKey?: string;
   standardAppearance: TabsScreenAppearanceIOS;
   scrollEdgeAppearance: TabsScreenAppearanceIOS;
 }
@@ -165,7 +167,8 @@ function Screen(props: InternalTabScreenProps) {
       title={shared.title}
       preventNativeSelection={options.disabled}
       {...shared.nativeRestOverrides}
-      screenKey={shared.screenKey}>
+      screenKey={shared.screenKey}
+      nativeID={props.routeKey ? `expo-router-tab:${props.routeKey}` : undefined}>
       {wrappedContent}
     </Tabs.Screen>
   );

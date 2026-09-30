@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { createExpoStart, executeExpoAsync } from '../utils/expo';
+import { expectSourceMapSection } from '../utils/sourceMap';
 import {
   projectRoot,
   getLoadedModulesAsync,
@@ -151,24 +152,27 @@ describeSkipWin('server', () => {
     const sourceMaps = await expo.fetchBundleAsync(sourceMapUrl!).then((res) => res.json());
     expect(sourceMaps).toMatchObject({
       version: 3,
-      sources: expect.arrayContaining([
-        '__prelude__',
+      sections: expect.arrayContaining([
+        expectSourceMapSection('__prelude__'),
         // NOTE(@kitten): We can slot in our own runtime here
-        expect.pathMatching(
-          new RegExp(
-            [
-              '/metro-runtime/src/polyfills/require.js',
-              '/@expo/cli/build/metro-require/require.js',
-            ].join('|')
+        expectSourceMapSection(
+          expect.pathMatching(
+            new RegExp(
+              [
+                '/metro-runtime/src/polyfills/require.js',
+                '/@expo/cli/build/metro-require/require.js',
+              ].join('|')
+            )
           )
         ),
-        expect.pathMatching(/@react-native\/js-polyfills\/console\.js$/),
-        expect.pathMatching(/@react-native\/js-polyfills\/error-guard\.js$/),
-        '\0polyfill:external-require',
+        expectSourceMapSection(expect.pathMatching(/@react-native\/js-polyfills\/console\.js$/)),
+        expectSourceMapSection(
+          expect.pathMatching(/@react-native\/js-polyfills\/error-guard\.js$/)
+        ),
+        expectSourceMapSection('\0polyfill:external-require'),
         // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
-        '\0polyfill:environment-variables',
+        expectSourceMapSection('\0polyfill:environment-variables'),
       ]),
-      mappings: expect.any(String),
     });
   });
 });

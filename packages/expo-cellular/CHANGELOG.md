@@ -1,16 +1,16 @@
 # Changelog
 
-## Unpublished
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
 - [Android] Remove deprecated allowsVoipAsync ([#47148](https://github.com/expo/expo/pull/47148) by [@Wenszel](https://github.com/Wenszel))
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

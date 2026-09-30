@@ -45,14 +45,14 @@ export default function DynamicLayout({ segment }) {
 }
 ```
 
-To enable the **array syntax**, specify the [`initialRouteName`](/router/advanced/router-settings/#initialroutename) for each group using `unstable_settings` object in the dynamic layout:
+To enable the **array syntax**, specify the [`anchor`](/router/advanced/router-settings/#anchor) for each group using the `unstable_settings` object in the dynamic layout:
 
 {/* prettier-ignore */}
 ```tsx src/app/(home,search)/_layout.tsx
 export const unstable_settings = {
-  initialRouteName: 'home',
+  anchor: 'home',
   search: {
-    initialRouteName: 'search',
+    anchor: 'search',
   },
 };
 
@@ -67,4 +67,4 @@ In the above example, the `home` route is the default route for the `home` group
 
 - You can only provide groups for the current navigator.
 - When using the array syntax, if there are two groups (for example, `(one)/(two)`), only the last group's segment is used for matching the route.
-- If there are at least two group `initialRouteNames`, but a default `initialRouteName` is not provided, the first group's `initialRouteName` is used.
+- If there are at least two group anchors, but a default `anchor` is not provided, the first group's anchor is used.

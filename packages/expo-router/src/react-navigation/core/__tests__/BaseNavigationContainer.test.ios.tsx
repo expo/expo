@@ -179,6 +179,46 @@ test('preserves a complete initial state by identity', () => {
   expect(ref.current?.getRootState()).toBe(initialState);
 });
 
+test('warns when route params contain a function', () => {
+  const callback = () => {};
+  const initialState: NavigationState = {
+    stale: false,
+    routeKeySeq: 0,
+    key: 'root-with-function-param',
+    index: 0,
+    routeNames: ['home'],
+    routes: [{ key: 'home-with-function-param', name: 'home', params: { callback } }],
+  };
+  const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  function Stack(props: any) {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  }
+
+  try {
+    render(
+      <RootProviders>
+        <RawBaseNavigationContainer initialState={initialState}>
+          <Stack>
+            <Screen name="home">{() => null}</Screen>
+          </Stack>
+        </RawBaseNavigationContainer>
+      </RootProviders>
+    );
+    expect(spy).toHaveBeenCalledWith(
+      expect.stringContaining('Pass only serializable values in route params.')
+    );
+    expect(spy.mock.calls[0]![0]).toContain('callback');
+  } finally {
+    spy.mockRestore();
+  }
+});
+
 test('handle dispatching with ref', () => {
   function CurrentRootRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
@@ -657,7 +697,7 @@ test('ignores options from an unfocused nested navigator', () => {
 });
 
 test('throws if there is no navigator rendered', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const ref = createNavigationContainerRef<ParamListBase>();
 
@@ -670,12 +710,13 @@ test('throws if there is no navigator rendered', () => {
   ref.current?.dispatch({ type: 'WHATEVER' });
 
   expect(spy.mock.calls[0]![0]).toMatch("The 'navigation' object hasn't been initialized yet.");
+  expect(spy.mock.calls[0]![0]).toContain('mount a navigator in a route layout');
 
   spy.mockRestore();
 });
 
 test("throws if the ref hasn't finished initializing", () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const ref = createNavigationContainerRef<ParamListBase>();
 
@@ -694,6 +735,7 @@ test("throws if the ref hasn't finished initializing", () => {
       ref.current?.dispatch({ type: 'WHATEVER' });
 
       expect(spy.mock.calls[0]![0]).toMatch("The 'navigation' object hasn't been initialized yet.");
+      expect(spy.mock.calls[0]![0]).toContain('mount a navigator in a route layout');
 
       spy.mockRestore();
     }, []);
@@ -742,47 +784,6 @@ test('isReady always returns true', () => {
   );
 
   expect(ref.current?.isReady()).toBe(true);
-});
-
-// TODO(@ubax): restore when unhandled actions are wired to the reducer. https://linear.app/expo/issue/ENG-26123
-test.skip('invokes the unhandled action listener with the unhandled action', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-  const fn = jest.fn();
-
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const TestScreen = () => <></>;
-
-  render(
-    <BaseNavigationContainer ref={ref} onUnhandledAction={fn}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-        <Screen name="bar" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  act(() => {
-    ref.current!.navigate('bar');
-  });
-  act(() => {
-    ref.current!.navigate('baz');
-  });
-
-  expect(fn).toHaveBeenCalledWith({
-    payload: {
-      name: 'baz',
-    },
-    type: 'NAVIGATE',
-  });
 });
 
 test('warns for duplicate route names nested inside each other', () => {

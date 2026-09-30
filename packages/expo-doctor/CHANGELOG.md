@@ -1,6 +1,25 @@
 # Changelog
 
-## Unpublished
+## 1.21.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Exit with a non-zero code when Doctor can't run its checks, for example because the app config fails to load. ([#50325](https://github.com/expo/expo/pull/50325) by [@tahakocal](https://github.com/tahakocal))
+
+## 1.21.2 — 2026-09-28
+
+### 💡 Others
+
+- [Internal] Type the Metro config loader from `expo/metro-config` and drop the `@expo/metro` devDependency. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
+
+## 1.21.1 — 2026-09-15
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 1.21.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 

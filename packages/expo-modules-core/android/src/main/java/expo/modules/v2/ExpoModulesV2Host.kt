@@ -2,7 +2,7 @@ package expo.modules.v2
 
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.kotlin.logger
-import io.github.expo.modules.v2.modules.Module
+import io.github.expo.modules.v2.Module
 import io.github.expo.modules.v2.modules.ModuleRegistry
 import io.github.expo.modules.v2.react.ReactRuntime
 import java.lang.reflect.Modifier

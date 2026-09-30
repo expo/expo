@@ -1,10 +1,25 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
+
+### 💡 Others
+
+- [Internal] Remove the unused `forceNodeFilesystemAPI` option. ([#50193](https://github.com/expo/expo/pull/50193) by [@robhogan](https://github.com/robhogan))
+- [Internal] Declare the perf logger types locally and drop the `@expo/metro` devDependency. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-15
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 

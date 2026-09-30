@@ -1,12 +1,53 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/image-utils@0.12.2
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Exclude the CoreMotion features from the build when `motionUsagePermission: false` is set in `app.json`. ([#49409](https://github.com/expo/expo/pull/49409) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Stop requiring the `location` background mode for geofencing. Region monitoring does not need it, and declaring it without a feature that uses persistent location gets apps rejected under App Store guideline 2.5.4. ([#50197](https://github.com/expo/expo/pull/50197) by [@abappi19](https://github.com/abappi19))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
 - [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
-
-### 🎉 New features
 
 ### 🐛 Bug fixes
 
@@ -565,13 +606,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Allow location to work on Android with only coarse location permission. All apps do not require fine/precise location permission, but in past Expo was enforcing fine/precise even if you only needed coarse level location. ([#15760](https://github.com/expo/expo/pull/15760) by [@Noitidart](https://github.com/Noitidart))
-
-## Unpublished
-
-### 🛠 Breaking changes
-
-- Add an option to whether kill or keep the foreground service when app is killed on Android. ([#15633](https://github.com/expo/expo/pull/15633) by [@islamouzou](https://github.com/islamouzou))
-- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 14.0.2 — 2022-02-01
 

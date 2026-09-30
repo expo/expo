@@ -20,6 +20,8 @@ To apply commits in projects that use the unversioned (that is, latest) SDK, add
 
 ### Upgrading React Native
 
-When we upgrade our version of React Native, we create a new branch called `sdk-*`, where `*` is the version of our next SDK. This branch is based on the latest stable release of React Native upstream. We cherry-pick in changes from the prior `sdk-*` branch that are still relevant and have not already been merged into the stable release branch.
+When we upgrade React Native, create a new branch from the upstream release tag and cherry-pick the Expo commits from **the branch `expo/expo` `main` currently pins**, not from the prior `sdk-*` branch by name. Find it with `git ls-tree main react-native-lab/react-native` in `expo/expo`, then `git branch -r --contains <sha>` here.
 
-The new `sdk-*` branch is used in a branch of Universe called `sdk-*-candidate`. After the client apps are in a nominal working state, we apply the `expo#sdk-*-candidate` branch's commits to `expo#master`.
+Older `sdk-*` branches carry patches that `expo/expo` has since replaced with its own code. Replaying them breaks Expo Go: the old `DevServerHelper` patch, for example, calls an Expo Go method that no longer exists, so every dev server bundle URL comes back empty. Skip any commit whose change has landed upstream. Judge the branch by `git diff <upstream-tag>..<branch>`, which should touch only the files that still need a patch.
+
+Point `expo/expo` at the new branch in the same PR as the React Native upgrade.

@@ -3,10 +3,12 @@ import type { ColorValue } from 'react-native';
 import {
   background,
   border,
+  contentShape,
   disabled,
   font,
   onTapGesture,
   padding,
+  shapes,
 } from '../../swift-ui/modifiers';
 import { transformToModifiers } from '../transformStyle';
 
@@ -45,6 +47,7 @@ describe('transformToModifiers (iOS)', () => {
     const onPress = jest.fn();
     const userTap = onTapGesture(jest.fn());
     expect(transformToModifiers(undefined, { onPress }, [userTap])).toEqual([
+      contentShape(shapes.rectangle()),
       onTapGesture(onPress),
       userTap,
     ]);

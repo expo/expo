@@ -21,11 +21,12 @@ function getStateForRouteNamesChange(state: NavigationState, routeNames: string[
   };
 }
 
-export function MockRouter(_options: DefaultRouterOptions) {
+export function MockRouter(options: DefaultRouterOptions) {
+  const base = BaseRouter(options);
   const router: Router<NavigationState, MockActions> = {
     type: 'test',
 
-    getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
+    getStateForDeclaredRoutes: base.getStateForDeclaredRoutes,
 
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
@@ -37,7 +38,7 @@ export function MockRouter(_options: DefaultRouterOptions) {
       return { ...state, index };
     },
 
-    getStateForAction(state, action) {
+    getStateForAction(state, action, config) {
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
           const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
@@ -139,7 +140,7 @@ export function MockRouter(_options: DefaultRouterOptions) {
         }
 
         default: {
-          const result = BaseRouter.getStateForAction(state, action);
+          const result = base.getStateForAction(state, action, config);
           return result === null
             ? null
             : { ...result, state: { ...result.state, type: 'test' } };

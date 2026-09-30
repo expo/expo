@@ -21,15 +21,14 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
 
   private let barcodeProvider: ExpoBarcodeScannerProvider?
 
-  init(session: AVCaptureSession, sessionQueue: DispatchQueue) {
+  init(
+    session: AVCaptureSession,
+    sessionQueue: DispatchQueue,
+    provider: ExpoBarcodeScannerProvider? = BarcodeScanner.discoverProvider()
+  ) {
     self.session = session
     self.sessionQueue = sessionQueue
-    self.barcodeProvider = BarcodeScanner.discoverProvider()
-  }
-
-  /// True when a barcode scanner provider is available (the companion pod is linked).
-  var isAvailable: Bool {
-    return barcodeProvider != nil
+    self.barcodeProvider = provider
   }
 
   /// Discovers the optional barcode scanner provider at runtime.
@@ -100,11 +99,10 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       return
     }
 
-    guard barcodeProvider != nil else {
-      return
-    }
-
-    if metadataOutput == nil || videoDataOutput == nil {
+    // A session can accept the metadata output while rejecting the video data output, which
+    // conflicts with the movie file output used in video mode. Keep retrying until the provider
+    // has its frame source, otherwise the types it claims scan nothing.
+    if metadataOutput == nil || (barcodeProvider != nil && videoDataOutput == nil) {
       addOutputs()
       if metadataOutput == nil {
         return
@@ -127,16 +125,13 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
   }
 
   private func addOutputs() {
-    guard let barcodeProvider else {
-      return
-    }
-
-    delegate = MetaDataDelegate(
+    let delegate = delegate ?? MetaDataDelegate(
       settings: settings,
       previewLayer: previewLayer,
       barcodeProvider: barcodeProvider,
       barcodeProviderEnabled: barcodeProviderEnabled,
       metadataResultHandler: self)
+    self.delegate = delegate
 
     session.beginConfiguration()
     if metadataOutput == nil {
@@ -148,7 +143,7 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       }
     }
 
-    if videoDataOutput == nil {
+    if barcodeProvider != nil && videoDataOutput == nil {
       let output = AVCaptureVideoDataOutput()
       output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
       output.alwaysDiscardsLateVideoFrames = true
@@ -163,7 +158,10 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
 
   private func removeOutputs() {
     session.beginConfiguration()
-    defer { session.commitConfiguration() }
+    defer {
+      session.commitConfiguration()
+      delegate = nil
+    }
 
     if let metadataOutput {
       if session.outputs.contains(metadataOutput) {

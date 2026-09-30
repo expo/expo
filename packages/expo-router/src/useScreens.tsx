@@ -14,7 +14,6 @@ import {
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
@@ -46,6 +45,8 @@ import type { NativeStackNavigationEventMap } from './react-navigation/native-st
 import type { UnknownOutputParams } from './types';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
+import { useActivityThreshold } from './views/NavigationActivityContext';
+import { NavigationAwareActivity } from './views/NavigationAwareActivity';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
@@ -79,6 +80,12 @@ export type ScreenProps<
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
   dangerouslySingular?: SingularOptions;
+
+  /**
+   * Overrides React Activity behavior inherited from the navigator. For stack navigators, a number
+   * specifies how many screens must be above this route before its content is hidden.
+   */
+  activityEnabled?: TState extends { type?: 'stack' } ? boolean | number : boolean;
 };
 
 export type SingularOptions =
@@ -106,7 +113,7 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular, activityEnabled }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -144,7 +151,7 @@ function getSortedChildren<
 
         return {
           route: match,
-          props: { listeners, options, getId },
+          props: { listeners, options, getId, activityEnabled },
           routeSource: 'layout' as const,
         };
       }
@@ -268,7 +275,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-  if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
+  if (process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
       const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
       // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
@@ -327,6 +334,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
     const isRouteType = value.type === 'route';
@@ -340,7 +348,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     }, [isGuarded, isRouteType, routeInfo]);
 
     const ResolvedSuspenseFallback =
-      EXPO_ROUTER_IMPORT_MODE === 'lazy'
+      process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy'
         ? DefaultSuspenseFallback
         : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
     const providedSuspenseFallback =
@@ -393,6 +401,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         segment={value.route}
       />
     );
+    const screenContent =
+      ScreenErrorBoundary && isRouteType ? (
+        <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+      ) : (
+        screenComponent
+      );
 
     return (
       <Route node={value} params={route?.params}>
@@ -417,10 +431,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {ScreenErrorBoundary && isRouteType ? (
-                <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+              {isRouteType && typeof activityThreshold === 'number' ? (
+                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
+                  {screenContent}
+                </NavigationAwareActivity>
               ) : (
-                screenComponent
+                screenContent
               )}
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>
@@ -534,17 +550,20 @@ function AnalyticsListeners({
   return null;
 }
 
-export function screenOptionsFactory(
+export function screenOptionsFactory<TOptions extends object = Record<string, any>>(
   route: RouteNode,
-  options?: ScreenProps['options'],
+  options?: ScreenProps<TOptions>['options'],
   isGuarded?: boolean
-): ScreenProps['options'] {
+): ScreenProps<TOptions>['options'] {
   return (args) => {
     // Only eager load generated components
     const staticOptions = route.generated ? route.loadRoute()?.getNavOptions : null;
-    const staticResult = typeof staticOptions === 'function' ? staticOptions(args) : staticOptions;
+    // Route modules are untyped, while callers define the option shape for their navigator.
+    const staticResult = (
+      typeof staticOptions === 'function' ? staticOptions(args) : staticOptions
+    ) as TOptions | null | undefined;
     const dynamicResult = typeof options === 'function' ? options?.(args) : options;
-    const output = {
+    const output: Partial<TOptions> & { hidden?: boolean } = {
       ...staticResult,
       ...dynamicResult,
     };
@@ -556,7 +575,8 @@ export function screenOptionsFactory(
       output.hidden = true;
     }
 
-    return output;
+    // The merged object may contain only part of `TOptions`.
+    return output as TOptions;
   };
 }
 

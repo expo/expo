@@ -7,10 +7,14 @@ on:
     paths:
       - .github/workflows/expotools.yml
       - tools/**
+      - packages/**/spm.config.json
+      - packages/**/Package.swift
   pull_request:
     paths:
       - .github/workflows/expotools.yml
       - tools/**
+      - packages/**/spm.config.json
+      - packages/**/Package.swift
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -22,6 +26,8 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
@@ -41,6 +47,23 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+      - name: 🛡️ Check SwiftPM manifest collateral
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            # Checkout uses the PR merge commit; its first parent is the base tip it merged into.
+            # pull_request.base.sha can be older, which would count newer base commits as the PR's.
+            base=$(git rev-parse HEAD^1)
+          elif [[ "$EVENT_NAME" == "push" && -n "$PUSH_BEFORE_SHA" && "$PUSH_BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
+            # Compare the whole push; an unavailable force-push baseline fails the gate.
+            base="$PUSH_BEFORE_SHA"
+          else
+            # Manual runs and first pushes compare the whole branch against main.
+            base=$(git merge-base origin/main HEAD)
+          fi
+          node tools/scripts/check-spm-manifest-collateral.cjs --base "$base"
       - name: 🛠 Typecheck sources
         run: pnpm tsc --noEmit
         working-directory: tools

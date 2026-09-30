@@ -80,9 +80,17 @@ class Env {
   get EXPO_NO_CACHE() {
     return boolish('EXPO_NO_CACHE', false);
   }
+  /** Disable validating Metro's transform cache against inlined ambient values (e.g. `EXPO_PUBLIC_*` env vars). */
+  get EXPO_NO_CACHE_VARY() {
+    return boolish('EXPO_NO_CACHE_VARY', false);
+  }
   /** Disable the app select redirect page. */
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
+  }
+  /** Append the reserved `__expo_*` params that keep the dev menu closed to Expo Go and development build launch URLs. Unset defaults to the inverse of `isInteractive()`. */
+  get EXPO_NO_DEV_MENU(): boolean {
+    return boolish('EXPO_NO_DEV_MENU', false);
   }
   /** Disable printing the QR code in the interactive Terminal UI. */
   get EXPO_NO_QR_CODE(): boolean {
@@ -283,11 +291,6 @@ class Env {
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
   get EXPO_FORCE_WEBCONTAINER_ENV(): boolean {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
-  }
-
-  /** Disable @react-navigation checks for expo-router projects */
-  get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
-    return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
   }
 
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */

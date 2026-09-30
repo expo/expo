@@ -28,6 +28,8 @@ jest.mock('react-native-screens', () => {
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 describe('Native Bottom Tabs Navigation', () => {
   function expectOneRender() {
     expect(TabsScreen).toHaveBeenCalledTimes(2);
@@ -80,6 +82,7 @@ describe('Native Bottom Tabs Navigation', () => {
     });
     expect(TabsScreen).toHaveBeenCalledTimes(4);
     expectIndexTabFocused();
+    act(() => router.setTransitionMode('always'));
     TabsScreen.mockClear();
   });
 

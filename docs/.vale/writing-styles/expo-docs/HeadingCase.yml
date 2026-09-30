@@ -90,6 +90,7 @@ exceptions:
   - '.*detach.*'
   - '.*develop.*apps.*Windows.*'
   - '.*DNS.*'
+  - '.*DOM.*'
   - '.*E2E.*'
   - '.*EAS.*'
   - '.*EAS Build.*'
@@ -335,3 +336,5 @@ exceptions:
   - HorizontalUncontainedCarousel
   - Serving Markdown to AI Agents
   - Clerk Publishable Key
+  - Compose
+  - Pressable

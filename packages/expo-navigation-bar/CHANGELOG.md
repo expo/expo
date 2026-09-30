@@ -1,16 +1,27 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
+
+### 🐛 Bug fixes
+
+- Fix the navigation bar not restoring its style or visibility when a `NavigationBar` component unmounts. ([#50712](https://github.com/expo/expo/pull/50712) by [@zoontek](https://github.com/zoontek))
+- Add a Jest mock for the `ExpoNavigationBar` native module, so importing `expo-navigation-bar` no longer throws under the `jest-expo/android` preset. ([#50592](https://github.com/expo/expo/pull/50592) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
 - Prevent unhandled promise rejections when declarative navigation bar updates race with Android activity teardown. ([#48097](https://github.com/expo/expo/pull/48097) by [@zoontek](https://github.com/zoontek))
-
-### 💡 Others
 
 ## 57.0.2 - 2026-07-15
 

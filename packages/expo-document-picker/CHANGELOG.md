@@ -1,14 +1,26 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Fixed the typed config plugin (`expo-document-picker/plugin`) not accepting `iCloudContainerEnvironment` and `kvStoreIdentifier` props. ([#50601](https://github.com/expo/expo/issues/50601) by [@rvieceli](https://github.com/rvieceli), [#50606](https://github.com/expo/expo/pull/50606) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 58.0.1 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Anchored the picker popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50434](https://github.com/expo/expo/pull/50434) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
 
 ## 57.0.1 - 2026-07-15
 

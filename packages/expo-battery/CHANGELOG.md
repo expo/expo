@@ -1,16 +1,20 @@
 # Changelog
 
-## Unpublished
+## 58.0.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
 - [iOS] Scope each notification observer to its own event so subscribing to one battery event no longer starts observing the others. ([#48377](https://github.com/expo/expo/pull/48377) by [@Ignigena](https://github.com/Ignigena))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

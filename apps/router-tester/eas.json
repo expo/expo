@@ -5,7 +5,7 @@
   },
   "build": {
     "development": {
-      "pnpm": "10.33.0",
+      "pnpm": "12.2.1",
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -13,21 +13,21 @@
       }
     },
     "android-apk": {
-      "pnpm": "10.33.0",
+      "pnpm": "12.2.1",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       }
     },
     "ios-simulator": {
-      "pnpm": "10.33.0",
+      "pnpm": "12.2.1",
       "distribution": "internal",
       "ios": {
         "simulator": true
       }
     },
     "ios-testflight": {
-      "pnpm": "10.33.0",
+      "pnpm": "12.2.1",
       "distribution": "store",
       "autoIncrement": true
     }

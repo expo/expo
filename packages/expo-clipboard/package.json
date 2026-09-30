@@ -1,6 +1,6 @@
 {
   "name": "expo-clipboard",
-  "version": "57.0.1",
+  "version": "58.0.2",
   "description": "Provides an interface for getting and setting Clipboard content on Android, iOS, macOS and Web.",
   "keywords": [
     "expo",
@@ -21,6 +21,7 @@
   "main": "build/Clipboard.js",
   "types": "build/Clipboard.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -28,11 +29,12 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },

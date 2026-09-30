@@ -101,7 +101,6 @@ function useWorkletAwareGlContext<T>(
         const workletGl = getWorkletContext(glCtxId)!;
         const ctx = onInit(workletGl);
         const renderer = () => {
-          'worklet';
           if (canceled.value) {
             return;
           }

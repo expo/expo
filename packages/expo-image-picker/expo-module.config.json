@@ -4,6 +4,11 @@
     "modules": ["ImagePickerModule"]
   },
   "android": {
-    "modules": ["expo.modules.imagepicker.ImagePickerModule"]
+    "modules": ["expo.modules.imagepicker.ImagePickerModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.imagepicker",
+      "repository": "local-maven-repo"
+    }
   }
 }

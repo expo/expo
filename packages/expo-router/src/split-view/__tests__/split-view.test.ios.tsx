@@ -9,11 +9,11 @@ import { renderRouter } from '../../testing-library';
 import { Slot } from '../../views/Navigator';
 import { SplitView } from '../split-view';
 
-jest.mock('react-native-screens/experimental', () => {
+jest.mock('../../optional-libraries/react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actual = jest.requireActual(
-    'react-native-screens/experimental'
-  ) as typeof import('react-native-screens/experimental');
+    '../../optional-libraries/react-native-screens'
+  ) as typeof import('../../optional-libraries/react-native-screens');
 
   return {
     ...actual,

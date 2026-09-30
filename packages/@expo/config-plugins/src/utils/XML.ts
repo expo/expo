@@ -116,16 +116,18 @@ export function format(manifest: any, { indentLevel = 2, newline = EOL } = {}): 
 }
 
 /**
- * Escapes Android string literals, specifically characters `"`, `'`, `\`, `\n`, `\r`, `\t`
+ * Escapes Android string literals, specifically characters `"`, `'`, `\`, `\n`, `\r`, `\t`, `@`, `?`
  *
  * @param value unescaped Android XML string literal.
  */
 export function escapeAndroidString(value: string): string {
-  value = value.replace(/[\n\r\t'"@]/g, (m) => {
+  value = value.replace(/[\n\r\t'"@?\\]/g, (m) => {
     switch (m) {
       case '"':
       case "'":
       case '@':
+      case '?':
+      case '\\':
         return '\\' + m;
       case '\n':
         return '\\n';

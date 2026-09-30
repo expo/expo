@@ -1,16 +1,8 @@
-import { Link, NavigationAwareActivity, usePathname } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 export default function ActivityHome() {
-  return (
-    <NavigationAwareActivity>
-      <ActivityHomeContents />
-    </NavigationAwareActivity>
-  );
-}
-
-function ActivityHomeContents() {
   const pathname = usePathname();
   const [count, setCount] = useState(0);
   const [effectRuns, setEffectRuns] = useState(0);

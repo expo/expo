@@ -1,13 +1,49 @@
 # Changelog
 
-## Unpublished
+## 58.0.7
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/dom-webview@58.0.2
+  - @expo/log-box-utils@58.0.1
+
+## 58.0.6 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-25
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+### 💡 Others
+
+- [Internal] Drop `expo-modules-core` dependency ([#50228](https://github.com/expo/expo/pull/50228) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [Android] Only enable LogBox WebView debugging in debuggable apps. ([#49529](https://github.com/expo/expo/pull/49529) by [@KaminariOS](https://github.com/KaminariOS))
 - Fix the web overlay bundle printing a `Deep imports from the 'react-native' package are deprecated` warning on every load. ([#47772](https://github.com/expo/expo/pull/47772) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Resolve development server requests from the URL the bundle was loaded from, instead of the default Metro address ([#48276](https://github.com/expo/expo/pull/48276) by [@kitten](https://github.com/kitten))
 - Stop the iOS webview wrapper printing `Unknown message type` for DOM runtime messages that LogBox does not handle, matching Android. ([#48813](https://github.com/expo/expo/pull/48813) by [@kudo](https://github.com/Kudo))

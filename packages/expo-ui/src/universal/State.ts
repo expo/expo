@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 
-export type ObservableState<T> = { value: T };
+import type { ObservableState } from './types';
+
+export type { ObservableState };
 
 /**
  * Web polyfill for the native `useNativeState` hook.
@@ -13,14 +15,20 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
 
   const stateRef = useRef<ObservableState<T> | null>(null);
   if (stateRef.current === null) {
+    const get = () => valRef.current;
+    const set = (v: T) => {
+      valRef.current = v;
+      setVal(v);
+    };
     stateRef.current = {
       get value() {
-        return valRef.current;
+        return get();
       },
       set value(v: T) {
-        valRef.current = v;
-        setVal(v);
+        set(v);
       },
+      get,
+      set,
     };
   }
   return stateRef.current;

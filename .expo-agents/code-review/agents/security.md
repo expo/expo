@@ -3,7 +3,7 @@ description: Security and secrets across the Expo SDK — command and HTML injec
 alwaysRun: true
 # Opus: this agent must trace an exploit path across the TypeScript/native boundary, and
 # it is the one reviewer whose miss ships a vulnerability to every app using the SDK.
-model: anthropic/claude-opus-5
+model: anthropic/claude-opus-5-5
 ---
 
 # Security & secrets

@@ -1,14 +1,34 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.3 — 2026-09-21
+
+### 💡 Others
+
+- [Internal] Use a relative import in `node/render.js` instead of a self-reference. ([#50238](https://github.com/expo/expo/pull/50238) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.1 — 2026-09-14
+
+### 🐛 Bug fixes
+
+- Fix JavaScript chunk execution order during streaming server rendering ([#50077](https://github.com/expo/expo/pull/50077) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
 
 - Compile `pageHeaders` rules into the routes manifest ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

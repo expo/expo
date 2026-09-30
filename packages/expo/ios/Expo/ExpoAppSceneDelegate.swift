@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import ExpoModulesCore
 import React
 #if canImport(ExpoObjC)
 import ExpoObjC
@@ -15,13 +14,17 @@ import ExpoObjC
 
  Responsibilities:
  - Create the `UIWindow` from the connecting `UIWindowScene` and start React Native into it.
- - Re-feed scene life-cycle, URL, and user-activity events to the existing
-   `ExpoAppDelegateSubscriberManager`, so app delegate subscribers keep working unchanged.
+ - Re-feed scene life-cycle, URL, user-activity, and quick-action events to the app delegate.
+
+ Requires the app delegate to be an `ExpoAppDelegate`; it forwards every event to the subscribers,
+ so one call reaches both subscribers and `AppDelegate` overrides.
  */
 @available(iOSApplicationExtension, unavailable)
 @objc(EXExpoAppSceneDelegate)
 open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
   open var window: UIWindow?
+
+  let forwarder = SceneEventForwarder()
 
   open func scene(
     _ scene: UIScene,
@@ -31,12 +34,14 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
-    guard let provider = UIApplication.shared.delegate as? ExpoReactNativeFactoryProvider,
+    guard let appDelegate = UIApplication.shared.delegate as? ExpoAppDelegate,
+      let provider = appDelegate as? ExpoReactNativeFactoryProvider,
       let factory = provider.reactNativeFactory else {
       fatalError(
-        "ExpoAppSceneDelegate couldn't start React Native because the app delegate doesn't provide a "
-        + "React Native factory. Make sure your AppDelegate conforms to ExpoReactNativeFactoryProvider and "
-        + "creates its RCTReactNativeFactory in application(_:didFinishLaunchingWithOptions:)."
+        "ExpoAppSceneDelegate couldn't start React Native because the app delegate isn't an "
+        + "ExpoAppDelegate that provides a React Native factory. Make sure your AppDelegate subclasses "
+        + "ExpoAppDelegate, conforms to ExpoReactNativeFactoryProvider and creates its "
+        + "RCTReactNativeFactory in application(_:didFinishLaunchingWithOptions:)."
       )
     }
 
@@ -64,43 +69,91 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     )
 
     // Deep links / universal links.
-    Self.route(urlContexts: connectionOptions.urlContexts)
-    connectionOptions.userActivities.forEach { Self.route(userActivity: $0) }
+    connectionOptions.urlContexts.forEach {
+      forwarder.open(url: $0.url, options: Self.openURLOptions(from: $0.options))
+    }
+    connectionOptions.userActivities.forEach { forwarder.continue($0) }
+
+#if os(iOS)
+    // A quick action that cold-starts the app arrives here instead of in
+    // `windowScene(_:performActionFor:completionHandler:)`, which UIKit only calls while running.
+    if let shortcutItem = connectionOptions.shortcutItem {
+      forwarder.perform(shortcutItem) { _ in }
+    }
+#endif
   }
 
   open func sceneDidDisconnect(_ scene: UIScene) {
     window = nil
   }
 
-  // In the scene lifecycle UIKit no longer calls the app delegate equivalents, so we forward
-  // these to the subscriber manager to preserve existing subscriber behavior.
-
   open func sceneDidBecomeActive(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationDidBecomeActive(UIApplication.shared)
+    forwarder.didBecomeActive()
   }
 
   open func sceneWillResignActive(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationWillResignActive(UIApplication.shared)
+    forwarder.willResignActive()
   }
 
   open func sceneWillEnterForeground(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationWillEnterForeground(UIApplication.shared)
+    forwarder.willEnterForeground()
   }
 
   open func sceneDidEnterBackground(_ scene: UIScene) {
-    ExpoAppDelegateSubscriberManager.applicationDidEnterBackground(UIApplication.shared)
+    forwarder.didEnterBackground()
   }
 
   open func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    Self.route(urlContexts: URLContexts)
+    // React Native ignores the app-delegate URL API under the scene life cycle, so a warm link only
+    // reaches JS through the scene API. It reads a single context, hence one call per context.
+    URLContexts.forEach { context in
+      forwarder.open(url: context.url, options: Self.openURLOptions(from: context.options)) {
+        // TODO: Remove this when bumping react-native-tvos to 0.88
+        let selector = NSSelectorFromString("scene:openURLContexts:")
+        if RCTLinkingManager.responds(to: selector) {
+          _ = RCTLinkingManager.perform(selector, with: scene, with: Set([context]))
+        }
+      }
+    }
+  }
+
+  open func scene(_ scene: UIScene, willContinueUserActivityWithType userActivityType: String) {
+    forwarder.willContinueUserActivity(withType: userActivityType)
   }
 
   open func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
-    Self.route(userActivity: userActivity)
+    forwarder.continue(userActivity) {
+      let selector = NSSelectorFromString("scene:continueUserActivity:")
+      if RCTLinkingManager.responds(to: selector) {
+        _ = RCTLinkingManager.perform(selector, with: scene, with: userActivity)
+      }
+    }
   }
+
+  open func scene(
+    _ scene: UIScene,
+    didFailToContinueUserActivityWithType userActivityType: String,
+    error: Error
+  ) {
+    forwarder.didFailToContinueUserActivity(withType: userActivityType, error: error)
+  }
+
+  open func scene(_ scene: UIScene, didUpdate userActivity: NSUserActivity) {
+    forwarder.didUpdate(userActivity)
+  }
+
+#if os(iOS)
+  open func windowScene(
+    _ windowScene: UIWindowScene,
+    performActionFor shortcutItem: UIApplicationShortcutItem,
+    completionHandler: @escaping (Bool) -> Void
+  ) {
+    forwarder.perform(shortcutItem, completionHandler: completionHandler)
+  }
+#endif
 }
 
-// MARK: - Launch options & routing helpers
+// MARK: - Launch options
 
 @available(iOSApplicationExtension, unavailable)
 extension ExpoAppSceneDelegate {
@@ -130,29 +183,6 @@ extension ExpoAppSceneDelegate {
       ]
     }
     return launchOptions.isEmpty ? nil : launchOptions
-  }
-
-  /// Pass incoming URL contexts to both the subscriber manager and `RCTLinkingManager`.
-  public static func route(urlContexts: Set<UIOpenURLContext>) {
-    for context in urlContexts {
-      let options = openURLOptions(from: context.options)
-      _ = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, open: context.url, options: options)
-      RCTLinkingManager.application(UIApplication.shared, open: context.url, options: options)
-    }
-  }
-
-  /// Passes an incoming `NSUserActivity` to both the subscriber manager and `RCTLinkingManager`.
-  public static func route(userActivity: NSUserActivity) {
-    _ = ExpoAppDelegateSubscriberManager.application(
-      UIApplication.shared,
-      continue: userActivity,
-      restorationHandler: { _ in }
-    )
-    RCTLinkingManager.application(
-      UIApplication.shared,
-      continue: userActivity,
-      restorationHandler: { _ in }
-    )
   }
 
   private static func openURLOptions(

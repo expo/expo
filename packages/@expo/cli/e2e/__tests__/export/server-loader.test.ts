@@ -20,16 +20,14 @@ describe.each(
     export: {
       env: {
         EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
     serve: {
       env: {
+        EXPO_USE_STATIC: 'server',
         TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
         TEST_THROW_ERROR: 'true',
-        E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     },
   })

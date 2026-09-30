@@ -1,16 +1,16 @@
 # Changelog
 
-## Unpublished
+## 2.3.1
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 2.3.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
 - [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 2.2.0 - 2026-06-25
 

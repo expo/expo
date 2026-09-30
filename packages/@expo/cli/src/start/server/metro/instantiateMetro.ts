@@ -3,8 +3,6 @@ import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config
 import { getMetroServerRoot } from '@expo/config/paths';
 import type { createStableModuleIdFactory, ExpoCustomTransformOptions } from '@expo/metro-config';
 import { loadUserConfig } from '@expo/metro-config';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import type { Reporter } from '@expo/metro/metro';
 import getMaxWorkers from '@expo/metro/metro-config/defaults/getMaxWorkers';
 import { Terminal } from '@expo/metro/metro-core';
@@ -39,6 +37,11 @@ import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
+import {
+  patchGetDeltaForCacheVary,
+  patchTransformFileForCacheVary,
+  withMetroCacheVary,
+} from './withMetroCacheVary';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 declare module '2g' {
@@ -328,6 +331,9 @@ export async function loadMetroConfigAsync(
     getMetroBundler,
   });
 
+  // Post-resolution: `loadUserConfig` has already resolved function-form `cacheStores` to an array.
+  config = withMetroCacheVary(config);
+
   event('config', {
     serverRoot: event.path(serverRoot),
     projectRoot: event.path(projectRoot),
@@ -531,11 +537,9 @@ export async function instantiateMetroAsync(
     );
   };
 
-  // Layered on top of the prune patch above. Both fresh worker results
-  // and cache hits flow through `Bundler.transformFile`, so wrapping
-  // here covers both.
-  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
-  patchMetroSourceMapStringForPackedMaps();
+  // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
+  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchGetDeltaForCacheVary();
 
   // Warm the transform worker pool during the idle window before the first bundle request
   if (!isExporting) {

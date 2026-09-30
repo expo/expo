@@ -1,4 +1,4 @@
-import WebView from './WebView';
+import WebViewDefault from './WebView';
 
-export { WebView };
-export default WebView;
+export { WebViewDefault as WebView };
+export default WebViewDefault;

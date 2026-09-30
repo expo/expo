@@ -1,8 +1,51 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Load the Swift macros plugin from `expo-modules-macros` and its renamed `ExpoModulesMacros` binary. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/require-utils@58.0.2
+
+## 58.0.5 — 2026-09-28
+
+### 🎉 New features
+
+- [iOS] Publish each product's `autolinkWhen` condition, `sourceOnly` flag, iOS deployment target and SwiftPM package dependencies in the `prebuilt-metadata` document. ([#50546](https://github.com/expo/expo/pull/50546) by [@chrfalch](https://github.com/chrfalch))
+
+### 🐛 Bug fixes
+
+- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone. ([#50455](https://github.com/expo/expo/pull/50455) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.4 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- Skip React Native libraries whose podspec does not declare the target platform when resolving `react-native-config` for `macos` and `tvos`. Codegen and Metro consume that config too, so libraries the Podfile was already filtering out no longer end up in the generated third-party components provider, where their missing classes crashed the app on first render. ([#50571](https://github.com/expo/expo/pull/50571) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.3 — 2026-09-21
+
+### 💡 Others
+
+- [Android] Enforce `ndkVersion` for Android library projects. ([#50240](https://github.com/expo/expo/pull/50240) by [@kudo](https://github.com/kudo))
+
+## 58.0.2 — 2026-09-15
 
 ### 🛠 Breaking changes
+
+- [Android] Compile the autolinking Gradle plugins against Android Gradle Plugin 9.2.1 and drop the Android Gradle Plugin 8 compatibility code. ([#50114](https://github.com/expo/expo/pull/50114) by [@lukmccall](https://github.com/lukmccall))
+
+### 🎉 New features
+
+- [Android] Discover Expo Modules v2 modules at compile time. ([#50178](https://github.com/expo/expo/pull/50178) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
 

@@ -21,6 +21,8 @@ class HomeViewModel: ObservableObject {
   @Published var selectedAccountId: String?
   @Published var isAuthenticating = false
   @Published var isAuthenticated = false
+  @Published var sessions: [StoredSession] = []
+  @Published var activeSessionId: String?
 
   @Published var developmentServers: [DevelopmentServer] = []
   @Published var projects: [ExpoProject] = []
@@ -36,6 +38,10 @@ class HomeViewModel: ObservableObject {
 
   var selectedAccount: Account? { authService.selectedAccount }
   var isLoggedIn: Bool { authService.isLoggedIn }
+  var hasStoredSessions: Bool { !sessions.isEmpty }
+  var accountSwitcherSections: [AccountSwitcherSection] {
+    AccountSwitcherSections.make(sessions: sessions, activeSessionId: activeSessionId)
+  }
 
   var shakeToShowDevMenu: Bool { settingsManager.shakeToShowDevMenu }
   var threeFingerLongPressEnabled: Bool { settingsManager.threeFingerLongPressEnabled }
@@ -88,51 +94,107 @@ class HomeViewModel: ObservableObject {
     serverService.stopDiscovery()
   }
 
-  func signIn() async {
+  @discardableResult
+  func signIn() async -> Bool {
+    let hadSession = isAuthenticated
     do {
-      try await authService.signIn()
-      if let account = selectedAccount {
-        dataService.startPolling(accountName: account.name)
-      }
+      return updateHomeAfterLogin(try await authService.signIn(), hadSession: hadSession)
     } catch {
       showError("Failed to sign in")
+      return false
     }
   }
 
-  func signUp() async {
+  @discardableResult
+  func signUp() async -> Bool {
+    let hadSession = isAuthenticated
     do {
-      try await authService.signUp()
-      if let account = selectedAccount {
-        dataService.startPolling(accountName: account.name)
-      }
+      return updateHomeAfterLogin(try await authService.signUp(), hadSession: hadSession)
     } catch {
       showError("Failed to sign up")
+      return false
     }
   }
 
-  func ssoLogin() async {
+  @discardableResult
+  func ssoLogin() async -> Bool {
+    let hadSession = isAuthenticated
     do {
-      try await authService.ssoLogin()
-      if let account = selectedAccount {
-        dataService.startPolling(accountName: account.name)
-      }
+      return updateHomeAfterLogin(try await authService.ssoLogin(), hadSession: hadSession)
     } catch {
       showError("Failed to sign in with SSO")
+      return false
     }
+  }
+
+  @discardableResult
+  func completeLogin(with sessionSecret: String) async -> Bool {
+    let hadSession = isAuthenticated
+    return updateHomeAfterLogin(await authService.completeLogin(with: sessionSecret), hadSession: hadSession)
+  }
+
+  private func updateHomeAfterLogin(_ outcome: LoginOutcome?, hadSession: Bool) -> Bool {
+    guard let outcome, outcome != .failed else {
+      return false
+    }
+    if case .alreadySignedIn(let username) = outcome {
+      errorToShow = ErrorInfo(message: "You're already signed in as \(username).", title: "Already signed in")
+    }
+    if hadSession {
+      clearRecentlyOpenedApps()
+      dataService.clearData()
+    }
+    startPollingSelectedAccount()
+    return true
   }
 
   func signOut() {
-    authService.signOut()
     clearRecentlyOpenedApps()
     dataService.clearData()
     dataService.stopPolling()
+    Task {
+      await authService.signOut()
+      startPollingSelectedAccount()
+    }
   }
 
-  func selectAccount(accountId: String) {
-    authService.selectAccount(accountId: accountId)
-    clearRecentlyOpenedApps()
+  private func startPollingSelectedAccount() {
     if let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
+    }
+  }
+
+  func selectAccount(accountId: String, sessionId: String) async {
+    if sessionId == activeSessionId {
+      authService.selectAccount(accountId: accountId)
+    } else {
+      authService.selectAccount(accountId, inSession: sessionId)
+      dataService.clearData()
+      await authService.switchSession(id: sessionId)
+    }
+    clearRecentlyOpenedApps()
+    startPollingSelectedAccount()
+  }
+
+  func switchToSession(id: String) async {
+    guard let session = sessions.first(where: { $0.id == id }) else {
+      return
+    }
+    if let accountId = session.selectedAccountId ?? session.accounts.first?.id {
+      await selectAccount(accountId: accountId, sessionId: id)
+    } else {
+      dataService.clearData()
+      await authService.switchSession(id: id)
+      clearRecentlyOpenedApps()
+      startPollingSelectedAccount()
+    }
+  }
+
+  func signOut(sessionId: String) {
+    if sessionId == activeSessionId {
+      signOut()
+    } else {
+      authService.removeSession(id: sessionId)
     }
   }
 
@@ -197,7 +259,10 @@ class HomeViewModel: ObservableObject {
   }
 
   func openApp(url: String) {
-    openAppViaBridge(url: url)
+    // Home gets URLs as the user gave them (QR, recents, dev servers, initial URL). Deep links are resolved by
+    // `EXKernelLinkingManager.openUrl:` before they reach the bridge, so this is the only other resolve point.
+    let resolved = URL(string: url).map { EXKernelLinkingManager.resolveLaunchUrl($0).absoluteString } ?? url
+    openAppViaBridge(url: resolved)
   }
 
   func openApp(url: String, snackParams: NSDictionary) {
@@ -257,6 +322,17 @@ class HomeViewModel: ObservableObject {
       }
       .store(in: &cancellables)
 
+    authService.$sessions
+      .sink { [weak self] in self?.sessions = $0 }
+      .store(in: &cancellables)
+
+    authService.$activeSessionId
+      .sink { [weak self] id in
+        self?.activeSessionId = id
+        self?.serverService.setSessionSecret(self?.authService.sessionSecret)
+      }
+      .store(in: &cancellables)
+
     dataService.$projects
       .sink { [weak self] in self?.projects = $0 }
       .store(in: &cancellables)
@@ -303,10 +379,12 @@ class HomeViewModel: ObservableObject {
 struct ErrorInfo: Identifiable {
   let id = UUID()
   let message: String
+  let title: String
   let apiError: APIError?
 
-  init(message: String, apiError: APIError? = nil) {
+  init(message: String, title: String = "Error", apiError: APIError? = nil) {
     self.message = message
+    self.title = title
     self.apiError = apiError
   }
 }

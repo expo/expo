@@ -1,16 +1,16 @@
 # Changelog
 
-## Unpublished
+## 58.0.1
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
 - Fix `deterministicUniformValue` to return a uniformly distributed value over `[0, 1)`. ([#49182](https://github.com/expo/expo/pull/49182) by [@bjjeong](https://github.com/bjjeong))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

@@ -1,14 +1,22 @@
 # Changelog
 
-## Unpublished
+## 0.12.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/require-utils@58.0.2
+
+## 0.12.1 — 2026-09-21
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Fix `Invalid mimeType` error for images with uppercase file extensions, such as `icon.PNG`. ([#50298](https://github.com/expo/expo/pull/50298) by [@tahakocal](https://github.com/tahakocal))
+
+## 0.12.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
 
 ## 0.11.4 - 2026-07-22
 

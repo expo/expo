@@ -227,8 +227,104 @@ struct CrashReportTests {
     }
 
     @Test
-    func `renders at most twenty-five attributed stack frames and reports the omitted count`() throws {
-      let attributedFrames = (0..<28).map { index in
+    func `describes how the trace was built`() throws {
+      let attributedFrames = (0..<53).map { index in
+        CrashReport.CallStackTree.Frame(
+          binaryName: "TestApp",
+          binaryUUID: "9F0C0F7E-1E55-4B0E-9C6E-1D6E6F0C0F7E",
+          address: nil,
+          offsetIntoBinaryTextSegment: UInt64(index),
+          sampleCount: nil,
+          subFrames: nil,
+          symbol: "frame\(index)"
+        )
+      }
+      let report = makeCrashReport(
+        timestampBegin: Date.now,
+        timestampEnd: Date.now,
+        callStackTree: CrashReport.CallStackTree(callStacks: [
+          CrashReport.CallStackTree.CallStack(
+            threadAttributed: true,
+            callStackRootFrames: attributedFrames
+          ),
+          CrashReport.CallStackTree.CallStack(
+            threadAttributed: false,
+            callStackRootFrames: [
+              CrashReport.CallStackTree.Frame(
+                binaryName: "Other",
+                binaryUUID: "11111111-1111-1111-1111-111111111111",
+                address: nil,
+                offsetIntoBinaryTextSegment: 0,
+                sampleCount: nil,
+                subFrames: nil,
+                symbol: "unattributed"
+              )
+            ]
+          ),
+        ])
+      )
+      let attributes = try #require(report.toLogRecord().attributes?.value as? [String: Any])
+      #expect(attributes["expo.crash.thread_count"] as? Int == 2)
+      #expect(attributes["expo.crash.thread_attributed"] as? Bool == true)
+      #expect(attributes["expo.crash.rendered_frame_count"] as? Int == 50)
+      #expect(attributes["expo.crash.total_frame_count"] as? Int == 53)
+      // Only the binaries actually rendered, so the unattributed thread's is absent.
+      #expect(
+        attributes["expo.crash.binary_uuids"] as? [String]
+          == ["TestApp:9F0C0F7E-1E55-4B0E-9C6E-1D6E6F0C0F7E"]
+      )
+    }
+
+    @Test
+    func `reports no thread as attributed when MetricKit flags none`() throws {
+      let report = makeCrashReport(
+        timestampBegin: Date.now,
+        timestampEnd: Date.now,
+        callStackTree: CrashReport.CallStackTree(callStacks: [
+          CrashReport.CallStackTree.CallStack(
+            threadAttributed: false,
+            callStackRootFrames: [
+              CrashReport.CallStackTree.Frame(
+                binaryName: "TestApp",
+                binaryUUID: nil,
+                address: nil,
+                offsetIntoBinaryTextSegment: 128,
+                sampleCount: nil,
+                subFrames: nil,
+                symbol: nil
+              )
+            ]
+          )
+        ])
+      )
+      let attributes = try #require(report.toLogRecord().attributes?.value as? [String: Any])
+      #expect(attributes["expo.crash.thread_attributed"] as? Bool == false)
+      #expect(attributes["expo.crash.thread_count"] as? Int == 1)
+      // No UUID on the frame, so the attribute is left off rather than emitted empty.
+      #expect(attributes["expo.crash.binary_uuids"] == nil)
+      // Nothing to name it with, so the trace keeps the address on its own.
+      let stacktrace = try #require(attributes["exception.stacktrace"] as? String)
+      #expect(stacktrace == "TestApp + 128")
+    }
+
+    @Test
+    func `reports the faulting memory region`() throws {
+      // A stack overflow looks like any other bad access until you check the region.
+      let report = makeCrashReport(
+        timestampBegin: Date.now,
+        timestampEnd: Date.now,
+        virtualMemoryRegionInfo: "0x16f603ff8 is in STACK GUARD region"
+      )
+      let attributes = try #require(report.toLogRecord().attributes?.value as? [String: Any])
+      #expect(
+        attributes["expo.crash.virtual_memory_region"] as? String
+          == "0x16f603ff8 is in STACK GUARD region"
+      )
+    }
+
+    @Test
+    func `renders at most fifty attributed stack frames and reports the omitted count`() throws {
+      let attributedFrames = (0..<53).map { index in
         CrashReport.CallStackTree.Frame(
           binaryName: "TestApp",
           binaryUUID: nil,
@@ -266,13 +362,15 @@ struct CrashReportTests {
       let attributes = try #require(report.toLogRecord().attributes?.value as? [String: Any])
       let stacktrace = try #require(attributes["exception.stacktrace"] as? String)
       let lines = stacktrace.split(separator: "\n")
-      #expect(lines.count == 26)
+      #expect(lines.count == 51)
+      // These fixtures carry no offset or address, so there's nothing to append to the symbol.
       #expect(lines.first == "frame0")
-      #expect(lines[24] == "frame24")
+      #expect(lines[49] == "frame49")
       #expect(lines.last == "… +3 more frames")
       #expect(!stacktrace.contains("unattributed"))
     }
   }
+
 }
 
 private func makeMainSessionRow(id: String, startDate: Date, endDate: Date?) -> SessionRow {
@@ -293,6 +391,7 @@ private func makeCrashReport(
   exceptionCode: Int? = 1,
   signal: Int? = 11,
   terminationReason: String? = nil,
+  virtualMemoryRegionInfo: String? = nil,
   exceptionReason: CrashReport.ExceptionReason? = nil,
   callStackTree: CrashReport.CallStackTree? = nil
 ) -> CrashReport {
@@ -301,7 +400,7 @@ private func makeCrashReport(
     exceptionCode: exceptionCode,
     signal: signal,
     terminationReason: terminationReason,
-    virtualMemoryRegionInfo: nil,
+    virtualMemoryRegionInfo: virtualMemoryRegionInfo,
     exceptionReason: exceptionReason,
     callStackTree: callStackTree,
     appVersion: "1.0.0",

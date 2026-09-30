@@ -5,6 +5,7 @@ import { Text } from 'react-native';
 
 import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
+import JSStack from '../layouts/JSStack';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -402,6 +403,37 @@ it('should remove guarded routes from history when a guard flips false', () => {
     setGuard(false);
   });
 
+  act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('should remove guarded routes from JavaScript stack history when a guard flips false', () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <JSStack>
+          <JSStack.Protected guard={guard}>
+            <JSStack.Screen name="secret" />
+          </JSStack.Protected>
+          <JSStack.Screen name="other" />
+        </JSStack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    other: () => <Text testID="other">other</Text>,
+  });
+
+  act(() => router.push('/secret'));
+  act(() => router.push('/other'));
+  act(() => setGuard(false));
   act(() => router.back());
 
   expect(screen.getByTestId('index')).toBeVisible();

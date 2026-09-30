@@ -26,7 +26,6 @@ test.describe('static loaders in production', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'server-loader',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
       },
     });
     console.timeEnd('expo export');

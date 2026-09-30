@@ -132,6 +132,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.exclusiveMavenMirror,
     },
     {
+      propName: 'expo.core.buildFromSource',
+      propValueGetter: (config) => config.android?.buildExpoModulesCoreFromSource?.toString(),
+    },
+    {
       propName: 'hermesV1Enabled',
       propValueGetter: (config) => resolveConfigValue(config, 'android', 'useHermesV1')?.toString(),
     },

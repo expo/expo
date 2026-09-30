@@ -4,7 +4,9 @@ import { use } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { findFocusedRoute } from '../../fork/findFocusedRoute';
+import { BrowserHistorySync } from '../../global-state/BrowserHistorySync';
 import { RoutingQueueDrainer } from '../../global-state/RoutingQueueDrainer';
+import { createBrowserHistoryAdapter } from '../../global-state/browserHistoryAdapter';
 import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
@@ -64,7 +66,6 @@ const duplicateNameWarnings: string[] = [];
  * This should be rendered at the root wrapping the whole app.
  *
  * @param props.initialState Initial state object for the navigation tree.
- * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
@@ -102,7 +103,8 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       linking: routerConfig?.linking,
       redirects: routerConfig?.redirects,
     });
-  useNavigationTreeReportEvents(report, consumeReportEvents);
+  const [browserHistory] = React.useState(createBrowserHistoryAdapter);
+  useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
     () => ({
       register(stateKey, entry) {
@@ -272,7 +274,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
             }
           }
 
-          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. See https://reactnavigation.org/docs/troubleshooting#i-get-the-warning-non-serializable-values-were-found-in-the-navigation-state for more details.`;
+          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. Pass only serializable values in route params.`;
 
           if (!serializableWarnings.includes(message)) {
             serializableWarnings.push(message);
@@ -311,8 +313,12 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
                   <ThemeProvider value={theme}>{children}</ThemeProvider>
                 </EnsureSingleNavigator>
               </RouterRegistrySettersContext.Provider>
-              <ImperativeRoutingQueueBridge enqueue={routingQueue.enqueue} />
+              <ImperativeRoutingQueueBridge
+                enqueue={routingQueue.enqueue}
+                setTransitionMode={routingQueue.setTransitionMode}
+              />
               <RoutingQueueDrainer processIntent={processIntent} />
+              <BrowserHistorySync adapter={browserHistory} />
             </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>

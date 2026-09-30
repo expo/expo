@@ -8,6 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FileTree } from '~/ui/components/FileTree';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -276,6 +277,25 @@ Let's take a look at our app now to see the new bottom tabs:
 </Step>
 
 <Step label="5">
+
+## Install @expo/vector-icons
+
+To install the `@expo/vector-icons` library, stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>C</kbd> in the terminal, then run the following command:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo/vector-icons'],
+    yarn: ['$ yarn expo install @expo/vector-icons'],
+    pnpm: ['$ pnpm expo install @expo/vector-icons'],
+    bun: ['$ bun expo install @expo/vector-icons'],
+  }}
+/>
+
+After the installation completes, start the development server again by running `npx expo start`.
+
+</Step>
+
+<Step label="6">
 
 ## Update bottom tab navigator appearance
 

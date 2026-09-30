@@ -13,9 +13,61 @@ public struct AppIntentEntityRecord: Codable, Sendable {
   public var title: String
   public var subtitle: String?
   public var synonyms: [String] = []
+  public var metadata: [String: String] = [:]
+  public var hideInSpotlight: Bool = false
 
-  public init(id: String, title: String, subtitle: String? = nil) {
-    self.init(id: id, title: title, subtitle: subtitle, synonyms: [])
+  private enum CodingKeys: String, CodingKey {
+    case id
+    case title
+    case subtitle
+    case synonyms
+    case metadata
+    case hideInSpotlight
+  }
+
+  public init(
+    id: String,
+    title: String,
+    subtitle: String? = nil,
+    synonyms: [String] = [],
+    metadata: [String: String] = [:],
+    hideInSpotlight: Bool = false
+  ) {
+    self.id = id
+    self.title = title
+    self.subtitle = subtitle
+    self.synonyms = synonyms
+    self.metadata = metadata
+    self.hideInSpotlight = hideInSpotlight
+  }
+
+  public init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    self.init(
+      id: try container.decode(String.self, forKey: .id),
+      title: try container.decode(String.self, forKey: .title),
+      subtitle: try container.decodeIfPresent(String.self, forKey: .subtitle),
+      synonyms: try container.decodeIfPresent([String].self, forKey: .synonyms) ?? [],
+      metadata: try container.decodeIfPresent([String: String].self, forKey: .metadata) ?? [:],
+      hideInSpotlight: try container.decodeIfPresent(Bool.self, forKey: .hideInSpotlight) ?? false
+    )
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(id, forKey: .id)
+    try container.encode(title, forKey: .title)
+    try container.encodeIfPresent(subtitle, forKey: .subtitle)
+    try container.encode(synonyms, forKey: .synonyms)
+    if !metadata.isEmpty {
+      try container.encode(metadata, forKey: .metadata)
+    }
+    // Encoded only when set, so catalogs that never touch the flag keep the same bytes and do not
+    // register as changed. It has to be encoded at all, though: change detection compares the
+    // encoded catalog, so a flag flip would otherwise go unnoticed and never trigger a reindex.
+    if hideInSpotlight {
+      try container.encode(hideInSpotlight, forKey: .hideInSpotlight)
+    }
   }
 }
 
@@ -45,6 +97,22 @@ public actor AppIntentEntityStore {
 
   private func storageKey(kind: String) -> String {
     return "dev.expo.appintents.entities.\(kind)"
+  }
+
+  private func staleIndexKey(kind: String) -> String {
+    return "dev.expo.appintents.index.stale.\(kind)"
+  }
+
+  internal func isIndexStale(kind: String) throws -> Bool {
+    return try requireDefaults().bool(forKey: staleIndexKey(kind: kind))
+  }
+
+  internal func markIndexStale(kind: String) throws {
+    try requireDefaults().set(true, forKey: staleIndexKey(kind: kind))
+  }
+
+  internal func clearIndexStale(kind: String) throws {
+    try requireDefaults().removeObject(forKey: staleIndexKey(kind: kind))
   }
 
   private func isBlank(_ value: String) -> Bool {
@@ -83,9 +151,15 @@ public actor AppIntentEntityStore {
     return try entities(ofKind: kind).filter { identifierSet.contains($0.id) }
   }
 
-  /// Replaces the catalog of the given kind, throwing instead of leaving the previous one in place
-  /// without saying so.
-  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) throws {
+  /// Replaces the catalog for the given kind and reports whether anything changed, so callers can
+  /// skip work that only makes sense for a new catalog. Throws rather than leaving the previous
+  /// catalog in place without saying so.
+  ///
+  /// `.sortedKeys` is required rather than cosmetic: `metadata` is a dictionary with no guaranteed
+  /// iteration order, so without it two encodings of equal content could differ and every write
+  /// would look like a change.
+  @discardableResult
+  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) throws -> Bool {
     // The kind names the catalog that app-target `EntityQuery` implementations read, so a blank
     // kind stores a catalog no query ever asks for.
     if isBlank(kind) {
@@ -122,23 +196,33 @@ public actor AppIntentEntityStore {
     }
 
     let defaults = try requireDefaults()
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = .sortedKeys
+
+    let data: Data
     do {
-      let data = try JSONEncoder().encode(entities)
-      defaults.set(data, forKey: storageKey(kind: kind))
+      data = try encoder.encode(entities)
     } catch {
       // Every field of `AppIntentEntityRecord` is a string, so this should never happen.
       throw AppIntentEntityCatalogEncodingException(
         "expo-app-intents could not save the '\(kind)' entity catalog. Encoding error: \(error.localizedDescription)"
       )
     }
+
+    guard data != defaults.data(forKey: storageKey(kind: kind)) else {
+      return false
+    }
+
+    defaults.set(data, forKey: storageKey(kind: kind))
+    return true
   }
 }
 
 internal final class AppIntentEntityStoreUnavailableException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     return """
-      expo-app-intents could not access the '\(param)' UserDefaults suite, so entity catalogs cannot \
-      be read or written. Try again later.
+      expo-app-intents could not access the '\(param)' UserDefaults suite, so entity catalogs and \
+      Spotlight recovery state cannot be read or written. Try again later.
       """
   }
 }

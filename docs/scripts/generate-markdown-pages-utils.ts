@@ -218,14 +218,14 @@ export interface ResolvedMdxImport {
 
 type ResolveImportedMdx = (importPath: string, fromPath: string | null) => ResolvedMdxImport | null;
 
+const JS_STRING_ESCAPES: Record<string, string> = {
+  n: '\n',
+  r: '\r',
+  t: '\t',
+};
+
 function decodeJsStringLiteral(value: string): string {
-  return value
-    .replace(/\\n/g, '\n')
-    .replace(/\\r/g, '\r')
-    .replace(/\\t/g, '\t')
-    .replace(/\\\\/g, '\\')
-    .replace(/\\'/g, "'")
-    .replace(/\\"/g, '"');
+  return value.replace(/\\(.)/g, (_match, char: string) => JS_STRING_ESCAPES[char] ?? char);
 }
 
 function extractTerminalCommands(arrayLiteral: string): string[] {
@@ -378,6 +378,10 @@ export function convertMdxInstructionToMarkdown(
 const DARK_IMAGE_VARIANTS =
   'img[class~="light:hidden"], picture[class~="light:hidden"] img, img[class~="hidden"][class~="dark:block"]';
 
+function escapeHtml(value: string) {
+  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // Keep every tab panel, each prefixed with its label as an h4 (ENG-21907).
   // Must run before the button removal below, since labels live in the buttons.
@@ -394,7 +398,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       .each((i, panel) => {
         const label = ownLabels[i];
         if (label) {
-          $(panel).prepend(`<h4>${label}</h4>`);
+          $(panel).prepend(`<h4>${escapeHtml(label)}</h4>`);
         }
       });
   });
@@ -405,7 +409,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $label = $summary.find('[data-text="true"]').first();
     const summaryText = ($label.length ? $label : $summary).text().replace(/\s+/g, ' ').trim();
     if (summaryText) {
-      $summary.replaceWith(`<h4>${summaryText}</h4>`);
+      $summary.replaceWith(`<h4>${escapeHtml(summaryText)}</h4>`);
     } else {
       $summary.remove();
     }
@@ -418,7 +422,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     $summary.find('[data-md="skip"]').remove();
     const headingText = $summary.text().replace(/\s+/g, ' ').trim();
     if (headingText) {
-      $summary.replaceWith(`<h4>${headingText}</h4>`);
+      $summary.replaceWith(`<h4>${escapeHtml(headingText)}</h4>`);
     } else {
       $summary.remove();
     }
@@ -426,7 +430,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const $title = $(title);
       const titleText = $title.text().replace(/\s+/g, ' ').trim();
       if (titleText) {
-        $title.replaceWith(`<h5>${titleText}</h5>`);
+        $title.replaceWith(`<h5>${escapeHtml(titleText)}</h5>`);
       }
     });
     $details.replaceWith($details.contents());
@@ -527,7 +531,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const href = $el.attr('href');
     const text = $el.text().trim();
     if (href && text) {
-      $el.replaceWith(`<p><a href="${href}">${text}</a></p>`);
+      $el.replaceWith(`<p><a href="${href}">${escapeHtml(text)}</a></p>`);
     } else {
       $el.remove();
     }
@@ -564,7 +568,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
     });
     if (platforms.length > 0) {
-      $el.replaceWith('<p>Supported platforms: ' + platforms.join(', ') + '.</p>');
+      $el.replaceWith('<p>Supported platforms: ' + platforms.map(escapeHtml).join(', ') + '.</p>');
     } else {
       $el.remove();
     }
@@ -582,7 +586,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
     const platformText = $el.find('span').last().text().trim();
     if (platformText) {
-      $el.replaceWith(`, ${platformText}`);
+      $el.replaceWith(`, ${escapeHtml(platformText)}`);
     }
   });
   // Fallback: extract platform badges that lack data-md but have the old CSS class pattern
@@ -596,7 +600,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       }
       const platformText = $el.find('span').last().text().trim();
       if (platformText) {
-        $el.replaceWith(`, ${platformText}`);
+        $el.replaceWith(`, ${escapeHtml(platformText)}`);
       }
     }
   });
@@ -634,8 +638,8 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const title = texts[0];
       const desc = texts.slice(1).join(' — ');
       const replacement = desc
-        ? `<p><a href="${href}">${title}</a> — ${desc}</p>`
-        : `<p><a href="${href}">${title}</a></p>`;
+        ? `<p><a href="${href}">${escapeHtml(title)}</a> — ${escapeHtml(desc)}</p>`
+        : `<p><a href="${href}">${escapeHtml(title)}</a></p>`;
       $a.replaceWith(replacement);
     }
   });
@@ -692,11 +696,6 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       $div.replaceWith(second.html()!);
     }
   });
-
-  // Escape before re-injecting as HTML: cheerio would otherwise parse a generic
-  // like Promise<PermissionResponse> as a tag and lowercase the type name.
-  const escapeHtml = (value: string) =>
-    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   // Convert API returns sections to inline "Returns: type" text.
   main.find('[data-md="api-returns"]').each((_, el) => {
@@ -791,7 +790,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
         if (tag && !knownHtmlTags.has(tag)) {
           const $child = $(child);
           const inner = $child.text();
-          $child.replaceWith(inner ? `&lt;${tag}&gt;${inner}&lt;/${tag}&gt;` : `&lt;${tag}&gt;`);
+          $child.replaceWith(
+            inner ? `&lt;${tag}&gt;${escapeHtml(inner)}&lt;/${tag}&gt;` : `&lt;${tag}&gt;`
+          );
         }
       });
   });
@@ -848,43 +849,35 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       )
         .replace(/\s+/g, ' ')
         .trim();
-      $callout.replaceWith(text ? '. ' + escapeHtml(text) + ' ' : '');
+      $callout.replaceWith(text ? '%%MD_SEP%%' + escapeHtml(text) + ' ' : '');
     });
 
-    // Generic block flattening — loop until stable since nested divs require multiple passes.
-    // Prepend ". " when unwrapping so adjacent blocks read as separate sentences, then
-    // clean up artifacts (double periods, leading separators) after the loop.
     let hasBlocks = true;
     while (hasBlocks) {
       hasBlocks = false;
       $cell.find('blockquote').each((_, el) => {
-        $(el).replaceWith('. ' + $(el).text().trim());
+        $(el).replaceWith('. ' + escapeHtml($(el).text().trim()));
         hasBlocks = true;
       });
       $cell.find('p').each((_, el) => {
-        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
       $cell.find('div').each((_, el) => {
-        $(el).replaceWith('. ' + ($(el).html() ?? ''));
+        $(el).replaceWith('%%MD_SEP%%' + ($(el).html() ?? ''));
         hasBlocks = true;
       });
     }
-    // Clean up artifacts from block flattening:
-    // - Collapse ". ." / ".." from nested unwrapping. Skip <code>/<pre> so "..." is untouched.
-    // - Repeat until stable: a single pass leaves ". ." from triple nesting.
-    // - Trim leading ". " at cell start
-    // - Remove orphan "-" after periods (upstream renders a bare dash for empty descriptions)
     const blocks: string[] = [];
     let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
       blocks.push(match);
       return `%%MD_CODE_${blocks.length - 1}%%`;
     });
-    while (/\.\s*\./.test(cellHtml)) {
-      cellHtml = cellHtml.replace(/\.\s*\./g, '. ');
-    }
     cellHtml = cellHtml
-      .replace(/^\s*\.\s*/, '')
+      .replace(/(?:%%MD_SEP%%)+/g, '%%MD_SEP%%')
+      .replace(/^\s*%%MD_SEP%%\s*/, '')
+      .replace(/\.\s*%%MD_SEP%%/g, '. ')
+      .replace(/%%MD_SEP%%/g, '. ')
       .replace(/\.\s*-\s*$/, '.')
       .replace(/%%MD_CODE_(\d+)%%/g, (_, i) => blocks[Number(i)]);
     $cell.html(cellHtml);
@@ -1017,10 +1010,37 @@ export function insertAgentInstructionsAfterH1(
   return `${markdown.slice(0, insertAt)}\n\n${block.trimEnd()}${markdown.slice(insertAt)}`;
 }
 
-/**
- * Post-process the markdown output to clean up common artifacts.
- */
-export function cleanMarkdown(markdown: string): string {
+const CODE_FENCE_LINE = /^\s*```/;
+
+function applyOutsideCodeFences(markdown: string, transform: (text: string) => string): string {
+  const segments: { isCode: boolean; lines: string[] }[] = [];
+  let insideFence = false;
+
+  for (const line of markdown.split('\n')) {
+    const isFenceLine = CODE_FENCE_LINE.test(line);
+    const isCode = insideFence || isFenceLine;
+    const openSegment = segments.at(-1);
+
+    if (openSegment?.isCode === isCode) {
+      openSegment.lines.push(line);
+    } else {
+      segments.push({ isCode, lines: [line] });
+    }
+
+    if (isFenceLine) {
+      insideFence = !insideFence;
+    }
+  }
+
+  return segments
+    .map(segment => {
+      const text = segment.lines.join('\n');
+      return segment.isCode ? text : transform(text);
+    })
+    .join('\n');
+}
+
+function cleanProse(markdown: string): string {
   return (
     markdown
       // Remove empty headings (from sections whose only content was visual/interactive)
@@ -1031,8 +1051,6 @@ export function cleanMarkdown(markdown: string): string {
       .replace(/\[]\([^)]+\)/g, '')
       // Remove standalone horizontal rules (often from description separators)
       .replace(/^\* \* \*$/gm, '')
-      // Replace %%placeholder%% markers with ellipsis
-      .replace(/%%placeholder-start%%.*?%%placeholder-end%%/g, '...')
       // Clean up platform badge comma formatting
       .replace(/Only for:\s*,\s*/g, 'Only for: ')
       .replace(/^\s*,\s*/gm, '')
@@ -1057,6 +1075,17 @@ export function cleanMarkdown(markdown: string): string {
       .replace(/^\s*•\s*$/gm, '')
       // Replace fullwidth equals sign with regular equals
       .replace(/\uff1d/g, '=')
+  );
+}
+
+/**
+ * Post-process the markdown output to clean up common artifacts.
+ */
+export function cleanMarkdown(markdown: string): string {
+  return (
+    applyOutsideCodeFences(markdown, cleanProse)
+      // Replace %%placeholder%% markers with ellipsis
+      .replace(/%%placeholder-start%%.*?%%placeholder-end%%/g, '...')
       // Clean up excessive whitespace
       .replace(/\n{3,}/g, '\n\n')
       .trim()

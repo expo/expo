@@ -5,31 +5,23 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { types as t } from '@babel/core';
-import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import type {
+  FBSourceFunctionMap,
+  MetroSourceMapSegmentTuple,
+  VlqMap,
+} from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 
+import type { EmbeddedVaryDim } from '../cache-vary/ambient';
 import type { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
-import type { PackedMap, SerializableSourceMap } from './packedMap';
 
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
-
-// `data.map` is one of three shapes depending on the pipeline stage:
-//   - `SerializableSourceMap` from the worker / metro-cache.
-//   - The `Array.isArray`-true Proxy installed on the main thread by
-//     Expo's `Bundler.transformFile` wrapper — what every reader sees.
-//   - Plain `MetroSourceMapSegmentTuple[]` from custom transformers, or
-//     legacy cache entries written before `SerializableSourceMap` existed.
-export type ModuleSourceMap = SerializableSourceMap | MetroSourceMapSegmentTuple[];
 
 export type JsOutput = {
   data: {
     code: string;
     lineCount: number;
-    map: ModuleSourceMap;
-    // Non-enumerable so it doesn't survive `{...data}` spreads; the
-    // encoder fast path reads it off the original `data` object to
-    // iterate the underlying `Int32Array` directly.
-    readonly __packedMap?: PackedMap;
+    map: VlqMap;
     functionMap: FBSourceFunctionMap | null;
 
     css?: {
@@ -70,6 +62,7 @@ export type ExpoJsOutput = Omit<JsOutput, 'data'> & {
       duration: number;
     };
     css?: CSSMetadata;
+    expoCacheVary?: EmbeddedVaryDim[];
   };
 };
 
@@ -78,7 +71,7 @@ export type ReconcileTransformSettings = {
   importDefault: string;
   importAll: string;
   globalPrefix: string;
-  unstable_renameRequire?: boolean;
+  unstable_useStaticHermesModuleFactory?: boolean;
   unstable_compactOutput?: boolean;
   minify?: {
     minifierPath: string;
