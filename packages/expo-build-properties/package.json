@@ -46,11 +46,11 @@
   "dependencies": {
     "@expo/schema-utils": "workspace:^",
     "resolve-from": "^5.0.0",
-    "semver": "^7.6.0"
+    "semver": "^7.7.4"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "@types/semver": "^7.0.0",
+    "@types/semver": "^7.7.1",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
