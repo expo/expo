@@ -253,7 +253,7 @@ describe('FallbackWatcher', () => {
 
     fs.writeFileSync(path.join(srcDir, 'first.js'), 'module.exports = 1;\n');
     fs.writeFileSync(path.join(srcDir, 'second.js'), 'module.exports = 2;\n');
-    src.report('rename', null);
+    src.report('change', null);
 
     await waitFor(() => hasEvent('recrawl', 'src'), 'a recrawl of src');
   });
@@ -266,7 +266,7 @@ describe('FallbackWatcher', () => {
     await startWatcher();
 
     fs.mkdirSync(path.join(srcDir, 'nested'));
-    src.report('rename', null);
+    src.report('change', null);
     await waitFor(() => hasEvent('recrawl', 'src'), 'a recrawl of src');
 
     fs.writeFileSync(path.join(srcDir, 'nested', 'later.js'), 'module.exports = 1;\n');
@@ -284,7 +284,7 @@ describe('FallbackWatcher', () => {
     await startWatcher();
 
     fs.writeFileSync(path.join(srcDir, 'added.js'), 'module.exports = 2;\n');
-    src.report('rename', null);
+    src.report('change', null);
     await waitFor(() => hasEvent('recrawl', 'src'), 'a recrawl of src');
 
     fs.unlinkSync(path.join(srcDir, 'added.js'));
