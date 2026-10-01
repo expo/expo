@@ -234,6 +234,7 @@ let metricNameMap = [
   "navigation/cold_ttr": "expo.navigation.cold_ttr",
   "navigation/warm_ttr": "expo.navigation.warm_ttr",
   "navigation/tti": "expo.navigation.tti",
+  "navigation/tbt": "expo.navigation.tbt",
 ]
 
 private func nsFromISOString(_ dateString: String?) -> UInt64 {

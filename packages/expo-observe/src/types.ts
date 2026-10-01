@@ -128,7 +128,7 @@ export type ObserveNavigationIntegrationConfig = {
 export interface ObserveIntegrationsConfig {
   /**
    * Enables the `expo-router` integration, which records navigation metrics
-   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
+   * (`cold_ttr`, `warm_ttr`, `tti`, `tbt`) from router state changes.
    *
    * Requires `expo-router` to be installed.
    *
