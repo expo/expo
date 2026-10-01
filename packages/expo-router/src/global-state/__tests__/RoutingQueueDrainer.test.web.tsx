@@ -25,10 +25,10 @@ function renderDrainer(processIntent: (intent: RoutingIntent) => void) {
   });
 }
 
-it('isolates queue notifications from its parent', () => {
+it('isolates queue notifications from its parent', async () => {
   const parentRender = jest.fn();
   const processIntent = jest.fn();
-  const { result } = renderHook(useEnqueueRoutingIntent, {
+  const { result } = await renderHook(useEnqueueRoutingIntent, {
     wrapper: ({ children }) => {
       parentRender();
       return (
@@ -42,18 +42,18 @@ it('isolates queue notifications from its parent', () => {
   expect(parentRender).toHaveBeenCalledTimes(1);
   expect(processIntent).not.toHaveBeenCalled();
 
-  act(() => result.current(actionIntent('TEST')));
+  await act(() => result.current(actionIntent('TEST')));
   expect(parentRender).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
 });
 
-it('processes a queued batch in FIFO order', () => {
+it('processes a queued batch in FIFO order', async () => {
   const processIntent = jest.fn();
-  const { result } = renderDrainer(processIntent);
+  const { result } = await renderDrainer(processIntent);
   expect(processIntent).not.toHaveBeenCalled();
 
-  act(() => {
+  await act(() => {
     result.current(actionIntent('FIRST'));
     result.current(actionIntent('SECOND'));
     result.current(actionIntent('THIRD'));
@@ -64,14 +64,14 @@ it('processes a queued batch in FIFO order', () => {
   expect(processIntent).toHaveBeenNthCalledWith(3, actionIntent('THIRD'));
 });
 
-it('does not process an intent twice in Strict Mode', () => {
+it('does not process an intent twice in Strict Mode', async () => {
   const processIntent = jest.fn();
   function MountWhenQueued() {
     const intents = React.use(PendingIntentsContext);
     // Mount with pending work so Strict Mode replays an effect that processes an intent.
     return intents.length ? <RoutingQueueDrainer processIntent={processIntent} /> : null;
   }
-  const { result, rerender } = renderHook(useEnqueueRoutingIntent, {
+  const { result, rerender } = await renderHook(useEnqueueRoutingIntent, {
     wrapper: ({ children }) => (
       <React.StrictMode>
         <RoutingQueueProvider>
@@ -83,39 +83,39 @@ it('does not process an intent twice in Strict Mode', () => {
   });
   expect(processIntent).not.toHaveBeenCalled();
 
-  act(() => result.current(actionIntent('TEST')));
+  await act(() => result.current(actionIntent('TEST')));
   expect(processIntent).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
 
-  rerender(undefined);
+  await rerender(undefined);
   expect(processIntent).toHaveBeenCalledTimes(1);
 });
 
-it('processes separately enqueued intents', () => {
+it('processes separately enqueued intents', async () => {
   const processIntent = jest.fn();
-  const { result } = renderDrainer(processIntent);
+  const { result } = await renderDrainer(processIntent);
   expect(processIntent).not.toHaveBeenCalled();
 
-  act(() => result.current(actionIntent('FIRST')));
+  await act(() => result.current(actionIntent('FIRST')));
   expect(processIntent).toHaveBeenCalledTimes(1);
   expect(processIntent).toHaveBeenCalledWith(actionIntent('FIRST'));
 
-  act(() => result.current(actionIntent('SECOND')));
+  await act(() => result.current(actionIntent('SECOND')));
   expect(processIntent).toHaveBeenCalledTimes(2);
   expect(processIntent).toHaveBeenLastCalledWith(actionIntent('SECOND'));
 });
 
-it('continues after processIntent throws synchronously', () => {
+it('continues after processIntent throws synchronously', async () => {
   const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const processIntent = jest.fn().mockImplementationOnce(() => {
     throw new Error('failed');
   });
   try {
-    const { result } = renderDrainer(processIntent);
+    const { result } = await renderDrainer(processIntent);
     expect(processIntent).not.toHaveBeenCalled();
     expect(warning).not.toHaveBeenCalled();
 
-    act(() => {
+    await act(() => {
       result.current(actionIntent('FIRST'));
       result.current(actionIntent('SECOND'));
     });
@@ -127,7 +127,7 @@ it('continues after processIntent throws synchronously', () => {
   }
 });
 
-it('processes the whole batch before committing destination updates', () => {
+it('processes the whole batch before committing destination updates', async () => {
   const onProcess = jest.fn();
   function Drainer() {
     const [destination, setDestination] = React.useState(0);
@@ -141,7 +141,7 @@ it('processes the whole batch before committing destination updates', () => {
     }, []);
     return <RoutingQueueDrainer processIntent={processIntent} />;
   }
-  const { result } = renderHook(useEnqueueRoutingIntent, {
+  const { result } = await renderHook(useEnqueueRoutingIntent, {
     wrapper: ({ children }) => (
       <RoutingQueueProvider>
         {children}
@@ -151,7 +151,7 @@ it('processes the whole batch before committing destination updates', () => {
   });
   expect(onProcess).not.toHaveBeenCalled();
 
-  act(() => {
+  await act(() => {
     result.current(actionIntent('FIRST'));
     result.current(actionIntent('SECOND'));
   });
@@ -162,7 +162,7 @@ it('processes the whole batch before committing destination updates', () => {
 
 it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
   'allows %s to interrupt a suspended destination',
-  (type) => {
+  async (type) => {
     const onProcess = jest.fn();
     const suspended = new Promise<void>(() => {});
     function Destination({ value }: { value: number }) {
@@ -184,7 +184,7 @@ it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
         </>
       );
     }
-    const { result } = renderHook(useEnqueueRoutingIntent, {
+    const { result } = await renderHook(useEnqueueRoutingIntent, {
       wrapper: ({ children }) => (
         <RoutingQueueProvider>
           {children}
@@ -195,7 +195,7 @@ it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
     expect(onProcess).not.toHaveBeenCalled();
 
     const first = { ...actionIntent('FIRST'), inTransition: true };
-    act(() => result.current(first));
+    await act(() => result.current(first));
     expect(onProcess).toHaveBeenCalledTimes(1);
     expect(onProcess).toHaveBeenCalledWith(first);
 
@@ -203,26 +203,26 @@ it.each(['GO_BACK', 'BROWSER_HISTORY_CHANGED', 'PUSH'] as const)(
       type === 'BROWSER_HISTORY_CHANGED'
         ? { type, payload: { id: 'first', path: '/' } }
         : { ...actionIntent(type), inTransition: false };
-    act(() => result.current(interrupt));
+    await act(() => result.current(interrupt));
     expect(onProcess).toHaveBeenCalledTimes(2);
     expect(onProcess).toHaveBeenLastCalledWith(interrupt);
   }
 );
 
-it('processes each occurrence of a reused intent object', () => {
+it('processes each occurrence of a reused intent object', async () => {
   const processIntent = jest.fn();
-  const { result } = renderDrainer(processIntent);
+  const { result } = await renderDrainer(processIntent);
   expect(processIntent).not.toHaveBeenCalled();
 
   const intent = actionIntent('TEST');
-  act(() => {
+  await act(() => {
     result.current(intent);
     result.current(intent);
   });
   expect(processIntent).toHaveBeenCalledTimes(2);
 });
 
-it.each([0, 1])('opts the entire queued batch out when intent %i opts out', (urgentIndex) => {
+it.each([0, 1])('opts the entire queued batch out when intent %i opts out', async (urgentIndex) => {
   const startTransition = jest.fn(React.startTransition);
   const processIntent = jest.fn();
   function Drainer() {
@@ -233,7 +233,7 @@ it.each([0, 1])('opts the entire queued batch out when intent %i opts out', (urg
       </RoutingQueueApiContext>
     );
   }
-  const { result } = renderHook(useEnqueueRoutingIntent, {
+  const { result } = await renderHook(useEnqueueRoutingIntent, {
     wrapper: ({ children }) => (
       <RoutingQueueProvider>
         {children}
@@ -244,7 +244,7 @@ it.each([0, 1])('opts the entire queued batch out when intent %i opts out', (urg
   expect(processIntent).not.toHaveBeenCalled();
   expect(startTransition).not.toHaveBeenCalled();
 
-  act(() => {
+  await act(() => {
     for (let index = 0; index < 2; index++) {
       result.current({
         ...actionIntent('PUSH'),

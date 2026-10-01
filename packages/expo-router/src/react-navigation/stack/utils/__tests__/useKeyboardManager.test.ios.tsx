@@ -7,16 +7,18 @@ jest.useFakeTimers();
 
 describe('useKeyboardManager', () => {
   describe('onPageChangeConfirm', () => {
-    test('calls onPageChangeCancel when closing is false', () => {
-      const { result } = renderHook(() => useKeyboardManager({ enabled: true, focused: true }));
+    test('calls onPageChangeCancel when closing is false', async () => {
+      const { result } = await renderHook(() =>
+        useKeyboardManager({ enabled: true, focused: true })
+      );
 
       const blurMock = jest.fn();
       const input = { blur: blurMock } as any;
 
       jest.spyOn(TextInput.State, 'currentlyFocusedInput').mockReturnValue(input);
 
-      act(() => result.current.onPageChangeStart());
-      act(() =>
+      await act(() => result.current.onPageChangeStart());
+      await act(() =>
         result.current.onPageChangeConfirm({
           gesture: false,
           active: true,
@@ -27,12 +29,14 @@ describe('useKeyboardManager', () => {
       expect(blurMock).toHaveBeenCalledTimes(1);
     });
 
-    test('dismisses keyboard when closing without gesture', () => {
+    test('dismisses keyboard when closing without gesture', async () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-      const { result } = renderHook(() => useKeyboardManager({ enabled: true, focused: true }));
+      const { result } = await renderHook(() =>
+        useKeyboardManager({ enabled: true, focused: true })
+      );
 
-      act(() =>
+      await act(() =>
         result.current.onPageChangeConfirm({
           gesture: false,
           active: false,
@@ -45,19 +49,21 @@ describe('useKeyboardManager', () => {
       dismissSpy.mockRestore();
     });
 
-    test('blurs previously focused input when closing with gesture and active', () => {
-      const { result } = renderHook(() => useKeyboardManager({ enabled: true, focused: true }));
+    test('blurs previously focused input when closing with gesture and active', async () => {
+      const { result } = await renderHook(() =>
+        useKeyboardManager({ enabled: true, focused: true })
+      );
 
       const blurMock = jest.fn();
       const input = { blur: blurMock } as any;
 
       jest.spyOn(TextInput.State, 'currentlyFocusedInput').mockReturnValue(input);
 
-      act(() => result.current.onPageChangeStart());
+      await act(() => result.current.onPageChangeStart());
 
       blurMock.mockClear();
 
-      act(() =>
+      await act(() =>
         result.current.onPageChangeConfirm({
           gesture: true,
           active: true,
@@ -70,85 +76,85 @@ describe('useKeyboardManager', () => {
   });
 
   describe('useLayoutEffect keyboard dismiss on focus loss', () => {
-    test('dismisses keyboard when focused transitions from true to false', () => {
+    test('dismisses keyboard when focused transitions from true to false', async () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-      const { rerender } = renderHook(
+      const { rerender } = await renderHook(
         (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: true, focused: true } }
       );
 
       dismissSpy.mockClear();
 
-      rerender({ enabled: true, focused: false });
+      await rerender({ enabled: true, focused: false });
 
       expect(dismissSpy).toHaveBeenCalled();
 
       dismissSpy.mockRestore();
     });
 
-    test('does not dismiss keyboard when focus is lost in the same render that disables it', () => {
+    test('does not dismiss keyboard when focus is lost in the same render that disables it', async () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-      const { rerender } = renderHook(
+      const { rerender } = await renderHook(
         (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: true, focused: true } }
       );
 
       dismissSpy.mockClear();
 
-      rerender({ enabled: false, focused: false });
+      await rerender({ enabled: false, focused: false });
 
       expect(dismissSpy).not.toHaveBeenCalled();
 
       dismissSpy.mockRestore();
     });
 
-    test('does not dismiss keyboard when focused stays false', () => {
+    test('does not dismiss keyboard when focused stays false', async () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-      const { rerender } = renderHook(
+      const { rerender } = await renderHook(
         (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: false, focused: false } }
       );
 
       dismissSpy.mockClear();
 
-      rerender({ enabled: false, focused: false });
+      await rerender({ enabled: false, focused: false });
 
       expect(dismissSpy).not.toHaveBeenCalled();
 
       dismissSpy.mockRestore();
     });
 
-    test('does not dismiss keyboard when only enabled changes without focus changing', () => {
+    test('does not dismiss keyboard when only enabled changes without focus changing', async () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-      const { rerender } = renderHook(
+      const { rerender } = await renderHook(
         (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: true, focused: true } }
       );
 
       dismissSpy.mockClear();
 
-      rerender({ enabled: false, focused: true });
+      await rerender({ enabled: false, focused: true });
 
       expect(dismissSpy).not.toHaveBeenCalled();
 
       dismissSpy.mockRestore();
     });
 
-    test('does not dismiss keyboard when losing focus while disabled', () => {
+    test('does not dismiss keyboard when losing focus while disabled', async () => {
       const dismissSpy = jest.spyOn(Keyboard, 'dismiss');
 
-      const { rerender } = renderHook(
+      const { rerender } = await renderHook(
         (props: { enabled: boolean; focused: boolean }) => useKeyboardManager(props),
         { initialProps: { enabled: false, focused: true } }
       );
 
       dismissSpy.mockClear();
 
-      rerender({ enabled: false, focused: false });
+      await rerender({ enabled: false, focused: false });
 
       expect(dismissSpy).not.toHaveBeenCalled();
 

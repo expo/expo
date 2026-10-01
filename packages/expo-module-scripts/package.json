@@ -97,7 +97,7 @@
     "@swc-contrib/mut-cjs-exports": "^14.13.0",
     "@swc/core": "^1.15.18",
     "@swc/jest": "^0.2.39",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^29.2.1",
     "commander": "^12.1.0",
     "glob": "^13.0.0",

@@ -82,7 +82,7 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "^14.0.1",
     "@types/invariant": "^2.2.33",
     "@types/react": "~19.3.0",
     "@types/react-dom": "^19.1.7",
