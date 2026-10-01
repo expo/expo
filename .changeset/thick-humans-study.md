@@ -1,6 +1,13 @@
 ---
+'@expo/cli': patch
+'@expo/config': patch
+'@expo/config-plugins': patch
+'@expo/fingerprint': patch
+'@expo/image-utils': patch
+'@expo/prebuild-config': patch
+'expo-build-properties': patch
 'expo-doctor': patch
 'install-expo-modules': patch
 ---
 
-Update the bundled `semver` from 7.5.4 to 7.7.4.
+Bump `semver` to `^7.7.4`.
