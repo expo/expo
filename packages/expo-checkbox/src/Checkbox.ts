@@ -6,5 +6,8 @@ export * from './Checkbox.types';
  */
 export { Checkbox };
 
-/** @hidden */
+/**
+ * @hidden
+ * @deprecated `expo-checkbox` is deprecated. Use the [`Checkbox`](./ui/universal/checkbox/) component from `@expo/ui` instead.
+ */
 export default Checkbox;
