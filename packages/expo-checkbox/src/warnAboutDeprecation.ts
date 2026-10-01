@@ -1,9 +1,5 @@
 let didWarn = false;
 
-/**
- * Logs the deprecation warning once per app session. Only runs in development.
- * @internal
- */
 export function warnAboutDeprecation(): void {
   if (!__DEV__ || didWarn) {
     return;
