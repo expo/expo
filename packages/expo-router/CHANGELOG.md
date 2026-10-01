@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 🐛 Bug fixes
+
+- Resolve `ExpoRouterActivityContents` on first render instead of at module scope, so importing the module before React Native has initialised no longer throws. ([#PRNUM](https://github.com/expo/expo/pull/PRNUM) by [@jvidalv](https://github.com/jvidalv))
+
 ## 58.0.11
 
 ### Patch Changes
