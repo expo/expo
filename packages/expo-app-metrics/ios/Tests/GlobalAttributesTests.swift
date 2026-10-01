@@ -17,6 +17,7 @@ struct GlobalAttributesTests {
 
   @Test
   func `merged returns event attributes when store is empty`() {
+    GlobalAttributes.set(nil)
     let merged = GlobalAttributes.merged(with: ["userId": "u_42"])
     let attributes = try! #require(merged)
     #expect(attributes.count == 1)

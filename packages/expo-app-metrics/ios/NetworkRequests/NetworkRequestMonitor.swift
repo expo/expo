@@ -46,7 +46,7 @@ public final class NetworkRequestMonitor: Sendable {
   private var delegates: [WeakDelegate] = []
   private var started = false
 
-  /// Persists each recorded completion into the metrics database. Installed at launch by
+  /// Records each completion as a span through the metrics sink. Installed at launch by
   /// `AppMetricsAppDelegateSubscriber`; `nil` until then (and in tests that don't exercise
   /// persistence). Held strongly because unlike delegates, persistence is part of the pipeline, not an
   /// observer of it.

@@ -226,13 +226,6 @@ extension LogRow {
 /// event into a `SpanRow` at record time, and `expo-observe` exports rows past a cursor to the
 /// OTLP traces endpoint without knowing what produced them.
 public struct SpanRow: Sendable {
-  /// `SpanKind` values from the OTLP proto, for producers picking a `kind`.
-  public static let internalKind = 1
-  public static let clientKind = 3
-
-  /// `Status.code` values from the OTLP proto. UNSET is expressed by a `nil` `statusCode`.
-  public static let statusError = 2
-
   public let id: Int64?
   public let sessionId: String
 
@@ -250,7 +243,7 @@ public struct SpanRow: Sendable {
   /// request spans).
   public let name: String
 
-  /// `SpanKind` per the OTLP proto (`clientKind` for network requests).
+  /// `SpanKind` per the OTLP proto (`NetworkSpan.clientKind` for network requests).
   public let kind: Int
 
   /// Unix-epoch milliseconds. Stored as integers rather than the ISO strings the other tables use:
@@ -261,7 +254,7 @@ public struct SpanRow: Sendable {
   public let startTimestampMs: Int64
   public let endTimestampMs: Int64
 
-  /// OTLP status code (`statusError`), or `nil` when the span completed without one (UNSET).
+  /// OTLP status code (`NetworkSpan.statusError`), or `nil` when the span completed without one (UNSET).
   public let statusCode: Int?
   public let statusMessage: String?
 
@@ -281,7 +274,7 @@ public struct SpanRow: Sendable {
     spanId: String = SpanRow.generateSpanId(),
     parentSpanId: String? = nil,
     name: String,
-    kind: Int = SpanRow.internalKind,
+    kind: Int = NetworkSpan.internalKind,
     startTimestampMs: Int64,
     endTimestampMs: Int64,
     statusCode: Int? = nil,
@@ -345,7 +338,7 @@ extension SpanRow {
       spanId: row.string(at: 3) ?? "",
       parentSpanId: row.string(at: 4),
       name: row.string(at: 5) ?? "",
-      kind: row.int(at: 6) ?? SpanRow.internalKind,
+      kind: row.int(at: 6) ?? NetworkSpan.internalKind,
       startTimestampMs: row.int64(at: 7) ?? 0,
       endTimestampMs: row.int64(at: 8) ?? 0,
       statusCode: row.int(at: 9),

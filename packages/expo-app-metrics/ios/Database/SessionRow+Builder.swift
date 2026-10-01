@@ -3,20 +3,19 @@
 import Foundation
 
 extension SessionRow {
-  /// Builds a `SessionRow` from a `Session`, snapshotting the current `AppInfo`, `DeviceInfo` and
-  /// environment. Called when a new session is inserted; subsequent updates (end timestamp, environment
-  /// patch, OTA app-info patch) are applied with the more focused DAO methods.
-  static func snapshot(of session: Session, environment: String?) -> SessionRow {
-    let app = AppInfo.current
-    let device = DeviceInfo.current
+  /// Builds a `SessionRow` for a session that just started. Called when a new session is inserted;
+  /// subsequent updates (end timestamp, environment patch, OTA app-info patch) are applied with the
+  /// more focused DAO methods.
+  static func from(_ session: SessionInfo, environment: String?) -> SessionRow {
+    let app = session.app
+    let device = session.device
     let updates = app.updatesInfo
 
     return SessionRow(
       id: session.id,
       type: session.type.rawValue,
       startTimestamp: session.startDate.ISO8601Format(),
-      endTimestamp: session.endDate?.ISO8601Format(),
-      isActive: session.isActive,
+      isActive: true,
       environment: environment,
       appName: app.appName,
       appIdentifier: app.appId,
@@ -33,7 +32,7 @@ extension SessionRow {
       expoSdkVersion: app.expoSdkVersion,
       reactNativeVersion: app.reactNativeVersion,
       clientVersion: app.clientVersion,
-      languageTag: Locale.preferredLanguages.first
+      languageTag: session.languageTag
     )
   }
 }

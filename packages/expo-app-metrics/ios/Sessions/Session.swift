@@ -21,17 +21,16 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
     self.type = type
     super.init()
 
-    // The session-row INSERT is fire-and-forget on `AppMetricsActor`. Subsequent writes for this
+    // `sessionStarted` is fire-and-forget on `AppMetricsActor`. Subsequent records for this
     // session (metrics, logs, `stop()`, crash reports) all go through the same actor, and tasks on
-    // an actor run in submission order — so they always observe the INSERT before their own SQL
-    // runs, even though no caller `await`s the task returned here. The invariant only holds because
+    // an actor run in submission order — so the sink always receives `sessionStarted` before them,
+    // even though no caller `await`s the task returned here. The invariant only holds because
     // every metric-producing path enqueues *after* `Session.init` returns; if a future caller
     // submits to `AppMetricsActor` from a parallel task that could race `init`, this should be
     // converted to a stored `sessionStartTask` that downstream writes `await` before proceeding.
     AppMetricsActor.isolated { [self] in
-      let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
       do {
-        try AppMetrics.database?.insert(session: SessionRow.snapshot(of: self, environment: environment))
+        try MetricsSinkRegistry.shared.sessionStarted(SessionInfo.snapshot(of: self))
       } catch {
         logger.warn("[AppMetrics] Failed to insert session row: \(error.localizedDescription)")
       }
@@ -60,7 +59,7 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
     return endDate.timeIntervalSince(startDate)
   }
 
-  /// Stops the session, persists its end timestamp, and writes a final duration metric.
+  /// Stops the session, records its end, and records a final duration metric.
   func stop() {
     if endDate != nil {
       // Can't stop session more than once
@@ -72,12 +71,8 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
 
     AppMetricsActor.isolated { [self] in
       do {
-        try AppMetrics.database?.updateSessionActiveStatus(
-          id: self.id,
-          isActive: false,
-          endTimestamp: endDate.ISO8601Format()
-        )
-        try AppMetrics.database?.insert(metric: MetricRow.from(metric: durationMetric, sessionId: self.id))
+        try MetricsSinkRegistry.shared.sessionEnded(id: self.id, endDate: endDate)
+        try MetricsSinkRegistry.shared.record(metrics: [durationMetric], sessionId: self.id)
       } catch {
         logger.warn("[AppMetrics] Failed to finalize session \(self.id): \(error.localizedDescription)")
       }
@@ -115,11 +110,11 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
     try insert(input.toMetric(sessionId: id))
   }
 
-  // Persists a metric row for this session. Shared by the throwing JS path (`addMetric`) and the
+  // Records a metric for this session. Shared by the throwing JS path (`addMetric`) and the
   // fire-and-forget native push path (`receiveMetric`), which differ only in error handling.
   @AppMetricsActor
   private func insert(_ metric: Metric) throws {
-    try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: id))
+    try MetricsSinkRegistry.shared.record(metrics: [metric], sessionId: id)
   }
 
   // MARK: - MetricsReceiver
@@ -138,7 +133,7 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
   @AppMetricsActor
   public func receiveLog(_ log: LogRecord) {
     do {
-      try AppMetrics.database?.insert(log: LogRow.from(log: log, sessionId: self.id))
+      try MetricsSinkRegistry.shared.record(logs: [log], sessionId: self.id)
     } catch {
       logger.warn(
         "[AppMetrics] Failed to insert log \"\(log.name)\" for session \(self.id): \(error.localizedDescription)"

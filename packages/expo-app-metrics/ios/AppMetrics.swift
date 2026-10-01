@@ -22,7 +22,7 @@ public struct AppMetrics {
   #endif
 
   /// Ingests fatal JavaScript errors that were written to disk before the process was terminated on a
-  /// previous launch (see `PendingErrorStore`). Reads the files synchronously, then inserts each as an
+  /// previous launch (see `PendingErrorStore`). Reads the files synchronously, then records each as an
   /// `js.exception` log attributed to the session it was captured in. Called once at launch.
   static func ingestPendingErrors() {
     let pendingErrors = PendingErrorStore.drain()
@@ -34,32 +34,13 @@ public struct AppMetrics {
         // Each error attaches to the prior-launch session it was captured in (`pendingError.sessionId`),
         // not the just-started `mainSession`, so this doesn't depend on the current session's row INSERT.
         do {
-          _ = try database?.insert(
-            log: LogRow.from(log: pendingError.toLogRecord(), sessionId: pendingError.sessionId)
-          )
+          try MetricsSinkRegistry.shared.record(logs: [pendingError.toLogRecord()], sessionId: pendingError.sessionId)
         } catch {
           logger.warn("[AppMetrics] Failed to ingest pending error: \(error.localizedDescription)")
         }
       }
     }
   }
-
-  /// The shared metrics database, or `nil` in release builds if the database could not be opened even
-  /// after a wipe-and-retry. In DEBUG we trap with `assertionFailure` so developers see the failure
-  /// immediately; in release we keep the host app running because telemetry should never be
-  /// load-bearing for the user's primary work — callers degrade naturally via `?.`.
-  @AppMetricsActor
-  static let database: MetricsDatabase? = {
-    do {
-      return try MetricsDatabase.openWipingOnFailure()
-    } catch {
-      logger.error(
-        "[AppMetrics] Failed to open the metrics database after a wipe-and-retry: \(error.localizedDescription). Continuing without persistence — metrics and logs from this launch will be dropped."
-      )
-      assertionFailure("MetricsDatabase failed to open: \(error)")
-      return nil
-    }
-  }()
 
   // Make the initializer private to prevent non-singleton usage.
   private init() {}
@@ -71,21 +52,21 @@ public struct AppMetrics {
   /// database failed to open. Pass `limit` to return at most that many of the oldest rows.
   @AppMetricsActor
   public static func getMetrics(afterId cursor: Int64, limit: Int? = nil) throws -> [MetricRow] {
-    return try database?.getMetrics(afterId: cursor, limit: limit) ?? []
+    return try DatabaseMetricsSink.database?.getMetrics(afterId: cursor, limit: limit) ?? []
   }
 
   /// Returns log rows whose `id` is greater than `cursor`, in ascending id order. Empty when the
   /// database failed to open. Pass `limit` to return at most that many of the oldest rows.
   @AppMetricsActor
   public static func getLogs(afterId cursor: Int64, limit: Int? = nil) throws -> [LogRow] {
-    return try database?.getLogs(afterId: cursor, limit: limit) ?? []
+    return try DatabaseMetricsSink.database?.getLogs(afterId: cursor, limit: limit) ?? []
   }
 
   /// Hydrates session rows for the given ids. Used to attach session metadata to a batch of metrics
   /// or logs that have already been read past a cursor.
   @AppMetricsActor
   public static func getSessions(ids: [String]) throws -> [SessionRow] {
-    return try database?.getSessions(ids: ids) ?? []
+    return try DatabaseMetricsSink.database?.getSessions(ids: ids) ?? []
   }
 
   /// The largest metric id currently in the database, or `nil` if the metrics table is empty.
@@ -93,61 +74,61 @@ public struct AppMetrics {
   /// wiped (or never reached the cursor's value) and reset their cursor accordingly.
   @AppMetricsActor
   public static func getMaxMetricId() throws -> Int64? {
-    return try database?.getMaxMetricId() ?? nil
+    return try DatabaseMetricsSink.database?.getMaxMetricId() ?? nil
   }
 
   /// The largest log id currently in the database, or `nil` if the logs table is empty.
   @AppMetricsActor
   public static func getMaxLogId() throws -> Int64? {
-    return try database?.getMaxLogId() ?? nil
+    return try DatabaseMetricsSink.database?.getMaxLogId() ?? nil
   }
 
   /// Returns span rows whose `id` is greater than `cursor`, in ascending id order, at most
   /// `limit` of them (all when `nil`). Empty when the database failed to open.
   @AppMetricsActor
   public static func getSpans(afterId cursor: Int64, limit: Int? = nil) throws -> [SpanRow] {
-    return try database?.getSpans(afterId: cursor, limit: limit) ?? []
+    return try DatabaseMetricsSink.database?.getSpans(afterId: cursor, limit: limit) ?? []
   }
 
   /// The largest span id currently in the database, or `nil` if the table is empty.
   @AppMetricsActor
   public static func getMaxSpanId() throws -> Int64? {
-    return try database?.getMaxSpanId() ?? nil
+    return try DatabaseMetricsSink.database?.getMaxSpanId() ?? nil
   }
 
   /// Returns the spans attributed to `sessionId`, in ascending id order. Empty when the
   /// database failed to open.
   @AppMetricsActor
   public static func getSpans(forSessionId sessionId: String) throws -> [SpanRow] {
-    return try database?.getSpans(forSessionId: sessionId) ?? []
+    return try DatabaseMetricsSink.database?.getSpans(forSessionId: sessionId) ?? []
   }
 
   /// Deletes span rows with `id <= upToId`. The exporter owns deletion; the per-session read
   /// (`getSpans(forSessionId:)`) sees only rows not yet dispatched.
   @AppMetricsActor
   public static func deleteSpans(upToId: Int64) throws {
-    try database?.deleteSpans(upToId: upToId)
+    try DatabaseMetricsSink.database?.deleteSpans(upToId: upToId)
   }
 
   /// The inactive (ended) sessions with their children. For expo-observe debug APIs. Removed when
   /// storage moves to expo-observe.
   @AppMetricsActor
   public static func getInactiveStoredSessions() throws -> [StoredSession] {
-    return try database?.getInactiveSessionsWithChildren().map { StoredSession(from: $0) } ?? []
+    return try DatabaseMetricsSink.database?.getInactiveSessionsWithChildren().map { StoredSession(from: $0) } ?? []
   }
 
   /// The metrics stored for `sessionId`. For expo-observe debug APIs. Removed when storage moves to
   /// expo-observe.
   @AppMetricsActor
   public static func getStoredMetrics(sessionId: String) throws -> [Metric] {
-    return decodeMetrics(from: try database?.getMetrics(sessionId: sessionId) ?? [])
+    return decodeMetrics(from: try DatabaseMetricsSink.database?.getMetrics(sessionId: sessionId) ?? [])
   }
 
   /// The log records stored for `sessionId`. For expo-observe debug APIs. Removed when storage moves
   /// to expo-observe.
   @AppMetricsActor
   public static func getStoredLogs(sessionId: String) throws -> [LogRecord] {
-    return decodeLogs(from: try database?.getLogs(sessionId: sessionId) ?? [])
+    return decodeLogs(from: try DatabaseMetricsSink.database?.getLogs(sessionId: sessionId) ?? [])
   }
 
   // MARK: - Environment
@@ -157,7 +138,7 @@ public struct AppMetrics {
     guard AppMetricsUserDefaults.environment != environment else { return }
     AppMetricsUserDefaults.environment = environment
     do {
-      try database?.updateEnvironmentForActiveSessions(environment: environment)
+      try DatabaseMetricsSink.shared.updateEnvironmentForActiveSessions(environment)
     } catch {
       logger.warn("[AppMetrics] Failed to propagate environment to active sessions: \(error.localizedDescription)")
     }

@@ -2,6 +2,7 @@ import ExpoModulesCore
 
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
+    MetricsSinkRegistry.register(DatabaseMetricsSink.shared)
     AppMetrics.mainSession.appStartupMonitor.markMain()
     // Install the URLSessionTask swizzles synchronously before any app code (RN included) issues
     // its first network request. Doing this on the `AppMetricsActor` would defer it past that
@@ -11,13 +12,12 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
     AppMetricsActor.isolated {
       NetworkPathMonitor.shared.start()
       NetworkRequestMonitor.shared.start()
-      // From here on every completed request is written to the database, attributed to the main
-      // session. The session's row INSERT was enqueued on the actor when `mainSession` was first
-      // touched above, so it lands before any request row that references it.
+      // From here on every completed request is recorded as a span, attributed to the main
+      // session. Its `sessionStarted` record was enqueued on the actor when `mainSession` was
+      // first touched above, so it reaches the sink before any span that references it.
       // The persisted recording policy applies from the first observed request; JS can replace
       // it later via `setNetworkTracesConfig`, affecting subsequent requests only.
       NetworkRequestMonitor.shared.persistence = NetworkRequestPersistence(
-        database: AppMetrics.database,
         configuration: AppMetricsUserDefaults.networkTracesConfiguration ?? NetworkTracesConfiguration()
       ) {
         return AppMetrics.mainSession.id

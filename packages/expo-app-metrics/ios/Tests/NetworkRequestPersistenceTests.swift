@@ -56,36 +56,34 @@ private func makeRequest(
   )
 }
 
-private func makeSpan(_ request: NetworkRequest) throws -> SpanRow {
-  return try #require(SpanRow.from(request: request, sessionId: "s"))
+private func makeSpan(_ request: NetworkRequest) throws -> NetworkSpan {
+  return try #require(NetworkSpan.from(request: request))
 }
 
 /// Decodes the row's `attributes` JSON blob for assertions.
-private func attributesDict(_ row: SpanRow) throws -> [String: Any] {
+private func attributesDict(_ row: NetworkSpan) throws -> [String: Any] {
   let json = try #require(row.attributes)
   let object = try JSONSerialization.jsonObject(with: Data(json.utf8))
   return try #require(object as? [String: Any])
 }
 
 /// Decodes the row's `events` JSON blob for assertions.
-private func eventsArray(_ row: SpanRow) throws -> [[String: Any]] {
+private func eventsArray(_ row: NetworkSpan) throws -> [[String: Any]] {
   let json = try #require(row.events)
   let object = try JSONSerialization.jsonObject(with: Data(json.utf8))
   return try #require(object as? [[String: Any]])
 }
 
 @AppMetricsActor
-@Suite("NetworkRequest to SpanRow mapping")
+@Suite("NetworkRequest to NetworkSpan mapping")
 struct NetworkRequestSpanMappingTests {
   @Test
   func `converts a completed request into a client span with millisecond timestamps`() throws {
     let row = try makeSpan(makeRequest(method: "POST"))
-    #expect(row.sessionId == "s")
     #expect(row.name == "POST")
-    #expect(row.kind == SpanRow.clientKind)
+    #expect(row.kind == NetworkSpan.clientKind)
     #expect(row.startTimestampMs == 1_782_131_895_000)
     #expect(row.endTimestampMs == 1_782_131_895_250)
-    #expect(row.parentSpanId == nil)
     #expect(row.events == nil)
   }
 
@@ -295,7 +293,7 @@ struct NetworkRequestSpanMappingTests {
         errorType: "NSURLErrorDomain:-999"
       )
     )
-    #expect(row.statusCode == SpanRow.statusError)
+    #expect(row.statusCode == NetworkSpan.statusError)
     #expect(try attributesDict(row)["error.type"] as? String == "500")
   }
 
@@ -312,7 +310,7 @@ struct NetworkRequestSpanMappingTests {
     // Semconv makes any 4xx/5xx an error for a client span, unlike the server-span rule.
     for statusCode in [400, 404, 429, 500, 503] {
       let row = try makeSpan(makeRequest(statusCode: statusCode))
-      #expect(row.statusCode == SpanRow.statusError, "expected ERROR for status \(statusCode)")
+      #expect(row.statusCode == NetworkSpan.statusError, "expected ERROR for status \(statusCode)")
     }
   }
 
@@ -327,7 +325,7 @@ struct NetworkRequestSpanMappingTests {
         errorType: "NSURLErrorDomain:-1009"
       )
     )
-    #expect(row.statusCode == SpanRow.statusError)
+    #expect(row.statusCode == NetworkSpan.statusError)
     #expect(row.statusMessage == "The Internet connection appears to be offline.")
     let attributes = try attributesDict(row)
     #expect(attributes["error.type"] as? String == "NSURLErrorDomain:-1009")
@@ -405,15 +403,6 @@ struct NetworkRequestSpanMappingTests {
   }
 
   @Test
-  func `assigns generated identifiers to each span`() throws {
-    let first = try makeSpan(makeRequest())
-    let second = try makeSpan(makeRequest())
-    #expect(first.traceId.count == 32)
-    #expect(first.spanId.count == 16)
-    #expect(first.traceId != second.traceId)
-  }
-
-  @Test
   func `derives a missing end timestamp from the total duration`() throws {
     // The `setState:` fallback path can produce a snapshot before the OS reported a
     // response end; the row still needs a usable window for the span.
@@ -428,7 +417,7 @@ struct NetworkRequestSpanMappingTests {
     // Without either endpoint of the window there is nothing to anchor a span to. The
     // factory always sets both, so this only guards direct construction.
     let timings = makeTimings(fetchStart: nil, responseEnd: nil, totalDuration: 0)
-    let row = SpanRow.from(request: makeRequest(timings: timings), sessionId: "s")
+    let row = NetworkSpan.from(request: makeRequest(timings: timings))
     #expect(row == nil)
   }
 }
@@ -436,131 +425,92 @@ struct NetworkRequestSpanMappingTests {
 @AppMetricsActor
 @Suite("NetworkRequestPersistence")
 struct NetworkRequestPersistenceTests {
-  private func withTemporaryDatabase(_ body: (MetricsDatabase) throws -> Void) throws {
-    let directoryUrl = FileManager.default.temporaryDirectory
-      .appendingPathComponent("NetworkRequestPersistenceTests-\(UUID().uuidString)")
-    try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
-    defer {
-      try? FileManager.default.removeItem(at: directoryUrl)
-    }
-    let database = try MetricsDatabase(directoryUrl: directoryUrl)
-    try body(database)
+  let registry = MetricsSinkRegistry()
+  let sink = FakeMetricsSink()
+
+  init() {
+    registry.register(sink)
   }
 
-  private func insertSession(id: String, into database: MetricsDatabase) throws {
-    try database.insert(
-      session: SessionRow(
-        id: id,
-        type: "main",
-        startTimestamp: "2026-08-12T12:00:00Z",
-        isActive: true
-      )
-    )
+  private var recordedSpans: [NetworkSpan] {
+    return sink.calls.flatMap { call -> [NetworkSpan] in
+      guard case .spans(let spans, _) = call else {
+        return []
+      }
+      return spans
+    }
   }
 
   @Test
-  func `drops every request while recording is disabled`() throws {
-    try withTemporaryDatabase { database in
-      try insertSession(id: "s", into: database)
-      let persistence = NetworkRequestPersistence(
-        database: database,
-        configuration: NetworkTracesConfiguration(enabled: false)
-      ) {
-        return "s"
-      }
-      persistence.persist(makeRequest())
-      #expect(try database.getSpans(afterId: -1).isEmpty)
+  func `drops every request while recording is disabled`() {
+    let persistence = NetworkRequestPersistence(
+      configuration: NetworkTracesConfiguration(enabled: false),
+      registry: registry
+    ) {
+      return "s"
     }
+    persistence.persist(makeRequest())
+    #expect(sink.calls.isEmpty)
   }
 
   @Test
   func `records only requests matching the configured filter`() throws {
-    try withTemporaryDatabase { database in
-      try insertSession(id: "s", into: database)
-      let persistence = NetworkRequestPersistence(
-        database: database,
-        configuration: NetworkTracesConfiguration(enabled: true, hosts: ["API.myapp.com"], methods: nil)
-      ) {
-        return "s"
-      }
-      persistence.persist(makeRequest(url: "https://api.example.com/skip"))
-      persistence.persist(makeRequest(url: "https://api.myapp.com/keep"))
-      let rows = try database.getSpans(afterId: -1)
-      #expect(rows.count == 1)
-      let attributes = try attributesDict(#require(rows.first))
-      #expect(attributes["url.full"] as? String == "https://api.myapp.com/keep")
+    let persistence = NetworkRequestPersistence(
+      configuration: NetworkTracesConfiguration(enabled: true, hosts: ["API.myapp.com"], methods: nil),
+      registry: registry
+    ) {
+      return "s"
     }
+    persistence.persist(makeRequest(url: "https://api.example.com/skip"))
+    persistence.persist(makeRequest(url: "https://api.myapp.com/keep"))
+    #expect(recordedSpans.count == 1)
+    let attributes = try attributesDict(#require(recordedSpans.first))
+    #expect(attributes["url.full"] as? String == "https://api.myapp.com/keep")
   }
 
   @Test
-  func `applies a configuration change to subsequent requests only`() throws {
-    // "Applies forward": rows persisted before the change stay in the table and still dispatch.
-    try withTemporaryDatabase { database in
-      try insertSession(id: "s", into: database)
-      let persistence = NetworkRequestPersistence(
-        database: database,
-        configuration: NetworkTracesConfiguration(enabled: true)
-      ) {
-        return "s"
-      }
-      persistence.persist(makeRequest())
-      persistence.setConfiguration(NetworkTracesConfiguration(enabled: false))
-      persistence.persist(makeRequest())
-      #expect(try database.getSpans(afterId: -1).count == 1)
+  func `applies a configuration change to subsequent requests only`() {
+    let persistence = NetworkRequestPersistence(
+      configuration: NetworkTracesConfiguration(enabled: true),
+      registry: registry
+    ) {
+      return "s"
     }
+    persistence.persist(makeRequest())
+    persistence.setConfiguration(NetworkTracesConfiguration(enabled: false))
+    persistence.persist(makeRequest())
+    #expect(recordedSpans.count == 1)
   }
 
   @Test
-  func `persists a completed request as a span attributed to the provided session`() throws {
-    try withTemporaryDatabase { database in
-      try insertSession(id: "main-session", into: database)
-      let persistence = NetworkRequestPersistence(
-        database: database,
-        configuration: NetworkTracesConfiguration(enabled: true)
-      ) {
-        return "main-session"
-      }
-      persistence.persist(makeRequest())
-      let rows = try database.getSpans(afterId: -1)
-      #expect(rows.count == 1)
-      #expect(rows.first?.sessionId == "main-session")
-      #expect(rows.first?.name == "GET")
-      #expect(rows.first?.kind == SpanRow.clientKind)
+  func `records a completed request as a span attributed to the provided session`() {
+    let persistence = NetworkRequestPersistence(
+      configuration: NetworkTracesConfiguration(enabled: true),
+      registry: registry
+    ) {
+      return "main-session"
     }
+    persistence.persist(makeRequest())
+    guard case .spans(let spans, let sessionId) = sink.calls.first else {
+      Issue.record("Expected spans, got \(sink.calls)")
+      return
+    }
+    #expect(sessionId == "main-session")
+    #expect(spans.map(\.name) == ["GET"])
+    #expect(spans.first?.kind == NetworkSpan.clientKind)
   }
 
   @Test
-  func `persists each request the monitor records`() throws {
-    try withTemporaryDatabase { database in
-      try insertSession(id: "main-session", into: database)
-      let monitor = NetworkRequestMonitor()
-      monitor.persistence = NetworkRequestPersistence(
-        database: database,
-        configuration: NetworkTracesConfiguration(enabled: true)
-      ) {
-        return "main-session"
-      }
-      monitor.record(makeRequest(method: "GET"))
-      monitor.record(makeRequest(method: "POST"))
-      let rows = try database.getSpans(afterId: -1)
-      #expect(rows.map(\.name) == ["GET", "POST"])
+  func `records each request the monitor records`() {
+    let monitor = NetworkRequestMonitor()
+    monitor.persistence = NetworkRequestPersistence(
+      configuration: NetworkTracesConfiguration(enabled: true),
+      registry: registry
+    ) {
+      return "main-session"
     }
-  }
-
-  @Test
-  func `drops a request whose session row does not exist yet`() throws {
-    // The sessions FK protects referential integrity; persistence must degrade to a dropped
-    // row rather than throw into the monitor's record path.
-    try withTemporaryDatabase { database in
-      let persistence = NetworkRequestPersistence(
-        database: database,
-        configuration: NetworkTracesConfiguration(enabled: true)
-      ) {
-        return "never-inserted"
-      }
-      persistence.persist(makeRequest())
-      let rows = try database.getSpans(afterId: -1)
-      #expect(rows.isEmpty)
-    }
+    monitor.record(makeRequest(method: "GET"))
+    monitor.record(makeRequest(method: "POST"))
+    #expect(recordedSpans.map(\.name) == ["GET", "POST"])
   }
 }

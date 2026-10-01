@@ -15,7 +15,7 @@ private func makeRow(
   spanId: String = "00f067aa0ba902b7",
   parentSpanId: String? = nil,
   name: String = "GET",
-  kind: Int = SpanRow.clientKind,
+  kind: Int = NetworkSpan.clientKind,
   startTimestampMs: Int64 = startMs,
   endTimestampMs: Int64 = endMs,
   statusCode: Int? = nil,

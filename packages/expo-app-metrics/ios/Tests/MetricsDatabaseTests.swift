@@ -669,10 +669,10 @@ struct MetricsDatabaseTests {
           spanId: "00f067aa0ba902b7",
           parentSpanId: "abcdef0123456789",
           name: "POST",
-          kind: SpanRow.clientKind,
+          kind: NetworkSpan.clientKind,
           startTimestampMs: 1_782_131_895_000,
           endTimestampMs: 1_782_131_895_250,
-          statusCode: SpanRow.statusError,
+          statusCode: NetworkSpan.statusError,
           statusMessage: "went wrong",
           attributes: "{\"url.full\":\"https://example.com\"}",
           events: "[{\"name\":\"http.redirect\"}]"
@@ -685,10 +685,10 @@ struct MetricsDatabaseTests {
       #expect(row.spanId == "00f067aa0ba902b7")
       #expect(row.parentSpanId == "abcdef0123456789")
       #expect(row.name == "POST")
-      #expect(row.kind == SpanRow.clientKind)
+      #expect(row.kind == NetworkSpan.clientKind)
       #expect(row.startTimestampMs == 1_782_131_895_000)
       #expect(row.endTimestampMs == 1_782_131_895_250)
-      #expect(row.statusCode == SpanRow.statusError)
+      #expect(row.statusCode == NetworkSpan.statusError)
       #expect(row.statusMessage == "went wrong")
       #expect(row.attributes == "{\"url.full\":\"https://example.com\"}")
       #expect(row.events == "[{\"name\":\"http.redirect\"}]")
@@ -920,7 +920,7 @@ private func makeSpanRow(
   spanId: String = SpanRow.generateSpanId(),
   parentSpanId: String? = nil,
   name: String = "GET",
-  kind: Int = SpanRow.clientKind,
+  kind: Int = NetworkSpan.clientKind,
   startTimestampMs: Int64 = 1_782_131_895_000,
   endTimestampMs: Int64 = 1_782_131_895_250,
   statusCode: Int? = nil,

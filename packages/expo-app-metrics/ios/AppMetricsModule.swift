@@ -11,6 +11,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     Name("ExpoAppMetrics")
 
     OnCreate {
+      MetricsSinkRegistry.register(DatabaseMetricsSink.shared)
       AppMetricsActor.isolated {
         AppMetrics.mainSession.updatesMonitor.patchAppInfoIfNeeded()
       }
@@ -46,7 +47,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         sanitized.attributes,
         displayName: validateDisplayName(options?.displayName)
       )
-      // Globals merge happens in `LogRow.from` so every persistence path picks them up.
+      // Globals merge happens in `MetricsSinkRegistry` so every record path picks them up.
       let record = LogRecord(
         name: validatedName,
         body: validatedBody,
@@ -97,8 +98,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
 
     AsyncFunction("addCustomMetricToSession") { (jsMetric: JsMetric) in
       try await AppMetricsActor.isolated {
-        let metric = jsMetric.toMetric()
-        try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: jsMetric.sessionId))
+        try MetricsSinkRegistry.shared.record(metrics: [jsMetric.toMetric()], sessionId: jsMetric.sessionId)
       }.value
     }
 

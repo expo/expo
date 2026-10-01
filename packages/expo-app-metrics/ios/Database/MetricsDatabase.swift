@@ -28,7 +28,7 @@ final class MetricsDatabase: Sendable {
   /// Opens the database, falling back to a wipe-and-retry on the first failure. The retry exists for
   /// the rare case where the on-disk file is corrupted in a way the schema-mismatch path can't detect
   /// (e.g. truncated WAL after a power loss). Throws the second error if the retry also fails — the
-  /// caller (`AppMetrics.database`) decides what to do with that. Also removes the legacy JSON storage
+  /// caller (`DatabaseMetricsSink.database`) decides what to do with that. Also removes the legacy JSON storage
   /// file, if it's still on the device.
   static func openWipingOnFailure(fileName: String = "metrics") throws -> MetricsDatabase {
     cleanUpLegacyStorage()

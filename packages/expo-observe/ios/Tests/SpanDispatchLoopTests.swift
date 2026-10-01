@@ -192,7 +192,7 @@ struct SpanDispatchLoopTests {
         id: id,
         sessionId: "s",
         name: "GET",
-        kind: SpanRow.clientKind,
+        kind: NetworkSpan.clientKind,
         startTimestampMs: 1_782_131_895_000,
         endTimestampMs: 1_782_131_895_250
       )
