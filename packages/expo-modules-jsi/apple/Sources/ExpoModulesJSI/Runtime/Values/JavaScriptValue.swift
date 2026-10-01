@@ -732,9 +732,18 @@ extension JavaScriptValue: JSIRepresentable {
 extension JavaScriptValue {
   public struct TypeError: Error, CustomStringConvertible {
     let type: any ~Copyable.Type
+    /// A specific explanation that replaces the generic message, when the failure needs one.
+    var reason: String? = nil
+    /// Where inside the converted value the failure happened, such as `.user.tags[1]`. Empty when it's
+    /// the value itself.
+    var path: String = ""
 
     public var description: String {
-      return "TypeError: Value cannot be represented as \(type)"
+      let message = "TypeError: \(reason ?? "Value cannot be represented as \(type)")"
+      guard !path.isEmpty else {
+        return message
+      }
+      return "\(message) (path: \(path.hasPrefix(".") ? path.dropFirst() : Substring(path)))"
     }
   }
 }
