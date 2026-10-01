@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+
 import ExpoFileSystem from '../ExpoFileSystem';
 import {
   File,
