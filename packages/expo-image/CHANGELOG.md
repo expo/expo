@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [Android] Fix `tintColor` not applying to SVG colors set to `currentColor`. ([#50744](https://github.com/expo/expo/pull/50744) by [@apuyou](https://github.com/apuyou))
+
 ## 58.0.8
 
 ### Patch Changes

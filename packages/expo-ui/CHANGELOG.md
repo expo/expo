@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [android] Fix `community/picker` `Picker` not updating its displayed label after a selection or a `selectedValue` change. ([#50801](https://github.com/expo/expo/pull/50801) by [@RaddishIoW](https://github.com/RaddishIoW))
+- [web] Fix `ListItem` always showing a pointer cursor, even without an `onPress`, because React Native Web's `Pressable` applies one unconditionally. A `ListItem` with no `onPress` now shows the default cursor instead of misleadingly looking clickable. ([#49986](https://github.com/expo/expo/pull/49986) by [@timheilman](https://github.com/timheilman))
+- [iOS][Android] `RNHostView` `matchContents` accepts `{ horizontal, vertical }`, so hosted content can take its width from the parent and its height from the content. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `preferredColorScheme` modifier, which sets the color scheme of a presentation such as `BottomSheet`, including its background. ([#50851](https://github.com/expo/expo/pull/50851) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 58.0.9
 
 ### Patch Changes

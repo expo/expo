@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.2
+
+### Patch Changes
+
+- [Web] Fix spaces in the `subject` and `body` of `composeAsync` appearing as "+" in the mail client. ([#41465](https://github.com/expo/expo/pull/41465) by [@jpaas](https://github.com/jpaas))
+
 ## 58.0.1
 
 ### Patch Changes

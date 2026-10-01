@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Lay out `RNHostView` hosted content at the size SwiftUI or Compose gives it on an axis that `matchContents` does not match. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#50805](https://github.com/expo/expo/pull/50805), [#50844](https://github.com/expo/expo/pull/50844), [#50806](https://github.com/expo/expo/pull/50806))
+  - expo-modules-jsi@58.0.6
+
 ## 58.0.9
 
 ### Patch Changes

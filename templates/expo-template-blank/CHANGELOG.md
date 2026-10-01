@@ -1,5 +1,12 @@
 # expo-template-blank
 
+## 58.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#50824](https://github.com/expo/expo/pull/50824), [#50815](https://github.com/expo/expo/pull/50815), [#50770](https://github.com/expo/expo/pull/50770), [#50547](https://github.com/expo/expo/pull/50547), [#50548](https://github.com/expo/expo/pull/50548))
+  - expo@58.0.1
+
 ## 58.0.9
 
 ### Patch Changes

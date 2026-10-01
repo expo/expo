@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Add React hook and component helper stubs to prevent missing API errors when rendering widgets, including `memo` and `forwardRef`. ([#50834](https://github.com/expo/expo/pull/50834) by [@jakex7](https://github.com/jakex7))
+- [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#50801](https://github.com/expo/expo/pull/50801), [#49986](https://github.com/expo/expo/pull/49986), [#50674](https://github.com/expo/expo/pull/50674), [#50786](https://github.com/expo/expo/pull/50786), [#50851](https://github.com/expo/expo/pull/50851))
+  - @expo/ui@58.0.10
+
 ## 58.0.9
 
 ### Patch Changes

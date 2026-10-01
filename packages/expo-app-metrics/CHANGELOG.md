@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Remove the legacy `metrics.json` file left behind by the JSON storage that was replaced with SQLite. ([#50752](https://github.com/expo/expo/pull/50752) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add privacy manifest describing required reason API usage. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
+
 ## 58.0.9
 
 ### Patch Changes
