@@ -12,6 +12,10 @@ const TEST_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-docs-worker-test-')
 let wranglerProcess: ChildProcess | null = null;
 let workerOutput = '';
 const NATIVE_TABS = '/versions/latest/sdk/router/native-tabs/';
+const BROWSER_NAVIGATION_HEADERS = {
+  'Sec-Fetch-Mode': 'navigate',
+  'Sec-Fetch-Dest': 'document',
+};
 
 function waitForReady(process: ChildProcess, timeoutMs = 30000): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -548,14 +552,19 @@ async function testHtmlNotFoundAsync(): Promise<void> {
 async function testUrlRecoveryAsync(): Promise<void> {
   console.log('\n--- Testing URL recovery with the mock AI binding ---');
   for (const path of ['/router/basics/tabs/', '/router/layouts/tabs']) {
-    const response = await fetch(`${BASE_URL}${path}`, { redirect: 'manual' });
+    const response = await fetch(`${BASE_URL}${path}`, {
+      headers: BROWSER_NAVIGATION_HEADERS,
+      redirect: 'manual',
+    });
     if (
       response.status !== 302 ||
       response.headers.get('location') !== `${BASE_URL}${NATIVE_TABS}`
     ) {
       throw new Error(`Expected recovery redirect for ${path}, got ${response.status}`);
     }
-    const markdown = await fetch(`${BASE_URL}${path}`, { headers: { Accept: 'text/markdown' } });
+    const markdown = await fetch(`${BASE_URL}${path}`, {
+      headers: { ...BROWSER_NAVIGATION_HEADERS, Accept: 'text/markdown' },
+    });
     if (markdown.status !== 200 || !(await markdown.text()).includes('# Native tabs')) {
       throw new Error(`Expected recovered Markdown for ${path}`);
     }
