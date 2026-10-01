@@ -758,11 +758,64 @@ const preview = [
       [
         makePage('preview/eas-simulator/introduction.mdx'),
         makePage('preview/eas-simulator/get-started.mdx'),
-        makePage('preview/eas-simulator/run-and-control.mdx'),
-        makePage('preview/eas-simulator/create-session-links.mdx'),
-        makePage('preview/eas-simulator/cli-reference.mdx'),
-        makePage('preview/eas-simulator/rest-api.mdx'),
+        makeGroup(
+          'How-to',
+          [
+            makePage('preview/eas-simulator/how-to/start-a-session.mdx'),
+            makePage('preview/eas-simulator/how-to/install-your-app.mdx'),
+            makePage('preview/eas-simulator/how-to/drive-the-device.mdx'),
+            makePage('preview/eas-simulator/how-to/iterate-on-your-code.mdx'),
+            makePage('preview/eas-simulator/how-to/capture-evidence.mdx'),
+            makePage('preview/eas-simulator/how-to/organize-sessions.mdx'),
+            makePage('preview/eas-simulator/how-to/verify-a-change-with-an-agent.mdx'),
+            makePage('preview/eas-simulator/how-to/work-without-a-mac.mdx'),
+            makePage('preview/eas-simulator/how-to/review-a-pull-request.mdx'),
+            makePage('preview/eas-simulator/how-to/run-in-ci.mdx'),
+            makePage('preview/eas-simulator/how-to/hand-off-a-session.mdx'),
+          ],
+          { expanded: false }
+        ),
+        makeGroup(
+          'Works with',
+          [
+            makePage('preview/eas-simulator/works-with/overview.mdx'),
+            makePage('preview/eas-simulator/works-with/expo-and-react-native.mdx'),
+            makePage('preview/eas-simulator/works-with/native-ios-and-android.mdx'),
+            makePage('preview/eas-simulator/works-with/flutter.mdx'),
+            makePage('preview/eas-simulator/works-with/unity-and-hybrid.mdx'),
+            makePage('preview/eas-simulator/works-with/appium.mdx'),
+            makePage('preview/eas-simulator/works-with/maestro.mdx'),
+            makePage('preview/eas-simulator/works-with/expo-go.mdx'),
+          ],
+          { expanded: false }
+        ),
+        makeGroup(
+          'Reference',
+          [
+            makePage('preview/eas-simulator/reference/session-types.mdx'),
+            makePage('preview/eas-simulator/reference/cli.mdx'),
+            makePage('preview/eas-simulator/reference/rest-api.mdx'),
+            makePage('preview/eas-simulator/reference/devices.mdx'),
+            makePage('preview/eas-simulator/reference/usage-and-billing.mdx'),
+            makePage('preview/eas-simulator/reference/security-and-data.mdx'),
+          ],
+          { expanded: false }
+        ),
+        makeGroup(
+          'How it works',
+          [
+            makePage('preview/eas-simulator/how-it-works/sessions.mdx'),
+            makePage('preview/eas-simulator/how-it-works/security-model.mdx'),
+            makePage('preview/eas-simulator/how-it-works/network-inspection.mdx'),
+            makePage('preview/eas-simulator/how-it-works/builds-and-bundles.mdx'),
+            makePage('preview/eas-simulator/how-it-works/agent-targeting.mdx'),
+            makePage('preview/eas-simulator/how-it-works/devices-compared.mdx'),
+            makePage('preview/eas-simulator/how-it-works/session-lifetime.mdx'),
+          ],
+          { expanded: false }
+        ),
         makePage('preview/eas-simulator/troubleshooting.mdx'),
+        makePage('preview/eas-simulator/limitations.mdx'),
       ],
       { expanded: true }
     ),

@@ -1,0 +1,109 @@
+---
+title: Use an iOS Simulator on Linux or Windows
+sidebar_title: Work without a Mac
+description: Build an iOS app with EAS Build and run it on a remote iOS Simulator from Linux, Windows, or a cloud sandbox with EAS Simulator.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+The iOS Simulator runs only on macOS. With EAS Simulator, the iOS Simulator runs on a Mac on EAS, and you control it from any computer. Use EAS Build to create the iOS Simulator build, then install it on an EAS Simulator session.
+
+This workflow also works in a cloud sandbox or for a background coding agent that cannot run a local simulator.
+
+## Build and run on a remote iOS Simulator
+
+<Step label="1">
+
+### Add a simulator build profile
+
+Add an EAS Build profile that targets the iOS Simulator. For live edits with Fast Refresh, also add `developmentClient: true`:
+
+```json eas.json
+{
+  "build": {
+    "development-simulator": {
+      "developmentClient": true,
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+iOS Simulator builds are not signed, so EAS Build does not ask for credentials for this build.
+
+</Step>
+
+<Step label="2">
+
+### Create the build on EAS
+
+<Terminal cmd={['$ eas build --platform ios --profile development-simulator --non-interactive']} />
+
+Record the build ID from the output.
+
+</Step>
+
+<Step label="3">
+
+### Start Metro with a tunnel
+
+<Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
+
+Skip this step if you only need a fixed build without live edits. Then use a profile without `developmentClient`.
+
+</Step>
+
+<Step label="4">
+
+### Start the session with the build
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --build-id <build-id> \\',
+    '    --open-url "<scheme>://expo-development-client/?url=<encoded-public-metro-url>" \\',
+    '    --name "Profile screen live edits" --non-interactive',
+  ]}
+/>
+
+</Step>
+
+<Step label="5">
+
+### See and control the simulator
+
+Open the `webPreviewUrl` from the start output in a desktop browser. You can also use agent-device commands through `eas simulator:exec`. See [Drive the device](/preview/eas-simulator/how-to/drive-the-device/).
+
+</Step>
+
+<Step label="6">
+
+### Stop the session
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+Stop Metro too.
+
+</Step>
+
+## Run commands on Windows
+
+The `eas` and `agent-device` commands work on Windows. Some shell examples in these docs, such as loops and `printf`, need a POSIX shell. Use Windows Subsystem for Linux (WSL) or Git Bash to run them.
+
+## Common questions
+
+### Do I need Xcode?
+
+No. EAS Build creates the iOS Simulator build, and EAS Simulator runs the iOS Simulator. You need Xcode only to create a build on your own computer.
+
+### Which iOS devices can I use?
+
+See [Devices](/preview/eas-simulator/reference/devices/).
+
+### Can I use an Android Emulator on Linux instead?
+
+Yes. A local Android Emulator runs on Linux and Windows. Use an EAS Simulator Android session when your computer cannot run an emulator, or when an agent in a sandbox needs one.

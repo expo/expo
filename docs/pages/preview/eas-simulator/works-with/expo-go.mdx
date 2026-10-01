@@ -1,0 +1,89 @@
+---
+title: Test your project in Expo Go on a remote simulator
+sidebar_title: Expo Go
+description: Install Expo Go on an EAS Simulator session, connect it to Metro through a tunnel, and test a project that has no custom native code without creating a build.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Yes, you can use Expo Go on EAS Simulator to test your project without a build. Pass `--expo-go` to `eas simulator:start`. EAS installs the Expo Go version that matches the Expo SDK of your project. Then Expo Go opens your project from Metro through a tunnel.
+
+Expo Go works only for projects that have no custom native code. For other projects, use a [development build](/preview/eas-simulator/how-to/iterate-on-your-code/).
+
+## Connect Expo Go to Metro
+
+<Step label="1">
+
+### Start Metro with a tunnel
+
+The remote device must reach Metro over the internet. Start Metro first, because EAS opens the Metro URL while the session starts:
+
+<Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
+
+</Step>
+
+<Step label="2">
+
+### Start the session with Expo Go
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --expo-go \\',
+    '    --launch-arg "-EXDevMenuIsOnboardingFinished" --launch-arg "1" \\',
+    '    --open-url "exp://<metro-host>" \\',
+    '    --name "Expo Go live preview" --non-interactive',
+  ]}
+/>
+
+Replace `<metro-host>` with the host of the tunnel URL, without a port. Use an `exp://` URL. An `https://` URL opens in Safari instead of Expo Go.
+
+The launch argument hides the developer menu onboarding screen.
+
+</Step>
+
+<Step label="3">
+
+### Check the result
+
+Open the `webPreviewUrl` in a desktop browser, or take a screenshot through the controller. Edit a source file to see the change with Fast Refresh.
+
+</Step>
+
+## Select an Expo Go version
+
+EAS CLI reads the Expo SDK version from the project. To use a different version, pass `--sdk-version` together with `--expo-go`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --expo-go --sdk-version <version> --name "Expo Go SDK check" --non-interactive',
+  ]}
+/>
+
+`--sdk-version` works only with `--expo-go`.
+
+## Start Expo Go from a link
+
+A create session link can also start Expo Go. Set `expoGo=true` and `platform=ios`, and pass the Metro URL as `openUrl`:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/create?expoGo=true&platform=ios&openUrl=exp%3A%2F%2F<metro-host>
+```
+
+See [Hand off a session](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
+
+## Common questions
+
+### Expo Go cannot find the SDK version. What do I do?
+
+Run the command from an Expo project with a valid app config, or pass `--sdk-version <version>` with `--expo-go`.
+
+### Can I profile native code in Expo Go?
+
+In Expo Go, native CPU, memory, and trace profiling measure the Expo Go process, not your project. Use a development build to profile your native code.
+
+### Why does my project not load?
+
+Confirm that Metro runs before the session starts and that the `--open-url` value uses the `exp://` scheme. Do not pass the `webPreviewUrl` to `--open-url`. See [Troubleshooting](/preview/eas-simulator/troubleshooting/).

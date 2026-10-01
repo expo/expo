@@ -1,0 +1,48 @@
+---
+title: EAS Simulator compared with local simulators, physical devices, and device clouds
+sidebar_title: Devices compared
+description: Compare EAS Simulator with a local iOS Simulator or Android Emulator, a physical device, and a device cloud to select the right device for a task.
+---
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator runs a stock iOS Simulator or Android Emulator on EAS. It does the same work as a local simulator, but on a remote machine that you, an agent, or another person can reach. It does not replace a physical device. Use EAS Simulator when your computer or sandbox cannot run the device, when an agent needs a device, or when you want to share a live device.
+
+## Comparison
+
+| Feature                       | EAS Simulator                    | Local simulator or emulator     | Physical device          | Device cloud                      |
+| ----------------------------- | -------------------------------- | ------------------------------- | ------------------------ | --------------------------------- |
+| Where it runs                 | EAS infrastructure               | Your computer                   | In your hand             | The provider's infrastructure     |
+| Needs a Mac for iOS           | No                               | Yes                             | Depends on how you build | Depends on the provider           |
+| Works from Linux or a sandbox | Yes                              | Android only                    | Not applicable           | Depends on the provider           |
+| Browser preview               | Yes, on iOS                      | No                              | No                       | Depends on the provider           |
+| Shareable with a link         | Yes, on iOS                      | No                              | No                       | Depends on the provider           |
+| Agent control                 | agent-device, Argent, or Appium  | agent-device, Argent, or Appium | agent-device, with setup | agent-device through the provider |
+| Fast Refresh with Metro       | Yes, through a public tunnel     | Yes                             | Yes                      | Depends on the provider           |
+| Physical hardware             | No                               | No                              | Yes                      | Depends on the provider           |
+| Cost                          | EAS usage while the session runs | Your computer's resources       | The device               | The provider's pricing            |
+
+## When to use each device
+
+| Task                                                                          | Recommended device            |
+| ----------------------------------------------------------------------------- | ----------------------------- |
+| Daily development on a Mac                                                    | Local iOS Simulator           |
+| iOS development on Linux or Windows                                           | EAS Simulator                 |
+| A cloud or background coding agent verifies a change                          | EAS Simulator                 |
+| Share a live build with a reviewer                                            | EAS Simulator browser preview |
+| Test the camera, sensors, push notifications, or performance on real hardware | Physical device               |
+| Test on many real device models                                               | A device cloud                |
+
+## What a simulator cannot test
+
+A simulator or an emulator is not a physical phone. Hardware features, such as the camera and sensors, and real device performance are different. Test these on a physical device before you release your app. agent-device supports physical devices and device clouds, with platform-specific setup. See [agent-device and Expo](/agents/agent-device/).
+
+## Common questions
+
+### Is EAS Simulator slower than a local simulator?
+
+Startup takes longer. A session can wait in a queue, and a cold start of the device can take minutes. On iOS, a snapshot of the accessibility tree can take tens of seconds. After the session is ready, controller commands go over the network.
+
+### Does EAS Simulator support physical devices?
+
+No. EAS Simulator runs only simulators and emulators.

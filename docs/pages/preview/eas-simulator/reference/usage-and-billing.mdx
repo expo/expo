@@ -1,0 +1,71 @@
+---
+title: EAS Simulator usage, limits, and billing
+sidebar_title: Usage and billing
+description: Learn how EAS Simulator access works, how long a session can run on each plan, how sessions share concurrency, and how to control usage.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator is an EAS service. A session consumes usage from the time it starts until it stops. To control usage, stop each session when you finish and set a maximum duration. For current prices and terms, see [Expo pricing](https://expo.dev/pricing).
+
+## Access
+
+Access to EAS Simulator does not come with a plan. Expo enables it for each account. Check the account of the current project:
+
+<Terminal cmd={['$ eas simulator:availability --json']} />
+
+The check is read-only. It does not start a device or consume usage. If `available` is `false`, `eas simulator:start` fails with a message that links to the waitlist.
+
+## Session duration limits
+
+Each session has a maximum duration. When the session reaches it, EAS stops the session.
+
+| Plan | Maximum session duration |
+| ---- | ------------------------ |
+| Free | 40 minutes               |
+| Paid | 115 minutes              |
+
+If you do not set a maximum duration, the session gets the maximum for the plan. To set a shorter limit, use `--max-duration-minutes` in EAS CLI or `maxDurationMinutes` in the REST API. A value above the plan limit returns an error.
+
+EAS adds five minutes after the session duration for cleanup. The cleanup time is not part of the session duration.
+
+## Billing
+
+## Concurrency and queueing
+
+Sessions run as EAS jobs and share the account's job concurrency with EAS Build and EAS Workflows. A running session holds one concurrency slot for its whole duration, also when the device is idle.
+
+When no slot is free, the session waits in a queue. EAS CLI shows that the session is queued or waiting for available concurrency. Queue time does not count toward the 15-minute startup timeout.
+
+## Control usage
+
+Use these methods to keep usage low:
+
+| Method                            | Command or field                                                 |
+| --------------------------------- | ---------------------------------------------------------------- |
+| Stop each session when you finish | `eas simulator:stop`, or `POST /v2/device-run-sessions/:id/stop` |
+| Set a maximum duration            | `--max-duration-minutes`, or `maxDurationMinutes`                |
+| Stop idle sessions                | `--max-idle-time-minutes`, or `maxIdleTimeMinutes`               |
+| Find sessions that still run      | `eas simulator:list --status in-progress`                        |
+
+Only agent-device and Argent activity resets the idle timer. See [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
+
+> **warning** `--non-interactive` does not stop the session when the command returns, and a CI job that ends does not stop the session. A session that you do not stop runs until its maximum duration.
+
+Each opening of a create session link starts a new session. See [Hand off a session](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
+
+## Common questions
+
+### Does the availability check consume usage?
+
+No. `eas simulator:availability` only reads the account status.
+
+### Does a session in the queue consume usage?
+
+The 15-minute startup timeout does not include queue time.
+
+### Does a session stop when my terminal closes?
+
+Only when EAS CLI is attached in interactive mode and you press <kbd>Ctrl</kbd> + <kbd>C</kbd>. A session started with `--non-interactive` or `--json` keeps running.

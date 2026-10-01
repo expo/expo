@@ -17,7 +17,7 @@ The installed EAS CLI is too old. [Install or update EAS CLI](/eas/cli/), then i
 
 <Terminal cmd={['$ eas simulator:start --help']} />
 
-The commands remain hidden because the API is experimental.
+The `simulator:*` commands appear in `eas --help` from EAS CLI 24.8.0. In earlier versions, the commands are hidden from the help output.
 
 ### `simulator:start` rejects a documented flag
 
@@ -47,6 +47,10 @@ Run the command inside the Expo project and initialize EAS:
 
 <Terminal cmd={['$ eas init']} />
 
+### `Device run session max duration must not exceed ... minutes for this account`
+
+The requested `--max-duration-minutes` value is larger than the limit for your plan. The limit is 40 minutes on the free plan and 115 minutes on paid plans. Use a smaller value, or omit the flag to use the plan maximum. See [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
+
 ## Session lifecycle problems
 
 ### The session takes a long time to start
@@ -75,6 +79,16 @@ List active sessions and stop the old one explicitly:
 
 Use `--no-force` when you want `simulator:start` to fail instead of creating a new session while the environment already contains an ID. Give every session a descriptive `--name` so it is easy to identify in the list.
 
+### The start command shows that the session is queued
+
+The session waits for available concurrency on your account. Sessions use the same job concurrency as other EAS jobs, such as EAS Build. Queue time does not count toward the 15-minute startup timeout. Stop sessions that you do not need to free concurrency:
+
+<Terminal cmd={['$ eas simulator:list --status in-progress']} />
+
+### An Appium or browser preview session stopped while someone used it
+
+Only agent-device and Argent activity resets the idle timer. Appium commands and browser preview activity do not. Omit `--max-idle-time-minutes` for these sessions, and use `--max-duration-minutes` to limit them.
+
 ## Controller and tunnel problems
 
 ### `Remote daemon is unavailable` or the tunnel endpoint is offline
@@ -82,6 +96,22 @@ Use `--no-force` when you want `simulator:start` to fail instead of creating a n
 The controller tunnel has dropped or the remote VM has ended. A dropped controller invalidates the installed app state, accessibility references, and connection configuration.
 
 Stop the session if it is still active, then start a fresh session and repeat install → open → drive. Do not repeatedly retry a controller command against the dead endpoint.
+
+### Screenshots show a local simulator instead of the remote device
+
+If **.env.eas-simulator** has no connection details, agent-device can use a local simulator without an error. This can happen when another `simulator:start` command replaced the file. Confirm that `eas simulator:get --json` returns the session ID that the start command printed. In the agent-device output, the session state path of a remote session is under **/Users/expo/**. See [Agent targeting](/preview/eas-simulator/how-it-works/agent-targeting/).
+
+### `DEVICE_NOT_FOUND` when you select a second device
+
+In a remote session, the agent-device `--device` flag accepts a device name, not a UDID. List the device names:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest devices --json']} />
+
+### Argent returns `401 Unauthorized` after `argent link`
+
+`argent link` without `--yes` keeps the old token when the URL is already linked. Link again with `--yes`:
+
+<Terminal cmd={["$ argent link '<ARGENT_TOOLS_URL>' --token '<ARGENT_AUTH_TOKEN>' --yes"]} />
 
 ### `Unknown command: tap` or `Unknown command: click`
 
@@ -144,6 +174,10 @@ A release build embeds JavaScript at build time. Rebuild it from the current sou
 
 Changing source files does not update an already-installed release build.
 
+### A recording did not download
+
+The recording can still be a session artifact. Get the session with its ID and download the file from `artifacts[].downloadUrl`. See [Capture evidence](/preview/eas-simulator/how-to/capture-evidence/#recover-a-recording-that-did-not-download).
+
 ### Fast Refresh does not work
 
 Confirm all of the following:
@@ -168,6 +202,24 @@ Android browser preview is not currently supported. Use agent-device or Argent a
 ### The preview appears inside the simulator
 
 The `webPreviewUrl` was opened as though it were an app URL. Open it in the desktop browser instead. It is a browser stream, not an application deep link.
+
+## Network problems
+
+### `--egress local is only supported with --platform ios`
+
+Local egress uses the macOS system proxy, so it works only for iOS sessions.
+
+### Local egress is not enabled for the account
+
+Local egress is an experimental feature. Contact Expo to enable it for your account.
+
+### Requests fail after the egress client disconnects
+
+In a local egress session, proxied requests fail while the egress client is disconnected. The client tries to connect again. Keep `eas simulator:egress` running for the life of the session. The session keeps running and consuming usage while the client is disconnected.
+
+### The app cannot reach a server on your computer through local egress
+
+Local egress refuses local and private addresses unless you allow them. Start the session with `--egress-allow <host:port>` for each server, such as `--egress-allow localhost:3000`. See [Network inspection](/preview/eas-simulator/how-it-works/network-inspection/).
 
 </FAQ>
 

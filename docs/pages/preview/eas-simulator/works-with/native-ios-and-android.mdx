@@ -1,0 +1,175 @@
+---
+title: Run a native Android or iOS app on EAS Simulator
+sidebar_title: Native Android and iOS
+description: Install a Kotlin, Java, Swift, or Objective-C app built with Gradle or Xcode on a remote Android Emulator or iOS Simulator from an archive URL.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Yes, you can use EAS Simulator with a native Android or iOS app. EAS Simulator starts a stock Android Emulator or iOS Simulator, so the app does not need Expo or React Native. Build the app for the emulator or simulator, publish it to a URL, and pass the URL when you start the session.
+
+> **warning** This guide uses the application archive source. The Expo Go and fingerprint sources do not apply, and the React Native features of each controller do not work. See [Limitations](#limitations) before you start.
+
+<Prerequisites>
+  <Requirement title="An Expo account with EAS Simulator access">
+    Access is granted directly to select partners. Check the account before you start a session.
+  </Requirement>
+  <Requirement title="An EAS project">
+    A session belongs to an EAS project. Create one at [expo.dev](https://expo.dev). The project
+    does not need Expo source code. Copy its project ID.
+  </Requirement>
+  <Requirement title="A download URL for the app">
+    The remote device downloads the app over HTTPS. Prepare storage that serves a direct URL.
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+### Build for the emulator or simulator
+
+The remote device is an emulator or a simulator, not a physical phone:
+
+| Platform | Required artifact          | Constraint                                                                   |
+| -------- | -------------------------- | ---------------------------------------------------------------------------- |
+| Android  | An **.apk**                | Include an emulator ABI, such as `x86_64`. An **.aab** fails to install.     |
+| iOS      | An archive with a **.app** | Build against the `iphonesimulator` SDK. A device **.ipa** fails to install. |
+
+<Terminal
+  cmd={[
+    '$ ./gradlew assembleDebug',
+    '$ xcodebuild -scheme MyApp -sdk iphonesimulator -derivedDataPath ./build',
+  ]}
+/>
+
+For iOS, compress the **.app** directory into an archive, such as a **.tar.gz** file.
+
+</Step>
+
+<Step label="2">
+
+### Publish the artifact to a URL
+
+Upload the file to storage that returns the file directly. A signed URL works while it is valid. The remote device downloads the file one time, when the session starts.
+
+</Step>
+
+<Step label="3">
+
+### Start a session with the archive
+
+<Tabs>
+
+<Tab label="EAS CLI">
+
+EAS CLI finds the project from the current directory. It needs **package.json** and an app config. Add both to the repository root if they do not exist:
+
+```json package.json
+{
+  "name": "my-app",
+  "version": "1.0.0"
+}
+```
+
+```json app.json
+{
+  "expo": {
+    "name": "my-app",
+    "slug": "my-app",
+    "extra": {
+      "eas": {
+        "projectId": "<project-id>"
+      }
+    }
+  }
+}
+```
+
+Start the session and pass the archive URL:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --application-archive-url "https://example.com/MyApp.app.tar.gz" --name "Native build review" --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="REST API">
+
+Use the REST API when you do not want an app config in the repository. Authenticate with an [Expo access token](/accounts/programmatic-access/):
+
+<Terminal
+  cmd={[
+    '$ curl -X POST https://api.expo.dev/v2/device-run-sessions \\',
+    '  -H "Authorization: Bearer $EXPO_TOKEN" \\',
+    '  -H "Content-Type: application/json" \\',
+    '  -d \'{"appId":"<project-id>","platform":"ios","type":"agent-device","name":"Native build review","applicationArchiveUrl":"https://example.com/MyApp.app.tar.gz"}\'',
+  ]}
+/>
+
+The response contains the session `id`, its `status`, and a `url` for the session page on expo.dev.
+
+</Tab>
+
+</Tabs>
+
+The session downloads the archive, installs the app, and launches it before the controller becomes ready. For Android, use `--platform android` and the URL of the **.apk**.
+
+</Step>
+
+<Step label="4">
+
+### Control the device
+
+Use device-level commands. They act through the operating system:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest open <application-id> --platform ios',
+    '$ eas simulator:exec npx agent-device@latest snapshot -i',
+    '$ eas simulator:exec npx agent-device@latest screenshot ./artifacts/home.png',
+  ]}
+/>
+
+Replace `<application-id>` with the Android package name or the iOS bundle identifier from your build settings. See [Drive the device](/preview/eas-simulator/how-to/drive-the-device/).
+
+</Step>
+
+<Step label="5">
+
+### Stop the session
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+The session also stops at its maximum duration. It does not stop when your terminal closes.
+
+</Step>
+
+## Limitations
+
+| Feature                                       | Available for a native app   |
+| --------------------------------------------- | ---------------------------- |
+| Boot a remote device                          | Yes                          |
+| Install and launch an app archive             | Yes                          |
+| Screenshots, video, and accessibility actions | Yes                          |
+| Browser preview, iOS sessions                 | Yes                          |
+| Install by `--build-id`                       | Only for EAS Build artifacts |
+| Install by `--expo-go` or build fingerprint   | No                           |
+| Fast Refresh and Metro                        | No                           |
+| React DevTools and component inspection       | No                           |
+| React render profiling                        | No                           |
+
+## Common questions
+
+### Can I install a local build without a URL?
+
+Yes. Start a blank session, then upload the build with agent-device `install`. See [Install a local build](/preview/eas-simulator/how-to/install-your-app/#install-a-local-build).
+
+### Why does the install fail?
+
+Check the artifact format first. An **.aab** or a device **.ipa** does not install. An Android APK without an emulator ABI does not run. See [Troubleshooting](/preview/eas-simulator/troubleshooting/).
