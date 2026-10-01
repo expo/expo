@@ -288,7 +288,8 @@ private val metricNameMap = mapOf(
   // Navigation
   (MetricCategory.Navigation.categoryName to "cold_ttr") to "expo.navigation.cold_ttr",
   (MetricCategory.Navigation.categoryName to "warm_ttr") to "expo.navigation.warm_ttr",
-  (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti"
+  (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti",
+  (MetricCategory.Navigation.categoryName to "tbt") to "expo.navigation.tbt"
 )
 
 fun EASMetric.toOTMetric(): OTMetric {
