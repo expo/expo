@@ -61,7 +61,7 @@ const nextConfig: NextConfig = {
   },
   agentRules: false,
   experimental: {
-    optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
+    optimizePackageImports: ['@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
     parallelServerCompiles: true,
     parallelServerBuildTraces: true,
     esmExternals: true,
