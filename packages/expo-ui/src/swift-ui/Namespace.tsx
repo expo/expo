@@ -1,4 +1,4 @@
-import { requireNativeView } from 'expo';
+import { requireNativeLayoutView } from '../requireNativeLayoutView';
 
 export interface NamespaceProps {
   /**
@@ -11,7 +11,7 @@ export interface NamespaceProps {
 
 type NativeNamespaceProps = NamespaceProps;
 
-const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> = requireNativeView(
+const NativeNamespaceView: React.ComponentType<NativeNamespaceProps> = requireNativeLayoutView(
   'ExpoUI',
   'NamespaceView'
 );

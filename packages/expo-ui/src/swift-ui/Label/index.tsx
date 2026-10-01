@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -37,7 +37,7 @@ export interface LabelProps extends CommonViewModifierProps {
 }
 
 const LabelNativeView: React.ComponentType<LabelProps & { children?: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'LabelView');
+  requireNativeLayoutView('ExpoUI', 'LabelView');
 
 /**
  * Renders a native label view, which could be used in a list or section.

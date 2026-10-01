@@ -1,6 +1,5 @@
-import { requireNativeView } from 'expo';
-
 import { PresentedContent } from '../../PresentedContentContext';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent, type ModifierConfig, type DialogProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -33,7 +32,7 @@ type NativeBasicAlertDialogProps = Omit<BasicAlertDialogProps, 'onDismissRequest
   >;
 
 const BasicAlertDialogNativeView: React.ComponentType<NativeBasicAlertDialogProps> =
-  requireNativeView('ExpoUI', 'BasicAlertDialogView');
+  requireNativeLayoutView('ExpoUI', 'BasicAlertDialogView');
 
 function transformProps(props: BasicAlertDialogProps): NativeBasicAlertDialogProps {
   const { modifiers, onDismissRequest, ...restProps } = props;

@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import { type Ref } from 'react';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -34,7 +34,7 @@ export interface SnackbarProps {
   modifiers?: ModifierConfig[];
 }
 
-const SnackbarNativeView: React.ComponentType<SnackbarProps> = requireNativeView(
+const SnackbarNativeView: React.ComponentType<SnackbarProps> = requireNativeLayoutView(
   'ExpoUI',
   'SnackbarView'
 );
@@ -113,7 +113,7 @@ export interface SnackbarHostProps {
   children?: React.ReactNode;
 }
 
-const SnackbarHostNativeView: React.ComponentType<SnackbarHostProps> = requireNativeView(
+const SnackbarHostNativeView: React.ComponentType<SnackbarHostProps> = requireNativeLayoutView(
   'ExpoUI',
   'SnackbarHostView'
 );

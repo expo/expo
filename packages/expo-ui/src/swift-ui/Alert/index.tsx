@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -32,7 +32,7 @@ type NativeAlertProps = Omit<AlertProps, 'onIsPresentedChange'> & {
   onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
 };
 
-const AlertNativeView: React.ComponentType<NativeAlertProps> = requireNativeView(
+const AlertNativeView: React.ComponentType<NativeAlertProps> = requireNativeLayoutView(
   'ExpoUI',
   'AlertView'
 );

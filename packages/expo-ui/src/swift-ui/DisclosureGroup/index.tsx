@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -27,7 +26,7 @@ type NativeDisclosureGroupProps = Omit<DisclosureGroupProps, 'onIsExpandedChange
   StateChangeEvent;
 
 const DisclosureGroupNativeView: React.ComponentType<NativeDisclosureGroupProps> =
-  requireNativeView('ExpoUI', 'DisclosureGroupView');
+  requireNativeLayoutView('ExpoUI', 'DisclosureGroupView');
 
 function Label({ children }: { children: React.ReactNode }) {
   return <Slot name="label">{children}</Slot>;

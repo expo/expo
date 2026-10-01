@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent, type ModifierConfig, type DialogProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -60,13 +60,13 @@ export interface AlertDialogProps {
 type NativeAlertDialogProps = Omit<AlertDialogProps, 'onDismissRequest'> &
   ViewEvent<'onDismissRequest', { onDismissRequest?: () => void }>;
 
-const AlertDialogNativeView: React.ComponentType<NativeAlertDialogProps> = requireNativeView(
+const AlertDialogNativeView: React.ComponentType<NativeAlertDialogProps> = requireNativeLayoutView(
   'ExpoUI',
   'AlertDialogView'
 );
 
 const SlotNativeView: React.ComponentType<{ slotName: string; children: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'SlotView');
+  requireNativeLayoutView('ExpoUI', 'SlotView');
 
 function transformProps(
   props: Omit<AlertDialogProps, 'children'>

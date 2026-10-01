@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
@@ -36,7 +35,7 @@ export const EdgeCornerStyle = {
 };
 
 const ConcentricRectangleNativeView: React.ComponentType<ConcentricRectangleProps> =
-  requireNativeView('ExpoUI', 'ConcentricRectangleView');
+  requireNativeLayoutView('ExpoUI', 'ConcentricRectangleView');
 
 export function ConcentricRectangle(props: ConcentricRectangleProps) {
   const { modifiers, ...restProps } = props;

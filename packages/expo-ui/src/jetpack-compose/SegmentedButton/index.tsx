@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -68,9 +68,9 @@ type NativeSegmentedButtonProps = Omit<SegmentedButtonProps, 'onClick' | 'onChec
   ViewEvent<'onCheckedChange', { value: boolean }>;
 
 const SegmentedButtonNativeView: React.ComponentType<NativeSegmentedButtonProps> =
-  requireNativeView('ExpoUI', 'SegmentedButtonView');
+  requireNativeLayoutView('ExpoUI', 'SegmentedButtonView');
 
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
   'ExpoUI',
   'SlotView'
 );

@@ -1,8 +1,8 @@
-import { requireNativeView } from 'expo';
 import type { Ref, ReactNode, ComponentType } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -11,7 +11,10 @@ type SlotNativeViewProps = {
   children: ReactNode;
 };
 
-const SlotNativeView: ComponentType<SlotNativeViewProps> = requireNativeView('ExpoUI', 'SlotView');
+const SlotNativeView: ComponentType<SlotNativeViewProps> = requireNativeLayoutView(
+  'ExpoUI',
+  'SlotView'
+);
 
 export type ModalBottomSheetRef = {
   /**
@@ -106,10 +109,8 @@ type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onDismissRequest
   onDismissRequest: () => void;
 };
 
-const ModalBottomSheetNativeView: ComponentType<NativeModalBottomSheetProps> = requireNativeView(
-  'ExpoUI',
-  'ModalBottomSheetView'
-);
+const ModalBottomSheetNativeView: ComponentType<NativeModalBottomSheetProps> =
+  requireNativeLayoutView('ExpoUI', 'ModalBottomSheetView');
 
 function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetProps {
   const { modifiers, onDismissRequest, ...restProps } = props;

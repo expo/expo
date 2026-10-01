@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import {
   type CommonNativeTextFieldProps,
@@ -48,18 +48,16 @@ type NativeBasicTextFieldProps = Omit<
 > &
   CommonNativeTextFieldProps;
 
-const BasicTextFieldNativeView: React.ComponentType<NativeBasicTextFieldProps> = requireNativeView(
-  'ExpoUI',
-  'BasicTextFieldView'
-);
+const BasicTextFieldNativeView: React.ComponentType<NativeBasicTextFieldProps> =
+  requireNativeLayoutView('ExpoUI', 'BasicTextFieldView');
 
-const InnerTextFieldNativeView: React.ComponentType<object> = requireNativeView(
+const InnerTextFieldNativeView: React.ComponentType<object> = requireNativeLayoutView(
   'ExpoUI',
   'InnerTextFieldView'
 );
 
 const PlaceholderNativeView: React.ComponentType<{ children?: React.ReactNode }> =
-  requireNativeView('ExpoUI', 'PlaceholderView');
+  requireNativeLayoutView('ExpoUI', 'PlaceholderView');
 
 function useTransformedProps(props: BasicTextFieldProps): NativeBasicTextFieldProps {
   return useCommonTextFieldProps(props);

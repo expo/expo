@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -216,7 +216,7 @@ function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePic
   };
 }
 
-const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = requireNativeView(
+const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = requireNativeLayoutView(
   'ExpoUI',
   'DateTimePickerView'
 );
@@ -307,7 +307,7 @@ function transformDateRangePickerProps(
 }
 
 const DateRangePickerNativeView: React.ComponentType<NativeDateRangePickerProps> =
-  requireNativeView('ExpoUI', 'DateRangePickerView');
+  requireNativeLayoutView('ExpoUI', 'DateRangePickerView');
 
 /**
  * Renders an inline Material 3 date range picker.
@@ -358,7 +358,7 @@ type NativeDatePickerDialogProps = Omit<
   ViewEvent<'onDismissRequest', void>;
 
 const DatePickerDialogNativeView: React.ComponentType<NativeDatePickerDialogProps> =
-  requireNativeView('ExpoUI', 'DatePickerDialogView');
+  requireNativeLayoutView('ExpoUI', 'DatePickerDialogView');
 
 export function DatePickerDialog(props: DatePickerDialogProps) {
   const { variant, initialDate, selectableDates, elementColors, onDismissRequest, ...rest } = props;
@@ -400,7 +400,7 @@ type NativeDateRangePickerDialogProps = Omit<NativeDateRangePickerProps, 'modifi
   ViewEvent<'onDismissRequest', void>;
 
 const DateRangePickerDialogNativeView: React.ComponentType<NativeDateRangePickerDialogProps> =
-  requireNativeView('ExpoUI', 'DateRangePickerDialogView');
+  requireNativeLayoutView('ExpoUI', 'DateRangePickerDialogView');
 
 /**
  * Renders a modal Material 3 date range picker.
@@ -437,7 +437,7 @@ type NativeTimePickerDialogProps = Omit<
   ViewEvent<'onDismissRequest', void>;
 
 const TimePickerDialogNativeView: React.ComponentType<NativeTimePickerDialogProps> =
-  requireNativeView('ExpoUI', 'TimePickerDialogView');
+  requireNativeLayoutView('ExpoUI', 'TimePickerDialogView');
 
 export function TimePickerDialog(props: TimePickerDialogProps) {
   const { initialDate, elementColors, onDismissRequest, ...rest } = props;

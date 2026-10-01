@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -26,7 +26,10 @@ export interface BadgeProps {
   children?: React.ReactNode;
 }
 
-const BadgeNativeView: React.ComponentType<BadgeProps> = requireNativeView('ExpoUI', 'BadgeView');
+const BadgeNativeView: React.ComponentType<BadgeProps> = requireNativeLayoutView(
+  'ExpoUI',
+  'BadgeView'
+);
 
 function transformProps(props: BadgeProps): BadgeProps {
   const { modifiers, ...restProps } = props;

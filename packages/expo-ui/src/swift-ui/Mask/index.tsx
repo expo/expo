@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type Alignment, type CommonViewModifierProps } from '../types';
@@ -13,7 +12,10 @@ export interface MaskProps extends CommonViewModifierProps {
   alignment?: Alignment;
 }
 
-const MaskNativeView: React.ComponentType<MaskProps> = requireNativeView('ExpoUI', 'MaskView');
+const MaskNativeView: React.ComponentType<MaskProps> = requireNativeLayoutView(
+  'ExpoUI',
+  'MaskView'
+);
 
 function MaskContent(props: { children: React.ReactNode }) {
   return <Slot name="content">{props.children}</Slot>;

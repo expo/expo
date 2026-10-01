@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -74,7 +74,7 @@ type NativeSlotViewProps = {
   children: React.ReactNode;
 };
 
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
   'ExpoUI',
   'SlotView'
 );
@@ -117,7 +117,7 @@ type NativeAssistChipProps = Omit<AssistChipProps, 'onClick'> & {
   onNativeClick?: () => void;
 };
 
-const AssistChipNativeView: React.ComponentType<NativeAssistChipProps> = requireNativeView(
+const AssistChipNativeView: React.ComponentType<NativeAssistChipProps> = requireNativeLayoutView(
   'ExpoUI',
   'AssistChipView'
 );
@@ -209,7 +209,7 @@ type NativeFilterChipProps = Omit<FilterChipProps, 'onClick'> & {
   onNativeClick?: () => void;
 };
 
-const FilterChipNativeView: React.ComponentType<NativeFilterChipProps> = requireNativeView(
+const FilterChipNativeView: React.ComponentType<NativeFilterChipProps> = requireNativeLayoutView(
   'ExpoUI',
   'FilterChipView'
 );
@@ -303,7 +303,7 @@ type NativeInputChipProps = Omit<InputChipProps, 'onClick'> & {
   onNativeClick?: () => void;
 };
 
-const InputChipNativeView: React.ComponentType<NativeInputChipProps> = requireNativeView(
+const InputChipNativeView: React.ComponentType<NativeInputChipProps> = requireNativeLayoutView(
   'ExpoUI',
   'InputChipView'
 );
@@ -392,10 +392,8 @@ type NativeSuggestionChipProps = Omit<SuggestionChipProps, 'onClick'> & {
   onNativeClick?: () => void;
 };
 
-const SuggestionChipNativeView: React.ComponentType<NativeSuggestionChipProps> = requireNativeView(
-  'ExpoUI',
-  'SuggestionChipView'
-);
+const SuggestionChipNativeView: React.ComponentType<NativeSuggestionChipProps> =
+  requireNativeLayoutView('ExpoUI', 'SuggestionChipView');
 
 /**
  * Label slot for SuggestionChip.

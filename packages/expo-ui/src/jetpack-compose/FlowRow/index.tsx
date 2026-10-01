@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import {
   type HorizontalArrangement,
   type PrimitiveBaseProps,
@@ -19,7 +18,7 @@ export interface FlowRowProps extends PrimitiveBaseProps {
   verticalArrangement?: VerticalArrangement;
 }
 
-const FlowRowNativeView: React.ComponentType<FlowRowProps> = requireNativeView(
+const FlowRowNativeView: React.ComponentType<FlowRowProps> = requireNativeLayoutView(
   'ExpoUI',
   'FlowRowView'
 );

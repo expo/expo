@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -38,7 +38,7 @@ type NativePickerProps = Omit<PickerProps, 'onSelectionChange'> & {
   children?: React.ReactNode;
 };
 
-const PickerNativeView: React.ComponentType<NativePickerProps> = requireNativeView(
+const PickerNativeView: React.ComponentType<NativePickerProps> = requireNativeLayoutView(
   'ExpoUI',
   'PickerView'
 );

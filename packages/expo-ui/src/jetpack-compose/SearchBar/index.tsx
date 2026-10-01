@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ExpoModifier, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -42,13 +41,13 @@ type NativeSlotViewProps = {
   children: React.ReactNode;
 };
 
-const SearchBarNativeView: React.ComponentType<NativeSearchBarProps> = requireNativeView(
+const SearchBarNativeView: React.ComponentType<NativeSearchBarProps> = requireNativeLayoutView(
   'ExpoUI',
   'SearchBarView'
 );
 
 // Internal slot marker component - not exported
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
   'ExpoUI',
   'SlotView'
 );

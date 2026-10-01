@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type Alignment, type CommonViewModifierProps } from '../types';
@@ -13,7 +12,7 @@ export interface OverlayProps extends CommonViewModifierProps {
   alignment?: Alignment;
 }
 
-const OverlayNativeView: React.ComponentType<OverlayProps> = requireNativeView(
+const OverlayNativeView: React.ComponentType<OverlayProps> = requireNativeLayoutView(
   'ExpoUI',
   'OverlayView'
 );

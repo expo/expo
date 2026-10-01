@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
@@ -31,7 +31,7 @@ type NativePopoverViewProps = Omit<PopoverViewProps, 'onIsPresentedChange'> & {
   onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
 };
 
-const PopoverNativeView: React.ComponentType<NativePopoverViewProps> = requireNativeView(
+const PopoverNativeView: React.ComponentType<NativePopoverViewProps> = requireNativeLayoutView(
   'ExpoUI',
   'PopoverView'
 );

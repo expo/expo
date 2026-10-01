@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -9,7 +9,7 @@ type SlotNativeViewProps = {
   children: React.ReactNode;
 };
 
-const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
+const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeLayoutView(
   'ExpoUI',
   'SlotView'
 );
@@ -98,14 +98,14 @@ type NativeSliderProps = Omit<SliderProps, 'onValueChange' | 'onValueChangeFinis
   ViewEvent<'onValueChange', { value: number }> &
   ViewEvent<'onValueChangeFinished', void> & { children?: React.ReactNode };
 
-const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeView(
+const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeLayoutView(
   'ExpoUI',
   'SliderView'
 );
 
 const VerticalSliderNativeView: React.ComponentType<
   NativeSliderProps & Pick<VerticalSliderProps, 'reverseDirection'>
-> = requireNativeView('ExpoUI', 'VerticalSliderView');
+> = requireNativeLayoutView('ExpoUI', 'VerticalSliderView');
 
 function transformSliderProps(
   props: Omit<SliderProps, 'children'>

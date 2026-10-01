@@ -1,11 +1,10 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export interface RectangleProps extends CommonViewModifierProps {}
 
-const RectangleNativeView: React.ComponentType<RectangleProps> = requireNativeView(
+const RectangleNativeView: React.ComponentType<RectangleProps> = requireNativeLayoutView(
   'ExpoUI',
   'RectangleView'
 );
@@ -25,10 +24,8 @@ export interface RoundedRectangleProps extends CommonViewModifierProps {
   cornerRadius?: number;
 }
 
-const RoundedRectangleNativeView: React.ComponentType<RoundedRectangleProps> = requireNativeView(
-  'ExpoUI',
-  'RoundedRectangleView'
-);
+const RoundedRectangleNativeView: React.ComponentType<RoundedRectangleProps> =
+  requireNativeLayoutView('ExpoUI', 'RoundedRectangleView');
 
 export function RoundedRectangle(props: RoundedRectangleProps) {
   const { modifiers, ...restProps } = props;
@@ -43,7 +40,7 @@ export function RoundedRectangle(props: RoundedRectangleProps) {
 
 export interface EllipseProps extends CommonViewModifierProps {}
 
-const EllipseNativeView: React.ComponentType<EllipseProps> = requireNativeView(
+const EllipseNativeView: React.ComponentType<EllipseProps> = requireNativeLayoutView(
   'ExpoUI',
   'EllipseView'
 );
@@ -67,7 +64,7 @@ export interface UnevenRoundedRectangleProps extends CommonViewModifierProps {
 }
 
 const UnevenRoundedRectangleNativeView: React.ComponentType<UnevenRoundedRectangleProps> =
-  requireNativeView('ExpoUI', 'UnevenRoundedRectangleView');
+  requireNativeLayoutView('ExpoUI', 'UnevenRoundedRectangleView');
 
 export function UnevenRoundedRectangle(props: UnevenRoundedRectangleProps) {
   const { modifiers, ...restProps } = props;
@@ -84,7 +81,7 @@ export interface CapsuleProps extends CommonViewModifierProps {
   cornerStyle?: 'continuous' | 'circular';
 }
 
-const CapsuleNativeView: React.ComponentType<CapsuleProps> = requireNativeView(
+const CapsuleNativeView: React.ComponentType<CapsuleProps> = requireNativeLayoutView(
   'ExpoUI',
   'CapsuleView'
 );
@@ -102,7 +99,7 @@ export function Capsule(props: CapsuleProps) {
 
 export interface CircleProps extends CommonViewModifierProps {}
 
-const CircleNativeView: React.ComponentType<CircleProps> = requireNativeView(
+const CircleNativeView: React.ComponentType<CircleProps> = requireNativeLayoutView(
   'ExpoUI',
   'CircleView'
 );

@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
 import { getStateId, type ObservableState, useWorkletProp } from '../../State';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -31,7 +31,7 @@ type NativeSyncToggleProps = Omit<SyncToggleProps, 'isOn' | 'onIsOnChangeSync'> 
   onIsOnChangeSync?: number | null;
 };
 
-const SyncToggleNativeView: React.ComponentType<NativeSyncToggleProps> = requireNativeView(
+const SyncToggleNativeView: React.ComponentType<NativeSyncToggleProps> = requireNativeLayoutView(
   'ExpoUI',
   'SyncToggleView'
 );

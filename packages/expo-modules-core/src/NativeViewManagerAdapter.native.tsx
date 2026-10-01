@@ -5,16 +5,9 @@
 'use client';
 
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
-import {
-  type ReactNativeElement,
-  type StyleProp,
-  type ViewStyle,
-  findNodeHandle,
-  type HostComponent,
-} from 'react-native';
+import { type ReactNativeElement, findNodeHandle, type HostComponent } from 'react-native';
 import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
 
-import { NativeLayoutContext } from './NativeLayoutContext';
 import { SharedObject } from './SharedObject';
 import { requireNativeModule } from './requireNativeModule';
 
@@ -31,8 +24,6 @@ import { requireNativeModule } from './requireNativeModule';
  * A map that caches registered native components.
  */
 const nativeComponentsCache = new Map<string, HostComponent<any>>();
-
-const NATIVE_LAYOUT_STYLE: ViewStyle = { display: 'contents' };
 
 // TODO(@kitten): Optimally, this is defined on ExpoGlobal, but we treat `__expo_app_identifier__` as internal
 declare namespace globalThis {
@@ -149,8 +140,6 @@ export function requireNativeViewManager<P>(
   class NativeComponent extends PureComponent<P> {
     static displayName = viewName ? viewName : moduleName;
 
-    static contextType = NativeLayoutContext;
-
     nativeRef = createRef<Component & ReactNativeElement>();
 
     // This will be accessed from native when the prototype functions are called,
@@ -169,17 +158,6 @@ export function requireNativeViewManager<P>(
     }
 
     render() {
-      if (this.context) {
-        const { style } = this.props as { style?: StyleProp<ViewStyle> };
-        return (
-          <ReactNativeComponent
-            {...this.props}
-            style={style ? [NATIVE_LAYOUT_STYLE, style] : NATIVE_LAYOUT_STYLE}
-            disableForceFlatten
-            ref={this.nativeRef}
-          />
-        );
-      }
       return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
     }
   }

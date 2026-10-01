@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ReactElement } from 'react';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createLazyStackForEach } from '../LazyStackForEach';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -48,7 +48,7 @@ export interface LazyHStackProps extends CommonViewModifierProps {
   alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
 }
 
-const LazyHStackNativeView: React.ComponentType<LazyHStackProps> = requireNativeView(
+const LazyHStackNativeView: React.ComponentType<LazyHStackProps> = requireNativeLayoutView(
   'ExpoUI',
   'LazyHStackView'
 );

@@ -1,6 +1,5 @@
-import { requireNativeView } from 'expo';
-
 import { getStateId, type ObservableState, useWorkletProp } from '../../State';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -31,7 +30,7 @@ type NativeSyncSwitchProps = Omit<SyncSwitchProps, 'isOn' | 'onCheckedChangeSync
   onCheckedChangeSync?: number | null;
 };
 
-const SyncSwitchNativeView: React.ComponentType<NativeSyncSwitchProps> = requireNativeView(
+const SyncSwitchNativeView: React.ComponentType<NativeSyncSwitchProps> = requireNativeLayoutView(
   'ExpoUI',
   'SyncSwitchView'
 );

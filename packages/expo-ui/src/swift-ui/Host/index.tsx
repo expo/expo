@@ -1,4 +1,4 @@
-import { NativeLayoutContext, requireNativeView } from 'expo';
+import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -81,7 +81,6 @@ export function Host(props: HostProps) {
     layoutDirection,
     seedColor,
     ref,
-    children,
     ...restProps
   } = props;
   const hostRef = useTextInputHostRef();
@@ -105,9 +104,8 @@ export function Host(props: HostProps) {
         ignoreSafeArea={ignoreSafeArea}
         seedColor={seedColor}
         {...restProps}
-        ref={mergedRef}>
-        <NativeLayoutContext.Provider value>{children}</NativeLayoutContext.Provider>
-      </HostNativeView>
+        ref={mergedRef}
+      />
     </TextInputHostProvider>
   );
 }

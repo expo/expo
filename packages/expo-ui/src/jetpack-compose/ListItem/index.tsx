@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -46,12 +46,15 @@ type SlotProps = {
   children: React.ReactNode;
 };
 
-const ListItemNativeView: React.ComponentType<ListItemProps> = requireNativeView(
+const ListItemNativeView: React.ComponentType<ListItemProps> = requireNativeLayoutView(
   'ExpoUI',
   'ListItemView'
 );
 
-const SlotNativeView: React.ComponentType<SlotProps> = requireNativeView('ExpoUI', 'SlotView');
+const SlotNativeView: React.ComponentType<SlotProps> = requireNativeLayoutView(
+  'ExpoUI',
+  'SlotView'
+);
 
 function transformProps(props: ListItemProps): ListItemProps {
   const { modifiers, ...restProps } = props;

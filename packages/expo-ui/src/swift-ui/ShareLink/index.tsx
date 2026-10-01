@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { useCallback, useRef } from 'react';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -46,7 +46,7 @@ const ShareLinkNativeView: React.ComponentType<
     ref?: React.Ref<ShareLinkNativeRef>;
     onAsyncItemRequest?: () => Promise<void>;
   }
-> = requireNativeView('ExpoUI', 'ShareLinkView');
+> = requireNativeLayoutView('ExpoUI', 'ShareLinkView');
 
 /**
  * Renders the native ShareLink component with the provided properties.
