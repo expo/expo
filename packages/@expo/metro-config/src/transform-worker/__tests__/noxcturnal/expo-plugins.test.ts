@@ -420,7 +420,6 @@ describe('EXPO_ROUTER_IMPORT_MODE', () => {
     expect(await transformImportMode({ platform: 'web', dev: false })).toMatch(/["']sync["']/);
   });
 
-  // Matches `getAsyncRoutes` in `babel-preset-expo`: server bundles are never split.
   it.each(['node', 'react-server'])(
     'stays synchronous for %s server bundles even with async routes',
     async (environment) => {

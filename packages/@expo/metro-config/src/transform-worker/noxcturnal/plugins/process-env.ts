@@ -42,8 +42,7 @@ function routerRoot(state: ProcessEnvState): string {
  * the bundler request enables async routes.
  */
 function isAsyncRoutesEnabled(options: NoxcturnalTransformInput['options']): boolean {
-  const environment = options.customTransformOptions?.environment;
-  if (environment === 'node' || environment === 'react-server') {
+  if (['node', 'react-server'].includes(options.customTransformOptions?.environment)) {
     return false;
   }
   if (String(options.customTransformOptions?.asyncRoutes) !== 'true') {
