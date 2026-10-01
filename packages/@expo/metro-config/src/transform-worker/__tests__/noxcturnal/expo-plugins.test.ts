@@ -421,7 +421,7 @@ describe('EXPO_ROUTER_IMPORT_MODE', () => {
   });
 
   it.each(['node', 'react-server'])(
-    'stays synchronous for %s server bundles even with async routes',
+    'stays synchronous for %s server bundles with async routes enabled',
     async (environment) => {
       expect(
         await transformImportMode({
