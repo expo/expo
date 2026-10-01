@@ -395,7 +395,7 @@ Tests with only exact steps need no model.
 
 For agent steps:
 
-- A subscription login is stored on your computer, so it is not available on the worker. Use an API key from your provider, and add an agent for it to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
+- It is recommended to use an API key from your provider instead of a subscription login because the login expires on the worker. e2e can read a subscription login from the `E2E_OAUTH_CREDENTIALS` environment variable, which holds the contents of your local **~/.config/e2e/oauth.json** file. However, e2e does not save refreshed tokens back to the variable. Add an agent for the API key to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
 - The `e2e_ios` job sets `environment: preview`, so it reads variables from the `preview` environment. Store the API key there as an [EAS environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
 - `npx e2e init` adds `.e2e/cache/` to **.gitignore**, so the workflow starts without recorded agent steps. To replay them on the worker, remove that line and commit the **.e2e/cache** directory. See [Commit your traces](https://e2e.tester.army/docs/cache#commit-your-traces).
 - A replay needs the recorded elements on the screen. The simulator on the worker can report a different accessibility tree than your own simulator, and then the agent calls the model.
@@ -501,7 +501,7 @@ Replace `<your-access-token>` with your personal access token and `<build-id>` w
   ]}
 />
 
-A session takes about three minutes to be ready, because EAS boots the remote iOS Simulator and installs your build first. For each session, the output links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
+The session is ready after EAS boots the remote iOS Simulator and installs your build. Boot time varies with device capacity. For each session, the output links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
 
 If the run exits before e2e stops the session, EAS stops it after 10 minutes without activity. A session also has a maximum duration that depends on your plan, so the run must finish before the session reaches it.
 
