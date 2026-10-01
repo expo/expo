@@ -22,6 +22,7 @@ on:
       - packages/expo-constants/**/*.swift
       - packages/expo-document-picker/**/*.swift
       - packages/expo-haptics/**/*.swift
+      - packages/expo-hinge/**/*.swift
       - packages/expo-keep-awake/**/*.swift
       - packages/expo-linking/**/*.swift
       - packages/expo-live-photo/**/*.swift
@@ -53,6 +54,7 @@ on:
       - packages/expo-constants/**/*.swift
       - packages/expo-document-picker/**/*.swift
       - packages/expo-haptics/**/*.swift
+      - packages/expo-hinge/**/*.swift
       - packages/expo-keep-awake/**/*.swift
       - packages/expo-linking/**/*.swift
       - packages/expo-live-photo/**/*.swift
@@ -137,6 +139,7 @@ jobs:
             packages/expo-constants
             packages/expo-document-picker
             packages/expo-haptics
+            packages/expo-hinge
             packages/expo-keep-awake
             packages/expo-linking
             packages/expo-live-photo

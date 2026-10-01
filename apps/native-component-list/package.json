@@ -73,6 +73,7 @@
     "expo-gl": "workspace:*",
     "expo-glass-effect": "workspace:*",
     "expo-haptics": "workspace:*",
+    "expo-hinge": "workspace:*",
     "expo-image": "workspace:*",
     "expo-image-loader": "workspace:*",
     "expo-image-manipulator": "workspace:*",

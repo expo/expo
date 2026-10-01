@@ -411,6 +411,8 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (58.0.3):
     - ExpoModulesCore
+  - ExpoHinge (58.0.0):
+    - ExpoModulesCore
   - ExpoImage (58.0.8):
     - ExpoModulesCore
     - libavif/libdav1d
@@ -3387,6 +3389,7 @@ DEPENDENCIES:
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoGlassEffect (from `../../../packages/expo-glass-effect/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
+  - ExpoHinge (from `../../../packages/expo-hinge/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
@@ -3704,6 +3707,9 @@ EXTERNAL SOURCES:
   ExpoHaptics:
     inhibit_warnings: false
     :path: "../../../packages/expo-haptics/ios"
+  ExpoHinge:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-hinge/ios"
   ExpoImage:
     inhibit_warnings: false
     :path: "../../../packages/expo-image/ios"
@@ -4110,6 +4116,7 @@ SPEC CHECKSUMS:
   ExpoGL: 185dc45a0744fc7c214e5ad0c8bdac6c84fb70db
   ExpoGlassEffect: 1542f6b1b15b4e41eca504e2c3914bf4f4c05187
   ExpoHaptics: 25f6531149beb4c300b4697b1f0d17c41726bcb8
+  ExpoHinge: 36d8cb6dcf9ec58054ccdb88712730d095a051b2
   ExpoImage: 0493de44e0f9c304c2e824a6c7e2dd119e32cb2a
   ExpoImageManipulator: 23f5b3fc24a2e83b2c1eefe26e587755ded98888
   ExpoImagePicker: 52feab45cf826bc3bcf387fa348e540e7a3a19a2
