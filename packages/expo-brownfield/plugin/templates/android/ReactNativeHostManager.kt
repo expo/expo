@@ -24,14 +24,24 @@ class ReactNativeHostManager {
     return reactHost
   }
 
-  fun initialize(application: Application, additionalPackages: List<ReactPackage> = emptyList()) {
+  /**
+   * @param useDevSupport Whether to load JavaScript from a Metro dev server. Defaults to the
+   *   build type, so debug builds use Metro and release builds use the embedded bundle. Pass
+   *   `false` in a debug build to run against the bundle embedded in the AAR instead — that
+   *   bundle only exists if the `android.bundleInDebug` config plugin option is enabled.
+   */
+  fun initialize(
+    application: Application,
+    additionalPackages: List<ReactPackage> = emptyList(),
+    useDevSupport: Boolean = BuildConfig.DEBUG,
+  ) {
     if (reactHost != null) {
       return
     }
 
-    // Ensure that `index.android.bundle` is available in the assets
-    // for release builds
-    if (!BuildConfig.DEBUG) {
+    // Without dev support there is no Metro to fetch from, so the bundle has to be embedded in
+    // the assets. That covers release builds and debug builds that opted out of dev support.
+    if (!useDevSupport) {
       val assets = application.applicationContext.assets.list("")?.toList()
         ?: emptyList<String>()
       if (!assets.contains("index.android.bundle")) {
@@ -41,7 +51,11 @@ class ReactNativeHostManager {
           ?: "None"
 
           throw IllegalStateException("""
-          Cannot find `index.android.bundle` in the assets
+          Cannot find `index.android.bundle` in the assets.
+          React Native was started without dev support, so it loads JavaScript from the
+          bundle embedded in the AAR, but no bundle was packaged.
+          In a debug build, enable the `android.bundleInDebug` option on the expo-brownfield
+          config plugin and rebuild. Otherwise pass `useDevSupport = true` to run against Metro.
           Available JS bundles:
           $bundleList
           """.trimIndent()
@@ -60,19 +74,19 @@ class ReactNativeHostManager {
 
     // Pass `useDevSupport` explicitly (default is `ReactBuildConfig.DEBUG`). The
     // brownfield's own `BuildConfig.DEBUG` follows the fused sibling's variant
-    // (true in `-fused-debug`, false in `-fused-release`) — using it ensures
-    // dev support fires correctly regardless of which RN variant the consumer
-    // resolves.
+    // (true in `-fused-debug`, false in `-fused-release`) — defaulting the parameter
+    // to it ensures dev support fires correctly regardless of which RN variant the
+    // consumer resolves, while still letting the host opt out.
     reactHost = ExpoReactHostFactory.getDefaultReactHost(
       context = application.applicationContext,
       packageList = PackageList(application).packages + additionalPackages,
-      useDevSupport = BuildConfig.DEBUG
+      useDevSupport = useDevSupport
     )
   }
 }
 
-fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList()) {
-  ReactNativeHostManager.shared.initialize(this.application, additionalPackages)
+fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList(), useDevSupport: Boolean = BuildConfig.DEBUG) {
+  ReactNativeHostManager.shared.initialize(this.application, additionalPackages, useDevSupport)
   val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
   setContentView(fragment)
   setUpNativeBackHandling()

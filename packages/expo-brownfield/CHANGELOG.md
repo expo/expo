@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [android] `BrownfieldActivity.showReactNativeFragment` takes a new trailing `useDevSupport` parameter. Calls are unaffected, but subclasses that `override` the method must add the parameter. ([#49XXX](https://github.com/expo/expo/pull/49XXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
+
+- [android] Add an `android.bundleInDebug` config plugin option that embeds a JS bundle in the debug AAR, and a `useDevSupport` parameter on `ReactNativeHostManager.initialize` / `showReactNativeFragment` so a host can run a debug build without a Metro dev server. ([#49XXX](https://github.com/expo/expo/pull/49XXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

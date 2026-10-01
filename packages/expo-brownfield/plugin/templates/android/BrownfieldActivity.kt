@@ -32,8 +32,9 @@ open class BrownfieldActivity : AppCompatActivity(), DefaultHardwareBackBtnHandl
   open fun showReactNativeFragment(
     rootComponent: String = "main",
     additionalPackages: List<ReactPackage> = emptyList(),
+    useDevSupport: Boolean = BuildConfig.DEBUG,
   ) {
-    (this as Activity).showReactNativeFragment(rootComponent, additionalPackages)
+    (this as Activity).showReactNativeFragment(rootComponent, additionalPackages, useDevSupport)
   }
 
   // React Native calls this when JS has no back handler. Don't call

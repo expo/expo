@@ -1,9 +1,55 @@
 import { type AndroidConfig, type ConfigPlugin, withGradleProperties } from 'expo/config-plugins';
 
 import { checkPlugin } from '../../common';
+import type { PluginConfig } from '../types';
 
-const withGradlePropertiesPlugin: ConfigPlugin = (config) => {
+export const BUNDLE_IN_DEBUG_PROPERTY = 'expo.brownfield.bundleInDebug';
+
+/**
+ * Tells `ExpoBrownfieldSetupPlugin` whether to forward the app module's debug assets (the JS
+ * bundle among them) into the debug AAR.
+ *
+ * Written as an explicit `false` rather than removed when the option is turned off: gradle.properties
+ * survives prebuild, so a stale `true` from an earlier run would keep embedding the bundle.
+ */
+export const setBundleInDebugProperty = (
+  items: AndroidConfig.Properties.PropertiesItem[],
+  bundleInDebug: boolean
+): AndroidConfig.Properties.PropertiesItem[] => {
+  const existing = items.find(
+    (item) => item.type === 'property' && item.key === BUNDLE_IN_DEBUG_PROPERTY
+  );
+
+  if (existing) {
+    return items.map((item) =>
+      item.type === 'property' && item.key === BUNDLE_IN_DEBUG_PROPERTY
+        ? { ...item, value: String(bundleInDebug) }
+        : item
+    );
+  }
+
+  if (!bundleInDebug) {
+    return items;
+  }
+
+  return [
+    ...items,
+    {
+      type: 'comment',
+      value: 'Embed a JS bundle in the debug AAR so the host can run without Metro',
+    },
+    {
+      type: 'property',
+      key: BUNDLE_IN_DEBUG_PROPERTY,
+      value: 'true',
+    },
+  ];
+};
+
+const withGradlePropertiesPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig) => {
   return withGradleProperties(config, (config) => {
+    config.modResults = setBundleInDebugProperty(config.modResults, pluginConfig.bundleInDebug);
+
     if (checkPlugin(config, 'expo-dev-menu')) {
       const devMenuReleaseConfiguration = getDevMenuReleaseConfiguration();
       const hasDevMenuConfig = config.modResults.some(

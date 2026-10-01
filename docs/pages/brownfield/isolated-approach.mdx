@@ -275,6 +275,28 @@ startActivity(Intent(this, ExpoActivity::class.java))
 
 `BrownfieldActivity` extends `AppCompatActivity` and handles forwarding configuration changes to Expo modules. The `showReactNativeFragment()` extension also sets up native back button handling automatically.
 
+### Run a debug AAR without Metro
+
+By default, a debug AAR loads JavaScript from a Metro dev server, so native developers consuming the library need to run Metro to see a screen. To ship a debug AAR that runs on its own, enable `android.bundleInDebug`:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-brownfield", { "android": { "bundleInDebug": true } }]]
+  }
+}
+```
+
+This embeds a JavaScript bundle in the debug AAR. Pass `useDevSupport = false` to load it instead of connecting to Metro:
+
+```kotlin
+showReactNativeFragment(useDevSupport = false)
+```
+
+Leave `useDevSupport` at its default to keep using Metro, with fast refresh and the dev menu, while developing the React Native side.
+
+> **info** Enabling this option makes React Native bundle JavaScript for the `debug` variant, which adds the bundling step to every debug build.
+
 </Step>
 
 </Tab>

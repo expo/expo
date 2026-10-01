@@ -42,6 +42,17 @@ export type Publication =
   | RemotePrivatePublication;
 
 export interface PluginConfig {
+  /**
+   * Whether to embed a JavaScript bundle in the debug AAR so the host app can run the React
+   * Native screen without a Metro server. Pair it with `useDevSupport = false` when calling
+   * `ReactNativeHostManager.initialize` to actually load the embedded bundle.
+   *
+   * Enabling this makes React Native bundle JavaScript for the `debug` variant, which adds the
+   * bundling step to every debug build.
+   *
+   * @default false
+   */
+  bundleInDebug: boolean;
   group: string;
   libraryName: string;
   package: string;
@@ -53,7 +64,7 @@ export interface PluginConfig {
 
 export type AndroidPluginProps = Pick<
   PluginConfig,
-  'group' | 'libraryName' | 'package' | 'publishing' | 'version'
+  'bundleInDebug' | 'group' | 'libraryName' | 'package' | 'publishing' | 'version'
 >;
 
 export type PluginProps = Partial<AndroidPluginProps> | undefined;

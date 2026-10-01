@@ -20,6 +20,7 @@ export const getPluginConfig = (props: PluginProps, config: ExpoConfig): PluginC
   const version = validateGradleField('mavenVersion', getVersion(props), 'android.version');
 
   return {
+    bundleInDebug: props?.bundleInDebug ?? false,
     group,
     libraryName,
     package: packageId,

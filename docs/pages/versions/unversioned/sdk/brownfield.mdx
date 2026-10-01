@@ -190,6 +190,13 @@ The `expo-brownfield` package provides a [config plugin](/config-plugins/introdu
       default: 'false',
     },
     {
+      name: 'android.bundleInDebug',
+      platform: 'android',
+      description:
+        'Embed a JavaScript bundle in the debug AAR so the host app can run without a Metro dev server. Call `ReactNativeHostManager.initialize` with `useDevSupport = false` to load it. This makes React Native bundle JavaScript for the debug variant, which adds the bundling step to every debug build.',
+      default: 'false',
+    },
+    {
       name: 'android.group',
       platform: 'android',
       description:
