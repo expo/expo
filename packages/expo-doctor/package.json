@@ -47,7 +47,7 @@
     "@expo/sdk-compatibility": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/debug": "^4.1.8",
-    "@types/getenv": "^1.0.0",
+    "@types/getenv": "^1.0.3",
     "@types/semver": "^7.7.1",
     "@vercel/ncc": "^0.38.4",
     "chalk": "^4.0.0",
