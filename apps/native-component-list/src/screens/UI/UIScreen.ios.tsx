@@ -474,6 +474,14 @@ export const UIScreens = [
       return optionalRequire(() => require('./Rotation3DEffectScreen'));
     },
   },
+  {
+    name: 'onHingeChange modifier',
+    route: 'ui/on-hinge-change',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HingeChangeScreen'));
+    },
+  },
 ];
 
 export default function UIScreen() {
