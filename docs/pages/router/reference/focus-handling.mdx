@@ -69,7 +69,7 @@ export default function Profile() {
 
 ## Listen for focus and blur events
 
-> **Note:** Prefer `useFocusEffect` whenever possible. Use `useNavigation().addListener` only when the work cannot be expressed as an effect tied to screen focus.
+> **Note:** Prefer `useFocusEffect` whenever possible. Use `useNavigation().addListener` only when you cannot express the work as an effect tied to screen focus.
 
 Use `useNavigation` to run code for a specific `focus` or `blur` event. Subscribe in an effect and remove both listeners in its cleanup:
 
