@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [iOS] `@Record` now accepts properties that hold free-form `Any` values, such as `[String: Any]?` or `[Any]`. ([#50660](https://github.com/expo/expo/pull/50660) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed Expo views using Android layout not completing system-forced layout passes. ([#48679](https://github.com/expo/expo/pull/48679) by [@lujjjh](https://github.com/lujjjh))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#50660](https://github.com/expo/expo/pull/50660))
+  - expo-modules-jsi@58.0.7
+
 ## 58.0.10
 
 ### Patch Changes

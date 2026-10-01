@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Disable the vertical bar while the dev menu is open so the sheet fills the full width on iPhone Duo. ([#50900](https://github.com/expo/expo/pull/50900) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.9
 
 ### Patch Changes

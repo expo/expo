@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Update `expo-router/testing-library` to use `@testing-library/react-native` v14. ([#50686](https://github.com/expo/expo/pull/50686) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.11
 
 ### Patch Changes

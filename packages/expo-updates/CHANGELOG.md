@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Resolve Android resource names and `drawable-*` folders with `@react-native/asset-utils`, matching how React Native resolves embedded assets at runtime. Scales outside the standard set map to a `drawable-<n>dpi` folder instead of failing the export, and assets referenced through `?unstable_path=` drop that prefix from their resource name. ([#50861](https://github.com/expo/expo/pull/50861) by [@huntie](https://github.com/huntie))
+- Load app config and `.env` files in the native build's mode when generating Updates resources. ([#49452](https://github.com/expo/expo/pull/49452) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Load `.env` files in `runtimeversion:resolve` and `configuration:syncnative` before reading app config. ([#49508](https://github.com/expo/expo/pull/49508) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 58.0.12
 
 ### Patch Changes
