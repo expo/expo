@@ -1,0 +1,98 @@
+---
+title: EAS Simulator security, permissions, and data retention
+sidebar_title: Security and data
+description: Learn who can start and view EAS Simulator sessions, how to protect session tokens and preview links, and how long EAS keeps recordings, screenshots, and logs.
+---
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+An EAS Simulator session belongs to an EAS project. Account roles control who can start, view, and stop sessions. Session tokens and preview links give direct access to the remote device, so treat them as secrets. EAS keeps logs and artifacts for 30 days after the run is created.
+
+For how the parts connect, see [Security model](/preview/eas-simulator/how-it-works/security-model/).
+
+## Permissions
+
+| Action                          | Required role                               |
+| ------------------------------- | ------------------------------------------- |
+| Start a session                 | Developer, Release Manager, Admin, or Owner |
+| Stop a session                  | Developer, Release Manager, Admin, or Owner |
+| Delete a finished session       | Developer, Release Manager, Admin, or Owner |
+| View sessions and their details | Any role, including View Only               |
+
+> **warning** Read access to a session includes its connection details while the session runs. A member with the View Only role can read the controller tokens of a running session through the Expo GraphQL API.
+
+For automation, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) with the [Developer role](/accounts/account-types/#manage-access). Developer is the minimum role that can create and stop sessions.
+
+If the user who started a session is deleted, EAS stops the session.
+
+## Session tokens
+
+The connection details of a session include tokens for the controller. EAS stores the connection details encrypted.
+
+| Where the tokens appear              | What to do                                                         |
+| ------------------------------------ | ------------------------------------------------------------------ |
+| **.env.eas-simulator**               | Add the file to **.gitignore**. Do not upload it as a CI artifact. |
+| `remoteConfig` in `--json` output    | Do not print it in CI logs.                                        |
+| `remoteConfig` in REST API responses | Do not log or cache it.                                            |
+| MCP configuration files for Argent   | Add the file to **.gitignore**.                                    |
+
+The REST API returns `remoteConfig` only while the session is `in-progress`. After the session stops or fails, `remoteConfig` is `null`. Session responses include `Cache-Control: private, no-store` and `Pragma: no-cache`.
+
+The session page on expo.dev hides the token values.
+
+## Browser preview links
+
+The browser preview is a public page on expo.dev. It does not require an Expo login. When the preview is gated, the link contains a session token, and the page needs that token to show the preview.
+
+Treat a preview link as a secret. Anyone with the link can see and use the simulator while the session runs. Share it only with the people who need it, and set a maximum duration on the session.
+
+## Network access
+
+- **Metro tunnel:** a Metro URL from `npx expo start --tunnel` is public while the tunnel runs. It does not require authentication. Stop Metro when you finish.
+- **Default egress:** without local egress, all traffic from the simulator exits from EAS infrastructure.
+- **Local egress:** with `--egress local`, iOS Simulator traffic that honors the system proxy exits from your computer. The egress client refuses local, private, link-local, and multicast addresses. Only the exact `host:port` entries that you pass with `--egress-allow` are exceptions.
+
+See [Network inspection](/preview/eas-simulator/how-it-works/network-inspection/).
+
+## Data that EAS stores
+
+| Data                                                         | Where it appears                                    |
+| ------------------------------------------------------------ | --------------------------------------------------- |
+| Session details: name, tags, type, status, platform, times   | `eas simulator:list`, `eas simulator:get`, expo.dev |
+| Screenshots and screenshot diffs                             | **Artifacts** on the session page                   |
+| Screen recordings (iOS)                                      | Recording player and **Artifacts**                  |
+| Traces, performance metrics, native profiles, React profiles | **Artifacts** on the session page                   |
+| Session activity events                                      | `eas simulator:events` and the session page         |
+| Job logs                                                     | Logs section on the session page                    |
+
+One artifact can be up to about 5 GiB.
+
+EAS records the request origin and agent identifiers that a client sends when it creates a session. EAS uses these values for analytics only, not for authorization.
+
+## Artifact downloads
+
+`eas simulator:get --json` returns a `downloadUrl` for each artifact. The download URL contains a long random key and does not require authentication. Treat it as a secret.
+
+The download URL redirects to a signed storage URL. The signed URL expires after one hour. To get a new one, request the session again.
+
+## Retention and deletion
+
+- EAS keeps logs and artifacts for 30 days after the run is created.
+- You can delete a session after it finishes. A running session cannot be deleted.
+- When you delete a session, EAS also deletes its recordings and screenshots. You cannot undo this.
+
+## What is not documented yet
+
+## Common questions
+
+### Can a member with the view-only role start a session?
+
+No. Starting a session requires the Developer role or higher.
+
+### Can someone without an Expo account open my preview?
+
+Yes, if they have the preview link. The preview page does not require an Expo login. When the preview is gated, the link must include the session token.
+
+### How do I remove recordings of a session?
+
+Delete the finished session from its page on expo.dev. EAS deletes its recordings and screenshots.

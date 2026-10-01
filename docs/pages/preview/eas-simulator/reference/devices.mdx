@@ -1,0 +1,116 @@
+---
+title: EAS Simulator devices (iPhone, iPad, and Android Emulator profiles)
+sidebar_title: Devices
+description: See which iPhone, iPad, and Android Emulator devices EAS Simulator can start, the default Android profile, and how to select a device.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator starts one virtual device for each session. On Android, it is an Android Emulator with a hardware profile. On iOS, it is an iOS Simulator device. Select the device with `--device` when the session starts. If you omit the flag, the runner chooses the device.
+
+## Android Emulator profiles
+
+Pass the profile ID to `--device`:
+
+| Profile ID       | Device                 |
+| ---------------- | ---------------------- |
+| `medium_phone`   | Medium Phone (default) |
+| `pixel_9`        | Pixel 9                |
+| `pixel_9_pro`    | Pixel 9 Pro            |
+| `pixel_9_pro_xl` | Pixel 9 Pro XL         |
+| `pixel_9a`       | Pixel 9a               |
+
+The default `medium_phone` profile has a 720 x 1600 screen at density 300. It is similar to a budget phone from 2026.
+
+Android sessions use the `system-images;android-35;google_apis;x86_64` system image, which is Android API level 35 with Google APIs. Install an APK that includes the `x86_64` architecture.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform android --type agent-device --device pixel_9 --name "Pixel 9 layout check" --non-interactive',
+  ]}
+/>
+
+## iOS Simulator devices
+
+Pass the device name or its unique device identifier (UDID) to `--device`:
+
+| Device              | Notes                                      |
+| ------------------- | ------------------------------------------ |
+| `iPhone 17`         |                                            |
+| `iPhone 17 Pro`     |                                            |
+| `iPhone 17 Pro Max` |                                            |
+| `iPhone Air`        |                                            |
+| `iPhone 17e`        |                                            |
+| `iPhone Duo`        | Not in the default image. Uses Xcode 27.1. |
+
+iOS sessions use a macOS Tahoe 26.5 image with Xcode 26.6. Sessions on iPhone Duo use a different image with Xcode 27.1.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --device "iPhone 17 Pro" --name "Checkout on iPhone 17 Pro" --non-interactive',
+  ]}
+/>
+
+### iPad devices
+
+The iOS image also includes iPad simulators. A live iOS session lists about 16 simulators, including these iPad devices:
+
+- iPad (A16)
+- iPad Air 11-inch (M4) and iPad Air 13-inch (M4)
+- iPad mini (A17 Pro)
+- iPad Pro 11-inch (M5) and iPad Pro 13-inch (M5)
+
+To start an iPad, pass its exact name:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --device "iPad Pro 13-inch (M5)" --name "iPad layout check" --non-interactive',
+  ]}
+/>
+
+## List the devices in a session
+
+To see the devices that the remote runner offers, list them from a live agent-device session:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest devices --json']} />
+
+The output shows each device's name, kind, and boot state. It does not show the iOS version.
+
+## Use a second device in the same session
+
+A session boots one device at start. In an iOS session, agent-device can boot and control another simulator. Pass the controller's `--device` flag on each command:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest open com.example.app --platform ios --device "iPad Pro 13-inch (M5)" --relaunch',
+  ]}
+/>
+
+The two `--device` flags work differently:
+
+| Flag                                 | Accepts      |
+| ------------------------------------ | ------------ |
+| `eas simulator:start --device`       | Name or UDID |
+| agent-device `--device` in a session | Name only    |
+
+A UDID passed to the agent-device `--device` flag returns `DEVICE_NOT_FOUND`.
+
+## Resource classes
+
+EAS CLI has a hidden, experimental `--resource-class` flag. It is not generally available. Do not use it in scripts.
+
+## Common questions
+
+### Can I test on a physical device?
+
+No. EAS Simulator runs only iOS Simulators and Android Emulators. Use local device tooling for physical devices.
+
+### Can I select an iOS version?
+
+Not with a flag. The iOS version comes from the image that the session uses.
+
+### Can I select a custom Android system image?
+
+EAS CLI does not have a flag for it.

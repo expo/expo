@@ -52,7 +52,7 @@ UUID means universally unique identifier.
 | `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. Defaults to `agent-device`. The removed `serve-sim` type returns `400`. Use `web-preview-only` instead.                                                                 |
 | `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                             |
 | `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                       |
-| `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The 115-minute limit excludes five minutes reserved for cleanup. Omit to use the account default.            |
+| `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The 115-minute limit excludes five minutes reserved for cleanup. Omit to use the account maximum.            |
 | `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. It must be smaller than `maxDurationMinutes` when both are set. Omit to disable the idle timeout. Not supported for `web-preview-only`. |
 | `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                  |
 | `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters.                                                                                                                                               |
@@ -121,6 +121,8 @@ Save `data.id` and set it as `SESSION_ID` for the remaining examples. `url` link
 `buildId` contains the supplied build ID. `applicationArchiveUrl` contains the supplied archive URL or the resolved Expo Go archive URL. It is `null` when using `buildId`. Optional values such as `name`, `packageVersion`, and `maxIdleTimeMinutes` are `null` when omitted.
 
 The response's `maxDurationMinutes` matches the requested session duration. A request for 30 minutes returns `30`.
+
+The account's duration limit depends on its plan: 40 minutes on the free plan and 115 minutes on paid plans. When you omit `maxDurationMinutes`, the session gets the plan maximum. See [Usage and billing](/preview/eas-simulator/reference/usage-and-billing/#session-duration-limits).
 
 `remoteConfig` is `null` while the session is starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
 
@@ -199,7 +201,7 @@ The fields in `remoteConfig` depend on the session type. Connection details are 
 | `appium`           | `appiumUrl`, a `capabilities` object, and optional `webPreviewUrl`.                          |
 | `web-preview-only` | `webPreviewUrl`. This session type has no controller.                                        |
 
-For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Run and control an app](/preview/eas-simulator/run-and-control/) for controller usage.
+For agent-device, use the URL and token as `AGENT_DEVICE_DAEMON_BASE_URL` and `AGENT_DEVICE_DAEMON_AUTH_TOKEN`. For Argent, use `toolsUrl` and `toolsAuthToken` as `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN`. For Appium, configure your client with `appiumUrl` and `capabilities`. See [Run and control an app](/preview/eas-simulator/how-to/install-your-app/) for controller usage.
 
 Open `webPreviewUrl` in a desktop browser to view the live iOS Simulator or Android Emulator. Do not open it on the remote device.
 
@@ -243,6 +245,6 @@ Use the returned error message to identify which option or permission needs atte
 <BoxLink
   title="Run and control your app"
   description="Choose a compatible build, connect a controller, and interact with the remote device."
-  href="/preview/eas-simulator/run-and-control/"
+  href="/preview/eas-simulator/how-to/install-your-app/"
   Icon={Cloud01Icon}
 />

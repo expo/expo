@@ -1,0 +1,77 @@
+---
+title: EAS Simulator session types (agent-device, Argent, Appium, web preview only)
+sidebar_title: Session types
+description: Compare the four EAS Simulator session types, what each one provisions, and how each one installs apps, reports activity, and connects to the remote device.
+---
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+The **session type** sets which controller EAS starts next to the remote device. There are four session types: `agent-device`, `argent`, `appium`, and `web-preview-only`. Set the type with `--type` in EAS CLI or `type` in the REST API. The default type is `agent-device`.
+
+## Compare the session types
+
+| Session type       | Controller                                   | Use it for                                                           |
+| ------------------ | -------------------------------------------- | -------------------------------------------------------------------- |
+| `agent-device`     | [agent-device](/agents/agent-device/) daemon | Agent-driven control, app installation, screenshots, and recordings. |
+| `argent`           | [Argent](/agents/argent/) tool server        | Argent tools and its Model Context Protocol (MCP) server.            |
+| `appium`           | Appium server                                | Existing Appium clients and test suites.                             |
+| `web-preview-only` | None                                         | A person who uses the browser preview without programmatic control.  |
+
+Each session type includes a browser preview. Each session type also provisions only its own controller. For example, agent-device commands do not work in an `argent` session.
+
+## Connection details
+
+When a session is ready, EAS returns its connection details. EAS CLI writes them to **.env.eas-simulator**. The REST API returns them in `remoteConfig`.
+
+| Session type       | Variables in **.env.eas-simulator**                              | Fields in `remoteConfig`                                                                 |
+| ------------------ | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `agent-device`     | `AGENT_DEVICE_DAEMON_BASE_URL`, `AGENT_DEVICE_DAEMON_AUTH_TOKEN` | `agentDeviceRemoteSessionUrl`, `agentDeviceRemoteSessionToken`, optional `webPreviewUrl` |
+| `argent`           | `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN`       | `toolsUrl`, optional `toolsAuthToken`, optional `webPreviewUrl`                          |
+| `appium`           | `APPIUM_URL`, `APPIUM_CAPS` (JSON)                               | `appiumUrl`, `capabilities`, optional `webPreviewUrl`                                    |
+| `web-preview-only` | Only `EAS_SIMULATOR_SESSION_ID`                                  | `webPreviewUrl`                                                                          |
+
+The tokens in these values give access to the remote device. Keep them secret. See [Security and data](/preview/eas-simulator/reference/security-and-data/).
+
+## Behavior by session type
+
+| Behavior                                   | `agent-device` | `argent` | `appium` | `web-preview-only` |
+| ------------------------------------------ | -------------- | -------- | -------- | ------------------ |
+| Start flags install and launch the app     | Yes            | Yes      | No       | Yes                |
+| Controller activity resets the idle timer  | Yes            | Yes      | No       | No                 |
+| Supports `--max-idle-time-minutes`         | Yes            | Yes      | Yes      | No                 |
+| Activity appears in `eas simulator:events` | Yes            | Yes      | No       | No                 |
+
+Notes:
+
+- In an `appium` session, install and launch the app through your Appium client. See [Appium](/preview/eas-simulator/works-with/appium/).
+- Appium commands and browser preview activity do not reset the idle timer. For `appium` sessions and sessions that a person controls, use `--max-duration-minutes` to limit the session. See [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
+- A `web-preview-only` session does not report activity, so it does not support an idle timeout.
+
+## Choose a session type
+
+- Use `agent-device` for most work, and for coding agents. The EAS Simulator skill uses it.
+- Use `argent` when your agent already uses Argent tools or its MCP server.
+- Use `appium` when you already have Appium tests.
+- Use `web-preview-only` when a person only needs to see and use the iOS Simulator in a browser.
+
+The **Create new simulator** dialog on expo.dev offers the Agent Device, Argent, and Appium controllers. Agent Device is the default.
+
+## The removed `serve-sim` type
+
+EAS CLI 23.0.0 renamed the preview-only type from `serve-sim` to `web-preview-only`. EAS now rejects new sessions with `"type": "serve-sim"`. Upgrade to EAS CLI 23.2.0 or later and use `web-preview-only`.
+
+Sessions created before the change still return `"type": "serve-sim"` from the REST API. `eas simulator:list --type web-preview-only` includes them.
+
+## Common questions
+
+### Can I change the session type of a running session?
+
+No. EAS sets the session type when the session starts. Start a new session with a different `--type`.
+
+### Do Android sessions include a browser preview?
+
+Android Emulator support is still in development, and some iOS features do not work on Android yet. Screen recordings on the session page are available only for iOS sessions.
+
+### Which session type does a create session link use?
+
+A create session link always starts a `web-preview-only` session on iOS. See [Hand off a session](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).

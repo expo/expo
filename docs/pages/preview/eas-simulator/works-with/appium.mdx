@@ -1,0 +1,70 @@
+---
+title: Run Appium tests on a remote iOS Simulator or Android Emulator
+sidebar_title: Appium
+description: Start an appium EAS Simulator session and connect your existing Appium client or test suite with the APPIUM_URL server URL and APPIUM_CAPS capabilities.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Yes, you can run [Appium](https://appium.io/docs/en/) tests on EAS Simulator. Start a session with `--type appium`. EAS provisions an Appium server next to the remote device and gives you its URL and capabilities. Your Appium client connects to that server as it does to a local one.
+
+## Start an Appium session
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --max-duration-minutes 30 --non-interactive',
+  ]}
+/>
+
+EAS CLI writes these values to **.env.eas-simulator**:
+
+| Variable      | Value                                     |
+| ------------- | ----------------------------------------- |
+| `APPIUM_URL`  | The URL of the remote Appium server       |
+| `APPIUM_CAPS` | The session capabilities, encoded as JSON |
+
+An Appium session does not also provision agent-device or Argent. On iOS, the session includes a browser preview.
+
+## Run your Appium client
+
+`eas simulator:exec` loads the variables, then runs your command. Configure your client to read the server URL from `APPIUM_URL` and the capabilities from `APPIUM_CAPS`:
+
+<Terminal cmd={['$ eas simulator:exec <appium-client> [args...]']} />
+
+Replace `<appium-client>` with the command that runs your test suite.
+
+## Install the app through Appium
+
+The start flags `--build-id`, `--application-archive-url`, and `--expo-go` install and launch the app for `agent-device`, `argent`, and `web-preview-only` sessions. For an `appium` session, install and launch the app through your Appium client.
+
+## Limit the session with a maximum duration
+
+Appium commands do not reset the idle timer. A session that uses `--max-idle-time-minutes` can stop while your tests still run. Use `--max-duration-minutes` to limit an Appium session, and do not set an idle limit. See [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
+
+## Use the REST API
+
+Create the session with `"type": "appium"`. When the session is ready, `remoteConfig` contains:
+
+| Field           | Value                                   |
+| --------------- | --------------------------------------- |
+| `appiumUrl`     | The URL of the remote Appium server     |
+| `capabilities`  | An object with the session capabilities |
+| `webPreviewUrl` | Optional. The browser preview URL       |
+
+See [REST API](/preview/eas-simulator/reference/rest-api/).
+
+## Common questions
+
+### Do I need to install an Appium server?
+
+No. EAS runs the Appium server for the session. You need only an Appium client.
+
+### Are Appium commands shown in session activity?
+
+`eas simulator:events` shows activity from agent-device and Argent. It does not show Appium commands.
+
+### Is the Appium URL a secret?
+
+Yes. Treat `APPIUM_URL`, `APPIUM_CAPS`, and `remoteConfig` as secrets. Do not commit **.env.eas-simulator** or print its values in CI logs. See [Security and data](/preview/eas-simulator/reference/security-and-data/).

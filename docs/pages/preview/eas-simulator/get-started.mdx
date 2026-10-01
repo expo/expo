@@ -22,9 +22,9 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
     run `eas init` first.
   </Requirement>
   <Requirement title="A recent EAS CLI">
-    The `simulator:*` commands are experimental and hidden. [Install or update EAS CLI](/eas/cli/)
-    before using them. Since the preview changes quickly, use `eas simulator:start --help` to check
-    the flags supported by your installed version.
+    The `simulator:*` commands are experimental. [Install or update EAS CLI](/eas/cli/) before using
+    them. Since the preview changes quickly, use `eas simulator:start --help` to check the flags
+    supported by your installed version.
   </Requirement>
 </Prerequisites>
 
@@ -36,7 +36,7 @@ If you use an AI agent, install [Expo Skills](/skills/) and ask it to use the EA
 
 ## Start a session manually
 
-The steps below use EAS CLI. To manage sessions directly from your own HTTP client, see the [REST API reference](/preview/eas-simulator/rest-api/). To start a browser-preview-only session when someone opens an authenticated expo.dev URL, see [Create session links](/preview/eas-simulator/create-session-links/).
+The steps below use EAS CLI. To manage sessions directly from your own HTTP client, see the [REST API reference](/preview/eas-simulator/reference/rest-api/). To start a browser-preview-only session when someone opens an authenticated expo.dev URL, see [Create session links](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
 
 <Step label="1">
 
@@ -161,7 +161,7 @@ The start command waits for the session to become ready, then writes **.env.eas-
 - A temporary `webPreviewUrl` for supported iOS sessions
 - The command pattern for controlling the device
 
-To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Run and control an app](/preview/eas-simulator/run-and-control/) for complete examples.
+To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Install your app](/preview/eas-simulator/how-to/install-your-app/) for complete examples.
 
 > **warning** `--non-interactive` does not automatically stop the session. The command returns when the session is ready, and the remote device remains active.
 
