@@ -60,6 +60,8 @@ jobs:
     if: needs.stable-mode.outputs.mode == 'version'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      GIT_OPTIONAL_LOCKS: "0"
     concurrency:
       group: publish-packages-version-${{ github.ref_name }}
       cancel-in-progress: true
@@ -79,8 +81,10 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: Build Expo Tools and workspace dependencies
-        run: pnpm turbo run build --filter=expotools...
+      - name: Prerequisites
+        run: |
+          pnpm turbo run build --filter=expotools...
+          rm -f .git/index.lock
       - name: Create release PR
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
         with:
