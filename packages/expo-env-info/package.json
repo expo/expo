@@ -51,7 +51,7 @@
     "@types/node": "^22.14.0",
     "@vercel/ncc": "^0.38.4",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "^3.6.0"
   },
   "preferGlobal": true,
   "engines": {

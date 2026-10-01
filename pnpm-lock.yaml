@@ -2328,7 +2328,7 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       nock:
         specifier: ^14.0.10
@@ -2398,7 +2398,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/config-plugins:
@@ -2459,7 +2459,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/config-types:
@@ -2561,7 +2561,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/fingerprint:
@@ -2628,7 +2628,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-splash-screen
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       require-from-string:
         specifier: ^2.0.2
@@ -2718,7 +2718,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/local-build-cache-provider:
@@ -2737,7 +2737,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/log-box:
@@ -2922,7 +2922,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       metro-minify-terser:
         specifier: ^0.84.2
@@ -3061,7 +3061,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       strip-ansi:
         specifier: ^6.0.1
@@ -3151,7 +3151,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/require-utils:
@@ -3182,7 +3182,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/router-server:
@@ -3534,7 +3534,7 @@ importers:
         specifier: ^13.0.0
         version: 13.0.6
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       multitars:
         specifier: ^1.0.2
@@ -4709,7 +4709,7 @@ importers:
         specifier: ^5.3.2
         version: 5.3.2
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       ora:
         specifier: 3.4.0
@@ -4770,7 +4770,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/expo-file-system:
@@ -5375,7 +5375,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/expo-modules-core:
@@ -5551,7 +5551,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/expo-observe:
@@ -5928,7 +5928,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/expo-sqlite:
@@ -6455,7 +6455,7 @@ importers:
         specifier: ^4.0.4
         version: 4.0.5
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       picomatch:
         specifier: ^4.0.4
@@ -6755,7 +6755,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/pod-install:

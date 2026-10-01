@@ -52,7 +52,7 @@
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "^3.6.0"
   },
   "peerDependencies": {
     "expo": "*",
