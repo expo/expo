@@ -9,8 +9,10 @@ Package changes are released through `publish-packages.yml`:
 3. That pull request contains the new package versions, changelogs, generated version files, and
    lockfile.
 4. After it is merged, the workflow runs `et publish-packages`. This builds and precompiles the
-   packages, publishes them with Changesets, and updates the staging versions endpoint from the
-   checked-out `expo` version.
+   packages, publishes them with Changesets, updates the staging versions endpoint from the
+   checked-out `expo` version, syncs `bundledNativeModules.json` to staging and production, and
+   promotes the staging versions endpoint to production. If one of these API steps fails, the
+   publish still succeeds and the log shows the `et` command to run locally.
 
 Only this workflow can use npm trusted publishing. Use it for normal releases.
 

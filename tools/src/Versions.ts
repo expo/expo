@@ -1,3 +1,4 @@
+import * as jsondiffpatch from 'jsondiffpatch';
 import semver from 'semver';
 
 import logger from './Logger';
@@ -109,7 +110,25 @@ export async function setVersionsAsync(
       secret: process.env.EXPO_VERSIONS_SECRET,
     }),
   });
-  await resp.json();
+  const text = await resp.text();
+  let errors: unknown;
+  try {
+    errors = JSON.parse(text)?.errors;
+  } catch {}
+  if (!resp.ok || (Array.isArray(errors) && errors.length)) {
+    throw new Error(`Failed to update the versions on ${apiHost} (${resp.status}): ${text}`);
+  }
+}
+
+export async function promoteVersionsToProductionAsync(): Promise<jsondiffpatch.Delta | null> {
+  const versionsStaging = await getVersionsAsync(VersionsApiHost.STAGING);
+  const versionsProd = await getVersionsAsync(VersionsApiHost.PRODUCTION);
+  const delta = jsondiffpatch.diff(versionsProd, versionsStaging);
+  if (!delta) {
+    return null;
+  }
+  await setVersionsAsync(versionsStaging, VersionsApiHost.PRODUCTION);
+  return delta;
 }
 
 export async function modifyVersionsAsync(

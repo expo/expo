@@ -5,27 +5,20 @@ import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
 
-import { EXPO_DIR, LOCAL_API_HOST } from '../Constants';
+import { EXPO_DIR } from '../Constants';
 import logger from '../Logger';
-import * as Versions from '../Versions';
+import {
+  diffNativeModules,
+  getNativeModulesAsync,
+  NativeModuleChange,
+  NativeModulesEnv,
+  putNativeModulesAsync,
+  readBundledNativeModulesAsync,
+} from '../changesets/NativeModules';
 
 type ActionOptions = {
   env: string;
 };
-
-type Env = 'local' | 'staging' | 'production';
-type BundledNativeModules = Record<string, string>;
-interface NativeModule {
-  npmPackage: string;
-  versionRange: string;
-}
-type BundledNativeModulesList = NativeModule[];
-interface SyncPayload {
-  nativeModules: BundledNativeModulesList;
-}
-interface GetBundledNativeModulesResult {
-  data: BundledNativeModulesList;
-}
 
 const EXPO_PACKAGE_PATH = path.join(EXPO_DIR, 'packages/expo');
 
@@ -38,16 +31,17 @@ async function main(options: ActionOptions) {
 
   const sdkVersion = await resolveTargetSdkVersionAsync();
   const bundledNativeModules = await readBundledNativeModulesAsync();
-  const syncPayload = prepareSyncPayload(bundledNativeModules);
 
-  const currentBundledNativeModules = await getCurrentBundledNativeModules(env, sdkVersion);
-  await compareAndConfirmAsync(currentBundledNativeModules, syncPayload.nativeModules);
+  const currentBundledNativeModules = await getNativeModulesAsync(env, sdkVersion);
+  await compareAndConfirmAsync(
+    diffNativeModules(currentBundledNativeModules, bundledNativeModules)
+  );
 
-  await syncModulesAsync({ env, secret }, sdkVersion, syncPayload);
+  await putNativeModulesAsync(env, sdkVersion, bundledNativeModules, secret);
   logger.success(`Successfully synced the modules for SDK ${sdkVersion}!`);
 }
 
-function resolveEnv({ env }: ActionOptions): Env {
+function resolveEnv({ env }: ActionOptions): NativeModulesEnv {
   if (env === 'staging' || env === 'production' || env === 'local') {
     return env;
   } else {
@@ -55,7 +49,7 @@ function resolveEnv({ env }: ActionOptions): Env {
   }
 }
 
-async function confirmEnvAsync(env: Env): Promise<void> {
+async function confirmEnvAsync(env: NativeModulesEnv): Promise<void> {
   const { confirmed } = await inquirer.prompt<{ confirmed: boolean }>([
     {
       type: 'confirm',
@@ -118,59 +112,14 @@ async function resolveTargetSdkVersionAsync(): Promise<string> {
   }
 }
 
-async function readBundledNativeModulesAsync(): Promise<BundledNativeModules> {
-  const bundledNativeModulesPath = path.join(EXPO_PACKAGE_PATH, 'bundledNativeModules.json');
-  return await JsonFile.readAsync<BundledNativeModules>(bundledNativeModulesPath);
-}
-
-async function getCurrentBundledNativeModules(
-  env: Env,
-  sdkVersion: string
-): Promise<BundledNativeModulesList> {
-  const baseApiUrl = resolveBaseApiUrl(env);
-  const result = await fetch(`${baseApiUrl}/v2/sdks/${sdkVersion}/native-modules`);
-  const resultJson = (await result.json()) as GetBundledNativeModulesResult;
-  return resultJson.data;
-}
-
-async function compareAndConfirmAsync(
-  current: BundledNativeModulesList,
-  next: BundledNativeModulesList
-): Promise<void> {
-  const currentMap = current.reduce(
-    (acc, i) => {
-      acc[i.npmPackage] = i;
-      return acc;
-    },
-    {} as Record<string, NativeModule>
-  );
-  const nextMap = next.reduce(
-    (acc, i) => {
-      acc[i.npmPackage] = i;
-      return acc;
-    },
-    {} as Record<string, NativeModule>
-  );
-
+async function compareAndConfirmAsync(changes: NativeModuleChange[]): Promise<void> {
   logger.info('Changes:');
-  let hasChanges = false;
-  for (const { npmPackage, versionRange } of next) {
-    if (versionRange !== currentMap[npmPackage]?.versionRange) {
-      hasChanges = true;
-      logger.info(
-        ` - ${npmPackage}: ${chalk.red(
-          currentMap[npmPackage]?.versionRange ?? '(none)'
-        )} -> ${chalk.green(versionRange)}`
-      );
-    }
+  for (const { npmPackage, from, to } of changes) {
+    logger.info(
+      ` - ${npmPackage}: ${chalk.red(from ?? '(none)')} -> ${chalk.green(to ?? '(removed)')}`
+    );
   }
-  for (const { npmPackage, versionRange } of current) {
-    if (!nextMap[npmPackage]) {
-      hasChanges = true;
-      logger.info(` - ${npmPackage}: ${chalk.red(versionRange)} -> ${chalk.green('(removed)')}`);
-    }
-  }
-  if (!hasChanges) {
+  if (!changes.length) {
     logger.info(chalk.gray('(no changes found)'));
     // there's no need to proceed with the script
     process.exit(0);
@@ -188,59 +137,6 @@ async function compareAndConfirmAsync(
     logger.info('No worries, come back soon!');
     process.exit(1);
   }
-}
-
-async function syncModulesAsync(
-  { env, secret }: { env: Env; secret: string },
-  sdkVersion: string,
-  payload: SyncPayload
-): Promise<void> {
-  const baseApiUrl = resolveBaseApiUrl(env);
-  const result = await fetch(`${baseApiUrl}/v2/sdks/${sdkVersion}/native-modules/sync`, {
-    method: 'put',
-    body: JSON.stringify(payload),
-    headers: {
-      'Content-Type': 'application/json',
-      'expo-sdk-native-modules-secret': secret,
-    },
-  });
-
-  if (result.status !== 200) {
-    throw new Error(`Failed to sync the modules: ${await result.text()}`);
-  }
-}
-
-function resolveBaseApiUrl(env: Env): string {
-  if (env === 'production') {
-    return `https://${Versions.VersionsApiHost.PRODUCTION}`;
-  } else if (env === 'staging') {
-    return `https://${Versions.VersionsApiHost.STAGING}`;
-  } else {
-    return `http://${LOCAL_API_HOST}`;
-  }
-}
-
-/**
- * converts
- * {
- *   "expo-ads-admob": "~10.0.4",
- *   "expo-ads-facebook": "~12.0.4"
- * }
- * to
- * {
- *   "nativeModules": [
- *     { "npmPackage": "expo-ads-admob", "versionRange": "~10.0.4" },
- *     { "npmPackage": "expo-ads-facebook", "versionRange": "~12.0.4" }
- *   ]
- * }
- */
-function prepareSyncPayload(bundledNativeModules: BundledNativeModules): SyncPayload {
-  return {
-    nativeModules: Object.entries(bundledNativeModules).map(([npmPackage, versionRange]) => ({
-      npmPackage,
-      versionRange,
-    })),
-  };
 }
 
 export default (program: Command) => {
