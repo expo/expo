@@ -85,18 +85,10 @@ export const Animation = {
 };
 
 function ChainableAnimation(animation: AnimationObject): ChainableAnimationType {
-  let _animation: AnimationObject = animation;
-
   return {
-    delay: (delay) => {
-      _animation = { ..._animation, delay };
-      return ChainableAnimation(_animation);
-    },
-    repeat: (params) => {
-      _animation = { ..._animation, ...params };
-      return ChainableAnimation(_animation);
-    },
-    [VALUE_SYMBOL]: () => _animation,
+    delay: (delay) => ChainableAnimation({ ...animation, delay }),
+    repeat: (params) => ChainableAnimation({ ...animation, ...params }),
+    [VALUE_SYMBOL]: () => animation,
   };
 }
 
