@@ -158,8 +158,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     concurrency:
-      group: sync-published-packages-${{ github.ref_name }}
-      cancel-in-progress: true
+      # All SDK branches update the same versions document.
+      group: sync-published-packages
+      queue: max
+      cancel-in-progress: false
     permissions:
       contents: read
       id-token: write
