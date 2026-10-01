@@ -827,6 +827,16 @@ export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
 /**
+ * Sets the preferred color scheme for the nearest enclosing presentation, such as a `BottomSheet`,
+ * including its background. The value overrides the device's light or dark appearance for that
+ * presentation.
+ * @param colorScheme - The preferred color scheme, or `null` to indicate no preference.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/preferredcolorscheme(_:)).
+ */
+export const preferredColorScheme = (colorScheme: 'light' | 'dark' | null) =>
+  createModifier('preferredColorScheme', { colorScheme });
+
+/**
  * Disables or enables clipping of a scrollable view's content to its bounds.
  * Content drawn outside those bounds, such as a shadow or a view scaled up past the edge, is
  * cut off by default and stays visible once clipping is disabled.
@@ -1839,6 +1849,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof preferredColorScheme>
   | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof scrollIndicators>
   | ReturnType<typeof scrollEdgeEffectStyle>
