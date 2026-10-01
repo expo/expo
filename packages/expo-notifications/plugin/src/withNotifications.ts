@@ -43,6 +43,15 @@ export type NotificationsPluginProps = {
   mode?: 'development' | 'production';
 
   /**
+   * Whether to enable remote notification.
+   *
+   * If set to false plugin wont add aps entitlement to native project. Only Local notification will work.
+   * @default true
+   * @platform ios
+   */
+  enableRemoteNotifications?: boolean;
+
+  /**
    * Whether to enable background remote notifications, as described in [Apple documentation](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app).
    *
    * This sets the `UIBackgroundModes` key in the `Info.plist` to include `remote-notification`.

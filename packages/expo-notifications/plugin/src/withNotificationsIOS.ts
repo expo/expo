@@ -15,14 +15,21 @@ const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications.
 
 export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
   config,
-  { mode = 'development', sounds = [], enableBackgroundRemoteNotifications }
+  {
+    mode = 'development',
+    sounds = [],
+    enableRemoteNotifications = true,
+    enableBackgroundRemoteNotifications,
+  }
 ) => {
-  config = withEntitlementsPlist(config, (config) => {
-    if (!config.modResults['aps-environment']) {
-      config.modResults['aps-environment'] = mode;
-    }
-    return config;
-  });
+  if (enableRemoteNotifications) {
+    config = withEntitlementsPlist(config, (config) => {
+      if (!config.modResults['aps-environment']) {
+        config.modResults['aps-environment'] = mode;
+      }
+      return config;
+    });
+  }
   config = withNotificationSounds(config, { sounds });
   config = withBackgroundRemoteNotifications(config, enableBackgroundRemoteNotifications);
 
