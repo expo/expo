@@ -2,4 +2,4 @@
 'expo': patch
 ---
 
-Remove the UTF-8-only `TextDecoder` polyfill and use the runtime implementation provided by Hermes in React Native 0.88, preserving support for legacy encodings such as Latin-1. Custom JavaScript runtimes must provide `TextDecoder` before initializing Expo.
+Use the `TextDecoder` implementation provided by Hermes in React Native 0.88. In addition to UTF-8, this new implementation supports more character encodings including UTF-16 LE and BE, Latin-1, and Windows-1252. Custom JavaScript runtimes must provide `TextDecoder` before initializing Expo.
