@@ -665,11 +665,13 @@ export function withExtendedResolver(
       // Redirect every asset registry request to the virtual registry module so all consumers
       // share one instance: Metro's generated asset modules (`assetRegistryPath`), imports of
       // `react-native/asset-registry`, and imports of the legacy `@react-native/assets-registry`
-      // package, which no longer ships with react-native 0.87.
+      // package and `react-native/Libraries/Image/AssetRegistry` module, which no longer ship
+      // with react-native 0.87.
       if (
         moduleName === config.transformer.assetRegistryPath ||
         moduleName === 'react-native/asset-registry' ||
-        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)
+        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName) ||
+        /^react-native\/Libraries\/Image\/AssetRegistry(\.js)?$/.test(moduleName)
       ) {
         return getAssetRegistryModule();
       }
