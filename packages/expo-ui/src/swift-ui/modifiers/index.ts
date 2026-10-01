@@ -827,8 +827,10 @@ export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
 /**
- * Sets the preferred color scheme for this presentation.
- * @param colorScheme - The preferred color scheme for this view, or `null` to indicate no preference.
+ * Sets the preferred color scheme for the nearest enclosing presentation, such as a `BottomSheet`,
+ * including its background. The value overrides the device's light or dark appearance for that
+ * presentation.
+ * @param colorScheme - The preferred color scheme, or `null` to indicate no preference.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/preferredcolorscheme(_:)).
  */
 export const preferredColorScheme = (colorScheme: 'light' | 'dark' | null) =>
