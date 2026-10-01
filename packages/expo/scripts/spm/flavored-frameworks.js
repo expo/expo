@@ -15,13 +15,11 @@ const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+const { pluginError } = require('./diagnostics');
+
 const FLAVORS = ['debug', 'release'];
 
-/**
- * Byte order, the order CocoaPods sorts in. Declaration order reaches the build:
- * it decides which contributor a colliding artifact is taken from, so it must not
- * vary with the machine's locale.
- */
+/** CocoaPods' byte order: it picks which contributor wins a collision, so never locale-dependent. */
 const byteOrder = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
 
 function stableFrameworkId(frameworkName) {
@@ -53,10 +51,8 @@ function existingArtifactSource(baseDir, flavor, frameworkName) {
 }
 
 /**
- * Candidate directories for precompiled output, in lookup order: the path
- * override, the monorepo prebuild output, then the copy bundled into the npm
- * package at `moduleRoot`. `buildPath` is relative to a prebuild output root,
- * `bundledPath` to the package's `prebuilds` directory.
+ * Lookup order: EXPO_PRECOMPILED_MODULES_PATH, monorepo prebuild output, the npm package's
+ * `prebuilds/` copy.
  */
 function precompiledBaseDirs(buildPath, moduleRoot, bundledPath) {
   const bases = [];
@@ -91,35 +87,33 @@ function validateTarEntries(tarballPath, frameworkName) {
     .map((entry) => entry.replace(/^\.\//, '').replace(/\/$/, ''))
     .filter(Boolean);
   if (entries.length === 0) {
-    throw new Error(`[expo-spm-plugin] ${tarballPath} is empty`);
+    throw pluginError({ what: `${tarballPath} is empty` });
   }
   const roots = new Set();
   for (const entry of entries) {
     const parts = entry.split('/');
     if (path.isAbsolute(entry) || parts.includes('..')) {
-      throw new Error(
-        `[expo-spm-plugin] ${tarballPath} holds the unsafe path '${entry}'. Extracting it would ` +
-          'write outside the plugin cache, so the archive is not a precompiled Expo artifact. ' +
-          'Delete it and rebuild or re-download the precompiled module.'
-      );
+      throw pluginError({
+        what: `${tarballPath} holds the unsafe path '${entry}'.`,
+        why: 'Extracting it would write outside the plugin cache, so the archive is not a precompiled Expo artifact.',
+        how: 'Delete it and rebuild or re-download the precompiled module.',
+      });
     }
     if (!/.+\.xcframework$/.test(parts[0])) {
-      throw new Error(
-        `[expo-spm-plugin] in ${tarballPath}, '${entry}' is not part of an .xcframework. ` +
-          'A flavor tarball holds only XCFramework directories, so this archive was packed by ' +
-          'something other than the Expo prebuild pipeline. Delete it and rebuild or ' +
-          're-download the precompiled module.'
-      );
+      throw pluginError({
+        what: `in ${tarballPath}, '${entry}' is not part of an .xcframework.`,
+        why: 'A flavor tarball holds only XCFramework directories, so this archive was packed by something other than the Expo prebuild pipeline.',
+        how: 'Delete it and rebuild or re-download the precompiled module.',
+      });
     }
     roots.add(parts[0]);
   }
   if (!roots.has(expectedRoot)) {
-    throw new Error(
-      `[expo-spm-plugin] ${tarballPath} does not contain ${expectedRoot}; it holds ` +
-        `${Array.from(roots).sort().join(', ')}. The tarball belongs to a different product or ` +
-        'the prebuild for this one did not finish. Rebuild the module with the Expo prebuild ' +
-        'pipeline, or re-download its precompiled artifacts.'
-    );
+    throw pluginError({
+      what: `${tarballPath} does not contain ${expectedRoot}; it holds ${Array.from(roots).sort().join(', ')}.`,
+      why: 'The tarball belongs to a different product or the prebuild for this one did not finish.',
+      how: 'Rebuild the module with the Expo prebuild pipeline, or re-download its precompiled artifacts.',
+    });
   }
 }
 
@@ -148,9 +142,9 @@ function extractTarball(sourcePath, frameworkName, cacheDir, flavor) {
     execFileSync('tar', ['-xzf', sourcePath, '-C', temp], { stdio: 'pipe' });
     const extracted = path.join(temp, `${frameworkName}.xcframework`);
     if (!fs.existsSync(path.join(extracted, 'Info.plist'))) {
-      throw new Error(
-        `[expo-spm-plugin] ${sourcePath} did not extract ${frameworkName}.xcframework/Info.plist`
-      );
+      throw pluginError({
+        what: `${sourcePath} did not extract ${frameworkName}.xcframework/Info.plist`,
+      });
     }
     fs.writeFileSync(path.join(temp, '.source.json'), stamp, 'utf8');
   });
@@ -194,30 +188,26 @@ function validateFlavoredFramework(framework) {
     framework.flavors == null ||
     typeof framework.flavors !== 'object'
   ) {
-    throw new Error(
-      '[expo-spm-plugin] flavored framework declarations require a stable id, frameworkName, ' +
-        'linkage="dynamic", and debug/release paths'
-    );
+    throw pluginError({
+      what: 'flavored framework declarations require a stable id, frameworkName, linkage="dynamic", and debug/release paths',
+    });
   }
 
   const normalized = {};
   for (const flavor of FLAVORS) {
     const value = framework.flavors[flavor];
     if (typeof value !== 'string' || !path.isAbsolute(value)) {
-      throw new Error(
-        `[expo-spm-plugin] ${framework.frameworkName} ${flavor} path must be absolute`
-      );
+      throw pluginError({ what: `${framework.frameworkName} ${flavor} path must be absolute` });
     }
     if (path.basename(value) !== `${framework.frameworkName}.xcframework`) {
-      throw new Error(
-        `[expo-spm-plugin] ${framework.frameworkName} ${flavor} path must identify ` +
-          `${framework.frameworkName}.xcframework: ${value}`
-      );
+      throw pluginError({
+        what: `${framework.frameworkName} ${flavor} path must identify ${framework.frameworkName}.xcframework: ${value}`,
+      });
     }
     if (!fs.existsSync(path.join(value, 'Info.plist'))) {
-      throw new Error(
-        `[expo-spm-plugin] ${framework.frameworkName} ${flavor} XCFramework is incomplete: ${value}`
-      );
+      throw pluginError({
+        what: `${framework.frameworkName} ${flavor} XCFramework is incomplete: ${value}`,
+      });
     }
     normalized[flavor] = path.resolve(value);
   }
@@ -245,11 +235,10 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
     }
     for (const flavor of FLAVORS) {
       if (sources[flavor] == null) {
-        throw new Error(
-          `[expo-spm-plugin] ${frameworkName} has an incomplete precompiled pair in ${baseDir}: ` +
-            `missing ${flavor}. Run the Expo prebuild pipeline for both Debug and Release ` +
-            'before react-native spm update.'
-        );
+        throw pluginError({
+          what: `${frameworkName} has an incomplete precompiled pair in ${baseDir}: missing ${flavor}.`,
+          how: 'Run the Expo prebuild pipeline for both Debug and Release before react-native spm update.',
+        });
       }
     }
     return validateFlavoredFramework({
@@ -274,39 +263,33 @@ function spmDependencyBaseDirs(depName, ownerModuleRoot) {
   return precompiledBaseDirs(['.spm-deps', depName], ownerModuleRoot, ['spm-deps', depName]);
 }
 
-/**
- * A dependency copied verbatim from an upstream `.binaryTarget` can be a static
- * library, and one built from a package whose product is named differently ships
- * a differently named framework. Both reach RN and the interface tree as a slice
- * that is not `<Dep>.framework`, and fail there with a message naming neither the
- * dependency nor the module that pulled it in — so they are rejected here.
- */
 function readXcframeworkPlist(plistPath) {
   try {
     return JSON.parse(
       execFileSync('plutil', ['-convert', 'json', '-o', '-', plistPath], { encoding: 'utf8' })
     );
   } catch (error) {
-    throw new Error(
-      `[expo-spm-plugin] ${plistPath} could not be read as a property list: ${error.message}. ` +
-        'An XCFramework keeps the list of what it holds there, so this one is damaged or was ' +
-        'never an XCFramework. Delete it and rebuild the dependency with the Expo prebuild ' +
-        'pipeline, or reinstall the package that ships it.',
+    throw pluginError(
+      {
+        what: `${plistPath} could not be read as a property list: ${error.message}.`,
+        why: 'An XCFramework keeps the list of what it holds there, so this one is damaged or was never an XCFramework.',
+        how: 'Delete it and rebuild the dependency with the Expo prebuild pipeline, or reinstall the package that ships it.',
+      },
       { cause: error }
     );
   }
 }
 
+/** Rejects a static library or misnamed framework here, where the error can name the dependency. */
 function assertEmbeddableFramework(depName, xcframeworkPath) {
   const plistPath = path.join(xcframeworkPath, 'Info.plist');
   const plist = readXcframeworkPlist(plistPath);
   if (plist.AvailableLibraries != null && !Array.isArray(plist.AvailableLibraries)) {
-    throw new Error(
-      `[expo-spm-plugin] ${plistPath} lists AvailableLibraries as something other than a list of ` +
-        'slices, so the plugin cannot tell what the XCFramework holds. The artifact is damaged. ' +
-        'Delete it and rebuild the dependency with the Expo prebuild pipeline, or reinstall the ' +
-        'package that ships it.'
-    );
+    throw pluginError({
+      what: `${plistPath} lists AvailableLibraries as something other than a list of slices, so the plugin cannot tell what the XCFramework holds.`,
+      why: 'The artifact is damaged.',
+      how: 'Delete it and rebuild the dependency with the Expo prebuild pipeline, or reinstall the package that ships it.',
+    });
   }
   const libraries = plist.AvailableLibraries ?? [];
   const expected = `${depName}.framework`;
@@ -317,23 +300,15 @@ function assertEmbeddableFramework(depName, xcframeworkPath) {
     const found =
       unusable.map((libraryPath) => libraryPath ?? 'a slice with no LibraryPath').join(', ') ||
       'no library slices';
-    throw new Error(
-      `[expo-spm-plugin] ${depName} does not ship a ${expected}: ${xcframeworkPath} holds ` +
-        `${found}. React Native links and embeds Expo's precompiled dependencies as dynamic ` +
-        'frameworks named after the product, so a static library, a differently named framework ' +
-        'and an XCFramework without slices are all unusable. Rebuild the dependency with the ' +
-        "Expo prebuild pipeline, or exclude the Expo module that links it in your app's " +
-        'package.json: "expo": { "autolinking": { "exclude": [...] } }.'
-    );
+    throw pluginError({
+      what: `${depName} does not ship a ${expected}: ${xcframeworkPath} holds ${found}.`,
+      why: "React Native links and embeds Expo's precompiled dependencies as dynamic frameworks named after the product, so a static library, a differently named framework and an XCFramework without slices are all unusable.",
+      how: 'Rebuild the dependency with the Expo prebuild pipeline, or exclude the Expo module that links it in your app\'s package.json: "expo": { "autolinking": { "exclude": [...] } }.',
+    });
   }
 }
 
-/**
- * XCFrameworks are directories; a stale file of the same name is not one. Only an
- * absent path counts as "not built here" — swallowing every error would make an
- * unreadable one look identical to a missing artifact, and the app would be built
- * without a dependency it links.
- */
+/** Only ENOENT/ENOTDIR mean absent; other errors must not look like a missing artifact. */
 function isDirectory(candidate) {
   try {
     return fs.statSync(candidate).isDirectory();
@@ -341,22 +316,20 @@ function isDirectory(candidate) {
     if (error.code === 'ENOENT' || error.code === 'ENOTDIR') {
       return false;
     }
-    throw new Error(
-      `[expo-spm-plugin] ${candidate} could not be read: ${error.message}. The plugin cannot ` +
-        'tell whether a precompiled dependency is there, and it will not silently build an app ' +
-        'without one. Make that path readable — or delete it and rebuild the dependency with ' +
-        'the Expo prebuild pipeline — then run `npx react-native spm update` again.',
+    throw pluginError(
+      {
+        what: `${candidate} could not be read: ${error.message}.`,
+        why: 'The plugin cannot tell whether a precompiled dependency is there, and it will not silently build an app without one.',
+        how: 'Make that path readable — or delete it and rebuild the dependency with the Expo prebuild pipeline — then run `npx react-native spm update` again.',
+      },
       { cause: error }
     );
   }
 }
 
 /**
- * RN embeds every flavored framework into the app bundle, so it rejects the whole
- * autolinking result when two declarations share an id or a framework name. Two
- * distinct products can collide after `stableFrameworkId` (Foo and ExpoFoo both
- * become expo-foo), and a dependency can carry the name of a module, so the check
- * belongs on the combined array rather than on either source.
+ * RN rejects the whole graph on a repeated id/name (Foo and ExpoFoo both → expo-foo).
+ * A dependency can carry a module's name, so this runs on the combined array.
  */
 function assertDistinctFlavoredFrameworks(frameworks) {
   const describe = (framework) =>
@@ -371,15 +344,11 @@ function assertDistinctFlavoredFrameworks(frameworks) {
     for (const framework of frameworks) {
       const previous = seen.get(framework[key]);
       if (previous != null) {
-        throw new Error(
-          `[expo-spm-plugin] ${describe(previous)} and ${describe(framework)} both declare the ` +
-            `${label} "${framework[key]}". React Native embeds each flavored framework once and ` +
-            'rejects the whole autolinking graph over a collision, so no Expo module would ' +
-            'build. ' +
-            "Exclude the Expo module that brings in one of the two in your app's package.json: " +
-            '"expo": { "autolinking": { "exclude": [...] } }, and report the pair at ' +
-            'https://github.com/expo/expo/issues — one of the two products has to be renamed.'
-        );
+        throw pluginError({
+          what: `${describe(previous)} and ${describe(framework)} both declare the ${label} "${framework[key]}".`,
+          why: 'React Native embeds each flavored framework once and rejects the whole autolinking graph over a collision, so no Expo module would build.',
+          how: 'Exclude the Expo module that brings in one of the two in your app\'s package.json: "expo": { "autolinking": { "exclude": [...] } }, and report the pair at https://github.com/expo/expo/issues — one of the two products has to be renamed.',
+        });
       }
       seen.set(framework[key], framework);
     }
@@ -387,10 +356,8 @@ function assertDistinctFlavoredFrameworks(frameworks) {
 }
 
 /**
- * Returns null when the dependency has no artifact anywhere. Each flavor walks
- * the full candidate list on its own, so a partial monorepo build cannot shadow
- * a complete bundled copy — CocoaPods resolves it the same way in
- * `expo-modules-autolinking/scripts/ios/precompiled_modules.rb`.
+ * Null when no artifact exists. Each flavor walks all candidates, so a partial monorepo build
+ * cannot shadow a complete bundled copy (as precompiled_modules.rb).
  */
 function resolveSpmDependencyFramework(depName, ownerModuleRoot) {
   const bases = spmDependencyBaseDirs(depName, ownerModuleRoot);
@@ -405,14 +372,11 @@ function resolveSpmDependencyFramework(depName, ownerModuleRoot) {
   }
   for (const flavor of FLAVORS) {
     if (flavors[flavor] == null) {
-      throw new Error(
-        `[expo-spm-plugin] ${depName} has no ${flavor} XCFramework, although its ` +
-          `${resolved[0]} one resolved. Expo declares its precompiled dependencies as immutable ` +
-          'pairs, so half a pair would link in one configuration and fail to launch in the other ' +
-          `with dyld "Library not loaded: @rpath/${depName}.framework/${depName}". Build the ` +
-          'dependency for both flavors with the Expo prebuild pipeline, or install a package ' +
-          `that ships both. Searched: ${bases.join(', ')}.`
-      );
+      throw pluginError({
+        what: `${depName} has no ${flavor} XCFramework, although its ${resolved[0]} one resolved.`,
+        why: `Expo declares its precompiled dependencies as immutable pairs, so half a pair would link in one configuration and fail to launch in the other with dyld "Library not loaded: @rpath/${depName}.framework/${depName}".`,
+        how: `Build the dependency for both flavors with the Expo prebuild pipeline, or install a package that ships both. Searched: ${bases.join(', ')}.`,
+      });
     }
   }
   const framework = validateFlavoredFramework({
@@ -428,16 +392,9 @@ function resolveSpmDependencyFramework(depName, ownerModuleRoot) {
 }
 
 /**
- * The SwiftPM packages the precompiled modules link (SDWebImage, ZXingObjC, …),
- * each shipped as its own XCFramework beside the module.
- *
- * Two modules can link the same package, and RN's flavored frameworks are a flat
- * app-wide array that rejects a repeated id or framework name, so each dependency
- * is declared exactly once. Its owner — the first consuming pod name in byte
- * order, as CocoaPods' `ensure_shared_spm_deps` picks it — is also the npm
- * package searched for a bundled copy, so the two installers must order names
- * identically. The other consumers need nothing: one declaration serves the whole
- * app.
+ * One declaration per linked SwiftPM package; owner = first consumer pod in byte order
+ * (CocoaPods' ensure_shared_spm_deps), searched for the bundled copy.
+ * The two installers must order names identically.
  */
 function resolveSpmDependencyFrameworks(consumers) {
   const owners = new Map();
@@ -498,9 +455,7 @@ function prepareCompileInterfaces(frameworks, destination) {
         .filter((candidate) => fs.existsSync(candidate))
         .sort();
       if (sliceFrameworks.length === 0) {
-        throw new Error(
-          `[expo-spm-plugin] ${source} has no ${framework.frameworkName}.framework slices`
-        );
+        throw pluginError({ what: `${source} has no ${framework.frameworkName}.framework slices` });
       }
       const target = path.join(temp, `${framework.frameworkName}.framework`);
       for (const slice of sliceFrameworks) {
