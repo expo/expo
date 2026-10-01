@@ -22,11 +22,32 @@ export { requireContext };
 
 const validExtensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-export function inMemoryContext(context: MemoryContext) {
+type PromiseWithResult<T> = Promise<T> & { _result?: T | Promise<T> };
+
+export function inMemoryContext(context: MemoryContext, { lazy = false }: { lazy?: boolean } = {}) {
+  // The keys whose module has loaded in the `lazy` import mode.
+  const loaded = new Set<string>();
+
   return Object.assign(
     function (id: string) {
       id = id.replace(/^\.\//, '').replace(/\.\w*$/, '');
-      return typeof context[id] === 'function' ? { default: context[id] } : context[id];
+      const module = typeof context[id] === 'function' ? { default: context[id] } : context[id];
+      if (!lazy) {
+        return module;
+      }
+      // Like Metro's lazy context combined with Expo's async require: a promise that carries the
+      // module in `_result` once its split bundle has loaded, and the pending promise until then.
+      if (loaded.has(id)) {
+        const promise: PromiseWithResult<typeof module> = Promise.resolve(module);
+        promise._result = module;
+        return promise;
+      }
+      const promise: PromiseWithResult<typeof module> = Promise.resolve().then(() => {
+        loaded.add(id);
+        return module;
+      });
+      promise._result = promise;
+      return promise;
     },
     {
       resolve: (key: string) => key,
