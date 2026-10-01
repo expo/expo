@@ -37,19 +37,19 @@ export type StandardNavigatorEmit<EventMap extends Record<string, { data: object
 
 export type StandardNavigationAction = NavigateAction | GoBackAction;
 
-export type PlaceholderDescriptorMap = Record<
+export type PlaceholderDescriptorMap<NavigatorOptions extends object = object> = Record<
   string,
   {
     route: DescriptorRouteProp<ParamListBase, string>;
-    options: object;
+    options: NavigatorOptions;
     render: () => React.ReactNode;
     routeSource?: RouteSource;
   }
 >;
 
-export type DescribePlaceholderRoute = (
+export type DescribePlaceholderRoute<NavigatorOptions extends object = object> = (
   route: DescriptorRouteProp<ParamListBase, string>
-) => NonNullable<PlaceholderDescriptorMap[string]>;
+) => NonNullable<PlaceholderDescriptorMap<NavigatorOptions>[string]>;
 
 export type StandardNavigator<
   NavigatorOptions extends object,
@@ -76,6 +76,10 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
   dispatch: (action: NavigationAction) => void;
   dispatchSync: (action: NavigationAction) => void;
   navigation: NavigationHelpers<ParamListBase>;
+  /** Returns whether the route with the given key is preloaded. */
+  isPreloaded: (key: string) => boolean;
+  /** Returns whether removal is prevented for the route with the given key. */
+  isRemovalPrevented: (key: string) => boolean;
 }
 
 /**
@@ -134,15 +138,15 @@ export type IntegrateWithRouterOptions<
    */
   processState?: (
     state: State,
-    descriptors: PlaceholderDescriptorMap,
-    describe: DescribePlaceholderRoute
+    descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
+    describe: DescribePlaceholderRoute<NavigatorOptions>
   ) => State;
   /** Creates additional descriptors before `processState` and navigator rendering. */
   processDescriptors?: (
-    descriptors: PlaceholderDescriptorMap,
+    descriptors: PlaceholderDescriptorMap<NavigatorOptions>,
     state: State,
-    describe: DescribePlaceholderRoute
-  ) => PlaceholderDescriptorMap;
+    describe: DescribePlaceholderRoute<NavigatorOptions>
+  ) => PlaceholderDescriptorMap<NavigatorOptions>;
   /**
    * Transforms the screens declared as children of the navigator before they are rendered.
    *
@@ -204,7 +208,7 @@ type NavigatorContentInferenceCarrier<
 
 /**
  * Props for a standard navigator's `NavigatorContent` component. Annotate your content component
- * with this type to declare the events it emits, so `unstable_createStandardRouterNavigator` can
+ * with this type to declare the events it emits, so `createStandardRouterNavigator` can
  * type `emitter.emit` for you.
  *
  * @example

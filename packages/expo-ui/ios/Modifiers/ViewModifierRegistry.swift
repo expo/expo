@@ -16,7 +16,7 @@ internal struct ListSectionSpacingModifier: ViewModifier, Record {
   @Field var value: CGFloat = 0
 
   func body(content: Content) -> some View {
-#if os(tvOS)
+#if os(tvOS) || os(macOS)
     content
 #else
     if #available(iOS 17.0, *) {
@@ -587,7 +587,11 @@ internal struct MenuActionDismissBehaviorModifier: ViewModifier, Record {
       case .automatic:
         content.menuActionDismissBehavior(.automatic)
       case .disabled:
+#if os(macOS)
+        content.menuActionDismissBehavior(.automatic)
+#else
         content.menuActionDismissBehavior(.disabled)
+#endif
       case .enabled:
         content.menuActionDismissBehavior(.enabled)
       }
@@ -1391,7 +1395,7 @@ internal struct ListSectionMargins: ViewModifier, Record {
   @Field var edges: EdgeOptions?
 
   func body(content: Content) -> some View {
-#if compiler(>=6.2) && !os(tvOS) // Xcode 26
+#if compiler(>=6.2) && !os(tvOS) && !os(macOS) // Xcode 26
     if #available(iOS 26.0, *) {
       if let edges {
         content.listSectionMargins(edges.toEdge(), length ?? 0)
@@ -1528,6 +1532,8 @@ public class ViewModifierRegistry {
 
   public typealias ModifierFactory = ([String: Any], AppContext, EventDispatcher) throws -> any ViewModifier
   private(set) internal var modifierFactories: [String: ModifierFactory] = [:]
+
+  public static var widgetKit: WidgetKitModifiers?
 
   private init() {
     registerBuiltInModifiers()
@@ -1989,6 +1995,14 @@ extension ViewModifierRegistry {
       return try NavigationTitleModifier(from: params, appContext: appContext)
     }
 
+    register("navigationSplitViewStyle") { params, appContext, _ in
+      return try NavigationSplitViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("navigationSplitViewColumnWidth") { params, appContext, _ in
+      return try NavigationSplitViewColumnWidthModifier(from: params, appContext: appContext)
+    }
+
     register("accessibilityLabel") { params, appContext, _ in
       return try AccessibilityLabelModifier(from: params, appContext: appContext)
     }
@@ -2305,6 +2319,10 @@ extension ViewModifierRegistry {
       return try ScrollIndicatorsModifier(from: params, appContext: appContext)
     }
 
+    register("scrollEdgeEffectStyle") { params, appContext, _ in
+      return try ScrollEdgeEffectStyleModifier(from: params, appContext: appContext)
+    }
+
     register("tabViewStyle") { params, appContext, _ in
       return try TabViewStyleModifier(from: params, appContext: appContext)
     }
@@ -2337,6 +2355,10 @@ extension ViewModifierRegistry {
       return try PresentationDragIndicatorModifier(from: params, appContext: appContext)
     }
 
+    register("presentationCornerRadius") { params, appContext, _ in
+      return try PresentationCornerRadiusModifier(from: params, appContext: appContext)
+    }
+
     register("presentationBackgroundInteraction") { params, appContext, _ in
       return try PresentationBackgroundInteractionModifier(from: params, appContext: appContext)
     }
@@ -2344,7 +2366,7 @@ extension ViewModifierRegistry {
     register("interactiveDismissDisabled") { params, appContext, _ in
       return try InteractiveDismissDisabledModifier(from: params, appContext: appContext)
     }
-    
+
     register("presentationBackground") { params, appContext, _ in
       return try PresentationBackgroundModifier(from: params, appContext: appContext)
     }
@@ -2373,14 +2395,6 @@ extension ViewModifierRegistry {
       return try ContentTransitionModifier(from: params, appContext: appContext)
     }
 
-    register("widgetURL") { params, appContext, _ in
-      return try WidgetURLModifier(from: params, appContext: appContext)
-    }
-
-    register("activityBackgroundTint") { params, appContext, _ in
-      return try ActivityBackgroundTintModifier(from: params, appContext: appContext)
-    }
-
     register("keyboardType") { params, appContext, _ in
       return try KeyboardTypeModifier(from: params, appContext: appContext)
     }
@@ -2394,7 +2408,11 @@ extension ViewModifierRegistry {
     }
 
     register("containerBackground") { params, appContext, _ in
-      return try ContainerBackgroundModifier(from: params, appContext: appContext)
+      let modifier = try ContainerBackgroundModifier(from: params, appContext: appContext)
+      #if DEBUG
+      modifier.warnIfWidgetPlacementIsUnavailable()
+      #endif
+      return modifier
     }
 
     register("symbolEffect") { params, appContext, _ in

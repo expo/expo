@@ -8,6 +8,7 @@ import {
   type Noxcturnal,
   type NoxcturnalTransformInput,
 } from '../noxcturnal-transformer';
+import { addCacheVary } from './cache-vary';
 
 const NO_PROCESS_ENV_REPLACEMENT = Symbol('NO_PROCESS_ENV_REPLACEMENT');
 
@@ -34,6 +35,18 @@ function routerRoot(state: ProcessEnvState): string {
   })());
 }
 
+/**
+ * Mirrors `getAsyncRoutes` in `babel-preset-expo`. Production async routes are web-only: native
+ * production bundles are never split, so they must keep the synchronous Router import mode even
+ * when the bundler request enables async routes.
+ */
+function isAsyncRoutesEnabled(options: NoxcturnalTransformInput['options']): boolean {
+  if (String(options.customTransformOptions?.asyncRoutes) !== 'true') {
+    return false;
+  }
+  return options.dev || options.platform === 'web';
+}
+
 function processEnvReplacement(
   name: string,
   state: ProcessEnvState
@@ -47,7 +60,7 @@ function processEnvReplacement(
     case 'EXPO_ROUTER_APP_ROOT':
       return path.relative(path.dirname(filename), routerRoot(state));
     case 'EXPO_ROUTER_IMPORT_MODE':
-      return String(options.customTransformOptions?.asyncRoutes) === 'true' ? 'lazy' : 'sync';
+      return isAsyncRoutesEnabled(options) ? 'lazy' : 'sync';
     default:
       return !options.dev && usesPublicEnvPlugin(state.input) && name.startsWith('EXPO_PUBLIC_')
         ? process.env[name]
@@ -73,6 +86,9 @@ export function createProcessEnvPlugin(nox: Noxcturnal): DefinedNativePlugin<Pro
           if (member.scope.hasBinding('process')) return;
           const replacement = processEnvReplacement(name, state);
           if (replacement === NO_PROCESS_ENV_REPLACEMENT) return;
+          if (!state.input.options.dev && name.startsWith('EXPO_PUBLIC_')) {
+            addCacheVary(member.context, { scheme: 'env', name });
+          }
           member.replaceWith(mappedLiteral(member.context, replacement));
         }
       ),

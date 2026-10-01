@@ -1,8 +1,46 @@
 # Changelog
 
-## Unpublished
+## 0.4.7
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#50579](https://github.com/expo/expo/pull/50579), [#50693](https://github.com/expo/expo/pull/50693))
+  - @expo/ui@58.0.9
+
+## 0.4.6 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.5 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.4 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- Annotate the mail example templates with macOS availability so `npx expo-app-intents init` output works on macOS. ([#50525](https://github.com/expo/expo/pull/50525) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 0.4.3 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.2 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- Fix the duplicate setup check in `init` reporting Windows-style paths, which also made its tests fail on Windows. ([#50175](https://github.com/expo/expo/pull/50175) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.4.1 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.3.0 — 2026-09-14
 
 ### 🎉 New features
 
@@ -10,7 +48,7 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Drop macOS from the podspec platforms to fix `pod install` failing with "Unable to find a specification for `ExpoUI`". ([#50065](https://github.com/expo/expo/pull/50065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 0.2.0 — 2026-09-10
 

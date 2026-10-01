@@ -1,14 +1,55 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-app-metrics@58.0.9
+  - expo-eas-client@58.0.1
+
+## 58.0.10 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.9 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-15
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Add a `networkTraces` option to `configure` to record network requests as trace spans, with an optional capture filter. Recording is opt-in, so it never adds to your event usage unless you turn it on. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
 
-### 💡 Others
+## 58.0.3 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

@@ -1,12 +1,20 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { RoutingQueueDrainer } from '../RoutingQueueDrainer';
+import { RoutingQueueDrainer, shouldUseTransition } from '../RoutingQueueDrainer';
 import type { RoutingIntent } from '../routingQueue';
 import { RoutingQueueProvider, useEnqueueRoutingIntent } from '../routingQueueContext';
 
-function actionIntent(type: string): RoutingIntent {
-  return { type: 'ACTION', payload: { action: { type } } };
+function actionIntent(type: string, inTransition?: boolean): RoutingIntent {
+  return { type: 'ACTION', payload: { action: { type } }, inTransition };
+}
+
+function navigate(event: string, inTransition?: boolean): RoutingIntent {
+  return {
+    type: 'NAVIGATE_TO_HREF',
+    payload: { href: '/test', options: { event } },
+    inTransition,
+  };
 }
 
 function actionType(intent: RoutingIntent): string {
@@ -63,16 +71,15 @@ it('isolates queue notifications from its parent', () => {
 it('processes a queued batch in FIFO order', () => {
   const calls: string[] = [];
   const processIntent = jest.fn((intent: RoutingIntent) => calls.push(actionType(intent)));
-  const onDispatch = jest.fn(() => calls.push('onDispatch'));
   const result = renderDrainer(processIntent);
 
   act(() => {
     result.enqueue(actionIntent('FIRST'));
-    result.enqueue({ ...actionIntent('SECOND'), onDispatch });
+    result.enqueue(actionIntent('SECOND'));
     result.enqueue(actionIntent('THIRD'));
   });
 
-  expect(calls).toEqual(['FIRST', 'onDispatch', 'SECOND', 'THIRD']);
+  expect(calls).toEqual(['FIRST', 'SECOND', 'THIRD']);
 });
 
 it('does not process a batch twice in Strict Mode', () => {
@@ -138,4 +145,60 @@ it('continues after processIntent throws synchronously', () => {
   expect(processIntent).toHaveBeenCalledTimes(2);
   expect(warning).toHaveBeenCalledWith(expect.stringContaining('failed'));
   warning.mockRestore();
+});
+
+describe(shouldUseTransition, () => {
+  const operations = [
+    ['push', navigate('PUSH')],
+    ['navigate', navigate('NAVIGATE')],
+    ['replace', navigate('REPLACE')],
+    ['dismissTo', navigate('POP_TO')],
+    ['back', actionIntent('GO_BACK')],
+    ['dismiss', actionIntent('POP')],
+    ['dismissAll', actionIntent('POP_TO_TOP')],
+    ['preload', navigate('PRELOAD')],
+  ] as const;
+
+  describe('always', () => {
+    it.each(operations)('uses a transition for %s by default', (_, intent) => {
+      expect(shouldUseTransition([intent], 'always')).toBe(true);
+    });
+
+    it.each(operations)('does not use a transition when %s opts out', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: false }], 'always')).toBe(false);
+    });
+  });
+
+  describe('preload-only', () => {
+    it('uses a transition when the entire batch consists of preloads', () => {
+      expect(shouldUseTransition([navigate('PRELOAD'), navigate('PRELOAD')], 'preload-only')).toBe(
+        true
+      );
+    });
+
+    it.each(operations.slice(0, -1))('does not use a transition for %s by default', (_, intent) => {
+      expect(shouldUseTransition([intent], 'preload-only')).toBe(false);
+    });
+
+    it.each(operations)('allows %s to opt in', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: true }], 'preload-only')).toBe(true);
+    });
+
+    it.each(operations)('does not use a transition when %s opts out', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: false }], 'preload-only')).toBe(false);
+    });
+
+    it.each([
+      ['preload followed by an opted-in operation', navigate('PRELOAD'), navigate('PUSH', true)],
+      ['opted-in operation followed by a preload', navigate('PUSH', true), navigate('PRELOAD')],
+    ])('allows %s in one transition', (_, first, second) => {
+      expect(shouldUseTransition([first, second], 'preload-only')).toBe(true);
+    });
+  });
+
+  describe('never', () => {
+    it.each(operations)('does not use a transition for %s', (_, intent) => {
+      expect(shouldUseTransition([{ ...intent, inTransition: true }], 'never')).toBe(false);
+    });
+  });
 });

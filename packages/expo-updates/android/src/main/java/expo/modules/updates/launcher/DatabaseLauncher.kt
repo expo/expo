@@ -265,7 +265,11 @@ class DatabaseLauncher(
 
         database.assetDao().updateAsset(result.assetEntity)
         val assetFileLocal = File(updatesDirectory, result.assetEntity.relativePath!!)
-        if (assetFileLocal.exists()) assetFileLocal else null
+        if (assetFileLocal.exists()) {
+          assetFileLocal
+        } else {
+          null
+        }
       } catch (e: Exception) {
         logger.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
         if (asset.isLaunchAsset) {

@@ -281,6 +281,46 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `host object receives non-ASCII property names`() throws {
+    var receivedNames: [String] = []
+    var setNames: [String] = []
+
+    let hostObject = runtime.createHostObject(
+      get: { name in
+        receivedNames.append(name)
+        return .undefined
+      },
+      set: { name, _ in
+        setNames.append(name)
+      }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+    _ = try runtime.eval("globalThis.hostObj['właściwość']; globalThis.hostObj['🚀'] = 1")
+
+    #expect(receivedNames == ["właściwość"])
+    #expect(setNames == ["🚀"])
+  }
+
+  @Test
+  func `host object receives long property names`() throws {
+    var receivedName: String?
+    let longName = String(repeating: "a", count: 300)
+
+    let hostObject = runtime.createHostObject(
+      get: { name in
+        receivedName = name
+        return .undefined
+      }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+    _ = try runtime.eval("globalThis.hostObj['\(longName)']")
+
+    #expect(receivedName == longName)
+  }
+
+  @Test
   func `isHostObject distinguishes host objects from plain ones`() {
     let hostObject = runtime.createHostObject(
       get: { _ in .undefined }
@@ -1031,7 +1071,7 @@ struct JavaScriptRuntimeTests {
       #expect((weakObject?.lock() != nil) == true)
     }
 
-    runtime.collectGarbage()
+    runtime.collectGarbage { weakObject?.lock() == nil }
 
     #expect((weakObject?.lock() == nil) == true)
   }

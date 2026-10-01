@@ -1,7 +1,7 @@
 import AppIntents
 internal import ExpoAppIntents
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct MailDraftEntityQuery: EntityStringQuery {
   func entities(for identifiers: [String]) async throws -> [MailDraftEntity] {
     return try await AppIntentEntityStore.shared.entities(ofKind: "mailDraft", matching: identifiers)

@@ -102,10 +102,10 @@ const __expoWidgetHandlePress = function (
 };
 
 Object.assign(globalThis, {
-  ...uiGlobals,
-  ...jsxRuntime,
-  ...React,
   ...ReactNative,
+  ...React,
+  ...jsxRuntime,
+  ...uiGlobals,
   React,
   __expoWidgetRender,
   __expoWidgetHandlePress,

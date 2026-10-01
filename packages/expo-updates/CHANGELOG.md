@@ -1,17 +1,73 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Add configurable update cache retention with `EXUpdatesMaxUpdatesToKeep`. ([#50459](https://github.com/expo/expo/pull/50459) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add configurable update cache retention with `expo.modules.updates.EXPO_UPDATES_MAX_UPDATES_TO_KEEP`. ([#50460](https://github.com/expo/expo/pull/50460) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Cover configurable update cache retention in E2E tests. ([#50463](https://github.com/expo/expo/pull/50463) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Fix the embedded manifest giving every duplicate asset scale the same `packagerHash`, which made updates download assets already in the binary. ([#50757](https://github.com/expo/expo/pull/50757) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/plist@0.10.1
+  - expo-eas-client@58.0.1
+  - expo-manifests@58.0.1
+  - expo-structured-headers@58.0.1
+  - expo-updates-interface@58.0.1
+
+## 58.0.10 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.9 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- Log a warning naming the event and its error message when the updates state machine drops an event that is not allowed from the current state. Previously such an event was discarded silently in release builds, so an error could disappear without a trace. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))
+- Add an `EX_UPDATES_ASSERT_INVALID_STATE` build flag that makes the updates state machine stop the app when it drops an event, so an invalid transition fails an E2E run instead of passing unnoticed. ([#50163](https://github.com/expo/expo/pull/50163) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.7 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- Only request or apply a bundle diff when the manifest provides a hash for the launch asset, so a patched bundle is never written without being verified. ([#50321](https://github.com/expo/expo/pull/50321), [#50322](https://github.com/expo/expo/pull/50322) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Honor the `enableBsdiffPatchSupport` setting, which was parsed but never applied, so setting it to `false` now disables bundle diff requests as it already does on Android. ([#50318](https://github.com/expo/expo/pull/50318) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix a `ConcurrentModificationException` in the Reaper when a failed asset deletion succeeds or throws on retry. ([#50324](https://github.com/expo/expo/pull/50324) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.5 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
 
 ### 🐛 Bug fixes
 
 - [iOS] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50018](https://github.com/expo/expo/pull/50018) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Apply bundle diffs against the embedded bundle in the app binary when the launched update is the embedded one, instead of failing to resolve a patch base and downloading the full bundle. ([#50019](https://github.com/expo/expo/pull/50019) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
+- Fix issues with error propagation when `checkForUpdateAsync`, `fetchUpdateAsync`, `readLogEntriesAsync` and `clearLogEntriesAsync` reject with an error, so that error causes/reasons are preserved. ([#50098](https://github.com/expo/expo/pull/50098) by [@douglowder](https://github.com/douglowder))
+- [iOS] Report a startup update failure through `downloadError` when the updates state machine is idle, instead of dropping it, so that `useUpdates()` reflects background update failures as it already did on Android. ([#50098](https://github.com/expo/expo/pull/50098) by [@douglowder](https://github.com/douglowder))
 
 ## 58.0.0 — 2026-09-10
 

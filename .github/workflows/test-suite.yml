@@ -186,6 +186,7 @@ jobs:
         with:
           ccache: 'true'
           bare-expo-pods: 'true'
+          ccache-variant: 'e2e-release'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules

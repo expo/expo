@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 
 import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/Stack';
+import { unstable_navigationEvents } from '../../../navigationEvents';
 import { renderRouter } from '../../../testing-library';
 import { Pressable } from '../../../views/Pressable';
 import { Link } from '../../Link';
@@ -166,9 +167,14 @@ describe('ZoomTransitionEnabler with gestureEnabled', () => {
 });
 
 function navigateViaPreviewZoomLink() {
-  // Simulate preview navigation: navigate with __internal__PreviewKey which sets
-  // INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME on the route params.
-  // The zoom source ID is included as a param so Expo's stack router override attaches the screen ID.
+  // Native reports the key of the mounted preload, not an arbitrary preview ID.
+  let previewKey: string | undefined;
+  const unsubscribe = unstable_navigationEvents.addListener('routePreloaded', ({ routeKey }) => {
+    previewKey = routeKey;
+  });
+  act(() => router.prefetch('/dest'));
+  unsubscribe();
+  expect(previewKey).toBeDefined();
   act(() =>
     router.navigate(
       {
@@ -177,7 +183,7 @@ function navigateViaPreviewZoomLink() {
           __internal_expo_router_zoom_transition_source_id: 'preview-source',
         },
       },
-      { __internal__PreviewKey: 'preview-key-123' }
+      { __internal__PreviewKey: previewKey }
     )
   );
   expect(screen.getByTestId('dest-page')).toBeVisible();

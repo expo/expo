@@ -2,9 +2,12 @@ import { describe, expect, jest, test } from '@jest/globals';
 
 import {
   CommonActions,
+  type CommonNavigationAction,
+  extendRouterActions,
   type ParamListBase,
   type RouterConfigOptions,
   StackActions,
+  type StackActionType,
   StackRouter,
   type StackNavigationState,
 } from '..';
@@ -3160,4 +3163,45 @@ test('does not reuse popped route keys', () => {
   const pushedAgain = router.getStateForAction(popped, push, options)!.state;
 
   expect(pushedAgain.routes[2]!.key).not.toBe(secondPush.routes[2]!.key);
+});
+
+describe('extended stack router', () => {
+  const options: RouterConfigOptions = { routeNames: ['index', 'second'], routeGetIdList: {} };
+  const state: StackNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'stack',
+    key: 'navigator:root',
+    routeKeySeq: 2,
+    index: 1,
+    routeNames: ['index', 'second'],
+    routes: [
+      { key: 'index:0', name: 'index' },
+      { key: 'second:1', name: 'second' },
+    ],
+  };
+
+  test('normalizes preload markers on the state returned by an extension', () => {
+    const router = extendRouterActions(
+      StackRouter,
+      (state, action: StackActionType | CommonNavigationAction | { type: 'CUSTOM' }) => {
+        if (action.type !== 'CUSTOM') {
+          return undefined;
+        }
+        return {
+          state: {
+            ...state,
+            index: 0,
+            routes: state.routes.map((route) => ({ ...route, isPreloaded: true as const })),
+          },
+          affectedRouteKey: state.routes[state.index]?.key,
+        };
+      }
+    )({});
+
+    const result = router.getStateForAction(state, { type: 'CUSTOM' }, options);
+
+    expect(result).not.toBeNull();
+    expect(result!.state.routes[0]?.isPreloaded).toBeUndefined();
+    expect(result!.state.routes[1]?.isPreloaded).toBe(true);
+  });
 });

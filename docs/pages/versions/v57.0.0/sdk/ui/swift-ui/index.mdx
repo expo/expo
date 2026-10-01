@@ -12,7 +12,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { CODE } from '~/ui/components/Text';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 import SwiftUICards from '~/scenes/versions/v57.0.0/ui/swift-ui.mdx';
 
@@ -24,7 +24,7 @@ The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iO
 
 ## Usage
 
-Using a component from `@expo/ui/swift-ui` requires wrapping it in a [`Host`](./host) component. The `Host` is a container for SwiftUI views.
+Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`Host`](host) component. The [`Host`](host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
 
 ```tsx
 import { Host, Button } from '@expo/ui/swift-ui';
@@ -38,23 +38,10 @@ export function SaveButton() {
 }
 ```
 
-For more information, see the following resources:
-
-<BoxLink
-  title="Expo UI guide for Swift UI"
-  description={
-    <>
-      Learn about the basics of <CODE>@expo/ui/swift-ui</CODE>
-    </>
-  }
-  href="/guides/expo-ui-swift-ui/"
-  Icon={BookOpen02Icon}
-/>
-
 <BoxLink
   title="Extending with SwiftUI"
   description="Create custom SwiftUI components and modifiers that integrate with Expo UI."
-  href="/guides/expo-ui-swift-ui/extending/"
+  href="swift-ui/extending"
   Icon={BookOpen02Icon}
 />
 
@@ -67,3 +54,435 @@ For more information, see the following resources:
 ## Available components
 
 <SwiftUICards />
+
+## Examples
+
+### Modifiers
+
+[SwiftUI modifiers](<https://developer.apple.com/documentation/swiftui/view/modifier(_:)>) customize the appearance and behavior of SwiftUI components. Expo UI also provides modifiers for SwiftUI components. You can import modifiers from `@expo/ui/swift-ui/modifiers` and pass them as an array to the `modifiers` prop. In the following example, the [`expo-mesh-gradient`](../../mesh-gradient) and the `glassEffect` modifier are combined to create Liquid Glass text.
+
+> **info** The `glassEffect` modifier requires Xcode 26+ and iOS 26+.
+
+<ComponentExample
+  title="GlassEffectExample.tsx"
+  src="/static/images/expo-ui/examples/swift-ui-index-glass-effect-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/swift-ui-index-glass-effect-ios-dark.webp"
+  alt="Large Glass effect text in a translucent capsule over a rainbow mesh gradient">
+
+```tsx
+import { Host, Text } from '@expo/ui/swift-ui';
+import {
+  font,
+  glassEffect,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+import { MeshGradientView } from 'expo-mesh-gradient';
+import { View } from 'react-native';
+
+export default function GlassEffectExample() {
+  return (
+    <View style={{ flex: 1 }}>
+      <MeshGradientView
+        style={{ flex: 1 }}
+        columns={3}
+        rows={3}
+        colors={[
+          'red',
+          'purple',
+          'indigo',
+          'orange',
+          'white',
+          'blue',
+          'yellow',
+          'green',
+          'cyan',
+        ]}
+        points={[
+          [0.0, 0.0],
+          [0.5, 0.0],
+          [1.0, 0.0],
+          [0.0, 0.5],
+          [0.5, 0.5],
+          [1.0, 0.5],
+          [0.0, 1.0],
+          [0.5, 1.0],
+          [1.0, 1.0],
+        ]}
+      />
+      <Host
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          left: 0,
+          bottom: 0,
+        }}>
+        <Text
+          modifiers={[
+            font({ size: 32 }),
+            padding({
+              all: 16,
+            }),
+            glassEffect({
+              glass: {
+                variant: 'clear',
+              },
+            }),
+          ]}>
+          Glass effect text
+        </Text>
+      </Host>
+    </View>
+  );
+}
+```
+
+</ComponentExample>
+
+### iOS Settings app
+
+Combining the Expo UI components and modifiers, you can build a UI like the iOS Settings app.
+
+<ComponentExample
+  title="SettingsFormExample.tsx"
+  src="/static/images/expo-ui/examples/swift-ui-index-settings-form-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/swift-ui-index-settings-form-ios-dark.webp"
+  alt="An Airplane Mode row with a green toggle above a Wi-Fi row with a disclosure arrow">
+
+```tsx
+import {
+  Button,
+  Form,
+  Host,
+  HStack,
+  Image,
+  Section,
+  Spacer,
+  Toggle,
+  Text,
+} from '@expo/ui/swift-ui';
+import {
+  background,
+  buttonStyle,
+  foregroundStyle,
+  clipShape,
+  frame,
+} from '@expo/ui/swift-ui/modifiers';
+import { Link } from 'expo-router';
+import { useState } from 'react';
+
+export default function SettingsFormExample() {
+  const [isAirplaneMode, setIsAirplaneMode] = useState(true);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section>
+          <HStack spacing={8}>
+            <Image
+              systemName="airplane"
+              color="white"
+              size={18}
+              modifiers={[
+                frame({ width: 28, height: 28 }),
+                background('#ffa500'),
+                clipShape('roundedRectangle'),
+              ]}
+            />
+            <Text>Airplane Mode</Text>
+            <Spacer />
+            <Toggle
+              isOn={isAirplaneMode}
+              onIsOnChange={setIsAirplaneMode}
+            />
+          </HStack>
+
+          <Link href="/wifi" asChild>
+            {/* Use buttonStyle('plain') to prevent default blue button styling */}
+            <Button modifiers={[buttonStyle('plain')]}>
+              <HStack spacing={8}>
+                <Image
+                  systemName="wifi"
+                  color="white"
+                  size={18}
+                  modifiers={[
+                    frame({ width: 28, height: 28 }),
+                    background('#007aff'),
+                    clipShape('roundedRectangle'),
+                  ]}
+                />
+                {/* Text inside a Link needs an explicit color. A hierarchical style adapts to light and dark mode. */}
+                <Text
+                  modifiers={[
+                    foregroundStyle({
+                      type: 'color',
+                      color: 'primary',
+                    }),
+                  ]}>
+                  Wi-Fi
+                </Text>
+                <Spacer />
+                <Image
+                  systemName="chevron.right"
+                  size={14}
+                  color="secondary"
+                />
+              </HStack>
+            </Button>
+          </Link>
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Secondary text styling
+
+Use `foregroundStyle` to apply a [hierarchical style](modifiers/#foregroundstylestyle), which makes text appear lighter and more subtle.
+
+<ComponentExample
+  title="SecondaryTextExample.tsx"
+  src="/static/images/expo-ui/examples/swift-ui-index-secondary-text-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/swift-ui-index-secondary-text-ios-dark.webp"
+  alt="A Night Shift row with its schedule in lighter secondary text above a secondary footer paragraph">
+
+```tsx
+import {
+  Button,
+  Form,
+  Host,
+  HStack,
+  Image,
+  List,
+  Section,
+  Spacer,
+  Text,
+} from '@expo/ui/swift-ui';
+import {
+  buttonStyle,
+  font,
+  foregroundStyle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function SecondaryTextExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section>
+          <List>
+            <Button
+              onPress={() => console.log('Navigate')}
+              modifiers={[buttonStyle('plain')]}>
+              <HStack>
+                <Text>Night Shift</Text>
+                <Spacer />
+                <Text
+                  modifiers={[
+                    foregroundStyle({
+                      type: 'hierarchical',
+                      style: 'secondary',
+                    }),
+                    padding({ trailing: 8 }),
+                  ]}>
+                  22:00 to 07:00
+                </Text>
+                <Image
+                  systemName="chevron.right"
+                  size={14}
+                  color="#C7C7CC"
+                />
+              </HStack>
+            </Button>
+          </List>
+          <List>
+            <Text
+              modifiers={[
+                foregroundStyle({
+                  type: 'hierarchical',
+                  style: 'secondary',
+                }),
+                font({ size: 14 }),
+              ]}>
+              Save up to 280.7 MB. This will permanently delete all
+              photos and videos kept in the "Recently Deleted"
+              album.
+            </Text>
+          </List>
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Slider with icons
+
+A common pattern for brightness or volume controls is to flank a `Slider` with icons.
+
+<ComponentExample
+  title="SliderWithIconsExample.tsx"
+  src="/static/images/expo-ui/examples/swift-ui-index-slider-with-icons-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/swift-ui-index-slider-with-icons-ios-dark.webp"
+  alt="A brightness slider flanked by a small and a large sun icon above a True Tone toggle">
+
+```tsx
+import { useState } from 'react';
+import {
+  Form,
+  Host,
+  HStack,
+  Image,
+  List,
+  Section,
+  Slider,
+  Spacer,
+  Text,
+  Toggle,
+} from '@expo/ui/swift-ui';
+import { padding } from '@expo/ui/swift-ui/modifiers';
+
+export default function SliderWithIconsExample() {
+  const [brightness, setBrightness] = useState(0.5);
+  const [trueToneEnabled, setTrueToneEnabled] = useState(true);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section
+          header={<Text>Brightness</Text>}
+          footer={
+            <Text>
+              Automatically adapt iPhone display based on ambient
+              lighting conditions to make colors appear consistent
+              in different environments.
+            </Text>
+          }>
+          <List>
+            <HStack modifiers={[padding({ vertical: 6 })]}>
+              <Image
+                systemName="sun.min.fill"
+                size={22}
+                color="#8E8E93"
+              />
+              <Spacer />
+              <Slider
+                value={brightness}
+                onValueChange={setBrightness}
+              />
+              <Spacer />
+              <Image
+                systemName="sun.max.fill"
+                size={22}
+                color="#8E8E93"
+              />
+            </HStack>
+            <Toggle
+              label="True Tone"
+              isOn={trueToneEnabled}
+              onIsOnChange={setTrueToneEnabled}
+            />
+          </List>
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Multi-line list items
+
+Use `VStack` with `alignment="leading"` for list items with a title and subtitle.
+
+<ComponentExample
+  title="MultiLineListItemExample.tsx"
+  src="/static/images/expo-ui/examples/swift-ui-index-multi-line-list-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/swift-ui-index-multi-line-list-ios-dark.webp"
+  alt="A Chrome row with Last used Today as a subtitle and 1.57 GB on the right">
+
+```tsx
+import {
+  Button,
+  Form,
+  Host,
+  HStack,
+  Image,
+  List,
+  Section,
+  Spacer,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
+import {
+  buttonStyle,
+  font,
+  foregroundStyle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function MultiLineListItemExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section>
+          <List>
+            <HStack>
+              <Image
+                systemName="safari"
+                size={22}
+                modifiers={[padding({ trailing: 6 })]}
+              />
+              <Spacer />
+              <Button
+                onPress={() => console.log('Navigate')}
+                modifiers={[
+                  buttonStyle('plain'),
+                  padding({ vertical: 6 }),
+                ]}>
+                <VStack spacing={4} alignment="leading">
+                  <Text>Chrome</Text>
+                  <Text
+                    modifiers={[
+                      foregroundStyle({
+                        type: 'hierarchical',
+                        style: 'secondary',
+                      }),
+                      font({ size: 14 }),
+                    ]}>
+                    Last used: Today
+                  </Text>
+                </VStack>
+                <Spacer />
+                <Text
+                  modifiers={[
+                    foregroundStyle({
+                      type: 'hierarchical',
+                      style: 'secondary',
+                    }),
+                    font({ size: 16 }),
+                  ]}>
+                  1.57 GB
+                </Text>
+                <Image
+                  systemName="chevron.right"
+                  size={14}
+                  color="#C7C7CC"
+                />
+              </Button>
+            </HStack>
+          </List>
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>

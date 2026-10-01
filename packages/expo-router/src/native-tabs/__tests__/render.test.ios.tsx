@@ -15,6 +15,8 @@ import { NativeTabsView } from '../NativeTabsView';
 import { BottomAccessoryPlacementContext } from '../hooks';
 import { SUPPORTED_BLUR_EFFECTS, SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS } from '../types';
 
+afterEach(() => router.setTransitionMode('preload-only'));
+
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actualModule = jest.requireActual(
@@ -242,6 +244,7 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[0][0].nativeID).toMatch(/^expo-router-tab:index:/);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
     expect(TabsHost).toHaveBeenCalledTimes(2);
@@ -443,6 +446,7 @@ describe('First focused tab', () => {
     expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
 
+    act(() => router.setTransitionMode('always'));
     TabsScreen.mockClear();
     TabsHost.mockClear();
     act(() => router.navigate('/second'));

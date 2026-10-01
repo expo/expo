@@ -4,6 +4,7 @@ import android.os.Bundle
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.events.IUpdatesEventManager
@@ -104,7 +105,7 @@ interface IUpdatesController {
   ) {
     fun toModuleConstantsMap(): Map<String, Any?> = mutableMapOf<String, Any?>().apply {
       this["isEmergencyLaunch"] = emergencyLaunchException != null
-      this["emergencyLaunchReason"] = emergencyLaunchException?.message
+      this["emergencyLaunchReason"] = emergencyLaunchException?.localizedMessageWithCauseLocalizedMessage()
       this["isEmbeddedLaunch"] = embeddedUpdate !== null && launchedUpdate?.id?.equals(embeddedUpdate.id) ?: false
       this["isEnabled"] = isEnabled
       this["launchDuration"] = launchDuration?.toLong(DurationUnit.MILLISECONDS)

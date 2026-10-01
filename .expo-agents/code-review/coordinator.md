@@ -8,7 +8,7 @@
 # so it runs on the Opus tier: consolidation quality matters more here than the small
 # serial-tail latency it adds (no repo tools, one bounded pass). Override with a cheaper
 # model if you would rather trade decision quality for latency.
-model: anthropic/claude-opus-5
+model: anthropic/claude-opus-5-5
 ---
 
 # Coordinator — consolidation & decision

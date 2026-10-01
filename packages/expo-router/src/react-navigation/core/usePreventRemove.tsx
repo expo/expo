@@ -4,9 +4,11 @@ import * as React from 'react';
 import { ScreenRemovalPreventionSetterContext } from '../../global-state/removalPrevention';
 import useLatestCallback from '../../utils/useLatestCallback';
 import type { NavigationAction } from '../routers';
+import { IsPreloadedContext } from './IsPreloadedContext';
 import type { EventListenerCallback, EventMapCore } from './types';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useNavigation } from './useNavigation';
+import { usePreventBeforeUnload } from './usePreventBeforeUnload';
 
 const NOOP = () => {};
 
@@ -52,6 +54,9 @@ const useWarnOnStalePreventRemove: (preventRemove: boolean) => () => void =
  * callback's `repeat` function. To navigate somewhere else, set `preventRemove` to `false`, call
  * the returned `disablePrevention` function, and then navigate.
  *
+ * On web, this hook also prevents the browser from unloading the page while `preventRemove` is
+ * `true`.
+ *
  * @example
  * ```tsx
  * const [hasUnsavedChanges, setHasUnsavedChanges] = useState(true);
@@ -82,8 +87,11 @@ export function usePreventRemove(
   const id = React.useId();
   const navigation = useNavigation();
   const setPreventRemove = React.use(ScreenRemovalPreventionSetterContext);
+  const isPreloaded = React.use(IsPreloadedContext);
   const markDisabled = useWarnOnStalePreventRemove(preventRemove);
   const preventInPreloadedRoutes = options?.preventInPreloadedRoutes ?? false;
+  const shouldPreventBeforeUnload = preventRemove && (!isPreloaded || preventInPreloadedRoutes);
+  const disableBeforeUnload = usePreventBeforeUnload(shouldPreventBeforeUnload);
 
   if (setPreventRemove === undefined) {
     throw new Error(
@@ -100,6 +108,7 @@ export function usePreventRemove(
 
   // TODO(@ubax): use standard useCallback if possible
   const disablePrevention = useLatestCallback(() => {
+    disableBeforeUnload();
     setPreventRemove(id, false, preventInPreloadedRoutes);
     markDisabled();
   });

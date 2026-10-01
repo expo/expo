@@ -1,7 +1,10 @@
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import vm from 'node:vm';
 
-import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
+import {
+  serializeShakingAsync,
+  serializeToWithGraph,
+} from '../fork/__tests__/serializer-test-utils';
 import type { SerialAsset } from '../serializerAssets';
 
 jest.mock('../exportHermes', () => {
@@ -175,6 +178,41 @@ it('emits workers as standalone bundles when ordinary chunk splitting is disable
   expect(ordinaryAsyncChunk).toBe(entryChunk);
   expect(workerChunk.metadata.modulePaths).toEqual(['/app/worker.js']);
   expect(workerChunk).not.toBe(entryChunk);
+});
+
+describe('lazy development bundles', () => {
+  it.each([
+    ['is not part of the graph', ''],
+    ['is also imported synchronously', `require('./worker');`],
+  ])('points to the dev server worker bundle when the worker %s', async (_, entryImport) => {
+    const [, artifacts] = await serializeToWithGraph({
+      fs: {
+        'index.js': `
+          ${entryImport}
+          const worker = require.unstable_resolveWorker('./worker');
+          console.log(worker);
+        `,
+        'worker.js': `
+          console.log('worker module');
+        `,
+      },
+      options: {
+        platform: 'web',
+        dev: true,
+        lazy: true,
+        output: 'static',
+        splitChunks: false,
+        sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&lazy=true',
+      },
+    });
+    const serialAssets = artifacts as SerialAsset[];
+    const entryChunk = getChunkContaining(serialAssets, '/app/index.js');
+
+    expect(serialAssets).toEqual([entryChunk]);
+    expect(entryChunk.source).toMatch(
+      /"paths":\{"\/app\/worker\.js":"\/worker\.bundle\?[^"]*modulesOnly=false&runModule=true/
+    );
+  });
 });
 
 it(`supports worker bundle with nested async chunk`, async () => {

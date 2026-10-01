@@ -21,7 +21,8 @@ function VerticalExample() {
               key={i}
               cornerRadius={12}
               modifiers={[
-                frame({ height: 60, maxWidth: 10000 }),
+                frame({ height: 60 }),
+                frame({ maxWidth: 10000 }),
                 foregroundStyle(`hsl(${i * 18}, 70%, 50%)`),
                 padding({ horizontal: 16 }),
               ]}

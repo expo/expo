@@ -48,7 +48,6 @@ target_link_libraries(
   PRIVATE
   ${LOG_LIB}
   android
-  ${JSEXECUTOR_LIB}
   ${NEW_ARCHITECTURE_DEPENDENCIES}
   expo-modules-jsi
 )

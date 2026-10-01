@@ -1370,7 +1370,7 @@ test('throws if multiple navigators rendered under one container', () => {
   );
 
   expect(() => render(element).update(element)).toThrow(
-    'Another navigator is already registered for this container'
+    /Another navigator is already registered.*https:\/\/docs\.expo\.dev\/router\/advanced\/nesting-navigators\//
   );
 });
 

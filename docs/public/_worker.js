@@ -1,3 +1,5 @@
+import { recoverNotFoundAsync } from '../worker/url-recovery.ts';
+
 const NOT_FOUND_MARKDOWN = `# Page not found
 
 No markdown exists for this path. Useful starting points:
@@ -55,41 +57,57 @@ export default {
     const url = new URL(request.url);
     const pairPath = upgradeHelperPairPath(url);
 
+    const directMarkdown = url.pathname.endsWith(".md");
     const wantsMarkdown =
+      directMarkdown ||
       acceptsMarkdown(accept) ||
       (pairPath !== null && /\.md$/.test(url.searchParams.get("toSdk") || ""));
 
     if (wantsMarkdown) {
-      let mdPath = url.pathname;
-      if (!mdPath.endsWith("/")) mdPath += "/";
-      mdPath += "index.md";
+      if (!directMarkdown) {
+        let mdPath = url.pathname;
+        if (!mdPath.endsWith("/")) mdPath += "/";
+        mdPath += "index.md";
 
-      const candidates = [];
-      if (pairPath) candidates.push(pairPath);
-      candidates.push(mdPath);
+        const candidates = [];
+        if (pairPath) candidates.push(pairPath);
+        candidates.push(mdPath);
 
-      for (const candidate of candidates) {
-        url.pathname = candidate;
-        const mdResponse = await env.ASSETS.fetch(new Request(url, request));
+        for (const candidate of candidates) {
+          url.pathname = candidate;
+          const mdResponse = await env.ASSETS.fetch(new Request(url, request));
 
-        const contentType = mdResponse.headers.get("Content-Type") || "";
-        if (mdResponse.ok && contentType.includes("text/markdown")) {
-          return new Response(mdResponse.body, {
-            status: 200,
-            headers: {
-              "Content-Type": "text/markdown; charset=utf-8",
-              Vary: "Accept",
-            },
-          });
+          const contentType = mdResponse.headers.get("Content-Type") || "";
+          if (
+            (mdResponse.ok && contentType.includes("text/markdown")) ||
+            mdResponse.status === 304 ||
+            mdResponse.status === 416 ||
+            mdResponse.status >= 500
+          ) {
+            const response = new Response(mdResponse.body, mdResponse);
+            if (contentType.includes("text/markdown")) {
+              response.headers.set("Content-Type", "text/markdown; charset=utf-8");
+            }
+            response.headers.append("Vary", "Accept");
+            return response;
+          }
         }
       }
 
       const passthrough = await env.ASSETS.fetch(request);
-      if (passthrough.status >= 300 && passthrough.status < 400) {
+      if (
+        (directMarkdown && passthrough.status !== 404) ||
+        (passthrough.status >= 300 && passthrough.status < 400)
+      ) {
         return passthrough;
       }
 
-      return new Response(NOT_FOUND_MARKDOWN, {
+      if (passthrough.status === 404) {
+        const recovered = await recoverNotFoundAsync(request, env, true).catch(() => null);
+        if (recovered) return recovered;
+      }
+
+      return new Response(request.method === "HEAD" ? null : NOT_FOUND_MARKDOWN, {
         status: 404,
         headers: {
           "Content-Type": "text/markdown; charset=utf-8",
@@ -99,6 +117,10 @@ export default {
     }
 
     const htmlResponse = await env.ASSETS.fetch(request);
+    if (htmlResponse.status === 404) {
+      const recovered = await recoverNotFoundAsync(request, env, false).catch(() => null);
+      if (recovered) return recovered;
+    }
     const response = new Response(htmlResponse.body, htmlResponse);
     response.headers.append("Vary", "Accept");
     return response;

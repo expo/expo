@@ -1,14 +1,20 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-15
 
 ### 💡 Others
+
+- Stopped passing `testString` to `expo-font`, which removed the option; font loading no longer needs one. ([#49497](https://github.com/expo/expo/pull/49497) by [@vonovak](https://github.com/vonovak))
 
 ## 58.0.0 — 2026-09-10
 

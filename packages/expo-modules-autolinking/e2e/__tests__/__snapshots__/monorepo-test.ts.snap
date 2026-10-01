@@ -114,7 +114,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-core",
         "packages": [],
         "services": [],
@@ -129,7 +128,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-application",
         "packages": [],
         "services": [],
@@ -144,7 +142,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-constants",
         "packages": [],
         "services": [],
@@ -159,7 +156,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-error-recovery",
         "packages": [],
         "services": [],
@@ -174,7 +170,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-file-system",
         "packages": [],
         "services": [],
@@ -189,7 +184,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-font",
         "packages": [],
         "services": [],
@@ -204,7 +198,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-image-loader",
         "packages": [],
         "services": [],
@@ -219,7 +212,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-keep-awake",
         "packages": [],
         "services": [],
@@ -234,7 +226,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-modules-core",
         "packages": [],
         "services": [],
@@ -249,7 +240,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-permissions",
         "packages": [],
         "services": [],
@@ -264,7 +254,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-splash-screen",
         "packages": [],
         "services": [],
@@ -279,7 +268,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-structured-headers",
         "packages": [],
         "services": [],
@@ -294,7 +282,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-updates",
         "packages": [],
         "services": [],
@@ -309,7 +296,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-updates-interface",
         "packages": [],
         "services": [],
@@ -324,7 +310,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-app-loader",
         "packages": [],
         "services": [],
@@ -339,7 +324,6 @@ exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-task-manager-interface",
         "packages": [],
         "services": [],
@@ -670,7 +654,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-core",
         "packages": [],
         "services": [],
@@ -685,7 +668,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-application",
         "packages": [],
         "services": [],
@@ -700,7 +682,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-constants",
         "packages": [],
         "services": [],
@@ -715,7 +696,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-error-recovery",
         "packages": [],
         "services": [],
@@ -730,7 +710,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-file-system",
         "packages": [],
         "services": [],
@@ -745,7 +724,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-font",
         "packages": [],
         "services": [],
@@ -760,7 +738,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-image-loader",
         "packages": [],
         "services": [],
@@ -775,7 +752,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-keep-awake",
         "packages": [],
         "services": [],
@@ -790,7 +766,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-modules-core",
         "packages": [],
         "services": [],
@@ -805,7 +780,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-permissions",
         "packages": [],
         "services": [],
@@ -820,7 +794,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-splash-screen",
         "packages": [],
         "services": [],
@@ -835,7 +808,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-structured-headers",
         "packages": [],
         "services": [],
@@ -850,7 +822,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-updates",
         "packages": [],
         "services": [],
@@ -865,7 +836,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-updates-interface",
         "packages": [],
         "services": [],
@@ -880,7 +850,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-app-loader",
         "packages": [],
         "services": [],
@@ -895,7 +864,6 @@ exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-task-manager-interface",
         "packages": [],
         "services": [],
@@ -1226,7 +1194,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-core",
         "packages": [],
         "services": [],
@@ -1241,7 +1208,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-application",
         "packages": [],
         "services": [],
@@ -1256,7 +1222,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-constants",
         "packages": [],
         "services": [],
@@ -1271,7 +1236,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-device",
         "packages": [],
         "services": [],
@@ -1286,7 +1250,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-error-recovery",
         "packages": [],
         "services": [],
@@ -1301,7 +1264,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-file-system",
         "packages": [],
         "services": [],
@@ -1316,7 +1278,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-font",
         "packages": [],
         "services": [],
@@ -1331,7 +1292,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-image-loader",
         "packages": [],
         "services": [],
@@ -1346,7 +1306,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-keep-awake",
         "packages": [],
         "services": [],
@@ -1361,7 +1320,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-modules-core",
         "packages": [],
         "services": [],
@@ -1376,7 +1334,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-permissions",
         "packages": [],
         "services": [],
@@ -1391,7 +1348,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-splash-screen",
         "packages": [],
         "services": [],
@@ -1406,7 +1362,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-structured-headers",
         "packages": [],
         "services": [],
@@ -1421,7 +1376,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-updates",
         "packages": [],
         "services": [],
@@ -1436,7 +1390,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "expo-updates-interface",
         "packages": [],
         "services": [],
@@ -1451,7 +1404,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-app-loader",
         "packages": [],
         "services": [],
@@ -1466,7 +1418,6 @@ exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
     "projects": [
       {
         "modules": [],
-        "modulesV2": [],
         "name": "unimodules-task-manager-interface",
         "packages": [],
         "services": [],

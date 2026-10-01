@@ -20,7 +20,7 @@ overrides:
   baseline-browser-mapping: 2.9.15
 
 patchedDependencies:
-  next@16.2.11: patches/next@16.2.11.patch
+  next@16.3.6: patches/next@16.3.6.patch
 
 # Native-binary deps whose install scripts we need at build or runtime, and the
 # ones we deliberately skip. pnpm 11 replaced `onlyBuiltDependencies` and

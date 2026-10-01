@@ -1,14 +1,17 @@
 # Changelog
 
-## Unpublished
+## 58.0.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 58.0.1 — 2026-09-14
 
 ### 💡 Others
+
+- [iOS] Rename the `EXApplication` pod to `ExpoApplication`. ([#50059](https://github.com/expo/expo/pull/50059) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Migrate to the Expo Modules API 2.0 macros. ([#50059](https://github.com/expo/expo/pull/50059) by [@tsapeta](https://github.com/tsapeta))
 
 ## 58.0.0 — 2026-09-10
 

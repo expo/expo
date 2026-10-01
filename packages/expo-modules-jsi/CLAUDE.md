@@ -1,6 +1,6 @@
 ## Expo Modules JSI
 
-See [README.md](./README.md) for the public overview: what the package is, the layered architecture, the public API surface, Swift/C++ configuration, installation, and distribution. Don't duplicate that material here &mdash; update the README instead.
+See [README.md](./README.md) for the public overview: what the package is, the public API surface, Swift/C++ configuration, installation, building, and testing. Don't duplicate that material here, update the README instead.
 
 This file holds context that's only useful when working *inside* the package.
 

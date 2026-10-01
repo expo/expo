@@ -14,7 +14,12 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
       // From here on every completed request is written to the database, attributed to the main
       // session. The session's row INSERT was enqueued on the actor when `mainSession` was first
       // touched above, so it lands before any request row that references it.
-      NetworkRequestMonitor.shared.persistence = NetworkRequestPersistence(database: AppMetrics.database) {
+      // The persisted recording policy applies from the first observed request; JS can replace
+      // it later via `setNetworkTracesConfig`, affecting subsequent requests only.
+      NetworkRequestMonitor.shared.persistence = NetworkRequestPersistence(
+        database: AppMetrics.database,
+        configuration: AppMetricsUserDefaults.networkTracesConfiguration ?? NetworkTracesConfiguration()
+      ) {
         return AppMetrics.mainSession.id
       }
     }

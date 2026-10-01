@@ -1,12 +1,18 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-21
 
 ### 🐛 Bug fixes
+
+- [iOS] Import `Foundation` in the AES `Data` extension, which relied on another file in the module importing it. ([#50280](https://github.com/expo/expo/pull/50280) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.1 — 2026-09-14
 
 ### 💡 Others
 

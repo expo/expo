@@ -4,10 +4,13 @@ import { expectTypeOf } from 'expect-type';
 import { createInitialState } from '../../core/createInitialState';
 import {
   CommonActions,
+  type CommonNavigationAction,
+  extendRouterActions,
   type ParamListBase,
   type RouterConfigOptions,
   TabActions,
   type TabActionHelpers,
+  type TabActionType,
   type TabNavigationState,
   TabRouter,
 } from '../index';
@@ -3095,5 +3098,46 @@ describe('state without history', () => {
     };
 
     expect(router.getStateForRouteFocus(state, 'missing').history).toEqual([]);
+  });
+});
+
+describe('extended tab router', () => {
+  const options: RouterConfigOptions = { routeNames: ['index', 'second'], routeGetIdList: {} };
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'tab',
+    key: 'navigator:root',
+    routeKeySeq: 2,
+    index: 1,
+    routeNames: ['index', 'second'],
+    routes: [
+      { key: 'index:0', name: 'index' },
+      { key: 'second:1', name: 'second' },
+    ],
+    history: [],
+  };
+
+  test('clears only the focused preload marker on the state returned by an extension', () => {
+    const router = extendRouterActions(
+      TabRouter,
+      (state, action: TabActionType | CommonNavigationAction | { type: 'CUSTOM' }) => {
+        if (action.type !== 'CUSTOM') {
+          return undefined;
+        }
+        return {
+          state: {
+            ...state,
+            routes: state.routes.map((route) => ({ ...route, isPreloaded: true as const })),
+          },
+          affectedRouteKey: state.routes[state.index]?.key,
+        };
+      }
+    )({});
+
+    const result = router.getStateForAction(state, { type: 'CUSTOM' }, options);
+
+    expect(result).not.toBeNull();
+    expect(result!.state.routes[0]?.isPreloaded).toBe(true);
+    expect(result!.state.routes[1]?.isPreloaded).toBeUndefined();
   });
 });

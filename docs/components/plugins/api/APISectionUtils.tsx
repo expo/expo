@@ -575,6 +575,15 @@ export function getPossibleComponentPropsNames(name?: string, children: PropData
   return [`${componentName}Props`, `${componentName.replace('View', '')}Props`];
 }
 
+const PROPS_WITH_CHILDREN_NAMES = new Set(['PropsWithChildren', 'React.PropsWithChildren']);
+
+export function unwrapPropsWithChildren(type?: TypeDefinitionData) {
+  if (type?.type === 'reference' && PROPS_WITH_CHILDREN_NAMES.has(type.name ?? '')) {
+    return type.typeArguments?.[0] ?? type;
+  }
+  return type;
+}
+
 export function extractDefaultPropValue(
   { comment, name }: PropData,
   defaultProps?: DefaultPropsDefinitionData

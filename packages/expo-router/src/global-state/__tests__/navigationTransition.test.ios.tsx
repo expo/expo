@@ -39,27 +39,54 @@ it('keeps the current screen visible and reports pending while a navigation susp
   }
 
   renderRouter({
-    _layout: PendingStackLayout,
-    index: () => <Text testID="index">Index</Text>,
-    slow: {
-      default: SlowScreen,
+    _layout: {
+      default: PendingStackLayout,
       SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
     },
+    index: () => <Text testID="index">Index</Text>,
+    slow: SlowScreen,
   });
 
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
   expect(screen.getByTestId('index')).toBeVisible();
 
-  const navigationAct = act(() => router.push('/slow'));
+  const navigationAct = act(() => router.push('/slow', { inTransition: true }));
 
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.queryByTestId('fallback')).toBeNull();
 
-  deferred.resolve('Slow');
+  await act(async () => deferred.resolve('Slow'));
   await navigationAct;
 
   await waitFor(() => expect(screen.getByTestId('is-navigating')).toHaveTextContent('false'));
+  expect(screen.getByTestId('slow')).toBeVisible();
+});
+
+it('renders the suspense fallback when a navigation suspends by default', async () => {
+  const deferred = createDeferred();
+
+  function SlowScreen() {
+    return <Text testID="slow">{use(deferred.promise)}</Text>;
+  }
+
+  renderRouter({
+    _layout: {
+      default: PendingStackLayout,
+      SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
+    },
+    index: () => <Text testID="index">Index</Text>,
+    slow: SlowScreen,
+  });
+
+  const navigationAct = act(() => router.push('/slow'));
+
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
+  expect(screen.getByTestId('fallback')).toBeVisible();
+
+  await act(async () => deferred.resolve('Slow'));
+  await navigationAct;
+
   expect(screen.getByTestId('slow')).toBeVisible();
 });
 
@@ -79,8 +106,8 @@ it('commits two queued navigations in one transition', async () => {
   });
 
   await act(async () => {
-    router.push('/first');
-    router.push('/second');
+    router.push('/first', { inTransition: true });
+    router.push('/second', { inTransition: true });
   });
 
   expect(screen).toHavePathname('/second');
@@ -107,7 +134,7 @@ it('processes each intent once when one is queued during a pending transition', 
   );
 
   try {
-    const navigationAct = act(() => router.push('/slow'));
+    const navigationAct = act(() => router.push('/slow', { inTransition: true }));
     expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -141,7 +168,7 @@ it('preserves action order when a synchronous dispatch interrupts a transition',
     slow: SlowScreen,
   });
 
-  const navigationAct = act(() => router.push('/slow'));
+  const navigationAct = act(() => router.push('/slow', { inTransition: true }));
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
 
   act(() => navigationRef.current?.dispatchSync(CommonActions.navigate('sync')));

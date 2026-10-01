@@ -15,10 +15,7 @@ import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
-import {
-  unstable_createStandardRouterNavigator,
-  type NavigatorContentProps,
-} from '../standard-navigation';
+import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
 import type { ErrorBoundaryProps } from './Try';
@@ -146,7 +143,7 @@ function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
   return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
 
-const RouterSlot = unstable_createStandardRouterNavigator(SlotContent, StackRouter, {
+const RouterSlot = createStandardRouterNavigator(SlotContent, StackRouter, {
   activityDefaultThreshold: 1,
 });
 

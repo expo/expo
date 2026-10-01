@@ -5,6 +5,11 @@
     "modules": ["MeshGradientModule"]
   },
   "android": {
-    "modules": ["expo.modules.meshgradient.MeshGradientModule"]
+    "modules": ["expo.modules.meshgradient.MeshGradientModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.meshgradient",
+      "repository": "local-maven-repo"
+    }
   }
 }

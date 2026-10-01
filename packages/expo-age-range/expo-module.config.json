@@ -4,6 +4,11 @@
     "modules": ["AgeRangeModule"]
   },
   "android": {
-    "modules": ["expo.modules.agerange.AgeRangeModule"]
+    "modules": ["expo.modules.agerange.AgeRangeModule"],
+    "publication": {
+      "groupId": "expo.modules.agerange",
+      "artifactId": "expo.modules.agerange",
+      "repository": "local-maven-repo"
+    }
   }
 }

@@ -1,0 +1,68 @@
+{
+  "cLanguageStandard": null,
+  "cxxLanguageStandard": null,
+  "defaultLocalization": null,
+  "dependencies": [],
+  "name": "fixture",
+  "packageKind": {
+    "root": [
+      "/fixture"
+    ]
+  },
+  "pkgConfig": null,
+  "platforms": [
+    {
+      "options": [],
+      "platformName": "ios",
+      "version": "16.4"
+    }
+  ],
+  "products": [
+    {
+      "name": "Fixture",
+      "settings": [],
+      "targets": [
+        "Fixture",
+        "FixtureObjC"
+      ],
+      "type": {
+        "library": [
+          "automatic"
+        ]
+      }
+    }
+  ],
+  "providers": null,
+  "swiftLanguageVersions": null,
+  "targets": [
+    {
+      "dependencies": [
+        {
+          "byName": [
+            "FixtureObjC",
+            null
+          ]
+        }
+      ],
+      "exclude": [],
+      "name": "Fixture",
+      "packageAccess": true,
+      "resources": [],
+      "settings": [],
+      "type": "regular"
+    },
+    {
+      "dependencies": [],
+      "exclude": [],
+      "name": "FixtureObjC",
+      "packageAccess": true,
+      "resources": [],
+      "settings": [],
+      "type": "regular"
+    }
+  ],
+  "toolsVersion": {
+    "_version": "6.2.0"
+  },
+  "traits": []
+}

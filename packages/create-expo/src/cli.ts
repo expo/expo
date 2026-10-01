@@ -49,7 +49,7 @@ async function run() {
       [
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
-        `    --no-agents-md    Skip generating AGENTS.md, CLAUDE.md, and .claude/settings.json`,
+        `    --no-agents-md    Skip generating AGENTS.md and .claude/settings.json`,
         chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
         chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
         `-v, --version         Version number`,
