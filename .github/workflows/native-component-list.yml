@@ -24,6 +24,10 @@ concurrency:
 
 jobs:
   build:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository ||
+      !startsWith(github.head_ref, 'changeset-release/')
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
