@@ -105,9 +105,9 @@ describe('FallbackWatcher', () => {
     );
   }
 
-  function hasRecrawlEvent(relativePath: string): boolean {
+  function hasEvent(event: string, relativePath: string): boolean {
     return events.some(
-      (event) => event.event === 'recrawl' && event.relativePath === path.normalize(relativePath)
+      (change) => change.event === event && change.relativePath === path.normalize(relativePath)
     );
   }
 
@@ -255,7 +255,7 @@ describe('FallbackWatcher', () => {
     fs.writeFileSync(path.join(srcDir, 'second.js'), 'module.exports = 2;\n');
     src.report('rename', null);
 
-    await waitFor(() => hasRecrawlEvent('src'), 'a recrawl of src');
+    await waitFor(() => hasEvent('recrawl', 'src'), 'a recrawl of src');
   });
 
   test('watches a new directory that a change without a filename reached', async () => {
@@ -267,13 +267,29 @@ describe('FallbackWatcher', () => {
 
     fs.mkdirSync(path.join(srcDir, 'nested'));
     src.report('rename', null);
-    await waitFor(() => hasRecrawlEvent('src'), 'a recrawl of src');
+    await waitFor(() => hasEvent('recrawl', 'src'), 'a recrawl of src');
 
     fs.writeFileSync(path.join(srcDir, 'nested', 'later.js'), 'module.exports = 1;\n');
     await waitFor(
       () => hasTouchEvent('src/nested/later.js'),
       'a touch event for a file written into the new directory'
     );
+  });
+
+  test('reports the deletion of a file that a change without a filename revealed', async () => {
+    const srcDir = path.join(root, 'src');
+    fs.mkdirSync(srcDir);
+    fs.writeFileSync(path.join(srcDir, 'entry.js'), 'module.exports = 1;\n');
+    const src = captureListenerOf(srcDir);
+    await startWatcher();
+
+    fs.writeFileSync(path.join(srcDir, 'added.js'), 'module.exports = 2;\n');
+    src.report('rename', null);
+    await waitFor(() => hasEvent('recrawl', 'src'), 'a recrawl of src');
+
+    fs.unlinkSync(path.join(srcDir, 'added.js'));
+    src.report('rename', 'added.js');
+    await waitFor(() => hasEvent('delete', 'src/added.js'), 'a delete event for src/added.js');
   });
 
   test('recrawls a new directory when the watch event has no filename', async () => {
@@ -289,7 +305,7 @@ describe('FallbackWatcher', () => {
     pkg.report('rename', '');
 
     await waitFor(
-      () => hasRecrawlEvent('node_modules/empty-name-pkg'),
+      () => hasEvent('recrawl', 'node_modules/empty-name-pkg'),
       'a recrawl of node_modules/empty-name-pkg'
     );
   });
