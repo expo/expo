@@ -8,6 +8,13 @@ public struct DeviceInfo: Codable, Equatable, Sendable {
   public let systemName: String
   public let systemVersion: String
 
+  public init(modelName: String, modelIdentifier: String, systemName: String, systemVersion: String) {
+    self.modelName = modelName
+    self.modelIdentifier = modelIdentifier
+    self.systemName = systemName
+    self.systemVersion = systemVersion
+  }
+
   nonisolated(unsafe) private static var _current: DeviceInfo?
 
   static var current: DeviceInfo {

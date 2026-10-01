@@ -1,7 +1,8 @@
+import ExpoAppMetrics
 import Foundation
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 // See `GlobalAttributesTests` for why this suite is pinned to
 // `AppMetricsActor` — same race concern, since these tests also set

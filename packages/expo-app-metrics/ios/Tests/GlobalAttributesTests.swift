@@ -3,7 +3,7 @@ import Testing
 @testable import ExpoAppMetrics
 
 // Pinned to `AppMetricsActor` so tests in this suite (and the sibling
-// `MetricRow+Builder` suite, which also touches `GlobalAttributes`) can't
+// `MetricsSinkRegistry` suite, which also touches `GlobalAttributes`) can't
 // run concurrently and race on the process-wide store. Swift Testing
 // parallelizes by default, and the store's per-operation `Mutex` only
 // makes individual ops atomic — it can't keep one test's `set/read`

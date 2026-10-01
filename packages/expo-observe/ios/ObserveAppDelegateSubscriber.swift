@@ -4,6 +4,10 @@ import ExpoAppMetrics
 import ExpoModulesCore
 
 public class ObserveAppDelegateSubscriber: ExpoAppDelegateSubscriber {
+  public func appDelegateWillBeginInitialization() {
+    MetricsSinkRegistry.register(DatabaseMetricsSink.shared)
+  }
+
   public func applicationWillResignActive(_ application: UIApplication) {
     AppMetricsActor.isolated {
       await ObservabilityManager.dispatch()

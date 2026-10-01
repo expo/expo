@@ -87,7 +87,7 @@ internal struct ObservabilityManager {
     let cursor = ObserveUserDefaults.lastDispatchedMetricId
     if !shouldDispatch {
       do {
-        if let highestId = try AppMetrics.getMaxMetricId() {
+        if let highestId = try MetricsStore.getMaxMetricId() {
           ObserveUserDefaults.lastDispatchedMetricId = highestId
         }
       } catch {
@@ -99,7 +99,7 @@ internal struct ObservabilityManager {
     await DispatchLoop.drain(
       startCursor: cursor,
       fetchBatch: { cursor, limit in
-        let metrics = try AppMetrics.getMetrics(afterId: cursor, limit: limit)
+        let metrics = try MetricsStore.getMetrics(afterId: cursor, limit: limit)
         if metrics.isEmpty {
           observeLogger.debug("[EAS Observe] No new metrics to dispatch")
         }
@@ -158,7 +158,7 @@ internal struct ObservabilityManager {
     let cursor = ObserveUserDefaults.lastDispatchedLogId
     if !shouldDispatch {
       do {
-        if let highestId = try AppMetrics.getMaxLogId() {
+        if let highestId = try MetricsStore.getMaxLogId() {
           ObserveUserDefaults.lastDispatchedLogId = highestId
         }
       } catch {
@@ -170,7 +170,7 @@ internal struct ObservabilityManager {
     await DispatchLoop.drain(
       startCursor: cursor,
       fetchBatch: { cursor, limit in
-        let logs = try AppMetrics.getLogs(afterId: cursor, limit: limit)
+        let logs = try MetricsStore.getLogs(afterId: cursor, limit: limit)
         if logs.isEmpty {
           observeLogger.debug("[EAS Observe] No new logs to dispatch")
         }
@@ -240,8 +240,8 @@ internal struct ObservabilityManager {
       // Drop the backlog without materializing it; one SELECT MAX is enough to know how far
       // to delete. Mirrors metrics/logs advancing their cursor past rows they won't send.
       do {
-        if let maxId = try AppMetrics.getMaxSpanId() {
-          try AppMetrics.deleteSpans(upToId: maxId)
+        if let maxId = try MetricsStore.getMaxSpanId() {
+          try MetricsStore.deleteSpans(upToId: maxId)
         }
       } catch {
         observeLogger.warn("[EAS Observe] Failed to drop undispatched spans: \(error.localizedDescription)")
@@ -256,7 +256,7 @@ internal struct ObservabilityManager {
     await SpanDispatchLoop.drain(
       chunkSize: maxSpansPerRequest,
       fetchChunk: { afterId, limit in
-        return try AppMetrics.getSpans(afterId: afterId, limit: limit)
+        return try MetricsStore.getSpans(afterId: afterId, limit: limit)
       },
       send: { chunk in
         let resourceSpans = try buildResourceSpans(forSpans: chunk)
@@ -296,7 +296,7 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      try AppMetrics.deleteSpans(upToId: upToId)
+      try MetricsStore.deleteSpans(upToId: upToId)
     } catch {
       observeLogger.warn("[EAS Observe] Failed to delete dispatched spans: \(error.localizedDescription)")
     }
@@ -312,7 +312,7 @@ internal struct ObservabilityManager {
     transform: (SessionRow, [Row]) -> T?
   ) throws -> [T] {
     let rowsBySession = Dictionary(grouping: rows, by: sessionId)
-    let sessions = try AppMetrics.getSessions(ids: Array(rowsBySession.keys))
+    let sessions = try MetricsStore.getSessions(ids: Array(rowsBySession.keys))
     return sessions.compactMap { session in
       guard let sessionRows = rowsBySession[session.id] else {
         return nil

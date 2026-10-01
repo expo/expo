@@ -1,6 +1,7 @@
 import Testing
 
 @testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 @AppMetricsActor
 @Suite("findMatchingSession")
@@ -168,5 +169,21 @@ private func makeMainSessionRow(id: String, startDate: Date, endDate: Date?) -> 
     startTimestamp: startDate.ISO8601Format(),
     endTimestamp: endDate?.ISO8601Format(),
     isActive: endDate == nil
+  )
+}
+
+func makeCrashReport(timestampBegin: Date, timestampEnd: Date) -> CrashReport {
+  return CrashReport(
+    exceptionType: 1,
+    exceptionCode: 1,
+    signal: 11,
+    terminationReason: nil,
+    virtualMemoryRegionInfo: nil,
+    exceptionReason: nil,
+    callStackTree: nil,
+    appVersion: "1.0.0",
+    timestampBegin: timestampBegin,
+    timestampEnd: timestampEnd,
+    ingestedAt: Date.now
   )
 }

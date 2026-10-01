@@ -29,7 +29,7 @@ public final class MainSession: Session, @unchecked Sendable {
   }
 
   /// Test-only initializer that builds a session with explicit values and skips registering it
-  /// with the global storage. Do not use from production code.
+  /// with the session registry. Do not use from production code.
   init(id: String, startDate: Date, endDate: Date?) {
     super.init(id: id, type: .main, startDate: startDate, endDate: endDate)
   }

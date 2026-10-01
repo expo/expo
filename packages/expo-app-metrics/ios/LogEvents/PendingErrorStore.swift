@@ -5,9 +5,9 @@ import Foundation
 /// Durable store for fatal JavaScript errors.
 ///
 /// A fatal error terminates the process moments after the `global.ErrorUtils` handler returns, so the
-/// normal async (actor + SQLite) log path can race the shutdown and lose the record. Instead, the
+/// normal async (actor + sink) log path can race the shutdown and lose the record. Instead, the
 /// fatal path writes the error to a small JSON file **synchronously** on the calling thread (no actor,
-/// no database) before React Native tears the app down. On the next launch the pending files are
+/// no sink) before React Native tears the app down. On the next launch the pending files are
 /// drained into the regular log pipeline as `js.exception` events. This mirrors how MetricKit delivers
 /// crash diagnostics on the following launch.
 enum PendingErrorStore {
@@ -49,7 +49,7 @@ enum PendingErrorStore {
   }
 
   /// Reads all pending errors oldest-first and removes their files. Returns the decoded errors so the
-  /// caller can ingest them into the database. Corrupt files are deleted and skipped.
+  /// caller can hand them to the sink. Corrupt files are deleted and skipped.
   static func drain() -> [PendingError] {
     guard let directory = try? directoryUrl() else {
       return []

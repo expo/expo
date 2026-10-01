@@ -28,6 +28,8 @@ public final class ObserveModule: Module {
     Events("configure")
 
     OnCreate {
+      // Fallback for hosts that do not call the app delegate subscribers. Registering again does nothing.
+      MetricsSinkRegistry.register(DatabaseMetricsSink.shared)
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
       // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
       if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
@@ -56,7 +58,7 @@ public final class ObserveModule: Module {
         )
         let resolvedEnvironment = config.environment ?? ObserveUserDefaults.bundleDefaults?.environment
         if let resolvedEnvironment {
-          AppMetrics.setEnvironment(resolvedEnvironment)
+          MetricsStore.setEnvironment(resolvedEnvironment)
         }
       }
 
@@ -74,15 +76,15 @@ public final class ObserveModule: Module {
     }
 
     AsyncFunction("getInactiveSessions") { () -> [StoredSession] in
-      return try await AppMetricsActor.isolated { try AppMetrics.getInactiveStoredSessions() }.value
+      return try await AppMetricsActor.isolated { try MetricsStore.getInactiveStoredSessions() }.value
     }
 
     AsyncFunction("getSessionMetrics") { (sessionId: String) -> [Metric] in
-      return try await AppMetricsActor.isolated { try AppMetrics.getStoredMetrics(sessionId: sessionId) }.value
+      return try await AppMetricsActor.isolated { try MetricsStore.getStoredMetrics(sessionId: sessionId) }.value
     }
 
     AsyncFunction("getSessionLogs") { (sessionId: String) -> [LogRecord] in
-      return try await AppMetricsActor.isolated { try AppMetrics.getStoredLogs(sessionId: sessionId) }.value
+      return try await AppMetricsActor.isolated { try MetricsStore.getStoredLogs(sessionId: sessionId) }.value
     }
 
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
@@ -97,7 +99,7 @@ public final class ObserveModule: Module {
         ObserveUserDefaults.setBundleDefaults(
           PersistedBundleDefaults(environment: defaults.environment, isJsDev: defaults.isJsDev)
         )
-        AppMetrics.setEnvironment(defaults.environment)
+        MetricsStore.setEnvironment(defaults.environment)
       }
     }
   }

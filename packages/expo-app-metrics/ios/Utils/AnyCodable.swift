@@ -7,7 +7,7 @@ public struct AnyCodable: Codable, Sendable {
   // to send it over different isolation domains as it is immutable.
   public nonisolated(unsafe) let value: Any?
 
-  init<T>(_ value: T) {
+  public init<T>(_ value: T) {
     self.value = value
   }
 

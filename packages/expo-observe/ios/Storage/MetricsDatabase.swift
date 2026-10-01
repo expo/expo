@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoAppMetrics
 import Foundation
 
 /// SQLite-backed storage for sessions, metrics, logs and crash reports.
@@ -36,7 +37,7 @@ final class MetricsDatabase: Sendable {
     do {
       return try MetricsDatabase(directoryUrl: directoryUrl, fileName: fileName)
     } catch {
-      logger.warn(
+      observeLogger.warn(
         "[AppMetrics] Opening the metrics database failed (\(error.localizedDescription)); wiping the file and retrying."
       )
       try? removeDatabaseFile(at: directoryUrl.appendingPathComponent("\(fileName).db"))
@@ -73,7 +74,7 @@ final class MetricsDatabase: Sendable {
     do {
       try database.execute("UPDATE sessions SET isActive = 0 WHERE isActive = 1")
     } catch {
-      logger.warn("[AppMetrics] Failed to deactivate orphaned sessions: \(error.localizedDescription)")
+      observeLogger.warn("[AppMetrics] Failed to deactivate orphaned sessions: \(error.localizedDescription)")
     }
   }
 
@@ -93,7 +94,7 @@ final class MetricsDatabase: Sendable {
       do {
         try self.cleanupSessions(olderThan: cutoff)
       } catch {
-        logger.warn("[AppMetrics] Failed to prune expired sessions: \(error.localizedDescription)")
+        observeLogger.warn("[AppMetrics] Failed to prune expired sessions: \(error.localizedDescription)")
       }
     }
   }
@@ -110,7 +111,7 @@ final class MetricsDatabase: Sendable {
       // `database` deinits here, releasing the underlying connection before the file is deleted.
     }
     if let mismatchedVersion {
-      logger.warn(
+      observeLogger.warn(
         """
         [AppMetrics] Metrics database at \(fileUrl.path) is at schema v\(mismatchedVersion) but \
         this build expects v\(currentSchemaVersion); recreating to keep this build functional.
@@ -830,7 +831,7 @@ final class MetricsDatabase: Sendable {
     do {
       try FileManager.default.removeItem(at: fileUrl)
     } catch {
-      logger.warn("[AppMetrics] Failed to remove the legacy metrics file: \(error.localizedDescription)")
+      observeLogger.warn("[AppMetrics] Failed to remove the legacy metrics file: \(error.localizedDescription)")
     }
   }
 }

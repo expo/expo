@@ -89,7 +89,7 @@ struct SQLiteDatabase: ~Copyable, Sendable {
       do {
         try execute("ROLLBACK")
       } catch let rollbackError {
-        logger.warn("[AppMetrics] Failed to roll back transaction: \(rollbackError.localizedDescription)")
+        observeLogger.warn("[AppMetrics] Failed to roll back transaction: \(rollbackError.localizedDescription)")
       }
       throw error
     }

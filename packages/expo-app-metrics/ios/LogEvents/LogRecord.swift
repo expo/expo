@@ -1,8 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 /// A single log event collected during a session. Records of this shape are
-/// persisted in the local storage and exposed to consumers (e.g. `expo-observe`)
-/// that decide how to dispatch or display them.
+/// handed to the registered metrics sink (e.g. `expo-observe`), which decides
+/// how to dispatch or display them.
 public struct LogRecord: Codable, Sendable {
   public let name: String
   public let body: String?
@@ -15,7 +15,7 @@ public struct LogRecord: Codable, Sendable {
   public let severity: Severity
   public var timestamp: String = Date.now.ISO8601Format(.init(includingFractionalSeconds: true))
 
-  init(
+  public init(
     name: String,
     body: String? = nil,
     attributes: [String: Any]? = nil,

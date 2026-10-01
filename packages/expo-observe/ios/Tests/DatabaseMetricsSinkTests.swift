@@ -2,6 +2,7 @@ import Foundation
 import Testing
 
 @testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 // Pinned to `AppMetricsActor` and serialized because two tests here set the process-wide
 // `GlobalAttributes` store — see `GlobalAttributesTests` for why that store needs both.

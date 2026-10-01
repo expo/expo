@@ -24,7 +24,7 @@ public struct AppInfo: Codable, Equatable, Sendable {
 
     /// True when none of the carried fields are populated. Lets callers omit the whole struct from
     /// wire payloads instead of sending `{ updateId: null, runtimeVersion: null, requestHeaders: null }`,
-    /// matching the pre-SQLite shape where `AppInfo.updatesInfo` was itself optional.
+    /// matching the original shape, where `AppInfo.updatesInfo` was itself optional.
     public var isEmpty: Bool {
       return updateId == nil && runtimeVersion == nil && requestHeaders == nil
     }

@@ -11,7 +11,6 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     Name("ExpoAppMetrics")
 
     OnCreate {
-      MetricsSinkRegistry.register(DatabaseMetricsSink.shared)
       AppMetricsActor.isolated {
         AppMetrics.mainSession.updatesMonitor.patchAppInfoIfNeeded()
       }

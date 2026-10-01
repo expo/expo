@@ -26,8 +26,6 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'EXUpdatesInterface'
 
-  s.libraries = 'sqlite3'
-
   s.resource_bundles = {'ExpoAppMetrics_privacy' => ['PrivacyInfo.xcprivacy']}
 
   install_modules_dependencies(s)

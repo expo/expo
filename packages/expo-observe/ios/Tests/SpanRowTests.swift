@@ -1,7 +1,8 @@
+import ExpoAppMetrics
 import Foundation
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 /// Yields the scripted values in order, then a fixed non-zero fallback.
 private struct ScriptedGenerator: RandomNumberGenerator {

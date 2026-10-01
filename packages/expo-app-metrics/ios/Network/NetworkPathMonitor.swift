@@ -13,7 +13,7 @@
 /// (and don't mind suspending for it). The latter is what TTI param collection
 /// uses — the TTI value itself is captured from the synchronously-recorded
 /// `markers.timeToInteractive` timestamp, so awaiting the first path here only
-/// delays the local-storage write, not the metric measurement.
+/// delays handing the metric to the sink, not the metric measurement.
 @AppMetricsActor
 final class NetworkPathMonitor: NetworkPathObserverDelegate, Sendable {
   static let shared = NetworkPathMonitor()

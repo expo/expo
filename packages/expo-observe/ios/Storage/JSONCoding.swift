@@ -11,7 +11,7 @@ func encodeAsJSONString<T: Encodable>(_ value: T) -> String? {
     let data = try encoder.encode(value)
     return String(data: data, encoding: .utf8)
   } catch {
-    logger.warn("[AppMetrics] Failed to JSON-encode value: \(error.localizedDescription)")
+    observeLogger.warn("[AppMetrics] Failed to JSON-encode value: \(error.localizedDescription)")
     return nil
   }
 }
@@ -46,7 +46,7 @@ func decodeFromJSONString<T: Decodable>(_ type: T.Type, from json: String?) -> T
   do {
     return try decoder.decode(type, from: data)
   } catch {
-    logger.warn("[AppMetrics] Failed to JSON-decode value as \(type): \(error.localizedDescription)")
+    observeLogger.warn("[AppMetrics] Failed to JSON-decode value as \(type): \(error.localizedDescription)")
     return nil
   }
 }

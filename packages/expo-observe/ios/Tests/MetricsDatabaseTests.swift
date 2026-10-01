@@ -1,7 +1,8 @@
+import ExpoAppMetrics
 import Foundation
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 @AppMetricsActor
 @Suite("MetricsDatabase")

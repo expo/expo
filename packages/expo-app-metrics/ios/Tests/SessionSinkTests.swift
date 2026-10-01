@@ -3,9 +3,8 @@ import Testing
 
 @testable import ExpoAppMetrics
 
-// Registers a fake sink on the shared registry for the duration of each test and restores the
-// database sink afterwards. Other code can emit to the shared registry at the same time, so the
-// assertions read only the calls for the session under test.
+// Registers a fake sink on the shared registry for each test. Other code can emit to the shared
+// registry at the same time, so the assertions read only the calls for the session under test.
 @AppMetricsActor
 @Suite("Session sink", .serialized)
 final class SessionSinkTests {
@@ -13,10 +12,6 @@ final class SessionSinkTests {
 
   init() {
     MetricsSinkRegistry.shared.register(sink)
-  }
-
-  deinit {
-    MetricsSinkRegistry.shared.register(DatabaseMetricsSink.shared)
   }
 
   @Test

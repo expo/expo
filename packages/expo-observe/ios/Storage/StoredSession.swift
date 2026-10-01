@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoAppMetrics
 import Foundation
 
 /// Public, JSON-friendly snapshot of a persisted session. Built from a `SessionWithChildren` row
@@ -59,7 +60,7 @@ public struct StoredSession: Codable, Sendable {
 }
 
 /// Projects metric rows into the public `Metric` domain shape, decoding the JSON-encoded `params`
-/// blob back into a dictionary. Shared by `StoredSession` and `AppMetrics.getStoredMetrics(sessionId:)`.
+/// blob back into a dictionary. Shared by `StoredSession` and `MetricsStore.getStoredMetrics(sessionId:)`.
 func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
   return rows.map { metric in
     return Metric(
@@ -76,7 +77,7 @@ func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
 }
 
 /// Projects log rows into the public `LogRecord` domain shape, decoding the JSON-encoded `attributes`
-/// blob back into a dictionary. Shared by `StoredSession` and `AppMetrics.getStoredLogs(sessionId:)`.
+/// blob back into a dictionary. Shared by `StoredSession` and `MetricsStore.getStoredLogs(sessionId:)`.
 func decodeLogs(from rows: [LogRow]) -> [LogRecord] {
   return rows.map { log in
     return LogRecord(

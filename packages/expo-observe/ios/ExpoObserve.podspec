@@ -22,6 +22,8 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoAppMetrics'
   s.dependency 'EASClient'
 
+  s.libraries = 'sqlite3'
+
   s.resource_bundles = {'ExpoObserve_privacy' => ['PrivacyInfo.xcprivacy']}
 
   install_modules_dependencies(s)
@@ -34,7 +36,8 @@ Pod::Spec.new do |s|
     ].compact
   }
 
-  s.source_files = '*.{h,m,mm,swift}'
+  s.source_files = '**/*.{h,m,mm,swift}'
+  s.exclude_files = 'Tests'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests'

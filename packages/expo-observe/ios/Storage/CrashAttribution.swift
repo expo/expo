@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoAppMetrics
 import Foundation
 
 extension CrashReport {

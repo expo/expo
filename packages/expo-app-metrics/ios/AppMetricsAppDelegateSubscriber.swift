@@ -2,7 +2,6 @@ import ExpoModulesCore
 
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
-    MetricsSinkRegistry.register(DatabaseMetricsSink.shared)
     AppMetrics.mainSession.appStartupMonitor.markMain()
     // Install the URLSessionTask swizzles synchronously before any app code (RN included) issues
     // its first network request. Doing this on the `AppMetricsActor` would defer it past that

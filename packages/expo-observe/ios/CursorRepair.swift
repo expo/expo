@@ -4,7 +4,7 @@ import ExpoAppMetrics
 
 /// Resets a dispatch cursor to `-1` if it has fallen past the largest id currently in its source
 /// table. The cursors live in UserDefaults; their source tables can be wiped from underneath them
-/// (notably on a schema-version mismatch in `expo-app-metrics`). Without this check the cursor would
+/// (notably on a schema-version mismatch in `MetricsDatabase`). Without this check the cursor would
 /// skip every new row until enough accumulated to pass the stale value.
 ///
 /// - `signalName`: short human-readable label ("metric" / "log") for log messages.
@@ -42,7 +42,7 @@ internal func repairMetricCursorIfStale() {
     signalName: "metric",
     readCursor: { ObserveUserDefaults.lastDispatchedMetricId },
     writeCursor: { ObserveUserDefaults.lastDispatchedMetricId = $0 },
-    readMaxId: { try AppMetrics.getMaxMetricId() }
+    readMaxId: { try MetricsStore.getMaxMetricId() }
   )
 }
 
@@ -52,6 +52,6 @@ internal func repairLogCursorIfStale() {
     signalName: "log",
     readCursor: { ObserveUserDefaults.lastDispatchedLogId },
     writeCursor: { ObserveUserDefaults.lastDispatchedLogId = $0 },
-    readMaxId: { try AppMetrics.getMaxLogId() }
+    readMaxId: { try MetricsStore.getMaxLogId() }
   )
 }

@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoAppMetrics
 import Foundation
 
 /// Stores every record in the SQLite metrics database.
@@ -15,7 +16,7 @@ internal final class DatabaseMetricsSink: MetricsSink {
     do {
       return try MetricsDatabase.openWipingOnFailure()
     } catch {
-      logger.error(
+      observeLogger.error(
         "[AppMetrics] Failed to open the metrics database after a wipe-and-retry: \(error.localizedDescription). Continuing without persistence — metrics and logs from this launch will be dropped."
       )
       assertionFailure("MetricsDatabase failed to open: \(error)")
@@ -92,11 +93,13 @@ internal final class DatabaseMetricsSink: MetricsSink {
     do {
       mainSessions = try openDatabase()?.getMainSessions() ?? []
     } catch {
-      logger.warn("[AppMetrics] Failed to load main sessions for crash attribution: \(error.localizedDescription)")
+      observeLogger.warn(
+        "[AppMetrics] Failed to load main sessions for crash attribution: \(error.localizedDescription)"
+      )
       return
     }
     guard let session = crash.findMatchingSession(in: mainSessions) else {
-      logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crash)")
+      observeLogger.warn("[AppMetrics] Received crash report with no matching session:\n\(crash)")
       return
     }
     guard let payload = encodeAsJSONString(crash) else {
@@ -109,7 +112,7 @@ internal final class DatabaseMetricsSink: MetricsSink {
         log: LogRow.from(log: log, sessionId: session.id)
       )
     } catch {
-      logger.warn(
+      observeLogger.warn(
         "[AppMetrics] Failed to persist crash report for session \(session.id): \(error.localizedDescription)"
       )
     }
