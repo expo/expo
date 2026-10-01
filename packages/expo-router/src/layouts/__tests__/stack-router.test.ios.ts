@@ -149,6 +149,10 @@ describe('native preview identity', () => {
       'detail:1',
       'other:3',
     ]);
+    // Native already pushed the screen. The flag would also disable the back animation.
+    expect(result.state.routes[1]!.params).not.toHaveProperty(
+      '__internal_expo_router_no_animation'
+    );
   });
 
   it.each(['missing', 'other:3'])(
