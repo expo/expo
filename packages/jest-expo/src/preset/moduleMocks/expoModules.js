@@ -378,6 +378,7 @@ module.exports = {
           { name: 'notificationAsync', argumentsCount: 1, key: 'notificationAsync' },
           { name: 'selectionAsync', argumentsCount: 0, key: 'selectionAsync' },
         ],
+        ExpoHinge: [],
         ExpoHead: [
           { name: 'clearActivitiesAsync', argumentsCount: 1, key: 'clearActivitiesAsync' },
           { name: 'createActivity', argumentsCount: 1, key: 'createActivity' },
@@ -1234,6 +1235,12 @@ module.exports = {
           notificationAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           selectionAsync: { type: 'function' },
+        },
+        ExpoHinge: {
+          addListener: { type: 'function' },
+          getHinge: { type: 'function' },
+          isAvailable: { type: 'boolean', mock: false },
+          removeListeners: { type: 'function' },
         },
         ExpoHead: {
           activities: { type: 'object' },
