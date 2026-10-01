@@ -1,5 +1,6 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system/legacy';
+import type { SharedObject } from 'expo-modules-core';
 import * as SQLite from 'expo-sqlite';
 import { SQLiteStorage } from 'expo-sqlite/kv-store';
 import path from 'path';
@@ -1150,6 +1151,25 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       }
     );
 
+    nativeIt(
+      'automatic cleanup closes a database after JavaScript releases a statement',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        const statement = await db.prepareAsync('SELECT 1');
+        const retainedStatement = await db.prepareAsync('SELECT 2');
+
+        // Explicit release invokes sharedObjectDidRelease, just like collection of the JS wrapper.
+        // SQLiteStatement hides the native SharedObject, so access it directly for this regression.
+        (statement['nativeStatement'] as unknown as InstanceType<typeof SharedObject>).release();
+        await db.closeAsync();
+
+        expect(() => db.execSync('SELECT 1')).toThrowError(/Access to closed resource/);
+        expect(() => retainedStatement.getColumnNamesSync()).toThrowError(
+          /Access to closed resource/
+        );
+      }
+    );
+
     nativeIt('concurrent finalization rejects the second call safely', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
       try {
@@ -1183,15 +1203,19 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       const db = await SQLite.openDatabaseAsync(':memory:', {
         finalizeUnusedStatementsBeforeClosing: false,
       });
-      await db.prepareAsync('SELECT sqlite_version()');
-
-      let error = null;
+      const statement = await db.prepareAsync('SELECT sqlite_version()');
       try {
+        let error = null;
+        try {
+          await db.closeAsync();
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
+      } finally {
+        await statement.finalizeAsync();
         await db.closeAsync();
-      } catch (e) {
-        error = e;
       }
-      expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
     });
 
     for (const useNewConnection of [false, true]) {
@@ -1202,7 +1226,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
             useNewConnection,
             finalizeUnusedStatementsBeforeClosing: false,
           };
-          const databaseName = 'close-retry.db';
+          const databaseName = ':memory:';
           const db = await SQLite.openDatabaseAsync(databaseName, options);
           await db.execAsync(
             'DROP TABLE IF EXISTS close_test; CREATE TABLE close_test (value); INSERT INTO close_test VALUES (42)'
@@ -1237,7 +1261,6 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
           } finally {
             await statement.finalizeAsync();
             await db.closeAsync();
-            await SQLite.deleteDatabaseAsync(databaseName);
           }
           // Android used to remove the cache entry on failure, making the retry a no-op.
           expect(() => db.execSync('SELECT 1')).toThrow();
