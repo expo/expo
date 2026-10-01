@@ -13,6 +13,9 @@
         "$TURBO_ROOT$/tools/src/prebuilds/**"
       ],
       "dependsOn": ["expo-modules-jsi#precompile-ios"]
+    },
+    "precompile-android": {
+      "outputs": ["android/prebuilt/**"]
     }
   }
 }
