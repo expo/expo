@@ -6,6 +6,7 @@ import type {
   NativeStackNavigationOptions,
   NativeStackNavigationEventMap,
 } from '../../react-navigation/native-stack';
+import type { SafeAreaEdges } from '../../safe-area.types';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
@@ -21,6 +22,14 @@ type StackBaseScreenProps = BaseScreenProps<
 >;
 
 export interface StackScreenProps extends PropsWithChildren {
+  /**
+   * Configures native safe area padding for this screen and its descendants.
+   * Unspecified edges inherit from the parent screen.
+   * Not supported for `formSheet` presentations on iOS.
+   * @platform android
+   * @platform ios
+   */
+  safeAreaEdges?: SafeAreaEdges;
   /** Name is required when used inside a Layout component. */
   name?: StackBaseScreenProps['name'];
 
@@ -88,7 +97,7 @@ export interface StackScreenProps extends PropsWithChildren {
  * ```
  */
 export const StackScreen = Object.assign(
-  function StackScreen({ children, options, ...rest }: StackScreenProps) {
+  function StackScreen({ children, options, safeAreaEdges, ...rest }: StackScreenProps) {
     // This component will only render when used inside a page.
     if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
       console.warn(
@@ -97,8 +106,11 @@ export const StackScreen = Object.assign(
     }
 
     const ownOptions = useMemo(
-      () => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})),
-      [options]
+      () =>
+        appendScreenStackPropsToOptions(typeof options === 'function' ? {} : (options ?? {}), {
+          safeAreaEdges,
+        }),
+      [options, safeAreaEdges]
     );
 
     return (
@@ -162,6 +174,9 @@ export function appendScreenStackPropsToOptions(
   props: StackScreenProps
 ): NativeStackNavigationOptions {
   let updatedOptions = { ...options, ...props.options };
+  if (props.safeAreaEdges !== undefined) {
+    updatedOptions = { ...updatedOptions, safeAreaEdges: props.safeAreaEdges };
+  }
 
   validateStackPresentation(updatedOptions);
 

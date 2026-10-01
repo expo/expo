@@ -27,6 +27,7 @@ import type {
   NativeStackViewEmit,
   NativeStackViewState,
 } from '../types';
+import { NativeStackTopInsetContext } from '../utils/NativeStackTopInsetContext';
 import { ScreenPresentationContext } from '../utils/ScreenPresentationContext';
 import { debounce } from '../utils/debounce';
 import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
@@ -428,7 +429,15 @@ const SceneView = ({
               ) : null}
               <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                 <HeaderBackContext.Provider value={headerBack}>
-                  {render()}
+                  <NativeStackTopInsetContext
+                    value={
+                      Platform.OS === 'ios' &&
+                      parseInt(String(Platform.Version), 10) >= 26 &&
+                      !headerConfig.hidden &&
+                      !headerConfig.translucent
+                    }>
+                    {render()}
+                  </NativeStackTopInsetContext>
                 </HeaderBackContext.Provider>
               </HeaderShownContext.Provider>
             </HeaderHeightContext.Provider>

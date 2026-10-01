@@ -35,6 +35,14 @@ const SplitLayout = () => (
   </SplitView>
 );
 
+jest.mock('react-native-screens/experimental', () => {
+  const { View } = jest.requireActual('react-native');
+  return {
+    ...jest.requireActual('react-native-screens/experimental'),
+    SafeAreaView: (props: object) => <View {...props} testID="leaf-safe-area" />,
+  };
+});
+
 it('renders a SplitView nested under Slot', () => {
   renderRouter(
     {
@@ -47,6 +55,13 @@ it('renders a SplitView nested under Slot', () => {
 
   expect(screen.getByTestId('Split.Host')).toBeVisible();
   expect(screen.getByTestId('child')).toBeVisible();
+  expect(screen.getAllByTestId('leaf-safe-area')).toHaveLength(1);
+  expect(screen.getByTestId('leaf-safe-area').props.edges).toEqual({
+    left: true,
+    right: true,
+    top: false,
+    bottom: false,
+  });
 });
 
 it('renders a SplitView nested under the default navigator', () => {

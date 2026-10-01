@@ -97,6 +97,7 @@ export function convertTabPropsToOptions(
     disableScrollToTop,
     unstable_nativeProps,
     disableAutomaticContentInsets,
+    safeAreaEdges,
     contentStyle,
     disableTransparentOnScrollEdge,
     disabled,
@@ -111,6 +112,7 @@ export function convertTabPropsToOptions(
 ) {
   const initialOptions: NativeTabOptions = isDynamic
     ? {
+        ...(safeAreaEdges !== undefined ? { safeAreaEdges } : {}),
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
         ...(disabled !== undefined ? { disabled } : {}),
@@ -124,6 +126,7 @@ export function convertTabPropsToOptions(
           : {}),
       }
     : {
+        ...(safeAreaEdges !== undefined ? { safeAreaEdges } : {}),
         hidden: !!hidden,
         specialEffects: {
           repeatedTabSelection: {

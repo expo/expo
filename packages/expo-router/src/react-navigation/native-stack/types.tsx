@@ -14,6 +14,7 @@ import type {
 } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { SafeAreaEdges } from '../../safe-area.types';
 import type { StandardNavigatorEmit } from '../../standard-navigation';
 import type {
   DefaultNavigatorOptions,
@@ -181,6 +182,8 @@ export type NativeStackHeaderLeftProps = NativeStackHeaderBackProps;
 export type NativeStackHeaderRightProps = NativeStackHeaderItemProps;
 
 export type NativeStackNavigationOptions = {
+  /** @internal Configured by Stack.Screen. */
+  safeAreaEdges?: SafeAreaEdges;
   /**
    * String that can be displayed in the header as a fallback for `headerTitle`.
    */

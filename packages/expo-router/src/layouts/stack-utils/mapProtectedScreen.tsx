@@ -12,12 +12,18 @@ export function mapProtectedScreen(props: ProtectedProps): ProtectedProps {
     children: Children.toArray(props.children)
       .map((child, index) => {
         if (isChildOfType(child, StackScreen)) {
-          const { children, options: childOptions, ...rest } = child.props;
+          const { children, safeAreaEdges, options: childOptions, ...rest } = child.props;
           const options =
             typeof childOptions === 'function'
               ? (...params: Parameters<typeof childOptions>) =>
-                  appendScreenStackPropsToOptions(childOptions(...params), { children })
-              : appendScreenStackPropsToOptions(childOptions ?? {}, { children });
+                  appendScreenStackPropsToOptions(childOptions(...params), {
+                    children,
+                    safeAreaEdges,
+                  })
+              : appendScreenStackPropsToOptions(childOptions ?? {}, {
+                  children,
+                  safeAreaEdges,
+                });
           return <Screen key={rest.name} {...rest} options={options} />;
         } else if (isChildOfType(child, Protected)) {
           return <Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)} />;

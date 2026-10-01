@@ -1,4 +1,5 @@
 export { Stack } from '../layouts/Stack';
+export type { SafeAreaEdges } from '../safe-area.types';
 
 export type {
   StackHeaderProps,
