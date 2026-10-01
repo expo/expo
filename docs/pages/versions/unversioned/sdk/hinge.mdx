@@ -1,0 +1,52 @@
+---
+title: Hinge
+description: A library that provides the device hinge angle and status on iPhone Duo.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-hinge'
+packageName: 'expo-hinge'
+platforms: ['ios']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+`expo-hinge` exposes the hinge of a foldable device, such as iPhone Duo, to the whole app. It reports the angle in degrees and whether the hinge is closed, partially open, or fully open. A [`UIHingeInteraction`](https://developer.apple.com/documentation/uikit/uihingeinteraction) on the app's window provides these values. For reacting to the hinge from one SwiftUI view, use the [`onHingeChange`](./ui/swift-ui/modifiers/#onhingechange) modifier from `@expo/ui` instead.
+
+> **important** Hinge updates need iOS 27.1 or later and a build made with Xcode 27.1 or later. On older builds and systems, and on devices without a hinge, the hinge is `null`. Use hinge state for interactions and effects, not for layout.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+```tsx
+import { useHinge } from 'expo-hinge';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function App() {
+  const hinge = useHinge();
+
+  return (
+    <View style={styles.container}>
+      <Text>{hinge ? `${hinge.status} at ${Math.round(hinge.angle)}°` : 'No hinge'}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## API
+
+```ts
+import * as Hinge from 'expo-hinge';
+```
+
+<APISection packageName="expo-hinge" />
