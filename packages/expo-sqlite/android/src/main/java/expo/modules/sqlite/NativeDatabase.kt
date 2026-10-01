@@ -9,6 +9,7 @@ import java.util.concurrent.locks.ReentrantLock
 internal class NativeDatabase(val databasePath: String, val openOptions: OpenDatabaseOptions) : SharedRef<NativeDatabaseBinding>(NativeDatabaseBinding()) {
   var isClosed = false
   val closeLock = ReentrantLock()
+
   // Protect statement registration and cleanup through the final close attempt.
   // Running statements use their own locks, so interruption need not wait for them.
   val statementLifecycleLock = Any()

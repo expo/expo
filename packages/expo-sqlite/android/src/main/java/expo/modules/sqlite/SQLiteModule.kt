@@ -639,13 +639,18 @@ class SQLiteModule : Module() {
     }
     // Finalize through the wrappers so even a failed close leaves them invalidated.
     // Do not destroy SQLite-internal statements owned by concurrent exec/backup operations.
+    var firstError: Exception? = null
     for (statement in database.statements.toList()) {
       try {
         finalize(statement, database)
       } catch (error: SQLiteErrorException) {
         android.util.Log.w("expo-sqlite", "Finalizing a statement during close failed", error)
+      } catch (error: Exception) {
+        // A broken wrapper must not prevent cleanup of the remaining statements.
+        firstError = firstError ?: error
       }
     }
+    firstError?.let { throw it }
   }
 
   // endregion
