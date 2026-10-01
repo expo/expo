@@ -109,7 +109,11 @@ class NotificationPermissionsModule : Module() {
 
   private fun getExactAlarmPermissionsBundle(): Bundle {
     val granted = canScheduleExactAlarms()
-    val status = if (granted) PermissionsStatus.GRANTED else PermissionsStatus.DENIED
+    val status = if (granted) {
+      PermissionsStatus.GRANTED
+    } else {
+      PermissionsStatus.DENIED
+    }
     return bundleOf(
       PermissionsResponse.EXPIRES_KEY to PermissionsResponse.PERMISSION_EXPIRES_NEVER,
       PermissionsResponse.STATUS_KEY to status.status,
