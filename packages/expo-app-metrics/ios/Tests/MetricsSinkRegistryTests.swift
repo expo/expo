@@ -107,15 +107,111 @@ struct MetricsSinkRegistryTests {
   }
 
   @Test
-  func `drops records emitted while no sink is registered`() throws {
+  func `replays records emitted before registration to the first sink in order`() async throws {
     let registry = MetricsSinkRegistry()
     try registry.sessionStarted(makeSessionInfo(id: "s"))
-    try registry.record(logs: [LogRecord(name: "l")], sessionId: "s")
+    try registry.record(metrics: [Metric(category: .session, name: "m", value: 1)], sessionId: "s")
+    try registry.sessionEnded(id: "s", endDate: Date(timeIntervalSince1970: 1_700_000_000))
 
     let sink = FakeMetricsSink()
     registry.register(sink)
 
+    let calls = try await waitForCalls(sink, count: 3)
+    #expect(calls.count == 3)
+    guard case .sessionStarted = calls[0], case .metrics = calls[1], case .sessionEnded = calls[2] else {
+      Issue.record("Expected sessionStarted, metrics, sessionEnded, got \(calls)")
+      return
+    }
+  }
+
+  @Test
+  func `merges global attributes before a record is buffered`() async throws {
+    let registry = MetricsSinkRegistry()
+    GlobalAttributes.set(["tier": "pro"])
+    try registry.record(logs: [LogRecord(name: "l")], sessionId: "s")
+    GlobalAttributes.set(["tier": "free"])
+
+    let sink = FakeMetricsSink()
+    registry.register(sink)
+
+    let calls = try await waitForCalls(sink, count: 1)
+    guard case .logs(let logs, _) = calls[0] else {
+      Issue.record("Expected logs, got \(calls)")
+      return
+    }
+    let attributes = try #require(logs.first?.attributes?.value as? [String: Any])
+    #expect(attributes["tier"] as? String == "pro")
+  }
+
+  @Test
+  func `records emitted after registration skip the buffer`() throws {
+    let registry = MetricsSinkRegistry()
+    let sink = FakeMetricsSink()
+    registry.register(sink)
+
+    try registry.record(logs: [LogRecord(name: "l")], sessionId: "s")
+
+    #expect(sink.calls.count == 1)
+  }
+
+  @Test
+  func `a record emitted during the replay goes after the buffered records`() async throws {
+    let registry = MetricsSinkRegistry()
+    try registry.record(logs: [LogRecord(name: "first")], sessionId: "s")
+    try registry.record(logs: [LogRecord(name: "second")], sessionId: "s")
+
+    let sink = FakeMetricsSink()
+    registry.register(sink)
+    // The replay runs in a later actor job, so this record arrives while it is pending.
+    try registry.record(logs: [LogRecord(name: "third")], sessionId: "s")
     #expect(sink.calls.isEmpty)
+
+    let calls = try await waitForCalls(sink, count: 3)
+    #expect(logNames(calls) == ["first", "second", "third"])
+  }
+
+  @Test
+  func `keeps the first 500 buffered records and drops the rest`() async throws {
+    let registry = MetricsSinkRegistry()
+    for index in 0...500 {
+      try registry.record(logs: [LogRecord(name: "\(index)")], sessionId: "s")
+    }
+
+    let sink = FakeMetricsSink()
+    registry.register(sink)
+
+    let calls = try await waitForCalls(sink, count: 500)
+    #expect(logNames(calls) == (0..<500).map { "\($0)" })
+  }
+
+  @Test
+  func `replays every buffered record when the sink throws`() async throws {
+    let registry = MetricsSinkRegistry()
+    try registry.record(logs: [LogRecord(name: "first")], sessionId: "s")
+    try registry.record(logs: [LogRecord(name: "second")], sessionId: "s")
+
+    let sink = FakeMetricsSink()
+    sink.error = FakeSinkError()
+    registry.register(sink)
+
+    let calls = try await waitForCalls(sink, count: 2)
+    #expect(logNames(calls) == ["first", "second"])
+  }
+
+  @Test
+  func `the buffer stays closed after the first registration`() async throws {
+    let registry = MetricsSinkRegistry()
+    try registry.record(logs: [LogRecord(name: "buffered")], sessionId: "s")
+    let first = FakeMetricsSink()
+    registry.register(first)
+    _ = try await waitForCalls(first, count: 1)
+
+    let second = FakeMetricsSink()
+    registry.register(second)
+    try registry.record(logs: [LogRecord(name: "live")], sessionId: "s")
+
+    #expect(logNames(first.calls) == ["buffered"])
+    #expect(logNames(second.calls) == ["live"])
   }
 
   @Test
@@ -243,6 +339,24 @@ struct MetricsSinkRegistryTests {
       return
     }
     #expect(spans.first?.attributes == span.attributes)
+  }
+
+  /// Waits for the replay, which runs in a later actor job than `register`.
+  private func waitForCalls(_ sink: FakeMetricsSink, count: Int) async throws -> [FakeMetricsSink.Call] {
+    for _ in 0..<200 where sink.calls.count < count {
+      try await Task.sleep(for: .milliseconds(10))
+    }
+    try #require(sink.calls.count >= count, "Timed out waiting for \(count) calls")
+    return sink.calls
+  }
+
+  private func logNames(_ calls: [FakeMetricsSink.Call]) -> [String] {
+    return calls.compactMap { call in
+      guard case .logs(let logs, _) = call else {
+        return nil
+      }
+      return logs.first?.name
+    }
   }
 }
 
