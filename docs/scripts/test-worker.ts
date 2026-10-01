@@ -1,6 +1,7 @@
 /* oxlint-disable no-console */
 import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
+import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -12,10 +13,6 @@ const TEST_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-docs-worker-test-')
 let wranglerProcess: ChildProcess | null = null;
 let workerOutput = '';
 const NATIVE_TABS = '/versions/latest/sdk/router/native-tabs/';
-const BROWSER_NAVIGATION_HEADERS = {
-  'Sec-Fetch-Mode': 'navigate',
-  'Sec-Fetch-Dest': 'document',
-};
 
 function waitForReady(process: ChildProcess, timeoutMs = 30000): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -549,29 +546,35 @@ async function testHtmlNotFoundAsync(): Promise<void> {
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
 }
 
+function navigateAsync(path: string, headers: http.OutgoingHttpHeaders = {}) {
+  return new Promise<http.IncomingMessage>((resolve, reject) => {
+    http
+      .get(
+        `${BASE_URL}${path}`,
+        { headers: { 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document', ...headers } },
+        response => {
+          resolve(response.resume());
+        }
+      )
+      .on('error', reject);
+  });
+}
+
 async function testUrlRecoveryAsync(): Promise<void> {
   console.log('\n--- Testing URL recovery with the mock AI binding ---');
   for (const path of ['/router/basics/tabs/', '/router/layouts/tabs']) {
-    const response = await fetch(`${BASE_URL}${path}`, {
-      headers: BROWSER_NAVIGATION_HEADERS,
-      redirect: 'manual',
-    });
-    if (
-      response.status !== 302 ||
-      response.headers.get('location') !== `${BASE_URL}${NATIVE_TABS}`
-    ) {
-      throw new Error(`Expected recovery redirect for ${path}, got ${response.status}`);
+    const response = await navigateAsync(path);
+    if (response.statusCode !== 302 || response.headers.location !== `${BASE_URL}${NATIVE_TABS}`) {
+      throw new Error(`Expected recovery redirect for ${path}, got ${response.statusCode}`);
     }
-    const markdown = await fetch(`${BASE_URL}${path}`, {
-      headers: { ...BROWSER_NAVIGATION_HEADERS, Accept: 'text/markdown' },
-    });
-    if (markdown.status !== 200 || !(await markdown.text()).includes('# Native tabs')) {
+    const markdown = await navigateAsync(path, { Accept: 'text/markdown' });
+    if (markdown.headers.location !== `${BASE_URL}${NATIVE_TABS}`) {
       throw new Error(`Expected recovered Markdown for ${path}`);
     }
   }
   for (const path of ['/router/basics/tabs.md', '/router/layouts/tabs/index.md']) {
-    const response = await fetch(`${BASE_URL}${path}`);
-    if (response.status !== 200 || !(await response.text()).includes('# Native tabs')) {
+    const response = await navigateAsync(path);
+    if (response.headers.location !== `${BASE_URL}${NATIVE_TABS}index.md`) {
       throw new Error(`Expected recovered Markdown for ${path}`);
     }
   }
