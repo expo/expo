@@ -24,6 +24,7 @@
     "generate-llms": "node --experimental-strip-types ./scripts/generate-llms/index.js",
     "generate-markdown-pages": "node --experimental-strip-types ./scripts/generate-markdown-pages.ts",
     "check-markdown-pages": "node --experimental-strip-types ./scripts/check-markdown-pages.ts",
+    "generate-docs-bundle": "node --experimental-strip-types ./scripts/generate-docs-bundle.ts",
     "check-internal-links": "node --experimental-strip-types ./checks/internal-links/index.ts",
     "ja:check": "node --experimental-strip-types checks/ja/check.ts",
     "ja:stamp": "node --experimental-strip-types checks/ja/stamp.ts",
