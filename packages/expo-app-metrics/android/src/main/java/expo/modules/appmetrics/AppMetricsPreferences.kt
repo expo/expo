@@ -5,7 +5,6 @@ import androidx.core.content.edit
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 
 private const val PREFS_NAME = "dev.expo.app-metrics"
-private const val KEY_ENVIRONMENT = "environment"
 private const val KEY_LAST_PROCESSED_EXIT_MILLIS = "lastProcessedExitMillis"
 private const val KEY_NETWORK_TRACES_CONFIGURATION = "networkTracesConfiguration"
 
@@ -25,27 +24,6 @@ object AppMetricsPreferences {
   ) {
     val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     prefs.edit(commit = true) { putLong(KEY_LAST_PROCESSED_EXIT_MILLIS, millis) }
-  }
-
-  fun getEnvironment(context: Context): String? {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    return prefs.getString(KEY_ENVIRONMENT, null) ?: getDefaultEnvironment()
-  }
-
-  fun setEnvironment(
-    context: Context,
-    environment: String
-  ) {
-    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    prefs.edit(commit = true) { putString(KEY_ENVIRONMENT, environment) }
-  }
-
-  fun getDefaultEnvironment(): String? {
-    return if (BuildConfig.DEBUG) {
-      "development"
-    } else {
-      null
-    }
   }
 
   /**

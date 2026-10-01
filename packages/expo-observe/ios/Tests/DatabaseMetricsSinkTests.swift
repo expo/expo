@@ -47,7 +47,7 @@ struct DatabaseMetricsSinkTests {
       #expect(row.startTimestamp == info.startDate.ISO8601Format())
       #expect(row.endTimestamp == nil)
       #expect(row.isActive)
-      #expect(row.environment == AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment())
+      #expect(row.environment == ObserveUserDefaults.environment ?? ObserveUserDefaults.defaultEnvironment)
       #expect(row.appIdentifier == "dev.expo.app")
       #expect(row.appName == "App")
       #expect(row.appVersion == "1.2.3")

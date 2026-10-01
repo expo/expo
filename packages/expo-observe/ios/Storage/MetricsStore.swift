@@ -75,8 +75,8 @@ internal enum MetricsStore {
   }
 
   static func setEnvironment(_ environment: String) {
-    guard AppMetricsUserDefaults.environment != environment else { return }
-    AppMetricsUserDefaults.environment = environment
+    guard ObserveUserDefaults.environment != environment else { return }
+    ObserveUserDefaults.environment = environment
     do {
       try DatabaseMetricsSink.shared.updateEnvironmentForActiveSessions(environment)
     } catch {

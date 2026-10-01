@@ -173,4 +173,42 @@ class ObservePreferencesTest {
   }
 
   // endregion
+
+  // region Environment
+
+  private fun legacyPreferences() =
+    context.getSharedPreferences("dev.expo.app-metrics", Context.MODE_PRIVATE)
+
+  @Test
+  fun `getEnvironment returns the build default when neither preferences has a value`() {
+    val expected = if (BuildConfig.DEBUG) {
+      "development"
+    } else {
+      null
+    }
+    assertEquals(expected, ObservePreferences.getEnvironment(context))
+  }
+
+  @Test
+  fun `getEnvironment migrates the legacy app-metrics value once`() {
+    legacyPreferences().edit().putString("environment", "staging").commit()
+
+    assertEquals("staging", ObservePreferences.getEnvironment(context))
+    assertFalse(legacyPreferences().contains("environment"))
+    assertEquals(
+      "staging",
+      context.getSharedPreferences("dev.expo.observe", Context.MODE_PRIVATE).getString("environment", null)
+    )
+    assertEquals("staging", ObservePreferences.getEnvironment(context))
+  }
+
+  @Test
+  fun `getEnvironment prefers the observe value over the legacy value`() {
+    ObservePreferences.setEnvironment(context, "production")
+    legacyPreferences().edit().putString("environment", "staging").commit()
+
+    assertEquals("production", ObservePreferences.getEnvironment(context))
+  }
+
+  // endregion
 }

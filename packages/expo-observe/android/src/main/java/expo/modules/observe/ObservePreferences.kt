@@ -10,6 +10,10 @@ private const val KEY_CONFIG = "config"
 private const val KEY_BUNDLE_DEFAULTS = "bundleDefaults"
 private const val KEY_LAST_DISPATCHED_METRIC_ID = "lastDispatchedMetricId"
 private const val KEY_LAST_DISPATCHED_LOG_ID = "lastDispatchedLogId"
+private const val KEY_ENVIRONMENT = "environment"
+
+// Earlier versions stored the environment in the expo-app-metrics preferences.
+private const val LEGACY_PREFS_NAME = "dev.expo.app-metrics"
 
 /**
  * Snapshot of the last `configure(...)` payload
@@ -74,6 +78,36 @@ object ObservePreferences {
   fun setLastDispatchedLogId(context: Context, id: Long) {
     context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
       putLong(KEY_LAST_DISPATCHED_LOG_ID, id)
+    }
+  }
+
+  /**
+   * The last environment set from JS, or the build default. On the first read after an upgrade,
+   * moves the value saved by earlier versions, so sessions started before JS runs keep it.
+   */
+  @Synchronized
+  fun getEnvironment(context: Context): String? {
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    prefs.getString(KEY_ENVIRONMENT, null)?.let { return it }
+    val legacyPrefs = context.getSharedPreferences(LEGACY_PREFS_NAME, Context.MODE_PRIVATE)
+    val legacy = legacyPrefs.getString(KEY_ENVIRONMENT, null) ?: return getDefaultEnvironment()
+    setEnvironment(context, legacy)
+    legacyPrefs.edit(commit = true) { remove(KEY_ENVIRONMENT) }
+    return legacy
+  }
+
+  @Synchronized
+  fun setEnvironment(context: Context, environment: String) {
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
+      putString(KEY_ENVIRONMENT, environment)
+    }
+  }
+
+  private fun getDefaultEnvironment(): String? {
+    return if (BuildConfig.DEBUG) {
+      "development"
+    } else {
+      null
     }
   }
 }

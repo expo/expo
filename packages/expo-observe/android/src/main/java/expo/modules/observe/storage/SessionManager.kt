@@ -3,11 +3,11 @@ package expo.modules.observe.storage
 import android.content.Context
 import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
-import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.records.NetworkSpan
 import expo.modules.appmetrics.utils.TimeUtils
+import expo.modules.observe.ObservePreferences
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -29,7 +29,7 @@ class SessionManager(
     metadata: AppMetadata? = null,
     environment: String? = null
   ) {
-    val resolvedEnvironment = environment ?: AppMetricsPreferences.getEnvironment(context)
+    val resolvedEnvironment = environment ?: ObservePreferences.getEnvironment(context)
     val session = Session(
       id = sessionId,
       startTimestamp = timestamp,

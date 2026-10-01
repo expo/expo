@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
-import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.appmetrics.records.LogEvent
@@ -16,6 +15,7 @@ import expo.modules.appmetrics.sessions.SessionSharedObject
 import expo.modules.appmetrics.sink.MetricsSinkRegistry
 import expo.modules.appmetrics.sink.SessionInfo
 import expo.modules.appmetrics.utils.JsonAny
+import expo.modules.observe.ObservePreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
@@ -67,7 +67,7 @@ class DatabaseMetricsSinkTest {
   @Test
   fun `sessionStarted inserts the session row with its metadata and the environment`() =
     runBlocking {
-      AppMetricsPreferences.setEnvironment(context, "staging")
+      ObservePreferences.setEnvironment(context, "staging")
 
       sink.sessionStarted(session("s", metadata = metadata()))
       awaitStart("s")

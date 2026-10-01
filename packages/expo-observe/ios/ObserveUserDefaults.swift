@@ -30,6 +30,7 @@ internal final class ObserveUserDefaults: UserDefaults {
     case lastDispatchDate
     case config
     case bundleDefaults
+    case environment
   }
 
   private init() {
@@ -94,6 +95,35 @@ internal final class ObserveUserDefaults: UserDefaults {
   static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
+  }
+
+  /// The last environment set from JS. On the first read after an upgrade, moves the value saved by
+  /// earlier versions, so sessions started before JS runs keep it.
+  static var environment: String? {
+    get {
+      if let environment = defaults.string(forKey: Keys.environment.rawValue) {
+        return environment
+      }
+      let legacyDefaults = UserDefaults(suiteName: "dev.expo.app-metrics")
+      guard let legacyEnvironment = legacyDefaults?.string(forKey: Keys.environment.rawValue) else {
+        return nil
+      }
+      defaults.set(legacyEnvironment, forKey: Keys.environment.rawValue)
+      legacyDefaults?.removeObject(forKey: Keys.environment.rawValue)
+      return legacyEnvironment
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.environment.rawValue)
+    }
+  }
+
+  /// The environment of sessions started before JS sets one.
+  nonisolated static var defaultEnvironment: String? {
+    #if DEBUG
+    return "development"
+    #else
+    return nil
+    #endif
   }
 
   // MARK: - Legacy keys

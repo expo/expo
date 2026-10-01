@@ -39,38 +39,6 @@ class AppMetricsPreferencesTest {
   }
 
   @Test
-  fun `getEnvironment returns default environment when nothing saved`() {
-    val expected = if (BuildConfig.DEBUG) {
-      "development"
-    } else {
-      null
-    }
-    assertEquals(expected, AppMetricsPreferences.getEnvironment(context))
-  }
-
-  @Test
-  fun `getEnvironment returns saved environment over default`() {
-    AppMetricsPreferences.setEnvironment(context, "production")
-    assertEquals("production", AppMetricsPreferences.getEnvironment(context))
-  }
-
-  @Test
-  fun `setEnvironment persists value`() {
-    AppMetricsPreferences.setEnvironment(context, "staging")
-    assertEquals("staging", AppMetricsPreferences.getEnvironment(context))
-  }
-
-  @Test
-  fun `getDefaultEnvironment matches build variant`() {
-    val expected = if (BuildConfig.DEBUG) {
-      "development"
-    } else {
-      null
-    }
-    assertEquals(expected, AppMetricsPreferences.getDefaultEnvironment())
-  }
-
-  @Test
   fun `last processed exit timestamp defaults to zero`() {
     assertEquals(0L, AppMetricsPreferences.getLastProcessedExitTimestampMillis(context))
   }

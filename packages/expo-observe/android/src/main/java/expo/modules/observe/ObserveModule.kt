@@ -2,7 +2,6 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
-import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.sink.MetricsSinkRegistry
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.easclient.EASClientID
@@ -146,7 +145,7 @@ class ObserveModule : Module() {
     }
 
   private fun setEnvironment(environment: String) {
-    AppMetricsPreferences.setEnvironment(context, environment)
+    ObservePreferences.setEnvironment(context, environment)
     appContext.modulesQueue.launch {
       DatabaseMetricsSink.getInstance(context).updateEnvironmentForActiveSessions(environment)
     }

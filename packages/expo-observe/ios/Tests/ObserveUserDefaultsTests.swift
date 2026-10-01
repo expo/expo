@@ -9,7 +9,10 @@ struct ObserveUserDefaultsTests {
   init() {
     // Remove the persistent domain to simulate a fresh install between tests.
     UserDefaults.standard.removePersistentDomain(forName: "dev.expo.observe")
+    legacyDefaults.removeObject(forKey: "environment")
   }
+
+  private let legacyDefaults = UserDefaults(suiteName: "dev.expo.app-metrics")!
 
   @Test
   func `config defaults to nil`() {
@@ -135,6 +138,29 @@ struct ObserveUserDefaultsTests {
     ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: true))
     #expect(ObserveUserDefaults.bundleDefaults?.environment == "development")
     #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == true)
+  }
+
+  // MARK: - Environment
+
+  @Test
+  func `environment is nil when neither suite has a value`() {
+    #expect(ObserveUserDefaults.environment == nil)
+  }
+
+  @Test
+  func `environment migrates the legacy app-metrics value once`() {
+    legacyDefaults.set("staging", forKey: "environment")
+    #expect(ObserveUserDefaults.environment == "staging")
+    #expect(legacyDefaults.string(forKey: "environment") == nil)
+    #expect(UserDefaults(suiteName: "dev.expo.observe")?.string(forKey: "environment") == "staging")
+    #expect(ObserveUserDefaults.environment == "staging")
+  }
+
+  @Test
+  func `environment prefers the observe value over the legacy value`() {
+    ObserveUserDefaults.environment = "production"
+    legacyDefaults.set("staging", forKey: "environment")
+    #expect(ObserveUserDefaults.environment == "production")
   }
 
   @Test

@@ -5,11 +5,11 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppUpdatesInfo
-import expo.modules.appmetrics.BuildConfig
 import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.utils.TimeUtils
+import expo.modules.observe.BuildConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*

@@ -34,7 +34,7 @@ internal final class DatabaseMetricsSink: MetricsSink {
 
   @AppMetricsActor
   func sessionStarted(_ session: SessionInfo) throws {
-    let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
+    let environment = ObserveUserDefaults.environment ?? ObserveUserDefaults.defaultEnvironment
     try openDatabase()?.insert(session: SessionRow.from(session, environment: environment))
   }
 
