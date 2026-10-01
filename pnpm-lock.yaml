@@ -1065,6 +1065,9 @@ importers:
       expo-haptics:
         specifier: workspace:*
         version: link:../../packages/expo-haptics
+      expo-hinge:
+        specifier: workspace:*
+        version: link:../../packages/expo-hinge
       expo-image:
         specifier: workspace:*
         version: link:../../packages/expo-image
