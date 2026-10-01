@@ -6,6 +6,18 @@ on:
       - main
       # - sdk-58
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Operation to run
+        type: choice
+        default: canary
+        options:
+          - canary
+          - sync-published-packages
+      dry-run:
+        description: Validate the sync without changing npm tags or www
+        type: boolean
+        default: true
   schedule:
     - cron: 0 1 * * * # Nightly at 1:00 AM UTC
 
@@ -132,17 +144,54 @@ jobs:
         run: pnpm turbo run build --filter=expotools...
       - name: Publish with Changesets
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
-        env:
-          EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
         with:
           github-token: ${{ github.token }}
           publish-script: pnpm expotools publish-packages
+
+  sync-published-packages:
+    name: Sync published packages
+    needs: stable-publish
+    if: >-
+      !cancelled() && github.repository == 'expo/expo' && github.ref_name == 'main' &&
+      (needs.stable-publish.result == 'success' ||
+       (github.event_name == 'workflow_dispatch' && inputs.operation == 'sync-published-packages'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    concurrency:
+      group: sync-published-packages-${{ github.ref_name }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
+      - run: npm install --global npm@^11.21.0
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm turbo run build --filter=expotools...
+      - name: Sync versions from this main commit
+        run: |
+          until pnpm expotools sync-published-packages --env staging ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
+            echo 'Sync failed; retrying this commit in 10 minutes.'
+            sleep 600
+          done
+        env:
+          EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
+          EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
 
   canary-publish:
     name: Publish canary packages
     if: >-
       github.repository == 'expo/expo' &&
-      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+      (github.event_name == 'schedule' ||
+       (github.event_name == 'workflow_dispatch' && inputs.operation != 'sync-published-packages'))
     runs-on:
       group: macos-publishing
     timeout-minutes: 180
