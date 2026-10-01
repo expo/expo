@@ -27,15 +27,23 @@ const FRONTMATTER = /^---\n[\S\s]*?\n---\n/;
 const AGENT_INSTRUCTIONS = /\n*<AgentInstructions>[\S\s]*?<\/AgentInstructions>\n*/g;
 const MARKDOWN_BANNER = /^This documentation is available as Markdown for AI agents\b.*\n+/m;
 const STUB_PREFIXES = ['This page redirects to', 'No content found'];
-const SKIPPED_SECTIONS = ['ja/', 'internal/'];
+const INTERNAL_SECTIONS = ['internal/'];
 
 export function pagePathFromFile(outDir: string, mdFile: string): string {
   const rel = path.relative(outDir, path.dirname(mdFile)).split(path.sep).join('/');
   return rel === '' ? 'index' : rel;
 }
 
-export function bundleNameForPath(pagePath: string): string | null {
-  if (SKIPPED_SECTIONS.some(prefix => pagePath.startsWith(prefix))) {
+/** `ja/` for `ja.json`: every locale in docs/messages except English is a translated section. */
+export function translationSections(messageFiles: string[]): string[] {
+  return messageFiles
+    .filter(file => file.endsWith('.json') && file !== 'en.json')
+    .map(file => `${file.slice(0, -'.json'.length)}/`)
+    .sort();
+}
+
+export function bundleNameForPath(pagePath: string, skippedSections: string[]): string | null {
+  if (skippedSections.some(prefix => pagePath.startsWith(prefix))) {
     return null;
   }
   if (!pagePath.startsWith('versions/')) {
@@ -62,14 +70,17 @@ export function pageTitle(content: string): string {
   return content.match(/^# +(.+)$/m)?.[1]?.trim() ?? '';
 }
 
-export function groupPages(pages: { path: string; markdown: string }[]): {
+export function groupPages(
+  pages: { path: string; markdown: string }[],
+  skippedSections: string[]
+): {
   bundles: Map<string, BundlePage[]>;
   invalidPaths: string[];
 } {
   const bundles = new Map<string, BundlePage[]>();
   const invalidPaths: string[] = [];
   for (const page of pages) {
-    const name = bundleNameForPath(page.path);
+    const name = bundleNameForPath(page.path, skippedSections);
     const content = name ? cleanPageMarkdown(page.markdown) : null;
     if (!name || content === null) {
       continue;
@@ -96,7 +107,8 @@ function main(outDir: string) {
     path: pagePathFromFile(outDir, file),
     markdown: fs.readFileSync(file, 'utf-8'),
   }));
-  const { bundles, invalidPaths } = groupPages(pages);
+  const translations = translationSections(fs.readdirSync(path.join(outDir, '..', 'messages')));
+  const { bundles, invalidPaths } = groupPages(pages, [...INTERNAL_SECTIONS, ...translations]);
   if (invalidPaths.length > 0) {
     console.error(`\x1b[31m✗\x1b[0m Invalid page paths:\n${invalidPaths.join('\n')}`);
     process.exit(1);
