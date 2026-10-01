@@ -1335,8 +1335,29 @@ export default function TabLayout() {
 
 Native tabs automatically handle safe area insets, with platform-specific behavior:
 
-- **Android**: Screen content is automatically wrapped in a `SafeAreaView` that applies the **bottom** inset for the tab bar. Other insets (top, left, right) must be handled manually.
+- **Android**: Screen content is automatically wrapped in a `SafeAreaView` that applies the **bottom** inset for the tab bar. You must handle the top inset manually. In SDK 57 and earlier, you must also handle left and right insets manually.
 - **iOS**: The first `ScrollView` nested inside a native tabs screen has [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled. This ensures content scrolls correctly behind the tab bar.
+
+Starting in SDK 58, Expo Router also adds left and right safe area padding to leaf screens inside native tabs, including screens in nested stacks. This changes the default layout for existing screens, especially in landscape. It does not change the Android bottom inset or iOS scroll adjustment described above. Web behavior is unchanged.
+
+Pass `safeAreaEdges` directly to `NativeTabs.Trigger` to control this padding. The object accepts optional `horizontal`, `vertical`, `left`, `right`, `top`, and `bottom` booleans. By default, `horizontal` is `true` and `vertical` is `false`. An individual edge overrides its axis in the same object. For example, `{ horizontal: true, left: false }` enables only the right edge.
+
+For full-bleed content or layouts that already handle horizontal insets manually, set `horizontal: false`:
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index" safeAreaEdges={{ horizontal: false }} />
+      <NativeTabs.Trigger name="settings" safeAreaEdges={{ horizontal: true, left: false }} />
+    </NativeTabs>
+  );
+}
+```
+
+The trigger's settings apply to descendant screens through nested stacks, except iOS `formSheet` screens. Explicit edges or axes on a child `Stack.Screen` override the inherited edges. Unspecified edges keep their inherited values. See [Stack safe area handling](/router/advanced/stack/#safe-area-handling) for the padding scope and a `Stack.Screen` example.
 
 #### Disabling automatic content insets
 
@@ -1400,7 +1421,9 @@ export default function TabLayout() {
 
 </Tabs>
 
-When `disableAutomaticContentInsets` is set to `true`, you must manage safe area insets manually. You can use `SafeAreaView` from `react-native-screens/experimental`:
+In SDK 58 and later, `disableAutomaticContentInsets` also disables the new default safe area padding for all descendant screens, including nested stacks. Explicit `safeAreaEdges` settings on the trigger or a child `Stack.Screen` can still enable padding for selected edges.
+
+When `disableAutomaticContentInsets` is set to `true`, you must manage any remaining safe area insets manually. You can use `SafeAreaView` from `react-native-screens/experimental`:
 
 ```tsx src/app/index.tsx
 import { SafeAreaView } from 'react-native-screens/experimental';

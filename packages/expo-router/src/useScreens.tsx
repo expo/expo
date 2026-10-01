@@ -42,12 +42,14 @@ import {
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import { getValidInitialRouteName } from './routeNode';
+import { IsWithinNativeNavigator } from './standard-navigation/IsWithinNativeNavigator';
 import type { UnknownOutputParams } from './types';
 import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
 import { useActivityThreshold } from './views/NavigationActivityContext';
 import { NavigationAwareActivity } from './views/NavigationAwareActivity';
+import { ScreenSafeArea } from './views/ScreenSafeArea';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
@@ -334,6 +336,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const isWithinNativeNavigator = use(IsWithinNativeNavigator);
     const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
@@ -393,11 +396,17 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         segment={value.route}
       />
     );
-    const screenContent =
+    const routeContent =
       ScreenErrorBoundary && isRouteType ? (
         <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
       ) : (
         screenComponent
+      );
+    const screenContent =
+      isRouteType && isWithinNativeNavigator ? (
+        <ScreenSafeArea>{routeContent}</ScreenSafeArea>
+      ) : (
+        routeContent
       );
 
     return (

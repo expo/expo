@@ -3,6 +3,8 @@ import * as React from 'react';
 import { use } from 'react';
 
 import { PreventRemovalProvider } from '../../global-state/removalPrevention';
+import type { SafeAreaEdges } from '../../safe-area.types';
+import { SafeAreaEdgesProvider } from '../../views/SafeAreaEdgesContext';
 import type {
   NavigationAction,
   NavigationState,
@@ -26,7 +28,10 @@ type Props<State extends NavigationState, ScreenOptions extends object> = {
   navigation: NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions>;
   route: Route<string>;
   routeState: NavigationState | PartialState<NavigationState> | undefined;
-  options: object;
+  options: {
+    safeAreaEdges?: SafeAreaEdges;
+    disableAutomaticContentInsets?: boolean;
+  };
   clearOptions: () => void;
   emitRemovalEvent: (
     routeKey: string,
@@ -110,17 +115,19 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
         <NavigationStateContext.Provider value={context}>
           <NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
             <EnsureSingleNavigator>
-              <StaticContainer
-                name={screen.name}
-                render={ScreenComponent || screen.children}
-                navigation={navigation}
-                route={route}>
-                {ScreenComponent !== undefined ? (
-                  <ScreenComponent navigation={navigation} route={route} />
-                ) : screen.children !== undefined ? (
-                  screen.children({ navigation, route })
-                ) : null}
-              </StaticContainer>
+              <SafeAreaEdgesProvider options={options}>
+                <StaticContainer
+                  name={screen.name}
+                  render={ScreenComponent || screen.children}
+                  navigation={navigation}
+                  route={route}>
+                  {ScreenComponent !== undefined ? (
+                    <ScreenComponent navigation={navigation} route={route} />
+                  ) : screen.children !== undefined ? (
+                    screen.children({ navigation, route })
+                  ) : null}
+                </StaticContainer>
+              </SafeAreaEdgesProvider>
             </EnsureSingleNavigator>
           </NavigationFocusedRouteStateContext.Provider>
         </NavigationStateContext.Provider>

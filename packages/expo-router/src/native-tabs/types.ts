@@ -14,6 +14,7 @@ import type {
   ParamListBase,
   TabNavigationState,
 } from '../react-navigation/native';
+import type { SafeAreaEdges } from '../safe-area.types';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
 import type { ErrorBoundaryProps } from '../views/Try';
@@ -47,6 +48,7 @@ export type NativeTabsHostNativeProps = Partial<
 >;
 
 export interface NativeTabOptions extends DefaultRouterOptions {
+  safeAreaEdges?: SafeAreaEdges;
   /**
    * @platform android
    * @platform iOS
@@ -699,19 +701,25 @@ export interface NativeTabTriggerProps {
    * The default behavior differs between iOS and Android.
    *
    * On **Android**, the content of a native tabs screen is automatically wrapped in a `SafeAreaView`,
-   * and the **bottom** inset is applied. Other insets must be handled manually.
+   * and the **bottom** inset is applied.
    *
    * On **iOS**, the first scroll view nested inside a native tabs screen has
    * [automatic content inset adjustment](https://reactnative.dev/docs/scrollview#contentinsetadjustmentbehavior-ios) enabled
    *
    * When this property is set to `true`, automatic content inset adjustment is disabled for the screen
-   * and must be managed manually. You can use `SafeAreaView` from `react-native-screens/experimental`
-   * to handle safe area insets.
+   * and safe area padding is disabled for descendant routes unless explicitly enabled with `safeAreaEdges`.
    *
    * @platform android
    * @platform ios
    */
   disableAutomaticContentInsets?: boolean;
+  /**
+   * Configures native safe area padding for this tab and its descendants.
+   * Explicit edges can enable padding even when `disableAutomaticContentInsets` is `true`.
+   * @platform android
+   * @platform ios
+   */
+  safeAreaEdges?: SafeAreaEdges;
   /**
    * The style applied to the content of the tab
    *

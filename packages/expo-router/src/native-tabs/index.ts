@@ -24,3 +24,4 @@ export type {
 export { NativeTabTrigger } from './NativeTabTrigger';
 export { NativeTabs } from './NativeTabs';
 export { createNativeTabsProps } from './NativeBottomTabsNavigator';
+export type { SafeAreaEdges } from '../safe-area.types';
