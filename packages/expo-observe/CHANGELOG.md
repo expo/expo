@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Remove legacy `UserDefaults` keys that are no longer read. ([#50752](https://github.com/expo/expo/pull/50752) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add privacy manifest describing required reason API usage and the collected data types. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
+- Updated dependencies. ([#50752](https://github.com/expo/expo/pull/50752), [#50734](https://github.com/expo/expo/pull/50734))
+  - expo-app-metrics@58.0.10
+  - expo-eas-client@58.0.2
+
 ## 58.0.11
 
 ### Patch Changes

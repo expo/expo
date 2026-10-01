@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.3
+
+### Patch Changes
+
+- [Android] Fix the splash screen staying visible over the app on Android 12 and 13 when the activity stops before the splash screen exits, for example when the app starts while the device is locked. This removes the workaround added in #44584. ([#50818](https://github.com/expo/expo/pull/50818) by [@zoontek](https://github.com/zoontek))
+
 ## 58.0.2
 
 ### Patch Changes

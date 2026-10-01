@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Fix missing back animation after opening a screen from a link preview on iOS. ([#50839](https://github.com/expo/expo/pull/50839) by [@Ubax](https://github.com/Ubax))
+- Allow setting the native header's light or dark interface style per `Stack` screen on iOS. ([#50765](https://github.com/expo/expo/pull/50765) by [@Ubax](https://github.com/Ubax))
+- [Internal] Remove the `import-mode` module and read `process.env.EXPO_ROUTER_IMPORT_MODE` directly in `useScreens`. ([#50826](https://github.com/expo/expo/pull/50826) by [@Ubax](https://github.com/Ubax))
+- Fix a crash on launch in production when the app has no `scheme`. ([#50708](https://github.com/expo/expo/pull/50708) by [@expo-bot](https://github.com/expo-bot))
+- Resolve Native Tabs `xcasset` icon names through the iOS asset catalog so symbol sets render. ([#48301](https://github.com/expo/expo/pull/48301) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
+- Fixes a minor grammatical issue in the error message when `NativeTabs` is used on an unsupported platform. ([#46202](https://github.com/expo/expo/pull/46202) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#49529](https://github.com/expo/expo/pull/49529))
+  - @expo/log-box@58.0.8
+  - @expo/metro-runtime@58.0.10
+
 ## 58.0.10
 
 ### Patch Changes

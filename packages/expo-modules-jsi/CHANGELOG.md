@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [iOS] Read host object property names through `getPropNameIdData` instead of building a `std::string` for every access, making property access from JavaScript up to 14% faster for long names. ([#50805](https://github.com/expo/expo/pull/50805) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] The `JavaScriptValue`, `JavaScriptObject` and `JavaScriptArray` initializers now take the runtime as `borrowing`, so callers no longer retain it for the call, making host functions that return strings or numbers up to ~15% faster. ([#50844](https://github.com/expo/expo/pull/50844) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptValue`, `JavaScriptObject` and `JavaScriptArray` now hold a strong runtime handle instead of a `weak` reference to the runtime, which removes the weak reference traffic and slow-path reference counting from their hot paths (for example `getObject()` ~16×, `getArray()` ~12× and `getProperty(_:)` ~1.8× faster). ([#50806](https://github.com/expo/expo/pull/50806) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.5
 
 ### Patch Changes
