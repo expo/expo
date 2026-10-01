@@ -14,6 +14,7 @@ import type {
   OnTabChangeEventPayload,
 } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
+import { useRouteNode } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
 import type {
@@ -51,6 +52,7 @@ export function NativeTabsNavigator({
     );
   }
 
+  const routeNode = useRouteNode();
   const processedLabelStyle = convertLabelStylePropToObject(labelStyle);
   const processedIconColor = convertIconColorPropToObject(iconColor);
 
@@ -73,6 +75,8 @@ export function NativeTabsNavigator({
     children,
     backBehavior,
     screenListeners,
+    // Honor layout `unstable_settings.initialRouteName` the same way headless Tabs does.
+    initialRouteName: routeNode?.initialRouteName,
     screenOptions: {
       disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
       labelStyle: processedLabelStyle.default,
