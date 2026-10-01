@@ -262,6 +262,7 @@ describe('FallbackWatcher, when a watched directory is deleted', () => {
   let watches: Watch[];
   let closedHandles: Set<fs.FSWatcher>;
   let events: WatcherBackendChangeEvent[];
+  let errors: Error[];
   let watcher: FallbackWatcher;
 
   const isReport = (value: unknown): value is Report => typeof value === 'function';
@@ -312,6 +313,7 @@ describe('FallbackWatcher, when a watched directory is deleted', () => {
     watches = [];
     closedHandles = new Set();
     events = [];
+    errors = [];
 
     // Every handle watches a quiet directory, so a test decides which report reaches which listener.
     const realWatch = fs.watch;
@@ -333,6 +335,9 @@ describe('FallbackWatcher, when a watched directory is deleted', () => {
     watcher = new FallbackWatcher(root, { dot: false, globs: ['**/*.js'], ignored: null });
     watcher.onFileEvent((event) => {
       events.push(event);
+    });
+    watcher.onError((error) => {
+      errors.push(error);
     });
     await watcher.startWatching();
   });
@@ -394,6 +399,49 @@ describe('FallbackWatcher, when a watched directory is deleted', () => {
     reportOwnDeletion(dist);
 
     expect(openDirectories()).toEqual(rewatched);
+  });
+
+  test('asks the file map to recrawl a directory recreated before its old handle reports', async () => {
+    const dist = watchOf('dist');
+    fs.rmSync(resolveDirectory('dist'), { recursive: true, force: true });
+    fs.mkdirSync(resolveDirectory('dist'));
+    fs.writeFileSync(path.join(resolveDirectory('dist'), 'entry.js'), 'module.exports = 2;\n');
+
+    reportOwnDeletion(dist);
+
+    await waitFor(() => hasEvent('recrawl', 'dist'), 'a recrawl of the recreated directory');
+    expect(errors).toEqual([]);
+  });
+
+  test('asks the file map to recrawl a directory its parent reports replaced', async () => {
+    fs.rmSync(resolveDirectory('dist'), { recursive: true, force: true });
+    fs.mkdirSync(resolveDirectory('dist'));
+
+    watchOf('').report('rename', 'dist');
+
+    await waitFor(() => hasEvent('recrawl', 'dist'), 'a recrawl of the replaced directory');
+  });
+
+  test('does not ask for a recrawl of a directory it has not seen before', async () => {
+    fs.mkdirSync(resolveDirectory('assets'));
+    fs.writeFileSync(path.join(resolveDirectory('assets'), 'entry.js'), 'module.exports = 1;\n');
+
+    watchOf('').report('rename', 'assets');
+
+    await waitFor(() => hasEvent('touch', 'assets/entry.js'), 'a touch event for the new file');
+    expect(hasEvent('recrawl', 'assets')).toBe(false);
+  });
+
+  test('closes only its own handle when the root reports its own deletion', async () => {
+    const rootWatch = watchOf('');
+
+    reportOwnDeletion(rootWatch);
+
+    await waitFor(() => closedHandles.has(rootWatch.handle), 'the root handle to close');
+    expect(openDirectories()).toEqual(
+      directoriesOf(EVERY_DIRECTORY.filter((relativeDir) => relativeDir !== ''))
+    );
+    expect(errors).toEqual([]);
   });
 
   test('closes every handle beneath a deleted directory when its parent reports the deletion', async () => {

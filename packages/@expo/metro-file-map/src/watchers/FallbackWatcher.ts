@@ -29,6 +29,7 @@ const fsPromises = fs.promises;
 
 const TOUCH_EVENT = common.TOUCH_EVENT;
 const DELETE_EVENT = common.DELETE_EVENT;
+const RECRAWL_EVENT = common.RECRAWL_EVENT;
 
 /**
  * This setting delays all events. It suppresses 'change' events that
@@ -382,6 +383,11 @@ export default class FallbackWatcher extends AbstractWatcher {
           this.#checkedEmitError,
           this.ignored
         );
+        // A directory we already knew about has been replaced, so entries we registered under it may
+        // since have changed or been removed. Have the file map reconcile it.
+        if (registered) {
+          this.#emitEvent({ event: RECRAWL_EVENT, relativePath });
+        }
       } else {
         const type = common.typeFromStat(stat);
         if (type == null) {
