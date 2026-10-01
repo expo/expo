@@ -99,7 +99,7 @@ The command adds `e2e` and `@e2e-dev/mobile` to your development dependencies an
 
 ### Configure your app
 
-Open **e2e.config.ts** and add a target for each platform. Set `app` to your bundle identifier or package name, and `device` to the emulator or simulator to use:
+Open **e2e.config.ts** and add a target for each platform. Set `app.bundleId` to your bundle identifier or package name, and set `device` in `mobile()` to the emulator or simulator to use:
 
 ```ts e2e.config.ts|collapseHeight=300
 import type { E2EConfig } from 'e2e';
@@ -111,18 +111,20 @@ export default {
       name: 'ios',
       engine: mobile({
         platform: 'ios',
-        app: 'com.example.testerarmye2e',
         device: 'iPhone 17 Pro',
       }),
+      app: { bundleId: 'com.example.testerarmye2e' },
     },
     {
       name: 'android',
       engine: mobile({
         platform: 'android',
-        app: 'com.example.testerarmye2e',
-        appPath: 'android/app/build/outputs/apk/release/app-release.apk',
         device: 'Medium Phone',
       }),
+      app: {
+        bundleId: 'com.example.testerarmye2e',
+        appPath: 'android/app/build/outputs/apk/release/app-release.apk',
+      },
     },
   ],
   workers: 1,
@@ -131,7 +133,7 @@ export default {
 
 > **info** For an Android Emulator, use the name that `npx agent-device devices` shows for the running emulator, such as `Medium Phone`. The Android Virtual Device (AVD) name with underscores, such as `Medium_Phone`, fails after the emulator boots.
 
-`appPath` names the build to install. e2e does not install it on its own. On a new emulator or simulator, such as on a CI machine, call `await device.installApp()` at the start of a test to install the build from `appPath`. When you install the app with `npx expo run:android --variant release` or `npx expo run:ios --configuration Release`, it is already on the emulator or simulator.
+`app.appPath` names the build to install. e2e does not install it on its own. On a new emulator or simulator, such as on a CI machine, call `await device.installApp()` at the start of a test to install the build from `app.appPath`. When you install the app with `npx expo run:android --variant release` or `npx expo run:ios --configuration Release`, it is already on the emulator or simulator.
 
 </Step>
 
@@ -139,7 +141,7 @@ export default {
 
 ### Write a test with exact steps
 
-Create **tests/home.e2e.ts**. Each test starts with `app.open()`, which launches the app set in `app`. Without it, a test starts on the screen the previous test left open.
+Create **tests/home.e2e.ts**. Each test starts with `app.open()`, which launches the app set in `app.bundleId`. Without it, a test starts on the screen the previous test left open.
 
 ```ts tests/home.e2e.ts
 import { test } from '@e2e-dev/mobile';
@@ -302,7 +304,13 @@ import type { E2EConfig } from 'e2e';
 import { mobile } from '@e2e-dev/mobile';
 
 export default {
-  targets: [{ name: 'ios', engine: mobile({ platform: 'ios', app: 'com.example.testerarmye2e' }) }],
+  targets: [
+    {
+      name: 'ios',
+      engine: mobile({ platform: 'ios' }),
+      app: { bundleId: 'com.example.testerarmye2e' },
+    },
+  ],
   workers: 1,
 } satisfies E2EConfig;
 ```
@@ -396,85 +404,108 @@ For agent steps:
 
 ## Run e2e on EAS Simulator
 
-EAS Simulator runs Android Emulators and iOS Simulators on EAS infrastructure. e2e runs on your computer and drives the remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
+EAS Simulator runs Android Emulators and iOS Simulators on EAS infrastructure. The [`@e2e-dev/eas`](https://e2e.tester.army/docs/integrations/eas) integration starts an EAS Simulator session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
 
 > **important** EAS Simulator is a limited-access preview. For more information, see the [EAS Simulator documentation](/preview/eas-simulator/introduction/).
 
 <Step label="1">
 
-### Start an EAS Simulator session
+### Install the EAS Simulator integration
+
+Install `@e2e-dev/eas` as a development dependency:
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev @e2e-dev/eas'],
+    yarn: ['$ yarn add --dev @e2e-dev/eas'],
+    pnpm: ['$ pnpm add --save-dev @e2e-dev/eas'],
+    bun: ['$ bun add --dev @e2e-dev/eas'],
+  }}
+/>
 
 Link your project to EAS and check that your account can use EAS Simulator:
 
 <Terminal cmd={['$ eas init', '$ eas simulator:availability --json']} />
 
-EAS CLI saves the session ID and the connection details for the remote device in **.env.eas-simulator**. The connection details include an authentication token, so add the file to **.gitignore** before you start a session:
+`eas init` sets `extra.eas.projectId` in your app config. The integration uses this project ID to start sessions.
 
-```sh .gitignore
-.env.eas-simulator
-```
-
-Start an iOS session with agent-device. `--max-idle-time-minutes` stops the session after 10 minutes without activity:
-
-<Terminal
-  cmd={[
-    '$ eas simulator:start --platform ios --type agent-device --device "iPhone 17 Pro" --max-idle-time-minutes 10 --non-interactive',
-  ]}
-/>
+The integration authenticates with an Expo access token from the `EXPO_TOKEN` environment variable. It does not use the account that you signed in to with `eas login`. Create a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to use when you run the tests.
 
 </Step>
 
 <Step label="2">
 
-### Install your app on the remote device
+### Create an iOS Simulator build
 
-`eas simulator:exec` runs a command with the connection details of the active session. Use it to install the iOS release build that you created in [Build and install a release build](#build-and-install-a-release-build) on the remote device. Xcode saves the build as **testerarmye2eexample.app** in a **Build/Products/Release-iphonesimulator** directory under **~/Library/Developer/Xcode/DerivedData**.
+EAS installs your app on the remote iOS Simulator from an EAS Build. Create a build with the `e2e-ios-simulator` profile from [Add an iOS Simulator build profile](#add-an-ios-simulator-build-profile):
+
+<Terminal cmd={['$ eas build --platform ios --profile e2e-ios-simulator']} />
+
+Record the build ID from the command output, or find a completed simulator build:
 
 <Terminal
-  cmd={[
-    '$ eas simulator:exec npx agent-device install com.example.testerarmye2e ./path/to/testerarmye2eexample.app --platform ios',
-  ]}
+  cmd={['$ eas build:list --platform ios --simulator --status finished --json --non-interactive']}
 />
-
-To install an iOS Simulator build from EAS Build instead, pass `--build-id` to `eas simulator:start`.
 
 </Step>
 
 <Step label="3">
 
-### Run the tests
+### Create an e2e configuration for EAS Simulator
 
-Create **e2e.eas.config.ts**. It reuses **e2e.config.ts**, including the agent. It replaces the targets with one iOS target that does not set `device`, because the session has one remote device:
+Create **e2e.eas.config.ts**. It reuses **e2e.config.ts**, including the agent. It replaces the targets with one iOS target that gets its device from EAS Simulator through `easSimulators()`:
 
 ```ts e2e.eas.config.ts
 import type { E2EConfig } from 'e2e';
 import { mobile } from '@e2e-dev/mobile';
+import { easSimulators } from '@e2e-dev/eas';
 
 import config from './e2e.config';
 
 export default {
   ...config,
-  targets: [{ name: 'ios', engine: mobile({ platform: 'ios', app: 'com.example.testerarmye2e' }) }],
+  targets: [
+    {
+      name: 'ios',
+      engine: mobile({
+        platform: 'ios',
+        device: easSimulators({
+          projectId: '<your-eas-project-id>',
+          buildId: process.env.IOS_SIMULATOR_BUILD_ID,
+        }),
+        videoTouches: false,
+      }),
+      app: { bundleId: 'com.example.testerarmye2e' },
+    },
+  ],
 } satisfies E2EConfig;
 ```
 
-Run the tests through `eas simulator:exec`:
+Replace `<your-eas-project-id>` with the `extra.eas.projectId` value from your app config. EAS installs and launches the build from `buildId` before each session is ready.
 
-<Terminal cmd={['$ eas simulator:exec npx e2e run --config e2e.eas.config.ts']} />
+`videoTouches: false` turns off the touch indicator in video recordings. On a remote iOS Simulator, the indicator takes minutes to draw, so e2e saves no video.
 
-Agent steps that you recorded on your own simulator can replay on the remote device without a model call.
+Each session counts toward your EAS Simulator usage. This configuration keeps `workers: 1` from **e2e.config.ts**, so a run uses one session.
 
 </Step>
 
 <Step label="4">
 
-### Review the session and stop it
+### Run the tests
 
-The output of `eas simulator:start` links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
+Replace `<your-access-token>` with your personal access token and `<build-id>` with the build ID from step 2. Then, run the tests:
 
-A session counts toward your EAS Simulator usage until it stops. Stop it when the tests finish:
+<Terminal
+  cmd={[
+    '$ EXPO_TOKEN=<your-access-token> IOS_SIMULATOR_BUILD_ID=<build-id> npx e2e run --config e2e.eas.config.ts',
+  ]}
+/>
 
-<Terminal cmd={['$ eas simulator:stop']} />
+A session takes about three minutes to be ready, because EAS boots the remote iOS Simulator and installs your build first. For each session, the output links to the session page on expo.dev. The page shows a recording of the session and each agent-device action, such as a tap.
+
+If the run exits before e2e stops the session, EAS stops it after 10 minutes without activity. A session also has a maximum duration that depends on your plan, so the run must finish before the session reaches it.
+
+Agent steps that you recorded on your own simulator can replay on the remote iOS Simulator without a model call.
 
 </Step>
 
