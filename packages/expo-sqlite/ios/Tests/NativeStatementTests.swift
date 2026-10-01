@@ -124,7 +124,7 @@ final class NativeStatementTests {
       bindBlobParams: [:],
       shouldPassAsArray: true
     )
-    #expect(result.firstRowValues == [.integer(2), .text("two")])
+    #expect(result.firstRowValues == [.double(2), .text("two")])
   }
 
   @Test
@@ -133,21 +133,21 @@ final class NativeStatementTests {
     let bytes: [UInt8] = [1, 2, 3]
     let result = try statement.runSync(
       database: database,
-      bindParams: ["1": .null, "2": .null],
+      bindParams: ["1": nil, "2": nil],
       bindBlobParams: ["0": ArrayBuffer.copy(of: bytes, count: bytes.count)],
       shouldPassAsArray: true
     )
     #expect(result.firstRowValues.count == 3)
     #expect(blobBytes(result.firstRowValues[0]) == [1, 2, 3])
-    #expect(result.firstRowValues[1] == .null)
+    #expect(result.firstRowValues[1] == nil)
     #expect(result.firstRowValues[2] == .text("null"))
   }
 
   @Test
   func `step returns one row at a time and nil once done`() throws {
     let statement = prepare("SELECT id FROM test ORDER BY id")
-    #expect(try statement.stepSync(database: database) == [.integer(1)])
-    #expect(try statement.stepSync(database: database) == [.integer(2)])
+    #expect(try statement.stepSync(database: database) == [.double(1)])
+    #expect(try statement.stepSync(database: database) == [.double(2)])
     #expect(try statement.stepSync(database: database) == nil)
   }
 
@@ -156,8 +156,8 @@ final class NativeStatementTests {
     let statement = prepare("SELECT id, value, 1.5, NULL FROM test ORDER BY id")
     let rows = try statement.getAllSync(database: database)
     #expect(rows == [
-      [.integer(1), .text("one"), .double(1.5), .null],
-      [.integer(2), .text("two"), .double(1.5), .null]
+      [.double(1), .text("one"), .double(1.5), nil],
+      [.double(2), .text("two"), .double(1.5), nil]
     ])
   }
 
@@ -185,11 +185,11 @@ final class NativeStatementTests {
       bindBlobParams: [:],
       shouldPassAsArray: true
     )
-    #expect(result.firstRowValues == [.integer(1)])
-    #expect(try await statement.stepAsync(database: database) == [.integer(2)])
+    #expect(result.firstRowValues == [.double(1)])
+    #expect(try await statement.stepAsync(database: database) == [.double(2)])
     #expect(try await statement.stepAsync(database: database) == nil)
     try statement.resetSync(database: database)
-    #expect(try await statement.getAllAsync(database: database) == [[.integer(1)], [.integer(2)]])
+    #expect(try await statement.getAllAsync(database: database) == [[.double(1)], [.double(2)]])
   }
 
   private func selectValue(id: Int32) -> String? {
@@ -203,8 +203,8 @@ final class NativeStatementTests {
     return String(cString: text)
   }
 
-  private func blobBytes(_ value: SQLiteValue) -> [UInt8]? {
-    guard case .blob(let buffer) = value else {
+  private func blobBytes(_ value: SQLiteColumnValue?) -> [UInt8]? {
+    guard case .blob(let buffer)? = value else {
       return nil
     }
     return buffer.withUnsafeBytes { Array($0) }

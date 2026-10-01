@@ -60,7 +60,7 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
   @JS(.concurrent)
   func runAsync(
     database: NativeDatabase,
-    bindParams: [String: SQLiteValue],
+    bindParams: [String: SQLiteBindValue?],
     bindBlobParams: [String: ArrayBuffer],
     shouldPassAsArray: Bool
   ) async throws -> SQLiteRunResult {
@@ -70,7 +70,7 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
   @JS
   func runSync(
     database: NativeDatabase,
-    bindParams: [String: SQLiteValue],
+    bindParams: [String: SQLiteBindValue?],
     bindBlobParams: [String: ArrayBuffer],
     shouldPassAsArray: Bool
   ) throws -> SQLiteRunResult {
@@ -78,22 +78,22 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
   }
 
   @JS(.concurrent)
-  func stepAsync(database: NativeDatabase) async throws -> [SQLiteValue]? {
+  func stepAsync(database: NativeDatabase) async throws -> [SQLiteColumnValue?]? {
     return try step(database: database)
   }
 
   @JS
-  func stepSync(database: NativeDatabase) throws -> [SQLiteValue]? {
+  func stepSync(database: NativeDatabase) throws -> [SQLiteColumnValue?]? {
     return try step(database: database)
   }
 
   @JS(.concurrent)
-  func getAllAsync(database: NativeDatabase) async throws -> [[SQLiteValue]] {
+  func getAllAsync(database: NativeDatabase) async throws -> [[SQLiteColumnValue?]] {
     return try getAll(database: database)
   }
 
   @JS
-  func getAllSync(database: NativeDatabase) throws -> [[SQLiteValue]] {
+  func getAllSync(database: NativeDatabase) throws -> [[SQLiteColumnValue?]] {
     return try getAll(database: database)
   }
 
@@ -142,7 +142,7 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
 
   private func run(
     database: NativeDatabase,
-    bindParams: [String: SQLiteValue],
+    bindParams: [String: SQLiteBindValue?],
     bindBlobParams: [String: ArrayBuffer],
     shouldPassAsArray: Bool
   ) throws -> SQLiteRunResult {
@@ -154,14 +154,19 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
       exsqlite3_clear_bindings(pointer)
       for (key, param) in bindParams {
         let index = try bindParamIndex(for: key, shouldPassAsArray: shouldPassAsArray)
-        if index > 0 {
+        guard index > 0 else {
+          continue
+        }
+        if let param {
           param.bind(to: pointer, at: index)
+        } else {
+          exsqlite3_bind_null(pointer, index)
         }
       }
       for (key, param) in bindBlobParams {
         let index = try bindParamIndex(for: key, shouldPassAsArray: shouldPassAsArray)
         if index > 0 {
-          SQLiteValue.blob(param).bind(to: pointer, at: index)
+          SQLiteBindValue.blob(param).bind(to: pointer, at: index)
         }
       }
 
@@ -177,7 +182,7 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
     }
   }
 
-  private func step(database: NativeDatabase) throws -> [SQLiteValue]? {
+  private func step(database: NativeDatabase) throws -> [SQLiteColumnValue?]? {
     return try lock.withLock { _ in
       try ensureNotFinalized()
       try database.ensureOpen()
@@ -193,12 +198,12 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
     }
   }
 
-  private func getAll(database: NativeDatabase) throws -> [[SQLiteValue]] {
+  private func getAll(database: NativeDatabase) throws -> [[SQLiteColumnValue?]] {
     return try lock.withLock { _ in
       try ensureNotFinalized()
       try database.ensureOpen()
 
-      var rows: [[SQLiteValue]] = []
+      var rows: [[SQLiteColumnValue?]] = []
       while true {
         let ret = exsqlite3_step(pointer)
         if ret == SQLITE_ROW {
@@ -215,12 +220,12 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
   }
 
   /// The values of the current row. Call it inside `lock`, after a step that returned `SQLITE_ROW`.
-  private func columnValues() throws -> [SQLiteValue] {
+  private func columnValues() throws -> [SQLiteColumnValue?] {
     let columnCount = exsqlite3_column_count(pointer)
-    var values: [SQLiteValue] = []
+    var values: [SQLiteColumnValue?] = []
     values.reserveCapacity(Int(columnCount))
     for index in 0..<columnCount {
-      values.append(try SQLiteValue(statement: pointer, column: index))
+      values.append(try SQLiteColumnValue.read(from: pointer, column: index))
     }
     return values
   }
@@ -246,7 +251,7 @@ struct SQLiteRunResult {
   // reads these as numbers.
   var lastInsertRowId: Int
   var changes: Int
-  var firstRowValues: [SQLiteValue]
+  var firstRowValues: [SQLiteColumnValue?]
 }
 
 // `==` lives in an extension: an operator declared inside a type that carries a member-attribute macro

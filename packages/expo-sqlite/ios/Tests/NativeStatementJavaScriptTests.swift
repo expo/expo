@@ -6,7 +6,7 @@ import Testing
 @testable import ExpoSQLite
 
 /// Calls the statement members from JavaScript, so the bind parameters and the column values go
-/// through the `SQLiteValue` conversions and the result has the shape `src/` reads.
+/// through the `SQLiteBindValue` and `SQLiteColumnValue` conversions and the result has the shape `src/` reads.
 @Suite("NativeStatement from JavaScript")
 @JavaScriptActor
 struct NativeStatementJavaScriptTests {
@@ -82,6 +82,20 @@ struct NativeStatementJavaScriptTests {
       """
     )
     #expect(try result.asString() == #"{"stepped":[[1,"one"],[2,null],null],"all":[[1,"one"],[2,null]]}"#)
+  }
+
+  @Test
+  func `run binds a bigint as an integer`() throws {
+    let result = try runtime.eval(
+      """
+      (function () {
+        var result = prepare('SELECT ?, typeof(?)').runSync(db, { 0: 9007199254740993n, 1: 7n }, {}, true);
+        return JSON.stringify(result.firstRowValues);
+      })()
+      """
+    )
+    // The column comes back as a number, like every integer column, so it loses precision above 2^53.
+    #expect(try result.asString() == #"[9007199254740992,"integer"]"#)
   }
 
   @Test
