@@ -1,7 +1,6 @@
 package expo.modules.location.next.locationProviders
 
 import android.app.Activity
-import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.next.Position
 import kotlin.time.Duration
@@ -73,9 +72,6 @@ interface LocationProvider {
   // When returning EnableLocationServicesResult.ResolutionPending this call has to result in OnActivityResult
   // being called with payload.requestCode == SETTINGS_REQUEST_CODE
   suspend fun enableLocationServices(activity: Activity): ProviderResult<EnableLocationServicesResult> = ProviderResult.Unsupported
-
-  // This class must have (Context, TaskManagerUtilsInterface?) constructor as it will be constructed like this by TaskManager.
-  fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
 }
 
 class OperationUnavailableException(functionName: String) : CodedException("$functionName is currently unavailable")

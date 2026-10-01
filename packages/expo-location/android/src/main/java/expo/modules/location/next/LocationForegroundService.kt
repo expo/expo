@@ -104,7 +104,7 @@ class LocationForegroundService : Service() {
       options: BackgroundSessionOptions,
       updateOnly: Boolean = false
     ): SessionState {
-      synchronized(serviceLock) {
+      val starting = synchronized(serviceLock) {
         when (val current = state) {
           SessionState.Promoted -> {
             val notification = buildNotification(context, options)
@@ -118,15 +118,14 @@ class LocationForegroundService : Service() {
             if (isBackgroundLocationUnthrottled()) {
               return current
             }
+            if (updateOnly) {
+              throw BackgroundSessionRequiresForegroundException()
+            }
+            SessionState.Starting(CompletableDeferred()).also { state = it }
           }
         }
       }
 
-      if (updateOnly) {
-        throw BackgroundSessionRequiresForegroundException()
-      }
-
-      val starting = SessionState.Starting(CompletableDeferred()).also { state = it }
       val failCause = try {
         val serviceStartIntent = Intent(context, LocationForegroundService::class.java)
         if (context.startService(serviceStartIntent) != null) {
