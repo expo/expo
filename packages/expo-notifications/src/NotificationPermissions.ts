@@ -82,12 +82,13 @@ const GRANTED_EXACT_ALARM_RESPONSE: PermissionResponse = {
  * Checks whether the app can schedule exact alarms. Without this permission, scheduled notifications are delivered
  * at an approximate time, and the `delivery: 'alarmClock'` trigger option falls back to `'bestEffort'`.
  *
- * The permission applies to Android 12 (API level 31) and later, and the system denies it by default
- * since Android 14 (API level 34). On earlier Android versions, and for apps that declare
+ * The permission applies to Android 12 (API level 31) and later. Android 14 (API level 34) and later deny it by default
+ * for newly installed apps. On earlier Android versions, and for apps that declare
  * `android.permission.USE_EXACT_ALARM`, the permission is always granted. There is no user-facing effect of calling this function.
  *
- * The app must declare `android.permission.SCHEDULE_EXACT_ALARM`, for example with the
- * [`android.permissions`](/versions/latest/config/app/#permissions-1) property in the app config.
+ * To request the permission, the app must declare `android.permission.SCHEDULE_EXACT_ALARM`, for example with the
+ * [`android.permissions`](/versions/latest/config/app/#permissions) property in the app config.
+ * If the app does not declare it and the permission is denied, the response has `canAskAgain: false`.
  * @return A `Promise` that resolves to the permission response. On iOS and web, it always resolves with a granted response.
  * @platform android
  * @example
@@ -117,7 +118,7 @@ export async function getExactAlarmPermissionsAsync(): Promise<PermissionRespons
  * for the permission and resolves when the user returns to the app.
  *
  * The app must declare `android.permission.SCHEDULE_EXACT_ALARM`, for example with the
- * [`android.permissions`](/versions/latest/config/app/#permissions-1) property in the app config.
+ * [`android.permissions`](/versions/latest/config/app/#permissions) property in the app config.
  * Otherwise, the returned `Promise` rejects.
  * The function resolves immediately if the permission is already granted, including on Android versions earlier than 12.
  *
