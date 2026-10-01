@@ -60,21 +60,32 @@
               devMenuConfiguration:devMenuConfiguration];
 }
 #else
+// react-native-macos routes every `viewWithModuleName:` variant, including the one called by
+// `RCTReactNativeFactory`, through this one.
 - (UIView *)viewWithModuleName:(NSString *)moduleName
              initialProperties:(nullable NSDictionary *)initialProperties
                  launchOptions:(nullable NSDictionary *)launchOptions
+          devMenuConfiguration:(nullable RCTDevMenuConfiguration *)devMenuConfiguration
 {
   if (self.reactDelegate != nil) {
     return [((id<EXReactDelegateProtocol>)self.reactDelegate) createReactRootViewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
   }
-  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+  return [super viewWithModuleName:moduleName
+                 initialProperties:initialProperties
+                     launchOptions:launchOptions
+              devMenuConfiguration:devMenuConfiguration];
 }
 
 - (UIView *)superViewWithModuleName:(NSString *)moduleName
                   initialProperties:(nullable NSDictionary *)initialProperties
                       launchOptions:(nullable NSDictionary *)launchOptions
 {
-  return [super viewWithModuleName:moduleName initialProperties:initialProperties launchOptions:launchOptions];
+  // Call the `devMenuConfiguration:` variant directly: the shorter `super` variants forward to it
+  // on `self`, which would call back into the reactDelegate.
+  return [super viewWithModuleName:moduleName
+                 initialProperties:initialProperties
+                     launchOptions:launchOptions
+              devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
 }
 #endif
 
