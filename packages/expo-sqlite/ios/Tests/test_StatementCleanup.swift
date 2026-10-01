@@ -8,6 +8,7 @@ import Testing
 @Suite("Statement cleanup")
 struct StatementCleanupTests {
   @Test
+  @JavaScriptActor
   func `failed close invalidates cleaned up statements and permits retry`() throws {
     let appContext = AppContext.create()
     let module = SQLiteModule(appContext: appContext)
@@ -47,7 +48,7 @@ struct StatementCleanupTests {
   }
 
   @Test
-  func `preparing during close either gets cleaned up or rejects the closed database`() throws {
+  func `preparing during close either gets cleaned up or rejects the closed database`() async throws {
     let appContext = AppContext.create()
     let module = SQLiteModule(appContext: appContext)
     for _ in 0..<50 {
@@ -58,17 +59,21 @@ struct StatementCleanupTests {
         if !database.isClosed { try? module.closeDatabase(database) }
       }
       let statement = NativeStatement()
-      DispatchQueue.concurrentPerform(iterations: 2) { index in
-        do {
-          if index == 0 {
-            try database.prepareSync(statement: statement, source: "SELECT 1")
-          } else {
-            try module.closeDatabase(database)
+      await withTaskGroup(of: Void.self) { group in
+        for index in 0..<2 {
+          group.addTask {
+            do {
+              if index == 0 {
+                try await database.prepareAsync(statement: statement, source: "SELECT 1")
+              } else {
+                try module.closeDatabase(database)
+              }
+            } catch is AccessClosedResourceException {
+              #expect(index == 0)
+            } catch {
+              Issue.record(error)
+            }
           }
-        } catch is AccessClosedResourceException {
-          #expect(index == 0)
-        } catch {
-          Issue.record(error)
         }
       }
       #expect(database.isClosed)
