@@ -42,7 +42,7 @@ export function areUrlObjectsEqual(a: UrlObject, b: UrlObject): boolean {
 /**
  * A better typed version of `FocusedRouteState` that is easier to parse
  */
-type StrictState = (FocusedRouteState | NavigationState | PartialState<NavigationState>) & {
+export type StrictState = (FocusedRouteState | NavigationState | PartialState<NavigationState>) & {
   routes: {
     key?: string;
     name: string;
