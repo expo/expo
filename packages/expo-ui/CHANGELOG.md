@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [android] Added `IntrinsicSize` support to the `width` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+- [iOS] Added the `preferredColorScheme` modifier, which sets the color scheme of a presentation such as `BottomSheet`, including its background. ([#50851](https://github.com/expo/expo/pull/50851) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
