@@ -224,10 +224,16 @@ public final class SecureStoreModule: Module {
     var item: CFTypeRef?
     let status = SecItemCopyMatching(query as CFDictionary, &item)
 
+    // errSecInteractionNotAllowed means the item is there but reading it would need UI, which this
+    // query suppresses. errSecAuthFailed means the item cannot be authorized at all, which is what a
+    // biometryCurrentSet item looks like once biometrics change, so it counts as absent like Android's
+    // KeyPermanentlyInvalidatedException.
+    // https://developer.apple.com/documentation/security/errsecinteractionnotallowed
+    // https://developer.apple.com/documentation/security/errsecauthfailed
     switch status {
-    case errSecSuccess, errSecInteractionNotAllowed, errSecAuthFailed:
+    case errSecSuccess, errSecInteractionNotAllowed:
       return true
-    case errSecItemNotFound:
+    case errSecItemNotFound, errSecAuthFailed:
       return false
     default:
       throw KeyChainException(status)

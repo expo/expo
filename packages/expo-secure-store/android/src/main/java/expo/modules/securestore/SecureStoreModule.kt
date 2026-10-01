@@ -143,6 +143,8 @@ open class SecureStoreModule : Module() {
           }
         }
         HybridAESEncryptor.NAME -> {
+          // The legacy hybrid scheme predates requireAuthentication, so presence of the key entry is
+          // the only signal available here. It cannot report invalidation.
           getKeyEntryCompat(
             PrivateKeyEntry::class.java,
             hybridAESEncryptor,
