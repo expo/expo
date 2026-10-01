@@ -5,6 +5,7 @@ import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import { warnIfNestedParams } from '../navigationParams';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
 import type { NavigationState, PartialState } from '../react-navigation/native';
+import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
@@ -78,6 +79,10 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   // Copied into an ordinary object because `collectRouteState()` builds a prototype-less one.
   // `Object.fromEntries()` defines own properties, so a param named `__proto__` is kept.
   const params: Record<string, unknown> = Object.fromEntries(Object.entries(mergedParams));
+  // The hash is the exception: it is stored from `URL.hash`, which is still percent-encoded.
+  if ('#' in params) {
+    params['#'] = safeDecodeURIComponent(params['#']);
+  }
   const { pathname, pathParams } = resolvePathname(segments, params);
   const { searchParams, pathnameWithParams } = serializeQueryAndHash(pathname, params, pathParams);
 

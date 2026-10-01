@@ -247,4 +247,13 @@ describe(useGlobalSearchParams, () => {
 
     expect(result.current).toEqual({ token });
   });
+
+  it(`decodes the hash from the URL exactly once`, () => {
+    // The hash is stored from `URL.hash`, which is still percent-encoded.
+    const { result } = renderHook(() => useGlobalSearchParams(), ['page'], {
+      initialUrl: '/page#100%25%20off',
+    });
+
+    expect(result.current).toEqual({ '#': '100% off' });
+  });
 });

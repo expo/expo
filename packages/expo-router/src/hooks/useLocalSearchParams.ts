@@ -5,6 +5,7 @@ import React from 'react';
 import { LocalRouteParamsContext } from '../Route';
 import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 import type { RouteParams, RoutePath, UnknownOutputParams } from '../types';
+import { safeDecodeURIComponent } from '../utils/url';
 
 /**
  * @hidden
@@ -52,5 +53,10 @@ export function useLocalSearchParams() {
   // `safelyDecodeURIComponent()` in `getStateFromPath()`, and search params are read through
   // `URLSearchParams`, which decodes on access. Decoding them a second time here would turn an
   // encoded value such as `%2F` into `/` and corrupt values that have to stay percent-encoded.
-  return { ...(previewParams ?? params) } as any;
+  // The hash is the exception: it is stored from `URL.hash`, which is still percent-encoded.
+  const result = { ...(previewParams ?? params) };
+  if ('#' in result) {
+    result['#'] = safeDecodeURIComponent(result['#']);
+  }
+  return result as any;
 }
