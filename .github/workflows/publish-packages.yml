@@ -176,7 +176,12 @@ jobs:
       - run: npm install --global npm@^11.21.0
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - run: pnpm turbo run build --filter=expotools...
-      - name: Sync versions from this main commit
+      - name: Sync staging versions from this main commit
+        run: pnpm expotools sync-published-packages --env staging ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}
+        env:
+          EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
+          EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
+      - name: Sync production versions from this main commit
         run: |
           until pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
             echo 'Sync failed; retrying this commit in 10 minutes.'

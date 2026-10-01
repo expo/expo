@@ -79,9 +79,11 @@ export async function syncPublishedPackagesAsync(
   options: SyncOptions,
   dependencies = defaultDependencies
 ): Promise<void> {
-  const { stdout } = await dependencies.spawn('npm', ['--version']);
-  if (!semver.satisfies(stdout.trim(), '^11.21.0 || >=12.2.0')) {
-    throw new Error('OIDC dist-tags require npm 11.21.0+ (or 12.2.0+ for npm 12).');
+  if (options.env === 'production') {
+    const { stdout } = await dependencies.spawn('npm', ['--version']);
+    if (!semver.satisfies(stdout.trim(), '^11.21.0 || >=12.2.0')) {
+      throw new Error('OIDC dist-tags require npm 11.21.0+ (or 12.2.0+ for npm 12).');
+    }
   }
   if (!options.dryRun) {
     for (const key of ['EXPO_VERSIONS_SECRET', 'EXPO_SDK_NATIVE_MODULES_SECRET']) {
@@ -89,37 +91,41 @@ export async function syncPublishedPackagesAsync(
     }
   }
 
-  // Finish registry validation before changing any tags or endpoint data.
-  for (let index = 0; index < plan.packages.length; index += 8) {
-    await Promise.all(
-      plan.packages.slice(index, index + 8).map(async (pkg) => {
-        const published = await dependencies.view(pkg);
-        if (!(Array.isArray(published) ? published : [published]).includes(pkg.version)) {
-          throw new Error(`${pkg.name}@${pkg.version} is not published on public npm`);
-        }
-      })
-    );
+  if (options.env === 'production') {
+    // Finish registry validation before changing any tags or endpoint data.
+    for (let index = 0; index < plan.packages.length; index += 8) {
+      await Promise.all(
+        plan.packages.slice(index, index + 8).map(async (pkg) => {
+          const published = await dependencies.view(pkg);
+          if (!(Array.isArray(published) ? published : [published]).includes(pkg.version)) {
+            throw new Error(`${pkg.name}@${pkg.version} is not published on public npm`);
+          }
+        })
+      );
+    }
   }
   const host =
     options.env === 'production'
       ? Versions.VersionsApiHost.PRODUCTION
       : Versions.VersionsApiHost.STAGING;
   const versions = await dependencies.getVersions(host);
-  for (const pkg of plan.templates) {
-    logger.info(`${pkg.name}@${pkg.version} -> ${plan.tag}${options.dryRun ? ' (dry run)' : ''}`);
-    if (!options.dryRun) {
-      // npm, rather than pnpm, performs the OIDC exchange for dist-tag writes.
-      await dependencies.spawn(
-        'npm',
-        [
-          'dist-tag',
-          'add',
-          `${pkg.name}@${pkg.version}`,
-          plan.tag,
-          '--registry=https://registry.npmjs.org/',
-        ],
-        { stdio: 'inherit' }
-      );
+  if (options.env === 'production') {
+    for (const pkg of plan.templates) {
+      logger.info(`${pkg.name}@${pkg.version} -> ${plan.tag}${options.dryRun ? ' (dry run)' : ''}`);
+      if (!options.dryRun) {
+        // npm, rather than pnpm, performs the OIDC exchange for dist-tag writes.
+        await dependencies.spawn(
+          'npm',
+          [
+            'dist-tag',
+            'add',
+            `${pkg.name}@${pkg.version}`,
+            plan.tag,
+            '--registry=https://registry.npmjs.org/',
+          ],
+          { stdio: 'inherit' }
+        );
+      }
     }
   }
   await dependencies.syncModules({ env: options.env, yes: true, dryRun: options.dryRun });

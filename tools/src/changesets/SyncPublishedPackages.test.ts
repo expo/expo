@@ -84,16 +84,16 @@ describe('sync-published-packages', () => {
 
   it('dry run never writes tags or versions and passes dry run to bundled-module sync', async () => {
     const deps = dependencies();
-    await syncPublishedPackagesAsync(plan, { env: 'staging', dryRun: true }, deps);
+    await syncPublishedPackagesAsync(plan, { env: 'production', dryRun: true }, deps);
     assert.deepEqual(deps.commands, [['npm', '--version']]);
-    assert.deepEqual(deps.writes, [{ env: 'staging', yes: true, dryRun: true }]);
+    assert.deepEqual(deps.writes, [{ env: 'production', yes: true, dryRun: true }]);
   });
 
   it('rejects unavailable versions before any remote writes', async () => {
     const deps = dependencies();
     deps.view = async () => '58.0.0';
     await assert.rejects(
-      syncPublishedPackagesAsync(plan, { env: 'staging', dryRun: true }, deps),
+      syncPublishedPackagesAsync(plan, { env: 'production', dryRun: true }, deps),
       /not published on public npm/
     );
     assert.deepEqual(deps.writes, []);
@@ -108,12 +108,38 @@ describe('sync-published-packages', () => {
       throw new Error('Registry unavailable');
     };
     await assert.rejects(
-      syncPublishedPackagesAsync(plan, { env: 'staging', dryRun: true }, deps),
+      syncPublishedPackagesAsync(plan, { env: 'production', dryRun: true }, deps),
       /Registry unavailable/
     );
     assert.equal(calls, plan.packages.length);
     assert.deepEqual(deps.writes, []);
     assert.deepEqual(deps.commands, [['npm', '--version']]);
+  });
+
+  it('syncs staging endpoints without npm checks or dist-tag updates', async () => {
+    const previous = { ...process.env };
+    process.env.EXPO_VERSIONS_SECRET = 'test';
+    process.env.EXPO_SDK_NATIVE_MODULES_SECRET = 'test';
+    try {
+      const deps = dependencies('11.20.0');
+      deps.view = async () => {
+        assert.fail('Staging must not query the npm registry');
+      };
+      await syncPublishedPackagesAsync(plan, { env: 'staging', dryRun: false }, deps);
+      assert.deepEqual(deps.commands, []);
+      assert.deepEqual(deps.writes[0], { env: 'staging', yes: true, dryRun: false });
+      const written = deps.writes[1] as { value: VersionsSchema; host: VersionsApiHost };
+      assert.equal(written.host, VersionsApiHost.STAGING);
+      assert.deepEqual(written.value.sdkVersions['58.0.0'], {
+        expoVersion: '~58.0.1',
+        iosClientVersion: 'keep',
+      });
+    } finally {
+      for (const key of ['EXPO_VERSIONS_SECRET', 'EXPO_SDK_NATIVE_MODULES_SECRET']) {
+        if (previous[key] === undefined) delete process.env[key];
+        else process.env[key] = previous[key];
+      }
+    }
   });
 
   it('uses npm for exact template versions and preserves other SDK metadata', async () => {
@@ -150,7 +176,7 @@ describe('sync-published-packages', () => {
     it(`rejects npm ${version} before attempting sync`, async () => {
       const deps = dependencies(version);
       await assert.rejects(
-        syncPublishedPackagesAsync(plan, { env: 'staging', dryRun: true }, deps),
+        syncPublishedPackagesAsync(plan, { env: 'production', dryRun: true }, deps),
         /OIDC dist-tags require/
       );
       assert.deepEqual(deps.writes, []);
