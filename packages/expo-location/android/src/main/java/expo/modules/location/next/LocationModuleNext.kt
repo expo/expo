@@ -9,6 +9,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.location.LocationServices
 import expo.modules.interfaces.permissions.Permissions
+import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -35,6 +36,7 @@ import java.lang.ref.WeakReference
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.withTimeoutOrNull
+import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -44,6 +46,7 @@ private const val MISSING_NOTIFICATION_PERMISSION_WARNING =
   "Starting the location foreground service without the `android.permission.POST_NOTIFICATIONS` " +
     "permission. The service runs and location updates are not throttled, but its notification " +
     "does not appear in the notification drawer."
+class TaskManagerNotFoundException : CodedException("TaskManager module not found")
 
 class LocationModuleNext : Module() {
   private val context: Context
@@ -66,6 +69,10 @@ class LocationModuleNext : Module() {
 
   val androidLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     SharedRef(AndroidLocationProvider(context))
+  }
+  val taskManager: TaskManagerInterface by lazy {
+    return@lazy appContext.legacyModule<TaskManagerInterface>()
+      ?: throw TaskManagerNotFoundException()
   }
   lateinit var currentLocationProvider: LocationProvider
 
@@ -102,6 +109,7 @@ class LocationModuleNext : Module() {
         listOf(fusedLocationProviderInstance.ref, androidLocationProviderInstance.ref)
       )
       locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+      modulesStarted.incrementAndGet()
     }
 
     // Permissions
@@ -167,6 +175,26 @@ class LocationModuleNext : Module() {
 
     Function("hasLocationServicesEnabled") { ->
       hasLocationServicesEnabled()
+    }
+
+    Class("BackgroundLocation") {
+      StaticFunction("ensureStarted") { taskName: String ->
+        val locationTaskConsumer = currentLocationProvider.getLocationTaskConsumerClass().getOrNull("getLocationTaskConsumerClass")
+          ?: return@StaticFunction false
+        // TODO(@HubertBer): Add error and permission handling in here.
+        // TODO(@HubertBer): Add options in here.
+        taskManager.registerTask(taskName, locationTaskConsumer, emptyMap())
+      }
+      StaticFunction("stop") { taskName: String ->
+        val locationTaskConsumer = currentLocationProvider.getLocationTaskConsumerClass().getOrNull("getLocationTaskConsumerClass")
+          ?: return@StaticFunction false
+        // TODO(@HubertBer): Add error and permission handling in here.
+        // TODO(@HubertBer): Add options in here.
+        taskManager.unregisterTask(taskName, locationTaskConsumer)
+      }
+      StaticFunction("status") { taskName: String ->
+        true // TODO(@HubertBer): Figure out what status can we report
+      }
     }
 
     AsyncFunction("enableLocationServices") Coroutine { ->
@@ -288,6 +316,7 @@ class LocationModuleNext : Module() {
     }
 
     OnDestroy {
+      modulesStarted.decrementAndGet()
       pollForegroundServiceJob?.cancel()
       synchronized(watchSessions) {
         for (session in watchSessions) {
@@ -354,5 +383,9 @@ class LocationModuleNext : Module() {
 
   private fun hasLocationServicesEnabled(): Boolean {
     return LocationManagerCompat.isLocationEnabled(locationManager)
+  }
+
+  companion object {
+    @Volatile var modulesStarted = AtomicInteger(0)
   }
 }
