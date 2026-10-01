@@ -65,7 +65,13 @@ export async function getVersionsAsync(
       'Content-Type': 'application/json',
     },
   });
+  if (!resp.ok) {
+    throw new Error(`Failed to get versions from ${apiHost}: HTTP ${resp.status}`);
+  }
   const { data: result } = await resp.json();
+  if (!result?.sdkVersions || typeof result.sdkVersions !== 'object') {
+    throw new Error(`Invalid versions response from ${apiHost}`);
+  }
   if (process.env.CI) {
     logger.debug('Received versions:', JSON.stringify(result, null, 2));
   }
@@ -109,6 +115,9 @@ export async function setVersionsAsync(
       secret: process.env.EXPO_VERSIONS_SECRET,
     }),
   });
+  if (!resp.ok) {
+    throw new Error(`Failed to update versions on ${apiHost}: HTTP ${resp.status}`);
+  }
   await resp.json();
 }
 
