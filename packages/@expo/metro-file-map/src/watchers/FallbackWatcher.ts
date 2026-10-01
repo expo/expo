@@ -29,6 +29,7 @@ const fsPromises = fs.promises;
 
 const TOUCH_EVENT = common.TOUCH_EVENT;
 const DELETE_EVENT = common.DELETE_EVENT;
+const RECRAWL_EVENT = common.RECRAWL_EVENT;
 
 /**
  * This setting delays all events. It suppresses 'change' events that
@@ -218,67 +219,47 @@ export default class FallbackWatcher extends AbstractWatcher {
   }
 
   /**
-   * On some platforms, as pointed out on the fs docs (most likely just win32)
-   * the file argument might be missing from the fs event. Try to detect what
-   * change by detecting if something was deleted or the most recent file change.
-   */
-  #detectChangedFile(dir: string, event: string, callback: (file: string) => void) {
-    if (!this.#dirRegistry[dir]) {
-      return;
-    }
-
-    let found = false;
-    let closest: Readonly<{ file: string; mtime: Stats['mtime'] }> | null = null;
-    let c = 0;
-    Object.keys(this.#dirRegistry[dir]).forEach((file, i, arr) => {
-      fs.lstat(path.join(dir, file), (error, stat) => {
-        if (found) {
-          return;
-        }
-
-        if (error) {
-          if (isIgnorableFileError(error)) {
-            found = true;
-            callback(file);
-          } else {
-            this.emitError(error);
-          }
-        } else {
-          if (closest == null || stat.mtime > closest.mtime) {
-            closest = { file, mtime: stat.mtime };
-          }
-          if (arr.length === ++c) {
-            callback(closest.file);
-          }
-        }
-      });
-    });
-  }
-
-  /**
    * Normalize fs events and pass it on to be processed.
    */
   #normalizeChange(dir: string, event: string, file: string) {
     if (!file) {
-      if (!this.#dirRegistry[dir]) {
-        // Windows may omit filename; list the new directory.
-        this.#processChange(dir, event === 'change' ? 'rename' : event, '').catch((error) => {
-          this.emitError(error);
-        });
-        return;
-      }
-      this.#detectChangedFile(dir, event, (actualFile) => {
-        if (actualFile) {
-          this.#processChange(dir, event, actualFile).catch((error) => {
-            this.emitError(error);
-          });
-        }
+      this.#processUnnamedChange(dir).catch((error) => {
+        this.emitError(error);
       });
     } else {
       this.#processChange(dir, event, path.normalize(file)).catch((error) => {
         this.emitError(error);
       });
     }
+  }
+
+  /**
+   * Process an event that doesn't name the changed entry. Windows sends these
+   * when changes to a directory overflow the buffer they're reported through,
+   * so any number of entries under `dir` may have been added, changed or
+   * removed.
+   */
+  async #processUnnamedChange(dir: string) {
+    // Watch and register anything new, so that later changes are reported.
+    await new Promise<void>((resolve) => {
+      recReaddir(
+        dir,
+        (subdir) => {
+          this.#watchdir(subdir);
+        },
+        (filename) => {
+          this.#register(filename, 'f');
+        },
+        (symlink) => {
+          this.#register(symlink, 'l');
+        },
+        resolve,
+        this.#checkedEmitError,
+        this.ignored
+      );
+    });
+    // Then have the file map reconcile everything under `dir`.
+    this.#emitEvent({ event: RECRAWL_EVENT, relativePath: path.relative(this.root, dir) });
   }
 
   /**

@@ -105,6 +105,41 @@ describe('FallbackWatcher', () => {
     );
   }
 
+  function hasRecrawlEvent(relativePath: string): boolean {
+    return events.some(
+      (event) => event.event === 'recrawl' && event.relativePath === path.normalize(relativePath)
+    );
+  }
+
+  // Answers the first watch of `dir` with a stub, so the test decides what that directory reports.
+  function captureListenerOf(dir: string): {
+    isWatched: () => boolean;
+    report: fs.WatchListener<string>;
+  } {
+    const realWatch = fs.watch;
+    let listener: fs.WatchListener<string> | null = null;
+    jest.spyOn(fs, 'watch').mockImplementation(((
+      watchedDir: fs.PathLike,
+      options: fs.WatchOptionsWithStringEncoding,
+      report: fs.WatchListener<string>
+    ) => {
+      if (watchedDir === dir && listener == null) {
+        listener = report;
+        return new StubWatcher() as unknown as fs.FSWatcher;
+      }
+      return realWatch(watchedDir, options, report);
+    }) as typeof fs.watch);
+    return {
+      isWatched: () => listener != null,
+      report: (event, filename) => {
+        if (listener == null) {
+          throw new Error(`The watcher never watched '${dir}'`);
+        }
+        listener(event, filename);
+      },
+    };
+  }
+
   test('reports a file written into a new directory before the watch starts (#48950)', async () => {
     await startWatcher();
 
@@ -209,29 +244,53 @@ describe('FallbackWatcher', () => {
     );
   });
 
-  test('lists a new directory when the watch event has no filename', async () => {
+  test('recrawls a watched directory that a change without a filename reached', async () => {
+    const srcDir = path.join(root, 'src');
+    fs.mkdirSync(srcDir);
+    fs.writeFileSync(path.join(srcDir, 'entry.js'), 'module.exports = 1;\n');
+    const src = captureListenerOf(srcDir);
+    await startWatcher();
+
+    fs.writeFileSync(path.join(srcDir, 'first.js'), 'module.exports = 1;\n');
+    fs.writeFileSync(path.join(srcDir, 'second.js'), 'module.exports = 2;\n');
+    src.report('rename', null);
+
+    await waitFor(() => hasRecrawlEvent('src'), 'a recrawl of src');
+  });
+
+  test('watches a new directory that a change without a filename reached', async () => {
+    const srcDir = path.join(root, 'src');
+    fs.mkdirSync(srcDir);
+    fs.writeFileSync(path.join(srcDir, 'entry.js'), 'module.exports = 1;\n');
+    const src = captureListenerOf(srcDir);
+    await startWatcher();
+
+    fs.mkdirSync(path.join(srcDir, 'nested'));
+    src.report('rename', null);
+    await waitFor(() => hasRecrawlEvent('src'), 'a recrawl of src');
+
+    fs.writeFileSync(path.join(srcDir, 'nested', 'later.js'), 'module.exports = 1;\n');
+    await waitFor(
+      () => hasTouchEvent('src/nested/later.js'),
+      'a touch event for a file written into the new directory'
+    );
+  });
+
+  test('recrawls a new directory when the watch event has no filename', async () => {
     await startWatcher();
 
     const packageDir = path.join(root, 'node_modules', 'empty-name-pkg');
-    const realWatch = fs.watch;
-    let listener: ((event: string, filename: string | Buffer | null) => void) | null = null;
-    jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
-      if (dir === packageDir && listener == null) {
-        listener = rest[rest.length - 1];
-        return new StubWatcher() as unknown as fs.FSWatcher;
-      }
-      return (realWatch as any)(dir, ...rest);
-    }) as typeof fs.watch);
+    const pkg = captureListenerOf(packageDir);
 
     fs.mkdirSync(packageDir);
-    await waitFor(() => listener != null, 'the watcher to watch the new directory');
+    await waitFor(() => pkg.isWatched(), 'the watcher to watch the new directory');
 
     fs.writeFileSync(path.join(packageDir, 'package.json'), '{"name":"empty-name-pkg"}');
-    listener!('rename', '');
+    pkg.report('rename', '');
 
     await waitFor(
-      () => hasTouchEvent('node_modules/empty-name-pkg/package.json'),
-      'a touch event for node_modules/empty-name-pkg/package.json'
+      () => hasRecrawlEvent('node_modules/empty-name-pkg'),
+      'a recrawl of node_modules/empty-name-pkg'
     );
   });
 });
