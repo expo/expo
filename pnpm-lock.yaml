@@ -511,8 +511,8 @@ importers:
         specifier: 4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -891,8 +891,8 @@ importers:
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
   apps/native-component-list:
     dependencies:
@@ -1243,7 +1243,7 @@ importers:
         version: 1.22.4(react-native-reanimated@4.7.0(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-maps:
         specifier: 1.29.0
-        version: 1.29.0(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 1.29.0(react-native-web@0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-pager-view:
         specifier: 9.0.4
         version: 9.0.4(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1263,8 +1263,8 @@ importers:
         specifier: 5.1.1
         version: 5.1.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-webview:
         specifier: 14.0.1
         version: 14.0.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1633,8 +1633,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(react-native-pager-view@8.0.2(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ^0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-webview:
         specifier: 14.0.1
         version: 14.0.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -2786,8 +2786,8 @@ importers:
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
-        specifier: ^0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       rimraf:
         specifier: ^6.1.2
         version: 6.1.3
@@ -3413,8 +3413,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       babel-plugin-react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2
+        specifier: ~0.21.3
+        version: 0.21.3
       babel-plugin-syntax-hermes-parser:
         specifier: ^0.36.0
         version: 0.36.1
@@ -3848,7 +3848,7 @@ importers:
         version: 29.7.0
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-webview:
         specifier: '*'
         version: 14.0.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -4370,7 +4370,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/jest':
         specifier: ^29.2.1
@@ -4413,7 +4413,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
         specifier: ^10.4.0
@@ -4842,7 +4842,7 @@ importers:
         version: 4.7.0(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/invariant':
         specifier: ^2.2.33
@@ -4919,7 +4919,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       sf-symbols-typescript:
         specifier: ^2.2.0
         version: 2.2.0
@@ -5740,8 +5740,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(react-native-pager-view@8.0.2(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -6028,8 +6028,8 @@ importers:
         specifier: 4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -6170,7 +6170,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/jest':
         specifier: ^29.2.1
@@ -6579,7 +6579,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
         specifier: ^10.4.0
@@ -6981,8 +6981,8 @@ importers:
         specifier: ~4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -7042,8 +7042,8 @@ importers:
         specifier: ~4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -10965,8 +10965,8 @@ packages:
   babel-plugin-react-compiler@1.0.0:
     resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
 
-  babel-plugin-react-native-web@0.21.2:
-    resolution: {integrity: sha512-SPD0J6qjJn8231i0HZhlAGH6NORe+QvRSQM2mwQEzJ2Fb3E4ruWTiiicPlHjmeWShDXLcvoorOCXjeR7k/lyWA==}
+  babel-plugin-react-native-web@0.21.3:
+    resolution: {integrity: sha512-e4fG8NbyRvk5GwU/7G2U9WxzPYtpC4IQN28AyRDzKE0kvywgohq8vT2x0/xBfg8a0RfSkXLlHAtUAGlSy3VhAw==}
 
   babel-plugin-syntax-hermes-parser@0.36.1:
     resolution: {integrity: sha512-ycduwJbvdvIMmVvlAZqGggS+pm5Eu4Bk9pcV9Sm2Z4PJNRVsKkv0g7vHj+LeuC1gHTeF67sJXFOq61IlqCa2hA==}
@@ -14527,6 +14527,12 @@ packages:
 
   react-native-web@0.21.2:
     resolution: {integrity: sha512-SO2t9/17zM4iEnFvlu2DA9jqNbzNhoUP+AItkoCOyFmDMOhUnBBznBDCYN92fGdfAkfQlWzPoez6+zLxFNsZEg==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
+  react-native-web@0.21.3:
+    resolution: {integrity: sha512-ozvZM0z8UWfduoKnYx03KUccM2LdHNaW8nNJu4Md0glyqWL+Ysa6dRZzMOO6Yp/hhTYT9yluwjknpd9l04uvDw==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
@@ -20025,7 +20031,7 @@ snapshots:
     dependencies:
       '@babel/types': 7.29.7
 
-  babel-plugin-react-native-web@0.21.2: {}
+  babel-plugin-react-native-web@0.21.3: {}
 
   babel-plugin-syntax-hermes-parser@0.36.1:
     dependencies:
@@ -24012,6 +24018,14 @@ snapshots:
     optionalDependencies:
       react-native-web: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
+  react-native-maps@1.29.0(react-native-web@0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
+    dependencies:
+      '@types/geojson': 7946.0.16
+      react: 19.3.0
+      react-native: 0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
+    optionalDependencies:
+      react-native-web: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+
   react-native-pager-view@8.0.2(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
     dependencies:
       react: 19.3.0
@@ -24095,6 +24109,22 @@ snapshots:
       react-native: 0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
 
   react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@react-native/normalize-colors': 0.74.89
+      fbjs: 3.0.5(encoding@0.1.13)
+      inline-style-prefixer: 7.0.1
+      memoize-one: 6.0.0
+      nullthrows: 1.1.1
+      postcss-value-parser: 4.2.0
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      styleq: 0.1.3
+    transitivePeerDependencies:
+      - encoding
+    optional: true
+
+  react-native-web@0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       '@babel/runtime': 7.29.7
       '@react-native/normalize-colors': 0.74.89
