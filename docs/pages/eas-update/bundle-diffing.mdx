@@ -17,7 +17,7 @@ With bundle diffing, EAS Update delivers a **bundle patch** when possible. When 
 
 ## Enable bundle diffing
 
-Bundle diffing works in two situations. Devices already running a published update get a patch when a newer one is available. Devices on a fresh install can also get a patch on their very first update check, instead of downloading the full new bundle, when the embedded bundle from the build has been uploaded. Both are enabled by default on recent SDK versions.
+Bundle diffing works in two situations. Devices already running a published update get a patch when a newer one is available. Devices on a fresh install can also get a patch on their very first update check, instead of downloading the full new bundle, when the embedded bundle from the build has been uploaded. The first is enabled by default in SDK 56 and later, and the second in SDK 58 and later.
 
 ### Patches between updates
 
@@ -59,7 +59,7 @@ To disable the upload, set the `EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE` environment v
 
 </Tab>
 
-<Tab label="SDK 57 and below">
+<Tab label="SDK 57 and earlier">
 
 > **info** On SDK 57 and below, this mode is [experimental](/more/release-statuses/#experimental) and opt-in. The flag and behavior may change.
 
