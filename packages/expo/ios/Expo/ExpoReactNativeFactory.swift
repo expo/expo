@@ -146,7 +146,8 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       rootView = factory.superView(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
-        launchOptions: launchOptions ?? [:]
+        launchOptions: launchOptions ?? [:],
+        devMenuConfiguration: self.devMenuConfiguration
       )
 #endif
     } else {

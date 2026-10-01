@@ -79,13 +79,16 @@
 - (UIView *)superViewWithModuleName:(NSString *)moduleName
                   initialProperties:(nullable NSDictionary *)initialProperties
                       launchOptions:(nullable NSDictionary *)launchOptions
+               devMenuConfiguration:(nullable RCTDevMenuConfiguration *)devMenuConfiguration
 {
-  // Call the `devMenuConfiguration:` variant directly: the shorter `super` variants forward to it
-  // on `self`, which would call back into the reactDelegate.
+  if (devMenuConfiguration == nil) {
+    devMenuConfiguration = [RCTDevMenuConfiguration defaultConfiguration];
+  }
+
   return [super viewWithModuleName:moduleName
                  initialProperties:initialProperties
                      launchOptions:launchOptions
-              devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
+              devMenuConfiguration:devMenuConfiguration];
 }
 #endif
 
