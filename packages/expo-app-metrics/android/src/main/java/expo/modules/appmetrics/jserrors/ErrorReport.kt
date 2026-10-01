@@ -1,7 +1,7 @@
 package expo.modules.appmetrics.jserrors
 
 import expo.modules.appmetrics.logevents.Severity
-import expo.modules.appmetrics.storage.LogRecord
+import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
@@ -23,9 +23,8 @@ data class ErrorReport(
   @Field val isFatal: Boolean = false
 ) : Record {
   /** Builds the `js.exception` log event for the live path. */
-  fun toLogRecord(sessionId: String): LogRecord =
-    makeExceptionLogRecord(
-      sessionId = sessionId,
+  fun toLogEvent(): LogEvent =
+    makeExceptionLogEvent(
       source = source.rawValue,
       type = type,
       message = message,
@@ -63,9 +62,8 @@ enum class ErrorSource(val rawValue: String) : Enumerable {
  * Builds the `js.exception` log event for a fatal error ingested from disk on the next launch, using the
  * session and timestamp captured at fatal time.
  */
-fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
-  makeExceptionLogRecord(
-    sessionId = sessionId,
+fun PendingErrorStore.PendingError.toLogEvent(): LogEvent =
+  makeExceptionLogEvent(
     source = source,
     type = type,
     message = message,
@@ -86,8 +84,7 @@ fun PendingErrorStore.PendingError.toLogRecord(): LogRecord =
  * captures, so `expo.error.component_stack` is omitted entirely when absent rather than logged as
  * `null` on every event.
  */
-private fun makeExceptionLogRecord(
-  sessionId: String,
+private fun makeExceptionLogEvent(
   source: String,
   type: String?,
   message: String,
@@ -95,7 +92,7 @@ private fun makeExceptionLogRecord(
   componentStack: String?,
   isFatal: Boolean,
   timestamp: String = TimeUtils.getCurrentTimestampInISOFormat()
-): LogRecord {
+): LogEvent {
   val attributes = buildMap {
     put("expo.error.source", source)
     put("expo.error.is_fatal", isFatal)
@@ -106,8 +103,7 @@ private fun makeExceptionLogRecord(
       put("expo.error.component_stack", componentStack)
     }
   }
-  return LogRecord(
-    sessionId = sessionId,
+  return LogEvent(
     timestamp = timestamp,
     name = "js.exception",
     severity = (

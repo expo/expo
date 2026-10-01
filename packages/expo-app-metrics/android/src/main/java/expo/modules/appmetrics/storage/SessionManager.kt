@@ -6,6 +6,8 @@ import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
+import expo.modules.appmetrics.records.LogEvent
+import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.serialization.builtins.MapSerializer
@@ -64,12 +66,11 @@ class SessionManager(
   }
 
   suspend fun addMetrics(
-    metrics: List<Metric>,
+    metrics: List<MetricRecord>,
     sessionId: String
   ) {
     val metricsWithSession = metrics.map { metric ->
-      metric.copy(
-        sessionId = sessionId,
+      metric.toEntity(sessionId).copy(
         params = mergeGlobalAttributesIntoJsonString(metric.params)
       )
     }
@@ -104,7 +105,7 @@ class SessionManager(
    * Stores a crash report and its log for `sessionId`, but only when the session
    * has no report yet. Reprocessing the same crash must not add a second log.
    */
-  suspend fun storeCrashReportIfNew(sessionId: String, payload: String, log: LogRecord) {
+  suspend fun storeCrashReportIfNew(sessionId: String, payload: String, log: LogEvent) {
     database.withTransaction {
       if (database.crashReportDao().getBySessionId(sessionId) == null) {
         database.crashReportDao().upsert(
@@ -195,16 +196,15 @@ class SessionManager(
   }
 
   suspend fun addLogs(
-    logs: List<LogRecord>,
+    logs: List<LogEvent>,
     sessionId: String
   ) {
     database.logDao().insertAll(logsWithSession(logs, sessionId))
   }
 
-  private fun logsWithSession(logs: List<LogRecord>, sessionId: String): List<LogRecord> =
+  private fun logsWithSession(logs: List<LogEvent>, sessionId: String): List<LogRecord> =
     logs.map { log ->
-      log.copy(
-        sessionId = sessionId,
+      log.toEntity(sessionId).copy(
         attributes = mergeGlobalAttributesIntoJsonString(log.attributes)
       )
     }

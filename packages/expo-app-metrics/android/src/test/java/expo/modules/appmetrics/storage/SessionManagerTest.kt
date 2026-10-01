@@ -7,6 +7,8 @@ import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.BuildConfig
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
+import expo.modules.appmetrics.records.LogEvent
+import expo.modules.appmetrics.records.MetricRecord
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -267,11 +269,11 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(session2Id, "2025-01-01T01:00:00.000Z")
 
       val metricsForSession1 = listOf(
-        createMetric("metric-1", ""),
-        createMetric("metric-2", "")
+        createMetricRecord("metric-1"),
+        createMetricRecord("metric-2")
       )
       val metricsForSession2 = listOf(
-        createMetric("metric-3", "")
+        createMetricRecord("metric-3")
       )
 
       // Act
@@ -298,7 +300,7 @@ class SessionManagerTest {
     val sessionId = "session-1"
     sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
     sessionManager.addMetrics(
-      listOf(createMetric("first", sessionId), createMetric("second", sessionId), createMetric("third", sessionId)),
+      listOf(createMetricRecord("first"), createMetricRecord("second"), createMetricRecord("third")),
       sessionId
     )
 
@@ -319,7 +321,7 @@ class SessionManagerTest {
     val sessionId = "session-1"
     sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
     sessionManager.addLogs(
-      listOf(createLog("first", sessionId), createLog("second", sessionId), createLog("third", sessionId)),
+      listOf(createLogEvent("first"), createLogEvent("second"), createLogEvent("third")),
       sessionId
     )
 
@@ -574,6 +576,21 @@ class SessionManagerTest {
       value = value,
       routeName = null,
       params = null
+    )
+
+  private fun createMetricRecord(name: String): MetricRecord =
+    MetricRecord(
+      timestamp = "2025-01-01T00:00:00.000Z",
+      category = "test",
+      name = name,
+      value = 123.45
+    )
+
+  private fun createLogEvent(name: String): LogEvent =
+    LogEvent(
+      timestamp = "2025-01-01T00:00:00.000Z",
+      name = name,
+      severity = "info"
     )
 
   private fun createLog(

@@ -22,7 +22,7 @@ class ErrorReportTest {
       isFatal = false
     )
 
-    val attributes = report.toLogRecord(sessionId = "s").attributes ?: ""
+    val attributes = report.toLogEvent().attributes ?: ""
     assertTrue(attributes.contains("expo.error.component_stack"))
     assertTrue(attributes.contains("at Boom"))
     assertEquals("errorBoundary", report.source.rawValue)
@@ -39,7 +39,7 @@ class ErrorReportTest {
       isFatal = false
     )
 
-    val attributes = report.toLogRecord(sessionId = "s").attributes ?: ""
+    val attributes = report.toLogEvent().attributes ?: ""
     assertFalse(attributes.contains("expo.error.component_stack"))
   }
 
@@ -52,7 +52,7 @@ class ErrorReportTest {
       stacktrace = "at f (app.js:1:1)",
       isFatal = false
     )
-    val record = report.toLogRecord(sessionId = "s")
+    val record = report.toLogEvent()
     val attributes = record.attributes ?: ""
     assertTrue(attributes.contains("\"expo.error.source\":\"reportedByUser\""))
     assertEquals("js.exception", record.name)
@@ -68,7 +68,7 @@ class ErrorReportTest {
       stacktrace = "at f (app.js:1:1)",
       sessionId = "s",
       timestamp = "2026-01-01T00:00:00Z"
-    ).toLogRecord()
+    ).toLogEvent()
 
     assertEquals("js.exception", record.name)
     assertEquals("fatal", record.severity)

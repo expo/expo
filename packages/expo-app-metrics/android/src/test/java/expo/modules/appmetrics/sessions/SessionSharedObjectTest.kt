@@ -3,6 +3,8 @@ package expo.modules.appmetrics.sessions
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.records.LogEvent
+import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.MetricsDatabase
@@ -63,7 +65,7 @@ class SessionSharedObjectTest {
 
       // Act — the very first touch is a write. If the INSERT didn't run first,
       // the FK on metrics.sessionId would throw FOREIGN KEY constraint failed.
-      session.addMetrics(listOf(createMetric("metric-1", session.sessionId)))
+      session.addMetrics(listOf(createMetric("metric-1")))
 
       // Assert — both the row and the metric exist.
       assertNotNull(sessionManager.getSessionRow(session.sessionId))
@@ -84,7 +86,7 @@ class SessionSharedObjectTest {
       )
       assertNull(sessionManager.getSessionRow(session.sessionId))
 
-      session.addLogs(listOf(createLog("log-1", session.sessionId)))
+      session.addLogs(listOf(createLog("log-1")))
 
       assertNotNull(sessionManager.getSessionRow(session.sessionId))
       assertEquals(
@@ -239,8 +241,8 @@ class SessionSharedObjectTest {
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
 
-      session.addMetrics(listOf(createMetric("metric-1", session.sessionId)))
-      session.addLogs(listOf(createLog("log-1", session.sessionId)))
+      session.addMetrics(listOf(createMetric("metric-1")))
+      session.addLogs(listOf(createLog("log-1")))
 
       assertEquals(setOf("metric-1"), session.getMetrics().map { it.name }.toSet())
       assertEquals(setOf("log-1"), session.getLogs().map { it.name }.toSet())
@@ -271,32 +273,19 @@ class SessionSharedObjectTest {
 
   // region Helpers
 
-  private fun createMetric(
-    name: String,
-    sessionId: String
-  ): Metric =
-    Metric(
-      sessionId = sessionId,
+  private fun createMetric(name: String): MetricRecord =
+    MetricRecord(
       timestamp = "2025-01-01T00:00:00.000Z",
       category = "test",
       name = name,
-      value = 123.45,
-      routeName = null,
-      params = null
+      value = 123.45
     )
 
-  private fun createLog(
-    name: String,
-    sessionId: String
-  ): LogRecord =
-    LogRecord(
-      sessionId = sessionId,
+  private fun createLog(name: String): LogEvent =
+    LogEvent(
       timestamp = "2025-01-01T00:00:00.000Z",
       name = name,
-      body = null,
-      severity = "info",
-      attributes = null,
-      droppedAttributesCount = 0
+      severity = "info"
     )
 
   // endregion

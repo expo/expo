@@ -4,7 +4,7 @@ import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
 import expo.modules.appmetrics.jserrors.PendingErrorStore
-import expo.modules.appmetrics.jserrors.toLogRecord
+import expo.modules.appmetrics.jserrors.toLogEvent
 import expo.modules.appmetrics.crashreporting.CrashFileReader
 import expo.modules.appmetrics.crashreporting.CrashReportProcessor
 import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
@@ -24,13 +24,13 @@ import expo.modules.appmetrics.logevents.validateEventBody
 import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.logevents.withDisplayNameAttribute
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.sessions.JsMetric
 import expo.modules.appmetrics.sessions.SessionMetricInput
 import expo.modules.appmetrics.sessions.SessionSharedObject
 import expo.modules.appmetrics.storage.JsDebugSession
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.JsLogRecord
-import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.storage.toJsMetric
 import expo.modules.appmetrics.updates.UpdatesMonitoring
@@ -121,8 +121,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // before inserting.
           mainSession.addLogs(
             listOf(
-              LogRecord(
-                sessionId = mainSession.sessionId,
+              LogEvent(
                 timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
                 name = validatedName,
                 body = validatedBody,
@@ -225,7 +224,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           context = context,
           sessionManager = sessionManager
         )
-        updatesMonitoring = UpdatesMonitoring(session = mainSession)
+        updatesMonitoring = UpdatesMonitoring()
         updatesMonitoring.patchAppInfoIfNeeded(metadata)
         UpdatesControllerRegistry.controller?.get()?.let { controller ->
           subscription = controller.subscribeToUpdatesStateChanges(this@AppMetricsModule)
@@ -240,7 +239,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         scope.launch {
           PendingErrorStore.drain(context).forEach { pendingError ->
             runCatching {
-              sessionManager.addLogs(listOf(pendingError.toLogRecord()), sessionId = pendingError.sessionId)
+              sessionManager.addLogs(listOf(pendingError.toLogEvent()), sessionId = pendingError.sessionId)
             }
           }
         }
@@ -315,7 +314,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           PendingErrorStore.write(context, report.toPendingError(mainSession.sessionId))
         } else {
           scope.launch {
-            mainSession.addLogs(listOf(report.toLogRecord(mainSession.sessionId)))
+            mainSession.addLogs(listOf(report.toLogEvent()))
           }
         }
       }
@@ -365,7 +364,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
 
         AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: SessionMetricInput ->
-          ref.addMetrics(listOf(metric.toMetric(ref.sessionId)))
+          ref.addMetrics(listOf(metric.toMetric()))
         }
       }
     }

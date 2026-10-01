@@ -3,8 +3,9 @@
 package expo.modules.appmetrics.networkrequests
 
 import android.util.Log
+import expo.modules.appmetrics.records.NetworkSpan
 import expo.modules.appmetrics.storage.MetricsDatabase
-import expo.modules.appmetrics.storage.Span
+import expo.modules.appmetrics.storage.toEntity
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -55,9 +56,9 @@ class NetworkRequestPersistence(
     // Converts and inserts on `scope`, so past the gate the dispatcher threads pay neither the
     // span building nor the database write. Matches `persistBuffered`.
     scope.launch {
-      val span = request.toSpan(sessionId) ?: return@launch
+      val span = request.toNetworkSpan() ?: return@launch
       try {
-        database.spanDao().insert(span)
+        database.spanDao().insert(span.toEntity(sessionId))
       } catch (e: CancellationException) {
         // A torn-down scope is routine (a JS reload), not a failure worth warning about.
         throw e
@@ -90,9 +91,9 @@ class NetworkRequestPersistence(
         if (!policy.allows(request.url, request.method)) {
           continue
         }
-        val span = request.toSpan(sessionId) ?: continue
+        val span = request.toNetworkSpan() ?: continue
         try {
-          database.spanDao().insert(span)
+          database.spanDao().insert(span.toEntity(sessionId))
         } catch (e: CancellationException) {
           // Must not be swallowed: `CancellationException` is an `Exception`, so a blanket catch
           // would let the loop finish and report completion for a batch that never wrote its
@@ -115,7 +116,7 @@ class NetworkRequestPersistence(
  * The attribute keys are the set the ingestion endpoint extracts into dedicated columns.
  * Returns `null` when the snapshot has no usable timestamps, leaving nothing to anchor a span to.
  */
-internal fun NetworkRequest.toSpan(sessionId: String): Span? {
+internal fun NetworkRequest.toNetworkSpan(): NetworkSpan? {
   val start = timings.fetchStart?.time
   val end = timings.responseEnd?.time
   val durationMs = (timings.totalDuration * 1_000).toLong()
@@ -200,18 +201,17 @@ internal fun NetworkRequest.toSpan(sessionId: String): Span? {
     events.put(event)
   }
 
-  return Span(
-    sessionId = sessionId,
+  return NetworkSpan(
     name = if (isKnownMethod) {
       method
     } else {
       "HTTP"
     },
-    kind = Span.CLIENT_KIND,
+    kind = NetworkSpan.CLIENT_KIND,
     startTimestampMs = resolvedStart,
     endTimestampMs = resolvedEnd,
     statusCode = if (failed) {
-      Span.STATUS_ERROR
+      NetworkSpan.STATUS_ERROR
     } else {
       null
     },

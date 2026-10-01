@@ -10,6 +10,7 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Transaction
+import expo.modules.appmetrics.records.NetworkSpan
 import java.util.concurrent.ThreadLocalRandom
 
 /**
@@ -56,8 +57,8 @@ data class Span(
   /** Span name per the semantic conventions of the producer (the HTTP method for network spans). */
   val name: String,
 
-  /** `SpanKind` per the OTLP proto (`CLIENT_KIND` for network requests). */
-  val kind: Int = INTERNAL_KIND,
+  /** `SpanKind` per the OTLP proto (`NetworkSpan.CLIENT_KIND` for network requests). */
+  val kind: Int = NetworkSpan.INTERNAL_KIND,
 
   /**
    * Unix-epoch milliseconds. Millisecond integers rather than the ISO strings the other tables
@@ -69,7 +70,7 @@ data class Span(
   val startTimestampMs: Long,
   val endTimestampMs: Long,
 
-  /** OTLP status code (`STATUS_ERROR`), or `null` when the span completed without one (UNSET). */
+  /** OTLP status code (`NetworkSpan.STATUS_ERROR`), or `null` when the span completed without one (UNSET). */
   val statusCode: Int? = null,
   val statusMessage: String? = null,
 
@@ -84,13 +85,6 @@ data class Span(
   val events: String? = null
 ) {
   companion object {
-    /** `SpanKind` values from the OTLP proto, for producers picking a `kind`. */
-    const val INTERNAL_KIND = 1
-    const val CLIENT_KIND = 3
-
-    /** `Status.code` values from the OTLP proto. UNSET is expressed by a null `statusCode`. */
-    const val STATUS_ERROR = 2
-
     /**
      * A new random 16-byte trace id as 32 lowercase hex characters. Called for a root span only:
      * a child reuses its parent's trace id. There is no cross-process trace-context propagation,

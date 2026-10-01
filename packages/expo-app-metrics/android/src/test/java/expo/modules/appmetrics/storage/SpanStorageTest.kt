@@ -3,6 +3,7 @@ package expo.modules.appmetrics.storage
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.records.NetworkSpan
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -45,7 +46,7 @@ class SpanStorageTest {
   private fun makeSpan(
     sessionId: String,
     name: String = "GET",
-    kind: Int = Span.CLIENT_KIND,
+    kind: Int = NetworkSpan.CLIENT_KIND,
     startTimestampMs: Long = 1_782_131_895_000,
     endTimestampMs: Long = 1_782_131_895_250,
     statusCode: Int? = null,
@@ -93,10 +94,10 @@ class SpanStorageTest {
         spanId = "00f067aa0ba902b7",
         parentSpanId = "abcdef0123456789",
         name = "POST",
-        kind = Span.CLIENT_KIND,
+        kind = NetworkSpan.CLIENT_KIND,
         startTimestampMs = 1_782_131_895_000,
         endTimestampMs = 1_782_131_895_250,
-        statusCode = Span.STATUS_ERROR,
+        statusCode = NetworkSpan.STATUS_ERROR,
         statusMessage = "went wrong",
         attributes = """{"url.full":"https://example.com"}""",
         events = """[{"name":"http.redirect"}]"""
@@ -108,10 +109,10 @@ class SpanStorageTest {
     assertEquals("00f067aa0ba902b7", row.spanId)
     assertEquals("abcdef0123456789", row.parentSpanId)
     assertEquals("POST", row.name)
-    assertEquals(Span.CLIENT_KIND, row.kind)
+    assertEquals(NetworkSpan.CLIENT_KIND, row.kind)
     assertEquals(1_782_131_895_000, row.startTimestampMs)
     assertEquals(1_782_131_895_250, row.endTimestampMs)
-    assertEquals(Span.STATUS_ERROR, row.statusCode)
+    assertEquals(NetworkSpan.STATUS_ERROR, row.statusCode)
     assertEquals("went wrong", row.statusMessage)
     assertEquals("""{"url.full":"https://example.com"}""", row.attributes)
     assertEquals("""[{"name":"http.redirect"}]""", row.events)

@@ -1,6 +1,8 @@
 package expo.modules.appmetrics.sessions
 
 import expo.modules.appmetrics.AppMetadata
+import expo.modules.appmetrics.records.LogEvent
+import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
@@ -35,12 +37,12 @@ class SessionSharedObject(
   /** Suspends until the session row has been persisted. */
   suspend fun awaitSessionPersisted() = sessionStartJob.join()
 
-  suspend fun addMetrics(metrics: List<Metric>) {
+  suspend fun addMetrics(metrics: List<MetricRecord>) {
     awaitSessionPersisted()
     sessionManager.addMetrics(metrics, sessionId)
   }
 
-  suspend fun addLogs(logs: List<LogRecord>) {
+  suspend fun addLogs(logs: List<LogEvent>) {
     awaitSessionPersisted()
     sessionManager.addLogs(logs, sessionId)
   }

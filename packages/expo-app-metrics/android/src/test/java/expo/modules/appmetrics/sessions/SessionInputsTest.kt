@@ -12,19 +12,6 @@ import org.robolectric.annotation.Config
 @Config(manifest = Config.NONE, sdk = [28])
 class SessionInputsTest {
   @Test
-  fun `SessionMetricInput_toMetric injects the sessionId`() {
-    val input = SessionMetricInput(
-      category = "custom",
-      name = "purchase",
-      value = 9.99
-    )
-
-    val metric = input.toMetric("session-42")
-
-    assertEquals("session-42", metric.sessionId)
-  }
-
-  @Test
   fun `SessionMetricInput_toMetric maps scalar fields verbatim`() {
     val input = SessionMetricInput(
       category = "custom",
@@ -34,7 +21,7 @@ class SessionInputsTest {
       routeName = "Checkout"
     )
 
-    val metric = input.toMetric("session-42")
+    val metric = input.toMetric()
 
     assertEquals("custom", metric.category)
     assertEquals("purchase", metric.name)
@@ -53,7 +40,7 @@ class SessionInputsTest {
       params = mapOf("screen" to "Home", "attempt" to 3, "flag" to true)
     )
 
-    val metric = input.toMetric("session-42")
+    val metric = input.toMetric()
 
     // Round-trip through the JSON decoder to assert the encoding is valid.
     val decoded = JsonAny.decodeJsonStringToMap(metric.params!!)
@@ -66,7 +53,7 @@ class SessionInputsTest {
   fun `SessionMetricInput_toMetric yields null params when none provided`() {
     val input = SessionMetricInput(category = "custom", name = "purchase", value = 1.0)
 
-    val metric = input.toMetric("session-42")
+    val metric = input.toMetric()
 
     assertNull(metric.params)
   }

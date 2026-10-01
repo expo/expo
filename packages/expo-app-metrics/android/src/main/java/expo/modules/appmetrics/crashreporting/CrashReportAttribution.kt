@@ -32,7 +32,7 @@ suspend fun attributeAndStoreCrashReport(
     }
     val payload = report.encodeToJsonString()
     if (target != null) {
-      sessionManager.storeCrashReportIfNew(target, payload, report.toLogRecord(target, logDetails))
+      sessionManager.storeCrashReportIfNew(target, payload, report.toLogEvent(logDetails))
     } else {
       sessionManager.setCrashReport(null, payload)
     }

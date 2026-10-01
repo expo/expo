@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.GlobalAttributes
+import expo.modules.appmetrics.records.LogEvent
+import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.utils.JsonAny
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -185,9 +187,8 @@ class SessionManagerGlobalAttributesTest {
     name: String = "test-metric",
     params: Map<String, Any?>? = null,
     rawParams: String? = null
-  ): Metric =
-    Metric(
-      sessionId = "",
+  ): MetricRecord =
+    MetricRecord(
       timestamp = "2025-01-01T00:00:00.000Z",
       category = "test",
       name = name,
@@ -199,9 +200,8 @@ class SessionManagerGlobalAttributesTest {
     name: String = "test.event",
     attributes: Map<String, Any?>? = null,
     rawAttributes: String? = null
-  ): LogRecord =
-    LogRecord(
-      sessionId = "",
+  ): LogEvent =
+    LogEvent(
       timestamp = "2025-01-01T00:00:00.000Z",
       name = name,
       severity = "info",

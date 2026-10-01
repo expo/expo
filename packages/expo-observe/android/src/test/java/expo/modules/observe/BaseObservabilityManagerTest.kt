@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.appmetrics.records.NetworkSpan
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
@@ -1054,7 +1055,7 @@ class BaseObservabilityManagerTest {
   private fun span(id: Long, sessionId: String = "session") = Span(
     sessionId = sessionId,
     name = "GET",
-    kind = Span.CLIENT_KIND,
+    kind = NetworkSpan.CLIENT_KIND,
     startTimestampMs = 1_782_131_895_000,
     endTimestampMs = 1_782_131_895_250,
     id = id

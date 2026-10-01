@@ -4,7 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Debug
 import expo.modules.appmetrics.MemoryMetric
-import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
@@ -34,8 +34,7 @@ class MemoryMetricsManager(
     )
 
     sessionId?.let { sessionId ->
-      val metrics = snapshot.toMetrics(sessionId)
-      sessionManager.addMetrics(metrics, sessionId = sessionId)
+      sessionManager.addMetrics(snapshot.toMetrics(), sessionId = sessionId)
     }
 
     return snapshot
@@ -58,15 +57,14 @@ data class MemoryUsageSnapshot(
    */
   @Field val javaHeap: Long
 ) : Record {
-  fun toMetrics(sessionId: String): List<Metric> {
+  fun toMetrics(): List<MetricRecord> {
     val timestamp = TimeUtils.getCurrentTimestampInISOFormat()
     return listOf(
       MemoryMetric.Physical to physical,
       MemoryMetric.Available to available,
       MemoryMetric.JavaHeap to javaHeap
     ).map {
-      Metric(
-        sessionId = sessionId,
+      MetricRecord(
         category = MemoryMetric.category.categoryName,
         name = it.first.metricName,
         value = it.second.toDouble(),

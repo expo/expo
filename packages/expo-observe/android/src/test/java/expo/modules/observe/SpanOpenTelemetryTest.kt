@@ -1,5 +1,6 @@
 package expo.modules.observe
 
+import expo.modules.appmetrics.records.NetworkSpan
 import expo.modules.appmetrics.storage.Span
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
@@ -17,7 +18,7 @@ private fun makeRow(
   spanId: String = "00f067aa0ba902b7",
   parentSpanId: String? = null,
   name: String = "GET",
-  kind: Int = Span.CLIENT_KIND,
+  kind: Int = NetworkSpan.CLIENT_KIND,
   startTimestampMs: Long = START_MS,
   endTimestampMs: Long = END_MS,
   statusCode: Int? = null,

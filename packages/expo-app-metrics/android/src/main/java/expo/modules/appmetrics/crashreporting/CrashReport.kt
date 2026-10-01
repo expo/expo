@@ -2,7 +2,7 @@ package expo.modules.appmetrics.crashreporting
 
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.truncateToMaxLength
-import expo.modules.appmetrics.storage.LogRecord
+import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.utils.JsonAny
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -32,7 +32,7 @@ data class CrashReport(
    */
   val ingestedAt: String
 ) {
-  fun toLogRecord(sessionId: String, details: CrashLogDetails = CrashLogDetails()): LogRecord {
+  fun toLogEvent(details: CrashLogDetails = CrashLogDetails()): LogEvent {
     val attributes = buildMap<String, Any?> {
       put("exception.type", details.exceptionType ?: signal?.let(::signalName) ?: "NativeCrash")
       put("exception.message", terminationReason ?: exceptionReason ?: signal?.let(::signalName) ?: "Native crash")
@@ -45,8 +45,7 @@ data class CrashReport(
       }
       terminationReason?.let { put("expo.crash.termination_reason", it) }
     }
-    return LogRecord(
-      sessionId = sessionId,
+    return LogEvent(
       timestamp = timestampBegin,
       name = "native.exception",
       severity = Severity.FATAL.rawValue,

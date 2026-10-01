@@ -101,13 +101,11 @@ class CrashReportTest {
   fun `builds a fatal exception log for a JVM crash`() {
     val report = reportFromThrowable(IllegalStateException("boom"))
 
-    val log = report.toLogRecord(
-      "session",
+    val log = report.toLogEvent(
       CrashLogDetails(exceptionType = "java.lang.IllegalStateException")
     )
     val attributes = requireNotNull(JsonAny.decodeJsonStringToMap(requireNotNull(log.attributes)))
 
-    assertEquals("session", log.sessionId)
     assertEquals("native.exception", log.name)
     assertEquals("fatal", log.severity)
     assertEquals(crashTimestamp, log.timestamp)
@@ -128,7 +126,7 @@ class CrashReportTest {
     )
 
     val attributes = requireNotNull(
-      JsonAny.decodeJsonStringToMap(requireNotNull(report.toLogRecord("session").attributes))
+      JsonAny.decodeJsonStringToMap(requireNotNull(report.toLogEvent().attributes))
     )
 
     assertEquals("SIGSEGV", attributes["exception.type"])
@@ -163,8 +161,7 @@ class CrashReportTest {
     val attributes = requireNotNull(
       JsonAny.decodeJsonStringToMap(
         requireNotNull(
-          report.toLogRecord(
-            "session",
+          report.toLogEvent(
             CrashLogDetails(exceptionType = "java.lang.IllegalStateException")
           ).attributes
         )

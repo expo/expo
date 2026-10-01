@@ -5,7 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Session
-import expo.modules.appmetrics.storage.Span
+import expo.modules.appmetrics.records.NetworkSpan
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.asExecutor
@@ -79,11 +79,11 @@ private fun makeRequest(
   redirects = redirects
 )
 
-private fun makeSpan(request: NetworkRequest): Span {
-  return checkNotNull(request.toSpan(sessionId = "s"))
+private fun makeSpan(request: NetworkRequest): NetworkSpan {
+  return checkNotNull(request.toNetworkSpan())
 }
 
-private fun attributes(span: Span): JSONObject {
+private fun attributes(span: NetworkSpan): JSONObject {
   return JSONObject(checkNotNull(span.attributes))
 }
 
@@ -93,12 +93,10 @@ class NetworkRequestToSpanMappingTest {
   @Test
   fun `converts a completed request into a client span with millisecond timestamps`() {
     val span = makeSpan(makeRequest(method = "POST"))
-    assertEquals("s", span.sessionId)
     assertEquals("POST", span.name)
-    assertEquals(Span.CLIENT_KIND, span.kind)
+    assertEquals(NetworkSpan.CLIENT_KIND, span.kind)
     assertEquals(1_782_131_895_000, span.startTimestampMs)
     assertEquals(1_782_131_895_250, span.endTimestampMs)
-    assertNull(span.parentSpanId)
     assertNull(span.events)
   }
 
@@ -313,7 +311,7 @@ class NetworkRequestToSpanMappingTest {
     // Semconv makes any 4xx/5xx an error for a client span, unlike the server-span rule.
     for (statusCode in listOf(400, 404, 429, 500, 503)) {
       val span = makeSpan(makeRequest(statusCode = statusCode))
-      assertEquals("expected ERROR for status $statusCode", Span.STATUS_ERROR, span.statusCode)
+      assertEquals("expected ERROR for status $statusCode", NetworkSpan.STATUS_ERROR, span.statusCode)
     }
   }
 
@@ -328,7 +326,7 @@ class NetworkRequestToSpanMappingTest {
         errorType = "java.net.UnknownHostException"
       )
     )
-    assertEquals(Span.STATUS_ERROR, span.statusCode)
+    assertEquals(NetworkSpan.STATUS_ERROR, span.statusCode)
     assertEquals("Unable to resolve host", span.statusMessage)
     assertEquals("java.net.UnknownHostException", attributes(span).getString("error.type"))
   }
@@ -439,7 +437,7 @@ class NetworkRequestToSpanMappingTest {
   fun `returns null when the request carries no usable timestamps`() {
     // Without either endpoint of the window there is nothing to anchor a span to.
     val timings = makeTimings(fetchStart = null, responseEnd = null, totalDuration = 0.0)
-    assertNull(makeRequest(timings = timings).toSpan(sessionId = "s"))
+    assertNull(makeRequest(timings = timings).toNetworkSpan())
   }
 }
 
