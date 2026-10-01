@@ -156,7 +156,7 @@ jobs:
         continue-on-error: true
         working-directory: apps/expo-workflow-testing
         env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
         run: |
           test -n "$EXPO_TOKEN"
           runs_file="$RUNNER_TEMP/precompile-runs.json"
