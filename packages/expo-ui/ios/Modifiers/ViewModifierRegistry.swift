@@ -1869,7 +1869,11 @@ internal enum ToolbarTitleDisplayModeType: String, Enumerable {
       }
       return nil
     case .large:
+#if os(iOS)
       return .large
+#else
+      return nil
+#endif
     }
   }
 }
