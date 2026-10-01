@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.0.1
+
+### Patch Changes
+
+- Bump recommended `@shopify/flash-list` to `2.3.2` and `@shopify/react-native-skia` to `2.13.1`. ([#50824](https://github.com/expo/expo/pull/50824) by [@zoontek](https://github.com/zoontek))
+- [Android] Fix animated GIF and WebP images showing only their first frame in release builds minified with R8. Fresco 3.7.0 creates these decoders through reflection, and R8 removed their constructors. ([#50815](https://github.com/expo/expo/pull/50815) by [@lukmccall](https://github.com/lukmccall))
+- Remove the `AbortSignal.timeout` and `AbortSignal.any` polyfills now that React Native supports them. ([#50770](https://github.com/expo/expo/pull/50770) by [@Kudo](https://github.com/Kudo))
+- [Internal] [iOS] Simplify the SwiftPM autolinking plugin's internals. The generated packages are unchanged. ([#50547](https://github.com/expo/expo/pull/50547) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Take module identity, deployment target and dependencies from `expo-modules-autolinking prebuilt-metadata` in the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix modules that use Expo Swift macros (`@Field`, `@Record`) failing to build from source with the SwiftPM autolinking plugin. ([#50548](https://github.com/expo/expo/pull/50548) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#49555](https://github.com/expo/expo/pull/49555), [#50204](https://github.com/expo/expo/pull/50204), [#50843](https://github.com/expo/expo/pull/50843), [#50290](https://github.com/expo/expo/pull/50290), [#49529](https://github.com/expo/expo/pull/49529), [#50674](https://github.com/expo/expo/pull/50674), [#50829](https://github.com/expo/expo/pull/50829))
+  - @expo/cli@58.1.0
+  - @expo/log-box@58.0.8
+  - expo-modules-core@58.0.10
+  - babel-preset-expo@58.0.7
+
 ## 58.0.0
 
 ### Patch Changes

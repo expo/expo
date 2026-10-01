@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.2
+
+### Patch Changes
+
+- Add a Jest mock for the Android-only `ExpoIntentLauncher` native module, so importing `expo-intent-launcher` under the `jest-expo/android` preset no longer throws `Cannot find native module 'ExpoIntentLauncher'`. ([#50796](https://github.com/expo/expo/pull/50796) by [@Abdulrahman3fify](https://github.com/Abdulrahman3fify))
+
 ## 58.0.1
 
 ### Patch Changes

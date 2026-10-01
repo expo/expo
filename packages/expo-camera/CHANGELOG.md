@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Bind the barcode image analyzer only while barcode scanning is enabled, so the camera preview and captured photo use the same frame. ([#50808](https://github.com/expo/expo/pull/50808) by [@hitanshur](https://github.com/hitanshur))
+
 ## 58.0.5
 
 ### Patch Changes

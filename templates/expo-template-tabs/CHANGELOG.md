@@ -1,5 +1,14 @@
 # expo-template-tabs
 
+## 58.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#50824](https://github.com/expo/expo/pull/50824), [#50815](https://github.com/expo/expo/pull/50815), [#50839](https://github.com/expo/expo/pull/50839), [#50765](https://github.com/expo/expo/pull/50765), [#50770](https://github.com/expo/expo/pull/50770), [#50826](https://github.com/expo/expo/pull/50826), [#50708](https://github.com/expo/expo/pull/50708), [#48301](https://github.com/expo/expo/pull/48301), [#46202](https://github.com/expo/expo/pull/46202), [#50818](https://github.com/expo/expo/pull/50818), [#50547](https://github.com/expo/expo/pull/50547), [#50548](https://github.com/expo/expo/pull/50548))
+  - expo@58.0.1
+  - expo-router@58.0.11
+  - expo-splash-screen@58.0.3
+
 ## 58.0.9
 
 ### Patch Changes

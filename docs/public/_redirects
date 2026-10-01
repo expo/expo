@@ -809,3 +809,9 @@
 /api/ /versions/latest 301
 /developers / 301
 /developers/ / 301
+/contact https://expo.dev/contact 301
+/contact/ https://expo.dev/contact 301
+/privacy https://expo.dev/privacy 301
+/privacy/ https://expo.dev/privacy 301
+/about https://expo.dev/about 301
+/about/ https://expo.dev/about 301

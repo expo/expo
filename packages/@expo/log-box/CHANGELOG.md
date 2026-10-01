@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Only enable LogBox WebView debugging in debuggable apps. ([#49529](https://github.com/expo/expo/pull/49529) by [@kosumic](https://github.com/kosumic))
+
 ## 58.0.7
 
 ### Patch Changes

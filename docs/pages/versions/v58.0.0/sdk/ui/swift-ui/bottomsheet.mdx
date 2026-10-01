@@ -265,6 +265,58 @@ export default function BottomSheetBackgroundColorExample() {
 
 </ComponentExample>
 
+### Color scheme
+
+A sheet follows the device's light or dark appearance by default. To use your app's appearance instead, add the [`preferredColorScheme`](modifiers/#preferredcolorschemecolorscheme) modifier to the `Group`. The `Host` `colorScheme` prop changes the sheet's content but not its background.
+
+```tsx BottomSheetColorSchemeExample.tsx
+import { useState } from 'react';
+import {
+  Host,
+  BottomSheet,
+  Button,
+  Group,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
+import {
+  padding,
+  preferredColorScheme,
+  presentationDetents,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetColorSchemeExample() {
+  const [isPresented, setIsPresented] = useState(false);
+  const appearance = 'dark';
+
+  return (
+    <Host style={{ flex: 1 }} colorScheme={appearance}>
+      <VStack>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={
+            <Button
+              label="Open sheet"
+              onPress={() => setIsPresented(true)}
+            />
+          }>
+          <Group
+            modifiers={[
+              presentationDetents(['medium']),
+              preferredColorScheme(appearance),
+            ]}>
+            <VStack modifiers={[padding({ all: 20 })]}>
+              <Text>This sheet is always dark.</Text>
+            </VStack>
+          </Group>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
 ### Bottom sheet with presentation detents
 
 Use the [`presentationDetents`](modifiers/#presentationdetentsdetents-options) modifier on `Group` to control the available heights. You can use:

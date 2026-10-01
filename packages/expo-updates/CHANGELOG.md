@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#50734](https://github.com/expo/expo/pull/50734))
+  - expo-eas-client@58.0.2
+
 ## 58.0.11
 
 ### Patch Changes

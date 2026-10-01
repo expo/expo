@@ -18,6 +18,7 @@ import {
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
+import { onHingeChange, useHingeChange } from './hingeObservation';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
@@ -825,6 +826,16 @@ export const scrollDismissesKeyboard = (
  */
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
+
+/**
+ * Sets the preferred color scheme for the nearest enclosing presentation, such as a `BottomSheet`,
+ * including its background. The value overrides the device's light or dark appearance for that
+ * presentation.
+ * @param colorScheme - The preferred color scheme, or `null` to indicate no preference.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/preferredcolorscheme(_:)).
+ */
+export const preferredColorScheme = (colorScheme: 'light' | 'dark' | null) =>
+  createModifier('preferredColorScheme', { colorScheme });
 
 /**
  * Disables or enables clipping of a scrollable view's content to its bounds.
@@ -1839,6 +1850,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof preferredColorScheme>
   | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof scrollIndicators>
   | ReturnType<typeof scrollEdgeEffectStyle>
@@ -1850,6 +1862,8 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollPosition>
   | ReturnType<typeof onScrollPhaseChange>
   | NonNullable<ReturnType<typeof useScrollGeometryChange>>
+  | ReturnType<typeof onHingeChange>
+  | NonNullable<ReturnType<typeof useHingeChange>>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1950,6 +1964,7 @@ export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
 export * from './symbolEffect';
 export * from './scrollObservation';
+export * from './hingeObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,
