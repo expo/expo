@@ -1,4 +1,9 @@
-import { createModifierWithEventListener } from './createModifier';
+import { getStateId, useWorkletProp, worklets } from '../../State';
+import {
+  createModifier,
+  createModifierWithEventListener,
+  type ModifierConfig,
+} from './createModifier';
 
 /**
  * Status of the device hinge, as reported by SwiftUI's `DeviceHinge.Status`.
@@ -62,3 +67,51 @@ export const onHingeChange = (
     (event: { oldContext: HingeContext; newContext: HingeContext }) =>
       handler(event.oldContext, event.newContext)
   );
+
+/**
+ * Like `onHingeChange`, but when the callback is marked with the `'worklet'` directive it runs
+ * synchronously on the UI thread with no JS-thread round-trip, which suits driving a shared value
+ * from the continuous `angle`. Without the directive it is delivered as a regular JS event, as
+ * `onHingeChange` does. Both paths share the same native modifier.
+ *
+ * This is a hook because the worklet path needs a stable shared-object reference across renders.
+ * Call it at the top of your component, then include the returned modifier in your `modifiers`
+ * array. Returns `null` when `callback` is `undefined`.
+ *
+ * @param callback - Function called with the old and the new hinge context.
+ * @platform ios 27.1+
+ *
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onhingechange(isenabled:_:)).
+ *
+ * @example
+ * ```tsx
+ * const hingeModifier = useHingeChange((_, newContext) => {
+ *   'worklet';
+ *   angle.value = newContext.hinge?.angle ?? 180;
+ * });
+ *
+ * <VStack modifiers={[hingeModifier]} />
+ * ```
+ */
+export function useHingeChange(
+  callback: (oldContext: HingeContext, newContext: HingeContext) => void
+): ModifierConfig;
+export function useHingeChange(
+  callback?: (oldContext: HingeContext, newContext: HingeContext) => void
+): ModifierConfig | null;
+export function useHingeChange(
+  callback?: (oldContext: HingeContext, newContext: HingeContext) => void
+): ModifierConfig | null {
+  const isWorklet = !!callback && !!worklets?.isWorkletFunction?.(callback);
+  const workletCallback = useWorkletProp(isWorklet ? callback : undefined, 'onHingeChange');
+
+  if (!callback) {
+    return null;
+  }
+  if (isWorklet && workletCallback) {
+    return createModifier('onHingeChange', {
+      workletCallback: getStateId(workletCallback),
+    });
+  }
+  return onHingeChange(callback);
+}

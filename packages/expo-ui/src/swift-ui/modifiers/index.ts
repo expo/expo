@@ -18,7 +18,7 @@ import {
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
-import { onHingeChange } from './hingeObservation';
+import { onHingeChange, useHingeChange } from './hingeObservation';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
@@ -1863,6 +1863,7 @@ export type BuiltInModifier =
   | ReturnType<typeof onScrollPhaseChange>
   | NonNullable<ReturnType<typeof useScrollGeometryChange>>
   | ReturnType<typeof onHingeChange>
+  | NonNullable<ReturnType<typeof useHingeChange>>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
