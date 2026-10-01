@@ -20,7 +20,7 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "react-native-reanimated" "react-native-svg"
+remove_dependencies "react-native-svg"
 
 echo " Copying macOS patches..."
 cp -r ./scripts/fixtures/macos/patches/* ../../patches/
@@ -92,26 +92,27 @@ node -e "
   fs.writeFileSync(workspaceFile, yaml);
 "
 
-# Pinned because react-native-macos releases lag behind react-native, so there is often no release
-# that matches the react-native minor version used by bare-expo. Update it when a newer release exists.
-RN_MACOS_VERSION="0.83.0"
-CURRENT_RN_MACOS_VERSION=$(jq -r '.dependencies["react-native-macos"]' package.json)
-
-if [[ "$CURRENT_RN_MACOS_VERSION" == "$RN_MACOS_VERSION" ]]; then
-    echo " ✅ react-native-macos@$RN_MACOS_VERSION installed"
+RN_MACOS_VERSION=$(jq -r '.dependencies["react-native-macos"]' package.json)
+if [[ "$RN_MACOS_VERSION" != "null" ]]; then
+    echo " ✅ React Native macOS installed"
 else
-    echo " ⚠️  Installing react-native-macos@$RN_MACOS_VERSION..."
-    # This version is explicitly chosen, so opt out of the workspace minimumReleaseAge
+    RN_MINOR_VERSION=$(jq -r '.dependencies["react-native"] | capture("^(?<major>\\d+)\\.(?<minor>\\d+)") | "\( .major ).\( .minor )"' package.json)
+    echo " ⚠️  Attempting to install react-native-macos@$RN_MINOR_VERSION..."
+    # These versions are explicitly chosen, so opt out of the workspace minimumReleaseAge
     # policy — it would reject any react-native-macos release younger than 24 hours.
-    if ! pnpm add "react-native-macos@$RN_MACOS_VERSION" --save-exact --config.minimum-release-age=0; then
-        echo " ❌ Could not install react-native-macos@$RN_MACOS_VERSION; the macOS project cannot be set up without it. See the pnpm error above."
-        exit 1
+    if ! pnpm add "react-native-macos@$RN_MINOR_VERSION" --silent --config.minimum-release-age=0; then
+        echo "⚠️  Failed to install react-native-macos@$RN_MINOR_VERSION, falling back to latest version"
+        # Manually extract the last react-native-macos version (highest) from npm because we can't rely on the @latest tag
+        latest_version=$(npm view react-native-macos versions --json | jq -r '.[-1]')
+        if ! pnpm add "react-native-macos@$latest_version" --config.minimum-release-age=0; then
+            echo " ❌ Could not install react-native-macos@$latest_version; the macOS project cannot be set up without it. See the pnpm error above."
+            exit 1
+        fi
     fi
 fi
 
 EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json | sed -E 's/^[~^]//')
 CURRENT_REACT_VERSION=$(jq -r '.dependencies.react' package.json)
-
 if [[ "$EXPECTED_REACT_VERSION" == "null" || -z "$EXPECTED_REACT_VERSION" ]]; then
     echo " ⚠️  Could not determine react peer dependency from react-native-macos, skipping react install"
 elif [[ "$CURRENT_REACT_VERSION" == "$EXPECTED_REACT_VERSION" ]]; then
