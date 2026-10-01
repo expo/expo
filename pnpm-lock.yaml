@@ -2090,6 +2090,9 @@ importers:
       '@expo/xcpretty':
         specifier: ^4.4.4
         version: 4.4.4
+      '@react-native/asset-utils':
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3
       '@react-native/dev-middleware':
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3
@@ -6364,6 +6367,9 @@ importers:
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
+      '@react-native/asset-utils':
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3
       arg:
         specifier: ^4.1.0
         version: 4.1.3
