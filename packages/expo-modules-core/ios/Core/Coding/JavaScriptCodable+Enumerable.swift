@@ -7,6 +7,12 @@ import ExpoModulesJSI
 // `String` or an integer type), delegating the actual conversion to that raw value's conformance.
 
 extension Enumerable where Self: RawRepresentable, RawValue: JavaScriptCodable {
+  // An enum decodes through its raw value, so it accepts what the raw value accepts.
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return RawValue.decodableKinds
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self

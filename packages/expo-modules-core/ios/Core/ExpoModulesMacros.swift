@@ -216,7 +216,7 @@ public macro Record() =
 ///     }
 @attached(
   member,
-  names: named(decode), named(encode), named(`as`), named(_payloadTypeName),
+  names: named(decode), named(encode), named(decodableKinds), named(`as`), named(_payloadTypeName),
   named(_assertTypesConformance))
 @attached(extension, conformances: JavaScriptDecodable, JavaScriptEncodable)
 public macro Union() =

@@ -9,6 +9,11 @@ import Foundation
 // A `Date` is an absolute instant with no timezone/calendar; resolution is milliseconds.
 
 extension Date: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .string, .object]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Date
