@@ -1,13 +1,13 @@
 import { BridgeModule, ExpoModule, TurboModule } from 'benchmarking';
 
+import { BenchmarkRun } from './ModulesBenchmarksHistory';
+
 // Metro compiles each re-export into a `defineProperty` getter, so reading `ExpoModule` inside a
 // timed loop costs two getter calls per iteration before the native call even starts. Resolving
 // the modules once here keeps that cost out of the measurements.
 const expoModule = ExpoModule;
 const turboModule = TurboModule;
 const bridgeModule = BridgeModule;
-
-import { BenchmarkRun } from './ModulesBenchmarksHistory';
 
 /**
  * Target duration of a single timed series. Iterations are calibrated per benchmark to
