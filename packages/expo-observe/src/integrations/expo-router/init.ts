@@ -1,7 +1,9 @@
-import AppMetrics from 'expo-app-metrics';
+import AppMetrics, { type MetricInput } from 'expo-app-metrics';
+import { AppState } from 'react-native';
 
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
+import { type BlockingTimeMeasurement, startBlockingTimeMeasurement } from './blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import {
@@ -36,6 +38,36 @@ export function initListeners(
   PerformanceObserver: RouterPerformanceObserver
 ): () => void {
   const appLaunchTime = performance.now();
+  const cleanup = new Set<() => void>();
+
+  // Blocking time of the latest navigation. `metric` is set when the
+  // destination screen is focused, and nothing is recorded without it.
+  let blockingTime:
+    | { measurement: BlockingTimeMeasurement; metric?: Omit<MetricInput, 'value'> }
+    | undefined;
+
+  const startNavigationBlockingTime = () => {
+    const current: NonNullable<typeof blockingTime> = {
+      measurement: startBlockingTimeMeasurement((blockingTimeMs) => {
+        if (blockingTime === current) blockingTime = undefined;
+        if (!current.metric) return;
+        AppMetrics.getMainSession().addMetric({ ...current.metric, value: blockingTimeMs / 1000 });
+      }),
+    };
+    blockingTime = current;
+  };
+
+  const cancelNavigationBlockingTime = () => {
+    blockingTime?.measurement.cancel();
+    blockingTime = undefined;
+  };
+  cleanup.add(cancelNavigationBlockingTime);
+
+  // Animation frames pause in the background, which would count as blocking.
+  const appStateSubscription = AppState.addEventListener('change', (state) => {
+    if (state !== 'active') cancelNavigationBlockingTime();
+  });
+  cleanup.add(() => appStateSubscription.remove());
 
   const observer = new PerformanceObserver((list) => {
     for (const performanceEntry of list.getEntries()) {
@@ -62,6 +94,11 @@ export function initListeners(
             actionType: entry.detail.actionType,
             startTime: enqueueTime ?? entry.startTime,
           });
+          // Navigations before the first screen is focused are part of app launch.
+          if (storage.hasRecordedInitialTtr) {
+            blockingTime?.measurement.finish();
+            startNavigationBlockingTime();
+          }
           break;
         }
         case 'expo-router:page-preloaded':
@@ -76,6 +113,7 @@ export function initListeners(
     }
   });
   observer.observe({ type: 'mark' });
+  cleanup.add(() => observer.disconnect());
 
   async function onPageFocused(e: RouterPageMarkDetail, now: number) {
     // Stamp every metric written below with the moment of the focus mark, not
@@ -144,6 +182,15 @@ export function initListeners(
       value: ttrSeconds,
       params: { isAppLaunch, ...navigationParams },
     });
+    if (!isAppLaunch && blockingTime && !blockingTime.metric) {
+      blockingTime.metric = {
+        timestamp,
+        category: 'navigation',
+        name: 'tbt',
+        routeName: routePattern,
+        params: navigationParams,
+      };
+    }
     if (hasPendingInteractive) {
       await emitTTI({
         session: mainSession,
@@ -158,5 +205,8 @@ export function initListeners(
     }
   }
 
-  return () => observer.disconnect();
+  return () => {
+    cleanup.forEach((c) => c());
+    cleanup.clear();
+  };
 }

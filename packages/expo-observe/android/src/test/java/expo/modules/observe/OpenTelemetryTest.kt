@@ -113,6 +113,7 @@ class OpenTelemetryTest {
     assertEquals("expo.navigation.tti", nameFor(navigation, "tti"))
     assertEquals("expo.navigation.cold_ttr", nameFor(navigation, "cold_ttr"))
     assertEquals("expo.navigation.warm_ttr", nameFor(navigation, "warm_ttr"))
+    assertEquals("expo.navigation.tbt", nameFor(navigation, "tbt"))
   }
 
   @Test

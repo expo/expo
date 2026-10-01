@@ -118,6 +118,19 @@ struct OpenTelemetryTests {
       customParams: nil
     )
     #expect(warm.toOTMetric().name == "expo.navigation.warm_ttr")
+
+    let tbt = Event.Metric(
+      category: "navigation",
+      name: "tbt",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: nil,
+      customParams: nil
+    )
+    #expect(tbt.toOTMetric().name == "expo.navigation.tbt")
   }
 
   // MARK: - Metric structure
