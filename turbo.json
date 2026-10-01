@@ -66,6 +66,7 @@
       "dependsOn": [
         "//#prepare-precompile-android",
         "expo-modules-core#precompile-android-inputs",
+        "expo-modules-core#precompile-android",
         "expo-modules-autolinking#precompile-android-inputs",
         "expo-modules-autolinking#build",
         "^precompile-android-inputs"
