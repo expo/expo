@@ -8,19 +8,21 @@
 /// against it compiles to a mask test in the client.
 @frozen
 public struct JavaScriptValueKinds: OptionSet, Sendable {
-  public let rawValue: UInt8
+  public let rawValue: UInt16
 
+  // `UInt16` leaves room for more kinds without changing the frozen layout.
+  //
   // The kinds are computed and inlinable rather than stored `static let`s, which a client would reach
   // through a lazily initialized global, so a mask built from them folds to a constant.
 
   @inlinable
-  public init(rawValue: UInt8) {
+  public init(rawValue: UInt16) {
     self.rawValue = rawValue
   }
 
   @inlinable public static var undefined: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 0) }
   @inlinable public static var null: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 1) }
-  @inlinable public static var boolean: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 2) }
+  @inlinable public static var bool: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 2) }
   @inlinable public static var number: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 3) }
   @inlinable public static var bigint: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 4) }
   @inlinable public static var string: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 5) }
@@ -28,7 +30,8 @@ public struct JavaScriptValueKinds: OptionSet, Sendable {
   /// Any object, including arrays, typed arrays and functions.
   @inlinable public static var object: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: 1 << 7) }
 
-  /// Every kind.
+  /// Every kind, including any added later: the bits above the current kinds are set too, so a type that
+  /// accepts every kind keeps doing so.
   @inlinable public static var all: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: .max) }
 
   /// The kind of `value`. The checks go from the most to the least common kind of an argument.
@@ -43,7 +46,7 @@ public struct JavaScriptValueKinds: OptionSet, Sendable {
     } else if value.isObject() {
       self = .object
     } else if value.isBool() {
-      self = .boolean
+      self = .bool
     } else if value.isNull() {
       self = .null
     } else if value.isUndefined() {
@@ -64,7 +67,7 @@ public struct JavaScriptValueKinds: OptionSet, Sendable {
     } else if value.isObject() {
       self = .object
     } else if value.isBool() {
-      self = .boolean
+      self = .bool
     } else if value.isNull() {
       self = .null
     } else if value.isUndefined() {

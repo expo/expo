@@ -20,7 +20,7 @@ struct JavaScriptDecodableKindsTests {
   @Test
   func `reads the kind of every JS type from owning and unowned values`() throws {
     let expected: [String: JavaScriptValueKinds] = [
-      "42": .number, "1.5": .number, "'text'": .string, "true": .boolean, "null": .null,
+      "42": .number, "1.5": .number, "'text'": .string, "true": .bool, "null": .null,
       "undefined": .undefined, "10n": .bigint, "Symbol()": .symbol, "({})": .object, "[1]": .object,
       "new Uint8Array(1)": .object, "(function () {})": .object,
     ]

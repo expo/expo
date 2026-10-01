@@ -17,7 +17,7 @@ import CoreGraphics
 extension Bool: JavaScriptCodable {
   @inlinable
   public static var decodableKinds: JavaScriptValueKinds {
-    return .boolean
+    return .bool
   }
 
   @JavaScriptActor

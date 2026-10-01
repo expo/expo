@@ -12,8 +12,11 @@ import Testing
 struct JavaScriptDecodableKindsTests {
   let appContext = AppContext.create()
 
-  static let samples = ["42", "'text'", "true", "null", "undefined", "10n", "({})", "new Uint8Array(1)"]
-  static let objects: Set<String> = ["({})", "new Uint8Array(1)"]
+  static let samples = [
+    "42", "1.5", "'text'", "true", "null", "undefined", "10n", "Symbol()", "({})", "[1]", "new Uint8Array(1)",
+    "(function () {})",
+  ]
+  static let objects: Set<String> = ["({})", "[1]", "new Uint8Array(1)", "(function () {})"]
 
   private func expectDecodableKinds<T: JavaScriptDecodable>(
     _ type: T.Type,
@@ -60,7 +63,7 @@ struct JavaScriptDecodableKindsTests {
   @Test
   func `enums accept what their raw value accepts`() throws {
     try expectDecodableKinds(DecodableKindsStringEnum.self, accept: ["'text'"])
-    try expectDecodableKinds(DecodableKindsIntEnum.self, accept: ["42", "10n"])
+    try expectDecodableKinds(DecodableKindsIntEnum.self, accept: ["42", "1.5", "10n"])
   }
 }
 
