@@ -2,8 +2,6 @@
 
 import ExpoModulesCore
 
-private typealias SQLiteColumnValues = [Any]
-private let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
 private let MEMORY_DB_NAME = ":memory:"
 
 private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
@@ -172,37 +170,9 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       }
     }
 
-    // MARK: - NativeStatement
+    // MARK: - NativeStatement and NativeSession
 
-    Class(NativeStatement.self) {
-      // swiftlint:disable line_length
-
-      AsyncFunction("runAsync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: ArrayBuffer], shouldPassAsArray: Bool) -> [String: Any] in
-        return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
-      }.runOnQueue(moduleQueue)
-      Function("runSync") { (statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: ArrayBuffer], shouldPassAsArray: Bool) -> [String: Any] in
-        return try run(statement: statement, database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
-      }
-
-      // swiftlint:enable line_length
-
-      AsyncFunction("stepAsync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
-        return try step(statement: statement, database: database)
-      }.runOnQueue(moduleQueue)
-      Function("stepSync") { (statement: NativeStatement, database: NativeDatabase) -> SQLiteColumnValues? in
-        return try step(statement: statement, database: database)
-      }
-
-      AsyncFunction("getAllAsync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
-        return try getAll(statement: statement, database: database)
-      }.runOnQueue(moduleQueue)
-      Function("getAllSync") { (statement: NativeStatement, database: NativeDatabase) -> [SQLiteColumnValues] in
-        return try getAll(statement: statement, database: database)
-      }
-    }
-
-    // MARK: - NativeSession
-
+    NativeStatement._synthesizedClassDefinition()
     NativeSession._synthesizedClassDefinition()
   }
 
@@ -253,84 +223,6 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     try maybeThrowForClosedDatabase(database)
     if database.openOptions.enableChangeListener {
       addUpdateHook(database)
-    }
-  }
-
-  // swiftlint:disable line_length
-
-  private func run(statement: NativeStatement, database: NativeDatabase, bindParams: [String: Any], bindBlobParams: [String: any AnyArrayBuffer], shouldPassAsArray: Bool) throws -> [String: Any] {
-    // The statement with parameter bindings is stateful,
-    // we have to guard with a critical section for thread safety.
-    return try statement.lock.withLock { _ -> [String: Any] in
-      try maybeThrowForFinalizedStatement(statement)
-      try maybeThrowForClosedDatabase(database)
-
-      exsqlite3_reset(statement.pointer)
-      exsqlite3_clear_bindings(statement.pointer)
-      for (key, param) in bindParams {
-        let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
-        if index > 0 {
-          try bindStatementParam(statement: statement, with: param, at: index)
-        }
-      }
-      for (key, param) in bindBlobParams {
-        let index = try getBindParamIndex(statement: statement, key: key, shouldPassAsArray: shouldPassAsArray)
-        if index > 0 {
-          try bindStatementParam(statement: statement, with: param, at: index)
-        }
-      }
-
-      let ret = exsqlite3_step(statement.pointer)
-      if ret != SQLITE_ROW && ret != SQLITE_DONE {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-      }
-      let firstRowValues: SQLiteColumnValues = (ret == SQLITE_ROW) ? try getColumnValues(statement: statement) : []
-      return [
-        "lastInsertRowId": Int(exsqlite3_last_insert_rowid(database.pointer)),
-        "changes": Int(exsqlite3_changes(database.pointer)),
-        "firstRowValues": firstRowValues
-      ]
-    }
-  }
-
-  // swiftlint:enable line_length
-
-  private func step(statement: NativeStatement, database: NativeDatabase) throws -> SQLiteColumnValues? {
-    // Guard the stateful statement, see `run` above.
-    return try statement.lock.withLock { _ -> SQLiteColumnValues? in
-      try maybeThrowForFinalizedStatement(statement)
-      try maybeThrowForClosedDatabase(database)
-
-      let ret = exsqlite3_step(statement.pointer)
-      if ret == SQLITE_ROW {
-        return try getColumnValues(statement: statement)
-      }
-      if ret != SQLITE_DONE {
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-      }
-      return nil
-    }
-  }
-
-  private func getAll(statement: NativeStatement, database: NativeDatabase) throws -> [SQLiteColumnValues] {
-    // Guard the stateful statement, see `run` above.
-    return try statement.lock.withLock { _ -> [SQLiteColumnValues] in
-      try maybeThrowForFinalizedStatement(statement)
-      try maybeThrowForClosedDatabase(database)
-
-      var columnValuesList: [SQLiteColumnValues] = []
-      while true {
-        let ret = exsqlite3_step(statement.pointer)
-        if ret == SQLITE_ROW {
-          columnValuesList.append(try getColumnValues(statement: statement))
-          continue
-        }
-        if ret == SQLITE_DONE {
-          break
-        }
-        throw SQLiteErrorException(convertSqlLiteErrorToString(database))
-      }
-      return columnValuesList
     }
   }
 
@@ -437,88 +329,8 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     contextPair.toOpaque())
   }
 
-  private func getColumnValues(statement: NativeStatement) throws -> SQLiteColumnValues {
-    try maybeThrowForFinalizedStatement(statement)
-    let columnCount = Int(exsqlite3_column_count(statement.pointer))
-    var columnValues: SQLiteColumnValues = Array(repeating: 0, count: columnCount)
-    for i in 0..<columnCount {
-      columnValues[i] = try getColumnValue(statement: statement, at: Int32(i))
-    }
-    return columnValues
-  }
-
-  @inline(__always)
-  private func getColumnValue(statement: NativeStatement, at index: Int32) throws -> Any {
-    let instance = statement.pointer
-    let type = exsqlite3_column_type(instance, index)
-
-    switch type {
-    case SQLITE_INTEGER:
-      return exsqlite3_column_int64(instance, index)
-    case SQLITE_FLOAT:
-      return exsqlite3_column_double(instance, index)
-    case SQLITE_TEXT:
-      guard let text = exsqlite3_column_text(instance, index) else {
-        throw InvalidConvertibleException("Null text")
-      }
-      return String(cString: text)
-    case SQLITE_BLOB:
-      guard let blob = exsqlite3_column_blob(instance, index) else {
-        return ArrayBuffer(size: 0)
-      }
-      let size = exsqlite3_column_bytes(instance, index)
-      return ArrayBuffer.copy(of: blob, count: Int(size))
-    case SQLITE_NULL:
-      return NSNull()
-    default:
-      throw InvalidConvertibleException("Unsupported column type: \(type)")
-    }
-  }
-
-  private func bindStatementParam(statement: NativeStatement, with param: Any, at index: Int32) throws {
-    let instance = statement.pointer
-    switch param {
-    case Optional<Any>.none:
-      exsqlite3_bind_null(instance, index)
-    case _ as NSNull:
-      exsqlite3_bind_null(instance, index)
-    case let param as Int64:
-      exsqlite3_bind_int64(instance, index, Int64(param))
-    case let param as Double:
-      exsqlite3_bind_double(instance, index, param)
-    case let param as String:
-      exsqlite3_bind_text(instance, index, param, -1, SQLITE_TRANSIENT)
-    case let param as any AnyArrayBuffer:
-      _ = param.withUnsafeBytes {
-        exsqlite3_bind_blob(instance, index, $0.baseAddress, Int32(param.byteLength), SQLITE_TRANSIENT)
-      }
-    case let param as Bool:
-      exsqlite3_bind_int(instance, index, param ? 1 : 0)
-    default:
-      throw InvalidConvertibleException("Unsupported parameter type: \(type(of: param))")
-    }
-  }
-
   private func maybeThrowForClosedDatabase(_ database: NativeDatabase) throws {
     try database.ensureOpen()
-  }
-
-  private func maybeThrowForFinalizedStatement(_ statement: NativeStatement) throws {
-    try statement.ensureNotFinalized()
-  }
-
-  @inline(__always)
-  private func getBindParamIndex(statement: NativeStatement, key: String, shouldPassAsArray: Bool) throws -> Int32 {
-    let index: Int32
-    if shouldPassAsArray {
-      guard let intKey = Int32(key) else {
-        throw InvalidBindParameterException()
-      }
-      index = intKey + 1
-    } else {
-      index = exsqlite3_bind_parameter_index(statement.pointer, key.cString(using: .utf8))
-    }
-    return index
   }
 
   // MARK: - cachedDatabases managements

@@ -87,4 +87,126 @@ final class NativeStatementTests {
     try await statement.finalizeAsync(database: database)
     #expect(statement.isFinalized)
   }
+
+  @Test
+  func `run binds positional parameters and reports the changes`() throws {
+    let statement = prepare("INSERT INTO test (id, value) VALUES (?, ?)")
+    let result = try statement.runSync(
+      database: database,
+      bindParams: ["0": .double(3), "1": .text("three")],
+      bindBlobParams: [:],
+      shouldPassAsArray: true
+    )
+    #expect(result.lastInsertRowId == 3)
+    #expect(result.changes == 1)
+    #expect(result.firstRowValues.isEmpty)
+    #expect(selectValue(id: 3) == "three")
+  }
+
+  @Test
+  func `run binds named parameters`() throws {
+    let statement = prepare("INSERT INTO test (id, value) VALUES ($id, $value)")
+    _ = try statement.runSync(
+      database: database,
+      bindParams: ["$id": .double(4), "$value": .text("four")],
+      bindBlobParams: [:],
+      shouldPassAsArray: false
+    )
+    #expect(selectValue(id: 4) == "four")
+  }
+
+  @Test
+  func `run returns the values of the first row`() throws {
+    let statement = prepare("SELECT id, value FROM test WHERE id = ?")
+    let result = try statement.runSync(
+      database: database,
+      bindParams: ["0": .double(2)],
+      bindBlobParams: [:],
+      shouldPassAsArray: true
+    )
+    #expect(result.firstRowValues == [.integer(2), .text("two")])
+  }
+
+  @Test
+  func `run binds blob and null parameters`() throws {
+    let statement = prepare("SELECT ?, ?, typeof(?)")
+    let bytes: [UInt8] = [1, 2, 3]
+    let result = try statement.runSync(
+      database: database,
+      bindParams: ["1": .null, "2": .null],
+      bindBlobParams: ["0": ArrayBuffer.copy(of: bytes, count: bytes.count)],
+      shouldPassAsArray: true
+    )
+    #expect(result.firstRowValues.count == 3)
+    #expect(blobBytes(result.firstRowValues[0]) == [1, 2, 3])
+    #expect(result.firstRowValues[1] == .null)
+    #expect(result.firstRowValues[2] == .text("null"))
+  }
+
+  @Test
+  func `step returns one row at a time and nil once done`() throws {
+    let statement = prepare("SELECT id FROM test ORDER BY id")
+    #expect(try statement.stepSync(database: database) == [.integer(1)])
+    #expect(try statement.stepSync(database: database) == [.integer(2)])
+    #expect(try statement.stepSync(database: database) == nil)
+  }
+
+  @Test
+  func `getAll returns every row with each storage class`() throws {
+    let statement = prepare("SELECT id, value, 1.5, NULL FROM test ORDER BY id")
+    let rows = try statement.getAllSync(database: database)
+    #expect(rows == [
+      [.integer(1), .text("one"), .double(1.5), .null],
+      [.integer(2), .text("two"), .double(1.5), .null]
+    ])
+  }
+
+  @Test
+  func `run, step and getAll throw once the statement is finalized`() throws {
+    let statement = prepare("SELECT id FROM test")
+    try statement.finalizeSync(database: database)
+    #expect(throws: AccessClosedResourceException.self) {
+      try statement.runSync(database: database, bindParams: [:], bindBlobParams: [:], shouldPassAsArray: true)
+    }
+    #expect(throws: AccessClosedResourceException.self) {
+      try statement.stepSync(database: database)
+    }
+    #expect(throws: AccessClosedResourceException.self) {
+      try statement.getAllSync(database: database)
+    }
+  }
+
+  @Test
+  func `async run, step and getAll run the same operations`() async throws {
+    let statement = prepare("SELECT id FROM test WHERE id >= ? ORDER BY id")
+    let result = try await statement.runAsync(
+      database: database,
+      bindParams: ["0": .double(1)],
+      bindBlobParams: [:],
+      shouldPassAsArray: true
+    )
+    #expect(result.firstRowValues == [.integer(1)])
+    #expect(try await statement.stepAsync(database: database) == [.integer(2)])
+    #expect(try await statement.stepAsync(database: database) == nil)
+    try statement.resetSync(database: database)
+    #expect(try await statement.getAllAsync(database: database) == [[.integer(1)], [.integer(2)]])
+  }
+
+  private func selectValue(id: Int32) -> String? {
+    var statement: OpaquePointer?
+    exsqlite3_prepare_v2(database.pointer, "SELECT value FROM test WHERE id = ?", -1, &statement, nil)
+    defer { exsqlite3_finalize(statement) }
+    exsqlite3_bind_int(statement, 1, id)
+    guard exsqlite3_step(statement) == SQLITE_ROW, let text = exsqlite3_column_text(statement, 0) else {
+      return nil
+    }
+    return String(cString: text)
+  }
+
+  private func blobBytes(_ value: SQLiteValue) -> [UInt8]? {
+    guard case .blob(let buffer) = value else {
+      return nil
+    }
+    return buffer.withUnsafeBytes { Array($0) }
+  }
 }
