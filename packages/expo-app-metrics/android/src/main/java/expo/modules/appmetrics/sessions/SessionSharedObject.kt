@@ -1,6 +1,9 @@
-package expo.modules.appmetrics.storage
+package expo.modules.appmetrics.sessions
 
 import expo.modules.appmetrics.AppMetadata
+import expo.modules.appmetrics.storage.LogRecord
+import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedObject

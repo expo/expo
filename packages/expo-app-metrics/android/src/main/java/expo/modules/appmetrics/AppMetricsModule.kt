@@ -24,14 +24,15 @@ import expo.modules.appmetrics.logevents.validateEventBody
 import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.logevents.withDisplayNameAttribute
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.sessions.JsMetric
+import expo.modules.appmetrics.sessions.SessionMetricInput
+import expo.modules.appmetrics.sessions.SessionSharedObject
 import expo.modules.appmetrics.storage.JsDebugSession
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.JsLogRecord
-import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.SessionManager
-import expo.modules.appmetrics.storage.SessionMetricInput
-import expo.modules.appmetrics.storage.SessionSharedObject
+import expo.modules.appmetrics.storage.toJsMetric
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.JsonAny
@@ -356,7 +357,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         AsyncFunction("getEndDate") Coroutine SessionSharedObject::getEndDate
 
         AsyncFunction("getMetrics") Coroutine { ref: SessionSharedObject ->
-          ref.getMetrics().map { JsMetric.fromMetric(it) }
+          ref.getMetrics().map { it.toJsMetric() }
         }
 
         AsyncFunction("getLogs") Coroutine { ref: SessionSharedObject ->

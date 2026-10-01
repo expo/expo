@@ -1,8 +1,12 @@
-package expo.modules.appmetrics.storage
+package expo.modules.appmetrics.sessions
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.storage.LogRecord
+import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.storage.MetricsDatabase
+import expo.modules.appmetrics.storage.SessionManager
 import io.mockk.coVerify
 import io.mockk.spyk
 import kotlinx.coroutines.launch

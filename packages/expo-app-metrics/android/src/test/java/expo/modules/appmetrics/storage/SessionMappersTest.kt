@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.storage
 
+import expo.modules.appmetrics.sessions.JsMetric
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -75,10 +76,10 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsMetric_fromMetric decodes params from JSON`() {
+  fun `Metric_toJsMetric decodes params from JSON`() {
     val metric = makeMetric(params = """{"screen":"Home","attempt":3,"flag":true}""")
 
-    val js = JsMetric.fromMetric(metric)
+    val js = metric.toJsMetric()
 
     val params = js.params
     assertEquals("Home", params?.get("screen"))
@@ -87,22 +88,22 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsMetric_fromMetric yields null params when storage column is null`() {
-    val js = JsMetric.fromMetric(makeMetric(params = null))
+  fun `Metric_toJsMetric yields null params when storage column is null`() {
+    val js = makeMetric(params = null).toJsMetric()
 
     assertNull(js.params)
   }
 
   @Test
-  fun `JsMetric_fromMetric yields null params when storage column is malformed JSON`() {
-    val js = JsMetric.fromMetric(makeMetric(params = "{ this is not valid json"))
+  fun `Metric_toJsMetric yields null params when storage column is malformed JSON`() {
+    val js = makeMetric(params = "{ this is not valid json").toJsMetric()
 
     assertNull(js.params)
   }
 
   @Test
-  fun `JsMetric_fromMetric copies scalar fields verbatim`() {
-    val js = JsMetric.fromMetric(makeMetric(sessionId = "session-1"))
+  fun `Metric_toJsMetric copies scalar fields verbatim`() {
+    val js = makeMetric(sessionId = "session-1").toJsMetric()
 
     assertEquals("session-1", js.sessionId)
     assertEquals("appStartup", js.category)
@@ -172,7 +173,7 @@ class SessionMappersTest {
     // payload so the two callers can't quietly drift.
     val payload = """{"user":{"id":"u_42","prefs":{"theme":"dark"}},"tags":["a","b"]}"""
 
-    val metricResult = JsMetric.fromMetric(makeMetric(params = payload)).params
+    val metricResult = makeMetric(params = payload).toJsMetric().params
     val logResult = JsLogRecord.fromLogRecord(makeLog(attributes = payload)).attributes
 
     // Both should decode the nested user object the same way.
@@ -191,66 +192,6 @@ class SessionMappersTest {
     // And arrays decode identically too.
     assertEquals(listOf("a", "b"), metricResult?.get("tags"))
     assertEquals(metricResult?.get("tags"), logResult?.get("tags"))
-  }
-
-  @Test
-  fun `SessionMetricInput_toMetric injects the sessionId`() {
-    val input = SessionMetricInput(
-      category = "custom",
-      name = "purchase",
-      value = 9.99
-    )
-
-    val metric = input.toMetric("session-42")
-
-    assertEquals("session-42", metric.sessionId)
-  }
-
-  @Test
-  fun `SessionMetricInput_toMetric maps scalar fields verbatim`() {
-    val input = SessionMetricInput(
-      category = "custom",
-      name = "purchase",
-      value = 9.99,
-      timestamp = "2025-03-01T12:00:00.000Z",
-      routeName = "Checkout"
-    )
-
-    val metric = input.toMetric("session-42")
-
-    assertEquals("custom", metric.category)
-    assertEquals("purchase", metric.name)
-    assertEquals(9.99, metric.value, 0.0)
-    assertEquals("2025-03-01T12:00:00.000Z", metric.timestamp)
-    assertEquals("Checkout", metric.routeName)
-    assertNull(metric.updateId)
-  }
-
-  @Test
-  fun `SessionMetricInput_toMetric JSON-encodes params`() {
-    val input = SessionMetricInput(
-      category = "custom",
-      name = "purchase",
-      value = 1.0,
-      params = mapOf("screen" to "Home", "attempt" to 3, "flag" to true)
-    )
-
-    val metric = input.toMetric("session-42")
-
-    // Round-trip through the JsMetric decoder to assert the encoding is valid.
-    val decoded = JsMetric.fromMetric(metric).params
-    assertEquals("Home", decoded?.get("screen"))
-    assertEquals(3L, decoded?.get("attempt"))
-    assertEquals(true, decoded?.get("flag"))
-  }
-
-  @Test
-  fun `SessionMetricInput_toMetric yields null params when none provided`() {
-    val input = SessionMetricInput(category = "custom", name = "purchase", value = 1.0)
-
-    val metric = input.toMetric("session-42")
-
-    assertNull(metric.params)
   }
 
   @Test

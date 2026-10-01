@@ -1,7 +1,7 @@
 package expo.modules.appmetrics.storage
 
+import expo.modules.appmetrics.sessions.JsMetric
 import expo.modules.appmetrics.utils.JsonAny
-import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
@@ -38,79 +38,25 @@ data class JsDebugSession(
         type = "main",
         startDate = value.session.startTimestamp,
         endDate = value.session.endTimestamp,
-        metrics = value.metrics.map { JsMetric.fromMetric(it) },
+        metrics = value.metrics.map { it.toJsMetric() },
         logs = value.logs.map { JsLogRecord.fromLogRecord(it) },
         crashReport = decodeJsonObject(value.crashReportPayload)
       )
   }
 }
 
-@OptimizedRecord
-data class JsMetric(
-  @Field val sessionId: String,
-  @Field val category: String,
-  @Field val name: String,
-  @Field val value: Double,
-  @Field val timestamp: String = TimeUtils.getCurrentTimestampInISOFormat(),
-  @Field val routeName: String? = null,
-  @Field val updateId: String? = null,
-  @Field val params: Map<String, Any?>? = null
-) : Record {
-  fun toMetric(): Metric =
-    Metric(
-      sessionId = sessionId,
-      timestamp = timestamp,
-      category = category,
-      name = name,
-      value = value,
-      routeName = routeName,
-      updateId = updateId,
-      params = params?.let { JsonAny.encodeMapToJsonString(it) }
-    )
-
-  companion object {
-    fun fromMetric(metric: Metric): JsMetric =
-      JsMetric(
-        sessionId = metric.sessionId,
-        timestamp = metric.timestamp,
-        category = metric.category,
-        name = metric.name,
-        value = metric.value,
-        routeName = metric.routeName,
-        updateId = metric.updateId,
-        params = decodeJsonObject(metric.params)
-      )
-  }
-}
-
-/**
- * Payload for `Session.addMetric` — mirrors the TypeScript `MetricInput` type
- * (`Metric` minus `sessionId`). The owning session is implied by the shared
- * object the metric is added to, so the session id is injected via `toMetric(sessionId)`
- * rather than carried across the bridge; `updateId` is a native-side concern not
- * exposed to JS.
- */
-@OptimizedRecord
-data class SessionMetricInput(
-  @Field val category: String,
-  @Field val name: String,
-  @Field val value: Double,
-  @Field val timestamp: String = TimeUtils.getCurrentTimestampInISOFormat(),
-  @Field val routeName: String? = null,
-  @Field val params: Map<String, Any?>? = null
-) : Record {
-  fun toMetric(sessionId: String): Metric =
-    Metric(
-      sessionId = sessionId,
-      timestamp = timestamp,
-      category = category,
-      name = name,
-      value = value,
-      routeName = routeName,
-      updateId = null,
-      params = params?.let { JsonAny.encodeMapToJsonString(it) }
-    )
-}
+/** Converts a stored `Metric` row to its JS-facing `JsMetric` shape. */
+fun Metric.toJsMetric(): JsMetric =
+  JsMetric(
+    sessionId = sessionId,
+    timestamp = timestamp,
+    category = category,
+    name = name,
+    value = value,
+    routeName = routeName,
+    updateId = updateId,
+    params = decodeJsonObject(params)
+  )
 
 /**
  * JS-facing shape of a log event. Mirrors the TypeScript `LogRecord` type and

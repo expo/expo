@@ -4,8 +4,8 @@ import android.util.Log
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.TAG
+import expo.modules.appmetrics.sessions.SessionSharedObject
 import expo.modules.appmetrics.storage.Metric
-import expo.modules.appmetrics.storage.SessionSharedObject
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
