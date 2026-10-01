@@ -1,4 +1,4 @@
-package expo.modules.appmetrics.storage
+package expo.modules.observe.storage
 
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord

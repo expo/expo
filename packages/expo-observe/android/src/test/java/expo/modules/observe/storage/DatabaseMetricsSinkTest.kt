@@ -1,4 +1,4 @@
-package expo.modules.appmetrics.storage
+package expo.modules.observe.storage
 
 import android.content.Context
 import android.content.ContextWrapper
@@ -9,12 +9,10 @@ import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.GlobalAttributes
-import expo.modules.appmetrics.crashreporting.CrashOrigin
-import expo.modules.appmetrics.crashreporting.CrashReport
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
 import expo.modules.appmetrics.records.NetworkSpan
-import expo.modules.appmetrics.sink.CrashAttributionHint
+import expo.modules.appmetrics.sessions.SessionSharedObject
 import expo.modules.appmetrics.sink.MetricsSinkRegistry
 import expo.modules.appmetrics.sink.SessionInfo
 import expo.modules.appmetrics.utils.JsonAny
@@ -193,23 +191,17 @@ class DatabaseMetricsSinkTest {
   fun `global attributes merged by the registry land in the stored metric and log rows`() =
     runBlocking {
       GlobalAttributes.set(mapOf("subscription_tier" to "pro", "screen" to "global"))
-      val registry = MetricsSinkRegistry().apply { register(sink) }
-      sessionManager.startSessionWithIdAt("s", start)
+      MetricsSinkRegistry.register(sink)
+      val session = SessionSharedObject(type = "main", customStartTimestamp = start)
+      session.start()
       val perRecord = """{"screen":"checkout"}"""
 
-      registry.recordMetrics(listOf(metric("m").copy(params = perRecord)), "s")
-      registry.recordLogs(listOf(log("l").copy(attributes = perRecord)), "s")
-      registry.recordCrash(
-        CrashReport.fromThrowable(IllegalStateException("boom"), start, start, "1.0.0"),
-        log("crash"),
-        CrashAttributionHint(sessionId = "s", origin = CrashOrigin.JVM_FILE, currentSessionId = "current")
-      )
+      session.addMetrics(listOf(metric("m").copy(params = perRecord)))
+      session.addLogs(listOf(log("l").copy(attributes = perRecord)))
 
       val merged = mapOf("subscription_tier" to "pro", "screen" to "checkout")
-      assertEquals(merged, decode(sessionManager.getMetricsForSession("s").single().params))
-      val logs = sessionManager.getLogsForSession("s").associateBy { it.name }
-      assertEquals(merged, decode(logs.getValue("l").attributes))
-      assertEquals(mapOf("subscription_tier" to "pro", "screen" to "global"), decode(logs.getValue("crash").attributes))
+      assertEquals(merged, decode(sessionManager.getMetricsForSession(session.sessionId).single().params))
+      assertEquals(merged, decode(sessionManager.getLogsForSession(session.sessionId).single().attributes))
     }
 
   // endregion

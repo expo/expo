@@ -2,11 +2,11 @@ package expo.modules.observe
 
 import android.content.Context
 import expo.modules.appmetrics.records.NetworkSpan
-import expo.modules.appmetrics.storage.LogRecord
-import expo.modules.appmetrics.storage.Metric
-import expo.modules.appmetrics.storage.Session
-import expo.modules.appmetrics.storage.SessionManager
-import expo.modules.appmetrics.storage.Span
+import expo.modules.observe.storage.LogRecord
+import expo.modules.observe.storage.Metric
+import expo.modules.observe.storage.Session
+import expo.modules.observe.storage.SessionManager
+import expo.modules.observe.storage.Span
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

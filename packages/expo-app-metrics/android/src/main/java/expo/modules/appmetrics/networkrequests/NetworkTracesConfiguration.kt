@@ -34,7 +34,7 @@ data class NetworkTracesConfiguration(
     return filter.matches(url, method)
   }
 
-  // `persist` gates on the OkHttp dispatcher thread, before the hop to the database queue, so this
+  // `persist` gates on the OkHttp dispatcher thread, before the hop to the module queue, so this
   // is built once instead of per request. The instance is immutable, so the filter is too.
   private val filter by lazy { NetworkRequestFilter(hosts = hosts, methods = methods) }
 

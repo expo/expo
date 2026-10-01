@@ -1,7 +1,7 @@
 package expo.modules.observe
 
 import expo.modules.appmetrics.records.NetworkSpan
-import expo.modules.appmetrics.storage.Span
+import expo.modules.observe.storage.Span
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

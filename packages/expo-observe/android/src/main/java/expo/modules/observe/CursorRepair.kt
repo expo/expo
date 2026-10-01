@@ -4,7 +4,7 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
-import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.observe.storage.SessionManager
 import kotlinx.coroutines.CancellationException
 
 internal suspend fun repairCursorIfStale(

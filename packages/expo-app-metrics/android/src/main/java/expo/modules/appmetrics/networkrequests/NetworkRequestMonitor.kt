@@ -44,7 +44,7 @@ class NetworkRequestMonitor internal constructor(
   private val delegates = mutableListOf<WeakReference<NetworkRequestObserverDelegate>>()
 
   /**
-   * Persists each recorded completion into the metrics database. Held strongly, because unlike
+   * Hands each recorded completion to the metrics sink. Held strongly, because unlike
    * delegates, persistence is part of the pipeline, not an observer of it. `null` until the
    * module installs it (and in tests that don't exercise persistence).
    */

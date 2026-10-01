@@ -3,8 +3,8 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.easclient.EASClientID
-import expo.modules.appmetrics.storage.SessionManager
-import expo.modules.appmetrics.storage.Span
+import expo.modules.observe.storage.SessionManager
+import expo.modules.observe.storage.Span
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import kotlinx.coroutines.currentCoroutineContext
@@ -387,7 +387,6 @@ class BaseObservabilityManager(
   }
 
   suspend fun cleanup() {
-    // TODO(@ubax): Move sessionManager.cleanupOldSessions out of eas observe
     sessionManager.cleanupOldSessions()
     // Remove the database used by the old pending telemetry queues.
     context.deleteDatabase("eas_observe")

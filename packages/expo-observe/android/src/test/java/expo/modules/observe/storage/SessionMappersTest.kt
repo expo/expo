@@ -1,4 +1,4 @@
-package expo.modules.appmetrics.storage
+package expo.modules.observe.storage
 
 import expo.modules.appmetrics.sessions.JsMetric
 import org.junit.Assert.assertEquals

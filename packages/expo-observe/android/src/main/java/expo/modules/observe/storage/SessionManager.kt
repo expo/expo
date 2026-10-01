@@ -1,4 +1,4 @@
-package expo.modules.appmetrics.storage
+package expo.modules.observe.storage
 
 import android.content.Context
 import androidx.room.withTransaction

@@ -1,8 +1,7 @@
-package expo.modules.appmetrics.storage
+package expo.modules.observe.storage
 
 import android.content.Context
 import android.util.Log
-import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.crashreporting.CrashOrigin
 import expo.modules.appmetrics.crashreporting.CrashReport
 import expo.modules.appmetrics.records.LogEvent
@@ -11,13 +10,14 @@ import expo.modules.appmetrics.records.NetworkSpan
 import expo.modules.appmetrics.sink.CrashAttributionHint
 import expo.modules.appmetrics.sink.MetricsSink
 import expo.modules.appmetrics.sink.SessionInfo
+import expo.modules.observe.OBSERVE_TAG
+import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.util.concurrent.ConcurrentHashMap
 
 /** Stores every record in the Room metrics database. */
 internal class DatabaseMetricsSink(private val sessionManager: SessionManager) : MetricsSink {
@@ -64,7 +64,7 @@ internal class DatabaseMetricsSink(private val sessionManager: SessionManager) :
         throw e
       } catch (e: Exception) {
         // Swallowed: recording telemetry must never break the network monitor.
-        Log.w(TAG, "Failed to persist a network request span", e)
+        Log.w(OBSERVE_TAG, "Failed to persist a network request span", e)
       }
     }
   }
@@ -76,7 +76,7 @@ internal class DatabaseMetricsSink(private val sessionManager: SessionManager) :
       // A null target stores the report as an orphan.
       val target: String? = when {
         // JVM file with a real session id → stored under that id.
-        hint.sessionId != null -> hint.sessionId.takeIf { sessionManager.getSessionRow(it) != null }
+        hint.sessionId != null -> hint.sessionId?.takeIf { sessionManager.getSessionRow(it) != null }
         // Native crash (exit record) → attributed to the previous main session,
         // unless that session already has a crash report, in which case it's stored
         // as an orphan so the existing report isn't overwritten.
@@ -93,7 +93,7 @@ internal class DatabaseMetricsSink(private val sessionManager: SessionManager) :
         sessionManager.setCrashReport(null, payload)
       }
     }.onFailure {
-      Log.e(TAG, "Failed to persist a crash report", it)
+      Log.e(OBSERVE_TAG, "Failed to persist a crash report", it)
     }
   }
 

@@ -512,7 +512,7 @@ private fun spanNanosecondsFromMilliseconds(milliseconds: Long): Long {
  * the session attribute, the event cap, and the JSON-to-`AnyValue` typing. Mirrors the iOS
  * `SpanRow.toOTSpan`.
  */
-fun expo.modules.appmetrics.storage.Span.toOTSpan(): OTSpan {
+fun expo.modules.observe.storage.Span.toOTSpan(): OTSpan {
   // Millisecond precision matches the backend's DateTime64(3) storage. A clock adjustment
   // mid-span can invert the two wall-clock timestamps, and the server rejects a span whose end
   // precedes its start, so the end clamps to the start.

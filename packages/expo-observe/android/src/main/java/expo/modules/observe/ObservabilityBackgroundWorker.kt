@@ -15,7 +15,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.observe.storage.SessionManager
 
 /**
  * Background worker that dispatches stored metrics, logs, and spans to EAS Observe.

@@ -2,10 +2,8 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
-import expo.modules.appmetrics.AppMetricsModule
-import expo.modules.appmetrics.storage.JsDebugSession
-import expo.modules.appmetrics.storage.JsLogRecord
-import expo.modules.appmetrics.storage.toJsMetric
+import expo.modules.appmetrics.AppMetricsPreferences
+import expo.modules.appmetrics.sink.MetricsSinkRegistry
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -16,6 +14,12 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.observe.storage.DatabaseMetricsSink
+import expo.modules.observe.storage.JsDebugSession
+import expo.modules.observe.storage.JsLogRecord
+import expo.modules.observe.storage.SessionManager
+import expo.modules.observe.storage.toJsMetric
+import kotlinx.coroutines.launch
 
 @OptimizedRecord
 class Config(
@@ -37,7 +41,6 @@ class ObserveModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private lateinit var observabilityManager: ObservabilityManager
-  private lateinit var appMetricsModule: AppMetricsModule
 
   private var lastIntegrations: Map<String, Any?> = emptyMap()
 
@@ -48,14 +51,12 @@ class ObserveModule : Module() {
       Events("configure")
 
       OnCreate {
-        appMetricsModule = checkNotNull(appContext.registry.getModule<AppMetricsModule>()) {
-          "AppMetricsModule is required by ObserveModule. Make sure expo-app-metrics is installed."
-        }
-        val sessionManager = appMetricsModule.sessionManager
+        // Fallback for hosts that skip `ObservePackage`. Registering the same sink again does nothing.
+        MetricsSinkRegistry.register(DatabaseMetricsSink.getInstance(context))
         observabilityManager = ObservabilityManager(
           context,
           appContext.service<ConstantsInterface>(),
-          sessionManager = sessionManager
+          sessionManager = SessionManager(context)
         )
       }
 
@@ -86,7 +87,7 @@ class ObserveModule : Module() {
         // omitted field becomes a deterministic value, not a silent retain of prior state.
         val resolvedEnvironment = config.environment
           ?: ObservePreferences.getBundleDefaults(context)?.environment
-        resolvedEnvironment?.let { appMetricsModule.setEnvironment(it) }
+        resolvedEnvironment?.let { setEnvironment(it) }
 
         // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
         lastIntegrations = config.integrations ?: emptyMap()
@@ -100,28 +101,28 @@ class ObserveModule : Module() {
       // Debug-only: surfaces the inactive (ended) sessions for on-device
       // inspection (e.g. the ObserveTester app)
       AsyncFunction("getInactiveSessions") Coroutine { ->
-        appMetricsModule.sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithChildren(it) }
+        observabilityManager.sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithChildren(it) }
       }
 
       // Every stored crash report, newest first — attributed reports plus
       // orphans (startup crashes before the session existed, or native crashes
       // that couldn't be attributed). Orphans carry a null session id.
       AsyncFunction("getAllCrashReports") Coroutine { ->
-        appMetricsModule.sessionManager.getAllCrashReports().mapNotNull { entity ->
+        observabilityManager.sessionManager.getAllCrashReports().mapNotNull { entity ->
           // `sessionId` lives on the DB row, not in the payload — merge it in so
           // callers can spot orphans (null session id).
           JsonAny.decodeJsonStringToMap(entity.payload)?.plus("sessionId" to entity.sessionId)
         }
       }
 
-      AsyncFunction("clearStoredEntries") Coroutine { -> appMetricsModule.sessionManager.clearAllData() }
+      AsyncFunction("clearStoredEntries") Coroutine { -> observabilityManager.sessionManager.clearAllData() }
 
       AsyncFunction("getSessionMetrics") Coroutine { sessionId: String ->
-        appMetricsModule.sessionManager.getMetricsForSession(sessionId).map { it.toJsMetric() }
+        observabilityManager.sessionManager.getMetricsForSession(sessionId).map { it.toJsMetric() }
       }
 
       AsyncFunction("getSessionLogs") Coroutine { sessionId: String ->
-        appMetricsModule.sessionManager.getLogsForSession(sessionId).map { JsLogRecord.fromLogRecord(it) }
+        observabilityManager.sessionManager.getLogsForSession(sessionId).map { JsLogRecord.fromLogRecord(it) }
       }
 
       Function("setBundleDefaults") { defaults: BundleDefaults ->
@@ -140,7 +141,14 @@ class ObserveModule : Module() {
           context,
           PersistedBundleDefaults(environment = defaults.environment, isJsDev = defaults.isJsDev)
         )
-        appMetricsModule.setEnvironment(defaults.environment)
+        setEnvironment(defaults.environment)
       }
     }
+
+  private fun setEnvironment(environment: String) {
+    AppMetricsPreferences.setEnvironment(context, environment)
+    appContext.modulesQueue.launch {
+      DatabaseMetricsSink.getInstance(context).updateEnvironmentForActiveSessions(environment)
+    }
+  }
 }

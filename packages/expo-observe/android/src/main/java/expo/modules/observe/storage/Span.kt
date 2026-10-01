@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-package expo.modules.appmetrics.storage
+package expo.modules.observe.storage
 
 import androidx.room.Dao
 import androidx.room.Entity

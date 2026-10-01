@@ -1,8 +1,8 @@
 package expo.modules.observe
 
-import expo.modules.appmetrics.storage.LogRecord
-import expo.modules.appmetrics.storage.Metric
-import expo.modules.appmetrics.storage.Session
+import expo.modules.observe.storage.LogRecord
+import expo.modules.observe.storage.Metric
+import expo.modules.observe.storage.Session
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer

@@ -30,8 +30,6 @@ import expo.modules.appmetrics.sessions.SessionMetricInput
 import expo.modules.appmetrics.sessions.SessionSharedObject
 import expo.modules.appmetrics.sink.CrashAttributionHint
 import expo.modules.appmetrics.sink.MetricsSinkRegistry
-import expo.modules.appmetrics.storage.DatabaseMetricsSink
-import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.JsonAny
@@ -64,8 +62,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
   private var subscription: UpdatesStateChangeSubscription? = null
-
-  lateinit var sessionManager: SessionManager
 
   lateinit var mainSession: SessionSharedObject
 
@@ -153,9 +149,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnCreate {
-        MetricsSinkRegistry.register(DatabaseMetricsSink.getInstance(context))
-        sessionManager = SessionManager(context)
-
         // The main session starts at the first startup metric's timestamp (the
         // earliest moment we have a record of), falling back to now when none
         // have been collected yet.
@@ -274,7 +267,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       //
       // A fatal error terminates the process right after this returns, so we can't let the async
       // coroutine write race the shutdown. We write it to disk synchronously here (no coroutine, no
-      // database) and ingest it on the next launch. Non-fatal errors aren't racing termination, so
+      // sink) and ingest it on the next launch. Non-fatal errors aren't racing termination, so
       // they go through the normal async log path.
       Function("reportError") { report: ErrorReport ->
         if (report.isFatal) {
@@ -328,13 +321,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
     }
 
-  fun setEnvironment(environment: String) {
-    AppMetricsPreferences.setEnvironment(context, environment)
-    scope.launch {
-      DatabaseMetricsSink.getInstance(context).updateEnvironmentForActiveSessions(environment)
-    }
-  }
-
   override fun updatesStateDidChange(event: Map<String, Any>) {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
@@ -348,13 +334,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     }
   }
 
-  // Persists the collected startup metrics once, then suspends until that write
+  // Records the collected startup metrics once, then suspends until that call
   // completes.
   internal suspend fun saveStartupMetricsIfNotSaved() = saveStartupMetricsJob.join()
 
-  // Startup metrics are persisted on first access and exactly once: `by lazy`
+  // Startup metrics are recorded on first access and exactly once: `by lazy`
   // runs the initializer a single time even across threads, so concurrent callers
-  // don't each insert them.
+  // don't each record them.
   private val saveStartupMetricsJob: Job by lazy {
     scope.launch {
       mainSession.addMetrics(AppStartupManager.metrics)
