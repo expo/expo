@@ -36,7 +36,9 @@ export default function Profile() {
 }
 ```
 
-The callback runs when the screen gains focus. If the screen is already focused, it also runs when its dependencies change. Return a cleanup function to stop the work when the screen loses focus, the dependencies change, or the component unmounts.
+The callback runs when the screen comes into focus. While the screen remains focused, it also runs again if any of its dependencies change.
+
+Return a cleanup function to stop the work when the screen loses focus, the dependencies change, or the component unmounts.
 
 ### Pass dependencies to `useFocusEffect`
 
@@ -50,32 +52,6 @@ useFocusEffect(
   }, [profileId])
 );
 ```
-
-### Run async work in `useFocusEffect`
-
-Do not make the callback itself `async` because it must return a cleanup function or nothing. Instead, define and call an async function inside the callback:
-
-```tsx
-useFocusEffect(
-  useCallback(() => {
-    let isActive = true;
-
-    async function loadProfile() {
-      const profile = await fetchProfile(profileId);
-      if (isActive) {
-        setProfile(profile);
-      }
-    }
-
-    loadProfile();
-    return () => {
-      isActive = false;
-    };
-  }, [profileId])
-);
-```
-
-The cleanup prevents a completed request from updating the screen after the effect ends.
 
 ## Render based on focus
 
@@ -92,6 +68,8 @@ export default function Profile() {
 ```
 
 ## Listen for focus and blur events
+
+> **Note:** Prefer `useFocusEffect` whenever possible. Use `useNavigation().addListener` only when the work cannot be expressed as an effect tied to screen focus.
 
 Use `useNavigation` to run code for a specific `focus` or `blur` event. Subscribe in an effect and remove both listeners in its cleanup:
 

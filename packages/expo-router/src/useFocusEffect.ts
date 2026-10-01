@@ -103,7 +103,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
             '    fetchData();\n' +
             '  }, [someId])\n' +
             ');\n\n' +
-            'See usage guide: https://docs.expo.dev/router/reference/focus-handling/#run-async-work-in-usefocuseffect';
+            'See usage guide: https://docs.expo.dev/router/reference/focus-handling/';
         } else {
           message += ` You returned '${JSON.stringify(destroy)}'.`;
         }
