@@ -17,13 +17,19 @@ import { BenchmarkRun } from './ModulesBenchmarksHistory';
 const TARGET_SERIES_MS = 200;
 
 /**
- * Sampling stops once a benchmark has spent this long in timed series, so a run costs
- * roughly the same wall time whatever the benchmark does.
+ * Sampling stops once a benchmark has spent this long in timed series. It sits above
+ * `MAX_SERIES` series at the target duration, so it only cuts in when series overrun the
+ * target; a noisy benchmark otherwise keeps sampling until the precision target or
+ * `MAX_SERIES`, while a quiet one stops as soon as it is precise.
  */
-const SERIES_BUDGET_MS = 2_000;
+const SERIES_BUDGET_MS = 6_000;
 
-/** Sampling never stops below this many series, whatever the budget or the precision says. */
-export const MIN_SERIES = 5;
+/**
+ * Sampling never stops below this many series, whatever the budget or the precision says.
+ * With fewer, the bootstrap interval of the median can only pick from the few series there
+ * are and collapses to the min–max range.
+ */
+export const MIN_SERIES = 10;
 
 /** Nor does it continue past this many, so one pathological benchmark can't stall a run. */
 export const MAX_SERIES = 25;
