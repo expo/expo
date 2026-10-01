@@ -268,7 +268,11 @@ class BackgroundSessionOptions(
       return BackgroundSessionOptions(
         notificationTitle = preferences.getString(KEY_TITLE, null),
         notificationBody = preferences.getString(KEY_BODY, null),
-        notificationColor = if (preferences.contains(KEY_COLOR)) preferences.getInt(KEY_COLOR, 0) else null,
+        notificationColor = if (preferences.contains(KEY_COLOR)) {
+          preferences.getInt(KEY_COLOR, 0)
+        } else {
+          null
+        },
         stopOnTaskRemoved = preferences.getBoolean(KEY_STOP_ON_TASK_REMOVED, false)
       )
     }
