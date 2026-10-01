@@ -248,7 +248,7 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
  * - Alias `react-native` to `react-native-web` on web.
- * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
+ * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to the shared virtual asset registry module on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
  */
 export function withExtendedResolver(
