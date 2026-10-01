@@ -30,7 +30,7 @@ export default function Profile() {
 }
 ```
 
-`useFocusEffect` waits until navigation has loaded before it first runs the callback. It then runs the callback when the screen gains focus, or when the effect runs while the screen is already focused. The cleanup runs on blur and when the effect is torn down, for example, when the callback changes or the component unmounts. If the memoized callback changes while the screen is focused, the previous cleanup runs before the new callback runs.
+`useFocusEffect` runs the callback when the screen gains focus, or when the effect runs while the screen is already focused. The cleanup runs on blur and when the effect is torn down, for example, when the callback changes or the component unmounts. If the memoized callback changes while the screen is focused, the previous cleanup runs before the new callback runs.
 
 ### Pass dependencies to `useFocusEffect`
 
@@ -45,33 +45,9 @@ useFocusEffect(
 );
 ```
 
-### Run async work in `useFocusEffect`
-
-The callback itself must not be `async`: an async function returns a Promise, but `useFocusEffect` expects it to return a cleanup function or nothing. Define and call an async function inside the callback. Ignore the result after cleanup if the work cannot be canceled:
-
-```tsx
-useFocusEffect(
-  useCallback(() => {
-    let active = true;
-
-    async function loadProfile() {
-      const profile = await fetchProfile(profileId);
-      if (active) {
-        setProfile(profile);
-      }
-    }
-
-    loadProfile();
-    return () => {
-      active = false;
-    };
-  }, [profileId])
-);
-```
-
 ## Render based on focus
 
-`useIsFocused` returns a boolean that changes when the screen gains or loses focus. It re-renders the component on focus changes. Call it inside a route screen or another component in the route tree.
+If you need to re-render your component when the screen is focused, use `useIsFocused`. This hook returns a boolean that changes when the screen gains or loses focus.
 
 ```tsx
 import { useIsFocused } from 'expo-router';
@@ -82,8 +58,6 @@ export default function Profile() {
   return <ProfileContent showLiveStatus={isFocused} />;
 }
 ```
-
-Calling `useIsFocused` outside the route tree throws an error.
 
 ## Listen for focus and blur events
 
@@ -109,8 +83,6 @@ export default function Profile() {
 }
 ```
 
-For imperative code outside a route component, a reference to a screen navigation object can also provide `focus` and `blur` events. Subscribe with `addListener` and retain the returned unsubscribe function. The root `NavigationContainerRef` exposes only the `state` event, so it cannot listen for screen focus or blur. Inside a route component, `useNavigation` provides the screen navigation object shown above.
-
 ## When to use which
 
 | Need                                                                 | Use                           |
@@ -118,24 +90,3 @@ For imperative code outside a route component, a reference to a screen navigatio
 | Start work while a screen is focused and clean it up when focus ends | `useFocusEffect`              |
 | Render different UI based on current focus                           | `useIsFocused`                |
 | Respond to a specific focus or blur navigation event                 | `useNavigation().addListener` |
-
-## Use the active route for route-aware effects
-
-Focus describes a screen's navigation state. When an effect depends on the active route, [`useSegments`](/versions/latest/sdk/router/#usesegments) reads its file-based segments and [`usePathname`](/versions/latest/sdk/router/#usepathname) reads its URL pathname. Use either value as an effect dependency when route changes should trigger the work:
-
-```tsx
-import { useEffect } from 'react';
-import { usePathname } from 'expo-router';
-
-export default function RouteObserver() {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    recordRoute(pathname);
-  }, [pathname]);
-
-  return null;
-}
-```
-
-`useStateForPath` is exported only by the `expo-router/react-navigation` compatibility entry; it is not exported from `expo-router` and is not an Expo Router feature.
