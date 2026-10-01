@@ -37,7 +37,11 @@ enum class FileMode(val descriptor: String) : Enumerable {
    * Other modes like `"wa"` or `"wt"` need to be handled manually.
    */
   val rafMode: String
-    get() = if (this == READ) "r" else "rw"
+    get() = if (this == READ) {
+      "r"
+    } else {
+      "rw"
+    }
 
   fun ensureCanRead() = when (this) {
     READ, READ_WRITE -> {}
@@ -133,7 +137,9 @@ class FileSystemFileHandle private constructor(
         var bytesRead = 0
         while (bytesRead < readAmount) {
           val result = fileChannel.read(buffer)
-          if (result == -1) break
+          if (result == -1) {
+            break
+          }
           bytesRead += result
         }
 
@@ -171,7 +177,9 @@ class FileSystemFileHandle private constructor(
       }
     }
     set(value) {
-      if (value == null) return
+      if (value == null) {
+        return
+      }
       synchronized(lock) {
         fileChannel.position(value)
       }

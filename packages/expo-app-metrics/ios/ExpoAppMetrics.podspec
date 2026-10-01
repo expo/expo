@@ -28,6 +28,8 @@ Pod::Spec.new do |s|
 
   s.libraries = 'sqlite3'
 
+  s.resource_bundles = {'ExpoAppMetrics_privacy' => ['PrivacyInfo.xcprivacy']}
+
   install_modules_dependencies(s)
 
   s.pod_target_xcconfig = {

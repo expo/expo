@@ -36,8 +36,16 @@ class BarcodeAnalyzer(formats: List<BarcodeType>, val onComplete: (BarCodeScanne
       // MLKit returns coordinates in the upright (rotated) coordinate space,
       // so we need the post-rotation dimensions for correct scaling.
       val isRotated = rotationDegrees == 90 || rotationDegrees == 270
-      val effectiveWidth = if (isRotated) imageProxy.height else imageProxy.width
-      val effectiveHeight = if (isRotated) imageProxy.width else imageProxy.height
+      val effectiveWidth = if (isRotated) {
+        imageProxy.height
+      } else {
+        imageProxy.width
+      }
+      val effectiveHeight = if (isRotated) {
+        imageProxy.width
+      } else {
+        imageProxy.height
+      }
 
       barcodeScanner.process(image)
         .addOnSuccessListener { barcodes ->

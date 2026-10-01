@@ -1,12 +1,13 @@
 # Changelog
 
-## Unpublished
+## 1.21.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Exit with a non-zero code when Doctor can't run its checks, for example because the app config fails to load. ([#50325](https://github.com/expo/expo/pull/50325) by [@tahakocal](https://github.com/tahakocal))
 
-### 🐛 Bug fixes
+## 1.21.2 — 2026-09-28
 
 ### 💡 Others
 

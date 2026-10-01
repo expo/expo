@@ -1,14 +1,45 @@
 # Changelog
 
-## Unpublished
+## 58.0.12
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Update `expo-router/testing-library` to use `@testing-library/react-native` v14. ([#50686](https://github.com/expo/expo/pull/50686) by [@hassankhan](https://github.com/hassankhan))
 
-### 🐛 Bug fixes
+## 58.0.11
 
-### 💡 Others
+### Patch Changes
+
+- Fix missing back animation after opening a screen from a link preview on iOS. ([#50839](https://github.com/expo/expo/pull/50839) by [@Ubax](https://github.com/Ubax))
+- Allow setting the native header's light or dark interface style per `Stack` screen on iOS. ([#50765](https://github.com/expo/expo/pull/50765) by [@Ubax](https://github.com/Ubax))
+- [Internal] Remove the `import-mode` module and read `process.env.EXPO_ROUTER_IMPORT_MODE` directly in `useScreens`. ([#50826](https://github.com/expo/expo/pull/50826) by [@Ubax](https://github.com/Ubax))
+- Fix a crash on launch in production when the app has no `scheme`. ([#50708](https://github.com/expo/expo/pull/50708) by [@expo-bot](https://github.com/expo-bot))
+- Resolve Native Tabs `xcasset` icon names through the iOS asset catalog so symbol sets render. ([#48301](https://github.com/expo/expo/pull/48301) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
+- Fixes a minor grammatical issue in the error message when `NativeTabs` is used on an unsupported platform. ([#46202](https://github.com/expo/expo/pull/46202) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#49529](https://github.com/expo/expo/pull/49529))
+  - @expo/log-box@58.0.8
+  - @expo/metro-runtime@58.0.10
+
+## 58.0.10
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Use `unwrapDevLaunchURL` from `expo-linking` instead of a private copy of the `expo-development-client` URL handling. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Ignore the reserved `__expo_*` launch URL params on Expo Go and development build launch URLs, so they no longer become route search params. ([#50289](https://github.com/expo/expo/pull/50289) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Remove obsolete fork annotations and commented-out path conversion code. ([#50726](https://github.com/expo/expo/pull/50726) by [@Ubax](https://github.com/Ubax))
+- Update Expo Router navigation guidance in API comments and diagnostics to point to Expo documentation. ([#50732](https://github.com/expo/expo/pull/50732) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/log-box@58.0.7
+  - @expo/metro-runtime@58.0.9
+  - @expo/schema-utils@58.0.1
+  - expo-glass-effect@58.0.3
+  - expo-server@58.0.2
+
+## 58.0.9 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.8 — 2026-09-25
 

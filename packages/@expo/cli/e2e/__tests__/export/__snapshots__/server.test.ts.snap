@@ -94,7 +94,6 @@ exports[`server-output express requests exported files has expected routes manif
   ],
   "assets": {
     "css": [],
-    "externalCss": [],
     "js": [
       "/_expo/static/js/web/entry-[hash].js",
     ],
@@ -273,7 +272,6 @@ exports[`server-output workerd requests exported files has expected routes manif
   ],
   "assets": {
     "css": [],
-    "externalCss": [],
     "js": [
       "/_expo/static/js/web/entry-[hash].js",
     ],

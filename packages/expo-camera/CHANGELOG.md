@@ -1,14 +1,28 @@
 # Changelog
 
-## Unpublished
+## 58.0.7
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Bind the barcode image analyzer only while barcode scanning is enabled, so the camera preview and captured photo use the same frame. ([#50808](https://github.com/expo/expo/pull/50808) by [@hitanshur](https://github.com/hitanshur))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
 
 ### 💡 Others
+
+- [iOS] Remove a dead `compilerFlags` block from the SwiftPM build configuration. It had no effect on either build path. ([#50417](https://github.com/expo/expo/pull/50417) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.3 — 2026-09-22
 

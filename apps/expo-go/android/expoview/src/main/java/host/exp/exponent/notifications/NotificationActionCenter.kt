@@ -59,7 +59,11 @@ object NotificationActionCenter {
       putExtra(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY, actionObject.actionId)
     }
     // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      PendingIntent.FLAG_MUTABLE
+    } else {
+      0
+    }
     val pendingIntent = PendingIntent.getActivity(
       context,
       UUID.randomUUID().hashCode(),

@@ -79,10 +79,23 @@ export const fillMaxWidth = (fraction?: number) => createModifier('fillMaxWidth'
 export const fillMaxHeight = (fraction?: number) => createModifier('fillMaxHeight', { fraction });
 
 /**
- * Sets the exact width of the view.
- * @param value - Width in dp.
+ * Intrinsic width values for the `width` modifier. `Min` is the smallest width at which the content
+ * still draws correctly, and `Max` is the width the content needs when nothing limits it.
  */
-export const width = (value: number) => createModifier('width', { width: value });
+export const IntrinsicSize = { Min: 'min', Max: 'max' } as const;
+export type IntrinsicSize = (typeof IntrinsicSize)[keyof typeof IntrinsicSize];
+
+/**
+ * Sets the width of the view to an exact value, or to the minimum or maximum intrinsic width of its
+ * content. The incoming constraints can still make the view narrower or wider than that width.
+ * @param value - Width in dp, or an `IntrinsicSize`. `IntrinsicSize.Min` uses the minimum intrinsic
+ * width, the smallest width at which the content still draws correctly (for a text, its widest word).
+ * `IntrinsicSize.Max` uses the maximum intrinsic width, the width the content needs when nothing
+ * limits it (for a text, a single line).
+ * @see [Compose `width(IntrinsicSize)` modifier](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/width.modifier#(androidx.compose.ui.Modifier).width(androidx.compose.foundation.layout.IntrinsicSize))
+ * @see [Intrinsic measurements in Compose layouts](https://developer.android.com/develop/ui/compose/layouts/intrinsic-measurements)
+ */
+export const width = (value: number | IntrinsicSize) => createModifier('width', { width: value });
 
 /**
  * Sets the exact height of the view.
@@ -455,9 +468,24 @@ export const onGloballyPositioned = (
 export const testID = (tag: string) => createModifier('testID', { testID: tag });
 
 /**
+ * Options for the `semantics` modifier.
+ */
+export type SemanticsConfig = {
+  /**
+   * An autofill hint, such as `'email'` or `'password'`.
+   */
+  contentType?: string;
+  /**
+   * What accessibility services such as TalkBack announce for the element. Useful when the visible
+   * content does not read well aloud, as with an abbreviation or a glyph.
+   */
+  contentDescription?: string;
+};
+
+/**
  * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
  */
-export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
+export const semantics = (params: SemanticsConfig) => createModifier('semantics', params);
 
 // =============================================================================
 // Clip Modifier & Shapes

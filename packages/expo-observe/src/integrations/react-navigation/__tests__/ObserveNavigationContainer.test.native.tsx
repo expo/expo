@@ -103,8 +103,8 @@ beforeEach(() => {
 });
 
 describe('ObserveNavigationContainer', () => {
-  it('renders NavigationContainer with the same children', () => {
-    const { getByText } = render(
+  it('renders NavigationContainer with the same children', async () => {
+    const { getByText } = await render(
       <ObserveNavigationContainer>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -113,9 +113,9 @@ describe('ObserveNavigationContainer', () => {
     expect(mockNavigationContainer).toHaveBeenCalled();
   });
 
-  it('exposes a non-null context when isInitialized() is true', () => {
+  it('exposes a non-null context when isInitialized() is true', async () => {
     const reads: unknown[] = [];
-    render(
+    await render(
       <ObserveNavigationContainer>
         <ContextProbe onRead={(v) => reads.push(v)} />
       </ObserveNavigationContainer>
@@ -126,10 +126,10 @@ describe('ObserveNavigationContainer', () => {
     ).toBeInstanceOf(Set);
   });
 
-  it('exposes a null context and skips attachActionListener when not initialized', () => {
+  it('exposes a null context and skips attachActionListener when not initialized', async () => {
     mockIsInitialized.mockReturnValue(false);
     const reads: unknown[] = [];
-    render(
+    await render(
       <ObserveNavigationContainer>
         <ContextProbe onRead={(v) => reads.push(v)} />
       </ObserveNavigationContainer>
@@ -138,8 +138,8 @@ describe('ObserveNavigationContainer', () => {
     expect(attachActionListenerMock).not.toHaveBeenCalled();
   });
 
-  it('attaches the action listener with the internal navigationRef and runs cleanup on unmount', () => {
-    const { unmount } = render(
+  it('attaches the action listener with the internal navigationRef and runs cleanup on unmount', async () => {
+    const { unmount } = await render(
       <ObserveNavigationContainer>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -148,13 +148,13 @@ describe('ObserveNavigationContainer', () => {
     expect(attachActionListenerMock.mock.calls[0][0]).toBe(fakeNavigationRef);
 
     expect(attachActionListenerCleanup).not.toHaveBeenCalled();
-    unmount();
+    await unmount();
     expect(attachActionListenerCleanup).toHaveBeenCalledTimes(1);
   });
 
-  it('forwards a user-supplied ref to the internal navigationRef', () => {
+  it('forwards a user-supplied ref to the internal navigationRef', async () => {
     const ref = createRef<unknown>();
-    render(
+    await render(
       <ObserveNavigationContainer ref={ref as never}>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -162,13 +162,13 @@ describe('ObserveNavigationContainer', () => {
     expect(ref.current).toBe(fakeNavigationRef);
   });
 
-  it('forwards user onStateChange and onReady to NavigationContainer unchanged', () => {
+  it('forwards user onStateChange and onReady to NavigationContainer unchanged', async () => {
     // Instrumentation rides the ref's `state` listener (via
     // ObserveNavigationProvider), so the container must not wrap the user's
     // callbacks — wrapping would double-drive the metrics handler.
     const userOnStateChange = jest.fn();
     const userOnReady = jest.fn();
-    render(
+    await render(
       <ObserveNavigationContainer onStateChange={userOnStateChange} onReady={userOnReady}>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -179,8 +179,8 @@ describe('ObserveNavigationContainer', () => {
     expect(props.onReady).toBe(userOnReady);
   });
 
-  it('does not inject its own onStateChange or onReady when the user omits them', () => {
-    render(
+  it('does not inject its own onStateChange or onReady when the user omits them', async () => {
+    await render(
       <ObserveNavigationContainer>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -191,8 +191,8 @@ describe('ObserveNavigationContainer', () => {
     expect(props.onReady).toBeUndefined();
   });
 
-  it('drives the state handler from the `state` ref event', () => {
-    render(
+  it('drives the state handler from the `state` ref event', async () => {
+    await render(
       <ObserveNavigationContainer>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -206,9 +206,9 @@ describe('ObserveNavigationContainer', () => {
     expect(stateChangeHandler).toHaveBeenCalledWith(rootState);
   });
 
-  it('passes other NavigationContainer props through (e.g. theme)', () => {
+  it('passes other NavigationContainer props through (e.g. theme)', async () => {
     const theme = { dark: true, colors: {} } as unknown as never;
-    render(
+    await render(
       <ObserveNavigationContainer theme={theme}>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -218,13 +218,13 @@ describe('ObserveNavigationContainer', () => {
     expect(props.theme).toBe(theme);
   });
 
-  it('uses the same createStateChangeHandler for the entire mount lifetime', () => {
-    const { rerender } = render(
+  it('uses the same createStateChangeHandler for the entire mount lifetime', async () => {
+    const { rerender } = await render(
       <ObserveNavigationContainer>
         <Text>child</Text>
       </ObserveNavigationContainer>
     );
-    rerender(
+    await rerender(
       <ObserveNavigationContainer>
         <Text>child</Text>
       </ObserveNavigationContainer>
@@ -232,24 +232,25 @@ describe('ObserveNavigationContainer', () => {
     expect(createStateChangeHandlerMock).toHaveBeenCalledTimes(1);
   });
 
-  it('throws when isInitialized() flips during the container lifetime', () => {
+  it('throws when isInitialized() flips during the container lifetime', async () => {
     mockIsInitialized.mockReturnValue(false);
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { rerender } = render(
+    const { rerender } = await render(
       <ObserveNavigationContainer>
         <Text>child</Text>
       </ObserveNavigationContainer>
     );
 
     mockIsInitialized.mockReturnValue(true);
-    expect(() =>
-      rerender(
-        <ObserveNavigationContainer>
-          <Text>child</Text>
-        </ObserveNavigationContainer>
-      )
-    ).toThrow(
+    await expect(
+      async () =>
+        await rerender(
+          <ObserveNavigationContainer>
+            <Text>child</Text>
+          </ObserveNavigationContainer>
+        )
+    ).rejects.toThrow(
       "[expo-observe] React Navigation integration was toggled after ObserveNavigationContainer mounted. Call `Observe.configure({ integrations: { 'react-navigation': true } })` before rendering ObserveNavigationContainer."
     );
   });

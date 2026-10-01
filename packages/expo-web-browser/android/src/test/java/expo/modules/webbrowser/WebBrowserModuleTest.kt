@@ -30,7 +30,9 @@ private fun assertStringValueNull(bundle: Bundle, key: String) {
 }
 
 private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
-  if (first == second) return
+  if (first == second) {
+    return
+  }
 
   if (first == null || second == null) {
     throw throw ComparisonFailure(message, first.toString(), second.toString())

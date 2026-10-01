@@ -3,7 +3,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { glob } from 'glob';
+import resolveWorkspaceRoot from 'resolve-workspace-root';
+
 import { checkDependenciesAsync } from '../utils/depscheck/check.js';
+
+const { getWorkspaceGlobs, resolveWorkspaceRoot: findWorkspaceRoot } = resolveWorkspaceRoot;
 
 /** Sub-targets that live in their own directory and are checked independently. */
 const SUB_TARGETS = ['plugin', 'cli', 'utils'];
@@ -17,7 +22,24 @@ async function runAsync() {
   }
 
   const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
-  const pkg = { packageName: packageJson.name, packagePath, packageJson };
+  const workspaceRoot = findWorkspaceRoot(packagePath);
+  const workspaceGlobs = workspaceRoot ? getWorkspaceGlobs(workspaceRoot) : null;
+  const workspacePackageNames = new Set();
+  if (workspaceRoot && workspaceGlobs) {
+    const packageJsonPaths = await glob(
+      workspaceGlobs.map((workspaceGlob) => `${workspaceGlob}/package.json`),
+      { cwd: workspaceRoot, absolute: true }
+    );
+    for (const workspacePackageJsonPath of packageJsonPaths) {
+      const workspacePackageJson = JSON.parse(
+        await fs.promises.readFile(workspacePackageJsonPath, 'utf8')
+      );
+      if (workspacePackageJson.name) {
+        workspacePackageNames.add(workspacePackageJson.name);
+      }
+    }
+  }
+  const pkg = { packageName: packageJson.name, packagePath, packageJson, workspacePackageNames };
 
   const args = process.argv.slice(2).filter((arg) => !arg.startsWith('-'));
 

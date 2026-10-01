@@ -1,7 +1,7 @@
 {
   "name": "minimal-tester",
-  "private": true,
   "version": "1.0.0",
+  "private": true,
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -25,7 +25,7 @@
     "expo-video": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.2",
-    "react-native-web": "~0.21.0"
+    "react-native": "0.88.0-rc.3",
+    "react-native-web": "~0.21.3"
   }
 }

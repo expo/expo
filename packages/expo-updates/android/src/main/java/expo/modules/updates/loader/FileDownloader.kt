@@ -1095,7 +1095,11 @@ private class FileDownloadProgressResponseBody(
 
       override fun read(sink: Buffer, byteCount: Long): Long {
         val bytesRead = super.read(sink, byteCount)
-        totalBytesRead += if (bytesRead != -1L) bytesRead else 0
+        totalBytesRead += if (bytesRead != -1L) {
+          bytesRead
+        } else {
+          0
+        }
         progressListener.update(totalBytesRead, responseBody.contentLength())
         return bytesRead
       }

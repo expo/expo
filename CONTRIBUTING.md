@@ -8,6 +8,7 @@
   - [✅ Unit Testing](#-unit-testing)
   - [🏁 E2E Testing](#-e2e-testing)
 - [📚 Updating Documentation](#-updating-documentation)
+- [🦋 Recording Package Changes](#-recording-package-changes)
 - [📝 Writing a Commit Message](#-writing-a-commit-message)
 - [🔎 Before Submitting](#-before-submitting)
   - [Extra Credit](#extra-credit-1)
@@ -155,6 +156,19 @@ All modules should adhere to the style guides which can be found here:
 - We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
 - We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
 
+## 🦋 Recording Package Changes
+
+Changes to a published package need a Changesets entry. Run `pnpm changeset`, select every affected
+public package, and choose `patch` for a fix, `minor` for a compatible feature, or `major` for a
+breaking change. Do not use `major` on an `sdk-*` release branch.
+
+Write a short summary for package users and edit the generated `.changeset/*.md` file instead of a
+package's `CHANGELOG.md`. Changes that only affect documentation, tests, apps, CI, or private tooling
+do not need a changeset.
+
+See [Updating Changelogs](guides/contributing/Updating%20Changelogs.md) for examples and formatting
+options.
+
 ## ⏱ Testing Your Changes
 
 > You'll need write about how you tested your changes in the PR under the **Test Plan** section.
@@ -202,7 +216,7 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 ## 🔎 Before Submitting
 
-- Remember to add a concise description of any user-facing changes to `CHANGELOG.md` file in the package you've changed or [root's CHANGELOG.md](/CHANGELOG.md) if your changes don't apply to any package. This is especially helpful for breaking changes!
+- Remember to add a changeset containing a concise description of any user-facing changes using `pnpm changeset` for the packages you've changed. This is especially helpful for breaking changes!
 
 To keep CI green, please make sure of the following:
 

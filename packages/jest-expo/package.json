@@ -1,6 +1,6 @@
 {
   "name": "jest-expo",
-  "version": "58.0.3",
+  "version": "58.0.6",
   "description": "A Jest preset to painlessly test your Expo / React Native apps.",
   "homepage": "https://github.com/expo/expo/tree/main/packages/jest-expo",
   "bugs": {
@@ -46,17 +46,17 @@
     "jest-watch-typeahead": "2.2.1",
     "json5": "^2.2.3",
     "lodash": "^4.17.19",
-    "react-test-renderer": "19.3.0",
     "server-only": "^0.0.1",
-    "stacktrace-js": "^2.0.2"
+    "stacktrace-js": "^2.0.2",
+    "test-renderer": "1.3.0"
   },
   "devDependencies": {
-    "@react-native/jest-preset": "0.88.0-rc.2",
+    "@react-native/jest-preset": "0.88.0-rc.3",
     "@types/react": "~19.3.0",
     "react-server-dom-webpack": "~19.0.8"
   },
   "peerDependencies": {
-    "@react-native/jest-preset": "^0.88.0-rc.2",
+    "@react-native/jest-preset": "^0.88.0-rc.3",
     "expo": "*",
     "react-native": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4 || ~19.3.0"
