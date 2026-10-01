@@ -1,10 +1,5 @@
-import AppMetrics, {
-  type CrashReport,
-  type DebugSession,
-  type Session,
-  type SessionType,
-} from 'expo-app-metrics';
-import { useObserve } from 'expo-observe';
+import AppMetrics, { type CrashReport, type Session, type SessionType } from 'expo-app-metrics';
+import { type DebugSession, Observe, useObserve } from 'expo-observe';
 import { type Href, router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -73,14 +68,14 @@ export default function SessionsList() {
       live.filter((session): session is Session => session != null).map(liveSessionToRow)
     );
 
-    const records = await AppMetrics.getInactiveSessions();
+    const records = await Observe.getInactiveSessions();
     const inactive: SessionRowData[] = records
       .map(inactiveSessionToRow)
       .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
 
     // Startup crashes that predate any session — the orphans among all reports.
     // Android only, hence the optional call.
-    const allReports = (await AppMetrics.getAllCrashReports?.()) ?? [];
+    const allReports = (await Observe.getAllCrashReports?.()) ?? [];
     const orphans: OrphanRowData[] = allReports
       .filter((report) => report.sessionId == null)
       .map(orphanCrashToRow);
@@ -108,7 +103,7 @@ export default function SessionsList() {
     }, [refresh])
   );
 
-  if (typeof AppMetrics.getInactiveSessions !== 'function') {
+  if (typeof Observe.getInactiveSessions !== 'function') {
     return (
       <View style={[styles.container, styles.center, { backgroundColor: theme.background.screen }]}>
         <Text style={[styles.emptyText, { color: theme.text.default }]}>
@@ -180,7 +175,7 @@ async function liveSessionToRow(session: Session): Promise<SessionRowData> {
     startDate: session.startDate,
     endDate: null,
     isActive: true,
-    metricCount: (await session.getMetrics()).length,
+    metricCount: (await Observe.getSessionMetrics(session.id)).length,
     crashed: false,
     href: `/sessions/${session.type}`,
   };

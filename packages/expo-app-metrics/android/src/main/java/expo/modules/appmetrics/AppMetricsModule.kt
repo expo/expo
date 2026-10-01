@@ -28,11 +28,8 @@ import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.sessions.JsMetric
 import expo.modules.appmetrics.sessions.SessionMetricInput
 import expo.modules.appmetrics.sessions.SessionSharedObject
-import expo.modules.appmetrics.storage.JsDebugSession
 import expo.modules.appmetrics.storage.MetricsDatabase
-import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.SessionManager
-import expo.modules.appmetrics.storage.toJsMetric
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.JsonAny
@@ -275,28 +272,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      // Debug-only: surfaces the inactive (ended) sessions for on-device
-      // inspection (e.g. the ObserveTester app)
-      AsyncFunction("getInactiveSessions") Coroutine { ->
-        sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithChildren(it) }
-      }
-
-      // Every stored crash report, newest first — attributed reports plus
-      // orphans (startup crashes before the session existed, or native crashes
-      // that couldn't be attributed). Orphans carry a null session id.
-      AsyncFunction("getAllCrashReports") Coroutine { ->
-        sessionManager.getAllCrashReports().mapNotNull { entity ->
-          // `sessionId` lives on the DB row, not in the payload — merge it in so
-          // callers can spot orphans (null session id).
-          JsonAny.decodeJsonStringToMap(entity.payload)?.plus("sessionId" to entity.sessionId)
-        }
-      }
-
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
         return@Coroutine memoryMetricsManager.takeMemorySnapshot(sessionId)
       }
-
-      AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
 
       AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
         sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
@@ -354,14 +332,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         AsyncFunction("isActive") Coroutine SessionSharedObject::isActive
         AsyncFunction("getEndDate") Coroutine SessionSharedObject::getEndDate
-
-        AsyncFunction("getMetrics") Coroutine { ref: SessionSharedObject ->
-          ref.getMetrics().map { it.toJsMetric() }
-        }
-
-        AsyncFunction("getLogs") Coroutine { ref: SessionSharedObject ->
-          ref.getLogs().map { JsLogRecord.fromLogRecord(it) }
-        }
 
         AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: SessionMetricInput ->
           ref.addMetrics(listOf(metric.toMetric()))

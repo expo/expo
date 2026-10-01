@@ -95,11 +95,9 @@ module.exports = {
         ],
         ExpoAppMetrics: [
           { name: 'addCustomMetricToSession', argumentsCount: 1, key: 'addCustomMetricToSession' },
-          { name: 'clearStoredEntries', argumentsCount: 0, key: 'clearStoredEntries' },
           { name: 'getAppStartupTimesAsync', argumentsCount: 0, key: 'getAppStartupTimesAsync' },
           { name: 'getForegroundSession', argumentsCount: 0, key: 'getForegroundSession' },
           { name: 'getFrameRateMetricsAsync', argumentsCount: 0, key: 'getFrameRateMetricsAsync' },
-          { name: 'getInactiveSessions', argumentsCount: 0, key: 'getInactiveSessions' },
           { name: 'getMainSession', argumentsCount: 0, key: 'getMainSession' },
           {
             name: 'getMemoryUsageSnapshotAsync',
@@ -691,9 +689,13 @@ module.exports = {
           { name: 'handleNotificationAsync', argumentsCount: 2, key: 'handleNotificationAsync' },
         ],
         ExpoObserve: [
+          { name: 'clearStoredEntries', argumentsCount: 0, key: 'clearStoredEntries' },
           { name: 'configure', argumentsCount: 1, key: 'configure' },
           { name: 'dispatchEvents', argumentsCount: 0, key: 'dispatchEvents' },
+          { name: 'getInactiveSessions', argumentsCount: 0, key: 'getInactiveSessions' },
           { name: 'getIntegrations', argumentsCount: 0, key: 'getIntegrations' },
+          { name: 'getSessionLogs', argumentsCount: 1, key: 'getSessionLogs' },
+          { name: 'getSessionMetrics', argumentsCount: 1, key: 'getSessionMetrics' },
           { name: 'setBundleDefaults', argumentsCount: 1, key: 'setBundleDefaults' },
         ],
         ExpoPrint: [
@@ -976,11 +978,9 @@ module.exports = {
         ExpoAppMetrics: {
           addCustomMetricToSession: { type: 'function' },
           addListener: { type: 'function' },
-          clearStoredEntries: { type: 'function' },
           getAppStartupTimesAsync: { type: 'function' },
           getForegroundSession: { type: 'function' },
           getFrameRateMetricsAsync: { type: 'function' },
-          getInactiveSessions: { type: 'function' },
           getMainSession: { type: 'function' },
           getMemoryUsageSnapshotAsync: { type: 'function' },
           logEvent: { type: 'function' },
@@ -1501,10 +1501,14 @@ module.exports = {
         },
         ExpoObserve: {
           addListener: { type: 'function' },
+          clearStoredEntries: { type: 'function' },
           clientId: { type: 'string' },
           configure: { type: 'function' },
           dispatchEvents: { type: 'function' },
+          getInactiveSessions: { type: 'function' },
           getIntegrations: { type: 'function' },
+          getSessionLogs: { type: 'function' },
+          getSessionMetrics: { type: 'function' },
           removeListeners: { type: 'function' },
           setBundleDefaults: { type: 'function' },
         },

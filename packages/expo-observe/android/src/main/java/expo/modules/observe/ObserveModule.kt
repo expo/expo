@@ -3,6 +3,10 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
+import expo.modules.appmetrics.storage.JsDebugSession
+import expo.modules.appmetrics.storage.JsLogRecord
+import expo.modules.appmetrics.storage.toJsMetric
+import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.easclient.EASClientID
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -91,6 +95,33 @@ class ObserveModule : Module() {
 
       Function("getIntegrations") {
         lastIntegrations
+      }
+
+      // Debug-only: surfaces the inactive (ended) sessions for on-device
+      // inspection (e.g. the ObserveTester app)
+      AsyncFunction("getInactiveSessions") Coroutine { ->
+        appMetricsModule.sessionManager.getInactiveSessions().map { JsDebugSession.fromSessionWithChildren(it) }
+      }
+
+      // Every stored crash report, newest first — attributed reports plus
+      // orphans (startup crashes before the session existed, or native crashes
+      // that couldn't be attributed). Orphans carry a null session id.
+      AsyncFunction("getAllCrashReports") Coroutine { ->
+        appMetricsModule.sessionManager.getAllCrashReports().mapNotNull { entity ->
+          // `sessionId` lives on the DB row, not in the payload — merge it in so
+          // callers can spot orphans (null session id).
+          JsonAny.decodeJsonStringToMap(entity.payload)?.plus("sessionId" to entity.sessionId)
+        }
+      }
+
+      AsyncFunction("clearStoredEntries") Coroutine { -> appMetricsModule.sessionManager.clearAllData() }
+
+      AsyncFunction("getSessionMetrics") Coroutine { sessionId: String ->
+        appMetricsModule.sessionManager.getMetricsForSession(sessionId).map { it.toJsMetric() }
+      }
+
+      AsyncFunction("getSessionLogs") Coroutine { sessionId: String ->
+        appMetricsModule.sessionManager.getLogsForSession(sessionId).map { JsLogRecord.fromLogRecord(it) }
       }
 
       Function("setBundleDefaults") { defaults: BundleDefaults ->

@@ -3,8 +3,6 @@ package expo.modules.appmetrics.sessions
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
-import expo.modules.appmetrics.storage.LogRecord
-import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.runtime.Runtime
@@ -55,8 +53,4 @@ class SessionSharedObject(
   suspend fun isActive(): Boolean = sessionManager.getSessionRow(sessionId)?.isActive ?: true
 
   suspend fun getEndDate(): String? = sessionManager.getSessionRow(sessionId)?.endTimestamp
-
-  suspend fun getMetrics(): List<Metric> = sessionManager.getMetricsForSession(sessionId)
-
-  suspend fun getLogs(): List<LogRecord> = sessionManager.getLogsForSession(sessionId)
 }

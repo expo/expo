@@ -5,8 +5,6 @@ import type {
   ExpoAppMetricsModuleType,
   LogAttributeValue,
   LogEventOptions,
-  LogRecord,
-  Metric,
   MetricAttributes,
   NetworkRequestObserverEvents,
   MetricInput,
@@ -34,12 +32,6 @@ class WebSession extends globalThis.expo.SharedObject {
   async getEndDate(): Promise<string | null> {
     return null;
   }
-  async getMetrics(): Promise<Metric[]> {
-    return [];
-  }
-  async getLogs(): Promise<LogRecord[]> {
-    return [];
-  }
   async addMetric(_metric: MetricInput): Promise<void> {}
 }
 
@@ -55,10 +47,6 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   logEvent(name: string, options?: LogEventOptions) {}
   setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null) {}
   setNetworkTracesConfig() {}
-  async clearStoredEntries() {}
-  async getInactiveSessions() {
-    return [];
-  }
   reportError() {}
   getMainSession(): Session {
     this.mainSession ??= new WebSession('main');

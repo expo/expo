@@ -28,4 +28,12 @@ describe('web module', () => {
     const Observe = loadWebModule();
     expect(Observe.clientId).toBeNull();
   });
+
+  it('resolves the debug APIs to empty results, because web has no on-device store', async () => {
+    const Observe = loadWebModule();
+    await expect(Observe.getInactiveSessions()).resolves.toEqual([]);
+    await expect(Observe.getSessionMetrics('session-id')).resolves.toEqual([]);
+    await expect(Observe.getSessionLogs('session-id')).resolves.toEqual([]);
+    await expect(Observe.clearStoredEntries()).resolves.toBeUndefined();
+  });
 });

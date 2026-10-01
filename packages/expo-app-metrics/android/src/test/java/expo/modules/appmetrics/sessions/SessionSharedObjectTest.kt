@@ -5,8 +5,6 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
-import expo.modules.appmetrics.storage.LogRecord
-import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.SessionManager
 import io.mockk.coVerify
@@ -198,23 +196,7 @@ class SessionSharedObjectTest {
     }
 
   @Test
-  fun `getMetrics and getLogs are empty before the row is persisted`() =
-    runTest {
-      // Never awaited — no row, no entries. The optimistic read returns empty
-      // collections rather than blocking on the start job.
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      assertEquals(emptyList<Metric>(), session.getMetrics())
-      assertEquals(emptyList<LogRecord>(), session.getLogs())
-    }
-
-  @Test
-  fun `a freshly persisted session reads as active with no metrics or logs`() =
+  fun `a freshly persisted session reads as active with no end date`() =
     runTest {
       val session = SessionSharedObject(
         sessionManager = sessionManager,
@@ -224,28 +206,9 @@ class SessionSharedObjectTest {
       )
       session.awaitSessionPersisted()
 
-      // Row exists now, but nothing has been written to it yet.
+      // Row exists now, but the session has not stopped yet.
       assertTrue(session.isActive())
       assertNull(session.getEndDate())
-      assertEquals(emptyList<Metric>(), session.getMetrics())
-      assertEquals(emptyList<LogRecord>(), session.getLogs())
-    }
-
-  @Test
-  fun `getMetrics and getLogs return this session's persisted entries`() =
-    runTest {
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      session.addMetrics(listOf(createMetric("metric-1")))
-      session.addLogs(listOf(createLog("log-1")))
-
-      assertEquals(setOf("metric-1"), session.getMetrics().map { it.name }.toSet())
-      assertEquals(setOf("log-1"), session.getLogs().map { it.name }.toSet())
     }
 
   @Test
@@ -263,8 +226,6 @@ class SessionSharedObjectTest {
 
       session.isActive()
       session.getEndDate()
-      session.getMetrics()
-      session.getLogs()
 
       // No INSERT was issued and the row still doesn't exist.
       coVerify(exactly = 0) { spy.startSessionWithIdAt(any(), any(), any(), any()) }

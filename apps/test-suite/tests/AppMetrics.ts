@@ -6,6 +6,7 @@ import AppMetrics, {
   type NetworkRequestObserver,
   type NetworkRequestStartedEvent,
 } from 'expo-app-metrics';
+import { Observe } from 'expo-observe';
 import { fetch } from 'expo/fetch';
 
 import type { JasmineInterface } from '../types';
@@ -120,8 +121,8 @@ async function pollUntil<T>(
 /**
  * Generates a label unique to this test run so a query can pick out the records it just wrote,
  * ignoring anything left in the on-device store from earlier runs or background activity. The
- * store is shared and not cleared between tests (`clearStoredEntries` is a no-op on iOS), so every
- * assertion has to be scoped this way.
+ * store is shared and not cleared between tests (`Observe.clearStoredEntries` is a no-op on iOS),
+ * so every assertion has to be scoped this way.
  */
 function uniqueLabel(prefix: string): string {
   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1e6)}`;
@@ -171,7 +172,7 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
 
       // `addMetric` resolves only after the native write completes, so a plain read sees it — no
       // polling needed (unlike `logEvent`, which is fire-and-forget).
-      const metrics = await session.getMetrics();
+      const metrics = await Observe.getSessionMetrics(session.id);
       const recorded = metrics.find((metric) => metric.name === name) as Metric;
       expect(recorded).toBeDefined();
       expect(recorded.value).toBe(42);
@@ -192,7 +193,7 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
         params: { screen: 'home', count: 3 },
       });
 
-      const metrics = await session.getMetrics();
+      const metrics = await Observe.getSessionMetrics(session.id);
       const recorded = metrics.find((metric) => metric.name === name) as Metric;
       expect(recorded).toBeDefined();
       expect(recorded.params).toBeDefined();
@@ -206,9 +207,9 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
     async function readBackLog(name: string): Promise<LogRecord> {
       const session = AppMetrics.getMainSession();
       const logs = await pollUntil(
-        () => session.getLogs(),
+        () => Observe.getSessionLogs(session.id),
         (all) => all.some((log) => log.name === name),
-        `log "${name}" to appear in getLogs()`
+        `log "${name}" to appear in getSessionLogs()`
       );
       return logs.find((log) => log.name === name) as LogRecord;
     }
@@ -251,9 +252,9 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
     async function readBackLog(name: string): Promise<LogRecord> {
       const session = AppMetrics.getMainSession();
       const logs = await pollUntil(
-        () => session.getLogs(),
+        () => Observe.getSessionLogs(session.id),
         (all) => all.some((log) => log.name === name),
-        `log "${name}" to appear in getLogs()`
+        `log "${name}" to appear in getSessionLogs()`
       );
       return logs.find((log) => log.name === name) as LogRecord;
     }
@@ -542,7 +543,7 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
       const session = AppMetrics.getMainSession();
       const deadline = Date.now() + timeoutMs;
       while (Date.now() < deadline) {
-        const logs = await session.getLogs();
+        const logs = await Observe.getSessionLogs(session.id);
         const match = logs.find((log) => log.name === 'js.exception' && predicate(log));
         if (match) {
           return match;
@@ -557,9 +558,9 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
       expect(typeof ErrorUtils.getGlobalHandler()).toBe('function');
     });
 
-    // Only non-fatal errors are readable via `getLogs` in-process: the fatal path writes to the file
-    // sink and is ingested on the next launch, so it can't be round-tripped here. Fatal persistence is
-    // covered by the native `PendingErrorStore` write/drain tests.
+    // Only non-fatal errors are readable via `getSessionLogs` in-process: the fatal path writes to the
+    // file sink and is ingested on the next launch, so it can't be round-tripped here. Fatal
+    // persistence is covered by the native `PendingErrorStore` write/drain tests.
     it('records a non-fatal error as a js.exception log event with OTel attributes', async () => {
       const message = `test-suite error ${Date.now()}`;
       AppMetrics.reportError({

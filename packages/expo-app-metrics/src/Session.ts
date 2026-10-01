@@ -1,15 +1,14 @@
 import type { SharedObject } from 'expo';
 
-import type { LogRecord, Metric, MetricInput, SessionType } from './types';
+import type { MetricInput, SessionType } from './types';
 
 /**
  * A live session recorded by App Metrics, backed by a native shared object.
  *
  * The scalar properties (`id`, `type`, `startDate`) are snapshots taken when the
  * object is created — they do not update as the session evolves. Properties that
- * can change over the session's lifetime (`isActive`, `getEndDate`) and the
- * heavier collections (`getMetrics`, `getLogs`) are fetched lazily so they
- * reflect live state on each call.
+ * can change over the session's lifetime (`isActive`, `getEndDate`) are fetched
+ * lazily so they reflect live state on each call.
  *
  * @private This API is unstable and may change without notice.
  */
@@ -39,15 +38,6 @@ export declare class Session extends SharedObject {
    * it is still active. Read lazily so it reflects live state.
    */
   getEndDate(): Promise<string | null>;
-  /**
-   * Fetches the metrics recorded during this session from the on-device store.
-   */
-  getMetrics(): Promise<Metric[]>;
-  /**
-   * Fetches the log events recorded during this session from the on-device
-   * store.
-   */
-  getLogs(): Promise<LogRecord[]>;
   /**
    * Records a custom metric against this session. The session id is implied by
    * the receiver, so the metric input carries no `sessionId`.

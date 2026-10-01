@@ -1,5 +1,5 @@
 import AppMetrics from 'expo-app-metrics';
-import { useObserve } from 'expo-observe';
+import { Observe, useObserve } from 'expo-observe';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -57,8 +57,8 @@ export default function Debug() {
         onPress={async () => {
           const session = AppMetrics.getMainSession();
           const [metrics, logs, isActive, endDate] = await Promise.all([
-            session.getMetrics(),
-            session.getLogs(),
+            Observe.getSessionMetrics(session.id),
+            Observe.getSessionLogs(session.id),
             session.isActive(),
             session.getEndDate(),
           ]);

@@ -1,4 +1,3 @@
-import AppMetrics from 'expo-app-metrics';
 import { Observe } from 'expo-observe';
 import { useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
@@ -42,7 +41,7 @@ export default function EventFlood() {
 
   async function clearStoredEntries() {
     try {
-      await AppMetrics.clearStoredEntries();
+      await Observe.clearStoredEntries();
       setStatus('Cleared stored entries');
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

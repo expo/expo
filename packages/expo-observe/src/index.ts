@@ -34,6 +34,7 @@ export { Observe };
 export default Observe;
 
 export type {
+  DebugSession,
   ObserveAttribute,
   ObserveAttributes,
   ObserveConfig,

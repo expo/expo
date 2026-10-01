@@ -1,5 +1,5 @@
-import type { DebugSession, Session } from 'expo-app-metrics';
-import { useObserve } from 'expo-observe';
+import type { Session } from 'expo-app-metrics';
+import { type DebugSession, Observe, useObserve } from 'expo-observe';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
@@ -115,8 +115,8 @@ export function SessionDetail({
  */
 export async function liveSessionToRecord(session: Session): Promise<DebugSession> {
   const [metrics, logs, endDate] = await Promise.all([
-    session.getMetrics(),
-    session.getLogs(),
+    Observe.getSessionMetrics(session.id),
+    Observe.getSessionLogs(session.id),
     session.getEndDate(),
   ]);
   return {

@@ -129,6 +129,27 @@ public struct AppMetrics {
     try database?.deleteSpans(upToId: upToId)
   }
 
+  /// The inactive (ended) sessions with their children. For expo-observe debug APIs. Removed when
+  /// storage moves to expo-observe.
+  @AppMetricsActor
+  public static func getInactiveStoredSessions() throws -> [StoredSession] {
+    return try database?.getInactiveSessionsWithChildren().map { StoredSession(from: $0) } ?? []
+  }
+
+  /// The metrics stored for `sessionId`. For expo-observe debug APIs. Removed when storage moves to
+  /// expo-observe.
+  @AppMetricsActor
+  public static func getStoredMetrics(sessionId: String) throws -> [Metric] {
+    return decodeMetrics(from: try database?.getMetrics(sessionId: sessionId) ?? [])
+  }
+
+  /// The log records stored for `sessionId`. For expo-observe debug APIs. Removed when storage moves
+  /// to expo-observe.
+  @AppMetricsActor
+  public static func getStoredLogs(sessionId: String) throws -> [LogRecord] {
+    return decodeLogs(from: try database?.getLogs(sessionId: sessionId) ?? [])
+  }
+
   // MARK: - Environment
 
   @AppMetricsActor

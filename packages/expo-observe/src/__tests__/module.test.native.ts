@@ -6,6 +6,10 @@ const mockNativeTarget = {
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
+  getInactiveSessions: jest.fn(() => Promise.resolve([])),
+  getSessionMetrics: jest.fn(() => Promise.resolve([])),
+  getSessionLogs: jest.fn(() => Promise.resolve([])),
+  clearStoredEntries: jest.fn(() => Promise.resolve()),
 };
 // The real native module is a JSI host object.
 // Mirror that here so the AppMetrics-fallback tests exercise the actual on-device bug — a fallback
@@ -21,6 +25,7 @@ const mockAppMetrics = {
   setGlobalAttributes: jest.fn(),
   reportError: jest.fn(),
   setNetworkTracesConfig: jest.fn(),
+  getInactiveSessions: jest.fn(() => Promise.resolve([])),
 };
 
 const mockSetErrorHandlerEnabled = jest.fn();
@@ -446,6 +451,28 @@ describe('module Proxy', () => {
     const Observe = loadModule();
     expect((Observe as { dispatchEvents: unknown }).dispatchEvents).toBe(mockNative.dispatchEvents);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('reads the debug APIs from the native ExpoObserve module, not AppMetrics', async () => {
+    const Observe = loadModule();
+    expect(Observe.getInactiveSessions).toBe(mockNative.getInactiveSessions);
+    expect(Observe.getSessionMetrics).toBe(mockNative.getSessionMetrics);
+    expect(Observe.getSessionLogs).toBe(mockNative.getSessionLogs);
+    expect(Observe.clearStoredEntries).toBe(mockNative.clearStoredEntries);
+    await Observe.getInactiveSessions();
+    await Observe.getSessionMetrics('session-id');
+    await Observe.getSessionLogs('session-id');
+    await Observe.clearStoredEntries();
+    expect(mockNative.getSessionMetrics).toHaveBeenCalledWith('session-id');
+    expect(mockNative.getSessionLogs).toHaveBeenCalledWith('session-id');
+    expect(mockAppMetrics.getInactiveSessions).not.toHaveBeenCalled();
+  });
+
+  it('resolves getAllCrashReports to undefined when the native target does not list it (iOS)', () => {
+    // mockNativeTarget mirrors iOS's ExpoObserve module, which has no `getAllCrashReports`,
+    // and AppMetrics doesn't have it either — the Proxy falls through to AppMetrics and finds nothing.
+    const Observe = loadModule();
+    expect(Observe.getAllCrashReports).toBeUndefined();
   });
 
   it('forwards logEvent to AppMetrics', () => {

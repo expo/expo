@@ -109,20 +109,6 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
 
   // MARK: - Reading and recording session data
 
-  /// Metrics recorded against this session, decoded from storage.
-  @AppMetricsActor
-  func getMetrics() throws -> [Metric] {
-    let rows = try AppMetrics.database?.getMetrics(sessionId: id) ?? []
-    return decodeMetrics(from: rows)
-  }
-
-  /// Log records recorded against this session, decoded from storage.
-  @AppMetricsActor
-  func getLogs() throws -> [LogRecord] {
-    let rows = try AppMetrics.database?.getLogs(sessionId: id) ?? []
-    return decodeLogs(from: rows)
-  }
-
   /// Records a metric against this session. JS-facing: errors propagate so the caller's promise rejects.
   @AppMetricsActor
   func addMetric(_ input: SessionMetricInput) throws {

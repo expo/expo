@@ -1,8 +1,14 @@
 import { NativeModule, registerWebModule } from 'expo';
-import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
+import AppMetrics, {
+  type LogEventOptions,
+  type LogRecord,
+  type Metric,
+  type MetricAttributes,
+} from 'expo-app-metrics';
 
 import { reportCaughtError } from './reportCaughtError';
 import type {
+  DebugSession,
   ObserveConfig,
   ObserveIntegrationsConfig,
   ObserveModule,
@@ -40,6 +46,16 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   }
   setGlobalAttributes(attributes?: ObserveAttributes | null): void {
     AppMetrics.setGlobalAttributes(attributes);
+  }
+  async clearStoredEntries() {}
+  async getInactiveSessions(): Promise<DebugSession[]> {
+    return [];
+  }
+  async getSessionMetrics(sessionId: string): Promise<Metric[]> {
+    return [];
+  }
+  async getSessionLogs(sessionId: string): Promise<LogRecord[]> {
+    return [];
   }
   setBundleDefaults(defaults: { environment: string; isJsDev: boolean }): void {}
 }

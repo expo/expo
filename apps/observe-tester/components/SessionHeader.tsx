@@ -1,5 +1,5 @@
-import type { DebugSession } from 'expo-app-metrics';
 import * as Clipboard from 'expo-clipboard';
+import type { DebugSession } from 'expo-observe';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useTheme } from '@/utils/theme';

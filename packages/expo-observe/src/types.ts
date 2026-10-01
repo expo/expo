@@ -1,9 +1,13 @@
 import type { NativeModule } from 'expo';
 import type {
+  CrashReport,
   LogAttributeValue,
   LogEventOptions,
+  LogRecord,
+  Metric,
   MetricAttributes,
   NetworkRequestFilter,
+  SessionType,
 } from 'expo-app-metrics';
 
 /**
@@ -151,6 +155,30 @@ export interface ObserveIntegrationsConfig {
    */
   'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
 }
+
+/**
+ * A historic session and its recorded data, returned by `getInactiveSessions()`
+ * as a plain eager record (not a shared object). Debug-only: intended for
+ * inspecting on-device history, not production use.
+ *
+ * @private This API is unstable, debug-only, and may change without notice.
+ */
+export type DebugSession = {
+  /** Unique identifier (UUID) of the session. */
+  id: string;
+  /** Kind of session. */
+  type: SessionType;
+  /** ISO 8601 timestamp of when the session started. */
+  startDate: string;
+  /** ISO 8601 timestamp of when the session ended, or `null`/absent while active. */
+  endDate?: string | null;
+  /** Metrics recorded during the session. */
+  metrics: Metric[];
+  /** Log events recorded during the session. */
+  logs: LogRecord[];
+  /** Crash report attached to the session, if any. */
+  crashReport?: CrashReport | null;
+};
 
 /**
  * Events emitted by the native `ExpoObserve` module.
@@ -308,6 +336,47 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * ```
    */
   setGlobalAttributes(attributes?: ObserveAttributes | null): void;
+  /**
+   * Deletes the stored sessions and their data. Does nothing on iOS.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  clearStoredEntries(): Promise<void>;
+  /**
+   * Returns the recorded sessions as plain `DebugSession` records, ordered with
+   * the most recent first. Each record eagerly includes its metrics, logs, and
+   * crash report.
+   *
+   * Debug-only: intended for inspecting on-device history (e.g. the
+   * ObserveTester app), not for production use.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  getInactiveSessions(): Promise<DebugSession[]>;
+  /**
+   * Returns every stored crash report, ordered with the most recent first.
+   * Includes reports attributed to a session as well as orphans — startup
+   * crashes captured before a session existed, or native crashes that couldn't
+   * be attributed. Orphans have a `sessionId` of `null`.
+   *
+   * Debug-only: intended for inspecting on-device history, not for production use.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform android
+   */
+  getAllCrashReports?: () => Promise<CrashReport[]>;
+  /**
+   * Fetches the metrics stored for the session with the given id.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  getSessionMetrics(sessionId: string): Promise<Metric[]>;
+  /**
+   * Fetches the log events stored for the session with the given id.
+   *
+   * @private This API is unstable and may change without notice.
+   */
+  getSessionLogs(sessionId: string): Promise<LogRecord[]>;
   /**
    * Pushes JS-bundle-derived facts (`process.env.NODE_ENV`, `__DEV__`) into native
    * storage. Called automatically once when the package is first imported; should

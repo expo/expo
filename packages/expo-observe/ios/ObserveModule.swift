@@ -69,6 +69,22 @@ public final class ObserveModule: Module {
       return self.lastIntegrations
     }
 
+    AsyncFunction("clearStoredEntries") {
+      // no-op
+    }
+
+    AsyncFunction("getInactiveSessions") { () -> [StoredSession] in
+      return try await AppMetricsActor.isolated { try AppMetrics.getInactiveStoredSessions() }.value
+    }
+
+    AsyncFunction("getSessionMetrics") { (sessionId: String) -> [Metric] in
+      return try await AppMetricsActor.isolated { try AppMetrics.getStoredMetrics(sessionId: sessionId) }.value
+    }
+
+    AsyncFunction("getSessionLogs") { (sessionId: String) -> [LogRecord] in
+      return try await AppMetricsActor.isolated { try AppMetrics.getStoredLogs(sessionId: sessionId) }.value
+    }
+
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
         observeLogger.warn(

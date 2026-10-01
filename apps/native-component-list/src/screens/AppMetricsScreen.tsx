@@ -1,5 +1,6 @@
 import { useTheme } from 'ThemeProvider';
 import AppMetrics, { type Metric } from 'expo-app-metrics';
+import { Observe } from 'expo-observe';
 import { useFocusEffect } from 'expo-router';
 import * as React from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -12,11 +13,9 @@ export default function AppMetricsScreen() {
   useFocusEffect(
     React.useCallback(() => {
       let canceled = false;
-      AppMetrics.getMainSession()
-        .getMetrics()
-        .then((m) => {
-          if (!canceled) setMetrics(m);
-        });
+      Observe.getSessionMetrics(AppMetrics.getMainSession().id).then((m) => {
+        if (!canceled) setMetrics(m);
+      });
       return () => {
         canceled = true;
       };
@@ -26,7 +25,7 @@ export default function AppMetricsScreen() {
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
-      setMetrics(await AppMetrics.getMainSession().getMetrics());
+      setMetrics(await Observe.getSessionMetrics(AppMetrics.getMainSession().id));
     } finally {
       setRefreshing(false);
     }

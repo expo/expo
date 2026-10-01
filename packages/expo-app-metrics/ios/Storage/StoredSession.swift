@@ -59,8 +59,7 @@ public struct StoredSession: Codable, Sendable {
 }
 
 /// Projects metric rows into the public `Metric` domain shape, decoding the JSON-encoded `params`
-/// blob back into a dictionary. Shared by `StoredSession` and the `Session`/`DebugSession` shared
-/// objects' lazy `getMetrics()` readers.
+/// blob back into a dictionary. Shared by `StoredSession` and `AppMetrics.getStoredMetrics(sessionId:)`.
 func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
   return rows.map { metric in
     return Metric(
@@ -77,8 +76,7 @@ func decodeMetrics(from rows: [MetricRow]) -> [Metric] {
 }
 
 /// Projects log rows into the public `LogRecord` domain shape, decoding the JSON-encoded `attributes`
-/// blob back into a dictionary. Shared by `StoredSession` and the `Session`/`DebugSession` shared
-/// objects' lazy `getLogs()` readers.
+/// blob back into a dictionary. Shared by `StoredSession` and `AppMetrics.getStoredLogs(sessionId:)`.
 func decodeLogs(from rows: [LogRow]) -> [LogRecord] {
   return rows.map { log in
     return LogRecord(

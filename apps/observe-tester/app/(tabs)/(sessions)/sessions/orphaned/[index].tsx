@@ -1,5 +1,5 @@
-import AppMetrics, { type CrashReport } from 'expo-app-metrics';
-import { useObserve } from 'expo-observe';
+import type { CrashReport } from 'expo-app-metrics';
+import { Observe, useObserve } from 'expo-observe';
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
@@ -24,7 +24,7 @@ export default function OrphanedCrashScreen() {
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      AppMetrics.getAllCrashReports?.().then((reports) => {
+      Observe.getAllCrashReports?.().then((reports) => {
         if (cancelled) return;
         const orphans = reports.filter((report) => report.sessionId == null);
         setReport(orphans[Number(index)] ?? null);

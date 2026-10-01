@@ -1,4 +1,4 @@
-import AppMetrics, { type DebugSession } from 'expo-app-metrics';
+import { type DebugSession, Observe } from 'expo-observe';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 
@@ -12,7 +12,7 @@ export default function InactiveSessionScreen() {
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      AppMetrics.getInactiveSessions().then((sessions) => {
+      Observe.getInactiveSessions().then((sessions) => {
         if (cancelled) return;
         setSession(sessions.find((s) => s.id === id) ?? null);
         setLoaded(true);

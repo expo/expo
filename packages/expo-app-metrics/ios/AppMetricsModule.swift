@@ -95,19 +95,6 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       return await AppMetrics.mainSession.frameMetricsRecorder.metrics
     }
 
-    AsyncFunction("clearStoredEntries") {
-      // no-op
-    }
-
-    // Debug-only: the inactive (ended) sessions
-    AsyncFunction("getInactiveSessions") { () -> [StoredSession] in
-      return try await AppMetricsActor.isolated {
-        return try AppMetrics.database?
-          .getInactiveSessionsWithChildren()
-          .map { StoredSession(from: $0) } ?? []
-      }.value
-    }
-
     AsyncFunction("addCustomMetricToSession") { (jsMetric: JsMetric) in
       try await AppMetricsActor.isolated {
         let metric = jsMetric.toMetric()
@@ -140,14 +127,6 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
 
       AsyncFunction("getEndDate") { (session: Session) -> String? in
         return try await AppMetricsActor.isolated { session.endDate?.ISO8601Format() }.value
-      }
-
-      AsyncFunction("getMetrics") { (session: Session) -> [Metric] in
-        return try await AppMetricsActor.isolated { try session.getMetrics() }.value
-      }
-
-      AsyncFunction("getLogs") { (session: Session) -> [LogRecord] in
-        return try await AppMetricsActor.isolated { try session.getLogs() }.value
       }
 
       AsyncFunction("addMetric") { (session: Session, input: SessionMetricInput) in
@@ -200,16 +179,6 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
   }
-}
-
-// Loads a session and its children from the database and wraps it as a `StoredSession`,
-// returning `nil` when the database is unavailable or the session no longer exists.
-@AppMetricsActor
-private func storedSession(id: String) throws -> StoredSession? {
-  guard let row = try AppMetrics.database?.getSessionWithChildren(id: id) else {
-    return nil
-  }
-  return StoredSession(from: row)
 }
 
 /// Payload of `setNetworkTracesConfig`: the normalized `networkTraces` setting pushed down by

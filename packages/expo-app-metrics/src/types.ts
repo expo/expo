@@ -300,7 +300,7 @@ export type CrashReport = {
   /**
    * Id of the session the crash is attributed to, or `null` for an orphan —
    * a startup crash captured before a session existed, or a native crash that
-   * couldn't be attributed. Only populated by `getAllCrashReports`.
+   * couldn't be attributed. Only populated by `Observe.getAllCrashReports`.
    * @platform android
    */
   sessionId?: string | null;
@@ -478,30 +478,6 @@ export declare class NetworkRequestObserver extends SharedObject<NetworkRequestO
 }
 
 /**
- * A historic session and its recorded data, returned by `getInactiveSessions()`
- * as a plain eager record (not a shared object). Debug-only: intended for
- * inspecting on-device history, not production use.
- *
- * @private This API is unstable, debug-only, and may change without notice.
- */
-export type DebugSession = {
-  /** Unique identifier (UUID) of the session. */
-  id: string;
-  /** Kind of session. */
-  type: SessionType;
-  /** ISO 8601 timestamp of when the session started. */
-  startDate: string;
-  /** ISO 8601 timestamp of when the session ended, or `null`/absent while active. */
-  endDate?: string | null;
-  /** Metrics recorded during the session. */
-  metrics: Metric[];
-  /** Log events recorded during the session. */
-  logs: LogRecord[];
-  /** Crash report attached to the session, if any. */
-  crashReport?: CrashReport | null;
-};
-
-/**
  * Normalized form of `Observe.configure({ networkTraces })`, persisted natively.
  * @hidden
  */
@@ -550,32 +526,6 @@ export interface ExpoAppMetricsModuleType {
    * ```
    */
   setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null): void;
-  clearStoredEntries(): Promise<void>;
-  /**
-   * Returns the recorded sessions as plain `Session` records, ordered with
-   * the most recent first. Each record eagerly includes its metrics, logs, and
-   * crash report.
-   *
-   * Debug-only: intended for inspecting on-device history (e.g. the
-   * ObserveTester app), not for production use.
-   *
-   * @private This API is unstable and may change without notice.
-   */
-  getInactiveSessions(): Promise<DebugSession[]>;
-
-  /**
-   * Returns every stored crash report, ordered with the most recent first.
-   * Includes reports attributed to a session as well as orphans — startup
-   * crashes captured before a session existed, or native crashes that couldn't
-   * be attributed. Orphans have a `sessionId` of `null`.
-   *
-   * Debug-only: intended for inspecting on-device history, not for production use.
-   *
-   * @private This API is unstable and may change without notice.
-   * @platform android
-   */
-  getAllCrashReports?: () => Promise<CrashReport[]>;
-
   /**
    * Reports an unhandled JavaScript error, recorded natively as a `js.exception` log event following
    * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
@@ -600,8 +550,7 @@ export interface ExpoAppMetricsModuleType {
   /**
    * Returns the main session — the per-launch session that tracks the entire
    * app process — as a shared object built from in-memory state, so the call
-   * is synchronous and never returns `null`. Metrics and logs are fetched
-   * lazily via the returned object.
+   * is synchronous and never returns `null`.
    *
    * The returned object is a static reference: repeated calls return the same
    * object while it stays referenced, so `getMainSession() === getMainSession()`.
@@ -613,8 +562,7 @@ export interface ExpoAppMetricsModuleType {
   /**
    * Resolves to the current foreground session — created when the app becomes
    * active and ended when it is backgrounded — as a shared object, or `null`
-   * when no foreground session is active. Metrics and logs are fetched lazily
-   * via the returned object.
+   * when no foreground session is active.
    *
    * @private This API is unstable and may change without notice.
    * @platform ios
