@@ -32,54 +32,26 @@ function getRootRouteNode(context: RequireContext, config: GetRoutesOptions | un
 }
 
 /**
- * The layouts whose `unstable_settings` seed the initial navigation state: the root layout and
- * every layout on the focused path of `state`. Without a parsed state every layout can take part.
+ * The layouts whose `unstable_settings` seed the initial navigation state: `node` and every layout
+ * on the focused path of `state`. Without a parsed state the navigators start on their default
+ * routes, which any layout can affect, so every layout below `node` is included.
  */
 export function getInitialLayoutNodes(
-  rootRouteNode: RouteNode,
+  node: RouteNode,
   state: ResultState | undefined
 ): RouteNode[] {
-  if (!state) {
-    return getAllLayoutNodes(rootRouteNode);
+  if (node.type !== 'layout') {
+    return [];
   }
-
-  const layouts = [rootRouteNode];
-  let node = rootRouteNode;
-  let current: ResultState | undefined = state;
-
-  while (current) {
-    const route: ResultState['routes'][number] | undefined =
-      current.routes[current.index ?? current.routes.length - 1];
-    if (!route) {
-      break;
-    }
-    // The parsed state wraps the app in the internal root slot, which maps to the root layout.
-    if (route.name === INTERNAL_SLOT_NAME) {
-      current = route.state;
-      continue;
-    }
-    const child = findRouteNodeByName(node, route.name);
-    if (!child) {
-      break;
-    }
-    if (child.type === 'layout') {
-      layouts.push(child);
-    }
-    node = child;
-    current = route.state;
+  const route = state?.routes[state.index ?? state.routes.length - 1];
+  // The parsed state wraps the app in the internal root slot, which maps to the root layout.
+  if (route?.name === INTERNAL_SLOT_NAME) {
+    return getInitialLayoutNodes(node, route.state);
   }
-
-  return layouts;
-}
-
-function getAllLayoutNodes(node: RouteNode, layouts: RouteNode[] = []): RouteNode[] {
-  if (node.type === 'layout') {
-    layouts.push(node);
-    for (const child of node.children) {
-      getAllLayoutNodes(child, layouts);
-    }
-  }
-  return layouts;
+  const children = route
+    ? [findRouteNodeByName(node, route.name)].filter((child) => child !== undefined)
+    : node.children;
+  return [node, ...children.flatMap((child) => getInitialLayoutNodes(child, route?.state))];
 }
 
 const initialLayoutLoads = new WeakMap<RequireContext, Promise<unknown> | null>();
