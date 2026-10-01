@@ -49,7 +49,7 @@ const removeConsoleConfig =
 const nextConfig: NextConfig = {
   outputFileTracingRoot: join(__dirname),
   transpilePackages: [
-    '@expo/*',
+    '@expo/styleguide',
     '@radix-ui/react-dropdown-menu',
     '@radix-ui/react-select',
     'framer-motion',
