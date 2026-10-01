@@ -178,7 +178,7 @@ jobs:
       - run: pnpm turbo run build --filter=expotools...
       - name: Sync versions from this main commit
         run: |
-          until pnpm expotools sync-published-packages --env staging ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
+          until pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
             echo 'Sync failed; retrying this commit in 10 minutes.'
             sleep 600
           done
