@@ -79,6 +79,7 @@ export async function syncPublishedPackagesAsync(
   options: SyncOptions,
   dependencies = defaultDependencies
 ): Promise<void> {
+  logger.info(`Sync ${options.env}: SDK ${plan.sdkVersion}${options.dryRun ? ' (dry run)' : ''}`);
   if (options.env === 'production') {
     const { stdout } = await dependencies.spawn('npm', ['--version']);
     if (!semver.satisfies(stdout.trim(), '^11.21.0 || >=12.2.0')) {
@@ -93,6 +94,7 @@ export async function syncPublishedPackagesAsync(
 
   if (options.env === 'production') {
     // Finish registry validation before changing any tags or endpoint data.
+    logger.info(`Checking ${plan.packages.length} versions on public npm.`);
     for (let index = 0; index < plan.packages.length; index += 8) {
       await Promise.all(
         plan.packages.slice(index, index + 8).map(async (pkg) => {
@@ -102,6 +104,10 @@ export async function syncPublishedPackagesAsync(
           }
         })
       );
+      const checked = Math.min(index + 8, plan.packages.length);
+      if (checked % 32 === 0 || checked === plan.packages.length) {
+        logger.info(`npm versions verified: ${checked}/${plan.packages.length}`);
+      }
     }
   }
   const host =
@@ -137,4 +143,7 @@ export async function syncPublishedPackagesAsync(
     };
     await dependencies.setVersions(versions, host);
   }
+  logger.success(
+    `${options.dryRun ? 'Dry run' : 'Sync'} complete: ${options.env}, SDK ${plan.sdkVersion}.`
+  );
 }

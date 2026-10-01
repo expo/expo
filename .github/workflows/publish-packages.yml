@@ -185,9 +185,13 @@ jobs:
           EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
       - name: Sync production versions from this main commit
         run: |
+          attempt=1
+          echo "Production sync attempt $attempt."
           until pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
-            echo 'Sync failed; retrying this commit in 10 minutes.'
+            echo "Attempt $attempt failed; retrying in 10 minutes."
             sleep 600
+            attempt=$((attempt + 1))
+            echo "Production sync attempt $attempt."
           done
         env:
           EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
