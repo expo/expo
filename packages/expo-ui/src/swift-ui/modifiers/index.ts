@@ -1952,6 +1952,7 @@ export * from './pickerStyle';
 export * from './menuOrder';
 export * from './tabViewModifiers';
 export * from './navigationModifiers';
+export * from './arrangementModifiers';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
 export * from './gaugeStyle';
