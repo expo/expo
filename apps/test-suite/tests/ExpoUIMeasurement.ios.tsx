@@ -145,7 +145,7 @@ export async function test(
       expect(second.pageY - host.pageY).toBe(host.height - PADDING - BOX);
     });
 
-    it('measures a hosted view inside a stack that is not the first child', async () => {
+    it('measures hosted views in stacks placed beside each other in a row', async () => {
       const hostWrapperRef = React.createRef<ViewRef>();
       const firstRef = React.createRef<ViewRef>();
       const secondRef = React.createRef<ViewRef>();
@@ -158,7 +158,7 @@ export async function test(
       setPortalChild(
         <View ref={hostWrapperRef} collapsable={false}>
           <Host matchContents onLayoutContent={() => onLaidOut()}>
-            <VStack modifiers={[padding({ all: PADDING })]}>
+            <HStack modifiers={[padding({ all: PADDING })]}>
               <VStack>
                 <RNHostView matchContents>
                   <View ref={firstRef} style={{ width: WIDE, height: SHORT }} />
@@ -169,7 +169,7 @@ export async function test(
                   <View ref={secondRef} style={{ width: BOX, height: BOX }} />
                 </RNHostView>
               </VStack>
-            </VStack>
+            </HStack>
           </Host>
         </View>
       );
@@ -180,10 +180,11 @@ export async function test(
       const first = await measureAsync(firstRef);
       const second = await measureAsync(secondRef);
 
+      const rowHeight = Math.max(SHORT, BOX);
       expect(first.pageX - host.pageX).toBe(PADDING);
-      expect(first.pageY - host.pageY).toBe(PADDING);
-      expect(second.pageX - host.pageX).toBe(PADDING + (WIDE - BOX) / 2);
-      expect(second.pageY - host.pageY).toBe(host.height - PADDING - BOX);
+      expect(first.pageY - host.pageY).toBe(PADDING + (rowHeight - SHORT) / 2);
+      expect(second.pageX - host.pageX).toBe(host.width - PADDING - BOX);
+      expect(second.pageY - host.pageY).toBe(PADDING + (rowHeight - BOX) / 2);
     });
 
     it('measures a hosted view in a row, beside a SwiftUI-only sibling', async () => {
