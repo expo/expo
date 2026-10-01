@@ -40,6 +40,7 @@
     "barcode-detector": "^3.0.0"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.0",
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",

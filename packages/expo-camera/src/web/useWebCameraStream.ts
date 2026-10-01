@@ -172,11 +172,11 @@ export function useWebCameraStream(
       return;
     }
 
-    // Only report the camera as ready once the video has decoded enough frames,
+    // Only report the camera as ready once the video has a frame to capture,
     // otherwise `takePictureAsync` would throw `ERR_CAMERA_NOT_READY`.
-    const readyEvents = ['canplay', 'canplaythrough', 'playing'] as const;
+    const readyEvents = ['loadeddata', 'canplay', 'canplaythrough', 'playing'] as const;
     const onVideoReady = () => {
-      if (element.readyState < element.HAVE_ENOUGH_DATA) {
+      if (!Utils.isVideoReadyForCapture(element)) {
         return;
       }
       removeListeners();
