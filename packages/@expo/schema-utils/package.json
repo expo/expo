@@ -33,8 +33,8 @@
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "json-schema-to-typescript": "^15.0.0"
+    "json-schema-to-typescript": "catalog:"
   }
 }

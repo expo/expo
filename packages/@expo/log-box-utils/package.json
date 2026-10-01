@@ -41,7 +41,7 @@
   "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "workspace:*",
-    "npm-run-all2": "^8.0.4",
-    "rimraf": "^6.1.2"
+    "npm-run-all2": "catalog:",
+    "rimraf": "catalog:"
   }
 }

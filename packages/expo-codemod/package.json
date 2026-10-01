@@ -43,7 +43,7 @@
   },
   "devDependencies": {
     "@types/jscodeshift": "^17.0.0",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "engines": {

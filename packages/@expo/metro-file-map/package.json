@@ -48,7 +48,7 @@
     "@types/fb-watchman": "^2.0.6",
     "@types/invariant": "^2.2.37",
     "@types/micromatch": "^4.0.10",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   }

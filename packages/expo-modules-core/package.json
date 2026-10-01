@@ -82,12 +82,12 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^14.0.1",
+    "@testing-library/react-native": "catalog:",
     "@types/invariant": "^2.2.33",
-    "@types/react": "~19.3.0",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "react-dom": "19.3.0"
+    "react-dom": "catalog:"
   },
   "peerDependencies": {
     "react": "*",
