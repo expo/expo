@@ -167,9 +167,17 @@ export default class FallbackWatcher extends AbstractWatcher {
     }
     let watcher: FSWatcher;
     try {
-      watcher = fs.watch(dir, { persistent: true }, (event, filename) =>
-        this.#normalizeChange(dir, event, filename as string)
-      );
+      watcher = fs.watch(dir, { persistent: true }, (event, filename) => {
+        // libuv on win32 reports a deleted watched directory to its own handle as a rename
+        // naming the directory's absolute path, and re-arms it until the handle is closed.
+        if (filename && path.isAbsolute(filename)) {
+          this.#reconcileWatchedDirectory(dir, watcher).catch((error) => {
+            this.emitError(error);
+          });
+          return;
+        }
+        this.#normalizeChange(dir, event, filename as string);
+      });
     } catch (error: any) {
       // Directory can vanish before watch; filterDir must not throw.
       this.#checkedEmitError(error);
@@ -206,6 +214,31 @@ export default class FallbackWatcher extends AbstractWatcher {
       watcher.once('error', () => process.nextTick(resolve));
       watcher.close();
     });
+  }
+
+  /**
+   * Stop watching a directory and every directory beneath it.
+   */
+  async #stopWatchingTree(dirpath: string): Promise<void> {
+    const prefix = dirpath + path.sep;
+    const nested = Object.keys(this.#watched).filter((watchedDir) => watchedDir.startsWith(prefix));
+    await Promise.all([dirpath, ...nested].map((watchedDir) => this.#stopWatching(watchedDir)));
+  }
+
+  /**
+   * A watched directory reported its own path, so it was deleted or replaced: close its handles
+   * and process it as its parent's rename event would.
+   */
+  async #reconcileWatchedDirectory(dir: string, watcher: FSWatcher): Promise<void> {
+    if (this.#watched[dir] !== watcher) {
+      return;
+    }
+    if (dir === this.root) {
+      await this.#stopWatching(dir);
+      return;
+    }
+    await this.#stopWatchingTree(dir);
+    await this.#processChange(path.dirname(dir), 'rename', path.basename(dir));
   }
 
   /**
@@ -385,7 +418,11 @@ export default class FallbackWatcher extends AbstractWatcher {
       if (registered) {
         this.#emitEvent({ event: DELETE_EVENT, relativePath });
       }
-      await this.#stopWatching(fullPath);
+      // A deleted directory takes its subtree with it, and a nested handle left open would also
+      // stop the path from being watched again once it is recreated.
+      if (removedFiles.length > 0 || this.#watched[fullPath]) {
+        await this.#stopWatchingTree(fullPath);
+      }
     }
   }
 
