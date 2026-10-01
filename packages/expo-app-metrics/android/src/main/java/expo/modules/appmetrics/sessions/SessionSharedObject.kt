@@ -3,54 +3,49 @@ package expo.modules.appmetrics.sessions
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
-import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.sink.MetricsSinkRegistry
+import expo.modules.appmetrics.sink.SessionInfo
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import java.util.UUID
 
 class SessionSharedObject(
-  private val sessionManager: SessionManager,
-  private val scope: CoroutineScope,
   val type: String,
   customStartTimestamp: String? = null,
   private val metadata: AppMetadata? = null,
   runtime: Runtime? = null
 ) : SharedObject(runtime) {
   // Generated synchronously so it's available immediately to readers and to
-  // collaborators that capture it before the session row has been persisted.
-  val sessionId: String = sessionManager.createSessionId()
+  // collaborators that capture it before the session has started.
+  val sessionId: String = UUID.randomUUID().toString()
 
   // The session's start timestamp, exposed to JS as `startDate`.
   val startDate: String = customStartTimestamp ?: TimeUtils.getCurrentTimestampInISOFormat()
 
-  private val sessionStartJob: Job by lazy {
-    scope.launch {
-      sessionManager.startSessionWithIdAt(sessionId, startDate, metadata)
-    }
+  // Written by `stop` on the thread that tears the module down, read from JS.
+  @Volatile
+  private var endDate: String? = null
+
+  fun start() {
+    MetricsSinkRegistry.shared.sessionStarted(SessionInfo(sessionId, type, startDate, metadata))
   }
 
-  /** Suspends until the session row has been persisted. */
-  suspend fun awaitSessionPersisted() = sessionStartJob.join()
-
   suspend fun addMetrics(metrics: List<MetricRecord>) {
-    awaitSessionPersisted()
-    sessionManager.addMetrics(metrics, sessionId)
+    MetricsSinkRegistry.shared.recordMetrics(metrics, sessionId)
   }
 
   suspend fun addLogs(logs: List<LogEvent>) {
-    awaitSessionPersisted()
-    sessionManager.addLogs(logs, sessionId)
+    MetricsSinkRegistry.shared.recordLogs(logs, sessionId)
   }
 
   suspend fun stop() {
-    awaitSessionPersisted()
-    sessionManager.stopSession(sessionId)
+    val endDate = TimeUtils.getCurrentTimestampInISOFormat()
+    this.endDate = endDate
+    MetricsSinkRegistry.shared.sessionEnded(sessionId, endDate)
   }
 
-  suspend fun isActive(): Boolean = sessionManager.getSessionRow(sessionId)?.isActive ?: true
+  fun isActive(): Boolean = endDate == null
 
-  suspend fun getEndDate(): String? = sessionManager.getSessionRow(sessionId)?.endTimestamp
+  fun getEndDate(): String? = endDate
 }

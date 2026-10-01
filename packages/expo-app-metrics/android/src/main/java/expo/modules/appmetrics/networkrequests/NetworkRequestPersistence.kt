@@ -2,11 +2,8 @@
 
 package expo.modules.appmetrics.networkrequests
 
-import android.util.Log
 import expo.modules.appmetrics.records.NetworkSpan
-import expo.modules.appmetrics.storage.MetricsDatabase
-import expo.modules.appmetrics.storage.toEntity
-import kotlinx.coroutines.CancellationException
+import expo.modules.appmetrics.sink.MetricsSinkRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -14,20 +11,18 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLDecoder
 
-private const val TAG = "ExpoAppMetrics"
-
 /**
- * Records completed network requests as trace spans in the `spans` table.
+ * Records completed network requests as trace spans through the metrics sink.
  *
  * Mirrors the iOS `NetworkRequestPersistence`.
  */
 class NetworkRequestPersistence(
-  private val database: MetricsDatabase,
   private val scope: CoroutineScope,
   initialConfiguration: NetworkTracesConfiguration = NetworkTracesConfiguration(),
   // A plain value rather than a provider: the id is constant for an instance, and resolving it
   // eagerly keeps the monitor's record path off module state a teardown could have invalidated.
-  private val sessionId: String
+  private val sessionId: String,
+  private val registry: MetricsSinkRegistry = MetricsSinkRegistry.shared
 ) {
   /**
    * Capture-time recording policy. Volatile because the monitor reads it from OkHttp dispatcher
@@ -53,19 +48,11 @@ class NetworkRequestPersistence(
     if (!configuration.allows(request.url, request.method)) {
       return
     }
-    // Converts and inserts on `scope`, so past the gate the dispatcher threads pay neither the
-    // span building nor the database write. Matches `persistBuffered`.
+    // Converts and records on `scope`, so past the gate the dispatcher threads pay neither the
+    // span building nor the write. Matches `persistBuffered`.
     scope.launch {
       val span = request.toNetworkSpan() ?: return@launch
-      try {
-        database.spanDao().insert(span.toEntity(sessionId))
-      } catch (e: CancellationException) {
-        // A torn-down scope is routine (a JS reload), not a failure worth warning about.
-        throw e
-      } catch (e: Exception) {
-        // Swallowed: recording telemetry must never break the monitor's fan-out to its delegates.
-        Log.w(TAG, "Failed to persist a network request span", e)
-      }
+      registry.recordSpans(listOf(span), sessionId)
     }
   }
 
@@ -79,32 +66,20 @@ class NetworkRequestPersistence(
       return
     }
     // One coroutine, converting inside it: the install path shares the module's serial queue
-    // with the session INSERT and crash-report processing, so converting up to 200 requests
-    // there would be the most expensive place to do it.
+    // with crash-report processing, so converting up to 200 requests there would be the most
+    // expensive place to do it.
     scope.launch {
       // Snapshotted once, unlike `persist`, which samples the policy per request. Everything in
       // this batch was observed before the install that triggered the drain, so one policy keeps
       // their treatment from depending on how far the loop happened to get before a reconfigure
       // landed.
       val policy = configuration
-      for (request in requests) {
-        if (!policy.allows(request.url, request.method)) {
-          continue
-        }
-        val span = request.toNetworkSpan() ?: continue
-        try {
-          database.spanDao().insert(span.toEntity(sessionId))
-        } catch (e: CancellationException) {
-          // Must not be swallowed: `CancellationException` is an `Exception`, so a blanket catch
-          // would let the loop finish and report completion for a batch that never wrote its
-          // remaining rows, losing the buffered requests the caller means to retry.
-          throw e
-        } catch (e: Exception) {
-          Log.w(TAG, "Failed to persist a network request span", e)
-        }
-      }
-      // Deliberately not in a `finally`: a cancelled batch must not report completion, so the
-      // caller can retry the drain on the next install.
+      val spans = requests
+        .filter { policy.allows(it.url, it.method) }
+        .mapNotNull { it.toNetworkSpan() }
+      // Throws `CancellationException` when the scope is canceled mid-write, so a canceled batch
+      // never reports completion and the caller can retry the drain on the next install.
+      registry.recordSpans(spans, sessionId)
       onComplete()
     }
   }

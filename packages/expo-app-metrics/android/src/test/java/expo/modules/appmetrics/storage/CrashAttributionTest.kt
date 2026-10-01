@@ -1,10 +1,13 @@
-package expo.modules.appmetrics.crashreporting
+package expo.modules.appmetrics.storage
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import expo.modules.appmetrics.storage.MetricsDatabase
-import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.crashreporting.CrashOrigin
+import expo.modules.appmetrics.crashreporting.CrashReport
+import expo.modules.appmetrics.sink.CrashAttributionHint
+import expo.modules.appmetrics.sink.SessionInfo
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -15,12 +18,13 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
-/** Covers `attributeAndStoreCrashReport` — the session-aware half of crash processing. */
+/** Covers `DatabaseMetricsSink.recordCrash` — the session-aware half of crash processing. */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
-class CrashReportAttributionTest {
+class CrashAttributionTest {
   private lateinit var database: MetricsDatabase
   private lateinit var sessionManager: SessionManager
+  private lateinit var sink: DatabaseMetricsSink
 
   @Before
   fun setUp() {
@@ -30,6 +34,7 @@ class CrashReportAttributionTest {
       .allowMainThreadQueries()
       .build()
     sessionManager = SessionManager(context, database)
+    sink = DatabaseMetricsSink(sessionManager)
   }
 
   @After
@@ -42,14 +47,10 @@ class CrashReportAttributionTest {
     origin: CrashOrigin,
     currentSessionId: String? = "current",
     message: String = "boom"
-  ) =
-    attributeAndStoreCrashReport(
-      sessionManager = sessionManager,
-      currentSessionId = currentSessionId,
-      sessionId = sessionId,
-      origin = origin,
-      report = report(message)
-    )
+  ) {
+    val report = report(message)
+    sink.recordCrash(report, report.toLogEvent(), CrashAttributionHint(sessionId, origin, currentSessionId))
+  }
 
   private fun report(message: String = "boom"): CrashReport =
     CrashReport.fromThrowable(
@@ -112,6 +113,21 @@ class CrashReportAttributionTest {
 
       assertEquals(1, orphanCount())
       assertEquals(0, sessionManager.getLogsForSession("current").size)
+    }
+
+  @Test
+  fun `waits for the start of a session that this sink is still inserting`() =
+    runBlocking {
+      val context = ApplicationProvider.getApplicationContext<Context>()
+      sink = DatabaseMetricsSink(SessionManager(DatabaseMetricsSinkTest.SlowPreferencesContext(context), database))
+      sink.sessionStarted(
+        SessionInfo(id = "starting", type = "custom", startTimestamp = "2023-11-14T22:00:00.000Z", metadata = null)
+      )
+
+      attribute("starting", CrashOrigin.JVM_FILE)
+
+      assertEquals("java.lang.IllegalStateException: boom", storedMessage("starting"))
+      assertEquals(0, orphanCount())
     }
 
   // endregion

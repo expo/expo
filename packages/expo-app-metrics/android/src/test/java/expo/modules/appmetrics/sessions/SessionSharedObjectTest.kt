@@ -1,18 +1,17 @@
 package expo.modules.appmetrics.sessions
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
-import expo.modules.appmetrics.storage.MetricsDatabase
-import expo.modules.appmetrics.storage.SessionManager
-import io.mockk.coVerify
-import io.mockk.spyk
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Assert.*
+import expo.modules.appmetrics.sink.FakeMetricsSink
+import expo.modules.appmetrics.sink.MetricsSinkRegistry
+import expo.modules.appmetrics.sink.SessionInfo
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -20,234 +19,96 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 /**
- * Exercises the lifecycle logic folded out of the old `SessionCoordinator` and
- * into [SessionSharedObject]: the ENG-21739 ordering guarantee (the session row
- * is INSERTed before any metric/log write touches it), and `stop()`.
- *
- * Uses the same Robolectric + in-memory Room harness as [SessionManagerTest],
- * constructing the object with no runtime (the default) so it stays unlinked
- * from any JS runtime.
+ * Checks that [SessionSharedObject] hands its lifecycle and records to the shared
+ * `MetricsSinkRegistry`. The object is constructed with no runtime (the default) so it stays
+ * unlinked from any JS runtime. Calls are filtered by session id, so records from other tests
+ * that reach the shared registry don't matter.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class SessionSharedObjectTest {
-  private lateinit var database: MetricsDatabase
-  private lateinit var sessionManager: SessionManager
+  private val sink = FakeMetricsSink()
 
   @Before
   fun setUp() {
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    database = Room
-      .inMemoryDatabaseBuilder(context, MetricsDatabase::class.java)
-      .allowMainThreadQueries()
-      .build()
-    sessionManager = SessionManager(context, database)
-  }
-
-  @After
-  fun tearDown() {
-    database.close()
+    GlobalAttributes.set(null)
+    MetricsSinkRegistry.register(sink)
   }
 
   @Test
-  fun `addMetrics persists the session row before writing the metric`() =
-    runTest {
-      // Arrange — a fresh session that has NOT been awaited yet.
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-      assertNull(sessionManager.getSessionRow(session.sessionId))
+  fun `start emits sessionStarted with the session info`() {
+    val session = SessionSharedObject(type = "main", customStartTimestamp = "2025-01-01T00:00:00.000Z")
 
-      // Act — the very first touch is a write. If the INSERT didn't run first,
-      // the FK on metrics.sessionId would throw FOREIGN KEY constraint failed.
-      session.addMetrics(listOf(createMetric("metric-1")))
+    session.start()
 
-      // Assert — both the row and the metric exist.
-      assertNotNull(sessionManager.getSessionRow(session.sessionId))
+    assertEquals(
+      listOf(
+        FakeMetricsSink.SessionStarted(
+          SessionInfo(id = session.sessionId, type = "main", startTimestamp = "2025-01-01T00:00:00.000Z", metadata = null)
+        )
+      ),
+      callsFor(session)
+    )
+  }
+
+  @Test
+  fun `startDate defaults to construction time when omitted`() {
+    val session = SessionSharedObject(type = "custom")
+
+    assertTrue(session.startDate.isNotBlank())
+  }
+
+  @Test
+  fun `each session gets its own id`() {
+    val first = SessionSharedObject(type = "main")
+    val second = SessionSharedObject(type = "main")
+
+    assertTrue(first.sessionId.isNotBlank())
+    assertTrue(first.sessionId != second.sessionId)
+  }
+
+  @Test
+  fun `addMetrics and addLogs emit with the session id`() =
+    runBlocking {
+      val session = SessionSharedObject(type = "main")
+      val metric = MetricRecord(timestamp = "2025-01-01T00:00:00.000Z", category = "test", name = "m", value = 1.0)
+      val log = LogEvent(timestamp = "2025-01-01T00:00:00.000Z", name = "l", severity = "info")
+
+      session.addMetrics(listOf(metric))
+      session.addLogs(listOf(log))
+
       assertEquals(
-        setOf("metric-1"),
-        sessionManager.getMetricsForSession(session.sessionId).map { it.name }.toSet()
+        listOf(
+          FakeMetricsSink.Metrics(listOf(metric), session.sessionId),
+          FakeMetricsSink.Logs(listOf(log), session.sessionId)
+        ),
+        callsFor(session)
       )
     }
 
   @Test
-  fun `addLogs persists the session row before writing the log`() =
-    runTest {
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-      assertNull(sessionManager.getSessionRow(session.sessionId))
-
-      session.addLogs(listOf(createLog("log-1")))
-
-      assertNotNull(sessionManager.getSessionRow(session.sessionId))
-      assertEquals(
-        setOf("log-1"),
-        sessionManager.getLogsForSession(session.sessionId).map { it.name }.toSet()
-      )
-    }
-
-  @Test
-  fun `startTimestamp defaults to construction time when omitted`() =
-    runTest {
-      // No startTimestamp passed — the object stamps it from the constructor.
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "custom"
-      )
-
-      // startDate is populated synchronously at construction...
-      assertTrue(session.startDate.isNotBlank())
-
-      // ...and is the timestamp persisted for the row.
-      session.awaitSessionPersisted()
-      assertEquals(
-        session.startDate,
-        sessionManager.getSessionRow(session.sessionId)!!.startTimestamp
-      )
-    }
-
-  @Test
-  fun `awaitSessionPersisted runs the start job exactly once`() =
-    runTest {
-      // Spy so we can count the real INSERT. We can't assert this via the DB:
-      // session inserts use OnConflictStrategy.IGNORE, so a duplicate run would
-      // be silently swallowed and leave exactly one row regardless.
-      val spy = spyk(sessionManager)
-      val session = SessionSharedObject(
-        sessionManager = spy,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      // Two concurrent waiters plus a third sequential call — all join the same
-      // lazily-started job, which must execute its body only once.
-      val a = launch { session.awaitSessionPersisted() }
-      val b = launch { session.awaitSessionPersisted() }
-      a.join()
-      b.join()
-      session.awaitSessionPersisted()
-
-      coVerify(exactly = 1) { spy.startSessionWithIdAt(any(), any(), any(), any()) }
-      assertNotNull(sessionManager.getSessionRow(session.sessionId))
-    }
-
-  @Test
-  fun `stop awaits the start job then stamps the end timestamp`() =
-    runTest {
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      session.stop()
-
-      val row = sessionManager.getSessionRow(session.sessionId)
-      assertNotNull(row)
-      assertFalse(row!!.isActive)
-      assertNotNull(row.endTimestamp)
-    }
-
-  @Test
-  fun `isActive and getEndDate reflect the persisted row across stop`() =
-    runTest {
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-      session.awaitSessionPersisted()
-
+  fun `stop emits sessionEnded with the in-memory end date`() =
+    runBlocking {
+      val session = SessionSharedObject(type = "main")
       assertTrue(session.isActive())
       assertNull(session.getEndDate())
 
       session.stop()
 
+      val endDate = session.getEndDate()
+      assertNotNull(endDate)
       assertFalse(session.isActive())
-      assertNotNull(session.getEndDate())
+      assertEquals(listOf(FakeMetricsSink.SessionEnded(session.sessionId, endDate!!)), callsFor(session))
     }
 
-  @Test
-  fun `isActive defaults to true before the row is persisted`() =
-    runTest {
-      // Never awaited, so the start job hasn't inserted the row yet — the read
-      // is optimistic rather than blocking.
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      assertTrue(session.isActive())
-      assertNull(session.getEndDate())
-      assertNull(sessionManager.getSessionRow(session.sessionId))
+  private fun callsFor(session: SessionSharedObject) =
+    sink.calls.filter {
+      when (it) {
+        is FakeMetricsSink.SessionStarted -> it.session.id == session.sessionId
+        is FakeMetricsSink.SessionEnded -> it.sessionId == session.sessionId
+        is FakeMetricsSink.Metrics -> it.sessionId == session.sessionId
+        is FakeMetricsSink.Logs -> it.sessionId == session.sessionId
+        else -> false
+      }
     }
-
-  @Test
-  fun `a freshly persisted session reads as active with no end date`() =
-    runTest {
-      val session = SessionSharedObject(
-        sessionManager = sessionManager,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-      session.awaitSessionPersisted()
-
-      // Row exists now, but the session has not stopped yet.
-      assertTrue(session.isActive())
-      assertNull(session.getEndDate())
-    }
-
-  @Test
-  fun `getters never trigger the session-start persist`() =
-    runTest {
-      // Reads are intentionally NOT gated on awaitSessionPersisted(): they read
-      // through optimistically and must never kick off the lazy start job.
-      val spy = spyk(sessionManager)
-      val session = SessionSharedObject(
-        sessionManager = spy,
-        scope = this,
-        type = "main",
-        customStartTimestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      session.isActive()
-      session.getEndDate()
-
-      // No INSERT was issued and the row still doesn't exist.
-      coVerify(exactly = 0) { spy.startSessionWithIdAt(any(), any(), any(), any()) }
-      assertNull(sessionManager.getSessionRow(session.sessionId))
-    }
-
-  // region Helpers
-
-  private fun createMetric(name: String): MetricRecord =
-    MetricRecord(
-      timestamp = "2025-01-01T00:00:00.000Z",
-      category = "test",
-      name = name,
-      value = 123.45
-    )
-
-  private fun createLog(name: String): LogEvent =
-    LogEvent(
-      timestamp = "2025-01-01T00:00:00.000Z",
-      name = name,
-      severity = "info"
-    )
-
-  // endregion
 }

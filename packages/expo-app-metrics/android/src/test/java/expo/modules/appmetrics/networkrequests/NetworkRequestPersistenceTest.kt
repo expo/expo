@@ -1,20 +1,16 @@
 package expo.modules.appmetrics.networkrequests
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import expo.modules.appmetrics.storage.MetricsDatabase
-import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.records.NetworkSpan
+import expo.modules.appmetrics.sink.FakeMetricsSink
+import expo.modules.appmetrics.sink.MetricsSinkRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONObject
-import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -444,45 +440,26 @@ class NetworkRequestToSpanMappingTest {
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class NetworkRequestPersistenceTest {
-  // Shared by `runTest` and Room's executors: persistence inserts are fire-and-forget, and
-  // Room's suspending DAO calls hop to its executors, which live outside the test scheduler's
-  // virtual time. Pinning them to the same scheduler makes `advanceUntilIdle` actually wait
-  // for the inserts instead of racing them.
   private val testDispatcher = StandardTestDispatcher()
 
-  private lateinit var database: MetricsDatabase
+  private val sink = FakeMetricsSink()
+  private val registry = MetricsSinkRegistry()
 
   @Before
   fun setUp() {
     // Surface swallowed persistence warnings in the test output.
     ShadowLog.stream = System.out
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    database = Room
-      .inMemoryDatabaseBuilder(context, MetricsDatabase::class.java)
-      .allowMainThreadQueries()
-      .setQueryExecutor(testDispatcher.asExecutor())
-      .setTransactionExecutor(testDispatcher.asExecutor())
-      .build()
+    registry.register(sink)
   }
 
-  @After
-  fun tearDown() {
-    database.close()
-  }
+  private fun recordedSpans() = sink.calls.filterIsInstance<FakeMetricsSink.Spans>()
 
-  private suspend fun insertSession(id: String) {
-    database.sessionDao().insert(
-      Session(id = id, startTimestamp = "2026-08-13T10:00:00.000Z")
-    )
-  }
-
-  private suspend fun allSpans() = database.spanDao().getSpans(afterId = -1, limit = Int.MAX_VALUE)
+  private fun allSpans() = recordedSpans().flatMap { it.spans }
 
   @Test
   fun `drops every request while recording is disabled`() = runTest(testDispatcher) {
-    insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = false),
       sessionId = "s"
@@ -494,9 +471,8 @@ class NetworkRequestPersistenceTest {
 
   @Test
   fun `records only requests matching the configured filter`() = runTest(testDispatcher) {
-    insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true, hosts = listOf("API.myapp.com")),
       sessionId = "s"
@@ -513,9 +489,8 @@ class NetworkRequestPersistenceTest {
   @Test
   fun `applies a configuration change to subsequent requests only`() = runTest(testDispatcher) {
     // "Applies forward": rows persisted before the change stay in the table and still dispatch.
-    insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -532,9 +507,8 @@ class NetworkRequestPersistenceTest {
   fun `a backfill records only the buffered requests the policy allows`() = runTest(testDispatcher) {
     // The startup buffer goes through the same gate as live traffic, so a filter set before the
     // drain keeps the non-matching requests out of the table rather than letting the backlog in.
-    insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true, hosts = listOf("api.example.com")),
       sessionId = "s"
@@ -555,9 +529,8 @@ class NetworkRequestPersistenceTest {
     // The drain reads the policy once. Without that, a reconfigure landing while the batch is
     // inserting would write the requests it already reached and drop the rest, so one buffer
     // would be split across two policies.
-    insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -585,19 +558,17 @@ class NetworkRequestPersistenceTest {
 
   @Test
   fun `persists a completed request as a span attributed to the provided session`() = runTest(testDispatcher) {
-    insertSession("main-session")
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "main-session"
     )
     persistence.persist(makeRequest())
     testScheduler.advanceUntilIdle()
-    val rows = allSpans()
-    assertEquals(1, rows.size)
-    assertEquals("main-session", rows.single().sessionId)
-    assertEquals("GET", rows.single().name)
+    val recorded = recordedSpans().single()
+    assertEquals("main-session", recorded.sessionId)
+    assertEquals(listOf("GET"), recorded.spans.map { it.name })
   }
 
   @Test
@@ -605,11 +576,10 @@ class NetworkRequestPersistenceTest {
     // The interceptor installs at Application.onCreate, but persistence can only start once
     // the module created the session. Requests observed in between sit in the monitor's ring
     // buffer, so installation drains it and startup traffic is not lost.
-    insertSession("main-session")
     val monitor = NetworkRequestMonitor()
     monitor.record(makeRequest(method = "GET"))
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "main-session"
@@ -625,11 +595,10 @@ class NetworkRequestPersistenceTest {
   fun `reinstalling after a completed backfill does not re-drain the buffer`() = runTest(testDispatcher) {
     // The module reinstalls on every JS reload; a second drain would duplicate the buffered
     // startup requests under the new session id.
-    insertSession("s")
     val monitor = NetworkRequestMonitor()
     monitor.record(makeRequest(method = "GET"))
     val first = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -638,7 +607,7 @@ class NetworkRequestPersistenceTest {
     testScheduler.advanceUntilIdle()
     monitor.uninstallPersistence(first)
     val second = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -653,12 +622,11 @@ class NetworkRequestPersistenceTest {
   fun `a backfill canceled before completing is retried by the next install`() = runTest(testDispatcher) {
     // A JS reload cancels the module scope the batch runs on. The drained-flag flips only on
     // completion, so the next install drains again instead of losing the buffer for good.
-    insertSession("s")
     val monitor = NetworkRequestMonitor()
     monitor.record(makeRequest(method = "GET"))
     val canceledScope = CoroutineScope(testDispatcher + Job())
     val first = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = canceledScope,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -668,7 +636,7 @@ class NetworkRequestPersistenceTest {
     testScheduler.advanceUntilIdle()
     assertTrue(allSpans().isEmpty())
     val second = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -679,56 +647,60 @@ class NetworkRequestPersistenceTest {
   }
 
   @Test
-  fun `a backfill canceled midway through does not report completion`() = runTest(testDispatcher) {
-    // Cancelling once the batch is inserting is the case a JS reload actually hits. Each
-    // remaining insert then throws `CancellationException`, and swallowing those would run the
-    // loop to the end and flip the drained flag, losing the buffered requests for good.
-    insertSession("s")
+  fun `a backfill canceled while the sink writes does not report completion`() = runTest(testDispatcher) {
+    // Cancelling once the batch is being written is the case a JS reload actually hits. The
+    // write then throws `CancellationException`, and swallowing it would flip the drained flag,
+    // losing the buffered requests for good.
     val monitor = NetworkRequestMonitor()
     repeat(3) { index ->
       monitor.record(makeRequest(method = "GET", url = "https://api.example.com/$index"))
     }
     val canceledScope = CoroutineScope(testDispatcher + Job())
+    val cancelingRegistry = MetricsSinkRegistry()
+    cancelingRegistry.register(
+      FakeMetricsSink(beforeWrite = {
+        canceledScope.cancel()
+        yield()
+      })
+    )
     var reportedComplete = false
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = cancelingRegistry,
       scope = canceledScope,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
-    // Cancel from inside the loop's own iteration: `persistBuffered` walks this list, so
-    // cancelling as the last element is produced makes the remaining inserts throw
-    // `CancellationException` from within the loop. Swallowing those would let the loop finish
-    // and report completion for a batch that never wrote its remaining rows.
-    val buffered = monitor.recent
-    var handed = 0
-    val cancelingList = object : AbstractList<NetworkRequest>() {
-      override val size = buffered.size
-      override fun get(index: Int): NetworkRequest {
-        handed++
-        if (handed == buffered.size) {
-          canceledScope.cancel()
-        }
-        return buffered[index]
-      }
-    }
-    persistence.persistBuffered(cancelingList) { reportedComplete = true }
+    persistence.persistBuffered(monitor.recent) { reportedComplete = true }
     testScheduler.advanceUntilIdle()
     assertFalse("a canceled batch must not report completion", reportedComplete)
   }
 
   @Test
+  fun `a backfill reports completion after the sink write returns`() = runTest(testDispatcher) {
+    var reportedComplete = false
+    val persistence = NetworkRequestPersistence(
+      registry = registry,
+      scope = this,
+      initialConfiguration = NetworkTracesConfiguration(enabled = true),
+      sessionId = "s"
+    )
+    persistence.persistBuffered(listOf(makeRequest(), makeRequest(method = "POST"))) { reportedComplete = true }
+    testScheduler.advanceUntilIdle()
+    assertTrue(reportedComplete)
+    assertEquals(listOf(listOf("GET", "POST")), recordedSpans().map { call -> call.spans.map { it.name } })
+  }
+
+  @Test
   fun `requests completing between uninstall and the next install are not lost`() = runTest(testDispatcher) {
     // A production host recreation (an `expo-updates` reload) uninstalls persistence, then the
-    // next module waits for its session row before installing. Requests landing in that window
+    // next module installs its own once it is created. Requests landing in that window
     // reach the ring buffer but no live persistence, so without a re-drain they are never
     // written.
-    insertSession("s")
     val monitor = NetworkRequestMonitor()
     // A startup request, so the first install drains a real buffer and marks it drained.
     monitor.record(makeRequest(method = "GET", url = "https://api.example.com/startup"))
     val first = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -741,7 +713,7 @@ class NetworkRequestPersistenceTest {
     testScheduler.advanceUntilIdle()
 
     val second = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -757,10 +729,9 @@ class NetworkRequestPersistenceTest {
     // `record` writes a request through the installed persistence immediately. A later install
     // must not drain it again from the ring buffer, or every JS reload duplicates every request
     // still in the buffer, each copy under a fresh span id the server cannot dedupe.
-    insertSession("s")
     val monitor = NetworkRequestMonitor()
     val first = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -773,7 +744,7 @@ class NetworkRequestPersistenceTest {
     monitor.uninstallPersistence(first)
 
     val second = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -790,11 +761,10 @@ class NetworkRequestPersistenceTest {
   fun `a drained request is not re-drained after aging out of the buffer`() = runTest(testDispatcher) {
     // A request that both drained and then aged out of the ring buffer must not be written
     // again by a later install.
-    insertSession("s")
     val monitor = NetworkRequestMonitor(recentCapacity = 2)
     monitor.record(makeRequest(method = "GET", url = "https://api.example.com/first"))
     val first = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -809,7 +779,7 @@ class NetworkRequestPersistenceTest {
     testScheduler.advanceUntilIdle()
 
     val second = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -827,10 +797,9 @@ class NetworkRequestPersistenceTest {
     // The drained set exists only to suppress a re-drain of ids a later install could still see
     // in the ring buffer, so eviction has to forget the evicted id. Without that the set grows
     // for the life of the process, one UUID per request.
-    insertSession("s")
     val monitor = NetworkRequestMonitor(recentCapacity = 2)
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -854,10 +823,9 @@ class NetworkRequestPersistenceTest {
     // Every request here is written live and marked, then all but the last two are evicted. The
     // marks that eviction drops belong to rows already on disk, so a reinstall that rescans the
     // buffer must still find nothing to drain.
-    insertSession("s")
     val monitor = NetworkRequestMonitor(recentCapacity = 2)
     val first = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -871,7 +839,7 @@ class NetworkRequestPersistenceTest {
     monitor.uninstallPersistence(first)
 
     val second = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -885,10 +853,9 @@ class NetworkRequestPersistenceTest {
 
   @Test
   fun `an uninstalled persistence receives no further requests`() = runTest(testDispatcher) {
-    insertSession("s")
     val monitor = NetworkRequestMonitor()
     val persistence = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -904,17 +871,16 @@ class NetworkRequestPersistenceTest {
   fun `uninstalling a stale instance leaves its replacement installed`() = runTest(testDispatcher) {
     // A late-arriving OnDestroy from the torn-down module must not remove the instance the
     // next module installed.
-    insertSession("s")
     val monitor = NetworkRequestMonitor()
     val stale = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
     )
     monitor.installPersistence(stale)
     val replacement = NetworkRequestPersistence(
-      database = database,
+      registry = registry,
       scope = this,
       initialConfiguration = NetworkTracesConfiguration(enabled = true),
       sessionId = "s"
@@ -924,20 +890,5 @@ class NetworkRequestPersistenceTest {
     monitor.record(makeRequest())
     testScheduler.advanceUntilIdle()
     assertEquals(1, allSpans().size)
-  }
-
-  @Test
-  fun `drops a request whose session row does not exist yet`() = runTest(testDispatcher) {
-    // The sessions FK protects referential integrity; persistence must degrade to a dropped
-    // row rather than throw into the monitor's record path.
-    val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
-      initialConfiguration = NetworkTracesConfiguration(enabled = true),
-      sessionId = "never-inserted"
-    )
-    persistence.persist(makeRequest())
-    testScheduler.advanceUntilIdle()
-    assertTrue(allSpans().isEmpty())
   }
 }

@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Debug
 import expo.modules.appmetrics.MemoryMetric
 import expo.modules.appmetrics.records.MetricRecord
-import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.sink.MetricsSinkRegistry
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -13,8 +13,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.serialization.Serializable
 
 class MemoryMetricsManager(
-  val context: Context,
-  val sessionManager: SessionManager
+  val context: Context
 ) {
   // If sessionId is null, then snapshot will not be stored
   suspend fun takeMemorySnapshot(sessionId: String? = null): MemoryUsageSnapshot {
@@ -34,7 +33,7 @@ class MemoryMetricsManager(
     )
 
     sessionId?.let { sessionId ->
-      sessionManager.addMetrics(snapshot.toMetrics(), sessionId = sessionId)
+      MetricsSinkRegistry.shared.recordMetrics(snapshot.toMetrics(), sessionId)
     }
 
     return snapshot

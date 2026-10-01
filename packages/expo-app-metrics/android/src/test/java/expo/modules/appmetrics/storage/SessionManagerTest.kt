@@ -6,9 +6,10 @@ import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.BuildConfig
-import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
+import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
+import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -135,7 +136,7 @@ class SessionManagerTest {
       assertTrue(database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!.session.isActive)
 
       // Act
-      sessionManager.stopSession(sessionId)
+      sessionManager.stopSession(sessionId, TimeUtils.getCurrentTimestampInISOFormat())
 
       // Assert
       assertFalse(database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!.session.isActive)
@@ -149,7 +150,7 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
 
       // Act
-      sessionManager.stopSession(sessionId)
+      sessionManager.stopSession(sessionId, TimeUtils.getCurrentTimestampInISOFormat())
 
       // Assert
       val stopped = database.sessionDao().getSessionWithMetricsBySessionId(sessionId)!!
@@ -171,28 +172,6 @@ class SessionManagerTest {
       // Assert
       assertFalse(database.sessionDao().getSessionWithMetricsBySessionId(oldSession)!!.session.isActive)
       assertTrue(database.sessionDao().getSessionWithMetricsBySessionId(newSession)!!.session.isActive)
-    }
-
-  @Test
-  fun `deactivateAllSessionsBefore excludes a session whose startTimestamp equals the cutoff`() =
-    runTest {
-      // The active-session safety in AppMetricsModule depends on this being a
-      // strict `<` comparison, NOT `<=`: a freshly-created session shares its
-      // start timestamp with the sweep cutoff, so it must survive the sweep even
-      // though it can run after the session's own INSERT.
-      val cutoff = "2025-01-10T00:00:00.000Z"
-      val atCutoff = "at-cutoff-session"
-      val justBefore = "just-before-session"
-      sessionManager.startSessionWithIdAt(atCutoff, cutoff)
-      sessionManager.startSessionWithIdAt(justBefore, "2025-01-09T23:59:59.999Z")
-
-      // Act
-      sessionManager.deactivateAllSessionsBefore(cutoff)
-
-      // Assert — equal to the cutoff is preserved (proves `<`), strictly older
-      // is deactivated.
-      assertTrue(database.sessionDao().getSessionWithMetricsBySessionId(atCutoff)!!.session.isActive)
-      assertFalse(database.sessionDao().getSessionWithMetricsBySessionId(justBefore)!!.session.isActive)
     }
 
   @Test
@@ -221,7 +200,7 @@ class SessionManagerTest {
       // keep its real end time even if it predates the deactivate cutoff.
       val cleanlyStopped = "clean-session"
       sessionManager.startSessionWithIdAt(cleanlyStopped, "2025-01-01T00:00:00.000Z")
-      sessionManager.stopSession(cleanlyStopped)
+      sessionManager.stopSession(cleanlyStopped, TimeUtils.getCurrentTimestampInISOFormat())
       val originalEnd = database.sessionDao().getSessionWithMetricsBySessionId(cleanlyStopped)!!
         .session.endTimestamp
       assertNotNull("precondition: stopSession should have stamped endTimestamp", originalEnd)
@@ -242,7 +221,7 @@ class SessionManagerTest {
       val inactiveSession = "inactive-session"
       sessionManager.startSessionWithIdAt(activeSession, "2025-01-01T00:00:00.000Z", environment = "staging")
       sessionManager.startSessionWithIdAt(inactiveSession, "2025-01-01T01:00:00.000Z", environment = "staging")
-      sessionManager.stopSession(inactiveSession)
+      sessionManager.stopSession(inactiveSession, TimeUtils.getCurrentTimestampInISOFormat())
 
       // Act
       sessionManager.updateEnvironmentForActiveSessions("production")
@@ -289,6 +268,23 @@ class SessionManagerTest {
 
       assertEquals(1, s2?.metrics?.size)
       assertTrue(s2?.metrics?.all { it.sessionId == session2Id } ?: false)
+    }
+
+  @Test
+  fun `addMetrics and addLogs store params and attributes without merging globals`() =
+    runTest {
+      // The merge happens once, in `MetricsSinkRegistry`, before a record reaches storage.
+      GlobalAttributes.set(mapOf("subscription_tier" to "pro"))
+      try {
+        sessionManager.startSessionWithIdAt("session-1", "2025-01-01T00:00:00.000Z")
+        sessionManager.addMetrics(listOf(createMetricRecord("metric-1").copy(params = "{\"screen\":\"home\"}")), "session-1")
+        sessionManager.addLogs(listOf(createLogEvent("log-1").copy(attributes = null)), "session-1")
+
+        assertEquals("{\"screen\":\"home\"}", sessionManager.getMetricsForSession("session-1").single().params)
+        assertNull(sessionManager.getLogsForSession("session-1").single().attributes)
+      } finally {
+        GlobalAttributes.set(null)
+      }
     }
 
   // endregion
@@ -399,13 +395,13 @@ class SessionManagerTest {
       val freshStart = isoFormatter.format(java.util.Date(now - 60_000))
 
       sessionManager.startSessionWithIdAt(staleStoppedId, staleStart)
-      sessionManager.stopSession(staleStoppedId)
+      sessionManager.stopSession(staleStoppedId, TimeUtils.getCurrentTimestampInISOFormat())
 
       sessionManager.startSessionWithIdAt(staleActiveId, staleStart)
       // Intentionally not stopped — simulates a long-running session.
 
       sessionManager.startSessionWithIdAt(freshStoppedId, freshStart)
-      sessionManager.stopSession(freshStoppedId)
+      sessionManager.stopSession(freshStoppedId, TimeUtils.getCurrentTimestampInISOFormat())
 
       // Act
       sessionManager.cleanupOldSessions()
@@ -493,7 +489,7 @@ class SessionManagerTest {
       assertNull(active.endTimestamp)
 
       // Act: end the session
-      sessionManager.stopSession(sessionId)
+      sessionManager.stopSession(sessionId, TimeUtils.getCurrentTimestampInISOFormat())
 
       // Assert: the same query now reflects the ended state
       val ended = sessionManager.getSessionRow(sessionId)

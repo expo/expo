@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
+import expo.modules.appmetrics.utils.JsonAny
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -43,5 +44,21 @@ object GlobalAttributes {
       return snapshot
     }
     return snapshot + eventAttributes
+  }
+
+  /**
+   * Decodes a JSON-encoded `params` / `attributes` value, folds the current
+   * globals into it, and re-encodes. Returns the original string when there's
+   * nothing to merge in — empty globals, or a non-null input that couldn't be
+   * parsed as a JSON object (we preserve whatever the caller wrote rather than
+   * silently replacing it).
+   */
+  internal fun mergeIntoJsonString(json: String?): String? {
+    val existing = json?.let { JsonAny.decodeJsonStringToMap(it) }
+    if (json != null && existing == null) {
+      return json
+    }
+    val merged = mergeWith(existing) ?: return json
+    return JsonAny.encodeMapToJsonString(merged)
   }
 }

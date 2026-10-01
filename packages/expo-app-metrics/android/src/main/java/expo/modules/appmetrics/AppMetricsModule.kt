@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.util.Log
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
 import expo.modules.appmetrics.jserrors.PendingErrorStore
@@ -10,7 +11,6 @@ import expo.modules.appmetrics.crashreporting.CrashReportProcessor
 import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
 import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
-import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
@@ -28,7 +28,9 @@ import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.sessions.JsMetric
 import expo.modules.appmetrics.sessions.SessionMetricInput
 import expo.modules.appmetrics.sessions.SessionSharedObject
-import expo.modules.appmetrics.storage.MetricsDatabase
+import expo.modules.appmetrics.sink.CrashAttributionHint
+import expo.modules.appmetrics.sink.MetricsSinkRegistry
+import expo.modules.appmetrics.storage.DatabaseMetricsSink
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
@@ -109,13 +111,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         scope.launch {
           // Attach any pending startup metrics first so the session has them
-          // alongside whatever's being logged. The session row itself is
-          // already persisted eagerly in `OnCreate`, so this is purely about
-          // ordering startup-metric writes ahead of caller-driven log events.
+          // alongside whatever's being logged. The session itself is started
+          // in `OnCreate`, so this is purely about ordering startup-metric
+          // writes ahead of caller-driven log events.
           saveStartupMetricsIfNotSaved()
-          // Globals merge happens inside `sessionManager.addLogs` so every
-          // persistence path picks them up. The session waits for its row
-          // before inserting.
+          // Globals merge happens in `MetricsSinkRegistry` so every record
+          // picks them up.
           mainSession.addLogs(
             listOf(
               LogEvent(
@@ -152,6 +153,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnCreate {
+        MetricsSinkRegistry.register(DatabaseMetricsSink.getInstance(context))
         sessionManager = SessionManager(context)
 
         // The main session starts at the first startup metric's timestamp (the
@@ -161,8 +163,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           AppStartupManager.metrics.firstOrNull()?.timestamp ?: TimeUtils.getCurrentTimestampInISOFormat()
 
         mainSession = SessionSharedObject(
-          sessionManager = sessionManager,
-          scope = scope,
           type = "main",
           customStartTimestamp = appSessionStartTimestamp,
           metadata = metadata,
@@ -171,16 +171,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         JvmCrashHandler.currentSessionId = mainSession.sessionId
 
-        // Persist the session row eagerly so it's visible to readers
-        // (`getMainSession`, …) as soon as possible. Idempotent:
-        // a racing write triggers (and joins) the same single start job.
+        // The sink orders every later record of this session after its start.
+        mainSession.start()
+
         scope.launch {
-          mainSession.awaitSessionPersisted()
-          // From here on every completed request is written to the `spans` table, attributed to
-          // the main session. The await above keeps the FK satisfied for every span insert;
-          // installation also drains requests buffered since process start.
+          // From here on every completed request is recorded as a span of the main session.
+          // Installation also drains requests buffered since process start.
           val persistence = NetworkRequestPersistence(
-            database = MetricsDatabase.getDatabase(context),
             scope = scope,
             initialConfiguration = AppMetricsPreferences.getNetworkTracesConfiguration(context),
             sessionId = mainSession.sessionId
@@ -189,16 +186,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           NetworkRequestMonitor.shared.installPersistence(persistence)
         }
 
-        // Sweep sessions orphaned by a previous process. The cutoff equals this
-        // session's start and the comparison is strict (`<`), so this session
-        // survives while older ones are swept — order vs the INSERT doesn't
-        // matter. Relies on `<`, not `<=` (see SessionManagerTest).
-        scope.launch { sessionManager.deactivateAllSessionsBefore(appSessionStartTimestamp) }
-
         // Turn the previous process's death evidence (pending JVM crash files,
-        // OS exit records) into stored crash reports.
-        // The processor builds the reports; `attributeAndStoreCrashReport` owns
-        // the session attribution and storage.
+        // OS exit records) into crash reports.
+        // The processor builds the reports; the sink owns the session
+        // attribution and storage.
         scope.launch {
           CrashReportProcessor(
             crashFileReader = CrashFileReader.forContext(context),
@@ -206,21 +197,20 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
             lastProcessedExitStore = PreferencesLastProcessedExitStore(context),
             appVersion = metadata?.appVersion
           ) { sessionId, origin, report, logDetails ->
-            attributeAndStoreCrashReport(
-              sessionManager = sessionManager,
-              currentSessionId = mainSession.sessionId,
-              sessionId = sessionId,
-              origin = origin,
-              report = report,
-              logDetails = logDetails
-            )
+            // A bad report must not stop the processor from deleting its file or crash the app.
+            runCatching {
+              MetricsSinkRegistry.shared.recordCrash(
+                report,
+                report.toLogEvent(logDetails),
+                CrashAttributionHint(sessionId, origin, mainSession.sessionId)
+              )
+            }.onFailure {
+              Log.e(TAG, "Failed to persist a crash report", it)
+            }
           }.process()
         }
 
-        memoryMetricsManager = MemoryMetricsManager(
-          context = context,
-          sessionManager = sessionManager
-        )
+        memoryMetricsManager = MemoryMetricsManager(context)
         updatesMonitoring = UpdatesMonitoring()
         updatesMonitoring.patchAppInfoIfNeeded(metadata)
         UpdatesControllerRegistry.controller?.get()?.let { controller ->
@@ -236,7 +226,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         scope.launch {
           PendingErrorStore.drain(context).forEach { pendingError ->
             runCatching {
-              sessionManager.addLogs(listOf(pendingError.toLogEvent()), sessionId = pendingError.sessionId)
+              MetricsSinkRegistry.shared.recordLogs(listOf(pendingError.toLogEvent()), pendingError.sessionId)
             }
           }
         }
@@ -258,10 +248,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // torn-down session until the next OnCreate replaces it.
         networkRequestPersistence?.let { NetworkRequestMonitor.shared.uninstallPersistence(it) }
         // `modulesQueue` is cancelled immediately after this hook returns, so
-        // run the UPDATE on the calling thread to make sure the end timestamp
-        // is persisted before teardown. `stop` awaits the session-start job
-        // first, so the INSERT lands before the UPDATE and the stamp doesn't
-        // silently no-op on a missing row.
+        // end the session on the calling thread to make sure the end timestamp
+        // is persisted before teardown. The sink waits for the session start
+        // first, so the end stamp doesn't silently no-op on a missing row.
         runBlocking {
           mainSession.stop()
         }
@@ -277,7 +266,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
-        sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
+        MetricsSinkRegistry.shared.recordMetrics(listOf(metric.toMetric()), metric.sessionId)
       }
 
       // Records an unhandled JavaScript error captured by the JS-side `global.ErrorUtils` handler as
@@ -330,8 +319,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         Property("type", SessionSharedObject::type)
         Property("startDate", SessionSharedObject::startDate)
 
-        AsyncFunction("isActive") Coroutine SessionSharedObject::isActive
-        AsyncFunction("getEndDate") Coroutine SessionSharedObject::getEndDate
+        AsyncFunction("isActive") { session: SessionSharedObject -> session.isActive() }
+        AsyncFunction("getEndDate") { session: SessionSharedObject -> session.getEndDate() }
 
         AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: SessionMetricInput ->
           ref.addMetrics(listOf(metric.toMetric()))
@@ -342,7 +331,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   fun setEnvironment(environment: String) {
     AppMetricsPreferences.setEnvironment(context, environment)
     scope.launch {
-      sessionManager.updateEnvironmentForActiveSessions(environment)
+      DatabaseMetricsSink.getInstance(context).updateEnvironmentForActiveSessions(environment)
     }
   }
 
@@ -351,8 +340,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
         scope.launch {
           // Attach any pending startup metrics first so the download-time
-          // metric lands alongside them. The session waits for its row before
-          // inserting.
+          // metric lands alongside them.
           saveStartupMetricsIfNotSaved()
           mainSession.addMetrics(listOf(metric))
         }
@@ -361,7 +349,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   }
 
   // Persists the collected startup metrics once, then suspends until that write
-  // completes. The session waits for its row before inserting.
+  // completes.
   internal suspend fun saveStartupMetricsIfNotSaved() = saveStartupMetricsJob.join()
 
   // Startup metrics are persisted on first access and exactly once: `by lazy`

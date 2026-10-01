@@ -136,8 +136,8 @@ class CrashReportStorageTest {
     runTest {
       startSession("crashed", startTimestamp = "2025-01-15T10:00:00.000Z")
       startSession("clean", startTimestamp = "2025-01-15T11:00:00.000Z")
-      sessionManager.stopSession("crashed")
-      sessionManager.stopSession("clean")
+      sessionManager.stopSession("crashed", TimeUtils.getCurrentTimestampInISOFormat())
+      sessionManager.stopSession("clean", TimeUtils.getCurrentTimestampInISOFormat())
       sessionManager.setCrashReport("crashed", """{"appVersion":"1.0.0"}""")
 
       val sessions = sessionManager.getInactiveSessions()
@@ -153,8 +153,8 @@ class CrashReportStorageTest {
     runTest {
       startSession("older", startTimestamp = "2025-01-15T10:00:00.000Z")
       startSession("newer", startTimestamp = "2025-01-15T11:00:00.000Z")
-      sessionManager.stopSession("older")
-      sessionManager.stopSession("newer")
+      sessionManager.stopSession("older", TimeUtils.getCurrentTimestampInISOFormat())
+      sessionManager.stopSession("newer", TimeUtils.getCurrentTimestampInISOFormat())
 
       val sessions = sessionManager.getInactiveSessions()
 
@@ -184,7 +184,7 @@ class CrashReportStorageTest {
     runTest {
       val oldTimestamp = "2020-01-01T00:00:00.000Z"
       startSession("ancient", startTimestamp = oldTimestamp)
-      sessionManager.stopSession("ancient")
+      sessionManager.stopSession("ancient", TimeUtils.getCurrentTimestampInISOFormat())
       sessionManager.setCrashReport("ancient", """{"appVersion":"1.0.0"}""")
 
       sessionManager.cleanupOldSessions()
@@ -214,7 +214,7 @@ class CrashReportStorageTest {
   fun `cleanupOldSessions keeps crash reports of recent sessions`() =
     runTest {
       startSession("recent", startTimestamp = TimeUtils.getCurrentTimestampInISOFormat())
-      sessionManager.stopSession("recent")
+      sessionManager.stopSession("recent", TimeUtils.getCurrentTimestampInISOFormat())
       sessionManager.setCrashReport("recent", """{"appVersion":"1.0.0"}""")
 
       sessionManager.cleanupOldSessions()

@@ -4,16 +4,17 @@ import android.content.Context
 import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
-import expo.modules.appmetrics.GlobalAttributes
-import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.records.LogEvent
 import expo.modules.appmetrics.records.MetricRecord
-import expo.modules.appmetrics.utils.JsonAny
+import expo.modules.appmetrics.records.NetworkSpan
 import expo.modules.appmetrics.utils.TimeUtils
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import java.util.UUID
+
+// https://sqlite.org/limits.html#:~:text=SQLITE_MAX_VARIABLE_NUMBER%2C%20which%20defaults%20to%20999%20for%20SQLite
+// 900 is a safe number slightly below the default limit to avoid hitting the limit
+internal const val SQLITE_MAX_BIND_VARIABLES = 900
 
 class SessionManager(
   context: Context,
@@ -21,8 +22,6 @@ class SessionManager(
 ) {
   private val context: Context = context
   private val database: MetricsDatabase = database ?: MetricsDatabase.getDatabase(context)
-
-  fun createSessionId(): String = UUID.randomUUID().toString()
 
   suspend fun startSessionWithIdAt(
     sessionId: String,
@@ -58,23 +57,15 @@ class SessionManager(
     database.sessionDao().insert(session)
   }
 
-  suspend fun stopSession(sessionId: String) {
-    database.sessionDao().stopSessionAt(
-      sessionId,
-      endTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
-    )
+  suspend fun stopSession(sessionId: String, endTimestamp: String) {
+    database.sessionDao().stopSessionAt(sessionId, endTimestamp)
   }
 
   suspend fun addMetrics(
     metrics: List<MetricRecord>,
     sessionId: String
   ) {
-    val metricsWithSession = metrics.map { metric ->
-      metric.toEntity(sessionId).copy(
-        params = mergeGlobalAttributesIntoJsonString(metric.params)
-      )
-    }
-    database.metricDao().insertAll(metricsWithSession)
+    database.metricDao().insertAll(metrics.map { it.toEntity(sessionId) })
   }
 
   /**
@@ -115,7 +106,7 @@ class SessionManager(
             createdAt = TimeUtils.getCurrentTimestampInISOFormat()
           )
         )
-        database.logDao().insertAll(logsWithSession(listOf(log), sessionId))
+        database.logDao().insertAll(listOf(log.toEntity(sessionId)))
       }
     }
   }
@@ -162,6 +153,10 @@ class SessionManager(
 
   suspend fun getMaxSpanId(): Long? = database.spanDao().getMaxId()
 
+  suspend fun addSpan(span: NetworkSpan, sessionId: String) {
+    database.spanDao().insert(span.toEntity(sessionId))
+  }
+
   suspend fun deleteSpansUpTo(rowId: Long) = database.spanDao().deleteUpTo(rowId)
 
   suspend fun getLogsForSession(sessionId: String): List<LogRecord> =
@@ -199,15 +194,8 @@ class SessionManager(
     logs: List<LogEvent>,
     sessionId: String
   ) {
-    database.logDao().insertAll(logsWithSession(logs, sessionId))
+    database.logDao().insertAll(logs.map { it.toEntity(sessionId) })
   }
-
-  private fun logsWithSession(logs: List<LogEvent>, sessionId: String): List<LogRecord> =
-    logs.map { log ->
-      log.toEntity(sessionId).copy(
-        attributes = mergeGlobalAttributesIntoJsonString(log.attributes)
-      )
-    }
 
   suspend fun cleanupOldLogs() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
@@ -220,20 +208,4 @@ class SessionManager(
 
   suspend fun getSessions(sessionIds: Collection<String>): List<Session> =
     sessionIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { database.sessionDao().getByIds(it) }
-
-  /**
-   * Decodes a JSON-encoded `params` / `attributes` column, folds the current
-   * `GlobalAttributes` snapshot into it, and re-encodes. Returns the original
-   * string when there's nothing to merge in — empty globals, or a non-null
-   * input that couldn't be parsed as a JSON object (we preserve whatever the
-   * caller wrote rather than silently replacing it).
-   */
-  private fun mergeGlobalAttributesIntoJsonString(json: String?): String? {
-    val existing = json?.let { JsonAny.decodeJsonStringToMap(it) }
-    if (json != null && existing == null) {
-      return json
-    }
-    val merged = GlobalAttributes.mergeWith(existing) ?: return json
-    return JsonAny.encodeMapToJsonString(merged)
-  }
 }
