@@ -84,7 +84,7 @@
     "@types/react": "~19.3.0",
     "@types/react-dom": "^19.1.7",
     "expo-module-scripts": "workspace:*",
-    "glob": "^13.0.0",
+    "glob": "^13.0.6",
     "npm-run-all2": "^8.0.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
