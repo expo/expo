@@ -87,6 +87,33 @@ export type AppEntityIdentifierModifier = ModifierConfig & {
   id: string;
 };
 
+/**
+ * A value that can be passed as an App Intent parameter: anything JSON can represent.
+ */
+export type AppIntentJSONValue =
+  | string
+  | number
+  | boolean
+  | null
+  | AppIntentJSONValue[]
+  | { [key: string]: AppIntentJSONValue };
+
+/**
+ * Selects the donations that `deleteDonationsAsync()` deletes. Pass one of these shapes:
+ *
+ * - `{ ids }` deletes the donations with the given IDs, as returned by `donateIntentAsync()`.
+ * - `{ intent }` deletes every donation of the intent type registered under that name. When
+ *   several names are registered for one intent type, this also deletes the donations made under
+ *   the other names.
+ * - `{ entity, id }` deletes every donation that refers to the given entity. The `entity` value
+ *   must be registered with `AppEntityIdentifierRegistry.shared.register(_:as:)` or
+ *   `AppEntityIdentifierRegistry.shared.registerIndexed(_:as:)`.
+ */
+export type AppIntentDonationFilter =
+  | { ids: string[] }
+  | { intent: string }
+  | { entity: string; id: string };
+
 export type ExpoAppIntentsModuleEvents = {
   onIntent: (invocation: AppIntentInvocation) => void;
 };
