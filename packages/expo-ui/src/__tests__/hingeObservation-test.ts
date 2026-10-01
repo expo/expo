@@ -5,9 +5,12 @@ Object.defineProperty(globalThis, '__DEV__', {
 
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => ({})),
+  useReleasingSharedObjectWithLifecycle: jest.fn(() => null),
 }));
 
-const { onHingeChange } = require('../swift-ui/modifiers');
+const { renderHook } = require('@testing-library/react-native');
+
+const { onHingeChange, useHingeChange } = require('../swift-ui/modifiers');
 
 describe(onHingeChange, () => {
   test('creates an onHingeChange modifier with an event listener', () => {
@@ -22,5 +25,27 @@ describe(onHingeChange, () => {
     const newContext = { hinge: { angle: 90, status: 'partiallyOpen' } };
     onHingeChange(handler).eventListener?.({ oldContext, newContext });
     expect(handler).toHaveBeenCalledWith(oldContext, newContext);
+  });
+});
+
+describe('useHingeChange', () => {
+  test('returns null without a callback', () => {
+    const { result } = renderHook(() => useHingeChange(undefined));
+    expect(result.current).toBeNull();
+  });
+
+  test('falls back to a JS event listener for a plain callback', () => {
+    const handler = jest.fn();
+    const { result } = renderHook(() => useHingeChange(handler));
+    expect(result.current?.$type).toBe('onHingeChange');
+    expect(result.current?.workletCallback).toBeUndefined();
+    result.current?.eventListener?.({
+      oldContext: { hinge: null },
+      newContext: { hinge: { angle: 10, status: 'closed' } },
+    });
+    expect(handler).toHaveBeenCalledWith(
+      { hinge: null },
+      { hinge: { angle: 10, status: 'closed' } }
+    );
   });
 });

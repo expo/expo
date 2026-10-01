@@ -4,6 +4,9 @@ import ExpoModulesCore
 import SwiftUI
 
 internal struct OnHingeChangeModifier: ViewModifier, Record {
+  // Worklet path: synchronous invocation on the UI runtime (no JS-thread dispatch).
+  @Field var workletCallback: WorkletCallback?
+  // JS-thread path: async event via the global modifier event dispatcher.
   var eventDispatcher: EventDispatcher?
   private var delivery = HingeDeliveryState()
 
@@ -17,19 +20,20 @@ internal struct OnHingeChangeModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
 #if canImport(SwiftUI, _version: 8.0.85) // iOS 27.1 SDK
     if #available(iOS 27.1, macOS 27.1, tvOS 27.1, visionOS 27.1, *) {
-      content.onHingeChange { [eventDispatcher, delivery] oldContext, newContext in
+      content.onHingeChange { [workletCallback, eventDispatcher, delivery] oldContext, newContext in
         // SwiftUI repeats the action with equal contexts while a fold relayouts the hierarchy. The
         // first call carries the initial state and passes even when neither context has a hinge.
         guard !delivery.hasDelivered || oldContext != newContext else {
           return
         }
         delivery.hasDelivered = true
-        eventDispatcher?([
-          "onHingeChange": [
-            "oldContext": HingeContextPayload(oldContext).dictionary,
-            "newContext": HingeContextPayload(newContext).dictionary
-          ]
-        ])
+        let old = HingeContextPayload(oldContext).dictionary
+        let new = HingeContextPayload(newContext).dictionary
+        if let workletCallback {
+          workletCallback.invoke(arguments: [old, new])
+        } else {
+          eventDispatcher?(["onHingeChange": ["oldContext": old, "newContext": new]])
+        }
       }
     } else {
       content
