@@ -204,7 +204,7 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
   providers.exec { env ->
     env.workingDir(layout.projectDirectory.file(".."))
     // TODO(@lukmccall): support other package managers
-    env.commandLine("pnpm", "prettier", "--write", "expo-module.config.json")
+    env.commandLine("pnpm", "oxfmt", "--write", "expo-module.config.json")
   }.result.get()
 }
 
