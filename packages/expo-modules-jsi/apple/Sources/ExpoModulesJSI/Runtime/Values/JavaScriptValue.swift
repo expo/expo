@@ -13,8 +13,10 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// Mutable only so that ``write(_:to:)`` can move the engine value out of a uniquely referenced
   /// instance that is about to be deallocated. Nothing else reassigns it, and that single write
   /// happens on the JS thread to an instance no one else can reach, so the `Sendable` conformance
-  /// stays sound.
-  nonisolated(unsafe) internal var pointee: facebook.jsi.Value
+  /// stays sound. `@exclusivity(unchecked)` matters: a plain `var` on a class makes every read go
+  /// through a dynamic exclusivity check, which measured `getDouble()` at 6.5 ns instead of 0.9 ns
+  /// and a two-number host call 90 ns slower.
+  @exclusivity(unchecked) nonisolated(unsafe) internal var pointee: facebook.jsi.Value
 
   /// The runtime the value belongs to, or `nil` if it has been deallocated or the value is runtime-free.
   /// Prefer ``jsiRuntime`` on hot paths: it costs no reference counting.
