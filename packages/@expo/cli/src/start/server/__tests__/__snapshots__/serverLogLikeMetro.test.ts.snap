@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`formatStackLikeMetro formats stack trace: ERROR_IN_ROUTER_GLOBAL_SCOPE 1`] = `
 "  factory (app/index.tsx:5:16)

@@ -45,7 +45,7 @@
     "test-suite": "workspace:*"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.3.0"
   },
   "jest": {
