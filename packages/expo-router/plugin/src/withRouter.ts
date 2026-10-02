@@ -35,12 +35,12 @@ const withGammaScreens: ConfigPlugin = (config) => {
 
 /**
  * Controls whether async routes are enabled. `'development'` and `'production'` enable them
- * for that environment only.
+ * for that environment only. Production async routes are web-only.
  */
 export type AsyncRouteOption = 'development' | 'production' | boolean;
 
 /**
- * HTTP methods a redirect, rewrite, or header rule can match.
+ * HTTP methods a redirect or rewrite rule can match.
  */
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'HEAD';
 
@@ -57,7 +57,7 @@ export type RedirectConfig = {
    */
   destination: string;
   /**
-   * Whether the redirect is temporary or permanent.
+   * Whether the redirect is permanent (301 or 308) instead of temporary (302 or 307).
    * @default false
    */
   permanent?: boolean;
@@ -76,7 +76,7 @@ export type RewriteConfig = {
    */
   source: string;
   /**
-   * The target file path that this route should rewrite.
+   * The target file path that this route should rewrite to.
    */
   destination: string;
   /**
@@ -125,7 +125,7 @@ export type Props = {
    */
   platformRoutes?: boolean;
   /**
-   * Enable or disable automatically generated routes.
+   * Enable or disable the automatically generated sitemap route at `/_sitemap`.
    * @default true
    */
   sitemap?: boolean;
