@@ -1,4 +1,4 @@
-import { matchDynamicName, matchGroupName } from '../matchers';
+import { matchGroupName } from '../matchers';
 import type { Route } from '../react-navigation/native';
 import { stringifySearchParams } from '../utils/queryParams';
 import type { State, StringifyConfig } from './getPathFromState';
@@ -7,11 +7,6 @@ export type ExpoOptions = {
   preserveDynamicRoutes?: boolean;
   preserveGroups?: boolean;
   shouldEncodeURISegment?: boolean;
-};
-
-export type ExpoConfigItem = {
-  // Used as fallback for groups
-  initialRouteName?: string;
 };
 
 export function fixCurrentParams(
@@ -84,17 +79,14 @@ export function getPathWithConventionsCollapsed({
   preserveGroups,
   preserveDynamicRoutes,
   shouldEncodeURISegment = true,
-  initialRouteName,
 }: ExpoOptions & {
   pattern: string;
   route: Route<any>;
   params: Record<string, any>;
-  initialRouteName?: string;
 }) {
-  const segments = pattern.split('/');
-
-  return segments
-    .map((p, i) => {
+  return pattern
+    .split('/')
+    .map((p) => {
       const name = getParamName(p);
 
       // Showing the route name seems ok, though whatever we show here will be incorrect
@@ -135,20 +127,6 @@ export function getPathWithConventionsCollapsed({
       }
 
       if (!preserveGroups && matchGroupName(p) != null) {
-        // When the last part is a group it could be a shared URL
-        // if the route has an initialRouteName defined, then we should
-        // use that as the component path as we can assume it will be shown.
-        if (segments.length - 1 === i) {
-          if (initialRouteName) {
-            // Return an empty string if the init route is ambiguous.
-            if (segmentMatchesConvention(initialRouteName)) {
-              return '';
-            }
-            return shouldEncodeURISegment
-              ? encodeURISegment(initialRouteName, { preserveBrackets: true })
-              : initialRouteName;
-          }
-        }
         return '';
       }
       // Preserve dynamic syntax so the path can be parsed back into state
@@ -162,12 +140,6 @@ export const getParamName = (pattern: string) => pattern.replace(/^[:*]/, '').re
 
 export function isDynamicPart(p: string) {
   return p.startsWith(':') || p.startsWith('*');
-}
-
-function segmentMatchesConvention(segment: string): boolean {
-  return (
-    segment === 'index' || matchGroupName(segment) != null || matchDynamicName(segment) != null
-  );
 }
 
 function encodeURISegment(str: string, { preserveBrackets = false } = {}) {

@@ -665,380 +665,6 @@ test('handles path at top level', () => {
   expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-test('handles initialRouteName at top level', () => {
-  const path = '/baz';
-  const config = {
-    initialRouteName: 'Boo',
-    screens: {
-      Foo: {
-        screens: {
-          Foe: 'foe',
-          Bar: {
-            screens: {
-              Baz: 'baz',
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const state = {
-    index: 1,
-    routes: [
-      { name: 'Boo' },
-      {
-        name: 'Foo',
-        state: {
-          routes: [
-            {
-              name: 'Bar',
-              state: {
-                routes: [{ name: 'Baz', path }],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-});
-
-test('handles initialRouteName inside a screen', () => {
-  const path = '/baz';
-  const config = {
-    screens: {
-      Foo: {
-        initialRouteName: 'Foe',
-        screens: {
-          Foe: 'foe',
-          Bar: {
-            screens: {
-              Baz: 'baz',
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'Foo',
-        state: {
-          index: 1,
-          routes: [
-            {
-              name: 'Foe',
-            },
-            {
-              name: 'Bar',
-              state: {
-                routes: [{ name: 'Baz', path }],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-});
-
-test('handles initialRouteName included in path', () => {
-  const path = '/baz';
-  const config = {
-    screens: {
-      Foo: {
-        initialRouteName: 'Foe',
-        screens: {
-          Foe: {
-            screens: {
-              Baz: 'baz',
-            },
-          },
-          Bar: 'bar',
-        },
-      },
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'Foo',
-        state: {
-          routes: [
-            {
-              name: 'Foe',
-              state: {
-                routes: [{ name: 'Baz', path }],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-});
-
-test('handles two initialRouteNames', () => {
-  const path = '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true';
-  const config = {
-    screens: {
-      Bar: {
-        path: 'bar/:type/:fruit',
-        screens: {
-          Foo: {
-            screens: {
-              Foe: {
-                path: 'foe',
-                screens: {
-                  Baz: {
-                    initialRouteName: 'Bos',
-                    screens: {
-                      Bos: {
-                        path: 'bos',
-                        exact: true,
-                      },
-                      Bis: {
-                        path: 'bis/:author',
-                        stringify: {
-                          author: (author: string) => author.replace(/^\w/, (c) => c.toLowerCase()),
-                        },
-                        parse: {
-                          author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
-                          count: Number,
-                          valid: Boolean,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'Bar',
-        params: {
-          fruit: 'apple',
-          type: 'sweet',
-          author: 'Jane', // Expo Router copies params to higher levels
-        },
-        state: {
-          routes: [
-            {
-              name: 'Foo',
-              params: {
-                author: 'Jane',
-                // Expo Router copies params to higher levels
-                fruit: 'apple',
-                type: 'sweet',
-              },
-              state: {
-                routes: [
-                  {
-                    name: 'Foe',
-                    params: {
-                      author: 'Jane',
-                      // Expo Router copies params to higher levels
-                      fruit: 'apple',
-                      type: 'sweet',
-                    },
-                    state: {
-                      routes: [
-                        {
-                          name: 'Baz',
-                          params: {
-                            author: 'Jane',
-                            // Expo Router copies params to higher levels
-                            fruit: 'apple',
-                            type: 'sweet',
-                          },
-                          state: {
-                            index: 1,
-                            routes: [
-                              {
-                                name: 'Bos',
-                                params: {
-                                  author: 'Jane',
-                                  // Expo Router copies params to higher levels
-                                  fruit: 'apple',
-                                  type: 'sweet',
-                                },
-                              },
-                              {
-                                name: 'Bis',
-                                params: {
-                                  answer: '42',
-                                  author: 'Jane',
-                                  count: 10,
-                                  valid: true,
-                                  // Expo Router copies params to higher levels
-                                  fruit: 'apple',
-                                  type: 'sweet',
-                                },
-                                path,
-                              },
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-});
-
-test('accepts initialRouteName without config for it', () => {
-  const path = '/bar/sweet/apple/foe/bis/jane?answer=42&count=10&valid=true';
-  const config = {
-    screens: {
-      Bar: {
-        path: 'bar/:type/:fruit',
-        screens: {
-          Foo: {
-            screens: {
-              Foe: {
-                path: 'foe',
-                screens: {
-                  Baz: {
-                    initialRouteName: 'Bas',
-                    screens: {
-                      Bos: {
-                        path: 'bos',
-                        exact: true,
-                      },
-                      Bis: {
-                        path: 'bis/:author',
-                        stringify: {
-                          author: (author: string) => author.replace(/^\w/, (c) => c.toLowerCase()),
-                        },
-                        parse: {
-                          author: (author: string) => author.replace(/^\w/, (c) => c.toUpperCase()),
-                          count: Number,
-                          valid: Boolean,
-                        },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'Bar',
-        params: {
-          fruit: 'apple',
-          type: 'sweet',
-          author: 'Jane', // Expo Router copies params to higher levels
-        },
-        state: {
-          routes: [
-            {
-              name: 'Foo',
-              params: {
-                // Expo Router copies params to higher levels
-                author: 'Jane',
-                fruit: 'apple',
-                type: 'sweet',
-              },
-              state: {
-                routes: [
-                  {
-                    name: 'Foe',
-                    params: {
-                      // Expo Router copies params to higher levels
-                      author: 'Jane',
-                      fruit: 'apple',
-                      type: 'sweet',
-                    },
-                    state: {
-                      routes: [
-                        {
-                          name: 'Baz',
-                          params: {
-                            // Expo Router copies params to higher levels
-                            author: 'Jane',
-                            fruit: 'apple',
-                            type: 'sweet',
-                          },
-                          state: {
-                            index: 1,
-                            routes: [
-                              {
-                                name: 'Bas',
-                                params: {
-                                  author: 'Jane',
-                                  // Expo Router copies params to higher levels
-                                  fruit: 'apple',
-                                  type: 'sweet',
-                                },
-                              },
-                              {
-                                name: 'Bis',
-                                params: {
-                                  answer: '42',
-                                  author: 'Jane',
-                                  count: 10,
-                                  valid: true,
-                                  // Expo Router copies params to higher levels
-                                  fruit: 'apple',
-                                  type: 'sweet',
-                                },
-                                path,
-                              },
-                            ],
-                          },
-                        },
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-});
-
 test('returns undefined if no matching screen is present (top level path)', () => {
   const path = '/foo/bar';
   const config = {
@@ -1262,7 +888,6 @@ test('chooses more exhaustive pattern', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1283,12 +908,7 @@ test('chooses more exhaustive pattern', () => {
 
         params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5 },
-            },
             {
               name: 'Bis',
               params: { id: 5 },
@@ -1311,7 +931,6 @@ test('handles same paths beginnings', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1327,11 +946,7 @@ test('handles same paths beginnings', () => {
       {
         name: 'Foe',
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-            },
             {
               name: 'Bis',
               path,
@@ -1353,7 +968,6 @@ test('handles same paths beginnings with params', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1373,12 +987,7 @@ test('handles same paths beginnings with params', () => {
         name: 'Foe',
         params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5 },
-            },
             {
               name: 'Bis',
               params: { id: 5 },
@@ -1401,7 +1010,6 @@ test('handles not taking path with too many segments', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1428,12 +1036,7 @@ test('handles not taking path with too many segments', () => {
         name: 'Foe',
         params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5 },
-            },
             {
               name: 'Bis',
               params: { id: 5 },
@@ -1456,7 +1059,6 @@ test('handles differently ordered params v1', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1483,12 +1085,7 @@ test('handles differently ordered params v1', () => {
         name: 'Foe',
         params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, pwd: 20 },
-            },
             {
               name: 'Bas',
               params: { id: 5, pwd: 20 },
@@ -1511,7 +1108,6 @@ test('handles differently ordered params v2', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1538,12 +1134,7 @@ test('handles differently ordered params v2', () => {
         name: 'Foe',
         params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, pwd: 20 },
-            },
             {
               name: 'Bas',
               params: { id: 5, pwd: 20 },
@@ -1566,7 +1157,6 @@ test('handles differently ordered params v3', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1593,12 +1183,7 @@ test('handles differently ordered params v3', () => {
         name: 'Foe',
         params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, pwd: 20 },
-            },
             {
               name: 'Bas',
               params: { id: 5, pwd: 20 },
@@ -1621,7 +1206,6 @@ test('handles differently ordered params v4', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1648,12 +1232,7 @@ test('handles differently ordered params v4', () => {
         name: 'Foe',
         params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, pwd: 20 },
-            },
             {
               name: 'Bas',
               params: { id: 5, pwd: 20 },
@@ -1678,7 +1257,6 @@ test('handles simple optional params', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1705,12 +1283,7 @@ test('handles simple optional params', () => {
         name: 'Foe',
         params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5 },
-            },
             {
               name: 'Bas',
               params: { id: 5 },
@@ -1733,7 +1306,6 @@ test('handle 2 optional params at the end v1', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1760,12 +1332,7 @@ test('handle 2 optional params at the end v1', () => {
         name: 'Foe',
         params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5 },
-            },
             {
               name: 'Bas',
               params: { id: 5 },
@@ -1788,7 +1355,6 @@ test('handle 2 optional params at the end v2', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1815,12 +1381,7 @@ test('handle 2 optional params at the end v2', () => {
         name: 'Foe',
         params: { id: 5, nip: 10 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, nip: 10 },
-            },
             {
               name: 'Bas',
               params: { id: 5, nip: 10 },
@@ -1843,7 +1404,6 @@ test('handle 2 optional params at the end v3', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1877,12 +1437,7 @@ test('handle 2 optional params at the end v3', () => {
           pwd: 15,
         },
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, nip: 10, pwd: 15 },
-            },
             {
               name: 'Bas',
               params: { id: 5, nip: 10, pwd: 15 },
@@ -1905,7 +1460,6 @@ test('handle optional params in the middle v1', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1933,12 +1487,7 @@ test('handle optional params in the middle v1', () => {
         name: 'Foe',
         params: { id: 5, pwd: 10 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, pwd: 10 },
-            },
             {
               name: 'Bas',
               params: { id: 5, pwd: 10 },
@@ -1961,7 +1510,6 @@ test('handle optional params in the middle v2', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -1989,12 +1537,7 @@ test('handle optional params in the middle v2', () => {
         name: 'Foe',
         params: { id: 5, nip: 10, pwd: 15 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, nip: 10, pwd: 15 },
-            },
             {
               name: 'Bas',
               params: { id: 5, nip: 10, pwd: 15 },
@@ -2017,7 +1560,6 @@ test('handle optional params in the middle v3', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -2046,12 +1588,7 @@ test('handle optional params in the middle v3', () => {
         name: 'Foe',
         params: { id: 5, pwd: 10, smh: 15 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { id: 5, pwd: 10, smh: 15 },
-            },
             {
               name: 'Bas',
               params: { id: 5, pwd: 10, smh: 15 },
@@ -2074,7 +1611,6 @@ test('handle optional params in the middle v4', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -2103,12 +1639,7 @@ test('handle optional params in the middle v4', () => {
         name: 'Foe',
         params: { pwd: 5, id: 10 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { pwd: 5, id: 10 },
-            },
             {
               name: 'Bas',
               params: { pwd: 5, id: 10 },
@@ -2131,7 +1662,6 @@ test('handle optional params in the middle v5', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -2160,12 +1690,7 @@ test('handle optional params in the middle v5', () => {
         name: 'Foe',
         params: { nip: 5, pwd: 10, id: 15 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { nip: 5, pwd: 10, id: 15 },
-            },
             {
               name: 'Bas',
               params: { nip: 5, pwd: 10, id: 15 },
@@ -2188,7 +1713,6 @@ test('handle optional params in the beginning v1', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -2217,12 +1741,7 @@ test('handle optional params in the beginning v1', () => {
         name: 'Foe',
         params: { nip: 5, pwd: 10, id: 15 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { nip: 5, pwd: 10, id: 15 },
-            },
             {
               name: 'Bas',
               params: { nip: 5, pwd: 10, id: 15 },
@@ -2247,7 +1766,6 @@ test('handle optional params in the beginning v2', () => {
     screens: {
       Foe: {
         path: '/',
-        initialRouteName: 'Foo',
         screens: {
           Foo: 'foo',
           Bis: {
@@ -2276,12 +1794,7 @@ test('handle optional params in the beginning v2', () => {
         name: 'Foe',
         params: { nip: 5, pwd: 10, id: 15 }, // Expo Router copies params to higher levels
         state: {
-          index: 1,
           routes: [
-            {
-              name: 'Foo',
-              params: { nip: 5, pwd: 10, id: 15 },
-            },
             {
               name: 'Bas',
               params: { nip: 5, pwd: 10, id: 15 },
@@ -2662,118 +2175,6 @@ test('throws if two screens map to the same pattern', () => {
   ).not.toThrow();
 });
 
-test('correctly applies initialRouteName for config with similar route names', () => {
-  const path = '/weekly-earnings';
-
-  const config = {
-    screens: {
-      RootTabs: {
-        screens: {
-          HomeTab: {
-            screens: {
-              Home: '',
-              WeeklyEarnings: 'weekly-earnings',
-              EventDetails: 'event-details/:eventId',
-            },
-          },
-          EarningsTab: {
-            initialRouteName: 'Earnings',
-            path: 'earnings',
-            screens: {
-              Earnings: '',
-              WeeklyEarnings: 'weekly-earnings',
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'RootTabs',
-        state: {
-          routes: [
-            {
-              name: 'HomeTab',
-              state: {
-                routes: [
-                  {
-                    name: 'WeeklyEarnings',
-                    path,
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-});
-
-test('correctly applies initialRouteName for config with similar route names v2', () => {
-  const path = '/earnings/weekly-earnings';
-
-  const config = {
-    screens: {
-      RootTabs: {
-        screens: {
-          HomeTab: {
-            initialRouteName: 'Home',
-            screens: {
-              Home: '',
-              WeeklyEarnings: 'weekly-earnings',
-            },
-          },
-          EarningsTab: {
-            initialRouteName: 'Earnings',
-            path: 'earnings',
-            screens: {
-              Earnings: '',
-              WeeklyEarnings: 'weekly-earnings',
-            },
-          },
-        },
-      },
-    },
-  };
-
-  const state = {
-    routes: [
-      {
-        name: 'RootTabs',
-        state: {
-          routes: [
-            {
-              name: 'EarningsTab',
-              state: {
-                index: 1,
-                routes: [
-                  {
-                    name: 'Earnings',
-                  },
-                  {
-                    name: 'WeeklyEarnings',
-                    path,
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(getStateFromPath<object>(path, config)).toEqual(state);
-  expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
-});
-
 test('throws when invalid properties are specified in the config', () => {
   expect(() =>
     getStateFromPath<object>('', {
@@ -2901,7 +2302,6 @@ test('resolves nested path params with same name to correct screen', () => {
   const path = '/foo/42/bar/43';
 
   const config = {
-    initialRouteName: 'Foo',
     screens: {
       Foo: {
         path: 'foo/:id',

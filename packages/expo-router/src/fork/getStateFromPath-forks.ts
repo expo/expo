@@ -2,7 +2,7 @@ import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import type { InitialState } from '../react-navigation/native';
 import { escapeStringRegexp as escape } from '../utils/escapeStringRegexp';
 import { parseUrlUsingCustomBase } from '../utils/url';
-import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
+import type { Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 
 export type ExpoOptions = {
   previousSegments?: string[];
@@ -12,7 +12,6 @@ export type ExpoRouteConfig = {
   type: 'static' | 'dynamic' | 'layout';
   userReadableName: string;
   isIndex: boolean;
-  isInitial?: boolean;
   hasChildren: boolean;
   expandedRouteNames: string[];
   parts: string[];
@@ -81,7 +80,7 @@ export function createConfig(
   pattern: string,
   routeNames: string[],
   config: Record<string, any> = {}
-): Omit<ExpoRouteConfig, 'isInitial'> {
+): ExpoRouteConfig {
   const parts: string[] = [];
   let isDynamic = false;
   const isIndex = screen === 'index' || screen.endsWith('/index');
@@ -232,25 +231,6 @@ export function matchForEmptyPath(configs: RouteConfig[]) {
   return match;
 }
 
-export function appendIsInitial(initialRoutes: InitialRouteConfig[]) {
-  const resolvedInitialPatterns = initialRoutes.map((route) =>
-    joinPaths(...route.parentScreens, route.initialRouteName)
-  );
-
-  return function (config: RouteConfig) {
-    // TODO(EvanBacon): Probably a safer way to do this
-    // Mark initial routes to give them potential priority over other routes that match.
-    config.isInitial = resolvedInitialPatterns.includes(config.routeNames.join('/'));
-    return config;
-  };
-}
-
-const joinPaths = (...paths: string[]): string =>
-  ([] as string[])
-    .concat(...paths.map((p) => p.split('/')))
-    .filter(Boolean)
-    .join('/');
-
 export function getRouteConfigSorter(previousSegments: string[] = []) {
   return function sortConfigs(a: RouteConfig, b: RouteConfig) {
     // Sort config so that:
@@ -384,27 +364,6 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
       if (bSlug) {
         return -1;
       }
-    }
-
-    /*
-     * Both configs are identical in specificity and segments count/type
-     * Try and sort by initial instead.
-     *
-     * TODO: We don't differentiate between the default initialRoute and group specific default routes
-     *
-     * const unstable_settings = {
-     *   "group": {
-     *     initialRouteName: "article"
-     *  }
-     * }
-     *
-     * "article" will be ranked higher because its an initialRoute for a group - even if not your not currently in
-     * that group. The current work around is to ways provide initialRouteName for all groups
-     */
-    if (a.isInitial && !b.isInitial) {
-      return -1;
-    } else if (!a.isInitial && b.isInitial) {
-      return 1;
     }
 
     return b.parts.length - a.parts.length;

@@ -9,7 +9,6 @@ import { validatePathConfig } from './validatePathConfig';
 
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;
-  initialRouteName?: string;
   screens: PathConfigMap<ParamList>;
 };
 
@@ -24,11 +23,6 @@ export type RouteConfig = ExpoRouteConfig & {
   parse?: ParseConfig;
 };
 
-export type InitialRouteConfig = {
-  initialRouteName: string;
-  parentScreens: string[];
-};
-
 export type ResultState = PartialState<NavigationState> & {
   state?: ResultState;
 };
@@ -40,7 +34,6 @@ export type ParsedRoute = {
 };
 
 type ConfigResources = {
-  initialRoutes: InitialRouteConfig[];
   configs: RouteConfig[];
   configWithRegexes: RouteConfig[];
 };
@@ -71,7 +64,7 @@ export function getStateFromPath<ParamList extends object>(
   options?: Options<ParamList>,
   segments: string[] = []
 ): ResultState | undefined {
-  const { initialRoutes, configs, configWithRegexes } = getConfigResources(options, segments);
+  const { configs, configWithRegexes } = getConfigResources(options, segments);
 
   const screens = options?.screens;
 
@@ -105,7 +98,7 @@ export function getStateFromPath<ParamList extends object>(
       });
 
     if (routes.length) {
-      return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.hash);
+      return createNestedStateObject(expoPath, routes, [], expoPath.hash);
     }
 
     return undefined;
@@ -120,7 +113,6 @@ export function getStateFromPath<ParamList extends object>(
       return createNestedStateObject(
         expoPath,
         match.routeNames.map((name) => ({ name })),
-        initialRoutes,
         configs,
         expoPath.hash
       );
@@ -138,7 +130,7 @@ export function getStateFromPath<ParamList extends object>(
 
   if (routes !== undefined) {
     // This will always be empty if full path matched
-    current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.hash);
+    current = createNestedStateObject(expoPath, routes, configs, expoPath.hash);
     remaining = remainingPath;
     result = current;
   }
@@ -173,47 +165,26 @@ function prepareConfigResources(options?: Options<object>, previousSegments?: st
     validatePathConfig(options);
   }
 
-  const initialRoutes = getInitialRoutes(options);
-
-  const configs = getNormalizedConfigs(initialRoutes, options?.screens, previousSegments);
+  const configs = getNormalizedConfigs(options?.screens, previousSegments);
 
   checkForDuplicatedConfigs(configs);
 
   const configWithRegexes = getConfigsWithRegexes(configs);
 
   return {
-    initialRoutes,
     configs,
     configWithRegexes,
   };
 }
 
-function getInitialRoutes(options?: Options<object>) {
-  const initialRoutes: InitialRouteConfig[] = [];
-
-  if (options?.initialRouteName) {
-    initialRoutes.push({
-      initialRouteName: options.initialRouteName,
-      parentScreens: [],
-    });
-  }
-
-  return initialRoutes;
-}
-
-function getNormalizedConfigs(
-  initialRoutes: InitialRouteConfig[],
-  screens: PathConfigMap<object> = {},
-  previousSegments?: string[]
-) {
+function getNormalizedConfigs(screens: PathConfigMap<object> = {}, previousSegments?: string[]) {
   // Create a normalized configs array which will be easier to use
   return ([] as RouteConfig[])
     .concat(
       ...Object.keys(screens).map((key) =>
-        createNormalizedConfigs(key, screens as PathConfigMap<object>, [], initialRoutes, [])
+        createNormalizedConfigs(key, screens as PathConfigMap<object>, [])
       )
     )
-    .map(expo.appendIsInitial(initialRoutes))
     .sort(expo.getRouteConfigSorter(previousSegments));
 }
 
@@ -362,15 +333,11 @@ const createNormalizedConfigs = (
   screen: string,
   routeConfig: PathConfigMap<object>,
   routeNames: string[] = [],
-  initials: InitialRouteConfig[],
-  parentScreens: string[],
   parentPattern?: string
 ): RouteConfig[] => {
   const configs: RouteConfig[] = [];
 
   routeNames.push(screen);
-
-  parentScreens.push(screen);
 
   // @ts-expect-error: TODO(@kitten): This is entirely untyped. The index access just flags this, but we're not typing the config properly here
   const config = routeConfig[screen];
@@ -406,21 +373,11 @@ const createNormalizedConfigs = (
     }
 
     if (config.screens) {
-      // property `initialRouteName` without `screens` has no purpose
-      if (config.initialRouteName) {
-        initials.push({
-          initialRouteName: config.initialRouteName,
-          parentScreens,
-        });
-      }
-
       Object.keys(config.screens).forEach((nestedConfig) => {
         const result = createNormalizedConfigs(
           nestedConfig,
           config.screens as PathConfigMap<object>,
           routeNames,
-          initials,
-          [...parentScreens],
           pattern ?? parentPattern
         );
 
@@ -471,99 +428,31 @@ const findParseConfigForRoute = (
   return undefined;
 };
 
-// Try to find an initial route connected with the one passed
-const findInitialRoute = (
-  routeName: string,
-  parentScreens: string[],
-  initialRoutes: InitialRouteConfig[]
-): string | undefined => {
-  for (const config of initialRoutes) {
-    if (parentScreens.length === config.parentScreens.length) {
-      let sameParents = true;
-      for (let i = 0; i < parentScreens.length; i++) {
-        if (parentScreens[i]!.localeCompare(config.parentScreens[i]!) !== 0) {
-          sameParents = false;
-          break;
-        }
-      }
-      if (sameParents) {
-        return routeName !== config.initialRouteName ? config.initialRouteName : undefined;
-      }
-    }
-  }
-  return undefined;
-};
-
-// returns state object with values depending on whether
-// it is the end of state and if there is initialRoute for this level
-const createStateObject = (
-  initialRoute: string | undefined,
-  route: ParsedRoute,
-  isEmpty: boolean
-): InitialState => {
-  if (isEmpty) {
-    if (initialRoute) {
-      return {
-        index: 1,
-        routes: [{ name: initialRoute, params: route.params }, route],
-      };
-    } else {
-      return {
-        routes: [route],
-      };
-    }
-  } else {
-    if (initialRoute) {
-      return {
-        index: 1,
-        routes: [
-          { name: initialRoute, params: route.params },
-          { ...route, state: { routes: [] } },
-        ],
-      };
-    } else {
-      return {
-        routes: [{ ...route, state: { routes: [] } }],
-      };
-    }
-  }
-};
+// returns state object with values depending on whether it is the end of state
+const createStateObject = (route: ParsedRoute, isEmpty: boolean): InitialState =>
+  isEmpty ? { routes: [route] } : { routes: [{ ...route, state: { routes: [] } }] };
 
 const createNestedStateObject = (
   { path, ...expoURL }: ReturnType<typeof expo.getUrlWithReactNavigationConcessions>,
   routes: ParsedRoute[],
-  initialRoutes: InitialRouteConfig[],
   flatConfig?: RouteConfig[],
   hash?: string
 ) => {
   let route = routes.shift() as ParsedRoute;
-  const parentScreens: string[] = [];
 
-  let initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
-
-  parentScreens.push(route.name);
-
-  const state: InitialState = createStateObject(initialRoute, route, routes.length === 0);
+  const state: InitialState = createStateObject(route, routes.length === 0);
 
   if (routes.length > 0) {
     let nestedState = state;
 
     while ((route = routes.shift() as ParsedRoute)) {
-      initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
-
       const nestedStateIndex = nestedState.index ?? nestedState.routes.length - 1;
 
-      nestedState.routes[nestedStateIndex]!.state = createStateObject(
-        initialRoute,
-        route,
-        routes.length === 0
-      );
+      nestedState.routes[nestedStateIndex]!.state = createStateObject(route, routes.length === 0);
 
       if (routes.length > 0) {
         nestedState = nestedState.routes[nestedStateIndex]!.state as InitialState;
       }
-
-      parentScreens.push(route.name);
     }
   }
 
