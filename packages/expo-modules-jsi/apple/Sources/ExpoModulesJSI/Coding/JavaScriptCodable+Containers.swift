@@ -26,6 +26,24 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
       return try Element.decode(element, in: runtime)
     }
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> [Element]
+  {
+    // Same as the owning overload, reading the array straight from the borrowed value.
+    guard value.isObject() else {
+      return [try Element.decode(value, in: runtime)]
+    }
+    let object = value.getObject(in: runtime)
+    guard object.isArray() else {
+      return [try Element.decode(value, in: runtime)]
+    }
+    return try object.getArray().map { element in
+      return try Element.decode(element, in: runtime)
+    }
+  }
 }
 
 extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
@@ -99,6 +117,25 @@ extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScript
       let property = object.getProperty(key)
       // Treat an `undefined`-valued property as an absent entry. Without this a non-optional
       // `Value` would reject an object that simply omits the property as `undefined`.
+      if property.isUndefined() {
+        continue
+      }
+      result[key] = try Value.decode(property, in: runtime)
+    }
+    return result
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> [String: Value]
+  {
+    // Same as the owning overload, reading the object straight from the borrowed value.
+    let object = try value.asObject(in: runtime)
+    let keys = object.getPropertyNames()
+    var result = [String: Value](minimumCapacity: keys.count)
+    for key in keys {
+      let property = object.getProperty(key)
       if property.isUndefined() {
         continue
       }

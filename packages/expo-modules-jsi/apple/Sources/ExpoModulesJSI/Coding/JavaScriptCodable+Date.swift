@@ -31,6 +31,19 @@ extension Date: JavaScriptCodable {
 
   @JavaScriptActor
   @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> Date
+  {
+    // A number is read straight from the borrowed value. A string or a `Date` needs a call into the
+    // runtime anyway, so it goes through the owning overload.
+    if value.isNumber() {
+      return try dateFromMilliseconds(value.getDouble())
+    }
+    return try decode(value.copied(in: runtime), in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
   public static func encode(_ value: Date, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     let milliseconds = value.timeIntervalSince1970 * 1000.0
     let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
