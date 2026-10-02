@@ -367,7 +367,7 @@ describe('+not-found', () => {
           './+not-found.custom.tsx': () => null,
         })
       )
-    ).toThrowError("Route nodes cannot start with the '+' character");
+    ).toThrow("Route nodes cannot start with the '+' character");
   });
 
   it(`should not append a +not-found if there already is a top level +not+found`, () => {
