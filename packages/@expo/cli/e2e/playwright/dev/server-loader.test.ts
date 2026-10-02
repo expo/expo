@@ -37,6 +37,33 @@ for (const outputMode of outputModes) {
       await expoStart.stopAsync();
     });
 
+    test('shows large completed Suspense content without JavaScript', async ({ browser }) => {
+      const page = await browser.newPage({ javaScriptEnabled: false });
+      try {
+        const response = await page.goto(new URL('/large-suspense', expoStart.url).href);
+
+        expect(response?.status()).toBe(200);
+        await expect(page.getByTestId('large-suspense-content')).toHaveText(
+          'Completed Suspense content. '.repeat(2048)
+        );
+        await expect(page.getByTestId('large-suspense-content')).toBeVisible();
+        await expect(page.getByTestId('large-suspense-fallback')).toHaveCount(0);
+      } finally {
+        await page.close();
+      }
+    });
+
+    test('hydrates large completed Suspense content', async ({ page }) => {
+      const pageErrors = pageCollectErrors(page);
+
+      await page.goto(new URL('/large-suspense', expoStart.url).href);
+      await expect(page.getByTestId('large-suspense-content')).toBeVisible();
+      await expect(page.getByTestId('large-suspense-count')).toHaveText('0');
+      await page.getByTestId('large-suspense-increment').click();
+      await expect(page.getByTestId('large-suspense-count')).toHaveText('1');
+      expect(pageErrors.all).toEqual([]);
+    });
+
     test('loads loader data modules on client-side navigation', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {
