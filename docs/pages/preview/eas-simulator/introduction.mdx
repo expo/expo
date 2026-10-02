@@ -12,7 +12,7 @@ import { RelatedSkills } from '~/ui/components/RelatedSkills';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-**EAS Simulator** runs a remote iOS Simulator or Android Emulator on EAS infrastructure. You can install an app, inspect its user interface, and interact with it. You can also collect screenshots and recordings or share an iOS browser preview without running the device locally.
+**EAS Simulator** runs a remote iOS Simulator or Android Emulator on EAS infrastructure. You can install an app, inspect its user interface, and interact with it. You can also collect screenshots and recordings or share a browser preview without running the device locally.
 
 EAS Simulator is built for agentic development. It gives coding agents a real device runtime for verifying agent-written code. Agents can fix issues they observe and return evidence from the running app.
 
@@ -20,10 +20,10 @@ EAS Simulator is especially useful when:
 
 - A background or cloud coding agent needs device access that is not available in its sandbox
 - An AI agent needs to verify a change in a running app instead of only inspecting source code
-- You want a temporary, shareable iOS browser preview
+- You want a temporary, shareable browser preview
 - You need to offload simulator compute or test on a remote platform
 
-> **Note** EAS Simulator is also useful for developers on Linux or Windows who need access to an iOS Simulator, or when local resources are constrained and you want to offload the device runtime to EAS for a simpler setup.
+> **info** EAS Simulator is also useful for developers on Linux or Windows who need access to an iOS Simulator, or when local resources are constrained and you want to offload the device runtime to EAS for a simpler setup.
 
 EAS Simulator does not replace local Xcode or Android Studio workflows when you already have the required local device runtime. Use it when you need remote or shareable access.
 
@@ -50,74 +50,74 @@ A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another ba
 An EAS Simulator workflow has four stages:
 
 1. **Start a session** with EAS CLI, the [REST API](/preview/eas-simulator/reference/rest-api/), or an authenticated [create session link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link). Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
-2. **Install your app.** Pass an EAS Build, application archive URL, or Expo Go to the start command, or install a local build through the controller after the session starts. A session without an application source starts with a blank device.
-3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or [Appium](https://appium.io/docs/en/) for programmatic control. Supported iOS sessions also include a web preview.
+2. **Install your app.** Pass an EAS Build, build fingerprint, application archive URL, or Expo Go to the start command. You can also install a local build through the controller after the session starts. A session without an application source starts with a blank device.
+3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or [Appium](https://appium.io/docs/en/) for programmatic control. Each session also includes a browser preview.
 4. **Stop the session.** Stop it explicitly when you finish. An unattended non-interactive session continues consuming usage until it stops or reaches a configured limit.
 
 EAS CLI manages the session lifecycle and connection configuration. Use the REST API to manage sessions from your own HTTP client. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
 
 ## Available surfaces
 
-| Capability                                                     | Availability |
-| -------------------------------------------------------------- | ------------ |
-| Remote iOS Simulator                                           | <YesIcon />  |
-| Remote Android Emulator                                        | <YesIcon />  |
-| Programmatic control with agent-device                         | <YesIcon />  |
-| Programmatic control with Argent                               | <YesIcon />  |
-| Programmatic control with [Appium](https://appium.io/docs/en/) | <YesIcon />  |
-| Live browser preview for iOS                                   | <YesIcon />  |
-| Live browser preview for Android                               | Coming soon  |
-| Physical device access                                         | <NoIcon />   |
-| Fast Refresh with Metro using Expo Go or a development build   | <YesIcon />  |
+| Capability                                                     | Availability                                         |
+| -------------------------------------------------------------- | ---------------------------------------------------- |
+| Remote iOS Simulator                                           | <YesIcon />                                          |
+| Remote Android Emulator                                        | <YesIcon />                                          |
+| Programmatic control with agent-device                         | <YesIcon />                                          |
+| Programmatic control with Argent                               | <YesIcon />                                          |
+| Programmatic control with [Appium](https://appium.io/docs/en/) | <YesIcon />                                          |
+| Live browser preview for iOS                                   | <YesIcon />                                          |
+| Live browser preview for Android                               | <YesIcon /> Opens in a new tab from the session page |
+| Physical device access                                         | <NoIcon />                                           |
+| Fast Refresh with Metro using Expo Go or a development build   | <YesIcon />                                          |
 
 Use [EAS Build](/build/introduction/) to create installable builds, and use local device tooling for physical devices.
 
 ## Next steps
 
 <BoxLink
-  title="Get started"
+  title="Get started with EAS Simulator"
   description="Check access, start your first session, and open the dashboard and browser preview."
   href="/preview/eas-simulator/get-started/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
-  title="Install your app"
+  title="Install an app on a remote iOS Simulator or Android Emulator"
   description="Install an EAS Build, a fingerprint match, an archive, Expo Go, or a local build."
   href="/preview/eas-simulator/how-to/install-your-app/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
-  title="Verify a change with an agent"
+  title="Let an AI coding agent verify a change on a remote simulator"
   description="Give a coding agent a remote device so it can test its change and return evidence."
   href="/preview/eas-simulator/how-to/verify-a-change-with-an-agent/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
-  title="Works with your toolchain"
+  title="Which apps and frameworks work with EAS Simulator"
   description="Use EAS Simulator with Expo, React Native, native, Flutter, Unity, Appium, and Maestro."
   href="/preview/eas-simulator/works-with/overview/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
-  title="CLI reference"
+  title="EAS Simulator CLI reference"
   description="Review the simulator commands, flags, output, and managed environment file."
   href="/preview/eas-simulator/reference/cli/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
-  title="REST API"
+  title="EAS Simulator REST API"
   description="Create, inspect, connect to, and stop sessions from CI or your own HTTP client."
   href="/preview/eas-simulator/reference/rest-api/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
-  title="Troubleshooting"
+  title="Troubleshoot EAS Simulator"
   description="Recover from unavailable accounts, stale sessions, dropped tunnels, and incorrect builds."
   href="/preview/eas-simulator/troubleshooting/"
   Icon={Cloud01Icon}

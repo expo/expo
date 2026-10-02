@@ -7,6 +7,8 @@ description: Diagnose access, session lifecycle, controller, installation, previ
 import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
 <FAQ>
 
 ## Command not found
@@ -49,7 +51,7 @@ Run the command inside the Expo project and initialize EAS:
 
 ### `Device run session max duration must not exceed ... minutes for this account`
 
-The requested `--max-duration-minutes` value is larger than the limit for your plan. The limit is 40 minutes on the free plan and 115 minutes on paid plans. Use a smaller value, or omit the flag to use the plan maximum. See [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
+The requested `--max-duration-minutes` value is larger than the limit for your plan. The limit is 40 minutes on the Free plan and 115 minutes on paid plans. Any plan can set a custom value up to its limit. Use a smaller value, or omit the flag to use the plan maximum. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
 
 ## Session lifecycle problems
 
@@ -83,11 +85,11 @@ Use `--no-force` when you want `simulator:start` to fail instead of creating a n
 
 The session waits for available concurrency on your account. Sessions use the same job concurrency as other EAS jobs, such as EAS Build. Queue time does not count toward the 15-minute startup timeout. Stop sessions that you do not need to free concurrency:
 
-<Terminal cmd={['$ eas simulator:list --status in-progress']} />
+<Terminal cmd={['$ eas simulator:list --status new --status in-progress']} />
 
-### An Appium or browser preview session stopped while someone used it
+### A browser preview session stopped while someone used it
 
-Only agent-device and Argent activity resets the idle timer. Appium commands and browser preview activity do not. Omit `--max-idle-time-minutes` for these sessions, and use `--max-duration-minutes` to limit them.
+Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. For sessions that a person controls in the browser preview, omit `--max-idle-time-minutes` and use `--max-duration-minutes` to limit them.
 
 ## Controller and tunnel problems
 
@@ -99,25 +101,21 @@ Stop the session if it is still active, then start a fresh session and repeat in
 
 ### Screenshots show a local simulator instead of the remote device
 
-If **.env.eas-simulator** has no connection details, agent-device can use a local simulator without an error. This can happen when another `simulator:start` command replaced the file. Confirm that `eas simulator:get --json` returns the session ID that the start command printed. In the agent-device output, the session state path of a remote session is under **/Users/expo/**. See [Agent targeting](/preview/eas-simulator/how-it-works/agent-targeting/).
+If **.env.eas-simulator** has no connection details, agent-device can use a local simulator without an error. This can happen when another `simulator:start` command replaced the file. Confirm that `eas simulator:get --json` returns the session ID that the start command printed.
+
+Run `eas simulator:exec npx agent-device@latest open <app>`. In a remote session, the **Session state** path starts with **/Users/expo/** on iOS or **/home/expo/** on Android. A path under your own home directory means that the agent controls a local device. See [How EAS CLI and agents select an EAS Simulator session](/preview/eas-simulator/how-it-works/agent-targeting/).
 
 ### `DEVICE_NOT_FOUND` when you select a second device
 
-In a remote session, the agent-device `--device` flag accepts a device name, not a UDID. List the device names:
+The agent-device `--device` flag accepts a device name only. To select a device by its UDID, use `--udid <UDID>` instead. To control a second device, also pass a separate `--session <name>`. See [Use a second device in the same session](/preview/eas-simulator/reference/devices/#use-a-second-device-in-the-same-session). List the device names:
 
-<Terminal cmd={['$ eas simulator:exec npx agent-device@latest devices --json']} />
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest devices --platform ios']} />
 
 ### Argent returns `401 Unauthorized` after `argent link`
 
 `argent link` without `--yes` keeps the old token when the URL is already linked. Link again with `--yes`:
 
 <Terminal cmd={["$ argent link '<ARGENT_TOOLS_URL>' --token '<ARGENT_AUTH_TOKEN>' --yes"]} />
-
-### `Unknown command: tap` or `Unknown command: click`
-
-The agent-device action is named `press`:
-
-<Terminal cmd={['$ eas simulator:exec npx agent-device@latest press @e2']} />
 
 ### A controller action hangs
 
@@ -155,6 +153,7 @@ Open an installed app before taking the screenshot:
 `--launch-arg` and `--open-url` apply to an application installed during session startup. Pass exactly one source with the command:
 
 - `--build-id <build-id>` for an EAS Build
+- `--build-fingerprint <fingerprint-hash>` for the most recent finished EAS Build with that fingerprint
 - `--application-archive-url <url>` for a remote application archive
 - `--expo-go` for the Expo Go version matching the project SDK
 
@@ -162,11 +161,11 @@ For a local **.app** or APK, start a blank session and install it through agent-
 
 ### Expo Go cannot determine the SDK version
 
-Run the command from an Expo project with a valid app config, or pass `--sdk-version <version>` together with `--expo-go`. The SDK override is not valid with `--build-id` or `--application-archive-url`.
+Run the command from an Expo project with a valid app config, or pass `--sdk-version <version>` together with `--expo-go`. The SDK override is valid only with `--expo-go`.
 
 ### The remote device does not contain the app
 
-This is expected when the session starts without `--build-id`, `--application-archive-url`, or `--expo-go`. Install a local simulator or emulator build through the controller, or start a new session with an application source.
+This is expected when the session starts without `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. Install a local simulator or emulator build through the controller, or start a new session with an application source.
 
 ### The screenshot shows old source code
 
@@ -176,7 +175,7 @@ Changing source files does not update an already-installed release build.
 
 ### A recording did not download
 
-The recording can still be a session artifact. Get the session with its ID and download the file from `artifacts[].downloadUrl`. See [Capture evidence](/preview/eas-simulator/how-to/capture-evidence/#recover-a-recording-that-did-not-download).
+The recording can still be a session artifact. Get the session with its ID and download the file from `artifacts[].downloadUrl`. See [Recover a recording that did not download](/preview/eas-simulator/how-to/capture-evidence/#recover-a-recording-that-did-not-download).
 
 ### Fast Refresh does not work
 
@@ -195,13 +194,13 @@ If the first connection fails, reset the simulator session and Metro once, then 
 
 ## Browser preview problems
 
-### Android did not return a `webPreviewUrl`
+### The session page does not show the Android preview
 
-Android browser preview is not currently supported. Use agent-device or Argent and collect screenshots or recordings instead.
+Android sessions also include a browser preview that streams the emulator. The expo.dev session page does not show it inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet. If the Android preview does not respond to input, control the emulator with agent-device, Argent, or Appium.
 
 ### The preview appears inside the simulator
 
-The `webPreviewUrl` was opened as though it were an app URL. Open it in the desktop browser instead. It is a browser stream, not an application deep link.
+The browser preview URL was opened as though it were an app URL. Open it in the desktop browser instead. It is a browser stream, not an application deep link.
 
 ## Network problems
 
@@ -219,7 +218,7 @@ In a local egress session, proxied requests fail while the egress client is disc
 
 ### The app cannot reach a server on your computer through local egress
 
-Local egress refuses local and private addresses unless you allow them. Start the session with `--egress-allow <host:port>` for each server, such as `--egress-allow localhost:3000`. See [Network inspection](/preview/eas-simulator/how-it-works/network-inspection/).
+Local egress refuses local and private addresses unless you allow them. Start the session with `--egress-allow <host:port>` for each server, such as `--egress-allow localhost:3000`. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/).
 
 </FAQ>
 

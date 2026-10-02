@@ -4,6 +4,8 @@ sidebar_title: Expo and React Native
 description: Install an Expo or React Native development build or release build on a remote iOS Simulator or Android Emulator, and use Fast Refresh, component inspection, and profiling.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
@@ -35,7 +37,7 @@ An Expo project already has what EAS CLI needs. Link it to EAS one time:
   ]}
 />
 
-The `remote-device` profile needs `ios.simulator: true` for iOS and an APK build type for Android. See [Install your app](/preview/eas-simulator/how-to/install-your-app/#build-a-simulator-compatible-app).
+The `remote-device` profile needs `ios.simulator: true` for iOS and an APK build type for Android. See [Build a simulator-compatible app](/preview/eas-simulator/how-to/install-your-app/#build-a-simulator-compatible-app).
 
 ## React Native projects without Expo
 
@@ -55,7 +57,7 @@ EAS CLI finds the EAS project from the current directory. It needs **package.jso
 }
 ```
 
-To use the REST API instead, pass the project ID as `appId`. The REST API does not read files in the repository. See [REST API](/preview/eas-simulator/reference/rest-api/).
+To use the REST API instead, pass the project ID as `appId`. The REST API does not read files in the repository. See [EAS Simulator REST API](/preview/eas-simulator/reference/rest-api/).
 
 ## Use React Native features
 
@@ -76,6 +78,12 @@ These features need a development server and a compatible React DevTools connect
 
 ## Common questions
 
-### Do I need to add a library to my app?
+<FAQ>
+
+<Collapsible summary="Do I need to add a library to my app?">
 
 No. Device-level actions such as snapshots, presses, text entry, screenshots, and logs work on the installed app with no library added to the project.
+
+</Collapsible>
+
+</FAQ>

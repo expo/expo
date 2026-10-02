@@ -4,6 +4,8 @@ sidebar_title: Agent targeting
 description: Learn how simulator commands find the active session through .env.eas-simulator, how to run parallel sessions safely, and how to confirm that an agent controls the remote device.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
@@ -12,12 +14,12 @@ Each EAS Simulator command must know which session to use. By default, the comma
 
 ## How a command selects its session
 
-| Command                                               | How it selects the session                                                |
-| ----------------------------------------------------- | ------------------------------------------------------------------------- |
-| `simulator:get`, `simulator:stop`, `simulator:events` | `--id <session-id>`, or the ID in **.env.eas-simulator**                  |
-| `simulator:exec`                                      | Only the connection details in the environment. It takes no ID.           |
-| `simulator:egress`                                    | **.env.eas-simulator**, or the shell environment with `--config-type env` |
-| Controller commands, such as agent-device             | The variables that `simulator:exec` loads                                 |
+| Command                                               | How it selects the session                                                                                                   |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `simulator:get`, `simulator:stop`, `simulator:events` | `--id <session-id>`, the ID in **.env.eas-simulator**, or `EAS_SIMULATOR_SESSION_ID` in the shell environment, in that order |
+| `simulator:exec`                                      | Only the connection details in the environment. It takes no ID.                                                              |
+| `simulator:egress`                                    | **.env.eas-simulator**, or the shell environment with `--config-type env`                                                    |
+| Controller commands, such as agent-device             | The variables that `simulator:exec` loads                                                                                    |
 
 `simulator:exec` loads values in this order:
 
@@ -40,7 +42,7 @@ To run parallel sessions, use one of these methods:
   ]}
 />
 
-Use `--id` with `simulator:get`, `simulator:stop`, and `simulator:events` for each session.
+The printed exports do not include `EAS_SIMULATOR_SESSION_ID`. Use `--id` with `simulator:get`, `simulator:stop`, and `simulator:events` for each session.
 
 ## Confirm that the agent controls the remote device
 
@@ -50,16 +52,17 @@ To confirm the remote device:
 
 1. Run `eas simulator:get --json` and check that the ID matches the ID that the start command printed.
 2. Check that the status is `IN_PROGRESS`.
-3. In the output of an agent-device command, check that the **Session state** path starts with **/Users/expo/**. A path in your own home directory means a local simulator.
+3. Run `eas simulator:exec npx agent-device@latest open <app>`, and check that the **Session state** path starts with **/Users/expo/** on iOS or **/home/expo/** on Android. A path under your own home directory means that the agent controls a local device. The `agent-device session state-dir` command prints a local path, so do not use it for this check.
 
 ## Control more than one simulator in one session
 
-An iOS session can boot more than one iOS Simulator. At start, the session boots one device. To boot and control another device, pass the controller's `--device "<name>"` flag on each agent-device command. In a remote session, this flag accepts the device name, not the UDID.
+An iOS session can boot more than one iOS Simulator. At start, the session boots one device. The default agent-device session is bound to that device, so `--device` in the default session returns `INVALID_ARGS`. To boot and control another device, use a separate named agent-device session: pass `--session <name>` and `--device "<name>"` when you boot it, and pass `--session <name>` on each later command for that device. The agent-device `--device` flag accepts only a device name. To select a device by its UDID, use `--udid <UDID>`.
 
 <Terminal
   cmd={[
-    '$ eas simulator:exec npx agent-device@latest devices --json',
-    '$ eas simulator:exec npx agent-device@latest open com.example.app --platform ios --device "iPad Pro 13-inch (M5)"',
+    '$ eas simulator:exec npx agent-device@latest devices --platform ios',
+    '$ eas simulator:exec npx agent-device@latest boot --platform ios --session ipad --device "iPad mini (A17 Pro)"',
+    '$ eas simulator:exec npx agent-device@latest open com.apple.Preferences --platform ios --session ipad --device "iPad mini (A17 Pro)"',
   ]}
 />
 
@@ -69,10 +72,24 @@ When an agent creates a session, EAS can record where the request came from, suc
 
 ## Common questions
 
-### Why does a new session show the previous session ID?
+<FAQ>
+
+<Collapsible summary="How do I know that a screenshot came from the remote device?">
+
+Run `eas simulator:get --json` and check that it returns the session ID that the start command printed and the status `IN_PROGRESS`. If **.env.eas-simulator** has no connection details, agent-device falls back to a local simulator without an error. See [Confirm that the agent controls the remote device](#confirm-that-the-agent-controls-the-remote-device).
+
+</Collapsible>
+
+<Collapsible summary="Why does a new session show the previous session ID?">
 
 **.env.eas-simulator** contained an earlier session. EAS CLI prints `Overwriting previous simulator session` with the stop command for that session. Replacing the file does not stop the earlier session.
 
-### Can two agents share one session?
+</Collapsible>
 
-Both agents can use the same connection details. Keep state-changing commands in one session sequential, because two controllers that act at the same time can conflict.
+<Collapsible summary="Can two agents share one session?">
+
+Yes. Both agents can use the same connection details. Keep state-changing commands in one session sequential, because two controllers that act at the same time can conflict.
+
+</Collapsible>
+
+</FAQ>

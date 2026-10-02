@@ -4,6 +4,9 @@ sidebar_title: Overview
 description: EAS Simulator runs any app built for the iOS Simulator or the Android Emulator, including Expo, React Native, native, Flutter, and Unity apps, with React Native features only for React Native apps.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
 EAS Simulator works with any app that is built for the iOS Simulator or the Android Emulator. The remote device is a stock iOS Simulator or Android Emulator. The device has no Expo or React Native requirement. The toolchain that made the app changes only two things: how you get the app onto the device, and which controller features work.
@@ -32,19 +35,27 @@ EAS Simulator works with any app that is built for the iOS Simulator or the Andr
 
 ## Build requirements for every toolchain
 
-| Platform | Required build                                              | Fails to install         |
-| -------- | ----------------------------------------------------------- | ------------------------ |
-| Android  | An **.apk** that includes an emulator ABI, such as `x86_64` | An **.aab**              |
-| iOS      | A **.app** built against the `iphonesimulator` SDK          | An **.ipa** device build |
+| Platform | Required build                                                                                                     | Fails to install                             |
+| -------- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| Android  | An **.apk** that includes an emulator ABI, such as `x86_64`                                                        | An **.aab**                                  |
+| iOS      | A **.app** built against the `iphonesimulator` SDK. For an archive URL, a **.tar.gz** or **.tgz** of the **.app**. | An **.ipa** device build, a **.zip** archive |
 
-See [Builds and bundles](/preview/eas-simulator/how-it-works/builds-and-bundles/).
+See [Which build to install on EAS Simulator](/preview/eas-simulator/how-it-works/builds-and-bundles/).
 
 ## Common questions
 
-### Does my app need the `expo` package?
+<FAQ>
+
+<Collapsible summary="Does my app need the expo package?">
 
 No. The device runs any simulator or emulator build. EAS CLI needs a project directory with **package.json** and an app config that contains the EAS project ID. The REST API needs only the project ID.
 
-### Which features do I lose with an app that is not React Native?
+</Collapsible>
 
-Fast Refresh, Metro, React DevTools, component inspection, and React render profiling do not work. See [Limitations](/preview/eas-simulator/limitations/).
+<Collapsible summary="Which features do I lose with an app that is not React Native?">
+
+Fast Refresh, Metro, React DevTools, component inspection, and React render profiling do not work. See [EAS Simulator limitations](/preview/eas-simulator/limitations/).
+
+</Collapsible>
+
+</FAQ>

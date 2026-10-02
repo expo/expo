@@ -441,7 +441,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // EAS Simulator preview reorganization
   '/preview/eas-simulator/cli-reference/': '/preview/eas-simulator/reference/cli/',
   '/preview/eas-simulator/rest-api/': '/preview/eas-simulator/reference/rest-api/',
-  '/preview/eas-simulator/run-and-control/': '/preview/eas-simulator/how-to/install-your-app/',
+  '/preview/eas-simulator/run-and-control/': '/preview/eas-simulator/how-to/drive-the-device/',
   '/preview/eas-simulator/create-session-links/':
     '/preview/eas-simulator/how-to/hand-off-a-session/',
   '/preview/react-compiler/': '/guides/react-compiler/',

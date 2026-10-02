@@ -4,6 +4,8 @@ sidebar_title: Install your app
 description: Install an EAS Build, a build fingerprint, an application archive, Expo Go, or a local build on an EAS Simulator session.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
@@ -13,13 +15,13 @@ A new EAS Simulator session starts with a blank device. To put your app on it, g
 
 ## Choose an application source
 
-| Application source         | Start flag                        | Use it for                                                                                    |
-| -------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------- |
-| EAS Build ID               | `--build-id <id>`                 | One specific EAS Build.                                                                       |
-| EAS Build fingerprint      | `--build-fingerprint <hash>`      | The most recent finished, installable build that matches your current native code.            |
-| Application archive URL    | `--application-archive-url <url>` | A build that another system made and published to a URL.                                      |
-| Expo Go                    | `--expo-go`                       | A project that runs in Expo Go. See [Expo Go](/preview/eas-simulator/works-with/expo-go/).    |
-| Local build, after startup | No start flag                     | A **.app** or **.apk** on your computer. See [Install a local build](#install-a-local-build). |
+| Application source         | Start flag                        | Use it for                                                                                                                            |
+| -------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| EAS Build ID               | `--build-id <id>`                 | One specific EAS Build.                                                                                                               |
+| EAS Build fingerprint      | `--build-fingerprint <hash>`      | The most recent finished, non-expired build with the fingerprint hash that you pass.                                                  |
+| Application archive URL    | `--application-archive-url <url>` | A build that another system made and published to a URL.                                                                              |
+| Expo Go                    | `--expo-go`                       | A project that runs in Expo Go. See [Test your project in Expo Go on a remote simulator](/preview/eas-simulator/works-with/expo-go/). |
+| Local build, after startup | No start flag                     | A **.app** or **.apk** on your computer. See [Install a local build](#install-a-local-build).                                         |
 
 The four start flags are mutually exclusive. Pass at most one of them. A session without an application source starts with a blank device.
 
@@ -49,18 +51,24 @@ This EAS Build profile creates an installable build for both platforms:
 }
 ```
 
-iOS Simulator builds are not signed, so EAS Build does not ask for credentials. For more information, see [Builds and bundles](/preview/eas-simulator/how-it-works/builds-and-bundles/).
+iOS Simulator builds are not signed, so EAS Build does not ask for credentials. For more information, see [Which build to install on EAS Simulator](/preview/eas-simulator/how-it-works/builds-and-bundles/).
 
 ## Install an EAS Build
 
-Create the build **before** you start the session. A build can take long enough for an idle session to stop or lose its controller connection:
+Create the build **before** you start the session. A build can take longer than the maximum duration or idle limit of a session:
 
 <Terminal cmd={['$ eas build --platform ios --profile remote-device --non-interactive']} />
 
-Record the build ID from the output. To find an existing simulator build, list the finished builds:
+Record the build ID from the output. To find an existing iOS Simulator build, list the finished builds:
 
 <Terminal
   cmd={['$ eas build:list --platform ios --simulator --status finished --json --non-interactive']}
+/>
+
+For Android, leave out `--simulator`, because the flag works only with `--platform ios`. Pick an APK build from the list:
+
+<Terminal
+  cmd={['$ eas build:list --platform android --status finished --json --non-interactive']}
 />
 
 Then pass the build ID to the start command:
@@ -71,11 +79,19 @@ Then pass the build ID to the start command:
   ]}
 />
 
-For Android, use `--platform android` for both commands. The Android build must be an APK.
+For Android, use `--platform android` in the `eas build` and `eas simulator:start` commands. The Android build must be an APK.
 
 ## Install the build that matches a fingerprint
 
-A [fingerprint](/versions/latest/sdk/fingerprint/) is a hash of the native parts of your project. Pass a fingerprint to install the most recent finished build with that fingerprint that the simulator can install:
+A [fingerprint](/versions/latest/sdk/fingerprint/) is a hash of the native parts of your project. EAS CLI does not calculate the fingerprint for you. To get the hash for your current project, run `eas fingerprint:generate` with the build profile that you use for remote device builds:
+
+<Terminal
+  cmd={[
+    '$ eas fingerprint:generate --platform ios --build-profile remote-device --non-interactive',
+  ]}
+/>
+
+The command prints `Fingerprint generated: <hash>`. Pass the hash to install the most recent finished, non-expired build with that fingerprint. On iOS, the build must target the iOS Simulator:
 
 <Terminal
   cmd={[
@@ -83,7 +99,7 @@ A [fingerprint](/versions/latest/sdk/fingerprint/) is a hash of the native parts
   ]}
 />
 
-Use a fingerprint when you want any build that matches your native code, and you do not need one specific build. Use `--build-id` when you need one specific build.
+Use a fingerprint when any build with that fingerprint hash is acceptable, and you do not need one specific build. On Android, EAS can select a build of any distribution type, so use a build profile that creates an APK. Use `--build-id` when you need one specific build.
 
 ## Install from an application archive URL
 
@@ -91,11 +107,11 @@ Pass an HTTP or HTTPS URL that returns the file directly. The remote device down
 
 <Terminal
   cmd={[
-    '$ eas simulator:start --platform ios --type agent-device --application-archive-url "https://example.com/MyApp.app.tar.gz" --name "Archive review" --non-interactive',
+    '$ eas simulator:start --platform ios --type agent-device --application-archive-url "https://example.com/MyApp.tar.gz" --name "Archive review" --non-interactive',
   ]}
 />
 
-For iOS, compress the **.app** directory. Create session links accept the **.tar.gz**, **.tgz**, **.app**, and **.app.zip** extensions. For Android, use the URL of an **.apk**. A signed URL works while it is valid.
+For iOS, use a gzip tarball (**.tar.gz** or **.tgz**) that contains the **.app** directory, or the contents of the **.app** bundle at its root. A **.zip** or **.app.zip** archive does not install. For Android, use the URL of an **.apk**. An **.aab** does not install. A signed URL works while it is valid.
 
 ## Pass launch arguments and open a URL
 
@@ -112,7 +128,7 @@ When you use an application source, you can also pass launch arguments and a URL
 
 Repeat `--launch-arg` for each argument. The order is kept. `--launch-arg` and `--open-url` require an application source. Without one, the command fails with `Launch options require an application source`.
 
-On iOS, EAS approves the custom URL scheme before it opens the URL. The system **Open in** dialog does not appear.
+In an iOS agent-device or Argent session, EAS tries to approve the custom URL scheme first. Then the system **Open in** dialog does not appear. In other session types, or if the approval fails, the dialog can appear. Accept it in the browser preview or with the controller.
 
 ## Install a local build
 
@@ -139,11 +155,12 @@ For Android, use the Android package name, the APK path, and `--platform android
 <Terminal
   cmd={[
     '$ eas simulator:start --platform ios --type argent --name "Local build review" --non-interactive',
+    '$ eas simulator:exec argent run list-devices',
     '$ eas simulator:exec argent run reinstall-app --udid <udid> --bundleId com.example.app --appPath ./MyApp.app',
   ]}
 />
 
-Argent uploads the local bundle when it connects to a remote session. This requires Argent 0.16.0 or later.
+Use the UDID of the booted device from `list-devices`. The `reinstall-app` tool uploads the local bundle to the remote session. This requires Argent 0.16.0 or later.
 
 </Tab>
 
@@ -167,14 +184,18 @@ Use `ios.bundleIdentifier` for iOS and `android.package` for Android. For other 
 
 ## Common questions
 
-### Why does the app show old code?
+<FAQ>
 
-A release build contains the JavaScript from the time of the build. Changes to your source files do not update it. Create a new build, use a build with a matching fingerprint, or use a development build with Metro. See [Iterate on your code](/preview/eas-simulator/how-to/iterate-on-your-code/).
+<Collapsible summary="Why does the app show old code?">
 
-### Can I install an iOS device build or an Android App Bundle?
+A release build contains the JavaScript from the time of the build. Changes to your source files do not update it. Create a new build, use a build with a matching fingerprint, or use a development build with Metro. See [Use Fast Refresh with Metro on a remote simulator](/preview/eas-simulator/how-to/iterate-on-your-code/).
 
-No. Install an iOS Simulator build on iOS and an APK on Android.
+</Collapsible>
 
-### Can I install an app with an Appium session?
+<Collapsible summary="Can I install an app with an Appium session?">
 
-The start flags install and launch the app for `agent-device`, `argent`, and `web-preview-only` sessions. For an `appium` session, install and launch the app through your Appium client. See [Appium](/preview/eas-simulator/works-with/appium/).
+Yes. The start flags install and launch the app for all session types, including `appium`. See [Run Appium tests on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/works-with/appium/).
+
+</Collapsible>
+
+</FAQ>
