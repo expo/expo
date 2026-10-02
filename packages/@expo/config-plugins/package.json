@@ -93,7 +93,7 @@
     "@expo/json-file": "workspace:~",
     "@expo/plist": "workspace:^",
     "@expo/require-utils": "workspace:^",
-    "@expo/sdk-runtime-versions": "^1.0.0",
+    "@expo/sdk-runtime-versions": "^1.0.1",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
     "getenv": "^2.0.0",

@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main]
-    paths:
+    paths: &trigger_paths
       - .github/workflows/android-unit-tests.yml
       - fastlane/**
       - packages/**/android/**
@@ -13,14 +13,7 @@ on:
       - '!packages/@expo/cli/**'
       - '!tools/src/commands/GenerateDocsAPIData.ts'
   pull_request:
-    paths:
-      - .github/workflows/android-unit-tests.yml
-      - fastlane/**
-      - packages/**/android/**
-      - tools/**
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
-      - '!tools/src/commands/GenerateDocsAPIData.ts'
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

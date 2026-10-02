@@ -49,4 +49,7 @@ dependencies {
 
   def documentScannerDependencyConfiguration = isDocumentScannerEnabled ? "implementation" : "compileOnly"
   add(documentScannerDependencyConfiguration, "com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+
+  testImplementation "org.robolectric:robolectric:4.16"
+  testImplementation 'junit:junit:4.13.2'
 }
