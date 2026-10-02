@@ -19,7 +19,7 @@ final class LocationUpdatesHandle: SharedObject {
     guard CLLocationManager.locationServicesEnabled() else {
       throw LocationServicesDisabledGlobally()
     }
-    try accessGuard.checkForegroundPermissions()
+    try accessGuard.checkPermissions(.foreground)
     guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
       throw SignificantLocationChangesUnavailable()
     }
