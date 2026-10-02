@@ -183,6 +183,25 @@ describe('getRoutes', () => {
     );
   });
 
+  // NOTE(@hassankhan): Should we throw an error for invalid platforms for
+  // `_layout` like we do for `+not-found`?
+  it(`does not treat an unsupported dotted suffix as a layout qualifier`, () => {
+    const routes = getRoutes(
+      inMemoryContext({
+        './_layout.custom.tsx': () => null,
+      }),
+      { internal_stripLoadRoute: true, skipGenerated: true }
+    );
+
+    expect(routes?.children).toContainEqual(
+      expect.objectContaining({
+        contextKey: './_layout.custom.tsx',
+        route: '_layout.custom',
+        type: 'route',
+      })
+    );
+  });
+
   it(`should name routes relative to the closest _layout`, () => {
     expect(
       getRoutes(
@@ -341,6 +360,16 @@ describe('+html', () => {
 });
 
 describe('+not-found', () => {
+  it(`rejects an unsupported dotted suffix`, () => {
+    expect(() =>
+      getRoutes(
+        inMemoryContext({
+          './+not-found.custom.tsx': () => null,
+        })
+      )
+    ).toThrowError("Route nodes cannot start with the '+' character");
+  });
+
   it(`should not append a +not-found if there already is a top level +not+found`, () => {
     expect(
       getRoutes(
