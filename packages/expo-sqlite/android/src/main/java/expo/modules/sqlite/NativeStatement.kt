@@ -8,10 +8,18 @@ import java.nio.ByteBuffer
 
 internal class NativeStatement : SharedRef<NativeStatementBinding>(NativeStatementBinding()) {
   var isFinalized = false
+  var isPrepared = false
+  var releasedByJavaScript = false
 
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
-    this.ref.close()
+    synchronized(this) {
+      if (isFinalized || !isPrepared) {
+        ref.close()
+      } else {
+        releasedByJavaScript = true
+      }
+    }
   }
 
   override fun equals(other: Any?): Boolean {
