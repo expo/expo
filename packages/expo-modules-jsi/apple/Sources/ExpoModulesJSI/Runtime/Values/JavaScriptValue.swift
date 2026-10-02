@@ -119,6 +119,25 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     }
   }
 
+  /// Calls `body` with a `JavaScriptUnownedValue` that borrows this value's `jsi::Value`, without
+  /// copying it. The unowned value is valid only for the duration of the closure and must not be
+  /// stored or escaped.
+  ///
+  /// `runtime` must be the runtime the value belongs to. It is passed in because a runtime-free value
+  /// (undefined, null, a boolean or a number) doesn't hold one.
+  public func withUnownedValue<R>(
+    in runtime: borrowing JavaScriptRuntime,
+    _ body: (borrowing JavaScriptUnownedValue) throws -> R
+  ) rethrows -> R {
+    let jsiRuntime = runtime.pointee
+    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`, for the same SIL optimizer crash
+    // `withUnsafePointee(_:)` avoids.
+    return try withUnsafeBytes(of: pointee) { bytes in
+      let pointer = bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
+      return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
+    }
+  }
+
   // MARK: - Type checks
 
   public func isUndefined() -> Bool {
