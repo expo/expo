@@ -1,6 +1,5 @@
 ---
 'expo-modules-jsi': patch
-'expo-modules-core': patch
 ---
 
-[iOS] Add `JavaScriptArray.mapUnowned(_:)` and `JavaScriptObject.withUnownedProperty(_:_:)`, which lend elements and properties out as `JavaScriptUnownedValue`s. Arrays and dictionaries now decode their elements through them, without a `JavaScriptValue` per element, and their owning decodes, like those of records and enums, forward to the unowned ones.
+[iOS] Add `JavaScriptArray.mapUnowned(_:)`, `JavaScriptObject.withUnownedProperty(_:_:)`, and `isArray()` and `getArray(in:)` on `JavaScriptUnownedValue`. Arrays, dictionaries and dates now decode through their unowned overload without copying the value or wrapping each element in a `JavaScriptValue`, and their owning decodes forward to it.

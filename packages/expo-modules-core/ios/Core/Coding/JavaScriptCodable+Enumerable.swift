@@ -11,11 +11,8 @@ extension Enumerable where Self: RawRepresentable, RawValue: JavaScriptCodable {
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
   {
-    // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
-    return try value.withUnownedValue(in: runtime) { unownedValue in
-      return try decode(unownedValue, in: runtime)
-    }
+    let rawValue = try RawValue.decode(value, in: runtime)
+    return try create(fromRawValue: rawValue)
   }
 
   @JavaScriptActor

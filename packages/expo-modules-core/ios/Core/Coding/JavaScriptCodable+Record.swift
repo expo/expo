@@ -14,19 +14,18 @@ import ExpoModulesJSI
 // context never prepared has no such state, so recovery returns `nil` and the conversion throws
 // `Exceptions.AppContextNotFound`.
 //
-// The unowned `decode` reads the object straight from the borrowed value and hands it to
-// `from(object:appContext:)`, so a record argument isn't copied first. The owning one forwards to it.
+// Both `decode` overloads read the object and hand it to `from(object:appContext:)`. The unowned one
+// reads it straight from the borrowed value, so a record argument isn't copied first.
 
 extension Record {
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
   {
-    // Forwards to the unowned overload, which holds the implementation.
-    let runtime = copy runtime
-    return try value.withUnownedValue(in: runtime) { unownedValue in
-      return try decode(unownedValue, in: runtime)
+    guard let appContext = AppContext.from(runtime: runtime) else {
+      throw Exceptions.AppContextNotFound()
     }
+    return try from(object: value.asObject(), appContext: appContext)
   }
 
   @JavaScriptActor
