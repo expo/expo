@@ -6,7 +6,7 @@ internal import jsi
 /// As opposed to other concrete types (e.g. `JavaScriptObject`, `JavaScriptFunction`),
 /// this one is a reference type so can be safely captured in closures, passed to other isolation context,
 /// and stored in containers that don't support non-copyable types etc.
-public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
+public final class JavaScriptValue: JavaScriptType, Escapable {
   /// Handle to the runtime the value belongs to. `nil` only for runtime-free values (undefined, null,
   /// booleans and numbers).
   internal let runtimeHandle: JavaScriptRuntimeHandle?
@@ -685,8 +685,11 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 
   // MARK: - Equality
 
+  // The type does not conform to `Equatable`: that protocol requires `Copyable`, and the value is on
+  // its way to becoming non-copyable. The operators below provide the same syntax on borrowed operands.
+
   /// Tests whether two values are strictly equal, according to https://262.ecma-international.org/11.0/#sec-strict-equality-comparison
-  public func isEqual(to another: JavaScriptValue) -> Bool {
+  public func isEqual(to another: borrowing JavaScriptValue) -> Bool {
     if let jsiRuntime = jsiRuntime ?? another.jsiRuntime {
       return facebook.jsi.Value.strictEquals(jsiRuntime, pointee, another.pointee)
     }
@@ -708,12 +711,12 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   }
 
   /// Same as `isEqual(to:)`.
-  public static func == (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
+  public static func == (lhs: borrowing JavaScriptValue, rhs: borrowing JavaScriptValue) -> Bool {
     return lhs.isEqual(to: rhs)
   }
 
   /// Negates the result of `isEqual(to:)`.
-  public static func != (lhs: JavaScriptValue, rhs: JavaScriptValue) -> Bool {
+  public static func != (lhs: borrowing JavaScriptValue, rhs: borrowing JavaScriptValue) -> Bool {
     return !lhs.isEqual(to: rhs)
   }
 
@@ -779,7 +782,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
 }
 
 extension JavaScriptValue: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptValue {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptValue {
     return value.copy()
   }
 

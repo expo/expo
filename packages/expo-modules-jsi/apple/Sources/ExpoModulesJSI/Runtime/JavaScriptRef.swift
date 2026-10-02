@@ -93,7 +93,7 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
 }
 
 extension JavaScriptRef: JavaScriptRepresentable where T: JavaScriptRepresentable & ~Copyable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptRef<T> {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptRef<T> {
     return JavaScriptRef(T.fromJavaScriptValue(value))
   }
 

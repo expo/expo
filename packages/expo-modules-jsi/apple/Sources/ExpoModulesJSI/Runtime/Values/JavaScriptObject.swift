@@ -666,7 +666,7 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 }
 
 extension JavaScriptObject: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptObject {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptObject {
     return value.getObject()
   }
 

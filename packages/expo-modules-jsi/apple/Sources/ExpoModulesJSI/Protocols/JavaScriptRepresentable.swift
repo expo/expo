@@ -5,13 +5,13 @@ internal import jsi
 /// A type whose values can be represented in the JS runtime.
 public protocol JavaScriptRepresentable: Sendable, ~Copyable {
   /// Creates an instance of this type from the given JS value.
-  static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self
+  static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self
   /// Creates a JS value representing this value in the given runtime.
   func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue
 }
 
 extension Optional: JavaScriptRepresentable where Wrapped: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
     if value.isNull() || value.isUndefined() {
       return nil
     }
@@ -27,7 +27,7 @@ extension Optional: JavaScriptRepresentable where Wrapped: JavaScriptRepresentab
 }
 
 extension Array: JavaScriptRepresentable where Element: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
     return value.getArray().map { Element.fromJavaScriptValue($0) }
   }
 
@@ -41,7 +41,7 @@ extension Array: JavaScriptRepresentable where Element: JavaScriptRepresentable 
 }
 
 extension Dictionary: JavaScriptRepresentable where Key == String, Value: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
     guard let runtimeHandle = value.runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
       FatalError.runtimeLost()
     }

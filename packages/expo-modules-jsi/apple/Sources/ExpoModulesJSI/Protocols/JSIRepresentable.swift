@@ -16,7 +16,7 @@ internal protocol JSIRepresentable: JavaScriptRepresentable, Sendable, ~Copyable
 }
 
 extension JSIRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> Self {
     guard let jsiRuntime = value.jsiRuntime else {
       FatalError.runtimeLost()
     }

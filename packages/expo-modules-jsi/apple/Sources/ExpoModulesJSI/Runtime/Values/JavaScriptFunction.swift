@@ -116,7 +116,7 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
 }
 
 extension JavaScriptFunction: JavaScriptRepresentable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptFunction {
+  public static func fromJavaScriptValue(_ value: borrowing JavaScriptValue) -> JavaScriptFunction {
     return value.getFunction()
   }
 
