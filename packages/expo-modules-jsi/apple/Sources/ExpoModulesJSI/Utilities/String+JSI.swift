@@ -69,9 +69,10 @@ private func appendEngineStringChunk(ctx: UnsafeMutableRawPointer?, ascii: Bool,
   let chunk: String
   if ascii {
     let bytes = UnsafeBufferPointer(start: data.assumingMemoryBound(to: UInt8.self), count: count)
-    chunk = String(unsafeUninitializedCapacity: count) { buffer in
-      return buffer.initialize(fromContentsOf: bytes)
-    }
+    // `String(decoding:as:)` re-validates bytes the engine already guarantees to be ASCII, but it
+    // builds short strings inline. `String(unsafeUninitializedCapacity:)` always allocates heap
+    // storage first, which measured 5 to 10 ns slower for 6 and 22 byte strings.
+    chunk = String(decoding: bytes, as: UTF8.self)
   } else {
     let units = UnsafeBufferPointer(start: data.assumingMemoryBound(to: UInt16.self), count: count)
     if count < 512 {

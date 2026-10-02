@@ -10,7 +10,10 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// Handle to the runtime the value belongs to. `nil` only for runtime-free values (undefined, null,
   /// booleans and numbers).
   internal let runtimeHandle: JavaScriptRuntimeHandle?
-  internal let pointee: facebook.jsi.Value
+  /// Mutable only so that ``write(_:to:)`` can move the engine value out of a uniquely referenced
+  /// instance on the JS thread, right before it is deallocated. Unchecked exclusivity keeps reads of
+  /// a mutable class property free of the dynamic exclusivity check.
+  @exclusivity(unchecked) nonisolated(unsafe) internal var pointee: facebook.jsi.Value
 
   /// The runtime the value belongs to, or `nil` if it has been deallocated or the value is runtime-free.
   /// Prefer ``jsiRuntime`` on hot paths: it costs no reference counting.
@@ -532,6 +535,17 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   public func asValue() -> JavaScriptValue {
     // We need to copy the value as `self` would be borrowed
     return copy()
+  }
+
+  /// Writes `value` into a host callback's result slot. A uniquely referenced instance, the normal
+  /// case for a value the callback just created, has its engine value moved out instead of cloned,
+  /// since the instance is deallocated right after. Shared instances go through ``writeJSIValue(to:)``.
+  internal static func write(_ value: inout JavaScriptValue, to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
+    if value.runtimeHandle != nil, isKnownUniquelyReferenced(&value) {
+      expo.emplaceMovedValue(slot, &value.pointee)
+    } else {
+      value.writeJSIValue(to: slot)
+    }
   }
 
   /// Writes this value into a host callback's result slot. Undefined, null, booleans and numbers are
