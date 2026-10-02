@@ -13,20 +13,11 @@ extension Date: JavaScriptCodable {
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Date
   {
-    // The cheap tag checks come before `is("Date")`, which does a global lookup plus an `instanceof`
-    // walk; a number or string can't be a `Date`, so the order is behavior-neutral.
-    if value.isNumber() {
-      return try dateFromMilliseconds(value.getDouble())
+    // Forwards to the unowned overload, which holds the implementation.
+    let runtime = copy runtime
+    return try value.withUnownedValue(in: runtime) { unownedValue in
+      return try decode(unownedValue, in: runtime)
     }
-    if value.isString() {
-      let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
-      let constructed = try dateConstructor.callAsConstructor(value.copy()).asObject()
-      return try dateFromMilliseconds(constructed.callFunction("getTime").asDouble())
-    }
-    if value.is("Date") {
-      return try dateFromMilliseconds(value.asObject().callFunction("getTime").asDouble())
-    }
-    throw InvalidDateException()
   }
 
   @JavaScriptActor
@@ -34,12 +25,25 @@ extension Date: JavaScriptCodable {
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Date
   {
-    // A number is read straight from the borrowed value. A string or a `Date` needs a call into the
-    // runtime anyway, so it goes through the owning overload.
+    // The cheap tag checks come before the `instanceof` check, which needs a global lookup; a number or
+    // a string can't be a `Date`, so the order is behavior-neutral. No branch copies the value: a
+    // string goes to the `Date` constructor as the borrowed argument it is.
     if value.isNumber() {
       return try dateFromMilliseconds(value.getDouble())
     }
-    return try decode(value.copied(in: runtime), in: runtime)
+    if value.isString() {
+      let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
+      let constructed = try dateConstructor.callAsConstructor(unownedArgument: value).asObject()
+      return try dateFromMilliseconds(constructed.callFunction("getTime").asDouble())
+    }
+    if value.isObject() {
+      let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
+      let object = value.getObject(in: runtime)
+      if object.instanceOf(dateConstructor) {
+        return try dateFromMilliseconds(object.callFunction("getTime").asDouble())
+      }
+    }
+    throw InvalidDateException()
   }
 
   @JavaScriptActor

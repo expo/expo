@@ -80,6 +80,20 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     }
   }
 
+  /// Calls the function as a constructor with a single borrowed argument, passed to the engine as is,
+  /// without copying it into an owning value or an arguments buffer.
+  @usableFromInline
+  internal func callAsConstructor(unownedArgument argument: borrowing JavaScriptUnownedValue) throws -> JavaScriptValue
+  {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return try capturingCppErrors {
+      let jsiResult = expo.callAsConstructor(runtime.pointee, pointee, argument.pointer, 1)
+      return JavaScriptValue(runtime, jsiResult)
+    }
+  }
+
   /// Calls the function as a constructor with the given arguments. It's like calling a function with the `new` keyword.
   public func callAsConstructor<each T: JavaScriptRepresentable>(_ arguments: repeat each T) throws -> JavaScriptValue {
     guard let runtime else {

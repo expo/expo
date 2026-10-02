@@ -70,6 +70,19 @@ struct JavaScriptUnownedDecodeTests {
     #expect(throws: (any Error).self) {
       _ = try unowned(Date.self, from: "true")
     }
+    #expect(throws: (any Error).self) {
+      _ = try unowned(Date.self, from: "({ getTime() { return 0 } })")
+    }
+    #expect(throws: (any Error).self) {
+      _ = try unowned(Date.self, from: "'not a date'")
+    }
+  }
+
+  @Test
+  func `Date decodes the same from an owning value`() throws {
+    #expect(try Date.decode(runtime.eval("1000"), in: runtime) == Date(timeIntervalSince1970: 1))
+    #expect(try Date.decode(runtime.eval("'1970-01-01T00:00:02Z'"), in: runtime) == Date(timeIntervalSince1970: 2))
+    #expect(try Date.decode(runtime.eval("new Date(3000)"), in: runtime) == Date(timeIntervalSince1970: 3))
   }
 }
 
