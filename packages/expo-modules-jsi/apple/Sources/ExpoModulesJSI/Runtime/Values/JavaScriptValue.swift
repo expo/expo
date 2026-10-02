@@ -148,7 +148,12 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     let pointer = withUnsafeBytes(of: pointee) { bytes in
       // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`, for the same SIL optimizer crash
       // `withUnsafePointee(_:)` avoids.
-      return bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
+      guard let baseAddress = bytes.baseAddress else {
+        preconditionFailure(
+          "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
+        )
+      }
+      return baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
     }
     return JavaScriptUnownedValue(runtime.pointee, pointer)
   }
