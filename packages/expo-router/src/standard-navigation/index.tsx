@@ -4,8 +4,9 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
+import { ScreenErrorBoundaryContext, useRouteNode } from '../Route';
 import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
+import { getLayoutAnchor } from '../layoutAnchor';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -182,7 +183,7 @@ export function integrateWithRouter<
       EventMap,
       NavigatorProps,
       RouterOptions
-    >(props, getValidInitialRouteName(routeNode));
+    >(props, getLayoutAnchor(routeNode));
     const { state, navigation, describe, descriptors, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,

@@ -679,6 +679,7 @@ describe('singular', () => {
             slug: 'apple',
           },
           state: {
+            __internal__pendingAnchor: { type: 'prepend', params: { slug: 'apple' } },
             index: 0,
             key: expect.any(String),
             routeNames: ['[slug]'],

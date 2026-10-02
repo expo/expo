@@ -1,11 +1,7 @@
 import type { RouteNode } from '../Route';
-import {
-  findRouteNodeAndParamsForState,
-  getValidInitialRouteName,
-  sortRoutes,
-  sortRoutesWithInitial,
-} from '../Route';
+import { findRouteNodeAndParamsForState, sortRoutes, sortRoutesWithInitial } from '../Route';
 import { generateDynamic } from '../getRoutes';
+import { getLayoutAnchor, peekLayoutAnchor } from '../layoutAnchor';
 
 const asRouteNode = (route: string): RouteNode => {
   return {
@@ -94,48 +90,59 @@ describe(sortRoutes, () => {
   });
 });
 
-describe(getValidInitialRouteName, () => {
-  it('returns the registered route name for a valid setting', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'a';
-    node.children = [asRouteNode('a')];
+const asLayoutNode = (anchor: string, children: string[]): RouteNode => ({
+  ...asRouteNode('_layout'),
+  type: 'layout',
+  loadRoute: () => ({ default: () => null, unstable_settings: { anchor } }),
+  children: children.map(asRouteNode),
+});
 
-    expect(getValidInitialRouteName(node)).toBe('a');
+describe(getLayoutAnchor, () => {
+  it('returns the registered route name for a valid setting', () => {
+    expect(getLayoutAnchor(asLayoutNode('a', ['a']))).toBe('a');
   });
 
   it('resolves a directory setting to its registered index route', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'a';
-    node.children = [asRouteNode('a/index')];
-
-    expect(getValidInitialRouteName(node)).toBe('a/index');
+    expect(getLayoutAnchor(asLayoutNode('a', ['a/index']))).toBe('a/index');
   });
 
   it('sorts a resolved directory setting before other routes', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'a';
-    node.children = [asRouteNode('b'), asRouteNode('a/index')];
+    const node = asLayoutNode('a', ['b', 'a/index']);
 
     expect(
-      node.children
-        .sort(sortRoutesWithInitial(getValidInitialRouteName(node)))
-        .map(({ route }) => route)
+      node.children.sort(sortRoutesWithInitial(getLayoutAnchor(node))).map(({ route }) => route)
     ).toEqual(['a/index', 'b']);
   });
 
   it('throws for a missing route', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'missing';
+    const node = asLayoutNode('missing', ['index', 'settings/index']);
     node.contextKey = './app/(tabs)/_layout.tsx';
-    node.children = [asRouteNode('index'), asRouteNode('settings/index')];
 
-    expect(() => getValidInitialRouteName(node)).toThrow(
+    expect(() => getLayoutAnchor(node)).toThrow(
       'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 
   it('returns undefined without a route node', () => {
-    expect(getValidInitialRouteName(null)).toBeUndefined();
+    expect(getLayoutAnchor(null)).toBeUndefined();
+  });
+
+  it('throws when the layout module has not loaded yet', () => {
+    const node = asLayoutNode('a', ['a']);
+    // `loadRoute` is typed as sync, but Metro's async require returns a promise until the chunk loads.
+    node.loadRoute = () => Promise.resolve({}) as never;
+
+    expect(() => getLayoutAnchor(node)).toThrow('was read before its module finished loading');
+  });
+});
+
+describe(peekLayoutAnchor, () => {
+  it('returns the anchor only after the layout was read', () => {
+    const node = asLayoutNode('a', ['a', 'b']);
+
+    expect(peekLayoutAnchor(node)).toBeUndefined();
+    getLayoutAnchor(node);
+    expect(peekLayoutAnchor(node)).toBe('a');
   });
 });
 

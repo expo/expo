@@ -33,7 +33,7 @@ it('throws when navigating before the first render finishes', async () => {
   ).rejects.toThrow('The imperative router is unavailable before the first render has finished.');
 });
 
-it('should respect `unstable_settings', async () => {
+it('should respect group-specific `unstable_settings` without using them to pick the group', async () => {
   const render = async (options: any = {}) =>
     await renderRouter(
       {
@@ -58,11 +58,11 @@ it('should respect `unstable_settings', async () => {
       options
     );
 
+  // The URL matches orange in both groups. The group-specific anchor of (two) does not select it.
   await render({ initialUrl: '/orange' });
-  expect(screen).toHaveSegments(['(two)', 'orange']);
+  expect(screen).toHaveSegments(['(one)', 'orange']);
 
   expect(screen.getByTestId('orange')).toBeVisible();
-  // Orange is the initial route so you can't go back
   expect(router.canGoBack()).toBeFalsy();
 
   // Reset the app, but start at /banana
@@ -322,11 +322,11 @@ it('pushes auto-encoded params and fully qualified URLs', async () => {
   });
 });
 
-it('warns when pushing to a layout with an invalid initial route name', async () => {
+it('throws when a layout with an invalid initial route name mounts', async () => {
   /** https://github.com/expo/router/issues/452 */
-  // Throwing before the invalid layout mounts makes the reported render loop unreachable.
+  // Throwing when the invalid layout mounts makes the reported render loop unreachable.
 
-  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text />,
@@ -346,13 +346,13 @@ it('warns when pushing to a layout with an invalid initial route name', async ()
   });
 
   expect(screen).toHavePathname('/');
-  await act(() => router.push('/main/welcome'));
-  expect(warn).toHaveBeenCalledWith(
-    expect.stringContaining(
-      'The initial route name "index" was not found in the layout at "./main/_layout.js".'
-    )
+  await expect(async () => {
+    await act(() => router.push('/main/welcome'));
+    await act(async () => {});
+  }).rejects.toThrow(
+    'The initial route name "index" was not found in the layout at "./main/_layout.js".'
   );
-  warn.mockRestore();
+  error.mockRestore();
 });
 
 it('can push nested initial route name', async () => {

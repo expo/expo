@@ -6,9 +6,11 @@ import { isValidElementType } from 'react-is';
 
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
+import { applyPendingAnchor } from '../../global-state/createSeededNavigationState';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
+import { getLayoutAnchor } from '../../layoutAnchor';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -329,7 +331,7 @@ export function useNavigationBuilder<
   const { state: currentState } = use(NavigationStateContext);
   const rootState = use(RootNavigationStateContext);
 
-  const { resetNavigator, handleAction } = use(NavigationBuilderContext);
+  const { resetNavigator, mountNavigator, handleAction } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -349,19 +351,29 @@ export function useNavigationBuilder<
   const committedState = (
     isForeignType ? resetNavigatorState(treeState, router.type) : treeState
   ) as State;
+  // The layout module is loaded once its navigator renders, so the anchor can be read now.
+  const anchor = getLayoutAnchor(routeNode);
+  const anchoredState = React.useMemo(
+    () => applyPendingAnchor(committedState, routeNode, anchor),
+    [anchor, committedState, routeNode]
+  );
   const state = React.useMemo(() => {
-    const declaredState = router.getStateForDeclaredRoutes(committedState, routeNames);
+    const declaredState = router.getStateForDeclaredRoutes(anchoredState, routeNames);
     // The seeded state cannot know the order declared by mounted screens yet.
     return isArrayEqual(declaredState.routeNames, routeNames)
       ? declaredState
       : { ...declaredState, routeNames };
-  }, [committedState, routeNamesKey, router]);
+  }, [anchoredState, routeNamesKey, router]);
   const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
     // The registry stores states from different router types; this entry only receives its own state key.
-    router.getStateForAction(registryState as State, action, {
-      routeNames,
-      routeGetIdList,
-    })
+    router.getStateForAction(
+      applyPendingAnchor(registryState as State, routeNode, anchor),
+      action,
+      {
+        routeNames,
+        routeGetIdList,
+      }
+    )
   );
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
     const routeNames = [];
@@ -455,6 +467,10 @@ export function useNavigationBuilder<
   useClientLayoutEffect(() => {
     if (isForeignType) {
       resetNavigator(committedState.key, router.type);
+    } else if (anchoredState.routes !== committedState.routes) {
+      // Commits the anchor route added during render. A marker that adds no route stays in the
+      // store until this navigator's next action, which avoids a render.
+      mountNavigator(committedState.key);
     }
   });
 
@@ -488,7 +504,7 @@ export function useNavigationBuilder<
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
     handleAction: onAction,
-    state: committedState,
+    state: anchoredState,
     emitter,
     router,
   });
@@ -507,7 +523,7 @@ export function useNavigationBuilder<
     navigation,
     screenOptions,
     screenLayout,
-    state: committedState,
+    state: anchoredState,
     addListener,
     router,
     emitter,

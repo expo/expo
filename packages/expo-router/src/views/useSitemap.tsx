@@ -3,6 +3,7 @@ import { use, useMemo } from 'react';
 import type { RouteNode } from '../Route';
 import { sortRoutes } from '../Route';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
+import { peekLayoutAnchor } from '../layoutAnchor';
 import { matchDynamicName } from '../matchers';
 import type { Href } from '../types';
 
@@ -53,7 +54,8 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),
-  isInitial: route.initialRouteName === route.route,
+  // Best effort: the anchor is known only after the layout has rendered.
+  isInitial: peekLayoutAnchor(route) === route.route,
   isInternal: route.internal ?? false,
   isGenerated: route.generated ?? false,
   children: [...route.children]

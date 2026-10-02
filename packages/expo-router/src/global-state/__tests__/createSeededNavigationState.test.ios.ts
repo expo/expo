@@ -1,16 +1,18 @@
 import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState';
 import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import {
+  applyPendingAnchor,
   completeNavigationState,
   completeParsedState,
+  createSeededNavigationState,
   createSeededRootState,
 } from '../createSeededNavigationState';
 import { node } from './__fixtures__/routeNode';
 
-test('completes nested parsed routes without dropping anchor or dynamic params', () => {
+test('completes nested parsed routes and marks each navigator with a pending anchor', () => {
   const routeNode = node('root', [
     node('index'),
-    node('(group)', [node('[id]', [node('details')]), node('anchor')], 'anchor'),
+    node('(group)', [node('[id]', [node('details')]), node('anchor')]),
   ]);
 
   const state = createSeededRootState(
@@ -67,6 +69,7 @@ test('completes nested parsed routes without dropping anchor or dynamic params',
           routeKeySeq: 1,
           index: 0,
           routeNames: ['index', '(group)'],
+          __internal__pendingAnchor: { type: 'prepend' },
           routes: [
             {
               key: '(group):0-0',
@@ -77,7 +80,8 @@ test('completes nested parsed routes without dropping anchor or dynamic params',
                 key: 'navigator:0-0',
                 routeKeySeq: 2,
                 index: 1,
-                routeNames: ['anchor', '[id]'],
+                routeNames: ['[id]', 'anchor'],
+                __internal__pendingAnchor: { type: 'prepend', params: { id: '42' } },
                 routes: [
                   { key: 'anchor:0-0-0', name: 'anchor', params: { from: 'link' } },
                   {
@@ -90,6 +94,7 @@ test('completes nested parsed routes without dropping anchor or dynamic params',
                       routeKeySeq: 1,
                       index: 0,
                       routeNames: ['details'],
+                      __internal__pendingAnchor: { type: 'prepend' },
                       routes: [
                         {
                           key: 'details:0-0-1-0',
@@ -189,8 +194,8 @@ test('uses distinct chains for sibling and nested navigators', () => {
   expect(new Set(stateKeys).size).toBe(stateKeys.length);
 });
 
-test('falls back to the initial route when a nested state contains an unknown route', () => {
-  const routeNode = node('root', [node('alpha'), node('beta')], 'beta');
+test('falls back to the first route when a nested state contains an unknown route', () => {
+  const routeNode = node('root', [node('alpha'), node('beta')]);
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   const state = createSeededRootState(
@@ -208,13 +213,17 @@ test('falls back to the initial route when a nested state contains an unknown ro
     routeNode
   );
 
-  expect(state.routes[0]!.state).toMatchObject({ index: 0, routes: [{ name: 'beta' }] });
+  expect(state.routes[0]!.state).toMatchObject({
+    index: 0,
+    routes: [{ name: 'beta' }],
+    __internal__pendingAnchor: { type: 'initial' },
+  });
   expect(warn).toHaveBeenCalledWith(expect.stringContaining('unknown route "unknown"'));
   warn.mockRestore();
 });
 
 test('falls back instead of preserving other parsed routes when one nested route is unknown', () => {
-  const routeNode = node('root', [node('alpha'), node('beta')], 'alpha');
+  const routeNode = node('root', [node('alpha'), node('beta')]);
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   const state = createSeededRootState(
@@ -232,7 +241,7 @@ test('falls back instead of preserving other parsed routes when one nested route
     routeNode
   );
 
-  expect(state.routes[0]!.state).toMatchObject({ index: 0, routes: [{ name: 'alpha' }] });
+  expect(state.routes[0]!.state).toMatchObject({ index: 0, routes: [{ name: 'beta' }] });
   expect(warn).toHaveBeenCalledWith(expect.stringContaining('unknown route "unknown"'));
   warn.mockRestore();
 });
@@ -256,51 +265,6 @@ test('preserves the focused occurrence of a duplicate route', () => {
   expect(state.routes[0]!.state).toMatchObject({
     index: 1,
     routes: [{ name: 'alpha' }, { name: 'alpha' }],
-  });
-});
-
-test('resolves an initial route to its directory index route', () => {
-  const state = createSeededRootState(
-    {
-      routes: [
-        {
-          name: '__root',
-          state: {
-            routes: [{ name: 'home' }, { name: 'settings' }],
-          },
-        },
-      ],
-    },
-    node('root', [node('home/index'), node('settings')], 'home')
-  );
-
-  expect(state.routes[0]!.state).toMatchObject({
-    index: 1,
-    routeNames: ['home/index', 'settings'],
-    routes: [{ name: 'home/index' }, { name: 'settings' }],
-  });
-});
-
-test('does not duplicate a directory index route used as the initial route', () => {
-  const state = createSeededRootState(
-    {
-      routes: [
-        {
-          name: '__root',
-          state: {
-            index: 1,
-            routes: [{ name: 'home' }, { name: 'home/index', path: '/home' }],
-          },
-        },
-      ],
-    },
-    node('root', [node('home/index'), node('settings')], 'home')
-  );
-
-  expect(state.routes[0]!.state).toMatchObject({
-    index: 0,
-    routeNames: ['home/index', 'settings'],
-    routes: [{ name: 'home/index', path: '/home' }],
   });
 });
 
@@ -357,4 +321,65 @@ test.each(['+not-found', '_sitemap'])('keeps the root %s route as a leaf', (name
       params: { requested: '/missing' },
     },
   ]);
+});
+
+describe(applyPendingAnchor, () => {
+  const routeNode = node('root', [node('anchor', [node('index')]), node('[id]')]);
+
+  it('puts the anchor with the path params below the target without changing the target key', () => {
+    const seeded = createSeededNavigationState(
+      { routes: [{ name: '[id]', params: { id: '1', query: 'x' } }] },
+      routeNode,
+      '0'
+    );
+
+    expect(applyPendingAnchor(seeded, routeNode, 'anchor')).toStrictEqual({
+      stale: false,
+      key: 'navigator:0',
+      routeKeySeq: 2,
+      index: 1,
+      routeNames: ['[id]', 'anchor'],
+      routes: [
+        {
+          key: 'anchor:0-1',
+          name: 'anchor',
+          params: { id: '1' },
+          state: {
+            stale: false,
+            key: 'navigator:0-1',
+            routeKeySeq: 1,
+            index: 0,
+            routeNames: ['index'],
+            routes: [{ key: 'index:0-1-0', name: 'index' }],
+            __internal__pendingAnchor: { type: 'initial' },
+          },
+        },
+        { key: '[id]:0-0', name: '[id]', params: { id: '1', query: 'x' } },
+      ],
+    });
+  });
+
+  it('replaces routes picked without the anchor', () => {
+    const seeded = createSeededNavigationState(undefined, routeNode, '0');
+
+    expect(applyPendingAnchor(seeded, routeNode, 'anchor')).toMatchObject({
+      routeKeySeq: 2,
+      index: 0,
+      routes: [{ key: 'anchor:0-1', name: 'anchor', state: { key: 'navigator:0-1' } }],
+    });
+    expect(applyPendingAnchor(seeded, routeNode, 'anchor')).not.toHaveProperty(
+      '__internal__pendingAnchor'
+    );
+  });
+
+  it('only removes the marker when the anchor is already a route', () => {
+    const seeded = createSeededNavigationState({ routes: [{ name: '[id]' }] }, routeNode, '0');
+    // The marker is internal, so `NavigationState` does not declare it.
+    const { __internal__pendingAnchor, ...unmarked } = seeded as typeof seeded & {
+      __internal__pendingAnchor: unknown;
+    };
+
+    expect(applyPendingAnchor(seeded, routeNode, '[id]')).toStrictEqual(unmarked);
+    expect(applyPendingAnchor(seeded, routeNode, undefined)).toStrictEqual(unmarked);
+  });
 });

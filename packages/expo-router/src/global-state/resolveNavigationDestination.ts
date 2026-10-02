@@ -1,6 +1,6 @@
 import isEqual from 'react-fast-compare';
 
-import { findRouteNodeByName, getValidInitialRouteName, type RouteNode } from '../Route';
+import { findRouteNodeByName, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
@@ -15,7 +15,7 @@ import type {
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
 import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
-import { sortRoutesWithInitial } from '../sortRoutes';
+import { getRouteNames, withPendingAnchor } from './createSeededNavigationState';
 import type { RouterRegistry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
@@ -238,19 +238,10 @@ function createDestinationState(
   parentChain: string
 ): NavigationState {
   const targetRoute = getFocusedRoute(targetState);
-  const initialRouteName = getValidInitialRouteName(routeNode);
-  // Sort like a mounted navigator does, so the route names match on mount and no
-  // ROUTE_NAMES_CHANGED action is queued.
-  const routeNames = [...routeNode.children]
-    .sort(sortRoutesWithInitial(initialRouteName))
-    .map((child) => child.route);
+  const routeNames = getRouteNames(routeNode);
   if (!targetRoute) {
     return markState(
-      createInitialState({
-        routeNames,
-        initialRouteName,
-        parentChain,
-      })
+      withPendingAnchor(createInitialState({ routeNames, parentChain }), { type: 'initial' })
     );
   }
   if (!routeNames.includes(targetRoute.name)) {
@@ -258,24 +249,16 @@ function createDestinationState(
       `The navigation destination contains the unknown route "${targetRoute.name}". The route is not registered by its navigator, so Expo Router will use the navigator's initial route instead. Check that your linking configuration only returns registered routes.`
     );
     return markState(
-      createInitialState({
-        routeNames,
-        initialRouteName,
-        parentChain,
-      })
+      withPendingAnchor(createInitialState({ routeNames, parentChain }), { type: 'initial' })
     );
   }
 
-  const hasAnchor = withAnchor && initialRouteName && initialRouteName !== targetRoute.name;
   const destination = createInitialState({
     routeNames,
-    initialRouteName: hasAnchor ? initialRouteName : targetRoute.name,
+    initialRouteName: targetRoute.name,
     parentChain,
   });
-  const minter = createRouteKeyMinter(destination);
-  const destinationRouteKey = hasAnchor
-    ? minter.mint(targetRoute.name)
-    : destination.routes[0]!.key;
+  const destinationRouteKey = destination.routes[0]!.key;
   const childNode = findRouteNodeByName(routeNode, targetRoute.name);
   const childState =
     targetRoute.state && childNode
@@ -289,22 +272,13 @@ function createDestinationState(
       : undefined;
   const destinationRoute = {
     ...destination.routes[0]!,
-    key: destinationRouteKey,
     name: targetRoute.name,
     ...(targetRoute.path !== undefined ? { path: targetRoute.path } : undefined),
     params: appendInternalExpoRouterParams(targetRoute.params, internalParams) ?? {},
     ...(childState !== undefined ? { state: childState } : undefined),
   };
-  if (hasAnchor) {
-    return markState({
-      ...destination,
-      routeKeySeq: minter.routeKeySeq,
-      index: 1,
-      routes: [destination.routes[0]!, destinationRoute],
-    });
-  }
-
-  return markState({ ...destination, routes: [destinationRoute] });
+  const state = { ...destination, routes: [destinationRoute] };
+  return markState(withAnchor ? withPendingAnchor(state, { type: 'prepend' }) : state);
 }
 
 function getFocusedRoute(

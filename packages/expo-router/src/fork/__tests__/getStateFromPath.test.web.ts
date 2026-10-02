@@ -254,10 +254,10 @@ it(`supports spaces`, () => {
 
 it(`matches against dynamic groups`, () => {
   /*
-   * This will match (app)/([user])/[user]/index with a user = '(explore)'
+   * This will match (app)/(explore)/[user]/index with a user = '(explore)'
    * It may appear that '(explore)' is a group name but there is not value to match '[user]'
-   * So it doesn't match any routes in the '(explore)' group
-   * Therefore, '(explore)' is used as the value for '[user]'
+   * So '(explore)' is used as the value for '[user]'. Both groups have a matching `[user]/index`
+   * route, and the first group wins because layouts do not rank routes by their anchor.
    */
   expect(
     getStateFromPath(
@@ -291,7 +291,7 @@ it(`matches against dynamic groups`, () => {
               state: {
                 routes: [
                   {
-                    name: '([user])',
+                    name: '(explore)',
                     params: {
                       user: '(explore)',
                     },

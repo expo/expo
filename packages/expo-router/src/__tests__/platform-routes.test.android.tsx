@@ -101,7 +101,7 @@ it(`should work with layout routes`, () => {
         ],
         contextKey: './(app)/_layout.android.tsx',
         dynamic: null,
-        initialRouteName: undefined,
+        anchorGroupName: 'app',
         route: '(app)',
         type: 'layout',
       },

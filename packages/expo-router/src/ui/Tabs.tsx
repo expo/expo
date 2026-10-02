@@ -3,9 +3,10 @@ import { Children, Fragment, isValidElement, use, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { getValidInitialRouteName, useRouteNode, useContextKey } from '../Route';
+import { useRouteNode, useContextKey } from '../Route';
 import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
+import { getLayoutAnchor } from '../layoutAnchor';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
 import type {
@@ -168,7 +169,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
-  const initialRouteName = getValidInitialRouteName(routeNode);
+  const initialRouteName = getLayoutAnchor(routeNode);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,

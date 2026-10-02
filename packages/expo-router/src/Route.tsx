@@ -38,8 +38,8 @@ export type RouteNode = {
   type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => LoadedRoute;
-  /** Loaded initial route name. */
-  initialRouteName?: string;
+  /** Group that selects a group-specific anchor in `unstable_settings`, for `(a,b)` layouts. */
+  anchorGroupName?: string;
   /** Nested routes */
   children: RouteNode[];
   /** Is the route a dynamic path */
@@ -115,11 +115,11 @@ export function findRouteNodeAndParamsForState(
 }
 
 export function getValidInitialRoute(
-  node: RouteNode | null,
-  initialRouteName = node?.initialRouteName,
+  node: RouteNode,
+  initialRouteName: string | undefined,
   groupName?: string
 ): RouteNode | undefined {
-  if (!node || !initialRouteName) {
+  if (!initialRouteName) {
     return undefined;
   }
   const route =
@@ -134,11 +134,6 @@ export function getValidInitialRoute(
   }
   return route;
 }
-
-export const getValidInitialRouteName = (
-  node: RouteNode | null,
-  initialRouteName = node?.initialRouteName
-) => getValidInitialRoute(node, initialRouteName)?.route;
 
 export function useContextKey(): string {
   const node = useRouteNode();

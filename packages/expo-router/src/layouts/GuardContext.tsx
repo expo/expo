@@ -3,7 +3,8 @@
 import { createContext, use, useMemo, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
-import { getValidInitialRoute, LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
+import { findRouteNodeByName, LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
+import { getLayoutAnchor } from '../layoutAnchor';
 import { getContextKey } from '../matchers';
 import type { Href } from '../types';
 
@@ -30,15 +31,7 @@ export function GuardContextProvider({
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
   const { fallbacks, resolvedGuards } = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
-    [
-      node,
-      node?.children,
-      node?.contextKey,
-      node?.initialRouteName,
-      params,
-      parentFallbacks,
-      guardConfigurationKey,
-    ]
+    [node, node?.children, node?.contextKey, params, parentFallbacks, guardConfigurationKey]
   );
 
   return (
@@ -122,7 +115,7 @@ function findDefaultRedirectRouteInNavigator(
   node: RouteNode,
   guardedRedirects: GuardedRedirects
 ): RouteNode | undefined {
-  const anchor = getValidInitialRoute(node);
+  const anchor = findRouteNodeByName(node, getLayoutAnchor(node));
   const children = [...node.children].sort(sortRoutesWithInitial(anchor?.route));
 
   if (anchor && !isRouteGuarded(anchor.route, guardedRedirects)) {

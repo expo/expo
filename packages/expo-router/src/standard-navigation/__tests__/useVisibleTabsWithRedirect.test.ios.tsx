@@ -46,13 +46,14 @@ const descriptors = {
 };
 const routeNames = routes.map((route) => route.name);
 
-function routeNode(initialRouteName: string) {
-  // Only route names are relevant to this hook test fixture.
+function routeNode(anchor: string) {
+  // Only the anchor and route names are relevant to this hook test fixture.
   return {
-    initialRouteName,
+    type: 'layout',
+    loadRoute: () => ({ unstable_settings: { anchor } }),
     contextKey: './_layout.js',
     children: routes.map(({ name }) => ({ route: name })),
-  } as ReturnType<typeof useRouteNode>;
+  } as unknown as ReturnType<typeof useRouteNode>;
 }
 
 let warnSpy: jest.SpyInstance;

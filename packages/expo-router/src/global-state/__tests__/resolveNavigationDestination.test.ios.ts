@@ -86,12 +86,12 @@ test('switches mounted tabs and extends the selected tab stack', () => {
 });
 
 test.each([
-  [false, ['details']],
-  [true, ['index', 'details']],
-])('builds an unmounted destination with anchor=%s', (withAnchor, expectedRoutes) => {
+  [false, {}],
+  [true, { __internal__pendingAnchor: { type: 'prepend' } }],
+])('builds an unmounted destination with anchor=%s', (withAnchor, pendingAnchor) => {
   const routeNode = node('tabs', [
     node('home'),
-    node('settings', [node('index'), node('details')], 'index'),
+    node('settings', [node('index'), node('details')]),
   ]);
   const registry: RouterRegistry = new Map([['tabs', entry(TabRouter({}), tabs.routeNames)]]);
 
@@ -106,39 +106,24 @@ test.each([
     withAnchor,
   });
 
-  expect(action.payload.state?.stale).toBe(false);
-  expect(action.payload.state?.key).toBeDefined();
-  expect(action.payload.state?.routes.map((route) => route.name)).toEqual(expectedRoutes);
-  expect(action.payload.state?.index).toBe(expectedRoutes.length - 1);
-});
-
-test('orders unmounted destination routeNames like a mounted navigator', () => {
-  // The anchor is declared after `orange` in the file tree, so the raw child order differs
-  // from the order a mounted navigator reports via `useSortedScreens`.
-  const routeNode = node('tabs', [
-    node('home'),
-    node('settings', [node('orange'), node('test')], 'test'),
-  ]);
-  const registry: RouterRegistry = new Map([['tabs', entry(TabRouter({}), tabs.routeNames)]]);
-
-  const action = resolveNavigationDestination({
-    targetState: {
-      routes: [{ name: 'settings', state: { routes: [{ name: 'orange' }] } }],
-    },
-    navigationState: tabs,
-    routeNode,
-    registry,
-    action: { type: 'JUMP_TO', payload: {} },
+  // The navigator adds the anchor when it mounts.
+  expect(action.payload.state).toStrictEqual({
+    stale: false,
+    key: expect.any(String),
+    routeKeySeq: 1,
+    index: 0,
+    routeNames: ['index', 'details'],
+    routes: [{ key: expect.any(String), name: 'details', params: {} }],
+    __internal__routerActionState: true,
+    ...pendingAnchor,
   });
-
-  expect(action.payload.state?.routeNames).toEqual(['test', 'orange']);
 });
 
-test('warns and falls back to the initial route for an unknown destination', () => {
+test('warns and falls back to the first route for an unknown destination', () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
   const routeNode = node('tabs', [
     node('home'),
-    node('settings', [node('index'), node('details')], 'index'),
+    node('settings', [node('index'), node('details')]),
   ]);
 
   const action = resolveNavigationDestination({
@@ -152,7 +137,10 @@ test('warns and falls back to the initial route for an unknown destination', () 
   });
 
   expect(warn).toHaveBeenCalledWith(expect.stringContaining('unknown route "missing"'));
-  expect(action.payload.state?.routes.map((route) => route.name)).toEqual(['index']);
+  expect(action.payload.state).toMatchObject({
+    routes: [{ name: 'index' }],
+    __internal__pendingAnchor: { type: 'initial' },
+  });
   warn.mockRestore();
 });
 

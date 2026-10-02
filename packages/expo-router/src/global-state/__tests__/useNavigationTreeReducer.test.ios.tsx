@@ -1,7 +1,9 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { useLayoutEffect } from 'react';
 
+import type { RouteNode } from '../../Route';
 import type { NavigationAction, NavigationState } from '../../react-navigation/routers';
+import { withPendingAnchor } from '../createSeededNavigationState';
 import { getNavigateAction } from '../getNavigationAction';
 import type { RouterRegistry } from '../routerRegistry';
 import type { LinkToOptions } from '../types';
@@ -565,9 +567,8 @@ it('reports a later action as unhandled after a same-batch reset changes the sta
   expect(result.result.current.state.key).toBe('next-root');
 });
 
-it('resets a state slice when its router unregisters', async () => {
+it('reseeds a state slice with a pending anchor when its router unregisters', async () => {
   const routeNode = node('root', [node('first'), node('second'), node('third')]);
-  routeNode.initialRouteName = 'second';
   const registryEntry = { ...entry(() => null), routeNode };
   const result = await renderReducer({
     registry: new Map([['root', registryEntry]]),
@@ -581,10 +582,37 @@ it('resets a state slice when its router unregisters', async () => {
 
   expect(result.result.current.state).toMatchObject({
     index: 0,
-    routeNames: ['second', 'first', 'third'],
-    routes: [{ name: 'second' }],
+    routeNames: ['first', 'third', 'second'],
+    routes: [{ name: 'first' }],
+    __internal__pendingAnchor: { type: 'initial' },
   });
   expect(result.committedStates).toEqual([result.result.current.state]);
+});
+
+it('commits the pending anchor when its navigator mounts', async () => {
+  const routeNode: RouteNode = {
+    ...node('root', [node('first'), node('second'), node('third')]),
+    type: 'layout',
+    loadRoute: () => ({ unstable_settings: { anchor: 'second' } }),
+  };
+  const result = await renderReducer({
+    state: withPendingAnchor(
+      { ...initialState, key: 'navigator:0', routes: [initialState.routes[0]!] },
+      { type: 'initial' }
+    ),
+    registry: new Map([['navigator:0', { ...entry(() => null), routeNode }]]),
+  });
+
+  await act(() => result.result.current.mountNavigator('navigator:0'));
+
+  expect(result.result.current.state).toStrictEqual({
+    stale: false,
+    routeKeySeq: 1,
+    key: 'navigator:0',
+    index: 0,
+    routeNames: ['first', 'second', 'third'],
+    routes: [{ key: 'second:0-0', name: 'second' }],
+  });
 });
 
 it('resets a state slice when its router type changes', async () => {

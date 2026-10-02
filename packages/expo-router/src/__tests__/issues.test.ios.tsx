@@ -60,9 +60,10 @@ it('should return correct pathname for nested stack with initialRouteName', asyn
   expect(screen.queryByTestId('inner-index-pathname')).toBeNull();
   expect(screen.getByTestId('inner-a-pathname')).toBeVisible();
   expect(screen.getByTestId('inner-a-pathname')).toHaveTextContent('/inner/a');
-  expect(indexRenderCount).toHaveBeenCalledTimes(1);
+  // The inner stack commits its anchor after it mounts, which renders both tabs once more.
+  expect(indexRenderCount).toHaveBeenCalledTimes(2);
   expect(innerIndexRenderCount).toHaveBeenCalledTimes(0);
-  expect(innerARenderCount).toHaveBeenCalledTimes(1);
+  expect(innerARenderCount).toHaveBeenCalledTimes(2);
 });
 
 it('should return correct pathname for nested stack with initialRouteName, after push', async () => {

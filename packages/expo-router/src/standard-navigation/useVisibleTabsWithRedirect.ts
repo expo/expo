@@ -1,8 +1,9 @@
 import { useEffect, useMemo } from 'react';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
+import { useRouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { useRouterActions } from '../global-state/useRouterActions';
+import { getLayoutAnchor } from '../layoutAnchor';
 import { useGuardRedirect } from '../layouts/GuardContext';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import {
@@ -69,7 +70,7 @@ export function useVisibleTabsWithRedirect<
   // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996409
   const focusedIndex = visibleFocusedIndex;
 
-  const initialRouteName = getValidInitialRouteName(routeNode);
+  const initialRouteName = getLayoutAnchor(routeNode);
 
   const redirectHref = useMemo(() => {
     if (guardRedirect !== undefined) {

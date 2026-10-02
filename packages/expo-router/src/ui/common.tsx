@@ -1,13 +1,9 @@
-import {
-  findRouteNodeByName,
-  getValidInitialRouteName,
-  sortRoutesWithInitial,
-  type RouteNode,
-} from '../Route';
+import { findRouteNodeByName, sortRoutes, type RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
 import type { RouterRegistry } from '../global-state/routerRegistry';
+import { peekLayoutAnchor } from '../layoutAnchor';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type {
   LinkingOptions,
@@ -264,8 +260,9 @@ function hasDeepDestination(
 
   while (state) {
     const childRoute = state.routes[state.index ?? state.routes.length - 1];
+    // A layout that has not rendered yet also starts at its first route, see `createSeededNavigationState`.
     const initialRouteName =
-      getValidInitialRouteName(node) ?? [...node.children].sort(sortRoutesWithInitial())[0]?.route;
+      peekLayoutAnchor(node) ?? [...node.children].sort(sortRoutes)[0]?.route;
     if (
       !childRoute ||
       childRoute.name !== initialRouteName ||

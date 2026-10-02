@@ -199,6 +199,7 @@ describe('getRoutes', () => {
           type: 'layout',
           dynamic: null,
           route: '(b)',
+          anchorGroupName: 'b',
           children: [
             {
               type: 'route',
@@ -506,6 +507,7 @@ describe('entry points', () => {
                   type: 'layout',
                   dynamic: null,
                   route: '(c)',
+                  anchorGroupName: 'c',
                   children: [
                     {
                       children: [],
@@ -528,6 +530,7 @@ describe('entry points', () => {
                   type: 'layout',
                   dynamic: null,
                   route: '(d)',
+                  anchorGroupName: 'd',
                   children: [
                     {
                       children: [],
@@ -555,27 +558,25 @@ describe('entry points', () => {
 });
 
 describe('anchor', () => {
-  it('warns when using the deprecated initialRouteName setting', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    const routes = getRoutes(
-      inMemoryContext({
-        _layout: {
-          unstable_settings: { initialRouteName: 'a' },
-          default: () => null,
-        },
-        a: () => null,
-        b: () => null,
-      }),
-      { skipGenerated: true }
+  it('does not require layouts when building the route tree in lazy mode', () => {
+    const files = inMemoryContext({
+      _layout: { unstable_settings: { anchor: 'a' }, default: () => null },
+      a: () => null,
+      'b/_layout': { unstable_settings: { anchor: 'index' }, default: () => null },
+      'b/index': () => null,
+    });
+    const requires: string[] = [];
+    const context = Object.assign(
+      (id: string) => {
+        requires.push(id);
+        return files(id);
+      },
+      { keys: files.keys, resolve: files.resolve, id: files.id }
     );
 
-    expect(routes?.initialRouteName).toBe('a');
-    expect(warn).toHaveBeenCalledWith(
-      '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
-    );
+    getRoutes(context, { ignoreEntryPoints: true, importMode: 'lazy' });
 
-    warn.mockRestore();
+    expect(requires).toEqual([]);
   });
 
   it(`should append entry points for all parent _layouts`, () => {
@@ -617,7 +618,6 @@ describe('anchor', () => {
       loadRoute: expect.any(Function),
       contextKey: './_layout.js',
       dynamic: null,
-      initialRouteName: 'a',
       route: '',
       type: 'layout',
     });
@@ -695,7 +695,6 @@ describe('anchor', () => {
       { skipGenerated: true }
     );
 
-    expect(routes?.initialRouteName).toBe('a/index');
     expect(routes?.children[0]?.entryPoints).toContain('./a/index.js');
   });
 });

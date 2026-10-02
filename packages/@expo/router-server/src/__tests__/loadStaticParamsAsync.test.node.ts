@@ -179,14 +179,12 @@ describe(loadStaticParamsAsync, () => {
           type: 'layout',
           contextKey: './[color]/_layout.tsx',
           dynamic: [{ deep: false, name: 'color' }],
-          initialRouteName: undefined,
           route: '[color]',
         },
       ],
       type: 'layout',
       contextKey: './_layout.tsx',
       dynamic: null,
-      initialRouteName: undefined,
       route: '',
     });
 
@@ -208,7 +206,6 @@ describe(loadStaticParamsAsync, () => {
           type: 'layout',
           contextKey: './[color]/_layout.tsx',
           dynamic: [{ deep: false, name: 'color' }],
-          initialRouteName: undefined,
           route: '[color]',
         },
         {
@@ -243,7 +240,6 @@ describe(loadStaticParamsAsync, () => {
           type: 'layout',
           contextKey: './red/_layout.tsx',
           dynamic: null,
-          initialRouteName: undefined,
           route: 'red',
         },
         {
@@ -278,14 +274,12 @@ describe(loadStaticParamsAsync, () => {
           type: 'layout',
           contextKey: './blue/_layout.tsx',
           dynamic: null,
-          initialRouteName: undefined,
           route: 'blue',
         },
       ],
       type: 'layout',
       contextKey: './_layout.tsx',
       dynamic: null,
-      initialRouteName: undefined,
       route: '',
     });
 
@@ -502,7 +496,7 @@ describe(loadStaticParamsAsync, () => {
           type: 'layout',
           contextKey: './(app)/_layout.tsx',
           dynamic: null,
-          initialRouteName: undefined,
+          anchorGroupName: 'app',
           route: '(app)',
         },
       ],
@@ -598,7 +592,7 @@ describe(loadStaticParamsAsync, () => {
           type: 'layout',
           contextKey: './(app)/_layout.tsx',
           dynamic: null,
-          initialRouteName: undefined,
+          anchorGroupName: 'app',
           route: '(app)',
         },
       ],

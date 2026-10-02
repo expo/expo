@@ -1,11 +1,7 @@
-import {
-  findRouteNodeByName,
-  getValidInitialRouteName,
-  sortRoutesWithInitial,
-  type RouteNode,
-} from '../Route';
+import { findRouteNodeByName, sortRoutes, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
+import { matchDynamicName, removeSupportedExtensions } from '../matchers';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
 import {
@@ -19,8 +15,71 @@ import { getRootStackRouteNames } from './utils';
 type SeedState = NavigationState | PartialState<NavigationState>;
 
 /**
+ * Tells a navigator how to apply its anchor when it mounts. State built before mount cannot read
+ * the anchor, because the layout module may not be loaded yet.
+ * - `initial`: the routes were picked without the anchor; the anchor route replaces them.
+ * - `prepend`: the anchor route goes below the target route, with `params` when given.
+ */
+export type PendingAnchor = { type: 'initial' } | { type: 'prepend'; params?: object };
+
+type StateWithPendingAnchor = NavigationState & { __internal__pendingAnchor?: PendingAnchor };
+
+export function withPendingAnchor<State extends NavigationState>(
+  state: State,
+  pendingAnchor: PendingAnchor
+): State {
+  return { ...state, __internal__pendingAnchor: pendingAnchor };
+}
+
+/**
+ * Applies the pending anchor of a mounted navigator and removes the marker. The result depends
+ * only on its arguments, so render and the store produce the same route keys.
+ */
+export function applyPendingAnchor<State extends NavigationState>(
+  state: State,
+  routeNode: RouteNode | null,
+  anchor: string | undefined
+): State {
+  const { __internal__pendingAnchor: pendingAnchor, ...rest } = state as State &
+    StateWithPendingAnchor;
+  if (!pendingAnchor) {
+    return state;
+  }
+  // Removing the marker keeps every field of `State`.
+  const unmarked = rest as unknown as State;
+  if (
+    !anchor ||
+    !state.routeNames.includes(anchor) ||
+    state.routes.some((route) => route.name === anchor)
+  ) {
+    return unmarked;
+  }
+
+  const minter = createRouteKeyMinter(state);
+  const key = minter.mint(anchor);
+  const childNode = findRouteNodeByName(routeNode, anchor);
+  const anchorRoute = {
+    key,
+    name: anchor,
+    ...(pendingAnchor.type === 'prepend' && pendingAnchor.params
+      ? { params: pendingAnchor.params }
+      : undefined),
+    ...(childNode && childNode.children.length > 0
+      ? { state: createSeededNavigationState(undefined, childNode, getChainFromRouteKey(key)) }
+      : undefined),
+  };
+  return {
+    ...unmarked,
+    routeKeySeq: minter.routeKeySeq,
+    ...(pendingAnchor.type === 'initial'
+      ? { index: 0, routes: [anchorRoute] }
+      : { index: state.index + 1, routes: [anchorRoute, ...state.routes] }),
+  };
+}
+
+/**
  * Completes the partial state parsed from the initial URL by `getStateFromPath` with keys,
- * route names, anchor routes, and `stale: false` so navigators can adopt it directly.
+ * route names, pending anchors, and `stale: false` so navigators can adopt it directly.
  *
  * @param targetState The partial state the app should start in, parsed from the initial URL by
  * `getStateFromPath`.
@@ -33,8 +92,6 @@ export function createSeededRootState(
   return createSeededState({
     targetState,
     routeNames: getRootStackRouteNames(),
-    initialRouteName: undefined,
-    targetInitialRouteName: undefined,
     parentChain: ROOT_CHAIN,
     findChildNode: (routeName) => (routeName === INTERNAL_SLOT_NAME ? rootRouteNode : undefined),
   });
@@ -86,19 +143,43 @@ export function createSeededNavigationState(
   routeNode: RouteNode,
   parentChain: string
 ): NavigationState {
-  const initialRouteName = getValidInitialRouteName(routeNode);
-  const routeNames = [...routeNode.children]
-    .sort(sortRoutesWithInitial(initialRouteName))
-    .map((child) => child.route);
-
-  return createSeededState({
+  const state = createSeededState({
     targetState,
-    routeNames,
-    initialRouteName,
-    targetInitialRouteName: routeNode.initialRouteName,
+    routeNames: getRouteNames(routeNode),
     parentChain,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
+  const targetRoute = targetState?.routes[targetState.index ?? targetState.routes.length - 1];
+  if (!targetRoute || !state.routes.some((route) => route.name === targetRoute.name)) {
+    return withPendingAnchor(state, { type: 'initial' });
+  }
+  const params = getPathParams(
+    findRouteNodeByName(routeNode, targetRoute.name),
+    targetRoute.params
+  );
+  return withPendingAnchor(state, { type: 'prepend', ...(params ? { params } : undefined) });
+}
+
+/**
+ * Returns the params of a route that come from its path, like `id` for `[id].tsx`. The anchor of a
+ * URL target gets them, while query params stay on the target.
+ */
+function getPathParams(node: RouteNode | undefined, params: object | undefined) {
+  if (!node || !params) {
+    return undefined;
+  }
+  const names = new Set(
+    removeSupportedExtensions(node.contextKey)
+      .split('/')
+      .map((segment) => matchDynamicName(segment)?.name)
+  );
+  const pathParams = Object.fromEntries(Object.entries(params).filter(([name]) => names.has(name)));
+  return Object.keys(pathParams).length > 0 ? pathParams : undefined;
+}
+
+/** Returns the route names in file order. Mounted navigators move the anchor first. */
+export function getRouteNames(routeNode: RouteNode): string[] {
+  return [...routeNode.children].sort(sortRoutes).map((child) => child.route);
 }
 
 // TODO(@ubax): consider replacing findChildNode here and in other places
@@ -127,14 +208,10 @@ function completeExistingState(
       return completeRoute;
     }
 
-    const initialRouteName = getValidInitialRouteName(childNode);
-    const childRouteNames = [...childNode.children]
-      .sort(sortRoutesWithInitial(initialRouteName))
-      .map((child) => child.route);
     const childState = route.state
       ? completeExistingState(
           route.state,
-          childRouteNames,
+          getRouteNames(childNode),
           getChainFromRouteKey(routeKey),
           (routeName) => findRouteNodeByName(childNode, routeName)
         )
@@ -173,8 +250,6 @@ function completeExistingState(
 type CreateSeededStateOptions = {
   targetState: SeedState | undefined;
   routeNames: string[];
-  initialRouteName: string | undefined;
-  targetInitialRouteName: string | undefined;
   parentChain: string;
   // Root maps `INTERNAL_SLOT_NAME` to itself; nested levels lazily use `findRouteNodeByName`.
   findChildNode: (routeName: string) => RouteNode | undefined;
@@ -183,27 +258,11 @@ type CreateSeededStateOptions = {
 function createSeededState({
   targetState,
   routeNames,
-  initialRouteName,
-  targetInitialRouteName,
   parentChain,
   findChildNode,
 }: CreateSeededStateOptions): NavigationState {
   const initialState = createInitialState({ routeNames: [], parentChain });
-  const parsedRoutes = targetState?.routes ?? [];
-  const targetInitialRouteIndex = parsedRoutes.findIndex(
-    (route) => route.name === targetInitialRouteName
-  );
-  const omitTargetInitialRoute =
-    initialRouteName !== targetInitialRouteName &&
-    parsedRoutes.some((route) => route.name === initialRouteName);
-  let targetRoutes = parsedRoutes.flatMap((route, index) => {
-    if (omitTargetInitialRoute && index === targetInitialRouteIndex) {
-      return [];
-    }
-    return initialRouteName && route.name === targetInitialRouteName
-      ? [{ ...route, name: initialRouteName }]
-      : [route];
-  });
+  let targetRoutes = targetState?.routes ?? [];
 
   const unknownRoute = targetRoutes.find((route) => !routeNames.includes(route.name));
   if (unknownRoute) {
@@ -213,7 +272,7 @@ function createSeededState({
     targetRoutes = [];
   }
 
-  const defaultRouteName = initialRouteName ?? routeNames[0];
+  const defaultRouteName = routeNames[0];
   const routesToCreate =
     targetRoutes.length > 0
       ? targetRoutes
@@ -247,12 +306,7 @@ function createSeededState({
     ...initialState,
     routeKeySeq: minter.routeKeySeq,
     routeNames,
-    index:
-      routes.length === 0
-        ? -1
-        : omitTargetInitialRoute && targetInitialRouteIndex <= targetIndex
-          ? targetIndex - 1
-          : targetIndex,
+    index: routes.length === 0 ? -1 : targetIndex,
     routes,
   };
 }

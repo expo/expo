@@ -4,7 +4,6 @@ import React, { use, useEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
-  getValidInitialRouteName,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -14,6 +13,7 @@ import {
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
+import { getLayoutAnchor } from './layoutAnchor';
 import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
@@ -106,7 +106,8 @@ function getSortedChildren<
   routeSource: RouteSource;
 }[] {
   if (!order?.length) {
-    return children
+    // Copy, because state seeding reads the route tree in file order.
+    return [...children]
       .sort(sortRoutesWithInitial(initialRouteName))
       .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));
   }
@@ -186,9 +187,7 @@ export function useSortedScreens<
   const node = useRouteNode();
 
   const children = node?.children ?? [];
-  const sorted = children.length
-    ? getSortedChildren(children, order, getValidInitialRouteName(node))
-    : [];
+  const sorted = children.length ? getSortedChildren(children, order, getLayoutAnchor(node)) : [];
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {
       const route = value.route.route;

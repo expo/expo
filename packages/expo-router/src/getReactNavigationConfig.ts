@@ -7,7 +7,6 @@ export type Screen =
       path: string;
       screens: Record<string, Screen>;
       _route?: RouteNode;
-      initialRouteName?: string;
     };
 
 // `[page]` -> `:page`
@@ -65,14 +64,6 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     screens,
   };
 
-  if (node.initialRouteName) {
-    // NOTE(EvanBacon): This is bad because it forces all Layout Routes
-    // to be loaded into memory. We should move towards a system where
-    // the initial route name is either loaded asynchronously in the Layout Route
-    // or defined via a file system convention.
-    screen.initialRouteName = node.initialRouteName;
-  }
-
   if (!metaOnly) {
     screen._route = node;
   }
@@ -90,16 +81,7 @@ export function getReactNavigationScreensConfig(
 }
 
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
-  const config = {
-    initialRouteName: undefined,
+  return {
     screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
   };
-
-  if (routeTree?.initialRouteName) {
-    // We're using LinkingOptions the generic type is `object` instead of a proper ParamList.
-    // So we need to cast the initialRouteName to `any` to avoid type errors.
-    config.initialRouteName = routeTree.initialRouteName as any;
-  }
-
-  return config;
 }

@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import { getLayoutAnchor } from '../layoutAnchor';
 import { warnIfScreenParam } from '../navigationParams';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
 import type {
@@ -23,6 +24,7 @@ import {
 } from './browserHistory';
 import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types';
 import {
+  applyPendingAnchor,
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
@@ -63,6 +65,10 @@ type TreeOperation =
       type: 'NAVIGATOR_CHANGED';
       stateKey: string;
       routerType: string | undefined;
+    }
+  | {
+      type: 'NAVIGATOR_MOUNTED';
+      stateKey: string;
     }
   | {
       type: 'REPORT_CONSUMED';
@@ -170,7 +176,9 @@ function navigationTreeReducer(
   }
   // Structural repairs are not navigations, so they never move the browser.
   const projected =
-    operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
+    operation.type === 'NAVIGATOR_UNMOUNTED' ||
+    operation.type === 'NAVIGATOR_CHANGED' ||
+    operation.type === 'NAVIGATOR_MOUNTED'
       ? updateCurrentHistoryEntry(next.history, next.state, config)
       : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
@@ -344,6 +352,23 @@ function reduceTree(
         : nextState;
       return { ...result, state: deepFreeze(completeState) };
     }
+    case 'NAVIGATOR_MOUNTED': {
+      const navigatorState = findStateByKey(state, operation.stateKey);
+      const routeNode = config.registry.get(operation.stateKey)?.routeNode;
+      if (!navigatorState || !routeNode) {
+        return result;
+      }
+      // Same inputs as the navigator's render, so the store commits the state it rendered.
+      const replacement = applyPendingAnchor(navigatorState, routeNode, getLayoutAnchor(routeNode));
+      if (replacement === navigatorState) {
+        return result;
+      }
+      const nextState = replaceNavigationState(state, operation.stateKey, replacement);
+      const completeState = config.routeNode
+        ? completeNavigationState(nextState, config.routeNode)
+        : nextState;
+      return { ...result, state: deepFreeze(completeState) };
+    }
     case 'REPORT_CONSUMED': {
       if (!result.report) {
         return result;
@@ -454,6 +479,9 @@ export function useNavigationTreeReducer({
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
+  const mountNavigator = useLatestCallback((stateKey: string) => {
+    reactDispatch({ type: 'NAVIGATOR_MOUNTED', stateKey });
+  });
   const consumeReportEvents = useLatestCallback((eventIds: readonly number[]) => {
     reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
   });
@@ -478,6 +506,7 @@ export function useNavigationTreeReducer({
     report: result.report,
     consumeReportEvents,
     resetNavigator,
+    mountNavigator,
     handleAction,
     processIntent,
   };
