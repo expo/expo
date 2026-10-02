@@ -309,7 +309,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   }, [getRootState, state]);
 
   useClientLayoutEffect(() => {
-    emitter.emit({ type: 'state', data: { state } });
+    emitter.emit({ type: 'state', data: { state: stripPendingAnchors(state) } });
   }, [emitter, state]);
 
   return (

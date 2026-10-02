@@ -5,6 +5,7 @@ import {
   type NavigationAction,
   type NavigationState,
 } from '../../react-navigation/routers';
+import { stripPendingAnchors, withPendingAnchor } from '../createSeededNavigationState';
 import { resolveNavigationDestination } from '../resolveNavigationDestination';
 import type { RouterRegistry } from '../routerRegistry';
 import { node } from './__fixtures__/routeNode';
@@ -83,6 +84,46 @@ test('switches mounted tabs and extends the selected tab stack', () => {
     'details',
   ]);
   expect(settingsStack.routes).toHaveLength(2);
+});
+
+test('keeps a mounted state when reducing it only drops its pending anchor marker', () => {
+  const settingsStack = withPendingAnchor<NavigationState>(
+    {
+      stale: false,
+      routeKeySeq: 1,
+      type: 'stack',
+      key: 'settings-stack',
+      index: 0,
+      routeNames: ['index'],
+      routes: [{ key: 'index-key', name: 'index' }],
+    },
+    { type: 'prepend' }
+  );
+  const tabsWithStack: NavigationState = {
+    ...tabs,
+    routes: [tabs.routes[0]!, { key: 'settings:0', name: 'settings', state: settingsStack }],
+  };
+  const registry: RouterRegistry = new Map([
+    ['tabs', entry(TabRouter({}), tabs.routeNames)],
+    // A navigator whose anchor is already a route only drops the marker.
+    [
+      'settings-stack',
+      entry((state) => ({ state: stripPendingAnchors(state), affectedRouteKey: 'index-key' })),
+    ],
+  ]);
+
+  const action = resolveNavigationDestination({
+    targetState: { routes: [{ name: 'settings', state: { routes: [{ name: 'index' }] } }] },
+    navigationState: tabsWithStack,
+    routeNode: node('tabs', [node('home'), node('settings', [node('index')])]),
+    registry,
+    action: { type: 'JUMP_TO', payload: {} },
+  });
+
+  expect(action.payload.state).toStrictEqual({
+    ...settingsStack,
+    __internal__routerActionState: true,
+  });
 });
 
 test.each([

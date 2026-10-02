@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { stripPendingAnchors } from '../../global-state/createSeededNavigationState';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -40,7 +41,7 @@ export function useNavigationHelpers<
   const parentNavigationHelpers = use(NavigationContext);
   const enqueue = useEnqueueRoutingIntent();
   // Unlike handler-only Effect Events, the public accessor can be called during render.
-  const getState = useLatestCallback(() => state);
+  const getState = useLatestCallback(() => stripPendingAnchors(state));
 
   return React.useMemo(() => {
     const dispatchSync = (action: Action) => {

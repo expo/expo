@@ -6,6 +6,7 @@ import { unstable_navigationEvents } from '../navigationEvents';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { NavigationAction } from '../react-navigation/routers';
 import type { BrowserHistoryAdapter } from './browserHistory.types';
+import { stripPendingAnchors } from './createSeededNavigationState';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 
@@ -98,7 +99,7 @@ export function useNavigationTreeReportEvents(
             unstable_navigationEvents.emit('actionDispatched', {
               actionType: event.action.type,
               payload: event.action.payload,
-              state: event.state,
+              state: stripPendingAnchors(event.state),
             });
             break;
           case 'browser-history':
@@ -107,7 +108,7 @@ export function useNavigationTreeReportEvents(
           case 'route-preloaded':
             unstable_navigationEvents.emit('routePreloaded', {
               routeKey: event.routeKey,
-              state: event.state,
+              state: stripPendingAnchors(event.state),
             });
             break;
         }

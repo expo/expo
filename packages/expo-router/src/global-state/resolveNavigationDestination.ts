@@ -15,7 +15,11 @@ import type {
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
 import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
-import { getRouteNames, withPendingAnchor } from './createSeededNavigationState';
+import {
+  getRouteNames,
+  stripPendingAnchors,
+  withPendingAnchor,
+} from './createSeededNavigationState';
 import type { RouterRegistry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
@@ -227,7 +231,10 @@ function resolveState({
     return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
   }
 
-  return isEqual(result.state, navigationState) ? navigationState : result.state;
+  // `reduce` drops a pending anchor marker, which alone does not make the navigation a change.
+  return isEqual(result.state, stripPendingAnchors(navigationState))
+    ? navigationState
+    : result.state;
 }
 
 function createDestinationState(
