@@ -94,4 +94,28 @@ extension JSIBenchmarks {
       }
     }
   }
+
+  @Test
+  func `unowned decode of a date string`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("'2026-10-02T12:00:00Z'"))
+      try benchmark("Date.decode(unowned): ISO string", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try Date.decode(buffer.unownedValue(at: 0), in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `unowned decode of a date object`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("new Date(1700000000000)"))
+      try benchmark("Date.decode(unowned): Date object", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try Date.decode(buffer.unownedValue(at: 0), in: runtime)
+        }
+      }
+    }
+  }
 }
