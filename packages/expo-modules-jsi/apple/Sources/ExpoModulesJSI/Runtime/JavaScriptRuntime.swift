@@ -146,7 +146,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // when the last reference is gone. `deinit` is `nonisolated`, so it can touch the actor-isolated
     // registry directly given that exclusive access.
     propNameIdsRegistry.removeAll()
-    cachedDeferredPromiseFactory = nil
+    cache.clear()
     expo.destroyRuntime(runtimePointee)
   }
 
@@ -789,12 +789,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @JavaScriptActor
   internal var propNameIdsRegistry: [String: JavaScriptPropNameID] = [:]
 
-  // MARK: - Deferred promise factory
+  // MARK: - Cache
 
-  /// The JavaScript function ``JavaScriptPromise`` uses to create deferred promises, built on first
-  /// use and released with the runtime. See `JavaScriptPromise.init(_:)` for why it exists.
+  /// Values cached with ``cached(_:_:)``. Unchecked exclusivity skips the dynamic access checks on
+  /// every lookup: the cache is only used on the JavaScript thread, and `cached(_:_:)` never keeps an
+  /// access open while it calls out, so accesses can't overlap.
   @JavaScriptActor
-  internal var cachedDeferredPromiseFactory: JavaScriptValue?
+  @exclusivity(unchecked)
+  internal var cache = Cache()
 
   // MARK: - Long-lived objects
 
@@ -826,12 +828,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         // hop back to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
-          // Also flush the cached `jsi::PropNameID`s and the deferred-promise factory: a non-owning
-          // wrapper can outlive its runtime (e.g. captured by a task abandoned on reload) and would
-          // otherwise destroy them against the freed runtime when it deallocates. `self` is weak so
-          // the teardown object doesn't retain the wrapper; the owning wrapper clears both in `deinit`.
+          // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
+          // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
+          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't retain the
+          // wrapper; the owning wrapper clears both in `deinit`.
           self?.propNameIdsRegistry.removeAll()
-          self?.cachedDeferredPromiseFactory = nil
+          self?.cache.clear()
         }
       }
       let object = createObject()
