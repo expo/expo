@@ -19,7 +19,8 @@ export function createDeepReactNativeImportWarningsPlugin(
       typeof source !== 'string' ||
       !source.startsWith('react-native/') ||
       source === 'react-native/Libraries/Core/InitializeCore' ||
-      source === 'react-native/setup-env'
+      source === 'react-native/setup-env' ||
+      source === 'react-native/unstable-internals-do-not-use'
     )
       return;
     const location = path.getLocation().start;
