@@ -1,6 +1,6 @@
 {
   "name": "expo-type-information",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "keywords": [
     "expo",
     "expo-modules",
@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
     "jest": "^29.3.1"

@@ -207,7 +207,11 @@ class FileSystemDownloadTask : SharedObject() {
 
     // 206 = server supports Range, 200 = server ignored it (sends full content)
     val isPartial = resp.code == 206
-    val effectiveOffset = if (isResume && isPartial) offset else 0L
+    val effectiveOffset = if (isResume && isPartial) {
+      offset
+    } else {
+      0L
+    }
 
     val contentLength = responseBody.contentLength()
     val totalBytes = calculateDownloadTotalBytes(resp.code, contentLength, effectiveOffset)

@@ -403,6 +403,10 @@ export const general = [
     makeGroup('Feature flags', [makePage('guides/using-feature-flags.mdx')]),
     makeGroup('In-app purchases', [makePage('guides/in-app-purchases.mdx')]),
     makeGroup('Push notifications', [makePage('guides/using-push-notifications-services.mdx')]),
+    makeGroup('Testing', [
+      makePage('guides/using-e2e.mdx'),
+      makePage('guides/using-testerarmy.mdx'),
+    ]),
     makeGroup('Tools', [makePage('guides/using-eslint.mdx'), makePage('guides/typescript.mdx')]),
     makeGroup('TV apps', [makePage('guides/building-for-tv.mdx')]),
     makeGroup('Web apps', [makePage('guides/using-nextjs.mdx')]),

@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Disable the vertical bar while the dev menu is open so the sheet fills the full width on iPhone Duo. ([#50900](https://github.com/expo/expo/pull/50900) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-dev-menu-interface@58.0.1
+
 ## 58.0.8 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

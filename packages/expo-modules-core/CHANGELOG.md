@@ -1,5 +1,33 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [iOS] `@Record` now accepts properties that hold free-form `Any` values, such as `[String: Any]?` or `[Any]`. ([#50660](https://github.com/expo/expo/pull/50660) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed Expo views using Android layout not completing system-forced layout passes. ([#48679](https://github.com/expo/expo/pull/48679) by [@lujjjh](https://github.com/lujjjh))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#50660](https://github.com/expo/expo/pull/50660))
+  - expo-modules-jsi@58.0.7
+
+## 58.0.10
+
+### Patch Changes
+
+- Lay out `RNHostView` hosted content at the size SwiftUI or Compose gives it on an axis that `matchContents` does not match. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#50805](https://github.com/expo/expo/pull/50805), [#50844](https://github.com/expo/expo/pull/50844), [#50806](https://github.com/expo/expo/pull/50806))
+  - expo-modules-jsi@58.0.6
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Depend on `expo-modules-macros`, the new name of the `@expo/expo-modules-macros-plugin` package. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a crash (`The app context has been lost`) when an Expo view mounts during a reload. ([#50721](https://github.com/expo/expo/pull/50721) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-modules-jsi@58.0.5
+
 ## 58.0.8 — 2026-09-28
 
 ### 🐛 Bug fixes
@@ -10,7 +38,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`).
+- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`). ([#50603](https://github.com/expo/expo/pull/50603) by [@gkueny](https://github.com/gkueny))
 - [iOS] Fixed `Exception` reporting `undefined reason` to JavaScript instead of the description it was created with, which also affected every `promise.reject(code, description)` call. ([#50215](https://github.com/expo/expo/pull/50215) by [@Maher-Reven](https://github.com/Maher-Reven))
 
 ## 58.0.6 — 2026-09-23

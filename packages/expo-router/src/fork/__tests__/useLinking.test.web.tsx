@@ -53,7 +53,7 @@ test('parses the initial URL instead of returning existing navigation state', as
     return null;
   }
 
-  render(<Sample />);
+  await render(<Sample />);
 
   const state = await getInitialState?.();
   expect(getStateFromPath).toHaveBeenCalledWith('/home', undefined);
@@ -83,9 +83,9 @@ test('getInitialState is computed once with first-render options', async () => {
     return null;
   }
 
-  const element = render(<Sample getStateFromPath={firstGetStateFromPath} />);
+  const element = await render(<Sample getStateFromPath={firstGetStateFromPath} />);
   const firstGetInitialState = getInitialState;
-  element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
+  await element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
   await firstGetInitialState?.();
 
   expect(firstGetStateFromPath).toHaveBeenCalledWith('/home', undefined);

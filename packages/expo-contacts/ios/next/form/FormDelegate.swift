@@ -63,16 +63,19 @@ class FormDelegate: OnContactPickingResultHandler {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
     }
-    var controller = ContactsViewController(for: contact)
+    var controller = ContactsViewController(forNewContact: contact)
     setCreateControllerOptions(controller: &controller, options: options)
 
     if let parent = appContext?.utilities?.currentViewController() {
       let navController = UINavigationController(rootViewController: controller)
       presentingViewController = navController
 
+      var createdContact: CNContact?
+      delegate.onComplete = { createdContact = $0 }
       controller.onViewDisappeared = {
-        promise.resolve()
+        self.delegate.onComplete = nil
         self.contactManipulationPromise = nil
+        promise.resolve(createdContact != nil)
       }
 
       contactManipulationPromise = promise

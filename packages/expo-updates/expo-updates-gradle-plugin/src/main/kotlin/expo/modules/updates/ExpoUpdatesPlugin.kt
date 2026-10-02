@@ -83,6 +83,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
           add(assetDir.get().toString())
           add(if (debuggableVariant.get()) "only-fingerprint" else "all")
           add(entryFile.get())
+          add(if (debuggableVariant.get()) "development" else "production")
         }
 
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {

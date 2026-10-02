@@ -1,6 +1,6 @@
 {
   "name": "expo-cellular",
-  "version": "58.0.0",
+  "version": "58.0.2",
   "description": "Provides information about the user’s cellular service provider",
   "keywords": [
     "expo",
@@ -36,7 +36,7 @@
     "prepack": "expo-module prepack"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

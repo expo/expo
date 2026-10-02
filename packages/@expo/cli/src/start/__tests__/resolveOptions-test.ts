@@ -1,4 +1,5 @@
 import { Log } from '../../log';
+import { envIsWebcontainer } from '../../utils/env';
 import { choosePortAsync, resolveMetroPortAsync } from '../../utils/port';
 import { getOptionalDevClientSchemeAsync } from '../../utils/scheme';
 import { canResolveDevClient, hasDirectDevClientDependency } from '../detectDevClient';
@@ -10,6 +11,10 @@ import {
 } from '../resolveOptions';
 
 jest.mock('../../log');
+jest.mock('../../utils/env', () => ({
+  ...jest.requireActual('../../utils/env'),
+  envIsWebcontainer: jest.fn(() => false),
+}));
 jest.mock('../../utils/port', () => {
   return {
     resolveMetroPortAsync: jest.fn(),
@@ -263,5 +268,74 @@ describe(resolvePortsAsync, () => {
       '/noop',
       expect.objectContaining({ defaultPort: 19006 })
     );
+  });
+});
+
+describe('tunnel provider', () => {
+  it.each([
+    [{ '--tunnel': true }, 'tunnel', 'expo'],
+    [{ '--tunnel': 'expo' }, 'tunnel', 'expo'],
+    [{ '--tunnel': 'ngrok' }, 'tunnel', 'ngrok'],
+    [{ '--host': 'tunnel' }, 'tunnel', 'expo'],
+    [{}, 'lan', null],
+    [{ '--tunnel': false }, 'lan', null],
+    [{ '--tunnel': null }, 'lan', null],
+    [{ '--tunnel': false, '--host': 'tunnel' }, 'tunnel', 'expo'],
+    [{ '--tunnel': null, '--host': 'tunnel' }, 'tunnel', 'expo'],
+    [{ '--host': 'localhost' }, 'localhost', null],
+  ])('resolves %j', async (args, host, tunnelProvider) => {
+    expect(await resolveOptionsAsync('/', args)).toMatchObject({
+      host,
+      tunnelProvider,
+    });
+  });
+
+  it.each([true, 'expo', 'ngrok'])(
+    'rejects combining --host tunnel with --tunnel %s',
+    async (tunnel) => {
+      await expect(
+        resolveOptionsAsync('/', { '--host': 'tunnel', '--tunnel': tunnel })
+      ).rejects.toThrow('Specify at most one of:');
+    }
+  );
+
+  it('rejects unknown providers', async () => {
+    await expect(resolveOptionsAsync('/', { '--tunnel': 'unknown' })).rejects.toThrow(
+      'Invalid tunnel provider: unknown. Expected expo or ngrok.'
+    );
+  });
+
+  it.each(['--offline', '--lan', '--localhost', '--host'])(
+    'rejects combining ngrok with %s',
+    async (flag) => {
+      await expect(
+        resolveOptionsAsync('/', {
+          '--tunnel': 'ngrok',
+          [flag]: flag === '--host' ? 'lan' : true,
+        })
+      ).rejects.toThrow('Specify at most one of:');
+    }
+  );
+});
+
+describe('WebContainer tunnel provider', () => {
+  beforeEach(() => {
+    jest.mocked(envIsWebcontainer).mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    jest.mocked(envIsWebcontainer).mockReturnValue(false);
+  });
+
+  it.each([
+    [{}, 'tunnel', 'expo'],
+    [{ '--host': 'tunnel' }, 'tunnel', 'expo'],
+    [{ '--tunnel': 'ngrok' }, 'tunnel', 'ngrok'],
+    [{ '--lan': true }, 'lan', null],
+    [{ '--localhost': true }, 'localhost', null],
+    [{ '--offline': true }, 'lan', null],
+    [{ '--host': 'lan' }, 'lan', null],
+  ])('resolves %j from the effective host', async (args, host, tunnelProvider) => {
+    expect(await resolveOptionsAsync('/', args)).toMatchObject({ host, tunnelProvider });
   });
 });

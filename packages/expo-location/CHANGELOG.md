@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Add the core functionalities for the **next** version: permission getters and requesters, position getter, and `enableLocationServices` prompt. Introduce `LocationProvider` interface to allow for multiple implementations: for now `gms` and `android.location`. ([#49988](https://github.com/expo/expo/pull/49988) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Add the position watchers to the **next** implementation. Update the `LocationProvider` interface to also support watchers and implement it in both GMS and Android providers. ([#49992](https://github.com/expo/expo/pull/49992) by [@HubertBer](https://github.com/HubertBer))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/image-utils@0.12.2
+
 ## 58.0.8 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

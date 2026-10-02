@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "58.0.8",
+  "version": "58.0.11",
   "description": "Widgets.",
   "keywords": [
     "expo",
@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.8.0",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",

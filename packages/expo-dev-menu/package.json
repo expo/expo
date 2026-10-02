@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "58.0.8",
+  "version": "58.0.10",
   "description": "Expo/React Native module with the developer menu.",
   "keywords": [
     "dev",
@@ -39,8 +39,8 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/jest": "^29.2.1",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",

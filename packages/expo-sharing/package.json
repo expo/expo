@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "58.0.11",
+  "version": "58.0.13",
   "description": "Provides a way to share files directly with other compatible applications.",
   "keywords": [
     "android",
@@ -41,7 +41,7 @@
     "@expo/plist": "workspace:^"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",

@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Warn about incomplete `spmPackages` entries, which the `prebuilt-metadata` document leaves out. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Load the Swift macros plugin from `expo-modules-macros` and its renamed `ExpoModulesMacros` binary. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/require-utils@58.0.2
+
 ## 58.0.5 — 2026-09-28
 
 ### 🎉 New features

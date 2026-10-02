@@ -46,7 +46,7 @@ if (shouldIncludeCompose) {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.8'
+version = '58.0.11'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -97,7 +97,7 @@ if (workletsProject != null) {
 
 def reactNativeWorkletsRootDir = workletsProject?.projectDir?.parentFile
 
-def expoModulesV2Version = "0.2.0"
+def expoModulesV2Version = "0.2.2"
 
 configurations {
   // Artifact-only: the C++ sources, not something to put on any classpath.
@@ -175,7 +175,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "58.0.8"
+    versionName "58.0.11"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true"
 

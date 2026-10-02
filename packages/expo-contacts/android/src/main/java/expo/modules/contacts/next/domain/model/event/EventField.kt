@@ -25,7 +25,11 @@ object EventField : ExtractableField.Data<ExistingEvent> {
 
     return ExistingEvent(
       dataId = DataId(getRequiredString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
-      startDate = if (dateString != null) ContactDate(dateString) else null,
+      startDate = if (dateString != null) {
+        ContactDate(dateString)
+      } else {
+        null
+      },
       label = extractLabel()
     )
   }

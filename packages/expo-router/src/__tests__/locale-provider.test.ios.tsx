@@ -23,15 +23,15 @@ function Index() {
   return <Text testID="direction">{direction}</Text>;
 }
 
-it('provides locale direction to navigators and updates it at runtime', () => {
-  renderRouter({
+it('provides locale direction to navigators and updates it at runtime', async () => {
+  await renderRouter({
     _layout: Layout,
     index: Index,
   });
 
   expect(screen.getByTestId('direction')).toHaveTextContent('ltr');
 
-  fireEvent.press(screen.getByRole('button', { name: 'Toggle direction' }));
+  await fireEvent.press(screen.getByRole('button', { name: 'Toggle direction' }));
 
   expect(screen.getByTestId('direction')).toHaveTextContent('rtl');
 });

@@ -1,5 +1,30 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-application@58.0.3
+
+## 58.0.10
+
+### Patch Changes
+
+- Allow native push token requests to retry after a transient failure while preserving shared in-flight requests. ([#50848](https://github.com/expo/expo/pull/50848) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
+- [Android] Fix notification action buttons going missing after an app update that changes R8 minification, until the app is opened again. ([#50799](https://github.com/expo/expo/pull/50799) by [@icoric4](https://github.com/icoric4))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#49511](https://github.com/expo/expo/pull/49511), [#50661](https://github.com/expo/expo/pull/50661))
+  - @expo/image-utils@0.12.2
+  - expo-application@58.0.2
+  - expo-constants@58.0.9
+
 ## 58.0.8 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

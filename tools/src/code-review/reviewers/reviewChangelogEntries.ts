@@ -1,6 +1,7 @@
 import path from 'node:path';
 
 import { EXPO_DIR } from '../../Constants';
+import { getExpoBranchPolicyAsync } from '../../changesets/Changesets';
 import { readChangedChangesetsAsync } from '../Changesets';
 import { ReviewInput, ReviewOutput, ReviewStatus } from '../types';
 
@@ -48,6 +49,48 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
         'Each changeset must select at least one package and include a user-facing summary:\n' +
         incomplete.map((changeset) => `- \`${changeset.path}\``).join('\n'),
     };
+  }
+
+  if (pullRequest.base.ref === 'main') {
+    const majorChangesets = changesets.filter(({ changeset }) =>
+      changeset?.releases.some((release) => release.type === 'major')
+    );
+    const minorChangesets = changesets.filter(({ changeset }) =>
+      changeset?.releases.some((release) => release.type === 'minor')
+    );
+    if (majorChangesets.length || minorChangesets.length) {
+      const policy = await getExpoBranchPolicyAsync('main');
+      const majorBumpsDisallowed = policy?.allowMajor === false && majorChangesets.length > 0;
+      const messages: string[] = [];
+
+      if (majorBumpsDisallowed) {
+        messages.push('Major bumps are not currently allowed on `main` (`allowMajor: false`).');
+      }
+      if (policy?.publish) {
+        if (majorChangesets.length) {
+          messages.push('Major releases may not be accepted during a beta period.');
+        }
+        if (minorChangesets.length) {
+          messages.push(
+            'Minor releases may not be accepted during a beta period. Use patch instead.'
+          );
+        }
+      }
+      if (messages.length) {
+        const affected = changesets.filter(
+          (entry) =>
+            majorChangesets.includes(entry) || (policy?.publish && minorChangesets.includes(entry))
+        );
+        return {
+          status: majorBumpsDisallowed ? ReviewStatus.ERROR : ReviewStatus.WARN,
+          title: 'Changesets release policy on main',
+          body:
+            messages.join('\n\n') +
+            '\n\n' +
+            affected.map((entry) => `- \`${entry.path}\``).join('\n'),
+        };
+      }
+    }
   }
 
   return { status: ReviewStatus.PASSIVE };

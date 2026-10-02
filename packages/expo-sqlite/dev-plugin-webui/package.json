@@ -30,7 +30,7 @@
     "react-native": "0.88.0-rc.3",
     "react-native-safe-area-context": "~5.9.1",
     "react-native-screens": "4.28.0",
-    "react-native-web": "~0.21.0",
+    "react-native-web": "~0.21.3",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.3.3",
@@ -39,12 +39,11 @@
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@react-native/jest-preset": "0.88.0-rc.3",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/jest": "^29.2.1",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^29.5.12",
     "@types/react": "~19.3.0",
     "expo-module-scripts": "workspace:*",
-    "jest-expo": "workspace:*",
-    "react-test-renderer": "19.3.0"
+    "jest-expo": "workspace:*"
   },
   "jest": {
     "moduleNameMapper": {

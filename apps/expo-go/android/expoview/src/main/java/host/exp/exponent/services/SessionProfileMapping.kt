@@ -10,7 +10,11 @@ fun CurrentUserActorData.toSessionProfile(): SessionProfile =
     username = onUserActor?.username ?: onPartnerActor?.username ?: displayName,
     displayName = displayName,
     avatarUrl = onUserActor?.primaryAccountProfileImageUrl,
-    actorType = if (onPartnerActor != null) ActorType.Partner else ActorType.User,
+    actorType = if (onPartnerActor != null) {
+      ActorType.Partner
+    } else {
+      ActorType.User
+    },
     accounts = accounts.map { account ->
       StoredAccount(
         id = account.id,
