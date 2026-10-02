@@ -42,8 +42,8 @@ const projects = [
   .map(withDefaults);
 
 // Run the config plugin's tests as their own project so a single `jest` covers the package.
-// `watchPlugins`/`prettierPath` are root-only, so strip them from the sub-project.
-const { watchPlugins, prettierPath, ...pluginProject } = require('./plugin/jest.config.js');
+// `watchPlugins` is root-only, so strip it from the sub-project.
+const { watchPlugins, ...pluginProject } = require('./plugin/jest.config.js');
 projects.push({ ...pluginProject, rootDir: path.join(__dirname, 'plugin') });
 
 // Run the RSC `__rsc_tests__` as their own per-platform projects (`rsc/<platform>`) so a single

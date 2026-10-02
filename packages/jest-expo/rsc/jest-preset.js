@@ -11,6 +11,4 @@ module.exports = withWatchPlugins({
     getAndroidPreset({ isReactServer: true }),
     getWebPreset({ isReactServer: true }),
   ],
-  // See: https://jestjs.io/docs/configuration#prettierpath-string
-  prettierPath: require.resolve('jest-snapshot-prettier'),
 });
