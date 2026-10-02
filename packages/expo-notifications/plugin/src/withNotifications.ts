@@ -45,7 +45,7 @@ export type NotificationsPluginProps = {
   /**
    * Whether to enable remote notification.
    *
-   * If set to false plugin wont add aps entitlement to native project. Only Local notification will work.
+   * If set to false, the plugin will not add the aps entitlement to the native project. Only Local notification will work.
    * @default true
    * @platform ios
    */
