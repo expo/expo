@@ -12,6 +12,9 @@ import org.json.JSONObject
 import java.io.Reader
 import java.net.URI
 
+// Body of the `/status` endpoint of Metro and compatible development servers.
+private const val PACKAGER_STATUS_RUNNING = "packager-status:running"
+
 class DevLauncherManifestParser(
   private val httpClient: OkHttpClient,
   private val url: Uri,
@@ -24,6 +27,38 @@ class DevLauncherManifestParser(
     return !response.isSuccessful ||
       response.header("Exponent-Server", null) != null ||
       (contentType != null && !contentType.startsWith("text/html") && !contentType.contains("/javascript"))
+  }
+
+  /**
+   * Checks whether the URL responds with an HTML page. Both a website page and the root of a
+   * React Native dev server (for example `http://localhost:8081`) do, so callers combine this with
+   * [isPackagerRunning] to tell them apart.
+   */
+  suspend fun isWebPage(): Boolean {
+    fetch(url, "HEAD", getHeaders()).await(httpClient).use { response ->
+      val contentType = response.header("Content-Type")
+      return response.isSuccessful && contentType != null && contentType.startsWith("text/html")
+    }
+  }
+
+  /**
+   * Checks that a development server answers at the URL's origin, using the same `/status` check
+   * React Native runs before it connects to the packager.
+   */
+  suspend fun isPackagerRunning(): Boolean {
+    val statusUrl = url.buildUpon()
+      .encodedPath("/status")
+      .clearQuery()
+      .fragment(null)
+      .build()
+    fetch(statusUrl, "GET", getHeaders()).await(httpClient).use { response ->
+      if (!response.isSuccessful) {
+        return false
+      }
+      @Suppress("DEPRECATION_ERROR")
+      val body = response.body()?.string() ?: return false
+      return body.contains(PACKAGER_STATUS_RUNNING)
+    }
   }
 
   private suspend fun downloadManifest(): Reader {
