@@ -22,6 +22,18 @@ export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
     enableBackgroundRemoteNotifications,
   }
 ) => {
+  if (typeof enableRemoteNotifications !== 'boolean') {
+    throw new Error(
+      ERROR_MSG_PREFIX +
+        `"enableRemoteNotifications" has an invalid value: ${enableRemoteNotifications}. Expected a boolean.`
+    );
+  }
+  if (!enableRemoteNotifications && enableBackgroundRemoteNotifications) {
+    throw new Error(
+      ERROR_MSG_PREFIX +
+        `"enableBackgroundRemoteNotifications" requires "enableRemoteNotifications" to be true, because background remote notifications are delivered through APNs. Set "enableRemoteNotifications" to true, or remove "enableBackgroundRemoteNotifications" from the expo-notifications plugin options.`
+    );
+  }
   if (enableRemoteNotifications) {
     config = withEntitlementsPlist(config, (config) => {
       if (!config.modResults['aps-environment']) {

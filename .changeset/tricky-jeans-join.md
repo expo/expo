@@ -2,6 +2,4 @@
 'expo-notifications': minor
 ---
 
-add `enableRemoteNotifications` to config plugin options to skip aps entitlement.
-
-This allows  free Apple developer account users build expo app with just LocalNotifications( by setting value to `false`). set to `true` by default
+Add `enableRemoteNotifications` config plugin option. Set it to `false` to skip the APNs entitlement for apps that use only local notifications. Defaults to `true`.
