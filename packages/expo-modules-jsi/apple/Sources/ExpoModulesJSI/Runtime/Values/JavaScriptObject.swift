@@ -146,6 +146,23 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime)))
   }
 
+  /// Calls `body` with the property of the object with the given name, or `undefined` if there is no
+  /// such property, lent as a `JavaScriptUnownedValue` instead of wrapped in a new `JavaScriptValue`.
+  /// The value is valid only for the duration of the closure and must not be stored or escaped.
+  public func withUnownedProperty<R>(_ name: String, _ body: (borrowing JavaScriptUnownedValue) throws -> R) rethrows
+    -> R
+  {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let property = pointee.getProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime))
+    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
+    return try withUnsafeBytes(of: property) { bytes in
+      let pointer = bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
+      return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
+    }
+  }
+
   /// Returns the property of the object with the given prop name id,
   /// or `undefined` value if the name is not a property of the object.
   public func getProperty(_ propName: JavaScriptPropNameID) -> JavaScriptValue {
