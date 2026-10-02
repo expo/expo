@@ -29,15 +29,11 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
   {
     // A non-array value is "arrayized" into a single-element array, so a caller that passes a
     // scalar where an array is expected still works.
-    guard value.isObject() else {
-      return [try Element.decode(value, in: runtime)]
-    }
-    let object = value.getObject(in: runtime)
-    guard object.isArray() else {
+    guard value.isArray() else {
       return [try Element.decode(value, in: runtime)]
     }
     // Each element is lent out unowned, so it's decoded without a `JavaScriptValue` per element.
-    return try object.getArray().mapUnowned { element in
+    return try value.getArray(in: runtime).mapUnowned { element in
       return try Element.decode(element, in: runtime)
     }
   }
