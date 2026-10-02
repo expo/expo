@@ -271,6 +271,7 @@
     "./rsc/entry.js": "./rsc/entry.js",
     "./assets/*": "./assets/*",
     "./app.plugin.js": "./app.plugin.js",
+    "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json"
   },
   "scripts": {

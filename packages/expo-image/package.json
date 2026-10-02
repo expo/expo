@@ -25,6 +25,7 @@
       "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
+    "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json"
   },
   "scripts": {

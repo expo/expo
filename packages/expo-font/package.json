@@ -48,6 +48,7 @@
     },
     "./app.plugin": "./app.plugin.js",
     "./app.plugin.js": "./app.plugin.js",
+    "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json"
   },
   "scripts": {

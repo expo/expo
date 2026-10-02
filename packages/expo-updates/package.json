@@ -33,6 +33,7 @@
       "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
+    "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json",
     "./*": "./*.js",
     "./*.js": "./*.js"
