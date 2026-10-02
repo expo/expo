@@ -36,7 +36,7 @@ async function renderCameraStream(video: HTMLVideoElement) {
   const onCameraReady = jest.fn();
   const onMountError = jest.fn();
   const ref = { current: video };
-  const hook = renderHook(() =>
+  const hook = await renderHook(() =>
     useWebCameraStream(ref, 'front', {}, { onCameraReady, onMountError })
   );
   // Wait for `getPreferredStreamDevice` to settle and the stream effect to run.
@@ -70,7 +70,7 @@ describe(useWebCameraStream, () => {
     // Some browsers (WebKit) keep a live stream at HAVE_FUTURE_DATA and never settle on HAVE_ENOUGH_DATA.
     setReadyState(video, HTMLMediaElement.HAVE_FUTURE_DATA);
     Object.defineProperty(video, 'videoWidth', { value: 640, configurable: true });
-    act(() => {
+    await act(async () => {
       video.dispatchEvent(new Event('canplay'));
     });
 
