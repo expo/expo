@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
 
-import { unstable_navigationEvents } from '../../../navigationEvents';
+import { internalNavigationEvents } from '../../../global-state/internalNavigationEvents';
 import type { StackNavigationState } from '../../../react-navigation';
 import { LinkPreviewContextProvider, useLinkPreviewContext } from '../LinkPreviewContext';
 
@@ -26,7 +26,7 @@ it.each(['missing', 'preloaded'])(
     });
     await act(() => result.current.setOpenPreviewKey('preview'));
     await act(() =>
-      unstable_navigationEvents.emit('actionDispatched', {
+      internalNavigationEvents.emit('actionDispatched', {
         actionType: 'NAVIGATE',
         payload: { __internal__PreviewKey: 'preview' },
         state: state(undefined, kind === 'preloaded' ? [route('preview')] : []),
@@ -43,7 +43,7 @@ it('retains a promoted key in a nested owning stack until its transition ends', 
   });
   await act(() => result.current.setOpenPreviewKey('preview'));
   await act(() =>
-    unstable_navigationEvents.emit('actionDispatched', {
+    internalNavigationEvents.emit('actionDispatched', {
       actionType: 'NAVIGATE',
       payload: { __internal__PreviewKey: 'preview' },
       state: {
@@ -61,7 +61,7 @@ it('does not let an earlier navigation report clear a newer preview', async () =
   });
   await act(() => result.current.setOpenPreviewKey('new-preview'));
   await act(() =>
-    unstable_navigationEvents.emit('actionDispatched', {
+    internalNavigationEvents.emit('actionDispatched', {
       actionType: 'NAVIGATE',
       payload: { __internal__PreviewKey: 'old-preview' },
       state: state(),

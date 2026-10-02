@@ -5,13 +5,13 @@ import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
 import { unstable_useIsNavigating } from '../exports';
+import { internalNavigationEvents } from '../global-state/internalNavigationEvents';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { useGuardRedirect } from '../layouts/GuardContext';
 import { Stack } from '../layouts/Stack';
 import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
-import { unstable_navigationEvents } from '../navigationEvents';
 import { useIsFocused } from '../react-navigation/native';
 import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs, useTabTrigger } from '../ui';
@@ -1499,7 +1499,7 @@ it('dispatches only one action when re-tapping active tab with nested stack', as
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+  const unsubscribe = internalNavigationEvents.addListener('actionDispatched', (event) =>
     dispatchedActions.push(event.actionType)
   );
 
@@ -1550,7 +1550,7 @@ it('JSTabs dispatches only one action when re-tapping active tab with nested sta
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+  const unsubscribe = internalNavigationEvents.addListener('actionDispatched', (event) =>
     dispatchedActions.push(event.actionType)
   );
 

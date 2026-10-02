@@ -21,12 +21,12 @@ import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
 import { resolveLoaderPath } from './loaders/resolveLoaderPath';
 import { getContextKey } from './matchers';
-import { unstable_navigationEvents } from './navigationEvents';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   removeParams,
 } from './navigationParams';
+import { isEnabled as isPerformanceEnabled, mark } from './performance';
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
@@ -415,7 +415,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
               retained route shell, which aborts pending work and causes a later visit to refetch.
               Activity visibility and transition-attempt ownership need explicit lifecycle APIs. */}
           {resolvedLoaderPath && <LoaderRouteLifecycle path={resolvedLoaderPath} />}
-          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
+          {isPerformanceEnabled() && isRouteType && hasRouteKey && (
             <AnalyticsListeners navigation={navigation} screenId={route.key} />
           )}
           <ZoomTransitionTargetContextProvider route={route}>
@@ -470,7 +470,7 @@ function AnalyticsListeners({
 
   const emitPagePreloaded = React.useEffectEvent(() => {
     if (routeInfo && !isFocused) {
-      unstable_navigationEvents.emit('pagePreloaded', {
+      mark('expo-router:page-preloaded', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         segments: routeInfo.segments,
@@ -490,7 +490,7 @@ function AnalyticsListeners({
   useEffect(() => {
     if (routeInfo) {
       return () => {
-        unstable_navigationEvents.emit('pageRemoved', {
+        mark('expo-router:page-removed', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
           segments: routeInfo.segments,
@@ -505,7 +505,7 @@ function AnalyticsListeners({
   // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
   useEffect(() => {
     if (isFocused && routeInfo && hasBlurredRef.current) {
-      unstable_navigationEvents.emit('pageFocused', {
+      mark('expo-router:page-focused', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         segments: routeInfo.segments,
@@ -521,7 +521,7 @@ function AnalyticsListeners({
         // If the screen was not blurred, don't emit focused again
         // hasBlurredRef will be false when the screen was initially focused
         if (hasBlurredRef.current) {
-          unstable_navigationEvents.emit('pageFocused', {
+          mark('expo-router:page-focused', {
             pathname: routeInfo.pathname,
             params: routeInfo.params,
             segments: routeInfo.segments,
@@ -531,7 +531,7 @@ function AnalyticsListeners({
         }
       });
       const cleanBlur = navigation.addListener('blur', () => {
-        unstable_navigationEvents.emit('pageBlurred', {
+        mark('expo-router:page-blurred', {
           pathname: routeInfo.pathname,
           params: routeInfo.params,
           segments: routeInfo.segments,

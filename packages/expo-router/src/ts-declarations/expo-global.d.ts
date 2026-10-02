@@ -4,15 +4,6 @@ declare module 'expo-modules-core' {
   namespace ExpoGlobal {
     export let router: {
       /**
-       * Experimental API to listen for navigation events in Expo Router.
-       *
-       * @experimental
-       */
-      get navigationEvents(): {
-        enable: () => void;
-        saveCurrentPathname: () => void;
-      };
-      /**
        * Experimental API to get the current pathname in Expo Router.
        *
        * @experimental
