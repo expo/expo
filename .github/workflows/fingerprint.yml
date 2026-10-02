@@ -4,17 +4,13 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/fingerprint.yml
       - packages/@expo/fingerprint/**
       - packages/create-expo/**
       - pnpm-lock.yaml
   pull_request:
-    paths:
-      - .github/workflows/fingerprint.yml
-      - packages/@expo/fingerprint/**
-      - packages/create-expo/**
-      - pnpm-lock.yaml
+    paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
 
