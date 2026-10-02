@@ -32,8 +32,11 @@ extension Array: JavaScriptRepresentable where Element: JavaScriptRepresentable 
   }
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    let values = map { $0.toJavaScriptValue(in: runtime) }
-    return JavaScriptArray(runtime, items: values).asValue()
+    let array = JavaScriptArray(runtime, length: count)
+    for (index, element) in enumerated() {
+      array[index] = element.toJavaScriptValue(in: runtime)
+    }
+    return array.asValue()
   }
 }
 
