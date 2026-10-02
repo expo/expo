@@ -2,9 +2,9 @@
 
 // `Set` encodes to a JS `Set` and decodes from a JS `Set` or, like `Array`, from an array or an arrayized
 // scalar. JSI has no `Set` API, so the conversions go through the runtime's global `Set` and `Array`
-// constructors, the same way `Date` goes through the global `Date`. Equality differs between the two
-// sides: a JS `Set` compares objects by reference while a Swift `Set` compares by `Hashable`, so two
-// distinct JS objects that decode to equal values collapse into a single element.
+// constructors. Equality differs between the two sides: a JS `Set` compares objects by reference while
+// a Swift `Set` compares by `Hashable`, so two distinct JS objects that decode to equal values collapse
+// into a single element.
 
 extension Set: JavaScriptDecodable where Element: JavaScriptDecodable {
   @JavaScriptActor
@@ -30,8 +30,7 @@ extension Set: JavaScriptEncodable where Element: JavaScriptEncodable {
   {
     // Constructing from an array fills the set in a single call, rather than one `add` call per element.
     let entries = try [Element].encode(Array(value), in: runtime)
-    let setConstructor = try runtime.global().getPropertyAsFunction("Set")
-    return try setConstructor.callAsConstructor(entries)
+    return try runtime.setConstructor().callAsConstructor(entries)
   }
 }
 
@@ -39,8 +38,7 @@ extension JavaScriptRuntime {
   /// Copies the entries of a JS `Set` out into a JS array, or returns `nil` when the value is not a
   /// JS `Set`. The instance check and the copy run in a single call to a cached JS function, which
   /// saves the global lookups and the separate `instanceof` call of `value.is("Set")` followed by
-  /// `Array.from`. For a small `Set` those fixed costs are most of the decode time. `Set` and
-  /// `Array.from` still resolve from the global scope on each call, the same as `value.is("Set")` would.
+  /// `Array.from`. For a small `Set` those fixed costs are most of the decode time.
   @usableFromInline
   @JavaScriptActor
   func setEntries(of value: borrowing JavaScriptValue) throws -> JavaScriptValue? {
@@ -53,7 +51,19 @@ extension JavaScriptRuntime {
     let entries = try function.getFunction().call(arguments: value.copy())
     return entries.isUndefined() ? nil : entries
   }
+
+  /// Returns the global `Set` constructor, looked up once and cached, so an encode doesn't pay for
+  /// the global property lookup.
+  @usableFromInline
+  @JavaScriptActor
+  func setConstructor() throws -> JavaScriptFunction {
+    let constructor = try cached(setConstructorKey) {
+      return try global().getPropertyAsFunction("Set").asValue()
+    }
+    return constructor.getFunction()
+  }
 }
 
-/// Key of the `Set` entries function in each runtime's cache.
+/// Keys of the `Set` entries function and the `Set` constructor in each runtime's cache.
 private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()
+private let setConstructorKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()
