@@ -1,7 +1,7 @@
+import { likelyContainsCodeFrame } from '../formatStack';
 import {
   attachImportStackToRootMessage,
   nearestImportStack,
-  likelyContainsCodeFrame,
   dropStackIfContainsCodeFrame,
 } from '../metroErrorInterface';
 

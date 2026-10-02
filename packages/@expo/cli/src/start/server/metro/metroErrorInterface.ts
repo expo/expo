@@ -7,37 +7,22 @@
 import { getMetroServerRoot } from '@expo/config/paths';
 import { parseWebBuildErrors } from '@expo/log-box-utils';
 import chalk from 'chalk';
-import { stripVTControlCharacters } from 'node:util';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import type { StackFrame } from 'stacktrace-parser';
 import { parse } from 'stacktrace-parser';
-import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
 import { stripAnsi } from '../../../utils/ansi';
 import { env } from '../../../utils/env';
 import { CommandError, SilentError } from '../../../utils/errors';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
+import { formatStack, likelyContainsCodeFrame } from './formatStack';
 import type { LogBoxLogData } from './log-box/LogBoxLog';
 import { LogBoxLog } from './log-box/LogBoxLog';
 import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxSymbolication';
-import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 
 const isDebug = env.EXPO_DEBUG;
-
-function fill(width: number): string {
-  return Array(width).join(' ');
-}
-
-function formatPaths(config: { filePath: string | null; line?: number; col?: number }) {
-  const filePath = chalk.reset(config.filePath);
-  return (
-    chalk.dim('(') +
-    filePath +
-    chalk.dim(`:${[config.line, config.col].filter(Boolean).join(':')})`)
-  );
-}
 
 export async function logMetroErrorWithStack(
   projectRoot: string,
@@ -66,146 +51,9 @@ export async function logMetroErrorWithStack(
     return;
   }
 
-  Log.log(
-    getStackAsFormattedLog(projectRoot, { stack, codeFrame, error, showCollapsedFrames: true })
-      .stack
-  );
-}
-
-export function getStackAsFormattedLog(
-  projectRoot: string,
-  {
-    stack,
-    codeFrame,
-    error,
-    showCollapsedFrames = env.EXPO_DEBUG,
-  }: {
-    stack: MetroStackFrame[];
-    codeFrame?: CodeFrame;
-    error?: Error;
-    showCollapsedFrames?: boolean;
-  }
-): {
-  isFallback: boolean;
-  stack: string;
-} {
-  const logs: string[] = [];
-  const containsCodeFrame = likelyContainsCodeFrame(error?.message);
-
-  if (containsCodeFrame) {
-    // Some transformation errors will have a code frame embedded in the error message
-    // from Babel and we should not duplicate it as message is already printed before this call.
-  } else if (codeFrame) {
-    const maxWarningLineLength = Math.max(800, process.stdout.columns);
-
-    const lineText = codeFrame.content;
-    const lines = codeFrame.content.split('\n');
-
-    // ---- index.tsx ------------------------------------------------------
-    //  32 |         This is example code which will be under the title.
-    const title = path.basename(codeFrame.fileName);
-    logs.push(chalk.bold`Code: ${title}`);
-
-    const isPreviewTooLong = lines.some((line) => line.length > maxWarningLineLength);
-    const column = codeFrame.location?.column;
-    // When the preview is too long, we skip reading the file and attempting to apply
-    // code coloring, this is because it can get very slow.
-    if (isPreviewTooLong) {
-      let previewLine = '';
-      let cursorLine = '';
-
-      const formattedPath = formatPaths({
-        filePath: codeFrame.fileName,
-        line: codeFrame.location?.row,
-        col: codeFrame.location?.column,
-      });
-      // Create a curtailed preview line like:
-      // `...transition:'fade'},k._updatePropsStack=function(){clearImmediate(k._updateImmediate),k._updateImmediate...`
-      // If there is no text preview or column number, we can't do anything.
-      if (lineText && column != null) {
-        const rangeWindow = Math.round(
-          Math.max(codeFrame.fileName?.length ?? 0, Math.max(80, process.stdout.columns)) / 2
-        );
-        let minBounds = Math.max(0, column - rangeWindow);
-        const maxBounds = Math.min(minBounds + rangeWindow * 2, lineText.length);
-        previewLine = lineText.slice(minBounds, maxBounds);
-
-        // If we splice content off the start, then we should append `...`.
-        // This is unlikely to happen since we limit the activation size.
-        if (minBounds > 0) {
-          // Adjust the min bounds so the cursor is aligned after we add the "..."
-          minBounds -= 3;
-          previewLine = chalk.dim('...') + previewLine;
-        }
-        if (maxBounds < lineText.length) {
-          previewLine += chalk.dim('...');
-        }
-
-        // If the column property could be found, then use that to fix the cursor location which is often broken in regex.
-        cursorLine = (column == null ? '' : fill(column) + chalk.reset('^')).slice(minBounds);
-
-        logs.push(formattedPath, '', previewLine, cursorLine, chalk.dim('(error truncated)'));
-      }
-    } else {
-      logs.push(codeFrame.content);
-    }
-  }
-
-  let isFallback = false;
-  if (stack?.length) {
-    const stackProps = stack.map((frame) => {
-      return {
-        title: frame.methodName,
-        subtitle: getStackFormattedLocation(projectRoot, frame),
-        collapse: frame.collapse || isInternalBytecode(frame),
-      };
-    });
-
-    const stackLines: string[] = [];
-    const backupStackLines: string[] = [];
-
-    stackProps.forEach((frame) => {
-      const shouldShow = !frame.collapse || showCollapsedFrames;
-
-      const position = terminalLink.isSupported
-        ? terminalLink(frame.subtitle, frame.subtitle)
-        : frame.subtitle;
-      let lineItem = chalk.gray(`  ${frame.title} (${position})`);
-
-      if (frame.collapse) {
-        lineItem = chalk.dim(lineItem);
-      }
-      // Never show the internal module system.
-      const isMetroRuntime =
-        /\/metro-runtime\/src\/polyfills\/require\.js/.test(frame.subtitle) ||
-        /\/metro-require\/require\.js/.test(frame.subtitle);
-      if (!isMetroRuntime) {
-        if (shouldShow) {
-          stackLines.push(lineItem);
-        }
-        backupStackLines.push(lineItem);
-      }
-    });
-
-    logs.push(chalk.bold`Call Stack`);
-
-    if (!backupStackLines.length) {
-      logs.push(chalk.gray('  No stack trace available.'));
-    } else {
-      isFallback = stackLines.length === 0;
-      // If there are not stack lines then it means the error likely happened in the node modules, in this case we should fallback to showing all the
-      // the stacks to give the user whatever help we can.
-      const displayStack = stackLines.length ? stackLines : backupStackLines;
-      logs.push(displayStack.join('\n'));
-    }
-  } else if (error && error.stack) {
-    logs.push(chalk.gray(`  ${error.stack}`));
-  }
-
-  return {
-    isFallback,
-    stack: logs.join('\n'),
-  };
+  // Always show the full stack for build errors so Babel plugin and transformer bugs remain
+  // debuggable. See https://github.com/expo/expo/pull/41468.
+  Log.log(formatStack(projectRoot, { stack, codeFrame, error, showCollapsedFrames: true }).stack);
 }
 
 export const IS_METRO_BUNDLE_ERROR_SYMBOL = Symbol('_isMetroBundleError');
@@ -348,24 +196,32 @@ function parseErrorStack(
 
   const serverRoot = getMetroServerRoot(projectRoot);
 
-  return parse(stack)
-    .map((frame) => {
-      // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
+  return (
+    parse(stack)
+      .map((frame) => {
+        // frame.file will mostly look like `http://localhost:8081/index.bundle?platform=web&dev=true&hot=false`
 
-      if (frame.file) {
-        // SSR will sometimes have absolute paths followed by `.bundle?...`, we need to try and make them relative paths and append a dev server URL.
-        if (frame.file.startsWith('/') && frame.file.includes('bundle?') && !canParse(frame.file)) {
-          // Malformed stack file from SSR. Attempt to repair.
-          frame.file = 'https://localhost:8081/' + path.relative(serverRoot, frame.file);
+        if (frame.file) {
+          // SSR will sometimes have absolute paths followed by `.bundle?...`, we need to try and make them relative paths and append a dev server URL.
+          if (
+            frame.file.startsWith('/') &&
+            frame.file.includes('bundle?') &&
+            !canParse(frame.file)
+          ) {
+            // Malformed stack file from SSR. Attempt to repair.
+            frame.file = 'https://localhost:8081/' + path.relative(serverRoot, frame.file);
+          }
         }
-      }
 
-      return {
-        ...frame,
-        column: frame.column != null ? frame.column - 1 : null,
-      };
-    })
-    .filter((frame) => frame.file && !frame.file.includes('node_modules'));
+        return {
+          ...frame,
+          column: frame.column != null ? frame.column - 1 : null,
+        };
+      })
+      // Keep dependency frames so formatStack can distinguish external callsites from collapsed
+      // internals and render them dimmed instead of dropping them entirely.
+      .filter((frame) => frame.file)
+  );
 }
 
 function canParse(url: string): boolean {
@@ -385,19 +241,6 @@ export function dropStackIfContainsCodeFrame(err: unknown) {
     // If the error message contains a code frame, we should drop the stack to avoid cluttering the output.
     delete err.stack;
   }
-}
-
-/**
- * Tests given string on presence of ` [num] |` at the start of any line.
- * Returns `false` for undefined or empty strings.
- */
-export function likelyContainsCodeFrame(message: string | undefined): boolean {
-  if (!message) return false;
-
-  const clean = stripVTControlCharacters(message);
-  if (!clean) return false;
-
-  return /^\s*\d+\s+\|/m.test(clean);
 }
 
 /**
@@ -433,7 +276,3 @@ export const nearestImportStack = (err: unknown, root: unknown = err): string | 
     return nearestImportStack(err.cause, root);
   }
 };
-
-function isInternalBytecode(frame: StackFrame): boolean {
-  return frame.file?.includes('InternalBytecode.js') ?? false;
-}
