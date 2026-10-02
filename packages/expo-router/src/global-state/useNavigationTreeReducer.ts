@@ -67,7 +67,7 @@ type TreeOperation =
       routerType: string | undefined;
     }
   | {
-      type: 'NAVIGATOR_MOUNTED';
+      type: 'PENDING_ANCHOR_APPLIED';
       stateKey: string;
     }
   | {
@@ -178,7 +178,7 @@ function navigationTreeReducer(
   const projected =
     operation.type === 'NAVIGATOR_UNMOUNTED' ||
     operation.type === 'NAVIGATOR_CHANGED' ||
-    operation.type === 'NAVIGATOR_MOUNTED'
+    operation.type === 'PENDING_ANCHOR_APPLIED'
       ? updateCurrentHistoryEntry(next.history, next.state, config)
       : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
@@ -352,7 +352,7 @@ function reduceTree(
         : nextState;
       return { ...result, state: deepFreeze(completeState) };
     }
-    case 'NAVIGATOR_MOUNTED': {
+    case 'PENDING_ANCHOR_APPLIED': {
       const navigatorState = findStateByKey(state, operation.stateKey);
       const routeNode = config.registry.get(operation.stateKey)?.routeNode;
       if (!navigatorState || !routeNode) {
@@ -479,8 +479,8 @@ export function useNavigationTreeReducer({
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
-  const mountNavigator = useLatestCallback((stateKey: string) => {
-    reactDispatch({ type: 'NAVIGATOR_MOUNTED', stateKey });
+  const commitPendingAnchor = useLatestCallback((stateKey: string) => {
+    reactDispatch({ type: 'PENDING_ANCHOR_APPLIED', stateKey });
   });
   const consumeReportEvents = useLatestCallback((eventIds: readonly number[]) => {
     reactDispatch({ type: 'REPORT_CONSUMED', eventIds });
@@ -506,7 +506,7 @@ export function useNavigationTreeReducer({
     report: result.report,
     consumeReportEvents,
     resetNavigator,
-    mountNavigator,
+    commitPendingAnchor,
     handleAction,
     processIntent,
   };

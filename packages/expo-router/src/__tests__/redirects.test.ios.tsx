@@ -105,7 +105,6 @@ it('deep link to a redirect', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          __internal__pendingAnchor: { type: 'prepend' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'bar', 'foo'],
@@ -156,7 +155,6 @@ it('deep link to a dynamic redirect', async () => {
           slug: 'bar',
         },
         state: {
-          __internal__pendingAnchor: { type: 'prepend', params: { slug: 'bar' } },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'deeply/nested/route/[slug]', 'foo/[slug]'],
@@ -207,7 +205,6 @@ it('keeps extra params as query params', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          __internal__pendingAnchor: { type: 'prepend' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'bar', 'foo/[slug]'],
@@ -258,7 +255,6 @@ it('can redirect from single to catch all', async () => {
           slug: ['bar'],
         },
         state: {
-          __internal__pendingAnchor: { type: 'prepend', params: { slug: ['bar'] } },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'foo/[slug]', 'bar/[...slug]'],
@@ -304,7 +300,6 @@ it('can push to a redirect', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          __internal__pendingAnchor: { type: 'prepend' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'bar', 'foo'],

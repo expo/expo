@@ -97,6 +97,24 @@ it('does not implicitly select a child for group routes without nested state', (
   expect(getPathFromState(state, config)).toBe('/');
 });
 
+it('drops a group that ends the pattern for a group route without nested state', () => {
+  // The linking config Expo Router generates has no `initialRouteName` to name the group path.
+  const state = { routes: [{ name: '(group)' }] };
+  const config = {
+    screens: {
+      '(group)': {
+        path: '(group)',
+        initialRouteName: 'other',
+        screens: {
+          other: '(group)/other',
+        },
+      },
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/');
+});
+
 it('does not implicitly select a child for non-group routes without nested state', () => {
   const state = {
     routes: [{ name: 'root' }],

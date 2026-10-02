@@ -31,7 +31,6 @@ it('stacks should always push a new route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          __internal__pendingAnchor: { type: 'prepend' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', '(group)'],
@@ -567,7 +566,6 @@ it('push should also add anchor routes', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
-          __internal__pendingAnchor: { type: 'prepend' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', '(group)'],

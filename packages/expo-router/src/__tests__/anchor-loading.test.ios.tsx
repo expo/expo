@@ -200,6 +200,19 @@ describe('initial deep link', () => {
     expect(getStateAt([0, 0]).routes.map((route) => route.name)).toEqual(['index', '[id]']);
   });
 
+  it('throws when the target screen calls router.back() on mount', async () => {
+    function Profile() {
+      useEffect(() => {
+        router.back();
+      }, []);
+      return <Text testID="profile-id">profile id</Text>;
+    }
+
+    await expect(
+      renderRouter({ ...nestedStackApp, 'profile/[id]': Profile }, { initialUrl: '/profile/1' })
+    ).rejects.toThrow('The imperative router is unavailable before the first render has finished.');
+  });
+
   it('goes back to the anchor when the target screen calls back on mount', async () => {
     function Profile() {
       const navigation = useNavigation();

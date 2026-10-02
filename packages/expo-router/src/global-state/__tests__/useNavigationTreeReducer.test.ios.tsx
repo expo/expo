@@ -603,7 +603,7 @@ it('commits the pending anchor when its navigator mounts', async () => {
     registry: new Map([['navigator:0', { ...entry(() => null), routeNode }]]),
   });
 
-  await act(() => result.result.current.mountNavigator('navigator:0'));
+  await act(() => result.result.current.commitPendingAnchor('navigator:0'));
 
   expect(result.result.current.state).toStrictEqual({
     stale: false,

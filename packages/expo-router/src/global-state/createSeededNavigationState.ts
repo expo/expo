@@ -31,6 +31,42 @@ export function withPendingAnchor<State extends NavigationState>(
   return { ...state, __internal__pendingAnchor: pendingAnchor };
 }
 
+const strippedStates = new WeakMap<NavigationState, NavigationState>();
+
+/**
+ * Removes pending anchor markers from a complete state tree for public reads, such as
+ * `getRootState()`. Unchanged branches keep their identity, and the result is cached per state.
+ */
+export function stripPendingAnchors<State extends NavigationState>(state: State): State {
+  const cached = strippedStates.get(state);
+  if (cached) {
+    // The cache only stores the result computed for this same state.
+    return cached as State;
+  }
+  let routesChanged = false;
+  const routes = state.routes.map((route) => {
+    if (route.state?.stale !== false) {
+      return route;
+    }
+    // `stale: false` marks a complete nested state.
+    const childState = stripPendingAnchors(route.state as NavigationState);
+    if (childState === route.state) {
+      return route;
+    }
+    routesChanged = true;
+    return { ...route, state: childState };
+  });
+  // `NavigationState` does not declare the internal marker.
+  const { __internal__pendingAnchor, ...rest } = state as State & StateWithPendingAnchor;
+  const result =
+    __internal__pendingAnchor === undefined && !routesChanged
+      ? state
+      : // Removing the marker keeps every field of `State`.
+        ({ ...rest, routes } as unknown as State);
+  strippedStates.set(state, result);
+  return result;
+}
+
 /**
  * Applies the pending anchor of a mounted navigator and removes the marker. The result depends
  * only on its arguments, so render and the store produce the same route keys.
@@ -40,6 +76,7 @@ export function applyPendingAnchor<State extends NavigationState>(
   routeNode: RouteNode | null,
   anchor: string | undefined
 ): State {
+  // `NavigationState` does not declare the internal marker.
   const { __internal__pendingAnchor: pendingAnchor, ...rest } = state as State &
     StateWithPendingAnchor;
   if (!pendingAnchor) {

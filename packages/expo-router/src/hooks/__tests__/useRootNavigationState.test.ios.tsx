@@ -49,7 +49,6 @@ describe(useRootNavigationState, () => {
           key: expect.any(String),
           name: '__root',
           state: {
-            __internal__pendingAnchor: { type: 'prepend' },
             index: 0,
             key: expect.any(String),
             routeNames: ['index'],
@@ -98,7 +97,6 @@ describe(useRootNavigationState, () => {
           key: expect.any(String),
           name: '__root',
           state: {
-            __internal__pendingAnchor: { type: 'prepend' },
             index: 0,
             key: expect.any(String),
             routeNames: ['(app)'],
@@ -107,7 +105,6 @@ describe(useRootNavigationState, () => {
                 key: expect.any(String),
                 name: '(app)',
                 state: {
-                  __internal__pendingAnchor: { type: 'prepend' },
                   index: 0,
                   key: expect.any(String),
                   routeNames: ['index'],
@@ -153,7 +150,6 @@ describe(useRootNavigationState, () => {
           key: expect.any(String),
           name: '__root',
           state: {
-            __internal__pendingAnchor: { type: 'prepend' },
             index: 0,
             key: expect.any(String),
             routeNames: ['index'],
@@ -199,7 +195,6 @@ describe(useRootNavigationState, () => {
           key: expect.any(String),
           name: '__root',
           state: {
-            __internal__pendingAnchor: { type: 'prepend' },
             index: 0,
             key: expect.any(String),
             routeNames: ['(app)'],
@@ -208,7 +203,6 @@ describe(useRootNavigationState, () => {
                 key: expect.any(String),
                 name: '(app)',
                 state: {
-                  __internal__pendingAnchor: { type: 'prepend' },
                   index: 0,
                   key: expect.any(String),
                   routeNames: ['index'],

@@ -331,7 +331,7 @@ export function useNavigationBuilder<
   const { state: currentState } = use(NavigationStateContext);
   const rootState = use(RootNavigationStateContext);
 
-  const { resetNavigator, mountNavigator, handleAction } = use(NavigationBuilderContext);
+  const { resetNavigator, commitPendingAnchor, handleAction } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -470,7 +470,7 @@ export function useNavigationBuilder<
     } else if (anchoredState.routes !== committedState.routes) {
       // Commits the anchor route added during render. A marker that adds no route stays in the
       // store until this navigator's next action, which avoids a render.
-      mountNavigator(committedState.key);
+      commitPendingAnchor(committedState.key);
     }
   });
 
