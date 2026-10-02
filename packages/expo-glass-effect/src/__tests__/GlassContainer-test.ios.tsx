@@ -2,8 +2,8 @@ import { render, screen } from '@testing-library/react-native';
 
 import { GlassView, GlassContainer } from '..';
 
-it('renders a liquid glass container view', () => {
-  render(
+it('renders a liquid glass container view', async () => {
+  await render(
     <GlassContainer spacing={8} testID="glass-container">
       <GlassView testID="glass-children-1" />
       <GlassView testID="glass-children-2" />

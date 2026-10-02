@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Keep `EXPO_ROUTER_IMPORT_MODE` synchronous in server bundles when async routes are enabled, matching `babel-preset-expo`. ([#50867](https://github.com/expo/expo/pull/50867) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.6
 
 ### Patch Changes

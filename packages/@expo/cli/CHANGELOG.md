@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.1.1
+
+### Patch Changes
+
+- Resolve Android resource names and `drawable-*` folders with `@react-native/asset-utils`, matching how React Native resolves embedded assets at runtime. Scales outside the standard set map to a `drawable-<n>dpi` folder instead of failing the export, and assets referenced through `?unstable_path=` drop that prefix from their resource name. ([#50861](https://github.com/expo/expo/pull/50861) by [@huntie](https://github.com/huntie))
+- Resolve Expo Updates runtime version for the dev server in development mode. ([#49508](https://github.com/expo/expo/pull/49508) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Resolve the legacy `react-native/Libraries/Image/AssetRegistry` import to the shared asset registry. React Native 0.87 removed this module, which broke libraries that still import it, such as `@shopify/react-native-skia` on web. ([#50887](https://github.com/expo/expo/pull/50887) by [@1kuko3](https://github.com/1kuko3))
+- Fix `CorsMiddleware`'s local-hostname check to require a literal dot between IPv4 octets, instead of an unescaped regex wildcard that let non-loopback hostnames starting with `127` (e.g. `127a1b1c1`) bypass the dev server's cross-origin request guard. ([#49302](https://github.com/expo/expo/pull/49302) by [@Rakshit-gen](https://github.com/Rakshit-gen))
+- Updated dependencies. ([#50867](https://github.com/expo/expo/pull/50867))
+  - @expo/metro-config@58.0.7
+  - @expo/router-server@58.0.6
+  - @expo/prebuild-config@58.0.7
+
 ## 58.1.0
 
 ### Minor Changes

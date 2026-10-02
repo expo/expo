@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-application@58.0.3
+  - expo-crypto@58.0.4
+  - expo-linking@58.0.10
+  - expo-web-browser@58.0.4
+
 ## 58.0.6
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.0.2
+
+### Patch Changes
+
+- [macOS] Fix the `AppController.sharedInstace was called before the module was initialized` assertion at launch with `react-native-macos` 0.83, where `EXReactRootViewFactory` did not override the `viewWithModuleName:initialProperties:launchOptions:devMenuConfiguration:` method that `RCTReactNativeFactory` calls. ([#50885](https://github.com/expo/expo/pull/50885) by [@zoontek](https://github.com/zoontek))
+- [iOS] Declare each module's SwiftPM package dependencies and honour `autolinkWhen` conditions in the SwiftPM autolinking plugin. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fail the SwiftPM autolinking sync with a specific error for module setups the plugin cannot link correctly, instead of producing a broken build. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#50861](https://github.com/expo/expo/pull/50861), [#50881](https://github.com/expo/expo/pull/50881), [#49508](https://github.com/expo/expo/pull/49508), [#50887](https://github.com/expo/expo/pull/50887), [#50660](https://github.com/expo/expo/pull/50660), [#49302](https://github.com/expo/expo/pull/49302), [#48679](https://github.com/expo/expo/pull/48679), [#50867](https://github.com/expo/expo/pull/50867), [#50549](https://github.com/expo/expo/pull/50549))
+  - expo-asset@58.0.10
+  - @expo/cli@58.1.1
+  - expo-file-system@58.0.5
+  - expo-font@58.0.5
+  - expo-keep-awake@58.0.3
+  - expo-modules-core@58.0.11
+  - @expo/metro-config@58.0.7
+  - expo-modules-autolinking@58.0.7
+  - babel-preset-expo@58.0.8
+
 ## 58.0.1
 
 ### Patch Changes

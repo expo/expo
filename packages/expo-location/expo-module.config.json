@@ -4,7 +4,10 @@
     "modules": ["LocationModule"]
   },
   "android": {
-    "modules": ["expo.modules.location.LocationModule"],
+    "modules": [
+      "expo.modules.location.LocationModule",
+      "expo.modules.location.next.LocationModuleNext"
+    ],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.location",

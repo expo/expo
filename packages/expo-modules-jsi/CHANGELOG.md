@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [iOS] Add conversions between JavaScript values and free-form `Any`, `[Any]` and `[String: Any]` values. ([#50660](https://github.com/expo/expo/pull/50660) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.6
 
 ### Patch Changes

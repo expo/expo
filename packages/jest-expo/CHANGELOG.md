@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Replace `react-test-renderer` with `test-renderer` for `@testing-library/react-native` v14 compatibility. ([#50686](https://github.com/expo/expo/pull/50686) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.5
 
 ### Patch Changes

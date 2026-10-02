@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Fix an intermittent `performMeasureAndLayout called during measure layout` crash that tore down the ReactHost when a `Host` with `matchContents` was measured while react-native-reanimated was active. The `onLayoutContent` event is now posted after the measure pass instead of emitted inside it. ([#49933](https://github.com/expo/expo/pull/49933) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.10
 
 ### Patch Changes

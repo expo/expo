@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-app-metrics@58.0.11
+
 ## 58.0.12
 
 ### Patch Changes

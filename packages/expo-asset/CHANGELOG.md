@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [Internal] Type the `react-native/asset-registry` entry point after React Native's `AssetRegistry` API, replacing the deprecated `@react-native/assets-registry` reference. ([#50861](https://github.com/expo/expo/pull/50861) by [@huntie](https://github.com/huntie))
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
 ## 58.0.9
 
 ### Patch Changes

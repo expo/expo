@@ -31,7 +31,7 @@ const Stack = createStandardRouterNavigator<
   StackRouterOptions
 >(Content, StackRouter);
 
-it('preserves the preloaded route and rendered element through promotion', () => {
+it('preserves the preloaded route and rendered element through promotion', async () => {
   let mounts = 0;
   const Second = () => {
     useEffect(() => {
@@ -40,18 +40,18 @@ it('preserves the preloaded route and rendered element through promotion', () =>
     return <View />;
   };
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <View />,
     second: Second,
   });
 
-  act(() => router.prefetch('/second'));
+  await act(() => router.prefetch('/second'));
 
   const preloadedRoute = contentArgs!.state.routes.find((route) => route.name === 'second')!;
   expect(mounts).toBe(1);
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   const focusedRoute = contentArgs!.state.routes[contentArgs!.state.index]!;
   expect(focusedRoute.key).toBe(preloadedRoute.key);
