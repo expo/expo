@@ -19,7 +19,10 @@ struct JavaScriptValuesBufferTests {
   func `copying accepts runtime-free values`() throws {
     let buffer = JavaScriptValuesBuffer.copying(
       in: runtime,
-      values: [.undefined, .null, .number(1), .true(), JavaScriptValue(runtime, "four")]
+      values: [
+        JavaScriptValueRef(.undefined), JavaScriptValueRef(.null), JavaScriptValueRef(.number(1)),
+        JavaScriptValueRef(.true()), JavaScriptValueRef(JavaScriptValue(runtime, "four")),
+      ]
     )
     #expect(buffer.count == 5)
     #expect(buffer[0].isUndefined())

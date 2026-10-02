@@ -103,6 +103,12 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   implementation creates an empty array first and then populates it element by element,
   ///   rather than using JSI's `createWithElements` method directly.
   /// - SeeAlso: `init(_:items:)` for the variadic argument version
+  @available(
+    *,
+    deprecated,
+    message:
+      "JavaScriptValue becomes non-copyable in SDK 59 and cannot be an array element; create the array with init(_:length:) and assign the elements through the subscript"
+  )
   public init(_ runtime: borrowing JavaScriptRuntime, items: [JavaScriptValue]) {
     self.init(runtime, length: items.count)
 
@@ -139,6 +145,12 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///   array-based initializer. If you already have an array of values, consider using
   ///   `init(_:items:)` directly for cleaner syntax.
   /// - SeeAlso: `init(_:items:)` for the array version
+  @available(
+    *,
+    deprecated,
+    message:
+      "JavaScriptValue becomes non-copyable in SDK 59 and cannot be a variadic argument; use the JavaScriptRepresentable parameter pack initializer"
+  )
   public init(_ runtime: borrowing JavaScriptRuntime, items: JavaScriptValue...) {
     self.init(runtime, items: items)
   }
@@ -174,9 +186,9 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   ///
   /// - Note: This initializer automatically converts each item to a `JavaScriptValue` using
   ///   its `toJavaScriptValue(in:)` method, providing compile-time type safety.
-  /// - Note: Unlike the `JavaScriptValue` variadic initializer, this version accepts heterogeneous
-  ///   types directly without requiring explicit `JavaScriptValue` wrapping.
-  /// - SeeAlso: `init(_:items:)` for the `JavaScriptValue` array version
+  /// - Note: `JavaScriptValue` becomes non-copyable in SDK 59, and parameter packs accept copyable
+  ///   types only, so pass a `JavaScriptValue` through its `ref()`. To fill an array from a Swift
+  ///   collection of values, create it with `init(_:length:)` and assign the elements through the subscript.
   public init<each T: JavaScriptRepresentable>(_ runtime: borrowing JavaScriptRuntime, items: repeat each T) {
     var length: Int = 0
     for _ in repeat each items {
@@ -526,6 +538,11 @@ extension JavaScriptArray {
   /// Returns an array of `(offset, element)` pairs, similar to `Sequence.enumerated()`.
   ///
   /// - Note: Eagerly evaluates all elements. For large arrays, prefer `forEach(_:)`.
+  @available(
+    *,
+    deprecated,
+    message: "JavaScriptValue becomes non-copyable in SDK 59 and cannot be a tuple element; use forEachIndexed(_:)"
+  )
   public func enumerated() -> [(offset: Int, element: JavaScriptValue)] {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
@@ -537,6 +554,19 @@ extension JavaScriptArray {
       result.append((offset: index, element: getValueUnchecked(at: index, in: jsiRuntime)))
     }
     return result
+  }
+
+  /// Calls the given closure on each element in the array together with its index, similar to
+  /// iterating `Sequence.enumerated()`. Named apart from `forEach(_:)` so a trailing closure is never
+  /// ambiguous between the two.
+  public func forEachIndexed(_ body: (_ index: Int, _ element: JavaScriptValue) throws -> Void) rethrows {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let count = self.length
+    for index in 0..<count {
+      try body(index, getValueUnchecked(at: index, in: jsiRuntime))
+    }
   }
 
   /// Calls the given closure on each element in the array.
@@ -551,6 +581,9 @@ extension JavaScriptArray {
   }
 
   /// Returns an array of elements satisfying the given predicate.
+  ///
+  /// - Note: `JavaScriptValue` becomes non-copyable in SDK 59 and cannot be a Swift array element, so
+  ///   this method will return a `JavaScriptArray` from then on.
   public func filter(_ isIncluded: (JavaScriptValue) throws -> Bool) rethrows -> [JavaScriptValue] {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
