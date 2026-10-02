@@ -4,6 +4,8 @@ sidebar_title: Verify a change with an agent
 description: Give a coding agent such as Claude Code, Codex, or Cursor a real iOS Simulator or Android Emulator on EAS so that it can test its own change and return screenshots or recordings.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -17,7 +19,7 @@ The fastest setup is the official EAS Simulator skill. Install [Expo Skills](/sk
 
 <RelatedSkills names={['eas-simulator']} />
 
-Use the skill instead of giving the agent individual commands. The `simulator:*` commands are new, and the skill tells the agent to read the current `--help` output before it uses flags that are not common.
+Use the skill instead of giving the agent individual commands. The `simulator:*` commands are new, and the skill tells the agent to check the current `--help` output when a command fails.
 
 ## Write a prompt that asks for evidence
 
@@ -34,7 +36,7 @@ Describe the result that you want and the evidence that proves it:
 
 With the skill, the agent follows the same loop each time:
 
-1. It runs `eas simulator:availability --json`. If EAS Simulator is not available for the account, it uses a local simulator or emulator instead.
+1. It runs `eas simulator:availability --json`. If EAS Simulator is not available for the account, it tells you, and it uses a local workflow instead, such as a local simulator or emulator.
 2. It selects a build that fits the goal. For live edits, it uses a development build with Metro. For a fixed screenshot, it uses a build that matches the current source.
 3. It starts a named session and confirms that the status is `IN_PROGRESS`.
 4. It installs and opens the app, then uses agent-device commands such as `snapshot -i`, `press`, and `fill`.
@@ -61,32 +63,40 @@ Confirm the setup:
 
 ## Watch the agent work
 
-For an iOS session, the start command prints a `webPreviewUrl`. Open it in a desktop browser to see the simulator while the agent uses it. In Cursor or VS Code, you can open the URL in the **Simple Browser** panel.
+The start command prints a browser preview URL. Open it in a desktop browser to see the simulator while the agent uses it. In Cursor or VS Code, you can open the URL in the **Simple Browser** panel.
+
+On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 To see each controller action as it happens, run this command in another terminal:
 
 <Terminal cmd={['$ eas simulator:events --follow']} />
 
+To confirm that the agent controls the remote device and not a local simulator, see [Confirm that the agent controls the remote device](/preview/eas-simulator/how-it-works/agent-targeting/#confirm-that-the-agent-controls-the-remote-device).
+
 ## Set limits for the agent
 
-Sessions consume usage while they run. Give the agent limits in the prompt, and add a maximum duration to each session:
+A session keeps running until it stops or reaches its maximum duration. Give the agent limits in the prompt, and add a maximum duration to each session:
 
 - Ask the agent to stop each session that it creates when it finishes or fails.
 - Ask the agent to start no more than one session at a time, unless the task needs more.
 - Tell the agent to use `--max-duration-minutes` so that a forgotten session stops on its own.
 
-See [Usage and billing](/preview/eas-simulator/reference/usage-and-billing/) and [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
+See [EAS Simulator usage, limits, and billing](/preview/eas-simulator/reference/usage-and-billing/) and [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
 
 ## Common questions
 
-### Which agents can use EAS Simulator?
+<FAQ>
+
+<Collapsible summary="Which agents can use EAS Simulator?">
 
 Any agent that can run shell commands can use EAS CLI and agent-device. The Expo docs include setup guides for [Claude Code](/agents/claude/), [Codex](/agents/codex/), and [Cursor](/agents/cursor/).
 
-### Does the agent need a Mac?
+</Collapsible>
 
-No. The simulator runs on EAS. The agent can create the build with EAS Build. See [Work without a Mac](/preview/eas-simulator/how-to/work-without-a-mac/).
+<Collapsible summary="Does the agent need a Mac?">
 
-### How do I know the screenshot came from the remote device?
+No. The simulator runs on EAS. The agent can create the build with EAS Build. See [Use an iOS Simulator on Linux or Windows](/preview/eas-simulator/how-to/work-without-a-mac/).
 
-If **.env.eas-simulator** has no connection details, agent-device can fall back to a local simulator without an error. Confirm that `eas simulator:get --json` returns the session ID that the start command printed. See [Agent targeting](/preview/eas-simulator/how-it-works/agent-targeting/).
+</Collapsible>
+
+</FAQ>

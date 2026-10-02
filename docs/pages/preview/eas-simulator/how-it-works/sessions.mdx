@@ -1,12 +1,15 @@
 ---
 title: How EAS Simulator sessions work
 sidebar_title: Sessions
-description: An EAS Simulator session is a time-limited job on EAS that runs one remote iOS Simulator or Android Emulator with a controller. Learn its states, its startup sequence, and its session page.
+description: An EAS Simulator session is a time-limited job on EAS that starts a remote iOS Simulator or Android Emulator with a controller. Learn its states, its startup sequence, and its session page.
 ---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-An EAS Simulator **session** is one remote device that runs for a limited time on EAS infrastructure. Each session belongs to an EAS project. It runs one Android Emulator or iOS Simulator, the controller that you selected, and, on iOS, a browser preview. EAS runs each session as a job, in the same way that it runs other EAS jobs.
+An EAS Simulator **session** is one remote device that runs for a limited time on EAS infrastructure. Each session belongs to an EAS project. It starts one Android Emulator or iOS Simulator, the controller that you selected, and a browser preview. EAS runs each session as a job, in the same way that it runs other EAS jobs.
 
 ## What a session contains
 
@@ -14,10 +17,12 @@ An EAS Simulator **session** is one remote device that runs for a limited time o
 | --------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Remote device   | A stock Android Emulator or iOS Simulator. It starts blank unless you give an application source.                |
 | Controller      | agent-device, Argent, or Appium. It receives device actions. A `web-preview-only` session has no controller.     |
-| Browser preview | A live stream of the iOS Simulator that people can see and control in a desktop browser.                         |
+| Browser preview | A live stream of the device that people can see in a desktop browser and, on iOS, control.                       |
 | Session record  | The ID, name, tags, status, timestamps, activity events, and artifacts. You can read it after the session stops. |
 
-For a list of the session types, see [Session types](/preview/eas-simulator/reference/session-types/).
+Android sessions also include a browser preview that streams the emulator. The expo.dev session page does not show it inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+
+For a list of the session types, see [EAS Simulator session types](/preview/eas-simulator/reference/session-types/).
 
 ## Session states
 
@@ -32,18 +37,18 @@ A session moves through four states:
 
 A session goes from new to in progress when the device and the controller are ready. It goes to stopped when you stop it, when it reaches a limit, or when its job finishes or is canceled. It goes to errored when its job fails. An errored session stays errored, even if you send a stop request.
 
-Connection details, such as controller tokens, are available only while the session is in progress.
+The REST API returns connection details, such as controller tokens, only while the session is in progress.
 
 ## What happens when a session starts
 
 1. EAS creates the session in the new state and returns its ID and session page URL.
-2. The session waits for available concurrency. EAS CLI shows a queue message during this step.
+2. The session waits in the queue. EAS CLI shows a queue message during this step.
 3. A machine on EAS starts the device and the controller.
 4. If you gave an application source, EAS downloads, installs, and launches the app. It also applies launch arguments and opens a URL if you gave them.
 5. The controller reports its connection details, and the session goes to in progress.
 6. EAS CLI writes **.env.eas-simulator** and prints the connection instructions.
 
-EAS CLI waits up to 15 minutes for steps 3 to 5. Queue time does not count toward this limit. If the limit expires, EAS CLI stops the session. If the job does not start, EAS marks the session as errored.
+EAS CLI waits up to 15 minutes for steps 3 to 5. Queue time does not count toward this limit. If the limit expires, EAS CLI stops the session. If the job fails before the session is ready, the session goes to errored, and EAS CLI exits with an error.
 
 ## Ways to create a session
 
@@ -51,7 +56,7 @@ EAS CLI waits up to 15 minutes for steps 3 to 5. Queue time does not count towar
 | ---------------------------------------------------------------------------------------------------- | ------------------------------- | --------------- |
 | [EAS CLI](/preview/eas-simulator/reference/cli/)                                                     | All session types               | Android and iOS |
 | [REST API](/preview/eas-simulator/reference/rest-api/)                                               | All session types               | Android and iOS |
-| [Create session link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link) | Browser preview only            | iOS             |
+| [Create session link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link) | Browser preview only            | Android and iOS |
 | **Create new simulator** dialog on expo.dev                                                          | agent-device, Argent, or Appium | Android and iOS |
 
 The **Create new simulator** dialog on the **Simulator sessions** page has these fields:
@@ -65,7 +70,7 @@ The **Create new simulator** dialog on the **Simulator sessions** page has these
 - Metro URL
 - Launch arguments and tags, under **Advanced options**
 
-The dialog does not set a maximum duration, an idle timeout, or local egress. Use EAS CLI or the REST API for these options. To create a session, your role on the account must be Developer or higher.
+The dialog does not set a maximum duration, an idle timeout, or local egress. Use EAS CLI or the REST API for these options. To create a session, you need the Developer role or higher.
 
 ## The session page
 
@@ -79,7 +84,7 @@ The page has these sections, from top to bottom:
 
 1. **Summary.** The status, duration, the person who started the session, the start time, and a **Stop session** button.
 2. **Preview or recordings.** The live browser preview while the session runs, or the screen recordings after it stops.
-3. **Session activity.** The controller actions, with a **Drive this session** button.
+3. **Session activity.** The controller actions, with a **Drive this session** button while the session runs.
 4. **Artifacts.** Files from the session, in groups: screenshots, screen recordings, traces, performance metrics, native profiles, React profiles, session events, and other files.
 5. **Job logs.** The logs of the job that ran the session. This section starts collapsed.
 
@@ -87,14 +92,24 @@ Android session pages also show a warning that Android Emulator support is still
 
 ## Common questions
 
-### Is a session the same as an EAS Build?
+<FAQ>
+
+<Collapsible summary="Is a session the same as an EAS Build?">
 
 No. Both run as jobs on EAS, but a session runs a device for you to use. It does not create a build. Use [EAS Build](/build/introduction/) to create the build that a session installs.
 
-### Can I reuse a stopped session?
+</Collapsible>
+
+<Collapsible summary="Can I reuse a stopped session?">
 
 No. A stopped or errored session is final. Start a new session. You can still read the record and the artifacts of a stopped session.
 
-### Can I delete a session?
+</Collapsible>
 
-You can delete a session after it finishes, if your role allows you to change the project. Deleting a session also deletes its recordings and screenshots. You cannot undo the deletion.
+<Collapsible summary="Can I delete a session?">
+
+Yes. You can delete a session after it finishes, if you have the Developer role or higher. Deleting a session also deletes its recordings and screenshots. You cannot undo the deletion.
+
+</Collapsible>
+
+</FAQ>

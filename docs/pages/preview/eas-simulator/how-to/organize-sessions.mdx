@@ -4,6 +4,8 @@ sidebar_title: Organize sessions
 description: Give EAS Simulator sessions descriptive names and tags, then list, filter, and stop them from EAS CLI or expo.dev.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
@@ -59,13 +61,13 @@ You can also add tags in the **Advanced options** of the **Create new simulator*
 
 You can combine and repeat these filters:
 
-| Filter       | Values                                                 | Match rule                                       |
-| ------------ | ------------------------------------------------------ | ------------------------------------------------ |
-| `--status`   | `new`, `in-progress`, `stopped`, `errored`             | Any of the listed values                         |
-| `--platform` | `android`, `ios`                                       | Any of the listed values                         |
-| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only` | Any of the listed values                         |
-| `--name`     | Text                                                   | Name starts with the text. Case does not matter. |
-| `--tag`      | Text                                                   | The session has every listed tag                 |
+| Filter       | Values                                                 | Match rule                                    |
+| ------------ | ------------------------------------------------------ | --------------------------------------------- |
+| `--status`   | `new`, `in-progress`, `stopped`, `errored`             | Any of the listed values                      |
+| `--platform` | `android`, `ios`                                       | Any of the listed values                      |
+| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only` | Any of the listed values                      |
+| `--name`     | Text                                                   | Name contains the text. Case does not matter. |
+| `--tag`      | Text                                                   | The session has every listed tag              |
 
 The list shows 10 sessions by default. Use `--limit` for up to 100 sessions on each page. To get the next page, pass the `endCursor` value from the previous JSON response to `--after`:
 
@@ -80,11 +82,16 @@ The JSON output contains a `sessions` array and a `pageInfo` object. Each sessio
 
 ## Find and stop sessions that are still running
 
-A session that you started with `--non-interactive` runs until you stop it or until it reaches a limit. To find running sessions and stop one:
+A session that you started with `--non-interactive` runs until you stop it or until it reaches a limit. To find sessions that are queued, starting, or running, and stop one:
 
 <Terminal
-  cmd={['$ eas simulator:list --status in-progress', '$ eas simulator:stop --id <session-id>']}
+  cmd={[
+    '$ eas simulator:list --status new --status in-progress',
+    '$ eas simulator:stop --id <session-id>',
+  ]}
 />
+
+The `new` status includes sessions that are in the queue or starting.
 
 ## See sessions on expo.dev
 
@@ -108,10 +115,18 @@ You can delete a session from its page on expo.dev after it finishes. Deleting a
 
 ## Common questions
 
-### Can I rename a session or change its tags after it starts?
+<FAQ>
 
-EAS CLI and the REST API do not have a command to rename a session or to change its tags. Set them when you start the session.
+<Collapsible summary="Can I rename a session or change its tags after it starts?">
 
-### Can I see sessions from other projects?
+Yes. Open the session page on expo.dev and select **Edit session** to change the name and tags. You need the Developer role or higher. This also works on finished sessions. EAS CLI and the REST API do not have a command to rename a session or to change its tags.
 
-`eas simulator:list` shows the sessions of the project in the current directory. Run it from each project directory, or open each project's **Simulator sessions** page.
+</Collapsible>
+
+<Collapsible summary="Can I see sessions from other projects?">
+
+Yes, one project at a time. `eas simulator:list` shows the sessions of the project in the current directory. Run it from each project directory, or open each project's **Simulator sessions** page.
+
+</Collapsible>
+
+</FAQ>

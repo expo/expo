@@ -4,6 +4,8 @@ sidebar_title: Work without a Mac
 description: Build an iOS app with EAS Build and run it on a remote iOS Simulator from Linux, Windows, or a cloud sandbox with EAS Simulator.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -36,6 +38,8 @@ Add an EAS Build profile that targets the iOS Simulator. For live edits with Fas
 
 iOS Simulator builds are not signed, so EAS Build does not ask for credentials for this build.
 
+For a fixed build without live edits, leave out `developmentClient`, skip step 3, and remove the `--open-url` flag from the command in step 4.
+
 </Step>
 
 <Step label="2">
@@ -54,7 +58,7 @@ Record the build ID from the output.
 
 <Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
 
-Skip this step if you only need a fixed build without live edits. Then use a profile without `developmentClient`.
+On Windows, see [Run commands on Windows](#run-commands-on-windows) for the syntax that sets `EXPO_UNSTABLE_TUNNEL_V2`.
 
 </Step>
 
@@ -76,7 +80,7 @@ Skip this step if you only need a fixed build without live edits. Then use a pro
 
 ### See and control the simulator
 
-Open the `webPreviewUrl` from the start output in a desktop browser. You can also use agent-device commands through `eas simulator:exec`. See [Drive the device](/preview/eas-simulator/how-to/drive-the-device/).
+Open the browser preview URL from the start output in a desktop browser. You can also use agent-device commands through `eas simulator:exec`. See [Control a remote simulator with agent-device, Argent, or Appium](/preview/eas-simulator/how-to/drive-the-device/).
 
 </Step>
 
@@ -92,18 +96,38 @@ Stop Metro too.
 
 ## Run commands on Windows
 
-The `eas` and `agent-device` commands work on Windows. Some shell examples in these docs, such as loops and `printf`, need a POSIX shell. Use Windows Subsystem for Linux (WSL) or Git Bash to run them.
+The `eas` CLI runs on Windows. The shell examples in these docs use POSIX syntax. For example, `EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel` sets an environment variable for one command, which does not work in PowerShell or Command Prompt. In PowerShell, set the variable first:
+
+<Terminal cmd={['$ $env:EXPO_UNSTABLE_TUNNEL_V2=1; npx expo start --tunnel']} />
+
+In Command Prompt, use `set`. Do not put a space before `&&`, because the space becomes part of the value:
+
+<Terminal cmd={['$ set EXPO_UNSTABLE_TUNNEL_V2=1&& npx expo start --tunnel']} />
+
+Commands that continue on a new line with `\` also fail in PowerShell. Put the command on one line, or end each line with a backtick (`` ` ``) instead.
+
+You can also run the examples as written in Windows Subsystem for Linux (WSL) or Git Bash.
 
 ## Common questions
 
-### Do I need Xcode?
+<FAQ>
+
+<Collapsible summary="Do I need Xcode?">
 
 No. EAS Build creates the iOS Simulator build, and EAS Simulator runs the iOS Simulator. You need Xcode only to create a build on your own computer.
 
-### Which iOS devices can I use?
+</Collapsible>
 
-See [Devices](/preview/eas-simulator/reference/devices/).
+<Collapsible summary="Which iOS devices can I use?">
 
-### Can I use an Android Emulator on Linux instead?
+iPhone 17, iPhone 17 Pro, iPhone 17 Pro Max, iPhone 17e, iPhone Air, and several iPad models. See [EAS Simulator devices](/preview/eas-simulator/reference/devices/).
+
+</Collapsible>
+
+<Collapsible summary="Can I use an Android Emulator on Linux instead?">
 
 Yes. A local Android Emulator runs on Linux and Windows. Use an EAS Simulator Android session when your computer cannot run an emulator, or when an agent in a sandbox needs one.
+
+</Collapsible>
+
+</FAQ>

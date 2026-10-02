@@ -4,6 +4,8 @@ sidebar_title: Native Android and iOS
 description: Install a Kotlin, Java, Swift, or Objective-C app built with Gradle or Xcode on a remote Android Emulator or iOS Simulator from an archive URL.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
@@ -11,7 +13,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Yes, you can use EAS Simulator with a native Android or iOS app. EAS Simulator starts a stock Android Emulator or iOS Simulator, so the app does not need Expo or React Native. Build the app for the emulator or simulator, publish it to a URL, and pass the URL when you start the session.
+EAS Simulator runs native Android and iOS apps. It starts a stock Android Emulator or iOS Simulator, so the app does not need Expo or React Native. Build the app for the emulator or simulator, publish it to a URL, and pass the URL when you start the session.
 
 > **warning** This guide uses the application archive source. The Expo Go and fingerprint sources do not apply, and the React Native features of each controller do not work. See [Limitations](#limitations) before you start.
 
@@ -24,9 +26,12 @@ Yes, you can use EAS Simulator with a native Android or iOS app. EAS Simulator s
     does not need Expo source code. Copy its project ID.
   </Requirement>
   <Requirement title="A download URL for the app">
-    The remote device downloads the app over HTTPS. Prepare storage that serves a direct URL.
+    The remote device downloads the app from the URL. Use storage that serves a direct HTTP or HTTPS
+    URL.
   </Requirement>
 </Prerequisites>
+
+## Install and run the app
 
 <Step label="1">
 
@@ -34,19 +39,20 @@ Yes, you can use EAS Simulator with a native Android or iOS app. EAS Simulator s
 
 The remote device is an emulator or a simulator, not a physical phone:
 
-| Platform | Required artifact          | Constraint                                                                   |
-| -------- | -------------------------- | ---------------------------------------------------------------------------- |
-| Android  | An **.apk**                | Include an emulator ABI, such as `x86_64`. An **.aab** fails to install.     |
-| iOS      | An archive with a **.app** | Build against the `iphonesimulator` SDK. A device **.ipa** fails to install. |
+| Platform | Required artifact             | Constraint                                                                   |
+| -------- | ----------------------------- | ---------------------------------------------------------------------------- |
+| Android  | An **.apk**                   | Include an emulator ABI, such as `x86_64`. An **.aab** fails to install.     |
+| iOS      | A **.tar.gz** of the **.app** | Build against the `iphonesimulator` SDK. A device **.ipa** fails to install. |
 
 <Terminal
   cmd={[
     '$ ./gradlew assembleDebug',
-    '$ xcodebuild -scheme MyApp -sdk iphonesimulator -derivedDataPath ./build',
+    '$ xcodebuild -project MyApp.xcodeproj -scheme MyApp -configuration Debug -sdk iphonesimulator -derivedDataPath ./build',
+    '$ tar -czf MyApp.app.tar.gz -C ./build/Build/Products/Debug-iphonesimulator MyApp.app',
   ]}
 />
 
-For iOS, compress the **.app** directory into an archive, such as a **.tar.gz** file.
+For a project that uses CocoaPods, replace `-project MyApp.xcodeproj` with `-workspace MyApp.xcworkspace`. For iOS, compress the **.app** directory into a **.tar.gz** or **.tgz** archive, as the `tar` command does. The output folder matches the configuration: **Debug-iphonesimulator** for `-configuration Debug`, or **Release-iphonesimulator** for `-configuration Release`. A **.zip** archive does not install.
 
 </Step>
 
@@ -136,7 +142,7 @@ Use device-level commands. They act through the operating system:
   ]}
 />
 
-Replace `<application-id>` with the Android package name or the iOS bundle identifier from your build settings. See [Drive the device](/preview/eas-simulator/how-to/drive-the-device/).
+Replace `<application-id>` with the Android package name or the iOS bundle identifier from your build settings. See [Control a remote simulator with agent-device, Argent, or Appium](/preview/eas-simulator/how-to/drive-the-device/).
 
 </Step>
 
@@ -157,7 +163,7 @@ The session also stops at its maximum duration. It does not stop when your termi
 | Boot a remote device                          | Yes                          |
 | Install and launch an app archive             | Yes                          |
 | Screenshots, video, and accessibility actions | Yes                          |
-| Browser preview, iOS sessions                 | Yes                          |
+| Browser preview                               | Yes                          |
 | Install by `--build-id`                       | Only for EAS Build artifacts |
 | Install by `--expo-go` or build fingerprint   | No                           |
 | Fast Refresh and Metro                        | No                           |
@@ -166,10 +172,18 @@ The session also stops at its maximum duration. It does not stop when your termi
 
 ## Common questions
 
-### Can I install a local build without a URL?
+<FAQ>
+
+<Collapsible summary="Can I install a local build without a URL?">
 
 Yes. Start a blank session, then upload the build with agent-device `install`. See [Install a local build](/preview/eas-simulator/how-to/install-your-app/#install-a-local-build).
 
-### Why does the install fail?
+</Collapsible>
 
-Check the artifact format first. An **.aab** or a device **.ipa** does not install. An Android APK without an emulator ABI does not run. See [Troubleshooting](/preview/eas-simulator/troubleshooting/).
+<Collapsible summary="Why does the install fail?">
+
+Check the artifact format first. An **.aab**, a device **.ipa**, or a **.zip** of an iOS app does not install. An Android APK without an emulator ABI does not run. See [Troubleshoot EAS Simulator](/preview/eas-simulator/troubleshooting/).
+
+</Collapsible>
+
+</FAQ>

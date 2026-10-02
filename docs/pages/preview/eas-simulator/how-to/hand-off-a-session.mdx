@@ -1,14 +1,14 @@
 ---
 title: Share a live EAS Simulator session or start one from a link
 sidebar_title: Hand off a session
-description: Share the iOS browser preview of a running EAS Simulator session, or build an authenticated expo.dev link that starts a new session from an EAS Build, fingerprint, archive, or Expo Go.
+description: Share the browser preview of a running EAS Simulator session, or build an authenticated expo.dev link that starts a new session from an EAS Build, fingerprint, archive, or Expo Go.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-You can hand an EAS Simulator session to another person in two ways. Share a session that is already running, or give them a **create session link** that starts a new session when they open it. In both cases, the person uses the iOS browser preview to see and control the simulator.
+You can hand an EAS Simulator session to another person in two ways. Share a session that is already running, or give them a **create session link** that starts a new session when they open it. In both cases, the person uses the browser preview to see the device and, on iOS, to control it.
 
 | Method                                                      | What the person gets                          | Starts a new session          |
 | ----------------------------------------------------------- | --------------------------------------------- | ----------------------------- |
@@ -17,13 +17,15 @@ You can hand an EAS Simulator session to another person in two ways. Share a ses
 
 ## Share a running session
 
-Every iOS session type includes a browser preview. The start command prints a `webPreviewUrl`, and the session page on expo.dev shows the same preview:
+Every session type includes a browser preview. The start command prints the browser preview URL. In `--json` output, the URL is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. On iOS, the session page on expo.dev shows the same preview:
 
 ```text
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>
 ```
 
-Before you share a session, set a maximum duration so that it stops on its own:
+On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+
+If you plan to share a session, set a maximum duration when you start it, so that it stops on its own:
 
 <Terminal
   cmd={[
@@ -31,15 +33,17 @@ Before you share a session, set a maximum duration so that it stops on its own:
   ]}
 />
 
-Tell the person when the session stops. Activity in the browser preview does not reset the idle timer, so use `--max-duration-minutes`, not `--max-idle-time-minutes`, to limit a session that a person controls. See [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/).
+To share a session that is already running, share the browser preview URL or session page URL that it already has. Tell the person when the session stops. Activity in the browser preview does not reset the idle timer, so use `--max-duration-minutes`, not `--max-idle-time-minutes`, to limit a session that a person controls. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
 
-Open the `webPreviewUrl` in a desktop browser. Do not open it on the remote device, because it is a browser stream and not a deep link. For who can open the preview, see [Security model](/preview/eas-simulator/how-it-works/security-model/).
+Open the browser preview URL in a desktop browser. Do not open it on the remote device, because it is a browser stream and not a deep link. For who can open the preview, see [EAS Simulator security model](/preview/eas-simulator/how-it-works/security-model/).
 
 ## Start a session from a link
 
-A create session link starts an iOS Simulator session from an EAS Build, build fingerprint, application archive, or Expo Go. The link opens the session's browser preview in fullscreen mode when the preview is ready. Use one to add an EAS Simulator action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/eas-simulator/reference/rest-api/).
+A create session link starts a session from an EAS Build, build fingerprint, application archive, or Expo Go. The link opens the session's browser preview when the preview is ready. Use one to add an EAS Simulator action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/eas-simulator/reference/rest-api/).
 
-Create session links start browser-preview-only sessions. They do not provision agent-device, Appium, or Argent. Use [EAS CLI](/preview/eas-simulator/reference/cli/) or the [REST API](/preview/eas-simulator/reference/rest-api/) when you need a controller, an Android Emulator, a blank device, or custom duration and idle limits.
+Create session links start browser-preview-only sessions. They do not provision agent-device, Appium, or Argent. Use [EAS CLI](/preview/eas-simulator/reference/cli/) or the [REST API](/preview/eas-simulator/reference/rest-api/) when you need a controller, a blank device, or custom duration and idle limits.
+
+Create session links support Android and iOS. Android support is still in development. A link with `platform=android`, or with an archive URL that ends in **.apk**, starts an Android session and shows an in-development warning. An Android application archive must be an **.apk**.
 
 > **warning** Opening a create session link starts a new session without a confirmation step. The link is not idempotent: opening it again can create another session that consumes EAS Simulator usage. To avoid starting a new session, open the existing one from the project's **Simulator sessions** page and share its session page URL.
 
@@ -57,12 +61,12 @@ The person opening the link must sign in to an Expo account that can access the 
 
 Every create session link requires exactly one application source:
 
-| Parameter               | Description                                                                                                                                                                                                                        |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `buildId`               | ID of a finished, unexpired EAS Build for the iOS Simulator. The build determines the platform.                                                                                                                                    |
-| `buildFingerprint`      | Fingerprint hash of an EAS Build. Requires `platform`. EAS resolves it to the most recent installable build with this fingerprint on the requested platform.                                                                       |
-| `applicationArchiveUrl` | URL of a downloadable iOS application archive. Encode this URL because it is nested inside the create session URL. Supported extensions are **.tar.gz**, **.tgz**, **.app**, and **.app.zip**.                                     |
-| `expoGo`                | Set to `true` to install and launch Expo Go instead of a project build. Requires `platform`. Use `sdkVersion` to choose the Expo Go version, and `openUrl` to load your project from Metro. `false` and `0` are treated as absent. |
+| Parameter               | Description                                                                                                                                                                                                                                                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buildId`               | ID of a finished, unexpired EAS Build. An iOS build must target the iOS Simulator, and an Android build must be an APK. The build determines the platform.                                                                                                                                                                       |
+| `buildFingerprint`      | Fingerprint hash of an EAS Build. Requires `platform`. EAS resolves it to the most recent finished, non-expired build with this fingerprint on the requested platform. On iOS, the build must target the iOS Simulator. On Android, EAS can select a build of any distribution type, so use a build profile that creates an APK. |
+| `applicationArchiveUrl` | URL of a downloadable application archive. Encode this URL because it is nested inside the create session URL. For iOS, use a **.tar.gz** or **.tgz** archive that contains the **.app**. For Android, use an **.apk**.                                                                                                          |
+| `expoGo`                | Set to `true` to install and launch Expo Go instead of a project build. Requires `platform`. Use `sdkVersion` to choose the Expo Go version, and `openUrl` to load your project from Metro. `false` and `0` are treated as absent.                                                                                               |
 
 Do not include more than one application source. A link with more than one, such as `buildId` together with `expoGo=true`, shows a validation error and does not create a session. A link without an application source cannot create a session.
 
@@ -70,14 +74,14 @@ EAS treats an empty application source value, such as `buildId=`, as absent.
 
 #### Add other parameters
 
-| Parameter          | Description                                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `platform`         | Platform for `buildFingerprint`, `applicationArchiveUrl`, or `expoGo`. Create session links currently support `ios`. It is required with `buildFingerprint` and `expoGo`, and can be omitted when an archive URL has a supported iOS extension. It is ignored when the application source is `buildId` because the build determines its platform.                                                                                         |
-| `sdkVersion`       | Expo SDK version used to select Expo Go, such as `54`. Accepts a major or semantic version. Only valid with `expoGo=true`. Omit to use the current Expo Go release for the platform.                                                                                                                                                                                                                                                      |
-| `launchArgs`       | Argument passed to the application when it launches. Repeat this parameter to pass multiple arguments. Their order is preserved.                                                                                                                                                                                                                                                                                                          |
-| `openUrl`          | Expo, development-client, or application deep link to open after the application launches. With Expo Go, pass the `exp://` URL of a Metro server that the remote simulator can reach, such as a tunneled Metro URL. With a development build, pass `<scheme>://expo-development-client/?url=<encoded-public-metro-url>`, as described in [Use a development build for live changes](/preview/eas-simulator/how-to/iterate-on-your-code/). |
-| `deviceIdentifier` | iOS Simulator name or unique device identifier (UDID), such as `iPhone 16 Pro`. The runner chooses the default device when this parameter is omitted.                                                                                                                                                                                                                                                                                     |
-| `name`             | Descriptive session name with a maximum of 255 characters.                                                                                                                                                                                                                                                                                                                                                                                |
+| Parameter          | Description                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `platform`         | Platform for `buildFingerprint`, `applicationArchiveUrl`, or `expoGo`. Accepts `ios` or `android`. It is required with `buildFingerprint` and `expoGo`, and can be omitted when the path of the archive URL ends in **.tar.gz**, **.tgz**, or **.apk**. It is ignored when the application source is `buildId` because the build determines its platform.                                                                                          |
+| `sdkVersion`       | Expo SDK version used to select Expo Go, such as `57`. Accepts a major or semantic version. Only valid with `expoGo=true`. Omit to use the current Expo Go release for the platform.                                                                                                                                                                                                                                                               |
+| `launchArgs`       | Argument passed to the application when it launches. Repeat this parameter to pass multiple arguments. Their order is preserved.                                                                                                                                                                                                                                                                                                                   |
+| `openUrl`          | Expo, development-client, or application deep link to open after the application launches. With Expo Go, pass the `exp://` URL of a Metro server that the remote simulator can reach, such as a tunneled Metro URL. With a development build, pass `<scheme>://expo-development-client/?url=<encoded-public-metro-url>`, as described in [Use Fast Refresh with Metro on a remote simulator](/preview/eas-simulator/how-to/iterate-on-your-code/). |
+| `deviceIdentifier` | Device to start. On iOS, a Simulator name or unique device identifier (UDID), such as `iPhone 17 Pro`. On Android, an Android Virtual Device (AVD) hardware profile, such as `pixel_9`. See [EAS Simulator devices](/preview/eas-simulator/reference/devices/). The runner chooses the default device when this parameter is omitted.                                                                                                              |
+| `name`             | Descriptive session name with a maximum of 255 characters.                                                                                                                                                                                                                                                                                                                                                                                         |
 
 URL-encode parameter values, especially nested URLs and values that contain spaces. Most programming languages provide a URL builder that handles this encoding. For example:
 
@@ -87,7 +91,7 @@ const url = new URL('https://expo.dev/accounts/acme/projects/my-app/simulator-se
 url.searchParams.set('buildFingerprint', 'FINGERPRINT_HASH');
 url.searchParams.set('platform', 'ios');
 url.searchParams.set('name', 'PR preview');
-url.searchParams.set('deviceIdentifier', 'iPhone 16 Pro');
+url.searchParams.set('deviceIdentifier', 'iPhone 17 Pro');
 url.searchParams.append('launchArgs', '-UITestMode');
 url.searchParams.append('launchArgs', '1');
 url.searchParams.set('openUrl', 'myapp://profile/42');
@@ -103,7 +107,7 @@ console.log(url.toString());
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID
 ```
 
-The build must be finished, its artifact must not be expired, and it must target the iOS Simulator instead of a physical iOS device.
+The build must be finished, and its artifact must not be expired. An iOS build must target the iOS Simulator instead of a physical iOS device. An Android build must be an APK.
 
 #### Start the most recent installable build with a fingerprint
 
@@ -116,13 +120,13 @@ EAS resolves the fingerprint to the most recent installable iOS Simulator build.
 #### Name the session and choose a device
 
 ```text
-https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID&name=PR%20preview&deviceIdentifier=iPhone%2016%20Pro
+https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID&name=PR%20preview&deviceIdentifier=iPhone%2017%20Pro
 ```
 
 #### Start a session from an application archive
 
 ```text
-https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?applicationArchiveUrl=https%3A%2F%2Fcdn.example.com%2FMyApp.app.zip&platform=ios
+https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?applicationArchiveUrl=https%3A%2F%2Fcdn.example.com%2FMyApp.tar.gz&platform=ios
 ```
 
 #### Pass launch arguments and open a deep link
@@ -141,13 +145,13 @@ EAS installs the Expo Go release for the requested SDK version and opens the `op
 
 <Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
 
-For more information, see [Use Expo Go](/preview/eas-simulator/works-with/expo-go/).
+For more information, see [Test your project in Expo Go on a remote simulator](/preview/eas-simulator/works-with/expo-go/).
 
 If no Expo Go release is published for the requested SDK version, the link shows a validation error.
 
 ### What happens when the link opens
 
-After authentication, expo.dev validates the parameters and build, then creates the session. It shows the session's startup progress while reserving a simulator and preparing the browser preview. This can take about a minute. When the browser preview becomes available, expo.dev redirects directly to its `webPreviewUrl` with `fullscreen=1`, so the preview fills the page.
+After authentication, expo.dev validates the parameters and build, then creates the session. It shows the session's startup progress while reserving a simulator and preparing the browser preview. This can take about a minute. When the browser preview becomes available, expo.dev redirects to its browser preview.
 
 To return to or share the same session without starting another one, open it from the project's **Simulator sessions** page. Its session page URL uses this format:
 

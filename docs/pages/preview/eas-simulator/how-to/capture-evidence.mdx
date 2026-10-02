@@ -4,6 +4,8 @@ sidebar_title: Capture evidence
 description: Take screenshots, record video, read session activity, and download session artifacts from an EAS Simulator session to prove that a change works.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
@@ -30,37 +32,39 @@ Open the app first. agent-device needs an open app session before it can take a 
   ]}
 />
 
-The screenshot downloads to the computer that runs the command. Take the screenshot only after the correct build is on screen. A release build shows the code from build time. See [Builds and bundles](/preview/eas-simulator/how-it-works/builds-and-bundles/).
+The screenshot downloads to the computer that runs the command. Take the screenshot only after the correct build is on screen. A release build shows the code from build time. See [Which build to install on EAS Simulator](/preview/eas-simulator/how-it-works/builds-and-bundles/). To confirm that a screenshot came from the remote device, see [Confirm that the agent controls the remote device](/preview/eas-simulator/how-it-works/agent-targeting/#confirm-that-the-agent-controls-the-remote-device).
 
 The status bar of the iOS Simulator shows `9:41` by default. This time does not mean that the screenshot is old.
 
 ### Control the screenshot size
 
-agent-device takes full-resolution screenshots by default. A full-resolution image uses more tokens when an agent reads it. From agent-device 0.20.6, pass `--scale` with a value from 0.01 to 1 to make the image smaller:
+On an iOS Simulator, agent-device screenshots use 1x logical points by default, such as 402 x 874 on iPhone 17. For a full-resolution image, pass `--pixel-density 3` (1206 x 2622 on iPhone 17). A full-resolution image uses more tokens when an agent reads it. From agent-device 0.20.6, pass `--scale` with a value from 0.01 to 1 to make the image smaller:
 
 <Terminal
   cmd={['$ eas simulator:exec npx agent-device@latest screenshot ./artifacts/home.png --scale 0.5']}
 />
 
-Keep the full resolution for an image that you compare pixel by pixel with another image.
+Use the full resolution for an image that you compare pixel by pixel with another image.
 
 ## Record the screen
 
 <Terminal
   cmd={[
-    '$ eas simulator:exec npx agent-device@latest record start',
+    '$ eas simulator:exec npx agent-device@latest record start ./artifacts/flow.mp4',
     '# Use the app',
-    '$ eas simulator:exec npx agent-device@latest record stop ./artifacts/flow.mp4',
+    '$ eas simulator:exec npx agent-device@latest record stop',
   ]}
 />
 
-Recordings capture about 30 frames each second. This rate shows visible jank, but it cannot prove or disprove a short frame drop on a 60 Hz or 120 Hz display.
+agent-device writes the recording to the path that you pass to `record start`, with a **.gesture-telemetry.json** file next to it. EAS also uploads the recording as a session artifact. If `record stop` times out while the remote device still exports the recording, run `record stop` again. If agent-device reports that it cannot find the recording, add `--platform ios`.
+
+Recordings may not capture every frame, so they cannot prove or disprove a short frame drop.
 
 With Argent, use the `screen-recording-start` and `screen-recording-stop` tools. Argent removes frames that do not change by default, so turn off that option when you measure timing. Argent recordings on EAS Simulator include an Argent watermark.
 
 ### Recover a recording that did not download
 
-If the controller does not download a recording, EAS can still have it as a session artifact. Get the session with its ID, and find the recording in the `artifacts` array:
+If the controller does not download a recording, get it from the session artifacts. EAS uploads the agent-device recording as an artifact, and it can appear while the session is still running. EAS also records the full session screen and uploads that recording as an artifact after the session stops. Get the session with its ID, and find the recording in the `artifacts` array:
 
 <Terminal cmd={['$ eas simulator:get --id <session-id> --json --non-interactive']} />
 
@@ -70,11 +74,11 @@ Download the file from its `downloadUrl`:
   cmd={[`$ curl --fail --location --max-time 600 --output ./capture.mp4 '<download-url>'`]}
 />
 
-The download link redirects to a signed URL that is valid for one hour. If the URL expires, get the session again for a new URL. You can get artifacts after the session stops.
+The `downloadUrl` does not change. Each request to it redirects to a new signed URL that is valid for one hour. If a signed URL expires, request the same `downloadUrl` again. You can get artifacts after the session stops.
 
 ## Read session activity
 
-Sessions that use agent-device or Argent record each controller action. Show the activity so far:
+Sessions that use agent-device, Argent, or Appium record each controller action. Show the activity so far:
 
 <Terminal cmd={['$ eas simulator:events']} />
 
@@ -96,25 +100,29 @@ The session page on expo.dev shows the evidence that EAS stores for the session:
 
 | Section              | Content                                                                                                                                         |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Preview or recording | The live iOS preview while the session runs. After it ends, the recording player.                                                               |
+| Preview or recording | The live browser preview while the session runs. After it ends, the recording player.                                                           |
 | Session activity     | The recorded controller actions.                                                                                                                |
 | Artifacts            | Files grouped as screenshots, screen recordings, traces, performance metrics, native profiles, React profiles, session events, and other files. |
 | Logs                 | The logs of the job that ran the session. This section starts collapsed.                                                                        |
 
-Screen recordings on the session page are available for iOS sessions.
+Android sessions also produce a session screen recording artifact. On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
-EAS keeps logs and artifacts for 30 days after the session is created. Download the files that you want to keep. See [Security and data](/preview/eas-simulator/reference/security-and-data/).
+Job logs on the session page are available for 30 days after the session is created. EAS keeps session artifacts, such as screenshots and recordings, until you delete the session. You can delete a finished session from its expo.dev page with the Developer role or higher. Download the files that you want to keep. See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/).
 
 ## Common questions
 
-### Why does the screenshot command say that there is no active session?
+<FAQ>
+
+<Collapsible summary="Why does the screenshot command say that there is no active session?">
 
 agent-device needs an open app. Run `open <app-id>` before `screenshot`. If the start command launched the app with `--open-url`, attach without a relaunch: `open <app-id> --foreground --platform ios`.
 
-### How do I prove that the screenshot came from the remote device?
+</Collapsible>
 
-Confirm that `eas simulator:get --json` returns the session ID that the start command printed. See [Agent targeting](/preview/eas-simulator/how-it-works/agent-targeting/).
+<Collapsible summary="Can other people see my artifacts?">
 
-### Can other people see my artifacts?
+Yes. People with access to the project can see the session page. An artifact download link works without an Expo login, so share it only with people who should see the file.
 
-People with access to the project can see the session page. An artifact download link works without an Expo login, so share it only with people who should see the file.
+</Collapsible>
+
+</FAQ>

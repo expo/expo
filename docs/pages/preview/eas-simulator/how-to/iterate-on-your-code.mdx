@@ -4,6 +4,8 @@ sidebar_title: Iterate on your code
 description: Connect a development build on EAS Simulator to Metro through a tunnel so that source changes reach the remote device with Fast Refresh.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -78,9 +80,9 @@ Pass the build ID and the development client URL:
   ]}
 />
 
-Replace `<scheme>` with the `scheme` value from your [app config](/workflow/configuration/). Do not use the project slug. URL-encode the Metro URL when it contains a path or a query.
+Replace `<scheme>` with the `scheme` value from your [app config](/workflow/configuration/), or with `exp+<slug>`. `expo-dev-client` adds the `exp+<slug>` scheme to a development build, where `<slug>` is the `slug` from your app config in lowercase, with characters that are not valid in a URL scheme removed. Do not use the slug without the `exp+` prefix. URL-encode the Metro URL when it contains a path or a query.
 
-The launch arguments hide the developer menu onboarding screen and stop the developer menu from opening at launch. Add `--launch-arg "-EXDevMenuShowFloatingActionButton" --launch-arg "0"` to hide the floating button.
+The launch arguments hide the developer menu onboarding screen and stop the developer menu from opening at launch. Add `--launch-arg "-EXDevMenuShowFloatingActionButton" --launch-arg "0"` to hide the floating button. These `-EXDevMenu*` launch arguments work only on iOS. For an Android session, do not pass them.
 
 </Step>
 
@@ -125,14 +127,24 @@ The start command installs a development build only from EAS Build, a fingerprin
 
 ## Common questions
 
-### Who can reach my Metro server through the tunnel?
+<FAQ>
 
-The tunnel URL is public while the tunnel runs. A random URL is hard to guess, but the URL does not require authentication. Share the URL only with the session, and stop Metro when you finish. See [Security model](/preview/eas-simulator/how-it-works/security-model/).
+<Collapsible summary="Who can reach my Metro server through the tunnel?">
 
-### Can I use Fast Refresh on Android?
+Anyone who has the URL. The tunnel URL is public while the tunnel runs. A random URL is hard to guess, but the URL does not require authentication. Share the URL only with the session, and stop Metro when you finish. See [EAS Simulator security model](/preview/eas-simulator/how-it-works/security-model/).
 
-Yes. Use a development build APK and the same Metro tunnel. Android sessions do not include a browser preview, so use screenshots to check the result.
+</Collapsible>
 
-### Why does `expo start` fail with exit code 137?
+<Collapsible summary="Can I use Fast Refresh on Android?">
+
+Yes. Use a development build APK and the same Metro tunnel. Do not pass the `-EXDevMenu*` launch arguments, because they work only on iOS.
+
+</Collapsible>
+
+<Collapsible summary="Why does `expo start` fail with exit code 137?">
 
 Exit code 137 means that the operating system stopped the process, usually because of low memory. This is common in small cloud sandboxes. Do not run a native build and Metro at the same time.
+
+</Collapsible>
+
+</FAQ>
