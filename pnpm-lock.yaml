@@ -2030,8 +2030,8 @@ importers:
         specifier: workspace:~
         version: link:../config-plugins
       '@expo/devcert':
-        specifier: ^1.2.1
-        version: 1.2.1
+        specifier: ^1.2.2
+        version: 1.2.2
       '@expo/env':
         specifier: workspace:~
         version: link:../env
@@ -2084,11 +2084,11 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
       '@expo/ws-tunnel':
-        specifier: ^2.0.0
-        version: 2.0.0(ws@8.19.0)
+        specifier: ^2.0.1
+        version: 2.0.1(ws@8.19.0)
       '@expo/xcpretty':
-        specifier: ^4.4.4
-        version: 4.4.4
+        specifier: ^4.4.6
+        version: 4.4.6
       '@react-native/asset-utils':
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3
@@ -2416,8 +2416,8 @@ importers:
         specifier: workspace:^
         version: link:../require-utils
       '@expo/sdk-runtime-versions':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.0.1
+        version: 1.0.1
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -7113,8 +7113,8 @@ importers:
         specifier: ^0.57.1
         version: 0.57.1
       '@expo/xcpretty':
-        specifier: ^4.4.4
-        version: 4.4.4
+        specifier: ^4.4.6
+        version: 4.4.6
       '@linear/sdk':
         specifier: ^2.6.0
         version: 2.6.0(encoding@0.1.13)
@@ -8318,8 +8318,8 @@ packages:
   '@expo/commander@2.21.1':
     resolution: {integrity: sha512-1m0+eqh8y3Wv4BeKutSD3F3l9WQ7rS/52ERW6zempzsXPvrKWTT5cPIrB0AVnMbnPzX0WjXgpABL7v9wNiLNgA==}
 
-  '@expo/devcert@1.2.1':
-    resolution: {integrity: sha512-qC4eaxmKMTmJC2ahwyui6ud8f3W60Ss7pMkpBq40Hu3zyiAaugPXnZ24145U7K36qO9UHdZUVxsCvIpz2RYYCA==}
+  '@expo/devcert@1.2.2':
+    resolution: {integrity: sha512-wz1YedXwdNbYqk/PRr34vixnuw1+l6uSwmPXUj649cot5iYNccb2zIOnK7Nonb1Pfd/dxAY6CvU6KM3uSdxC7A==}
 
   '@expo/material-symbols@0.1.1':
     resolution: {integrity: sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg==}
@@ -8411,8 +8411,8 @@ packages:
     resolution: {integrity: sha512-uy/hS/awclDJ1S88w9UGpc6Nm9XnNUjzOAAib1A3PVAnGQIwebg8DpFqOthFBTlZxeuV/BKbZ5jmTbtNZkp1WQ==}
     engines: {node: '>=12'}
 
-  '@expo/sdk-runtime-versions@1.0.0':
-    resolution: {integrity: sha512-Doz2bfiPndXYFPMRwPyGa1k5QaKDVpY806UJj570epIiMzWaYyCtobasyfC++qfIXVb5Ocy7r3tP9d62hAQ7IQ==}
+  '@expo/sdk-runtime-versions@1.0.1':
+    resolution: {integrity: sha512-kvisefkhxu8Fm/4M8G6DEqUaigrXfrSOm2lFw7hsk/nq0zchcp6B4wSk8rlheHY8FRi5iHxKtoVMGY/3M6h04A==}
 
   '@expo/server@0.5.3':
     resolution: {integrity: sha512-WXsWzeBs5v/h0PUfHyNLLz07rwwO5myQ1A5DGYewyyGLmsyl61yVCe8AgAlp1wkiMsqhj2hZqI2u3K10QnCMrQ==}
@@ -8439,13 +8439,13 @@ packages:
       react: '*'
       react-native: 0.88.0-rc.3
 
-  '@expo/ws-tunnel@2.0.0':
-    resolution: {integrity: sha512-j+JfTRdCk820J9dU0sA2SqshQIKFOMo7ED84w9MJFcebfbNQgsLztEY/SABDkGnjatrW4xGqnUhVRxSBVyCkXw==}
+  '@expo/ws-tunnel@2.0.1':
+    resolution: {integrity: sha512-mljsRffbOHzmSimYQbQu9h9NR3alwCCwEEouRGFL4QRTt8dNvsNtKEPa/5jHmtDLDtsh4xXsWKwzjN9BTpeXHQ==}
     peerDependencies:
       ws: ^8.0.0
 
-  '@expo/xcpretty@4.4.4':
-    resolution: {integrity: sha512-4aQzz9vgxcNXFfo/iyNgDDYfsU5XGKKxWxZopw0cVotHiW+U8IJbIxMaxsINs6bHhtkG3StKNPcOrn3eBuxKPw==}
+  '@expo/xcpretty@4.4.6':
+    resolution: {integrity: sha512-uRaZZ/IsX1WkFW69xxTZtMeRvI5ziD9yoian+FMqdhITkU6NGvIWd5uRMh2Gbo/6xstpQ4v0GtF1V5YatTwzDA==}
     hasBin: true
 
   '@gerrit0/mini-shiki@3.23.0':
@@ -17312,7 +17312,7 @@ snapshots:
     dependencies:
       chalk: 2.4.2
 
-  '@expo/devcert@1.2.1':
+  '@expo/devcert@1.2.2':
     dependencies:
       '@expo/sudo-prompt': 9.3.2
       debug: 3.2.7
@@ -17435,7 +17435,7 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@expo/sdk-runtime-versions@1.0.0': {}
+  '@expo/sdk-runtime-versions@1.0.1': {}
 
   '@expo/server@0.5.3':
     dependencies:
@@ -17471,11 +17471,11 @@ snapshots:
       react: 19.3.0
       react-native: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
 
-  '@expo/ws-tunnel@2.0.0(ws@8.19.0)':
+  '@expo/ws-tunnel@2.0.1(ws@8.19.0)':
     dependencies:
       ws: 8.19.0
 
-  '@expo/xcpretty@4.4.4':
+  '@expo/xcpretty@4.4.6':
     dependencies:
       '@babel/code-frame': 7.29.7
       chalk: 4.1.2
