@@ -780,12 +780,12 @@ const preview = [
           [
             makePage('preview/eas-simulator/works-with/overview.mdx'),
             makePage('preview/eas-simulator/works-with/expo-and-react-native.mdx'),
+            makePage('preview/eas-simulator/works-with/expo-go.mdx'),
             makePage('preview/eas-simulator/works-with/native-ios-and-android.mdx'),
             makePage('preview/eas-simulator/works-with/flutter.mdx'),
             makePage('preview/eas-simulator/works-with/unity-and-hybrid.mdx'),
             makePage('preview/eas-simulator/works-with/appium.mdx'),
             makePage('preview/eas-simulator/works-with/maestro.mdx'),
-            makePage('preview/eas-simulator/works-with/expo-go.mdx'),
           ],
           { expanded: false }
         ),
