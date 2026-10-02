@@ -312,12 +312,6 @@
 /develop/user-interface/splash-screen /develop/user-interface/splash-screen-and-app-icon 301
 /develop/user-interface/splash-screen/ /develop/user-interface/splash-screen-and-app-icon 301
 
-# Preview section
-/preview/support /preview/introduction 301
-/preview/support/ /preview/introduction 301
-/preview/react-compiler /guides/react-compiler 301
-/preview/react-compiler/ /guides/react-compiler 301
-
 # Archived
 /guides/using-flipper /debugging/tools 301
 /guides/using-flipper/ /debugging/tools 301
