@@ -8,8 +8,6 @@ hideTOC: true
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 import { FileTree } from '~/ui/components/FileTree';
 
-> **warning** **Warning:** `unstable_settings` currently do not work with [async routes](/router/web/async-routes/) (development-only). This is why the feature is designated _unstable_.
-
 <PaddedAPIBox header="anchor">
 
 When deep linking to a route, you may want to provide a user with a "back" button. The `anchor` sets the default screen of the stack and should match a valid filename (without the extension).
@@ -30,6 +28,8 @@ export default function Layout() {
 ```
 
 Now deep linking directly to `/other` or reloading the page will continue to show the back arrow.
+
+Expo Router reads the `anchor` when the layout first renders, so it also works with [async routes](/router/web/async-routes/). An invalid `anchor` throws an error when the layout renders.
 
 When using [array syntax](/router/advanced/shared-routes/#arrays) `(foo,bar)` you can specify the name of a group in the `unstable_settings` object to target a particular segment.
 
