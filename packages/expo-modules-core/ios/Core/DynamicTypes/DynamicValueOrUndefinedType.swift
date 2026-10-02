@@ -43,6 +43,9 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
     if let jsValue = value as? JavaScriptValue {
       return jsValue
     }
+    if let jsValue = value as? JavaScriptValueRef {
+      return jsValue.asValue()
+    }
     return try dynamicInnerType.castToJS(value, appContext: appContext)
   }
 

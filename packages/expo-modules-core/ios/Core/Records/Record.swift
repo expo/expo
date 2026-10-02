@@ -235,5 +235,8 @@ internal func recordFieldValueToJSValue(
   if let jsValue = convertedValue as? JavaScriptValue {
     return jsValue
   }
+  if let jsValue = convertedValue as? JavaScriptValueRef {
+    return jsValue.asValue()
+  }
   return try Conversions.unknownToJavaScriptValue(convertedValue, appContext: appContext)
 }

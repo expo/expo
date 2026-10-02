@@ -560,8 +560,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
     let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
 
-    // Stored as JavaScriptValue (a class) because JavaScriptObject is ~Copyable
-    // and cannot be a Dictionary value.
+    // Prototypes are cached behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and
+    // cannot be a Dictionary value.
     let prototypeCache = WorkletPrototypeCache()
 
     // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
@@ -579,8 +579,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
       let typeId = ObjectIdentifier(type(of: nativeObject))
       let instance: JavaScriptObject
 
-      if let cachedPrototype = prototypeCache.store[typeId] {
-        instance = runtime.createObject(prototype: cachedPrototype.getObject())
+      if let cachedPrototype = prototypeCache.store[typeId]?.withUnwrappedValue({ (value: borrowing JavaScriptValue) in value.getObject() }) {
+        instance = runtime.createObject(prototype: cachedPrototype)
       } else {
         guard let classDefinition = self.findClassDefinition(for: typeId) else {
           throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
@@ -590,7 +590,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
           appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
-        prototypeCache.store[typeId] = built.asValue()
+        prototypeCache.store[typeId] = built.refToValue()
         instance = runtime.createObject(prototype: built)
       }
 
@@ -819,12 +819,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
 /**
  Reference-type store for cached worklet prototypes. Needed because JavaScriptObject
- is ~Copyable and cannot be stored in a Dictionary; we cache via JavaScriptValue
- (a class) and rehydrate a JavaScriptObject on use.
+ is ~Copyable and cannot be stored in a Dictionary; we cache the prototype as a
+ `JavaScriptValue.Ref` and rehydrate a JavaScriptObject on use.
  */
 @JavaScriptActor
 private final class WorkletPrototypeCache {
-  var store: [ObjectIdentifier: JavaScriptValue] = [:]
+  var store: [ObjectIdentifier: JavaScriptValue.Ref] = [:]
 }
 
 // MARK: - Public exceptions

@@ -66,8 +66,8 @@ struct SharedObjectRegistryTests {
 
     // Reading the pairing must not consume it: two consecutive lookups for the same runtime should
     // both resolve to the originally paired JS object.
-    #expect(nativeState.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
-    #expect(nativeState.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
+    #expect(nativeState.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
+    #expect(nativeState.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
   }
 
   @Test
@@ -87,8 +87,8 @@ struct SharedObjectRegistryTests {
 
     // Each runtime resolves to its own JS counterpart. Compare within a runtime only (cross-runtime
     // strict-equality is meaningless).
-    #expect(nativeState.javaScriptObject(in: primaryRuntime)?.asValue() == primaryObject.asValue())
-    #expect(nativeState.javaScriptObject(in: secondaryRuntime)?.asValue() == secondaryObject.asValue())
+    #expect(nativeState.javaScriptObject(in: primaryRuntime)?.asValue().isEqual(to: primaryObject.asValue()) == true)
+    #expect(nativeState.javaScriptObject(in: secondaryRuntime)?.asValue().isEqual(to: secondaryObject.asValue()) == true)
   }
 
   @Test
@@ -285,7 +285,7 @@ struct SharedObjectRegistryTests {
       let id = sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
       let nativeState = sharedObjectRegistry.get(id)
       #expect(nativeState?.native === nativeObject)
-      #expect(nativeState?.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
+      #expect(nativeState?.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
     }
   }
 

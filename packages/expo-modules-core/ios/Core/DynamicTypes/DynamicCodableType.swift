@@ -40,6 +40,9 @@ internal struct DynamicCodableType<InnerType>: AnyDynamicType {
     if let value = value as? JavaScriptValue {
       return value
     }
+    if let value = value as? JavaScriptValueRef {
+      return value.asValue()
+    }
     if let value = value as? Encodable {
       let encoder = JSValueEncoder(appContext: appContext, runtime: runtime)
       try value.encode(to: encoder)
