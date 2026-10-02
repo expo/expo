@@ -1,0 +1,66 @@
+---
+title: EAS Simulator limitations
+sidebar_title: Limitations
+description: Known limits of the EAS Simulator preview, including Android support, browser preview, session duration, physical devices, and controller features.
+---
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator is an experimental preview. Its commands, flags, and behavior can change. This page lists the known limits. For each limit, it also gives the alternative to use.
+
+## Access and versions
+
+| Limit                                                                | Alternative                                                                                                |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Only accounts with limited-access preview access can start sessions. | Check access with `eas simulator:availability`. [Join the waitlist](https://expo.dev/services/simulators). |
+| The `simulator:*` commands and flags change often.                   | Use the latest EAS CLI, and read `eas simulator:start --help`.                                             |
+| The `--name` flag is not available in older EAS CLI versions.        | Run `npx --yes eas-cli@latest`.                                                                            |
+
+## Platforms and devices
+
+| Limit                                                                                                                                                                | Alternative                                                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Android support is still in development. Some features that work on iOS may not work on Android yet.                                                                 | Use iOS when you need a feature that does not work on Android yet.                                                                                                                 |
+| The expo.dev session page does not show the Android browser preview inline yet.                                                                                      | Select **Open preview** on the session page to open the preview in a new tab. If the preview does not respond to input, control the emulator with agent-device, Argent, or Appium. |
+| EAS Simulator does not provide physical devices.                                                                                                                     | Use a physical device with local tools or a device cloud.                                                                                                                          |
+| A session can run only a simulator build on iOS and an APK on Android. An iOS application archive must be a **.tar.gz** or **.tgz** file that contains the **.app**. | Create an iOS Simulator build or an APK. See [Install an app on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/how-to/install-your-app/).                      |
+| Create session links for Android are still in development, and Android links need an **.apk** archive.                                                               | Use EAS CLI or the REST API if an Android link does not work.                                                                                                                      |
+| Local egress works only on iOS, and it is an experimental feature that must be enabled for your account.                                                             | Contact Expo to enable it. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/).                                       |
+
+## Session lifetime
+
+| Limit                                                                                 | Alternative                                                                                   |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| A session runs for at most 40 minutes on the Free plan and 115 minutes on paid plans. | Start a new session when the old one stops.                                                   |
+| A session started with `--non-interactive` does not stop when the command returns.    | Run `eas simulator:stop`, and set `--max-duration-minutes`.                                   |
+| Browser preview activity does not reset the idle timer.                               | Use `--max-duration-minutes` to limit sessions that a person controls in the browser preview. |
+| `web-preview-only` sessions do not support an idle timeout.                           | Use `--max-duration-minutes`.                                                                 |
+
+See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
+
+## Controllers and tools
+
+| Limit                                                                                 | Alternative                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Each session provisions only the controller of its session type.                      | Start a new session with the type that you need.                                                                                                                                                                                |
+| **.env.eas-simulator** holds one session at a time.                                   | Use a separate working directory for each parallel session, or use `--out-config-type env` and pass `--id`. See [How EAS CLI and agents select an EAS Simulator session](/preview/eas-simulator/how-it-works/agent-targeting/). |
+| Fast Refresh, React DevTools, and React profiling need Metro and a development build. | Use a development build with a Metro tunnel. See [Use Fast Refresh with Metro on a remote simulator](/preview/eas-simulator/how-to/iterate-on-your-code/).                                                                      |
+| Fast Refresh and React features do not apply to apps that are not React Native apps.  | Use device-level commands. See [Which apps and frameworks work with EAS Simulator](/preview/eas-simulator/works-with/overview/).                                                                                                |
+| Argent recordings include a watermark on EAS Simulator.                               | Check the recording before you share it publicly.                                                                                                                                                                               |
+
+## Performance
+
+| Limit                                                                                        | Alternative                                                        |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Startup time varies. A session can wait for concurrency, then take time to start.            | Poll the existing session. Do not start a second session to retry. |
+| On iOS, accessibility snapshots can take tens of seconds.                                    | Wait for the snapshot. Take a new snapshot after a timeout.        |
+| The first JavaScript bundle over a Metro tunnel is slow.                                     | Wait for the first bundle. Later Fast Refresh updates are fast.    |
+| Recordings may not capture every frame, so they cannot prove or disprove a short frame drop. | Use a profiler for frame timing that a recording cannot show.      |
+
+## Data
+
+| Limit                                                                                | Alternative                                                                                             |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| Job logs on the session page are available for 30 days after the session is created. | Download the artifacts that you want to keep. EAS keeps session artifacts until you delete the session. |
+
+See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/).

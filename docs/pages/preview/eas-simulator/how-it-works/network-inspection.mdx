@@ -1,0 +1,97 @@
+---
+title: Network traffic and local egress in EAS Simulator
+sidebar_title: Network inspection
+description: Learn where network traffic from a remote EAS Simulator device exits, how local egress routes iOS traffic through your computer, and how to inspect requests.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+By default, network traffic from an EAS Simulator device exits from EAS infrastructure. Third-party servers see an EAS IP address, and the device cannot reach servers on your computer or private network. With **local egress**, an iOS Simulator session sends its proxied traffic through your computer instead. Your servers then see your IP address, and the simulator can reach destinations that you allow on your network.
+
+## Default network path
+
+| Traffic                                 | Exits from         |
+| --------------------------------------- | ------------------ |
+| All traffic from the device, by default | EAS infrastructure |
+
+To reach Metro on your computer without local egress, start Metro with a public tunnel. See [Use Fast Refresh with Metro on a remote simulator](/preview/eas-simulator/how-to/iterate-on-your-code/).
+
+## How local egress works
+
+Local egress is an experimental feature for iOS sessions. It is available only on accounts where Expo enables it. Contact Expo to enable it.
+
+When you start a session with `--egress local`, these steps occur:
+
+1. The machine on EAS points its macOS system proxy, which the iOS Simulator uses, at a port on that machine.
+2. A reverse tunnel connects that port to the egress client on your computer.
+3. The egress client sends each request to the internet from your computer.
+4. The response returns through the tunnel to the simulator.
+
+The egress client runs on the computer that runs EAS CLI. It must keep running for the life of the session. While the client is disconnected, proxied requests fail and the session continues to run. The client tries to reconnect automatically. If the client that `simulator:start` runs in interactive mode exits with an error, EAS CLI stops the session. If `eas simulator:egress` exits, the session continues to run.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --egress local --name "Staging API checks"',
+  ]}
+/>
+
+In interactive mode, the start command runs the egress client in the same terminal. With `--non-interactive`, run `eas simulator:egress` in another terminal. See [`simulator:egress`](/preview/eas-simulator/reference/cli/#simulatoregress).
+
+## Which traffic local egress covers
+
+| Client type                                                             | Behavior with local egress    |
+| ----------------------------------------------------------------------- | ----------------------------- |
+| Clients that honor the system proxy, such as WebKit and URLSession      | Exit from your computer.      |
+| Clients that read proxy environment variables, such as gRPC and libcurl | Exit from your computer.      |
+| HTTP and HTTPS requests, WebSocket connections                          | Supported through the proxy.  |
+| Connections that ignore both the system proxy and the variables         | Refused inside the simulator. |
+
+EAS reports each refused connection, with the library that tried to connect, in the session log.
+
+## Reach a server on your computer
+
+The egress client refuses connections to local, private, link-local, and multicast addresses. This keeps code in the remote simulator out of your network. To allow a destination, pass `--egress-allow` with an exact `host:port`:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --egress local --egress-allow localhost:3000 --name "Local API checks"',
+  ]}
+/>
+
+Repeat the flag for each destination. Ranges are not supported. A `localhost` or `127.0.0.1` entry also forwards that port from the simulator's machine to your computer, in the same way as `adb reverse`, so a development server URL that uses `127.0.0.1:3000` works in the remote simulator. EAS CLI does not forward ports below 1024 or the port of the egress proxy. The simulator can reach those destinations only by host name.
+
+## Inspect requests
+
+agent-device can collect the network requests and responses that the app makes. Run the `network` command through `simulator:exec`. Read the options for your installed version:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest help']} />
+
+The browser preview on expo.dev also shows performance charts for the session, including network use.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Does local egress work on Android?">
+
+No. Local egress uses the macOS system proxy, so it is available only with `--platform ios`.
+
+</Collapsible>
+
+<Collapsible summary="Why does a request fail when the egress client stops?">
+
+The simulator sends proxied traffic to the egress client. Without the client, the traffic has no exit. Restart the client with `eas simulator:egress`, or stop the session.
+
+</Collapsible>
+
+<Collapsible summary="Can I see the traffic in a proxy tool on my computer?">
+
+No. `eas simulator:egress` has no option to send requests through another proxy on your computer. To inspect requests, use the agent-device `network` command. See [Inspect requests](#inspect-requests).
+
+</Collapsible>
+
+</FAQ>

@@ -1,0 +1,80 @@
+---
+title: Which build to install on EAS Simulator
+sidebar_title: Builds and bundles
+description: Learn how release builds, development builds, and Expo Go load JavaScript on EAS Simulator, which build formats install, and where EAS downloads each build.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+An app on EAS Simulator shows the JavaScript that its build loads. A **release build** contains a JavaScript bundle from the time of the build. A **development build** loads the bundle from Metro, so it shows your current source. **Expo Go** also loads the bundle from Metro, but it contains only the native code that Expo Go includes. Select the build type before you install anything, because a wrong build type is the most common reason that a screenshot shows old code.
+
+## Where the JavaScript comes from
+
+| Build type        | JavaScript source              | Shows current source              | Fast Refresh |
+| ----------------- | ------------------------------ | --------------------------------- | ------------ |
+| Release build     | Bundle embedded at build time  | Only if built from current source | No           |
+| Development build | Metro, through a public tunnel | Yes                               | Yes          |
+| Expo Go           | Metro, through a public tunnel | Yes                               | Yes          |
+
+If you connect a release build to Metro, it continues to use its embedded bundle. To see live changes, install a development build.
+
+## Builds that install on a simulator
+
+A remote device is a simulator or an emulator, so the build must target it:
+
+| Platform | Installs                                                                | Does not install                         |
+| -------- | ----------------------------------------------------------------------- | ---------------------------------------- |
+| Android  | An **.apk** that includes an emulator ABI, such as `x86_64`             | An **.aab**                              |
+| iOS      | A **.app** built against the `iphonesimulator` SDK, often in an archive | A device **.ipa**, or a **.zip** archive |
+
+An iOS archive must be a gzip tarball (**.tar.gz** or **.tgz**). EAS supports an archive where the **.app** directory is inside the archive and an archive where the contents of the app bundle are at the root.
+
+## Fingerprints and build freshness
+
+A [fingerprint](/versions/latest/sdk/fingerprint/) is a hash of the native parts of a project. Two builds with the same fingerprint have the same native code. When you pass `--build-fingerprint`, EAS installs the most recent finished build with that fingerprint whose artifact has not expired. On iOS, EAS selects only simulator builds. On Android, EAS selects a build of any distribution type, and an **.aab** build fails to install, so use a build profile that creates an **.apk**.
+
+A matching fingerprint does not mean that the JavaScript matches. A release build with a matching fingerprint can contain an older bundle. To see current JavaScript, use a development build with Metro, or create a new release build.
+
+## Where EAS gets the build
+
+| Application source                               | Who downloads or uploads the build                            |
+| ------------------------------------------------ | ------------------------------------------------------------- |
+| `--build-id` or `--build-fingerprint`            | The machine on EAS downloads the EAS Build artifact.          |
+| `--application-archive-url`                      | The machine on EAS downloads the file from the URL.           |
+| `--expo-go`                                      | EAS selects the Expo Go release for the SDK version.          |
+| agent-device `install-from-source <url>`         | The machine on EAS downloads the file from the URL.           |
+| agent-device `install` or Argent `reinstall-app` | Your computer uploads the local build through the controller. |
+| **Upload build file** on expo.dev                | Your browser uploads the build. The limit is 1 GB.            |
+
+A large local build takes longer, because your computer uploads it. When the build is at a URL, let the machine on EAS download it.
+
+## Launch arguments and URLs
+
+When you install the app with an application source, EAS can launch it with arguments and then open a URL. EAS accepts up to 100 launch arguments, with a total size of up to 64,000 bytes. In an iOS agent-device or Argent session, EAS tries to approve the custom URL scheme first, so that the system **Open in** dialog does not appear. In other session types, or if the approval fails, the dialog can appear. Accept it in the browser preview or with the controller.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Do I need to sign an iOS build for EAS Simulator?">
+
+No. iOS Simulator builds are not signed, so EAS Build does not ask for credentials.
+
+</Collapsible>
+
+<Collapsible summary="Why does the status bar show 9:41?">
+
+9:41 is the default time in the iOS Simulator status bar. It does not mean that the build or the screenshot is old.
+
+</Collapsible>
+
+<Collapsible summary="Can the app use custom native code in Expo Go?">
+
+No. Expo Go contains a fixed set of native modules. Use a development build for a project with custom native code.
+
+</Collapsible>
+
+</FAQ>

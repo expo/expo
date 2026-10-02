@@ -1,0 +1,77 @@
+---
+title: Run a Unity or hybrid app on EAS Simulator
+sidebar_title: Unity and hybrid
+description: Build a Unity game or another app for the Android Emulator or iOS Simulator, then install and control it on a remote EAS Simulator session.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator runs Unity apps. Unity exports a native project. Build that project for the emulator or simulator, publish the build to a URL, and pass the URL to `eas simulator:start`. The same steps apply to any app that produces a simulator **.app** or an emulator **.apk**.
+
+## Build a Unity app
+
+<Tabs>
+
+<Tab label="Android">
+
+Build an **.apk** from Unity and include the `x86_64` target architecture. The Android Emulator needs this architecture.
+
+</Tab>
+
+<Tab label="iOS">
+
+Unity exports an Xcode project for iOS. Build that project against the simulator SDK, then compress the **.app** in the build output folder. Its name comes from your Unity product name. Replace `<YourApp>` with that name:
+
+<Terminal
+  cmd={[
+    '$ xcodebuild -project Unity-iPhone.xcodeproj -scheme Unity-iPhone -configuration Release -sdk iphonesimulator -derivedDataPath ./build',
+    '$ tar -czf <YourApp>.app.tar.gz -C ./build/Build/Products/Release-iphonesimulator <YourApp>.app',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
+
+## Start a session with the build
+
+Upload the file to storage that returns it directly. Then pass its URL:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --application-archive-url "https://example.com/<YourApp>.app.tar.gz" --name "Unity build review" --non-interactive',
+  ]}
+/>
+
+For the project setup that EAS CLI or the REST API needs, see [Native Android and iOS apps](/preview/eas-simulator/works-with/native-ios-and-android/#start-a-session-with-the-archive).
+
+## Control the app
+
+Use device-level commands, such as `open`, `snapshot -i`, `press`, and `screenshot`. See [Control a remote simulator with agent-device, Argent, or Appium](/preview/eas-simulator/how-to/drive-the-device/).
+
+## Hybrid apps
+
+A hybrid app shows web content inside a native app. If the toolchain produces an Android Emulator **.apk** or an iOS Simulator **.app**, install it with the same steps.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Which features do not work for Unity apps?">
+
+Fast Refresh, Metro, React DevTools, component inspection, and React render profiling do not work. See [EAS Simulator limitations](/preview/eas-simulator/limitations/).
+
+</Collapsible>
+
+<Collapsible summary="Can I record the app in motion?">
+
+Yes. Use agent-device `record start <path>` and `record stop`. Recordings may not capture every frame, so they cannot prove or disprove a short frame drop. See [Capture screenshots, recordings, and logs from a remote simulator](/preview/eas-simulator/how-to/capture-evidence/).
+
+</Collapsible>
+
+</FAQ>

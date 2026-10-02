@@ -318,6 +318,20 @@
 /preview/react-compiler /guides/react-compiler 301
 /preview/react-compiler/ /guides/react-compiler 301
 
+# EAS Simulator preview reorganization
+/preview/eas-simulator/cli-reference /preview/eas-simulator/reference/cli 301
+/preview/eas-simulator/cli-reference/ /preview/eas-simulator/reference/cli 301
+/preview/eas-simulator/cli-reference.md /preview/eas-simulator/reference/cli.md 301
+/preview/eas-simulator/rest-api /preview/eas-simulator/reference/rest-api 301
+/preview/eas-simulator/rest-api/ /preview/eas-simulator/reference/rest-api 301
+/preview/eas-simulator/rest-api.md /preview/eas-simulator/reference/rest-api.md 301
+/preview/eas-simulator/run-and-control /preview/eas-simulator/how-to/drive-the-device 301
+/preview/eas-simulator/run-and-control/ /preview/eas-simulator/how-to/drive-the-device 301
+/preview/eas-simulator/run-and-control.md /preview/eas-simulator/how-to/drive-the-device.md 301
+/preview/eas-simulator/create-session-links /preview/eas-simulator/how-to/hand-off-a-session 301
+/preview/eas-simulator/create-session-links/ /preview/eas-simulator/how-to/hand-off-a-session 301
+/preview/eas-simulator/create-session-links.md /preview/eas-simulator/how-to/hand-off-a-session.md 301
+
 # Archived
 /guides/using-flipper /debugging/tools 301
 /guides/using-flipper/ /debugging/tools 301

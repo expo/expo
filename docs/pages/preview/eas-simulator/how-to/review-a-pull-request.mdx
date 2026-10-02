@@ -1,0 +1,92 @@
+---
+title: Review a pull request on a remote iOS Simulator or Android Emulator
+sidebar_title: Review a pull request
+description: Add a link to a pull request that opens the change on an EAS Simulator session in the browser, so reviewers can test it without building it.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+A reviewer can test a pull request in the browser without a local build. Create a simulator-compatible build for the pull request, then add a **create session link** to the pull request. When the reviewer opens the link, EAS starts a session with the build and shows the browser preview. On iOS, use an iOS Simulator build. On Android, use an APK build.
+
+## Add a review link to a pull request
+
+<Step label="1">
+
+### Create a simulator-compatible build for the pull request
+
+For iOS, use a build profile with `ios.simulator: true`. For Android, use a build profile that creates an APK, because an AAB does not install. Create the build in CI or with EAS Workflows:
+
+<Terminal
+  cmd={[
+    '$ eas build --platform ios --profile remote-device --non-interactive',
+    '$ eas build --platform android --profile remote-device --non-interactive',
+  ]}
+/>
+
+Record the build ID. For a profile example, see [Build a simulator-compatible app](/preview/eas-simulator/how-to/install-your-app/#build-a-simulator-compatible-app).
+
+</Step>
+
+<Step label="2">
+
+### Build the link
+
+Use the account name, the project slug, and the build ID. Add a name that includes the pull request number:
+
+```text
+https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID&name=PR%201234%20review
+```
+
+To use the most recent build that matches the native code of the pull request, use `buildFingerprint` and `platform` (`ios` or `android`) instead of `buildId`. For all parameters, see [Start a session from a link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
+
+</Step>
+
+<Step label="3">
+
+### Post the link
+
+Add the link to the pull request description or to a comment from your CI system. Tell reviewers that each click starts a new session.
+
+</Step>
+
+## What the reviewer sees
+
+1. The reviewer opens the link and signs in to an Expo account that can access the project.
+2. expo.dev validates the build and starts the session. This can take about a minute.
+3. When the session is ready, expo.dev redirects to its browser preview. The reviewer uses the app in the browser.
+4. When the reviewer finishes, they stop the session from its page on expo.dev.
+
+To return to the same session, the reviewer opens it from the project's **Simulator sessions** page. Opening the link again starts a new session.
+
+## Let an agent review the change
+
+An agent can also test the pull request and post evidence. Ask the agent to use the EAS Simulator skill, start a session with the pull request build, run the changed flow, and attach screenshots or a recording. See [Let an AI coding agent verify a change on a remote simulator](/preview/eas-simulator/how-to/verify-a-change-with-an-agent/). For an EAS Workflows example, see Callstack's [agent-device EAS Workflow template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Can reviewers test an Android build from the link?">
+
+Yes. Create session links support Android and iOS. Use the build ID of an Android APK build, or use `buildFingerprint` with `platform=android`. A link with an application archive URL that ends in `.apk` also starts an Android session. The Android build or archive must be an `.apk` file, because an `.aab` file does not install. Android support is still in development, and some features that work on iOS may not work on Android yet.
+
+</Collapsible>
+
+<Collapsible summary="Does the link work for people outside my team?">
+
+No. The person must sign in to an Expo account that can access the project. To start a session, the account needs the Developer role or higher.
+
+</Collapsible>
+
+<Collapsible summary="How do I limit usage from review links?">
+
+Ask reviewers to stop the session when they finish. Each click on the link starts a session that runs until it stops. Create session links do not set a custom duration, so the session gets the default maximum duration for your plan. See [EAS Simulator usage, limits, and billing](/preview/eas-simulator/reference/usage-and-billing/).
+
+</Collapsible>
+
+</FAQ>

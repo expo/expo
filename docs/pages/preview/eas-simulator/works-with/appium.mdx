@@ -1,0 +1,92 @@
+---
+title: Run Appium tests on a remote iOS Simulator or Android Emulator
+sidebar_title: Appium
+description: Start an appium EAS Simulator session and connect your existing Appium client or test suite with the APPIUM_URL server URL and APPIUM_CAPS capabilities.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator runs [Appium](https://appium.io/docs/en/) tests. Start a session with `--type appium`. EAS provisions an Appium server next to the remote device and gives you its URL and capabilities. Your Appium client connects to that server as it does to a local one.
+
+## Start an Appium session
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --max-duration-minutes 30 --non-interactive',
+  ]}
+/>
+
+EAS CLI writes these values to **.env.eas-simulator**:
+
+| Variable      | Value                                     |
+| ------------- | ----------------------------------------- |
+| `APPIUM_URL`  | The URL of the remote Appium server       |
+| `APPIUM_CAPS` | The session capabilities, encoded as JSON |
+
+An Appium session does not also provision agent-device or Argent. The session includes a browser preview. On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+
+## Run your Appium client
+
+`eas simulator:exec` loads the variables, then runs your command. Configure your client to read the server URL from `APPIUM_URL` and the capabilities from `APPIUM_CAPS`:
+
+<Terminal cmd={['$ eas simulator:exec <appium-client> [args...]']} />
+
+Replace `<appium-client>` with the command that runs your test suite.
+
+## Install the app with start flags
+
+The start flags `--build-id`, `--build-fingerprint`, `--application-archive-url`, and `--expo-go` install and launch the app for all session types, including `appium`. The `--launch-arg` and `--open-url` flags also apply to an `appium` session. They require one of the application source flags.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type appium --build-id <build-id> --name "Checkout flow tests" --non-interactive',
+  ]}
+/>
+
+## Limit the session length
+
+Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. EAS records Appium commands as session events, so a session that uses `--max-idle-time-minutes` stays active while your tests send commands. Use `--max-duration-minutes` to set an upper limit. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
+
+## Use the REST API
+
+Create the session with `"type": "appium"`. When the session is ready, `remoteConfig` contains:
+
+| Field             | Value                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------- |
+| `appiumUrl`       | The URL of the remote Appium server                                                 |
+| `capabilities`    | An object with the session capabilities                                             |
+| `webPreviewUrl`   | Optional. The browser preview URL, without its token                                |
+| `webPreviewToken` | Optional. The token that the browser preview URL needs                              |
+| `previewApiUrl`   | Optional. The preview API URL. When it is set, `webPreviewUrl` is an expo.dev page. |
+
+When `webPreviewToken` is present, `webPreviewUrl` does not open without it. When `previewApiUrl` is set, add the token as a URL fragment: `<webPreviewUrl>#token=<webPreviewToken>`. Otherwise, add it as a query parameter: `<webPreviewUrl>?token=<webPreviewToken>`. EAS CLI adds the token for you.
+
+See [EAS Simulator REST API](/preview/eas-simulator/reference/rest-api/).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Do I need to install an Appium server?">
+
+No. EAS runs the Appium server for the session. You need only an Appium client.
+
+</Collapsible>
+
+<Collapsible summary="Are Appium commands shown in session activity?">
+
+Yes. EAS records Appium commands as session events with the producer `appium`. `eas simulator:events` shows them together with activity from agent-device and Argent.
+
+</Collapsible>
+
+<Collapsible summary="Is the Appium URL a secret?">
+
+Yes. Treat `APPIUM_URL`, `APPIUM_CAPS`, and `remoteConfig` as secrets. Do not commit **.env.eas-simulator** or print its values in CI logs. See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/).
+
+</Collapsible>
+
+</FAQ>

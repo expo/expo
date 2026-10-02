@@ -1,0 +1,83 @@
+---
+title: Run a Flutter app on a remote iOS Simulator or Android Emulator
+sidebar_title: Flutter
+description: Build a Flutter app for the Android Emulator or iOS Simulator, then install and control it on EAS Simulator from an archive URL.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator runs Flutter apps that are built for the Android Emulator or iOS Simulator. Build the app for the emulator or simulator with the Flutter CLI, publish the build to a URL, and pass the URL to `eas simulator:start`. You control the app with device-level commands, such as snapshots, presses, and screenshots.
+
+## Build the app
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal cmd={['$ flutter build apk --debug']} />
+
+Use the **.apk** that the command creates. An **.aab** fails to install.
+
+</Tab>
+
+<Tab label="iOS">
+
+<Terminal
+  cmd={[
+    '$ flutter build ios --simulator',
+    '$ tar -czf Runner.app.tar.gz -C build/ios/iphonesimulator Runner.app',
+  ]}
+/>
+
+The second command compresses **Runner.app** into **Runner.app.tar.gz**.
+
+</Tab>
+
+</Tabs>
+
+## Start a session with the build
+
+Upload the file to storage that returns it directly. Then pass its URL:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type agent-device --application-archive-url "https://example.com/Runner.app.tar.gz" --name "Flutter build review" --non-interactive',
+  ]}
+/>
+
+EAS CLI needs **package.json** and an app config with the EAS project ID in the current directory. You can also use the REST API with only the project ID. For both setups, see [Native Android and iOS apps](/preview/eas-simulator/works-with/native-ios-and-android/#start-a-session-with-the-archive).
+
+## Control the app
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest open <application-id> --platform ios',
+    '$ eas simulator:exec npx agent-device@latest snapshot -i',
+    '$ eas simulator:exec npx agent-device@latest screenshot ./artifacts/home.png',
+  ]}
+/>
+
+Replace `<application-id>` with the bundle identifier or package name of the Flutter app. Stop the session when you finish:
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+## Limitations
+
+Device-level control works for Flutter apps. The React Native features of the controllers do not work, and Fast Refresh with Metro does not apply. See [EAS Simulator limitations](/preview/eas-simulator/limitations/).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Can I use Flutter hot reload with EAS Simulator?">
+
+No. EAS Simulator does not provide a Flutter hot reload workflow. To see a change, rebuild the app and start a new session with the new build.
+
+</Collapsible>
+
+</FAQ>

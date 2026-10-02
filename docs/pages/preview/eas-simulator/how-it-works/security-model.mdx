@@ -1,0 +1,89 @@
+---
+title: EAS Simulator security model
+sidebar_title: Security model
+description: Learn who can create, view, and control an EAS Simulator session, which secrets a session uses, and which URLs grant access without an Expo login.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Access to an EAS Simulator session comes from two sources: your Expo account role and secret values that the session creates. Your role controls who can create, read, and stop sessions. The secret values, such as controller tokens and preview tokens, let a program or a browser reach the running device. Anyone who has a secret value can use what it unlocks, so treat each one as a password.
+
+This page explains the model. For the exact values and limits, see [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/).
+
+## Trust boundaries
+
+| Boundary                 | What controls access                                  | Who has access                                          |
+| ------------------------ | ----------------------------------------------------- | ------------------------------------------------------- |
+| Create and stop sessions | Expo account role                                     | The Developer role or higher                            |
+| Read a session           | Expo account role                                     | Any role that can view the project, including View Only |
+| Control the device       | Controller token in the connection details            | Anyone who has the token while the session runs         |
+| Use the browser preview  | Preview URL and, when the preview is gated, its token | Anyone who has the URL                                  |
+| Download an artifact     | Random download URL                                   | Anyone who has the URL                                  |
+| Reach your Metro server  | Public tunnel URL                                     | Anyone who has the URL while the tunnel runs            |
+| Reach your local network | `--egress-allow` list                                 | Only the destinations that you list                     |
+
+## Account permissions
+
+EAS checks your role on the account that owns the project:
+
+- To create, stop, or delete a session, you need the Developer role or higher.
+- To read a session, you need access to view the project.
+
+A read of a session in progress returns its connection details. Because of this, a person who can view the project can get the controller tokens of a running session.
+
+For CI and services, use a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) with the Developer role. Store its token in a secret store.
+
+## Controller tokens
+
+When a session starts, the controller creates a URL and a token. EAS stores them encrypted. The REST API returns them only while the session is in progress. The output of `eas simulator:get --json` can still include the stored values after the session stops. After the session stops, the remote device and its controller endpoints no longer exist.
+
+EAS CLI writes the URL and token to **.env.eas-simulator**. Keep the file out of Git and out of CI logs and artifacts. While the session runs, the expo.dev session page shows the connection details. It masks the token by default, but anyone who can view the session page can show or copy it.
+
+## The browser preview
+
+The browser preview has its own URL. When the preview is gated, the URL contains a session token. The preview page does not require an Expo login. The page moves the token out of the address bar after it opens.
+
+Because the preview does not require a login, share the preview URL only with people who should control the device.
+
+## Artifact download URLs
+
+Each artifact has a download URL that contains a random key. The URL does not require an Expo login, so it works as a capability: anyone who has the URL can download the file. The URL redirects to a signed storage URL that expires after one hour. If the account is disabled, the download is blocked.
+
+## Metro tunnels
+
+For live edits, you start Metro with a public tunnel. The tunnel URL is random, which makes it hard to guess, but the URL does not require authentication. Anyone who has the URL can fetch your JavaScript bundle while the tunnel runs. Stop Metro when the session ends.
+
+## Network traffic
+
+By default, all network traffic from the remote device exits from EAS infrastructure. With local egress, iOS Simulator traffic that honors the system proxy exits from your computer instead. The local egress client refuses connections to local, private, link-local, and multicast addresses on your network. To let the simulator reach a server on your computer or your network, list each destination as an exact `host:port` with `--egress-allow`. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/).
+
+## What EAS does when a user is deleted
+
+If the user who started a session is deleted, EAS stops the session.
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Can another account see my session?">
+
+No, unless someone outside the account has one of the session's secret URLs or tokens. A session belongs to an EAS project, and EAS checks permissions on the account that owns the project.
+
+</Collapsible>
+
+<Collapsible summary="What should I do if a token leaks?">
+
+Stop the session. After the session stops, the remote device and its controller endpoints no longer exist, so the token no longer controls a device. Start a new session to get new tokens.
+
+</Collapsible>
+
+<Collapsible summary="Is the app I install private?">
+
+Yes, within the session. The app installs only on the remote device for the session. Anyone who has the controller token or the browser preview URL can use the app while the session runs. Artifacts from the session, such as screenshots, use capability URLs. See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/) for retention.
+
+</Collapsible>
+
+</FAQ>

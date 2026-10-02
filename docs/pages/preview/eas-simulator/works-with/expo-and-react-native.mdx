@@ -1,0 +1,89 @@
+---
+title: Run an Expo or React Native app on EAS Simulator
+sidebar_title: Expo and React Native
+description: Install an Expo or React Native development build or release build on a remote iOS Simulator or Android Emulator, and use Fast Refresh, component inspection, and profiling.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS Simulator supports all of its features for Expo and React Native apps. Create a simulator build with EAS Build or on your computer, then install it on a session. A development build connected to Metro also gives you Fast Refresh and the React Native features of agent-device.
+
+## Choose a build
+
+| Goal                                      | Build                                | Guide                                                                       |
+| ----------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------- |
+| See source changes with Fast Refresh      | Development build connected to Metro | [Iterate on your code](/preview/eas-simulator/how-to/iterate-on-your-code/) |
+| Inspect a fixed build or capture evidence | Release build or EAS simulator build | [Install your app](/preview/eas-simulator/how-to/install-your-app/)         |
+| Test a project without custom native code | Expo Go                              | [Expo Go](/preview/eas-simulator/works-with/expo-go/)                       |
+
+A release build contains the JavaScript from build time. It does not show later source changes, even when you connect it to Metro.
+
+## Expo projects
+
+An Expo project already has what EAS CLI needs. Link it to EAS one time:
+
+<Terminal cmd={['$ eas init']} />
+
+`eas init` adds the EAS project ID to the app config. Then start a session with an application source:
+
+<Terminal
+  cmd={[
+    '$ eas build --platform ios --profile remote-device --non-interactive',
+    '$ eas simulator:start --platform ios --type agent-device --build-id <build-id> --name "Release build review" --non-interactive',
+  ]}
+/>
+
+The `remote-device` profile needs `ios.simulator: true` for iOS and an APK build type for Android. See [Build a simulator-compatible app](/preview/eas-simulator/how-to/install-your-app/#build-a-simulator-compatible-app).
+
+## React Native projects without Expo
+
+EAS CLI finds the EAS project from the current directory. It needs **package.json** and an app config that contains the project ID. Add an app config to the repository root if the project does not have one:
+
+```json app.json
+{
+  "expo": {
+    "name": "my-app",
+    "slug": "my-app",
+    "extra": {
+      "eas": {
+        "projectId": "<project-id>"
+      }
+    }
+  }
+}
+```
+
+To use the REST API instead, pass the project ID as `appId`. The REST API does not read files in the repository. See [EAS Simulator REST API](/preview/eas-simulator/reference/rest-api/).
+
+## Use React Native features
+
+agent-device has features for React Native apps:
+
+- React component, props, and hooks inspection
+- React render profiling, such as slow commits and re-renders
+- JavaScript evaluation through the Chrome DevTools Protocol (CDP) of Metro
+
+These features need a development server and a compatible React DevTools connection. Keep Metro running while you use them. For version-matched guidance, read the agent-device help through the session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest help react-native',
+    '$ eas simulator:exec npx agent-device@latest help react-devtools',
+  ]}
+/>
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Do I need to add a library to my app?">
+
+No. Device-level actions such as snapshots, presses, text entry, screenshots, and logs work on the installed app with no library added to the project.
+
+</Collapsible>
+
+</FAQ>

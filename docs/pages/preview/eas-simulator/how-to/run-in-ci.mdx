@@ -1,0 +1,100 @@
+---
+title: Run EAS Simulator sessions in CI
+sidebar_title: Run in CI
+description: Start, use, and always stop EAS Simulator sessions from GitHub Actions, EAS Workflows, or another CI system with an Expo access token.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+A CI job can start an EAS Simulator session, install a build, run checks against the remote device, and stop the session. The job authenticates with an Expo access token and uses EAS CLI or the REST API. The CI machine does not need macOS or a local simulator.
+
+## Set up authentication
+
+Create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project. Give it the [Developer role](/accounts/account-types/#manage-access) or higher. Developer is the minimum role that can create and stop sessions. Store its access token in the secret store of your CI system as `EXPO_TOKEN`.
+
+CI jobs cannot use `eas login`. EAS CLI reads `EXPO_TOKEN` from the environment.
+
+## Write the job
+
+A CI job follows these steps:
+
+1. Check access with `eas simulator:availability --json`, and stop the job if `available` is `false`.
+2. Find or create an iOS Simulator build or an Android APK.
+3. Start the session with the build and a maximum duration.
+4. Run your checks through `eas simulator:exec`.
+5. Stop the session in a step that runs even when an earlier step fails.
+
+This example shows the commands for a shell step. Add them to the job format of your CI system. The access check requires `jq`:
+
+<Terminal
+  cmd={[
+    "$ npx --yes eas-cli@latest simulator:availability --json | jq -e '.available'",
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device \\',
+    '    --build-fingerprint <fingerprint-hash> \\',
+    '    --name "PR 1234 smoke test" --tag ci --tag pr-1234 \\',
+    '    --max-duration-minutes 30 --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest screenshot ./artifacts/home.png',
+  ]}
+/>
+
+`simulator:availability` exits with code 0 even when EAS Simulator is not available for the account. `jq -e` exits with a non-zero code when `available` is `false`, so the job stops before it starts a session.
+
+Then add a cleanup step that always runs:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+
+The start command needs a project directory with an app config that contains the EAS project ID. Check out the repository before you run it.
+
+> **warning** A CI job that ends does not stop the session. If the cleanup step does not run, the session continues until it reaches its maximum duration. Always set `--max-duration-minutes` in CI.
+
+## Use the REST API
+
+When the CI job does not have Node.js or the project source, use the REST API with `curl` or another HTTP client:
+
+1. `POST /v2/device-run-sessions` with `appId`, `platform`, `type`, an application source, and `maxDurationMinutes`.
+2. Poll `GET /v2/device-run-sessions/:id` every five seconds until `data.status` is `in-progress` and `data.remoteConfig` is not `null`. Set a timeout.
+3. Use the values in `data.remoteConfig` to connect your controller.
+4. `POST /v2/device-run-sessions/:id/stop` in a cleanup handler, also after errors and timeouts.
+
+See [EAS Simulator REST API](/preview/eas-simulator/reference/rest-api/).
+
+## Get a build in EAS Workflows
+
+In [EAS Workflows](/eas/workflows/introduction/), the pre-packaged `get-build` job can find an existing iOS Simulator build that matches a filter, and a `build` job can create one. Pass the build to a later step that starts the session. See [Pre-packaged jobs](/eas/workflows/pre-packaged-jobs/).
+
+For an example of AI QA on pull requests, see Callstack's [agent-device EAS Workflow template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml).
+
+## Run end-to-end tests
+
+- To run [e2e](/guides/using-e2e/#run-e2e-on-eas-simulator) tests on EAS Simulator, use the `@e2e-dev/eas` integration. It starts one session for each e2e worker and stops the sessions when the run ends.
+- To run an existing Appium suite, start an `appium` session. See [Run Appium tests on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/works-with/appium/).
+- To run Maestro flows, see [Use Maestro flows with EAS Simulator](/preview/eas-simulator/works-with/maestro/).
+
+## Keep secrets out of CI logs
+
+The start command writes controller tokens to **.env.eas-simulator**, and `--json` output includes connection details. Do not print the file, and do not upload it as a CI artifact. See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Do sessions in CI wait in a queue?">
+
+Yes, a session can wait for available concurrency before it starts. EAS CLI shows when a session is in the queue, and queue time does not count toward the 15-minute startup timeout. See [EAS Simulator usage, limits, and billing](/preview/eas-simulator/reference/usage-and-billing/).
+
+</Collapsible>
+
+<Collapsible summary="Can I run sessions in parallel?">
+
+Yes. Start each session with its own name and tags. `simulator:exec` passes your shell environment to the command. When the **.env.eas-simulator** file in the project directory contains `EAS_SIMULATOR_SESSION_ID`, its values replace the exported connection variables. The file holds one session, so use a separate copy of the project directory for each parallel session. `simulator:get`, `simulator:stop`, and `simulator:events` also accept `--id <session-id>`.
+
+With `--out-config-type env`, the start command prints shell exports instead of writing **.env.eas-simulator**. Run the printed `export` lines in the shell of the job before you run controller commands. The exports do not include the session ID, so pass `--id` to `get`, `stop`, and `events`. A leftover **.env.eas-simulator** file in the project directory replaces these exports. Delete the file, or run the job in a separate directory. See [Run parallel sessions](/preview/eas-simulator/how-it-works/agent-targeting/#run-parallel-sessions).
+
+</Collapsible>
+
+</FAQ>

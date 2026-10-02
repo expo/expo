@@ -1,0 +1,147 @@
+---
+title: Control a remote simulator with agent-device, Argent, or Appium
+sidebar_title: Drive the device
+description: Open apps, press buttons, enter text, and read the accessibility tree on an EAS Simulator session through simulator:exec and a controller.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+EAS CLI manages the session, but it does not press buttons or type text. Device actions come from the **controller** that you selected with `--type` when the session started. Run each controller command through `eas simulator:exec`, which loads the connection details for the active session and then runs the command.
+
+## How `simulator:exec` works
+
+`simulator:exec` reads **.env.eas-simulator**, adds its values to the environment, and runs the command that follows. It does not implement device actions itself. There is no `simulator:tap` command.
+
+| Controller   | Variables that `simulator:exec` loads                            | Command pattern                                               |
+| ------------ | ---------------------------------------------------------------- | ------------------------------------------------------------- |
+| agent-device | `AGENT_DEVICE_DAEMON_BASE_URL`, `AGENT_DEVICE_DAEMON_AUTH_TOKEN` | `eas simulator:exec npx agent-device@latest <command> [args]` |
+| Argent       | `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN`       | `eas simulator:exec argent run <tool> [args]`                 |
+| Appium       | `APPIUM_URL`, `APPIUM_CAPS`                                      | `eas simulator:exec <appium-client> [args]`                   |
+
+Each session type provisions only its own controller. For example, agent-device commands do not work in an Argent session. A `web-preview-only` session has no controller. See [EAS Simulator session types](/preview/eas-simulator/reference/session-types/).
+
+## Control the app with agent-device
+
+[agent-device](/agents/agent-device/) is an open source command-line controller from Callstack. It runs on demand through `npx`, so you do not need to install it globally.
+
+### Open an app
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest apps --platform ios',
+    '$ eas simulator:exec npx agent-device@latest open com.example.app --platform ios',
+  ]}
+/>
+
+`apps` lists the apps that you installed. Add `--all` to include system apps.
+
+### Read the screen and press an element
+
+Take a snapshot of the interactive accessibility tree:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest snapshot -i']} />
+
+The snapshot returns references such as `@e1` and `@e2`. Press an element by its reference or by a selector:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest press @e2',
+    '$ eas simulator:exec npx agent-device@latest press \'label="Continue"\'',
+  ]}
+/>
+
+To press an element, use `press` or `click`.
+
+On iOS, a snapshot can take tens of seconds. If an action times out, take a new snapshot before you try again. The first action can reach the device even when the response is late, so a second attempt can do the action two times.
+
+### Enter text and scroll
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest fill @e4 "hello@example.com"',
+    '$ eas simulator:exec npx agent-device@latest scroll down',
+    '$ eas simulator:exec npx agent-device@latest gesture swipe left',
+  ]}
+/>
+
+### Open a deep link
+
+<Terminal
+  cmd={['$ eas simulator:exec npx agent-device@latest open "myapp://profile/42" --platform ios']}
+/>
+
+The first time a scheme opens, iOS can show an **Open in** dialog. Accept it with `alert accept`. You can also start the session with `--open-url`. EAS then tries to approve the scheme so that the dialog does not appear. `--open-url` requires an application source, such as `--build-id`. See [Install an app on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/how-to/install-your-app/).
+
+Do not open the browser preview URL on the device. The preview URL is a browser stream for people, not a deep link.
+
+### Read the full command list
+
+agent-device includes help text that is written for agents. Read the version that matches the session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest help',
+    '$ eas simulator:exec npx agent-device@latest help workflow',
+  ]}
+/>
+
+## Control the app with Argent
+
+[Argent](/agents/argent/) is a controller from Software Mansion. Install its CLI, then run its tools through `simulator:exec`:
+
+<Terminal
+  cmd={[
+    '$ npm install --global @swmansion/argent',
+    '$ eas simulator:exec argent run list-devices',
+    '$ eas simulator:exec argent run screenshot --udid <udid>',
+  ]}
+/>
+
+Argent tools need an explicit `--udid`. Use the booted device from `list-devices`. Argent gesture tools take coordinates from 0.0 to 1.0, not pixels.
+
+To use Argent through its Model Context Protocol (MCP) server instead, link the session credentials. Use `--yes` so that a new token replaces an old one:
+
+<Terminal cmd={["$ argent link '<ARGENT_TOOLS_URL>' --token '<ARGENT_AUTH_TOKEN>' --yes"]} />
+
+## Control the app with Appium
+
+Start an `appium` session, then run your Appium client through `simulator:exec`. The client reads the server URL from `APPIUM_URL` and the capabilities from `APPIUM_CAPS`, which contains JSON:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --type appium --name "Checkout flow tests" --non-interactive',
+    '$ eas simulator:exec <appium-client> [args...]',
+  ]}
+/>
+
+For more information, see [Run Appium tests on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/works-with/appium/).
+
+## Control the device from a browser
+
+Every session type includes a live browser preview. Open the browser preview URL from the start output, or open the session page on expo.dev, to see the device. On iOS, you can also interact with it. In `--json` output, the URL is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. See [Share a live EAS Simulator session or start one from a link](/preview/eas-simulator/how-to/hand-off-a-session/).
+
+On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+
+Browser preview activity does not reset the idle timer. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
+
+## Common questions
+
+<FAQ>
+
+<Collapsible summary="Why does a controller command say that the remote daemon is unavailable?">
+
+The controller connection dropped, or the session stopped. A dropped connection also removes the installed app state and the snapshot references. Stop the session if it is still active, start a new session, and repeat the install, open, and drive steps. See [Troubleshoot EAS Simulator](/preview/eas-simulator/troubleshooting/).
+
+</Collapsible>
+
+<Collapsible summary="Can I control two devices in one session?">
+
+Yes, in an iOS session. agent-device can boot and control more than one iOS Simulator in a session. Use a separate named agent-device session for the second device: pass `--session <name>` and `--device "<name>"` when you boot it, and pass `--session <name>` on each later command for that device. The agent-device `--device` flag accepts only a device name. To select a device by its UDID, use `--udid <UDID>`. See [Use a second device in the same session](/preview/eas-simulator/reference/devices/#use-a-second-device-in-the-same-session).
+
+</Collapsible>
+
+</FAQ>
