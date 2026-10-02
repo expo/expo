@@ -37,7 +37,7 @@ struct JavaScriptCodableArrayBufferTests {
         new Uint8Array(buffer, 1, 2);
       """
     )
-    let values = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let values = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
 
     let decoded = try ArrayBuffer.decode(values.unownedValue(at: 0), in: runtime)
 

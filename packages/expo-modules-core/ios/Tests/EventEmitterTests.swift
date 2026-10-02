@@ -148,8 +148,8 @@ struct EventEmitterTests {
       calls = calls + 1
     }
 
-    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerA.asValue())
-    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerB.asValue())
+    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerA.refToValue())
+    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerB.refToValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -167,9 +167,9 @@ struct EventEmitterTests {
       calls = calls + 1
     }
 
-    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
-    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
-    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
+    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
+    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
+    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -187,9 +187,9 @@ struct EventEmitterTests {
       calls = calls + 1
     }
 
-    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
-    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue)
-    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue)
+    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue.refToValue(), listener.refToValue())
+    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue.refToValue())
+    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue.refToValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
