@@ -129,7 +129,8 @@ function requireCachedNativeComponent<Props>(
 }
 
 /**
- * Maps `aria-*` and `id` props to native props, as React Native's `View` does for its own host component.
+ * Maps `aria-*`, `id` and `tabIndex` props to native props.
+ * Mirrors `Libraries/Components/View/View.js` in React Native 0.88.
  */
 function mapAriaProps(props: Record<string, any>): Record<string, any> {
   const {

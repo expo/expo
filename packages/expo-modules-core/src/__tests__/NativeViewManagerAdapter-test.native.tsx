@@ -82,6 +82,24 @@ describe('requireNativeViewManager', () => {
     expect(testNativeComponent.props).not.toHaveProperty('id');
   });
 
+  it(`converts aria-labelledby and tabIndex values`, async () => {
+    const TestView = requireNativeViewManager('ExpoTestView');
+    const { container } = await render(
+      <>
+        <TestView testID="labelled" aria-labelledby="title, subtitle" tabIndex={0} />
+        <TestView testID="skipped" tabIndex={-1} />
+      </>
+    );
+
+    const [labelled, skipped] = container.queryAll(
+      (node) => node.type === 'ViewManagerAdapter_ExpoTestView'
+    );
+
+    expect(labelled!.props.accessibilityLabelledBy).toEqual(['title', 'subtitle']);
+    expect(labelled!.props.focusable).toBe(true);
+    expect(skipped!.props.focusable).toBe(false);
+  });
+
   it(`gives aria props precedence over accessibility props`, async () => {
     const TestView = requireNativeViewManager('ExpoTestView');
     const { container } = await render(

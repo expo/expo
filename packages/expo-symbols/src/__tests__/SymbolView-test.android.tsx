@@ -33,6 +33,25 @@ describe('SymbolView', () => {
     expect(screen.getByLabelText('Next')).toBe(screen.getByTestId('symbol'));
   });
 
+  it('does not forward symbol props to the rendered view', async () => {
+    await render(
+      <SymbolView
+        name={{ android: 'chevron_right' }}
+        testID="symbol"
+        type="hierarchical"
+        scale="large"
+        colors="red"
+        resizeMode="center"
+        animationSpec={{ effect: { type: 'bounce' } }}
+      />
+    );
+
+    const { props } = screen.getByTestId('symbol');
+    for (const key of ['type', 'scale', 'colors', 'resizeMode', 'animationSpec']) {
+      expect(props).not.toHaveProperty(key);
+    }
+  });
+
   it('keeps the rendered view from being flattened so its label is not lost', async () => {
     await render(
       <SymbolView name={{ android: 'chevron_right' }} testID="symbol" aria-label="Next" />

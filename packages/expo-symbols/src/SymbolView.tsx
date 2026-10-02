@@ -13,9 +13,14 @@ const DEFAULT_SYMBOL_COLOR =
 export function SymbolView({
   name: nameProp,
   fallback,
+  type,
+  scale,
   weight,
+  colors,
   size: sizeProp,
   tintColor,
+  resizeMode,
+  animationSpec,
   style: styleProp,
   ...viewProps
 }: SymbolViewProps): JSX.Element {
