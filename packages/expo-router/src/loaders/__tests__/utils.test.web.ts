@@ -21,6 +21,12 @@ describe(getLoaderModulePath, () => {
     expect(getLoaderModulePath('/(group)/index')).toBe('/_expo/loaders/(group)/index');
   });
 
+  it('preserves route groups and query parameters in loader URLs', () => {
+    expect(getLoaderModulePath('/(website)/blog/index?preview=true')).toBe(
+      '/_expo/loaders/(website)/blog/index?preview=true'
+    );
+  });
+
   it('preserves query parameters', () => {
     expect(getLoaderModulePath('/request?foo=bar')).toBe('/_expo/loaders/request?foo=bar');
   });

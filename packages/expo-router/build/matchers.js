@@ -1,11 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.VALID_PLATFORMS = void 0;
 exports.matchDynamicName = matchDynamicName;
 exports.testNotFound = testNotFound;
 exports.matchGroupName = matchGroupName;
 exports.matchLastGroupName = matchLastGroupName;
 exports.matchArrayGroupName = matchArrayGroupName;
 exports.getNameFromFilePath = getNameFromFilePath;
+exports.getPlatformFromFilePath = getPlatformFromFilePath;
 exports.getContextKey = getContextKey;
 exports.removeSupportedExtensions = removeSupportedExtensions;
 exports.removeFileSystemExtensions = removeFileSystemExtensions;
@@ -15,6 +17,8 @@ exports.stripInvisibleSegmentsFromPath = stripInvisibleSegmentsFromPath;
 exports.isTypedRoute = isTypedRoute;
 /** Match `[page]` -> `page` or `[...group]` -> `...group` */
 const dynamicNameRe = /^\[([^[\]]+?)\]$/;
+// NOTE(@hassankhan): Should we retrieve these from a more central location?
+exports.VALID_PLATFORMS = new Set(['android', 'ios', 'native', 'web']);
 /** Match `[page]` -> `page` */
 function matchDynamicName(name) {
     const paramName = name.match(dynamicNameRe)?.[1];
@@ -47,10 +51,24 @@ function matchArrayGroupName(name) {
 function getNameFromFilePath(name) {
     return removeSupportedExtensions(removeFileSystemDots(name));
 }
+function getPlatformFromFilePath(filePath) {
+    const filename = getNameFromFilePath(filePath).split('/').pop();
+    const extensionIndex = filename.lastIndexOf('.');
+    if (extensionIndex < 0) {
+        return undefined;
+    }
+    const platform = filename.slice(extensionIndex + 1);
+    return exports.VALID_PLATFORMS.has(platform) ? platform : undefined;
+}
 function getContextKey(name) {
     // The root path is `` (empty string) so always prepend `/` to ensure
     // there is some value.
-    const normal = '/' + getNameFromFilePath(name);
+    const contextKey = getNameFromFilePath(name);
+    const platform = getPlatformFromFilePath(name);
+    const contextKeyWithoutPlatform = platform
+        ? contextKey.slice(0, -(platform.length + 1))
+        : contextKey;
+    const normal = '/' + contextKeyWithoutPlatform;
     if (!normal.endsWith('_layout')) {
         return normal;
     }

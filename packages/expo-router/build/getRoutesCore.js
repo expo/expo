@@ -5,7 +5,6 @@ exports.extrapolateGroups = extrapolateGroups;
 exports.generateDynamic = generateDynamic;
 const matchers_1 = require("./matchers");
 const url_1 = require("./utils/url");
-const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -518,13 +517,16 @@ function validateRouteTreeExports(node) {
 }
 function getFileMeta(originalKey, options, redirects, rewrites) {
     // Remove the leading `./`
+    // NOTE(@hassankhan): Why not use `getNameFromFilePath()` here?
     const key = (0, matchers_1.removeSupportedExtensions)((0, matchers_1.removeFileSystemDots)(originalKey));
     let route = key;
     const parts = (0, matchers_1.removeFileSystemDots)(originalKey).split('/');
     const filename = parts[parts.length - 1];
-    const filenameParts = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
-    const filenameWithoutExtensions = filenameParts[0];
-    const platformExtension = filenameParts[1];
+    const filenameWithoutFileExtension = (0, matchers_1.removeSupportedExtensions)(filename);
+    const platformExtension = (0, matchers_1.getPlatformFromFilePath)(filename);
+    const filenameWithoutExtensions = platformExtension
+        ? filenameWithoutFileExtension.slice(0, -(platformExtension.length + 1))
+        : filenameWithoutFileExtension;
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
@@ -536,7 +538,7 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
         throw new Error(`Invalid route ${originalKey}. Route nodes cannot start with the '+' character. "Rename it to ${renamedRoute}"`);
     }
     let specificity = 0;
-    const hasPlatformExtension = validPlatforms.has(platformExtension);
+    const hasPlatformExtension = platformExtension != null;
     const usePlatformRoutes = options.platformRoutes ?? true;
     if (hasPlatformExtension) {
         if (!usePlatformRoutes) {
@@ -564,7 +566,7 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
         if (isApi && specificity !== 0) {
             throw new Error(`API routes cannot have platform extensions. Remove '.${platformExtension}' from '${originalKey}'`);
         }
-        route = route.replace(new RegExp(`.${platformExtension}$`), '');
+        route = route.slice(0, -(platformExtension.length + 1));
     }
     return {
         route,

@@ -2,6 +2,7 @@ interface DynamicNameMatch {
     name: string;
     deep: boolean;
 }
+export declare const VALID_PLATFORMS: Set<string>;
 /** Match `[page]` -> `page` */
 export declare function matchDynamicName(name: string): DynamicNameMatch | undefined;
 /** Test `/` -> `page` */
@@ -13,6 +14,7 @@ export declare function matchLastGroupName(name: string): string | undefined;
 /** Match the first array group name `(a,b,c)/(d,c)` -> `'a,b,c'` */
 export declare function matchArrayGroupName(name: string): string | undefined;
 export declare function getNameFromFilePath(name: string): string;
+export declare function getPlatformFromFilePath(filePath: string): string | undefined;
 export declare function getContextKey(name: string): string;
 /** Remove `.js`, `.ts`, `.jsx`, `.tsx`, and the +api suffix */
 export declare function removeSupportedExtensions(name: string): string;
