@@ -79,4 +79,19 @@ extension JSIBenchmarks {
       }
     }
   }
+
+  @Test
+  func `unowned decode of nested arrays`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("[[1, 2], [3, 4], [5, 6], [7, 8]]")
+      )
+      try benchmark("[[Double]].decode(unowned): 4 x 2 elements", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [[Double]].decode(buffer.unownedValue(at: 0), in: runtime)
+        }
+      }
+    }
+  }
 }
