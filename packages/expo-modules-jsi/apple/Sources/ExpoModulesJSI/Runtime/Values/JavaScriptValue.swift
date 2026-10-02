@@ -125,17 +125,32 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   ///
   /// `runtime` must be the runtime the value belongs to. It is passed in because a runtime-free value
   /// (undefined, null, a boolean or a number) doesn't hold one.
+  ///
+  /// Inlinable, so the closure and `R` specialize in the caller; only `borrowUnownedValue(in:)` is a
+  /// call into this module.
+  @inlinable
   public func withUnownedValue<R>(
     in runtime: borrowing JavaScriptRuntime,
     _ body: (borrowing JavaScriptUnownedValue) throws -> R
   ) rethrows -> R {
-    let jsiRuntime = runtime.pointee
-    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`, for the same SIL optimizer crash
-    // `withUnsafePointee(_:)` avoids.
-    return try withUnsafeBytes(of: pointee) { bytes in
-      let pointer = bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
-      return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
+    let unownedValue = borrowUnownedValue(in: runtime)
+    // The unowned value points into `self`, so `self` must outlive `body`.
+    defer { withExtendedLifetime(self) {} }
+    return try body(unownedValue)
+  }
+
+  /// A `JavaScriptUnownedValue` pointing at the stored `jsi::Value`. It stays valid while `self` is
+  /// alive: the value is a stored property of this instance, so its address doesn't change, and
+  /// `withUnsafeBytes(of:)` yields that address because a `jsi::Value` can't be copied. Not inlinable,
+  /// since it touches the JSI types; `withUnownedValue(in:_:)` is the only caller.
+  @usableFromInline
+  internal func borrowUnownedValue(in runtime: borrowing JavaScriptRuntime) -> JavaScriptUnownedValue {
+    let pointer = withUnsafeBytes(of: pointee) { bytes in
+      // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`, for the same SIL optimizer crash
+      // `withUnsafePointee(_:)` avoids.
+      return bytes.baseAddress!.assumingMemoryBound(to: facebook.jsi.Value.self)
     }
+    return JavaScriptUnownedValue(runtime.pointee, pointer)
   }
 
   // MARK: - Type checks
