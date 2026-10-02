@@ -11,11 +11,8 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// booleans and numbers).
   internal let runtimeHandle: JavaScriptRuntimeHandle?
   /// Mutable only so that ``write(_:to:)`` can move the engine value out of a uniquely referenced
-  /// instance that is about to be deallocated. Nothing else reassigns it, and that single write
-  /// happens on the JS thread to an instance no one else can reach, so the `Sendable` conformance
-  /// stays sound. `@exclusivity(unchecked)` matters: a plain `var` on a class makes every read go
-  /// through a dynamic exclusivity check, which measured `getDouble()` at 6.5 ns instead of 0.9 ns
-  /// and a two-number host call 90 ns slower.
+  /// instance on the JS thread, right before it is deallocated. Unchecked exclusivity keeps reads of
+  /// a mutable class property free of the dynamic exclusivity check.
   @exclusivity(unchecked) nonisolated(unsafe) internal var pointee: facebook.jsi.Value
 
   /// The runtime the value belongs to, or `nil` if it has been deallocated or the value is runtime-free.
@@ -540,11 +537,9 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     return copy()
   }
 
-  /// Writes `value` into the engine's result slot and consumes the reference. When `value` is the
-  /// only reference to its instance, which is the case for a value a host callback just created and
-  /// returned, the engine value is moved out instead of cloned: the instance dies right after this
-  /// call anyway, so cloning the handle only to release the original was a wasted allocation and
-  /// release per returned string, object or array. Shared instances fall back to ``writeJSIValue(to:)``.
+  /// Writes `value` into a host callback's result slot. A uniquely referenced instance, the normal
+  /// case for a value the callback just created, has its engine value moved out instead of cloned,
+  /// since the instance is deallocated right after. Shared instances go through ``writeJSIValue(to:)``.
   internal static func write(_ value: inout JavaScriptValue, to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
     if value.runtimeHandle != nil, isKnownUniquelyReferenced(&value) {
       expo.emplaceMovedValue(slot, &value.pointee)
