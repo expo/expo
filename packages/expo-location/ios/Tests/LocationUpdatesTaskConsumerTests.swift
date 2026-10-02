@@ -56,7 +56,7 @@ struct LocationUpdatesTaskConsumerTests {
   func `passes the computed configuration to the updates stream`() async {
     let source = FakeUpdatesSource()
     let consumer = LocationUpdatesTaskConsumer()
-    consumer.makeStream = source.updates
+    consumer.makeSource = source.updates
 
     register(FakeTask(consumer: consumer, options: ["profile": "airborne"]), on: consumer)
 
@@ -67,7 +67,7 @@ struct LocationUpdatesTaskConsumerTests {
   func `executes the task when the stream yields a location`() async throws {
     let source = FakeUpdatesSource()
     let consumer = LocationUpdatesTaskConsumer()
-    consumer.makeStream = source.updates
+    consumer.makeSource = source.updates
     let task = FakeTask(consumer: consumer)
     register(task, on: consumer)
     _ = await source.nextProfile()
@@ -90,7 +90,7 @@ struct LocationUpdatesTaskConsumerTests {
   func `does not execute the task when the stream yields no location`() async throws {
     let source = FakeUpdatesSource()
     let consumer = LocationUpdatesTaskConsumer()
-    consumer.makeStream = source.updates
+    consumer.makeSource = source.updates
     let task = FakeTask(consumer: consumer)
     register(task, on: consumer)
     _ = await source.nextProfile()
@@ -112,7 +112,7 @@ struct LocationUpdatesTaskConsumerTests {
   func `forwards stream errors to the task`() async throws {
     let source = FakeUpdatesSource()
     let consumer = LocationUpdatesTaskConsumer()
-    consumer.makeStream = source.updates
+    consumer.makeSource = source.updates
     let task = FakeTask(consumer: consumer)
     register(task, on: consumer)
     _ = await source.nextProfile()
@@ -133,7 +133,7 @@ struct LocationUpdatesTaskConsumerTests {
   func `didUnregister stops the source and deactivates the subscription`() async throws {
     let source = FakeUpdatesSource()
     let consumer = LocationUpdatesTaskConsumer()
-    consumer.makeStream = source.updates
+    consumer.makeSource = source.updates
     register(FakeTask(consumer: consumer), on: consumer)
     _ = await source.nextProfile()
 
