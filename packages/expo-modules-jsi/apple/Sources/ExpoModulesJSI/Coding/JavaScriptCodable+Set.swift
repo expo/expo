@@ -12,14 +12,12 @@ extension Set: JavaScriptDecodable where Element: JavaScriptDecodable {
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Set<Element>
   {
-    // The cheap array tag check comes before `is("Set")`, which does a global lookup plus an
-    // `instanceof` walk. Any other value that is not a JS `Set` is arrayized, as in `Array`.
-    // Duplicates in an array collapse without an error.
-    guard !value.isArray(), value.is("Set") else {
+    // The cheap tag checks come first: an array takes the `Array` path directly, and a primitive
+    // can't be a JS `Set`, so both skip the JS call below. Any other value that is not a JS `Set` is
+    // arrayized, as in `Array`. Duplicates in an array collapse without an error.
+    guard !value.isArray(), value.isObject(), let entries = try runtime.setEntries(of: value) else {
       return Set(try [Element].decode(value, in: runtime))
     }
-    // `Array.from` copies the entries out in a single call, rather than one iterator call per entry.
-    let entries = try runtime.global().getPropertyAsObject("Array").callFunction("from", arguments: value.copy())
     return Set(try [Element].decode(entries, in: runtime))
   }
 }
@@ -36,3 +34,26 @@ extension Set: JavaScriptEncodable where Element: JavaScriptEncodable {
     return try setConstructor.callAsConstructor(entries)
   }
 }
+
+extension JavaScriptRuntime {
+  /// Copies the entries of a JS `Set` out into a JS array, or returns `nil` when the value is not a
+  /// JS `Set`. The instance check and the copy run in a single call to a cached JS function, which
+  /// saves the global lookups and the separate `instanceof` call of `value.is("Set")` followed by
+  /// `Array.from`. For a small `Set` those fixed costs are most of the decode time. `Set` and
+  /// `Array.from` still resolve from the global scope on each call, the same as `value.is("Set")` would.
+  @usableFromInline
+  @JavaScriptActor
+  func setEntries(of value: borrowing JavaScriptValue) throws -> JavaScriptValue? {
+    let function = try cached(setEntriesFunctionKey) {
+      return try eval(
+        label: "expo-modules-jsi/set-entries.js",
+        "(function (value) { return value instanceof Set ? Array.from(value) : undefined; })"
+      )
+    }
+    let entries = try function.getFunction().call(arguments: value.copy())
+    return entries.isUndefined() ? nil : entries
+  }
+}
+
+/// Key of the `Set` entries function in each runtime's cache.
+private let setEntriesFunctionKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()

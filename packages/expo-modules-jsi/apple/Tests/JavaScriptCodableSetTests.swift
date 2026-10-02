@@ -27,6 +27,18 @@ struct JavaScriptCodableSetTests {
   }
 
   @Test
+  func `decoding many sets leaves no helper on the global object`() throws {
+    let runtime = JavaScriptRuntime()
+    for _ in 0..<100 {
+      _ = try Set<Int>.decode(runtime.eval("new Set([1, 2, 3])"), in: runtime)
+    }
+    // The only object the wrapper may leave on `globalThis` is the long-lived-objects anchor.
+    let ownGlobals = try runtime.eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    let freshGlobals = try JavaScriptRuntime().eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    #expect(ownGlobals - freshGlobals <= 1)
+  }
+
+  @Test
   func `decodes a set from an array, collapsing duplicates`() throws {
     let decoded = try Set<Int>.decode(runtime.eval("[1, 2, 2, 3, 1]"), in: runtime)
     #expect(decoded == [1, 2, 3])
