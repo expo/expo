@@ -203,7 +203,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         let propertyName = String(jsiPropNameID: propertyName.pointee, in: runtime.pointee)
         return JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
-            try context.get(propertyName).writeJSIValue(to: resultPtr)
+            var result = try context.get(propertyName)
+            JavaScriptValue.write(&result, to: resultPtr)
           }
         }
       }
@@ -883,7 +884,8 @@ private func createFunctionClosure(
           let this = UnsafeMutablePointer(mutating: thisPtr).move()
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
           let thisValue = JavaScriptValue(runtime, this)
-          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
+          var result = try context.call(thisValue, consume arguments)
+          JavaScriptValue.write(&result, to: resultPtr)
         }
       }
     }
@@ -926,7 +928,8 @@ private func createFunctionClosure(
         return forwardingSwiftErrorsToJS(runtime: runtime) {
           let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
           let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
-          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
+          var result = try context.call(thisValue, consume arguments)
+          JavaScriptValue.write(&result, to: resultPtr)
         }
       }
     }
