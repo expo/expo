@@ -103,7 +103,8 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     // Source exports can contain TypeScript files that use explicit `.js`
     // extensions for runtime ESM compatibility.
     '^(\\.{1,2}/.*)\\.js$': '$1',
-    '^react-native/asset-registry$': 'react-native/src/asset-registry',
+    // See the note in `../jest-preset.js`: mapped targets must be absolute paths on Jest 30.
+    '^react-native/asset-registry$': expoPreset.moduleNameMapper['^react-native/asset-registry$'],
     ...preset.moduleNameMapper,
   };
 
