@@ -39,9 +39,11 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
+    "@types/react-dom": "^19.1.7",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "jest-expo": "workspace:*"
+    "jest-expo": "workspace:*",
+    "react-dom": "19.3.0"
   },
   "peerDependencies": {
     "expo": "*",
