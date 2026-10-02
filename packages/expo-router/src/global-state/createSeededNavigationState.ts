@@ -3,6 +3,7 @@ import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName, removeSupportedExtensions } from '../matchers';
 import { createInitialState } from '../react-navigation/core/createInitialState';
+import { deepFreeze } from '../react-navigation/core/deepFreeze';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
 import {
   createNavigatorStateKey,
@@ -62,7 +63,7 @@ export function stripPendingAnchors<State extends NavigationState>(state: State)
     __internal__pendingAnchor === undefined && !routesChanged
       ? state
       : // Removing the marker keeps every field of `State`.
-        ({ ...rest, routes } as unknown as State);
+        deepFreeze({ ...rest, routes } as unknown as State);
   strippedStates.set(state, result);
   return result;
 }
