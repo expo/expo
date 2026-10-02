@@ -2003,5 +2003,6 @@ export type {
   TimingAnimationParams,
   SpringAnimationParams,
   InterpolatingSpringAnimationParams,
+  SpringPresetAnimationParams,
   ChainableAnimationType,
 } from './animation/types';
