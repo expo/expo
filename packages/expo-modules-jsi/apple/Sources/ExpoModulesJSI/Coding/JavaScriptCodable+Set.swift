@@ -1,5 +1,8 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+internal import ExpoModulesJSI_Cxx
+internal import jsi
+
 // `Set` encodes to a JS `Set` and decodes from a JS `Set` or, like `Array`, from an array or an arrayized
 // scalar. JSI has no `Set` API, so the conversions go through the runtime's global `Set` and `Array`
 // constructors. Equality differs between the two sides: a JS `Set` compares objects by reference while
@@ -48,7 +51,14 @@ extension JavaScriptRuntime {
         "(function (value) { return value instanceof Set ? Array.from(value) : undefined; })"
       )
     }
-    let entries = try function.getFunction().call(arguments: value.copy())
+    let setEntries = function.getFunction()
+    // Pass the borrowed `jsi::Value` straight to the call, rather than copying it into an owned value
+    // and again into an arguments buffer.
+    let entries = try withUnsafePointer(to: value.pointee) { argument in
+      return try capturingCppErrors {
+        return JavaScriptValue(self, expo.callFunction(pointee, setEntries.pointee, argument, 1))
+      }
+    }
     return entries.isUndefined() ? nil : entries
   }
 
