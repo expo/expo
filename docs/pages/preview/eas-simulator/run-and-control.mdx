@@ -314,6 +314,44 @@ The follow command exits when the session ends. Use `--id <session-id>` to inspe
 
 Session activity describes controller operations and interactions. It does not replace application runtime logs.
 
+## Record network traffic
+
+On iOS, a session can record the HTTP and HTTPS requests that apps on the device make. Add `--network-capture` when you start the session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --build-id <build-id> --network-capture --non-interactive',
+  ]}
+/>
+
+While the session runs, the web preview lists each request in its network panel, and you can download the recording as a HAR file there.
+
+> **warning** Network capture decrypts HTTPS, so recordings can contain credentials and cookies in cleartext. Keep only the fields you need, and treat the preview link as secret.
+
+By default, a recording keeps only the method, URL, status, timing, and size of each request, and redacts query values in URLs. Use `--network-capture-field` to keep more:
+
+| Field           | What the recording also keeps                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `header`        | Request and response headers. Headers that usually hold credentials, such as `Authorization`, are redacted |
+| `query`         | Query values in URLs                                                                                       |
+| `request-body`  | Request bodies                                                                                             |
+| `response-body` | Response bodies                                                                                            |
+
+Repeat the flag, or pass a comma-separated list:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --expo-go --network-capture --network-capture-field header,response-body --non-interactive',
+  ]}
+/>
+
+Which traffic a session records:
+
+- Requests from third-party apps that start after capture starts. An app that the session installs with `--build-id`, `--application-archive-url`, or `--expo-go` is recorded from its first launch. Relaunch an app that was already running to record its traffic.
+- Apple system apps, such as Safari, are not recorded, and neither are requests made with `URLSession.shared`.
+- Apps that pin their server certificates cannot connect while capture is on.
+- Network capture is not available on Android or together with `--egress local`.
+
 ## Use the iOS browser preview
 
 Supported iOS sessions return a `webPreviewUrl`. Open it in a desktop browser while the session is active.
