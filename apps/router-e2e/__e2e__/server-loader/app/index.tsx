@@ -51,6 +51,7 @@ const IndexScreen = () => {
         <SiteLink href="/error">Go to Error</SiteLink>
         <SiteLink href="/(group)">Go to Grouped Index</SiteLink>
         <SiteLink href="/platform/alpha/beta">Go to Platform Catch-all</SiteLink>
+        <SiteLink href="/events">Go to Platform Index</SiteLink>
         <SiteLink href="/static-helper">Go to Static Helper</SiteLink>
         <SiteLink href="/server-helper">Go to Server Helper</SiteLink>
       </SiteLinks>

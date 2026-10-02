@@ -142,6 +142,28 @@ describe.each(
     }
   );
 
+  it.each(getPageAndLoaderData('/(group)/events', true))(
+    'can access platform-specific index data beside a dynamic sibling for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'platform-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)/events/event-1', true))(
+    'can access the dynamic sibling of a platform-specific index for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'platform-index-sibling', params: { eventId: 'event-1' } });
+    }
+  );
+
   it.each(getPageAndLoaderData('/second'))(
     'can access data for $url ($name)',
     async ({ getData, url }) => {

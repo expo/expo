@@ -82,6 +82,43 @@ test.describe('server loaders in production', () => {
     expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
   });
 
+  test('loads a platform-specific index loader beside a dynamic sibling on client-side navigation', async ({
+    page,
+  }) => {
+    const loaderRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_expo/loaders/')) {
+        loaderRequests.push(request.url());
+      }
+    });
+
+    await page.goto(expoServe.url.href);
+    await page.getByText('Go to Platform Index').click();
+    await expect(page).toHaveURL(/\/events$/);
+    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+      JSON.stringify({ data: 'platform-index' }, null, 2)
+    );
+    expect(loaderRequests).toContainEqual(
+      expect.stringContaining('/_expo/loaders/(group)/events/index')
+    );
+    expect(loaderRequests).not.toContainEqual(expect.stringContaining('index.web'));
+  });
+
+  test('hydrates a platform-specific index loader beside a dynamic sibling', async ({ page }) => {
+    const loaderRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_expo/loaders/')) {
+        loaderRequests.push(request.url());
+      }
+    });
+
+    await page.goto(new URL('/events', expoServe.url).href);
+    await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+      JSON.stringify({ data: 'platform-index' }, null, 2)
+    );
+    expect(loaderRequests).not.toContainEqual(expect.stringContaining('index.web'));
+  });
+
   test('refetches headerless loader data on every fresh mount', async ({ page }) => {
     const loaderRequests: string[] = [];
     page.on('request', (request) => {

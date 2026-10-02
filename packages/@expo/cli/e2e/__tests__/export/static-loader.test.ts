@@ -130,6 +130,28 @@ describe.each(
     }
   );
 
+  it.each(getPageAndLoaderData('/(group)/events', true))(
+    'can access platform-specific index data beside a dynamic sibling for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'platform-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)/events/event-1', true))(
+    'can access the dynamic sibling of a platform-specific index for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'platform-index-sibling', params: { eventId: 'event-1' } });
+    }
+  );
+
   it.each(getPageAndLoaderData('/second'))(
     'can access data for $url ($name)',
     async ({ getData, url }) => {
@@ -277,10 +299,16 @@ describe.each(
         // Header-less loader routes: the SSG default, applied to each page and loader file.
         { namedRegex: '^/(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/\\(group\\)(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)/events(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)/events/\\[eventId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)/events/event\\-1(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/\\(group\\)/platform/alpha/beta(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/events(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/events/\\[eventId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/events/event\\-1(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/meta(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/nested(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
@@ -294,6 +322,15 @@ describe.each(
         { namedRegex: '^/request(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/slow(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        {
+          namedRegex: '^/_expo/loaders/\\(group\\)/events/\\[eventId\\]/index(?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        {
+          namedRegex: '^/_expo/loaders/\\(group\\)/events/event\\-1/index(?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        { namedRegex: '^/_expo/loaders/\\(group\\)/events/index(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/\\(group\\)/index(?:/)?$', headers: SSG_DEFAULT },
         {
           namedRegex: '^/_expo/loaders/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$',
