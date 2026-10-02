@@ -137,6 +137,32 @@ export function test({ describe, expect, it, ...t }: any) {
     });
 
     describe('Player.replace()', () => {
+      it('reports playback errors and clears them after replacing the source', async () => {
+        player = createAudioPlayer(null);
+        expect(player.currentStatus.error).toBeNull();
+        let error: string | null = null;
+        const subscription = player.addListener('playbackStatusUpdate', (status) => {
+          if (status.error) error = status.error;
+        });
+        try {
+          player.replace({ uri: 'file:///expo-audio-missing-fixture.mp3' });
+          await asyncRetry(
+            () => {
+              if (error === null) {
+                throw new Error('The player has not emitted a playback error.');
+              }
+            },
+            { retries: 5, minTimeout: 100 }
+          );
+          expect(player.currentStatus.error).toBe(error);
+
+          player.replace(mainTestingSource);
+          await retryForStatus(player, { isLoaded: true, error: null });
+        } finally {
+          subscription.remove();
+        }
+      }, 15_000);
+
       it('replaces the audio source', async () => {
         player = createAudioPlayer(mainTestingSource);
         await retryForStatus(player, { isLoaded: true });
