@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import { act, renderHook } from '@testing-library/react-native';
+import { act, renderHook, waitFor } from '@testing-library/react-native';
 
 import * as Utils from '../WebCameraUtils';
 import { useWebCameraStream } from '../useWebCameraStream';
@@ -39,8 +39,13 @@ async function renderCameraStream(video: HTMLVideoElement) {
   const hook = renderHook(() =>
     useWebCameraStream(ref, 'front', {}, { onCameraReady, onMountError })
   );
-  // Let `getPreferredStreamDevice` resolve and the stream effect run.
-  await act(async () => {});
+  // Wait for `getPreferredStreamDevice` to settle and the stream effect to run.
+  await waitFor(() => {
+    const hasStream = jest
+      .mocked(Utils.setVideoSource)
+      .mock.calls.some(([element, stream]) => element === video && stream !== null);
+    expect(hasStream || onMountError.mock.calls.length > 0).toBe(true);
+  });
   return { ...hook, onCameraReady, onMountError };
 }
 
