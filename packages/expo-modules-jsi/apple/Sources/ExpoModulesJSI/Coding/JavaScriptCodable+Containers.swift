@@ -15,15 +15,10 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
     -> [Element]
   {
-    // A non-array value is "arrayized" into a single-element array, so a caller that passes a
-    // scalar where an array is expected still works.
-    guard value.isArray() else {
-      return [try Element.decode(value, in: runtime)]
-    }
-    // `map` reads the length once and uses the unchecked element accessor, avoiding a
-    // per-element weak-runtime load and bounds check on this hot path.
-    return try value.getArray().map { element in
-      return try Element.decode(element, in: runtime)
+    // Forwards to the unowned overload, which holds the implementation.
+    let runtime = copy runtime
+    return try value.withUnownedValue(in: runtime) { unownedValue in
+      return try decode(unownedValue, in: runtime)
     }
   }
 
@@ -32,15 +27,13 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> [Element]
   {
-    // Same as the owning overload, reading the array straight from the borrowed value.
-    guard value.isObject() else {
+    // A non-array value is "arrayized" into a single-element array, so a caller that passes a
+    // scalar where an array is expected still works.
+    guard value.isArray() else {
       return [try Element.decode(value, in: runtime)]
     }
-    let object = value.getObject(in: runtime)
-    guard object.isArray() else {
-      return [try Element.decode(value, in: runtime)]
-    }
-    return try object.getArray().map { element in
+    // Each element is lent out unowned, so it's decoded without a `JavaScriptValue` per element.
+    return try value.getArray(in: runtime).mapUnowned { element in
       return try Element.decode(element, in: runtime)
     }
   }
@@ -110,19 +103,11 @@ extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScript
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
     -> [String: Value]
   {
-    let object = try value.asObject()
-    let keys = object.getPropertyNames()
-    var result = [String: Value](minimumCapacity: keys.count)
-    for key in keys {
-      let property = object.getProperty(key)
-      // Treat an `undefined`-valued property as an absent entry. Without this a non-optional
-      // `Value` would reject an object that simply omits the property as `undefined`.
-      if property.isUndefined() {
-        continue
-      }
-      result[key] = try Value.decode(property, in: runtime)
+    // Forwards to the unowned overload, which holds the implementation.
+    let runtime = copy runtime
+    return try value.withUnownedValue(in: runtime) { unownedValue in
+      return try decode(unownedValue, in: runtime)
     }
-    return result
   }
 
   @JavaScriptActor
@@ -130,16 +115,20 @@ extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScript
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> [String: Value]
   {
-    // Same as the owning overload, reading the object straight from the borrowed value.
+    // Reads the object straight from the borrowed value and lends each property out unowned, so it's
+    // decoded without a `JavaScriptValue` per property.
     let object = try value.asObject(in: runtime)
     let keys = object.getPropertyNames()
     var result = [String: Value](minimumCapacity: keys.count)
     for key in keys {
-      let property = object.getProperty(key)
-      if property.isUndefined() {
-        continue
+      let decoded: Value? = try object.withUnownedProperty(key) { property in
+        // Treat an `undefined`-valued property as an absent entry. Without this a non-optional
+        // `Value` would reject an object that simply omits the property as `undefined`.
+        return property.isUndefined() ? nil : try Value.decode(property, in: runtime)
       }
-      result[key] = try Value.decode(property, in: runtime)
+      if let decoded {
+        result[key] = decoded
+      }
     }
     return result
   }
