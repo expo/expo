@@ -40,10 +40,11 @@ class AudioRecordingServiceConnection(
     bindingTimeoutJob?.cancel()
     bindingTimeoutJob = CoroutineScope(Dispatchers.Default).launch {
       delay(timeoutMs)
-      if (bindingState == ServiceBindingState.BINDING) {
-        takeBindingContinuation()?.resumeWithException(AudioRecordingServiceException("The recording service connection has failed to connect with the recording service within ${timeoutMs}ms"))
-        unbind()
-      }
+      // Only the side that takes the continuation settles the binding. If a service callback
+      // got it first, the binding has already been handled and must not be unbound here.
+      val continuation = takeBindingContinuation() ?: return@launch
+      continuation.resumeWithException(AudioRecordingServiceException("The recording service connection has failed to connect with the recording service within ${timeoutMs}ms"))
+      unbind()
     }
   }
 
