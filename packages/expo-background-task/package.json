@@ -1,6 +1,6 @@
 {
   "name": "expo-background-task",
-  "version": "58.0.9",
+  "version": "58.0.10",
   "description": "Expo Android and iOS module for Background Task APIs",
   "keywords": [
     "background",
@@ -39,7 +39,7 @@
     "expo-task-manager": "workspace:~"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^29.5.12",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

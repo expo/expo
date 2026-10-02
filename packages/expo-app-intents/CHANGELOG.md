@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.5.0
+
+### Minor Changes
+
+- Add `donateIntentAsync()` and `deleteDonationsAsync()` to donate App Intents to the system. ([#50760](https://github.com/expo/expo/pull/50760) by [@chrfalch](https://github.com/chrfalch))
+
+### Patch Changes
+
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#49933](https://github.com/expo/expo/pull/49933))
+  - @expo/ui@58.0.11
+
 ## 0.4.8
 
 ### Patch Changes

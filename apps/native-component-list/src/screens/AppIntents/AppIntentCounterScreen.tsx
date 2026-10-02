@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import { ScrollPage, Section } from '../../components/Page';
+import { AppIntentDonationButtons } from './AppIntentDonationButtons';
 import { AppIntentExitButton } from './AppIntentExitButton';
 import { getCounterState, resetCounterState, type AppIntentCounterState } from './AppIntentsStore';
 import { useAppIntentState } from './useAppIntentState';
@@ -39,7 +40,7 @@ export default function AppIntentCounterScreen() {
           <BodyText style={styles.count}>{counterState.count}</BodyText>
           <BodyText>
             {openedBySiri
-              ? 'Opened after the Increase Counter intent ran.'
+              ? 'Opened after a counter intent ran.'
               : 'Opened manually from the API list.'}
           </BodyText>
         </View>
@@ -64,6 +65,18 @@ export default function AppIntentCounterScreen() {
               });
             }}
           />
+        </View>
+      </Section>
+
+      <Section title="Donations">
+        <View style={styles.controls}>
+          <BodyText>
+            Donation Probe has no params and is not an App Shortcut, so the system suggests it only
+            after a donation. Add to Counter takes an amount, which the donation passes as its
+            DonationParams record.
+          </BodyText>
+          <AppIntentDonationButtons title="Donation Probe" intent="donationProbe" />
+          <AppIntentDonationButtons title="Add 5" intent="addToCounter" params={{ amount: 5 }} />
         </View>
       </Section>
     </ScrollPage>

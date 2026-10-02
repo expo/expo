@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.1",
+  "version": "58.0.2",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -239,7 +239,6 @@
     "whatwg-url-minimum": "^0.2.0"
   },
   "devDependencies": {
-    "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",

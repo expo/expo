@@ -1,6 +1,5 @@
 describe('TextDecoderStream', () => {
   it(`uses the Expo built-in APIs`, () => {
-    expect((TextDecoder as any)[Symbol.for('expo.builtin')]).toBe(true);
     expect((TextDecoderStream as any)[Symbol.for('expo.builtin')]).toBe(true);
   });
 
@@ -101,6 +100,28 @@ describe('TextDecoderStream', () => {
     });
   }
 
+  it.each([
+    [
+      'latin1',
+      [
+        [0x63, 0x61],
+        [0x66, 0xe9],
+      ],
+      'café',
+    ],
+    ['utf-16le', [[0x63], [0, 0x61, 0, 0x66, 0, 0xe9], [0]], 'café'],
+  ])('streams %s using the runtime decoder', async (encoding, chunks, expected) => {
+    const stream = createStreamFromChunks(chunks.map((chunk) => new Uint8Array(chunk)));
+    const reader = stream.pipeThrough(new TextDecoderStream(encoding)).getReader();
+    let text = '';
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      text += value;
+    }
+    expect(text).toBe(expected);
+  });
+
   it('decodes simple UTF-8 text', async () => {
     const text = 'Hello, world!';
     const encoded = new TextEncoder().encode(text);
@@ -145,7 +166,7 @@ describe('TextDecoderStream', () => {
 
     const reader = stream.pipeThrough(decoder).getReader();
 
-    await expect(reader.read()).rejects.toThrow(TypeError);
+    await expect(reader.read()).rejects.toThrow(expect.objectContaining({ name: 'TypeError' }));
   });
 
   it('respects ignoreBOM: true (preserves BOM)', async () => {

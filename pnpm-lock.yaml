@@ -126,19 +126,6 @@ patchedDependencies:
 importers:
 
   .:
-    dependencies:
-      expo-asset:
-        specifier: workspace:*
-        version: link:packages/expo-asset
-      expo-modules-core:
-        specifier: workspace:*
-        version: link:packages/expo-modules-core
-      jest-expo:
-        specifier: workspace:*
-        version: link:packages/jest-expo
-      jsc-android:
-        specifier: ^250231.0.0
-        version: 250231.0.0
     devDependencies:
       '@changesets/cli':
         specifier: 3.0.3
@@ -158,15 +145,27 @@ importers:
       '@vercel/ncc':
         specifier: ^0.38.4
         version: 0.38.4
+      expo-asset:
+        specifier: workspace:*
+        version: link:packages/expo-asset
       expo-module-scripts:
         specifier: workspace:*
         version: link:packages/expo-module-scripts
+      expo-modules-core:
+        specifier: workspace:*
+        version: link:packages/expo-modules-core
       expotools:
         specifier: workspace:*
         version: link:tools
       jest:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
+      jest-expo:
+        specifier: workspace:*
+        version: link:packages/jest-expo
+      jsc-android:
+        specifier: ^250231.0.0
+        version: 250231.0.0
       lint-staged:
         specifier: ^17.0.8
         version: 17.0.8
@@ -512,8 +511,8 @@ importers:
         specifier: 4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -831,6 +830,9 @@ importers:
       expo-crypto:
         specifier: workspace:*
         version: link:../../packages/expo-crypto
+      expo-image:
+        specifier: workspace:*
+        version: link:../../packages/expo-image
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -889,8 +891,8 @@ importers:
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
   apps/native-component-list:
     dependencies:
@@ -1241,7 +1243,7 @@ importers:
         version: 1.22.4(react-native-reanimated@4.7.0(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-maps:
         specifier: 1.29.0
-        version: 1.29.0(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 1.29.0(react-native-web@0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-pager-view:
         specifier: 9.0.4
         version: 9.0.4(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1261,8 +1263,8 @@ importers:
         specifier: 5.1.1
         version: 5.1.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-webview:
         specifier: 14.0.1
         version: 14.0.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1631,8 +1633,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(react-native-pager-view@8.0.2(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ^0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-webview:
         specifier: 14.0.1
         version: 14.0.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1964,7 +1966,7 @@ importers:
         specifier: ^5.6.0
         version: 5.13.0
       lodash:
-        specifier: ^4.17.19
+        specifier: ^4.18.1
         version: 4.18.1
       path:
         specifier: ^0.12.7
@@ -1989,7 +1991,7 @@ importers:
         specifier: ^1.4.5
         version: 1.4.9
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/invariant':
         specifier: ^2.2.35
@@ -1998,7 +2000,7 @@ importers:
         specifier: ^5.1.15
         version: 5.1.15
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/lodash':
         specifier: ^4.14.184
@@ -2087,6 +2089,9 @@ importers:
       '@expo/xcpretty':
         specifier: ^4.4.4
         version: 4.4.4
+      '@react-native/asset-utils':
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3
       '@react-native/dev-middleware':
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3
@@ -2175,7 +2180,7 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.8.5
       send:
         specifier: ^0.19.0
@@ -2245,7 +2250,7 @@ importers:
         specifier: ^5.0.3
         version: 5.0.6
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/klaw-sync':
         specifier: ^6.0.0
@@ -2275,7 +2280,7 @@ importers:
         specifier: ^1.20.2
         version: 1.20.6
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       '@types/send':
         specifier: ^0.17.1
@@ -2323,7 +2328,7 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       nock:
         specifier: ^14.0.10
@@ -2335,7 +2340,7 @@ importers:
         specifier: ^1.59.0
         version: 1.59.0
       react:
-        specifier: '*'
+        specifier: 19.3.0
         version: 19.3.0
       react-refresh:
         specifier: ^0.14.2
@@ -2374,7 +2379,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.1
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.8.5
       slugify:
         specifier: ^1.3.4
@@ -2384,16 +2389,16 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/config-plugins:
@@ -2426,7 +2431,7 @@ importers:
         specifier: ^13.0.0
         version: 13.0.6
       semver:
-        specifier: ^7.5.4
+        specifier: ^7.7.4
         version: 7.8.5
       slugify:
         specifier: ^1.6.6
@@ -2442,10 +2447,10 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.7.0
+        specifier: ^7.7.1
         version: 7.7.1
       '@types/xml2js':
         specifier: ~0.4.11
@@ -2454,7 +2459,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/config-types:
@@ -2497,7 +2502,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -2550,13 +2555,13 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/fingerprint:
@@ -2592,7 +2597,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.8.5
     devDependencies:
       '@expo/config':
@@ -2605,7 +2610,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/node':
         specifier: ^22.14.0
@@ -2614,7 +2619,7 @@ importers:
         specifier: ^1.2.3
         version: 1.2.3
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2623,7 +2628,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-splash-screen
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       require-from-string:
         specifier: ^2.0.2
@@ -2653,14 +2658,14 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.8.5
     devDependencies:
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.0.0
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -2679,7 +2684,7 @@ importers:
         version: link:../config-plugins
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -2701,7 +2706,7 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/json5':
         specifier: ^2.2.0
@@ -2713,7 +2718,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/local-build-cache-provider:
@@ -2732,7 +2737,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/log-box:
@@ -2766,7 +2771,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       npm-run-all2:
         specifier: ^8.0.4
@@ -2781,8 +2786,8 @@ importers:
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
-        specifier: ^0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       rimraf:
         specifier: ^6.1.2
         version: 6.1.3
@@ -2905,7 +2910,7 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/picomatch':
         specifier: ^4.0.2
@@ -2917,7 +2922,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       metro-minify-terser:
         specifier: ^0.84.2
@@ -3056,7 +3061,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       strip-ansi:
         specifier: ^6.0.1
@@ -3091,7 +3096,7 @@ importers:
         version: 15.1.1
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -3130,7 +3135,7 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.8.5
     devDependencies:
       '@expo/plist':
@@ -3140,13 +3145,13 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/require-utils:
@@ -3177,7 +3182,7 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/@expo/router-server:
@@ -3211,7 +3216,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -3244,7 +3249,7 @@ importers:
   packages/@expo/schema-utils:
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -3279,10 +3284,10 @@ importers:
         version: 7.8.5
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/semver':
-        specifier: ^7.7.0
+        specifier: ^7.7.1
         version: 7.7.1
       expo-module-scripts:
         specifier: workspace:*
@@ -3408,8 +3413,8 @@ importers:
         specifier: ^1.0.0
         version: 1.0.0
       babel-plugin-react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2
+        specifier: ~0.21.3
+        version: 0.21.3
       babel-plugin-syntax-hermes-parser:
         specifier: ^0.36.0
         version: 0.36.1
@@ -3454,7 +3459,7 @@ importers:
         specifier: ^7.27.0
         version: 7.27.0
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -3496,7 +3501,7 @@ importers:
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/node':
         specifier: ^22.14.0
@@ -3508,7 +3513,7 @@ importers:
         specifier: 2.0.14
         version: 2.0.14
       '@vercel/ncc':
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4
       arg:
         specifier: ^5.0.2
@@ -3526,10 +3531,10 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       multitars:
         specifier: ^1.0.2
@@ -3577,10 +3582,10 @@ importers:
         specifier: ^3.1.5
         version: 3.1.5
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -3755,7 +3760,7 @@ importers:
         specifier: ^8.56.12
         version: 8.56.12
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@typescript-eslint/rule-tester':
         specifier: ^8.59.0
@@ -3843,7 +3848,7 @@ importers:
         version: 29.7.0
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-webview:
         specifier: '*'
         version: 14.0.1(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -3927,7 +3932,7 @@ importers:
   packages/expo-app-intents:
     dependencies:
       '@expo/ui':
-        specifier: workspace:^58.0.10
+        specifier: workspace:^58.0.11
         version: link:../expo-ui
       commander:
         specifier: ^12.1.0
@@ -3943,10 +3948,10 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -3977,8 +3982,8 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -3999,7 +4004,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4022,6 +4027,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-asset:
     dependencies:
@@ -4042,10 +4050,10 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4070,7 +4078,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4132,7 +4140,7 @@ importers:
         version: link:../expo-task-manager
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4151,7 +4159,7 @@ importers:
         version: link:../expo-task-manager
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4204,14 +4212,14 @@ importers:
         specifier: ^10.4.0
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -4229,7 +4237,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4284,7 +4292,7 @@ importers:
         specifier: ^5.2.0
         version: 5.2.3
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4317,14 +4325,14 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: ^7.6.0
+        specifier: ^7.7.4
         version: 7.8.5
     devDependencies:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
       '@types/semver':
-        specifier: ^7.0.0
+        specifier: ^7.7.1
         version: 7.7.1
       expo:
         specifier: workspace:*
@@ -4340,7 +4348,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4365,13 +4373,13 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4389,7 +4397,7 @@ importers:
   packages/expo-cellular:
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4411,20 +4419,20 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
         specifier: ^10.4.0
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -4511,7 +4519,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4534,6 +4542,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-dev-client:
     dependencies:
@@ -4557,7 +4568,7 @@ importers:
         version: link:../expo-updates-interface
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4588,7 +4599,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4607,10 +4618,10 @@ importers:
         specifier: ^7.7.4
         version: 7.29.7(@babel/core@7.29.7)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4674,13 +4685,13 @@ importers:
         specifier: ^4.1.8
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       '@vercel/ncc':
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4
       chalk:
         specifier: ^4.0.0
@@ -4701,13 +4712,13 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       ignore:
         specifier: ^5.3.2
         version: 5.3.2
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       ora:
         specifier: 3.4.0
@@ -4719,8 +4730,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.1
       semver:
-        specifier: 7.5.4
-        version: 7.5.4
+        specifier: 7.7.4
+        version: 7.7.4
       terminal-link:
         specifier: ^2.1.1
         version: 2.1.1
@@ -4728,7 +4739,7 @@ importers:
   packages/expo-document-picker:
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4756,7 +4767,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.4
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4768,7 +4779,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/expo-file-system:
@@ -4781,7 +4792,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4806,10 +4817,10 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4840,7 +4851,7 @@ importers:
         version: 4.7.0(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/invariant':
         specifier: ^2.2.33
@@ -4883,14 +4894,14 @@ importers:
         specifier: ^10.4.0
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -4906,6 +4917,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-image:
     dependencies:
@@ -4917,16 +4931,16 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       sf-symbols-typescript:
         specifier: ^2.2.0
         version: 2.2.0
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -4988,7 +5002,7 @@ importers:
         specifier: ^14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5034,8 +5048,8 @@ importers:
         version: 19.3.0
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -5056,14 +5070,14 @@ importers:
         specifier: ^10.4.0
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -5131,7 +5145,7 @@ importers:
         specifier: ^2.2.33
         version: 2.2.37
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5156,7 +5170,7 @@ importers:
         specifier: ^3.8.2
         version: 3.8.9
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5190,7 +5204,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5208,7 +5222,7 @@ importers:
   packages/expo-mail-composer:
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5243,7 +5257,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5265,7 +5279,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5314,8 +5328,8 @@ importers:
         specifier: ^0.2.39
         version: 0.2.39(@swc/core@1.15.18)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
         specifier: ^29.2.1
         version: 29.5.14
@@ -5373,8 +5387,27 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
+
+  packages/expo-modules-cli:
+    dependencies:
+      commander:
+        specifier: ^14.0.3
+        version: 14.0.3
+      expo-modules-macros:
+        specifier: ^0.14.0
+        version: 0.14.0
+    devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
 
   packages/expo-modules-core:
     dependencies:
@@ -5398,8 +5431,8 @@ importers:
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/invariant':
         specifier: ^2.2.33
         version: 2.2.37
@@ -5444,7 +5477,7 @@ importers:
         version: 2.9.0
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       expo-module-scripts:
         specifier: workspace:*
@@ -5463,13 +5496,13 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5534,7 +5567,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5549,7 +5582,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/expo-observe:
@@ -5574,8 +5607,8 @@ importers:
         specifier: ^7.1.33
         version: 7.1.33(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -5693,13 +5726,13 @@ importers:
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@testing-library/user-event':
         specifier: ^14.6.1
         version: 14.6.1(@testing-library/dom@10.4.1)
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5713,9 +5746,6 @@ importers:
       '@types/react-is':
         specifier: ^19.0.0
         version: 19.2.0
-      '@types/react-test-renderer':
-        specifier: ^19.1.0
-        version: 19.1.0
       expect-type:
         specifier: ^1.3.0
         version: 1.3.0
@@ -5741,8 +5771,8 @@ importers:
         specifier: ^4.3.0
         version: 4.3.0(react-native-pager-view@8.0.2(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -5757,8 +5787,8 @@ importers:
         version: 19.3.0
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -5776,7 +5806,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5791,7 +5821,7 @@ importers:
   packages/expo-secure-store:
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5816,7 +5846,7 @@ importers:
         specifier: ^2.2.33
         version: 2.2.37
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5865,7 +5895,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5917,7 +5947,7 @@ importers:
         specifier: workspace:*
         version: link:../@expo/plist
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -5929,7 +5959,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/expo-sqlite:
@@ -5948,10 +5978,10 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6029,8 +6059,8 @@ importers:
         specifier: 4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -6051,10 +6081,10 @@ importers:
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3(@babel/core@7.29.7)(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/react':
         specifier: ~19.3.0
@@ -6065,9 +6095,6 @@ importers:
       jest-expo:
         specifier: workspace:*
         version: link:../../jest-expo
-      react-test-renderer:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
 
   packages/expo-standard-web-crypto:
     devDependencies:
@@ -6091,16 +6118,16 @@ importers:
         specifier: ^10.4.0
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6174,10 +6201,10 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6199,7 +6226,7 @@ importers:
         version: link:../unimodules-app-loader
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6255,7 +6282,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6289,7 +6316,7 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6329,13 +6356,13 @@ importers:
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6358,12 +6385,18 @@ importers:
       '@expo/code-signing-certificates':
         specifier: ^0.0.6
         version: 0.0.6
+      '@expo/env':
+        specifier: workspace:^
+        version: link:../@expo/env
       '@expo/plist':
         specifier: workspace:^
         version: link:../@expo/plist
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
+      '@react-native/asset-utils':
+        specifier: 0.88.0-rc.3
+        version: 0.88.0-rc.3
       arg:
         specifier: ^4.1.0
         version: 4.1.3
@@ -6414,16 +6447,16 @@ importers:
         specifier: workspace:*
         version: link:../@expo/metro-config
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6438,7 +6471,7 @@ importers:
         specifier: ~19.3.0
         version: 19.3.0
       '@vercel/ncc':
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4
       expo-dev-client:
         specifier: workspace:*
@@ -6453,7 +6486,7 @@ importers:
         specifier: ^4.0.4
         version: 4.0.5
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
       picomatch:
         specifier: ^4.0.4
@@ -6481,10 +6514,10 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6518,7 +6551,7 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6546,7 +6579,7 @@ importers:
         specifier: ^1.8.0
         version: 1.8.0
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/node':
         specifier: ^22.14.0
@@ -6577,20 +6610,20 @@ importers:
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
       react-native-web:
         specifier: '*'
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     devDependencies:
       '@testing-library/dom':
         specifier: ^10.4.0
         version: 10.4.1
       '@testing-library/jest-dom':
-        specifier: ^6.6.3
+        specifier: ^6.9.1
         version: 6.9.1
       '@testing-library/react':
         specifier: ^16.3.0
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@testing-library/react-native':
-        specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ^14.0.1
+        version: 14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
@@ -6616,7 +6649,7 @@ importers:
         specifier: ^2.0.6
         version: 2.4.9
       '@types/semver':
-        specifier: ^7.0.0
+        specifier: ^7.7.1
         version: 7.7.1
       chalk:
         specifier: ^4.1.2
@@ -6628,7 +6661,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       prompts:
         specifier: ^2.3.2
@@ -6637,8 +6670,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       semver:
-        specifier: 7.5.4
-        version: 7.5.4
+        specifier: 7.7.4
+        version: 7.7.4
       terminal-link:
         specifier: ^2.1.1
         version: 2.1.1
@@ -6676,20 +6709,20 @@ importers:
         specifier: ^2.2.3
         version: 2.2.3
       lodash:
-        specifier: ^4.17.19
+        specifier: ^4.18.1
         version: 4.18.1
       react-native:
         specifier: 0.88.0-rc.3
         version: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
-      react-test-renderer:
-        specifier: 19.3.0
-        version: 19.3.0(react@19.3.0)
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
       stacktrace-js:
         specifier: ^2.0.2
         version: 2.0.2
+      test-renderer:
+        specifier: 1.3.0
+        version: 1.3.0(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@react-native/jest-preset':
         specifier: 0.88.0-rc.3
@@ -6744,7 +6777,7 @@ importers:
         specifier: ^4.1.5
         version: 4.1.12
       '@types/getenv':
-        specifier: ^1.0.0
+        specifier: ^1.0.3
         version: 1.0.3
       expo:
         specifier: workspace:*
@@ -6753,7 +6786,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       memfs:
-        specifier: ^3.2.0
+        specifier: ^3.6.0
         version: 3.6.0
 
   packages/pod-install:
@@ -6789,13 +6822,13 @@ importers:
         specifier: workspace:*
         version: link:../@expo/package-manager
       '@types/jest':
-        specifier: ^29.2.1
+        specifier: ^29.5.12
         version: 29.5.14
       '@types/prompts':
         specifier: ^2.0.6
         version: 2.4.9
       '@vercel/ncc':
-        specifier: ^0.38.3
+        specifier: ^0.38.4
         version: 0.38.4
       agent-cli-detector:
         specifier: 0.1.6
@@ -6852,7 +6885,7 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
       glob:
-        specifier: ^13.0.0
+        specifier: ^13.0.6
         version: 13.0.6
       prompts:
         specifier: ^2.3.2
@@ -6979,8 +7012,8 @@ importers:
         specifier: ~4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -7040,8 +7073,8 @@ importers:
         specifier: ~4.28.0
         version: 4.28.0(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-web:
-        specifier: ~0.21.0
-        version: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        specifier: ~0.21.3
+        version: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       react-native-worklets:
         specifier: 0.13.0
         version: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -7161,7 +7194,7 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       semver:
-        specifier: ^7.6.3
+        specifier: ^7.7.4
         version: 7.8.5
       strip-ansi:
         specifier: ^6.0.0
@@ -7198,7 +7231,7 @@ importers:
         specifier: ^22.14.0
         version: 22.20.1
       '@types/semver':
-        specifier: ^7.5.8
+        specifier: ^7.7.1
         version: 7.7.1
       eslint:
         specifier: ^9.39.4
@@ -8636,8 +8669,8 @@ packages:
     resolution: {integrity: sha512-R+xGEtzA95NIsvpXJSROG4t01956dDOt17KpamguY4XOnGvdHNFFXE7Er0C1OAsRjOwiIxpKqOvGlznIGZIQlQ==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
-  '@jest/diff-sequences@30.3.0':
-    resolution: {integrity: sha512-cG51MVnLq1ecVUaQ3fr6YuuAOitHK1S4WUJHnsPFE/quQr33ADUx1FfrTCpMCRxvy0Yr9BThKpDjSlcTi91tMA==}
+  '@jest/diff-sequences@30.5.0':
+    resolution: {integrity: sha512-OsqBjHXCn8cadasoAZBP6nWYvMsRhpMzGXTpxJ5aO04NlbdhIz+FVe3q49l0AwVhsz/cEmIpBes6gAFl1/dWQg==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jest/environment@29.7.0':
@@ -8656,8 +8689,8 @@ packages:
     resolution: {integrity: sha512-q4DH1Ha4TTFPdxLsqDXK1d3+ioSL7yL5oCMJZgDYm6i+6CygW5E5xVr/D1HdsGxjt1ZWSfUAs9OxSB/BNelWrQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  '@jest/get-type@30.1.0':
-    resolution: {integrity: sha512-eMbZE2hUnx1WV0pmURZY9XoXPkUYjpc55mb0CrhtdWLtzMQPFvu/rZkTLZFTsdaVQa+Tr4eWAteqcUzoawq/uA==}
+  '@jest/get-type@30.5.0':
+    resolution: {integrity: sha512-9/2VUPitAjmBzbvDvqrxmvB7BzWsBW0WmkkojX1ODuxX1NLGxx9gfaZpHB0z8DtJ9uhGNmZG/VXBhf8uO0OV8Q==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jest/globals@29.7.0':
@@ -8681,12 +8714,12 @@ packages:
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  '@jest/schemas@30.0.5':
-    resolution: {integrity: sha512-DmdYgtezMkh3cpU8/1uyXakv3tJRcmcXxBOcO0tbaozPwpmh4YMsnWrQm9ZmZMfa5ocbxzbFk6O4bDPEc/iAnA==}
-    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
-
   '@jest/schemas@30.4.1':
     resolution: {integrity: sha512-i6b4qw5qnP8c5FEeBJg/uZQ4ddrkN6Ca8qISJh0pr7a5hfn3h3v5x60BEbOC7OYAGZNMs1LfFLwnW2CuK8F57Q==}
+    engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
+
+  '@jest/schemas@30.5.0':
+    resolution: {integrity: sha512-/hunigyNpc4RCjC0VaW3f5RCUZVM2+WQ65qP7z083Gmvac7or2LI50XVNOtE4YPgBpV0yxYiAgorAPGniCoJmg==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jest/source-map@29.6.3':
@@ -10009,14 +10042,14 @@ packages:
     resolution: {integrity: sha512-zIcONa+hVtVSSep9UT3jZ5rizo2BsxgyDYU7WFD5eICBE7no3881HGeb/QkGfsJs6JTkY1aQhT7rIPC7e+0nnA==}
     engines: {node: '>=14', npm: '>=6', yarn: '>=1'}
 
-  '@testing-library/react-native@13.3.3':
-    resolution: {integrity: sha512-k6Mjsd9dbZgvY4Bl7P1NIpePQNi+dfYtlJ5voi9KQlynxSyQkfOgJmYGCYmw/aSgH/rUcFvG8u5gd4npzgRDyg==}
-    engines: {node: '>=18'}
+  '@testing-library/react-native@14.0.1':
+    resolution: {integrity: sha512-2r2e2y8SkUNRWKRXlUGqDYunB+AkbdXUPn49Bs5rpv9oxRb0K3USBVugbPbAKJjfj4w5Ba91NJ8LcQCZyopUZA==}
+    engines: {node: ^22.13.0 || >=24}
     peerDependencies:
       jest: '>=29.0.0'
-      react: '>=18.2.0'
+      react: '>=19.0.0'
       react-native: 0.88.0-rc.3
-      react-test-renderer: '>=18.2.0'
+      test-renderer: ^1.0.0
     peerDependenciesMeta:
       jest:
         optional: true
@@ -10353,6 +10386,11 @@ packages:
 
   '@types/react-native__assets@1.0.3':
     resolution: {integrity: sha512-uvTH6VjIq5XScq4bQJoyaaxGxZdmw2I3Vy+fBt+fTqr5xKUleLb/y7xHJQa3qHCLJ1xpfLS42F0ftv4XCLFLww==}
+
+  '@types/react-reconciler@0.33.1':
+    resolution: {integrity: sha512-0kF59ji2mKuHUd5wytHSpmORybMYVerJvq0K10pz9ZFoOlJ3e+w1LBjLshWpCrokeyQOioRodNbO4PH4ddvRfg==}
+    peerDependencies:
+      '@types/react': '*'
 
   '@types/react-test-renderer@19.1.0':
     resolution: {integrity: sha512-XD0WZrHqjNrxA/MaR9O22w/RNidWR9YZmBdRGI7wcnWGrv/3dA8wKCJ8m63Sn+tLJhcjmuhOi629N66W6kgWzQ==}
@@ -10958,8 +10996,8 @@ packages:
   babel-plugin-react-compiler@1.0.0:
     resolution: {integrity: sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw==}
 
-  babel-plugin-react-native-web@0.21.2:
-    resolution: {integrity: sha512-SPD0J6qjJn8231i0HZhlAGH6NORe+QvRSQM2mwQEzJ2Fb3E4ruWTiiicPlHjmeWShDXLcvoorOCXjeR7k/lyWA==}
+  babel-plugin-react-native-web@0.21.3:
+    resolution: {integrity: sha512-e4fG8NbyRvk5GwU/7G2U9WxzPYtpC4IQN28AyRDzKE0kvywgohq8vT2x0/xBfg8a0RfSkXLlHAtUAGlSy3VhAw==}
 
   babel-plugin-syntax-hermes-parser@0.36.1:
     resolution: {integrity: sha512-ycduwJbvdvIMmVvlAZqGggS+pm5Eu4Bk9pcV9Sm2Z4PJNRVsKkv0g7vHj+LeuC1gHTeF67sJXFOq61IlqCa2hA==}
@@ -12985,8 +13023,8 @@ packages:
     resolution: {integrity: sha512-LMIgiIrhigmPrs03JHpxUh2yISK3vLFPkAodPeo0+BuF7wA2FoQbkEg1u8gBYBThncu7e1oEDUfIXVuTqLRUjw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  jest-diff@30.3.0:
-    resolution: {integrity: sha512-n3q4PDQjS4LrKxfWB3Z5KNk1XjXtZTBwQp71OP0Jo03Z6V60x++K5L8k6ZrW8MY8pOFylZvHM0zsjS1RqlHJZQ==}
+  jest-diff@30.5.2:
+    resolution: {integrity: sha512-rBtHnI6BWTiWj3lM7fOLVfChx7R9B0u9VV3PRHawKs79x6ZjW1QoSrKenaigNGWlvhtoi2BqvDbABDie+Os3xQ==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   jest-docblock@29.7.0:
@@ -13026,8 +13064,8 @@ packages:
     resolution: {integrity: sha512-sBkD+Xi9DtcChsI3L3u0+N0opgPYnCRPtGcQYrgXmR+hmt/fYfWAL0xRXYU8eWOdfuLgBe0YCW3AFtnRLagq/g==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  jest-matcher-utils@30.3.0:
-    resolution: {integrity: sha512-HEtc9uFQgaUHkC7nLSlQL3Tph4Pjxt/yiPvkIrrDCt9jhoLIgxaubo1G+CFOnmHYMxHwwdaSN7mkIFs6ZK8OhA==}
+  jest-matcher-utils@30.5.2:
+    resolution: {integrity: sha512-lFkB365PTIHOhPzwrb9T6gvlDnPpOZ7/c3ewOKKB7bzztqjVrtlyRL2MkyfJXpyY2u2SKw001JKrTx14fBUFcQ==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   jest-message-util@29.7.0:
@@ -13477,10 +13515,6 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
-
-  lru-cache@6.0.0:
-    resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
-    engines: {node: '>=10'}
 
   lucide-react@0.548.0:
     resolution: {integrity: sha512-63b16z63jM9yc1MwxajHeuu0FRZFsDtljtDjYm26Kd86UQ5HQzu9ksEtoUUw4RBuewodw/tGFmvipePvRsKeDA==}
@@ -14279,8 +14313,8 @@ packages:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
 
-  pretty-format@30.3.0:
-    resolution: {integrity: sha512-oG4T3wCbfeuvljnyAzhBvpN45E8iOTXCU/TD3zXW80HA3dQ4ahdqMkWGiPWZvjpQwlbyHrPTWUAqUzGzv4l1JQ==}
+  pretty-format@30.5.1:
+    resolution: {integrity: sha512-byhRAPguVKMQIj4kjJwJ5lAskVhfuiSdiYl/aLTWpgkGEmic2jYhJh1yE9ih8Ox44Xg9ccCT11/S6QrzSJuNrg==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   probe-image-size@7.2.3:
@@ -14524,6 +14558,12 @@ packages:
       react: ^18.0.0 || ^19.0.0
       react-dom: ^18.0.0 || ^19.0.0
 
+  react-native-web@0.21.3:
+    resolution: {integrity: sha512-ozvZM0z8UWfduoKnYx03KUccM2LdHNaW8nNJu4Md0glyqWL+Ysa6dRZzMOO6Yp/hhTYT9yluwjknpd9l04uvDw==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+
   react-native-webview@14.0.1:
     resolution: {integrity: sha512-lBUuvFk459Mo+5vUNqwzGvn+I8rDJE6zvOulG2hWWudeEOJfWTsQwOfuYnRu+27djUIXrESFfC+EQE3PGu+FWA==}
     peerDependencies:
@@ -14554,6 +14594,12 @@ packages:
     engines: {node: '>=0.10.0'}
     peerDependencies:
       react: ^19.0.0
+
+  react-reconciler@0.34.0:
+    resolution: {integrity: sha512-eVibvB1fc9j5Qf1KRkiM3GzRPBdjg2P6G6QV2f3P6Eb3OGMxRBhdg2rrUwjbV5JrQaJj8nOa8uajmmJA5tJWjQ==}
+    engines: {node: '>=0.10.0'}
+    peerDependencies:
+      react: ^19.3.0
 
   react-refresh@0.14.2:
     resolution: {integrity: sha512-jCvmsr+1IUSMUyzOkRcvnVbX3ZYC6g9TDrDbFuFmRDq7PD4yaGbLKNQL6k2jnArV8hjYxh7hVhAZB6s9HDGpZA==}
@@ -14851,8 +14897,8 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
-  semver@7.5.4:
-    resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
+  semver@7.7.4:
+    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -15301,6 +15347,11 @@ packages:
   test-exclude@6.0.0:
     resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
     engines: {node: '>=8'}
+
+  test-renderer@1.3.0:
+    resolution: {integrity: sha512-DXyHv7JrVmDc5dKpfVHFhJ0Evo/EFY3TqlNt8CR65ua3SCsI09K/mQDJmYUOnZz36GANYqjp0ApeRER/mOxktQ==}
+    peerDependencies:
+      react: ^19.0.0
 
   text-encoding@0.7.0:
     resolution: {integrity: sha512-oJQ3f1hrOnbRLOcwKz0Liq2IcrvDeZRHXhd9RgLrsT+DjWY/nty1Hi7v3dtkaEYbPYe0mUoOfzRrMwfXXwgPUA==}
@@ -16033,9 +16084,6 @@ packages:
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
-
-  yallist@4.0.0:
-    resolution: {integrity: sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==}
 
   yallist@5.0.0:
     resolution: {integrity: sha512-YgvUTfwqyc7UXVMrB+SImsVYSmTS8X/tSrtdNZMImM+n7+QTriRXyXim0mBrTXNeqzVF0KWGgHPeiyViFFrNDw==}
@@ -17628,7 +17676,7 @@ snapshots:
     dependencies:
       '@jest/types': 30.4.1
 
-  '@jest/diff-sequences@30.3.0': {}
+  '@jest/diff-sequences@30.5.0': {}
 
   '@jest/environment@29.7.0':
     dependencies:
@@ -17655,7 +17703,7 @@ snapshots:
       jest-mock: 29.7.0
       jest-util: 29.7.0
 
-  '@jest/get-type@30.1.0': {}
+  '@jest/get-type@30.5.0': {}
 
   '@jest/globals@29.7.0':
     dependencies:
@@ -17700,11 +17748,11 @@ snapshots:
     dependencies:
       '@sinclair/typebox': 0.27.10
 
-  '@jest/schemas@30.0.5':
+  '@jest/schemas@30.4.1':
     dependencies:
       '@sinclair/typebox': 0.34.48
 
-  '@jest/schemas@30.4.1':
+  '@jest/schemas@30.5.0':
     dependencies:
       '@sinclair/typebox': 0.34.48
 
@@ -18990,27 +19038,27 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react-native@13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@testing-library/react-native@14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))':
     dependencies:
-      jest-matcher-utils: 30.3.0
+      jest-matcher-utils: 30.5.2
       picocolors: 1.1.1
-      pretty-format: 30.3.0
+      pretty-format: 30.5.1
       react: 19.3.0
       react-native: 0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
-      react-test-renderer: 19.3.0(react@19.3.0)
       redent: 3.0.0
+      test-renderer: 1.3.0(@types/react@19.3.0)(react@19.3.0)
     optionalDependencies:
       jest: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
 
-  '@testing-library/react-native@13.3.3(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react-test-renderer@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@testing-library/react-native@14.0.1(jest@29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3)))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)(test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0))':
     dependencies:
-      jest-matcher-utils: 30.3.0
+      jest-matcher-utils: 30.5.2
       picocolors: 1.1.1
-      pretty-format: 30.3.0
+      pretty-format: 30.5.1
       react: 19.3.0
       react-native: 0.88.0-rc.3(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
-      react-test-renderer: 19.3.0(react@19.3.0)
       redent: 3.0.0
+      test-renderer: 1.3.0(@types/react@19.3.0)(react@19.3.0)
     optionalDependencies:
       jest: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
 
@@ -19360,6 +19408,10 @@ snapshots:
       '@types/react': 19.3.0
 
   '@types/react-native__assets@1.0.3': {}
+
+  '@types/react-reconciler@0.33.1(@types/react@19.3.0)':
+    dependencies:
+      '@types/react': 19.3.0
 
   '@types/react-test-renderer@19.1.0':
     dependencies:
@@ -20003,7 +20055,7 @@ snapshots:
     dependencies:
       '@babel/types': 7.29.7
 
-  babel-plugin-react-native-web@0.21.2: {}
+  babel-plugin-react-native-web@0.21.3: {}
 
   babel-plugin-syntax-hermes-parser@0.36.1:
     dependencies:
@@ -22329,12 +22381,12 @@ snapshots:
       jest-get-type: 29.6.3
       pretty-format: 29.7.0
 
-  jest-diff@30.3.0:
+  jest-diff@30.5.2:
     dependencies:
-      '@jest/diff-sequences': 30.3.0
-      '@jest/get-type': 30.1.0
+      '@jest/diff-sequences': 30.5.0
+      '@jest/get-type': 30.5.0
       chalk: 4.1.2
-      pretty-format: 30.3.0
+      pretty-format: 30.5.1
 
   jest-docblock@29.7.0:
     dependencies:
@@ -22401,12 +22453,12 @@ snapshots:
       jest-get-type: 29.6.3
       pretty-format: 29.7.0
 
-  jest-matcher-utils@30.3.0:
+  jest-matcher-utils@30.5.2:
     dependencies:
-      '@jest/get-type': 30.1.0
+      '@jest/get-type': 30.5.0
       chalk: 4.1.2
-      jest-diff: 30.3.0
-      pretty-format: 30.3.0
+      jest-diff: 30.5.2
+      pretty-format: 30.5.1
 
   jest-message-util@29.7.0:
     dependencies:
@@ -22945,10 +22997,6 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
-
-  lru-cache@6.0.0:
-    dependencies:
-      yallist: 4.0.0
 
   lucide-react@0.548.0(react@19.3.0):
     dependencies:
@@ -23804,11 +23852,12 @@ snapshots:
       ansi-styles: 5.2.0
       react-is: 18.3.1
 
-  pretty-format@30.3.0:
+  pretty-format@30.5.1:
     dependencies:
-      '@jest/schemas': 30.0.5
+      '@jest/react-is-18': react-is@18.3.1
+      '@jest/react-is-19': react-is@19.3.0
+      '@jest/schemas': 30.5.0
       ansi-styles: 5.2.0
-      react-is: 18.3.1
 
   probe-image-size@7.2.3:
     dependencies:
@@ -23989,6 +24038,14 @@ snapshots:
     optionalDependencies:
       react-native-web: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
+  react-native-maps@1.29.0(react-native-web@0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
+    dependencies:
+      '@types/geojson': 7946.0.16
+      react: 19.3.0
+      react-native: 0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
+    optionalDependencies:
+      react-native-web: 0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+
   react-native-pager-view@8.0.2(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
     dependencies:
       react: 19.3.0
@@ -24072,6 +24129,22 @@ snapshots:
       react-native: 0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
 
   react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@react-native/normalize-colors': 0.74.89
+      fbjs: 3.0.5(encoding@0.1.13)
+      inline-style-prefixer: 7.0.1
+      memoize-one: 6.0.0
+      nullthrows: 1.1.1
+      postcss-value-parser: 4.2.0
+      react: 19.3.0
+      react-dom: 19.3.0(react@19.3.0)
+      styleq: 0.1.3
+    transitivePeerDependencies:
+      - encoding
+    optional: true
+
+  react-native-web@0.21.3(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0):
     dependencies:
       '@babel/runtime': 7.29.7
       '@react-native/normalize-colors': 0.74.89
@@ -24209,6 +24282,11 @@ snapshots:
     dependencies:
       react: 19.3.0
       scheduler: 0.25.0
+
+  react-reconciler@0.34.0(react@19.3.0):
+    dependencies:
+      react: 19.3.0
+      scheduler: 0.28.0
 
   react-refresh@0.14.2: {}
 
@@ -24512,9 +24590,7 @@ snapshots:
 
   semver@6.3.1: {}
 
-  semver@7.5.4:
-    dependencies:
-      lru-cache: 6.0.0
+  semver@7.7.4: {}
 
   semver@7.8.5: {}
 
@@ -25021,6 +25097,14 @@ snapshots:
       '@istanbuljs/schema': 0.1.3
       glob: 7.2.3
       minimatch: 3.1.5
+
+  test-renderer@1.3.0(@types/react@19.3.0)(react@19.3.0):
+    dependencies:
+      '@types/react-reconciler': 0.33.1(@types/react@19.3.0)
+      react: 19.3.0
+      react-reconciler: 0.34.0(react@19.3.0)
+    transitivePeerDependencies:
+      - '@types/react'
 
   text-encoding@0.7.0: {}
 
@@ -25862,8 +25946,6 @@ snapshots:
   y18n@5.0.8: {}
 
   yallist@3.1.1: {}
-
-  yallist@4.0.0: {}
 
   yallist@5.0.0: {}
 

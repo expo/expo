@@ -1,5 +1,13 @@
 # Changelog
 
+## 56.0.5
+
+### Patch Changes
+
+- [Internal] Bump `@testing-library/react-native` to v14. ([#50686](https://github.com/expo/expo/pull/50686) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50686](https://github.com/expo/expo/pull/50686))
+  - jest-expo@58.0.6
+
 ## 56.0.4
 
 ### Patch Changes

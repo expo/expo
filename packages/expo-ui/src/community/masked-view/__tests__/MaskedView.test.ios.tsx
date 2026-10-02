@@ -7,8 +7,8 @@ import { findNativeViewProps } from '../../../__mocks__/expo';
 jest.mock('expo', () => jest.requireActual('../../../__mocks__/expo'));
 
 describe('MaskedView', () => {
-  it('keeps the SwiftUI host inside the React Native layout bounds', () => {
-    render(
+  it('keeps the SwiftUI host inside the React Native layout bounds', async () => {
+    await render(
       <MaskedView maskElement={<View />}>
         <View />
       </MaskedView>

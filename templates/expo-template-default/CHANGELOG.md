@@ -1,5 +1,23 @@
 # expo-template-default
 
+## 58.0.11
+
+### Patch Changes
+
+- Move or delete the demo images in **assets/images** along with the example files when running `reset-project`. ([#43534](https://github.com/expo/expo/pull/43534) by [@WolfieLeader](https://github.com/WolfieLeader))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#49933](https://github.com/expo/expo/pull/49933), [#50885](https://github.com/expo/expo/pull/50885), [#50686](https://github.com/expo/expo/pull/50686), [#50549](https://github.com/expo/expo/pull/50549))
+  - @expo/ui@58.0.11
+  - expo-device@58.0.5
+  - expo-font@58.0.5
+  - expo-image@58.0.10
+  - expo-linking@58.0.10
+  - expo-router@58.0.12
+  - expo-splash-screen@58.0.4
+  - expo-status-bar@58.0.3
+  - expo-system-ui@58.0.5
+  - expo-web-browser@58.0.4
+  - expo@58.0.2
+
 ## 58.0.10
 
 ### Patch Changes

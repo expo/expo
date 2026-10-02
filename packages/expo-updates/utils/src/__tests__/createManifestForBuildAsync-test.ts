@@ -12,7 +12,6 @@ jest.mock('expo/config/paths', () => ({
   resolveEntryPoint: () => 'index.js',
 }));
 jest.mock('expo/internal/unstable-expo-updates-cli-exports', () => ({
-  drawableFileTypes: new Set(['png']),
   createMetroServerAndBundleRequestAsync: jest.fn(),
   exportEmbedAssetsAsync: jest.fn(),
 }));

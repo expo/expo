@@ -9,24 +9,27 @@ import { createReactNativeConfigAsync } from './reactNativeConfig';
 import type { RNConfigDependency } from './reactNativeConfig/reactNativeConfig.types';
 import { scanFilesRecursively } from './utils';
 
-export interface PrebuiltMetadataEntry {
+export interface PrebuiltMetadataEntry extends PrebuiltProductFields {
   type: 'internal' | 'external';
   npmPackage: string;
   packageRoot: string;
   podspecDir: string;
   productName: string;
+}
+
+/** The fields read from a product's spm.config.json entry. Each needs a reader in
+ * `PRODUCT_FIELD_READERS`, which the compiler enforces. */
+export interface PrebuiltProductFields {
   /** The product is built from source only — the prebuild pipeline never
    * produces an XCFramework for it. Absent where it does. */
   sourceOnly?: boolean;
   /** The product's iOS deployment floor as a plain version string ("16.4").
    * Absent where the config declares none this can read. */
   iosDeploymentTarget?: string;
-  /** Product names of the SPM packages this product links, each of which ships
-   * as its own XCFramework beside the product. Absent where it links none. */
-  spmDependencies?: string[];
-  /** The same packages as full coordinates, for consumers that declare them
-   * themselves instead of linking an XCFramework. Absent where the product
-   * declares none this can render. */
+  /** The SPM packages the product links. A consumer of the precompiled product
+   * links each one as the XCFramework named after its `productName`, shipped
+   * beside the product; a consumer building from source declares the package.
+   * Absent where the product declares none this can render. */
   spmPackages?: PrebuiltSpmPackage[];
   /** The gate deciding whether the product is linked at all, present whenever
    * the product declares one — a gate this could not read whole is a gate that
@@ -186,19 +189,6 @@ function readIosDeploymentTarget(platforms: unknown): string | undefined {
   return undefined;
 }
 
-/** Mirrors Ruby's `spm_dependency_frameworks`: the product name of every SPM
- * package the product links, skipping entries that name none. */
-function readSpmDependencies(spmPackages: unknown): string[] {
-  if (!Array.isArray(spmPackages)) {
-    return [];
-  }
-  return spmPackages
-    .map((pkg: unknown) =>
-      typeof pkg === 'object' && pkg !== null && 'productName' in pkg ? pkg.productName : undefined
-    )
-    .filter((name): name is string => typeof name === 'string');
-}
-
 const SPM_VERSION_KEYS = ['exact', 'from', 'branch', 'revision'] as const;
 
 /** An SPM version requirement, when the entry declares exactly one this knows and
@@ -222,30 +212,66 @@ function readSpmVersion(version: unknown): PrebuiltSpmVersion | undefined {
  * missing one is diagnosed by name. An
  * entry naming a package identity of its own is skipped for the same reason —
  * SwiftPM derives identity from the URL, and no manifest can say otherwise. */
-function readSpmPackages(spmPackages: unknown): PrebuiltSpmPackage[] {
+function readSpmPackages(
+  spmPackages: unknown,
+  { podName, configPath }: ProductContext
+): PrebuiltSpmPackage[] | undefined {
   if (!Array.isArray(spmPackages)) {
-    return [];
+    return undefined;
   }
   const packages: PrebuiltSpmPackage[] = [];
-  for (const entry of spmPackages) {
-    if (typeof entry !== 'object' || entry === null) {
-      continue;
+  spmPackages.forEach((entry: unknown, index) => {
+    const read = readSpmPackage(entry);
+    if (typeof read !== 'string') {
+      packages.push(read);
+      return;
     }
-    const { url, productName, version } = entry as Record<string, unknown>;
-    const requirement = readSpmVersion(version);
-    if (
-      typeof url !== 'string' ||
-      url.trim() === '' ||
-      typeof productName !== 'string' ||
-      productName.trim() === '' ||
-      requirement == null ||
-      'packageName' in entry
-    ) {
-      continue;
-    }
-    packages.push({ url, productName, version: requirement });
+    const productName = (entry as { productName?: unknown } | null)?.productName;
+    const label = isNonEmptyString(productName) ? `"${productName}"` : `spmPackages[${index}]`;
+    warnSkippedSpmPackage(label, podName, configPath, read);
+  });
+  return packages.length > 0 ? packages : undefined;
+}
+
+/** The package an entry declares, or what keeps it from declaring one. */
+function readSpmPackage(entry: unknown): PrebuiltSpmPackage | string {
+  if (typeof entry !== 'object' || entry === null) {
+    return 'is not an object';
   }
-  return packages;
+  const { url, productName, version } = entry as Record<string, unknown>;
+  if (!isNonEmptyString(productName)) {
+    return 'has no productName';
+  }
+  if (!isNonEmptyString(url)) {
+    return 'has no url';
+  }
+  const requirement = readSpmVersion(version);
+  if (requirement == null) {
+    return 'declares no version requirement this can read (exactly one of exact, from, branch or revision, as a string)';
+  }
+  if ('packageName' in entry) {
+    return 'names a packageName, which SwiftPM derives from the url instead';
+  }
+  return { url, productName, version: requirement };
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.trim() !== '';
+}
+
+/** CocoaPods links every SPM package that names a product, so one skipped here
+ * without a word is linked by CocoaPods and silently missing from a SwiftPM build. */
+function warnSkippedSpmPackage(
+  label: string,
+  podName: string,
+  configPath: string,
+  problem: string
+) {
+  console.warn(
+    `[prebuilt-metadata] The SPM package ${label} of ${podName} in ${configPath} ${problem}, so it is left out of the metadata ` +
+      'and a SwiftPM build does not link it, even where CocoaPods does. ' +
+      'Give the entry a url, a productName, and exactly one version requirement, and no packageName.'
+  );
 }
 
 const AUTOLINK_WHEN_SUBJECTS = ['podName', 'npmPackage', 'podfileProperty'] as const;
@@ -322,35 +348,81 @@ function warnUnreadableAutolinkWhen(
   );
 }
 
-/** The spm.config.json product keys an entry's optional fields are read from. */
+/** An spm.config.json product as parsed; nothing beyond its names is trusted. */
 interface SpmConfigProduct {
-  sourceOnly?: unknown;
-  platforms?: unknown;
-  spmPackages?: unknown;
-  autolinkWhen?: unknown;
+  podName?: string;
+  name?: string;
+  [key: string]: unknown;
 }
 
-/** The optional fields internal and external entries share, each present only
- * where the product declares something this can read. */
-function productFields(
+interface ProductContext {
+  podName: string;
+  configPath: string;
+}
+
+type ProductFieldReaders = {
+  [Field in keyof PrebuiltProductFields]-?: (
+    product: SpmConfigProduct,
+    context: ProductContext
+  ) => PrebuiltProductFields[Field];
+};
+
+/** Declaration order is the document's key order. */
+const PRODUCT_FIELD_READERS: ProductFieldReaders = {
+  sourceOnly: (product) => (product.sourceOnly === true ? true : undefined),
+  iosDeploymentTarget: (product) => readIosDeploymentTarget(product.platforms),
+  spmPackages: (product, context) => readSpmPackages(product.spmPackages, context),
+  autolinkWhen: (product, { podName, configPath }) =>
+    readAutolinkWhen(product.autolinkWhen, podName, configPath),
+};
+
+function readProductFields(
   product: SpmConfigProduct,
-  podName: string,
-  configPath: string
-): Pick<
-  PrebuiltMetadataEntry,
-  'sourceOnly' | 'iosDeploymentTarget' | 'spmDependencies' | 'spmPackages' | 'autolinkWhen'
-> {
-  const iosDeploymentTarget = readIosDeploymentTarget(product.platforms);
-  const spmDependencies = readSpmDependencies(product.spmPackages);
-  const spmPackages = readSpmPackages(product.spmPackages);
-  const autolinkWhen = readAutolinkWhen(product.autolinkWhen, podName, configPath);
-  return {
-    ...(product.sourceOnly === true && { sourceOnly: true }),
-    ...(iosDeploymentTarget != null && { iosDeploymentTarget }),
-    ...(spmDependencies.length > 0 && { spmDependencies }),
-    ...(spmPackages.length > 0 && { spmPackages }),
-    ...(autolinkWhen != null && { autolinkWhen }),
-  };
+  context: ProductContext
+): PrebuiltProductFields {
+  const fields: Record<string, unknown> = {};
+  for (const [field, read] of Object.entries(PRODUCT_FIELD_READERS)) {
+    const value = read(product, context);
+    if (value !== undefined) {
+      fields[field] = value;
+    }
+  }
+  return fields as PrebuiltProductFields;
+}
+
+interface ProductSource {
+  type: PrebuiltMetadataEntry['type'];
+  npmPackage: string;
+  packageRoot: string;
+  podspecDir: (podName: string) => string;
+  configPath: string;
+}
+
+function addProducts(
+  entries: PrebuiltMetadataDocument,
+  config: { products?: SpmConfigProduct[] } | null,
+  source: ProductSource
+) {
+  const { configPath } = source;
+  // Like Ruby, a config that fails mid-processing is warned about and skipped.
+  try {
+    for (const product of config?.products ?? []) {
+      const podName = product.podName;
+      if (podName == null) {
+        continue;
+      }
+      entries[podName] = {
+        type: source.type,
+        npmPackage: source.npmPackage,
+        packageRoot: source.packageRoot,
+        podspecDir: source.podspecDir(podName),
+        productName: product.name || podName,
+        ...readProductFields(product, { podName, configPath }),
+      };
+    }
+  } catch (error) {
+    console.warn(`[prebuilt-metadata] Failed to process ${configPath}: ${error}`);
+  }
 }
 
 function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: string) {
@@ -366,25 +438,13 @@ function addInternalProducts(entries: PrebuiltMetadataDocument, packageRoot: str
   if (!npmPackage) {
     return;
   }
-  // Like Ruby, a config that fails mid-processing is warned about and skipped.
-  try {
-    for (const product of config.products ?? []) {
-      const podName = product.podName;
-      if (podName == null) {
-        continue;
-      }
-      entries[podName] = {
-        type: 'internal',
-        npmPackage,
-        packageRoot,
-        podspecDir: resolvePodspecDir(packageRoot, podName),
-        productName: product.name || podName,
-        ...productFields(product, podName, configPath),
-      };
-    }
-  } catch (error) {
-    console.warn(`[prebuilt-metadata] Failed to process ${configPath}: ${error}`);
-  }
+  addProducts(entries, config, {
+    type: 'internal',
+    npmPackage,
+    packageRoot,
+    podspecDir: (podName) => resolvePodspecDir(packageRoot, podName),
+    configPath,
+  });
 }
 
 /** Podspecs live in `ios/` unless the package keeps one at its root. */
@@ -409,24 +469,12 @@ async function scanExternalConfigsAsync(
     if (!packageRoot) {
       continue;
     }
-    const config = readJsonFile(file.path);
-    try {
-      for (const product of config?.products ?? []) {
-        const podName = product.podName;
-        if (podName == null) {
-          continue;
-        }
-        entries[podName] = {
-          type: 'external',
-          npmPackage,
-          packageRoot,
-          podspecDir: packageRoot,
-          productName: product.name || podName,
-          ...productFields(product, podName, file.path),
-        };
-      }
-    } catch (error) {
-      console.warn(`[prebuilt-metadata] Failed to process ${file.path}: ${error}`);
-    }
+    addProducts(entries, readJsonFile(file.path), {
+      type: 'external',
+      npmPackage,
+      packageRoot,
+      podspecDir: () => packageRoot,
+      configPath: file.path,
+    });
   }
 }
