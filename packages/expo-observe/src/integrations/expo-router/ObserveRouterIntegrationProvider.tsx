@@ -12,7 +12,7 @@ export function ObserveRouterIntegrationProvider({ children }: PropsWithChildren
   );
   const [listenersCleanup] = useState(() => {
     if (!storage || !optionalRouter) return;
-    return initListeners(storage, optionalRouter.unstable_navigationEvents);
+    return initListeners(storage, optionalRouter.unstable_PerformanceObserver);
   });
 
   const prevInitialized = useRef(isInitialized());

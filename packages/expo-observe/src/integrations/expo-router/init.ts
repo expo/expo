@@ -4,7 +4,11 @@ import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
-import { optionalRouter } from './router';
+import {
+  optionalRouter,
+  type RouterPageMarkDetail,
+  type RouterPerformanceObserver,
+} from './router';
 import { type RouterIntegrationStorage } from './storage';
 
 // TODO(@ubax): split this module into `.native.ts` / `.web.ts` variants so the
@@ -21,41 +25,43 @@ export const getRouterIntegrationConfig = () => routerIntegrationConfig;
 export function initRouterIntegration(config?: ObserveIntegrationsConfig['expo-router']) {
   initialized = true;
   routerIntegrationConfig = config;
-  optionalRouter?.unstable_navigationEvents.enable();
+  optionalRouter?.unstable_performance.enable();
 }
-
-type NavigationEvents = NonNullable<typeof optionalRouter>['unstable_navigationEvents'];
 
 export function initListeners(
   storage: RouterIntegrationStorage,
-  navigationEvents: NavigationEvents
+  PerformanceObserver: RouterPerformanceObserver
 ): () => void {
   const appLaunchTime = performance.now();
-  const cleanup = new Set<() => void>();
 
-  const unsubscribeAction = navigationEvents.addListener('actionDispatched', (event) => {
-    // PRELOAD comes from router.prefetch() — a route warm-up, not a user
-    // navigation — so it must not seed dispatchTime.
-    if (event.actionType === 'PRELOAD') return;
-    storage.pendingActions.push({
-      actionType: event.actionType,
-      dispatchTime: performance.now(),
-    });
+  const observer = new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) {
+      switch (entry.name) {
+        case 'expo-router:action-dispatched':
+          // PRELOAD comes from router.prefetch() — a route warm-up, not a user
+          // navigation — so it must not seed dispatchTime.
+          if (entry.detail.actionType === 'PRELOAD') break;
+          storage.pendingActions.push({
+            actionType: entry.detail.actionType,
+            dispatchTime: entry.startTime,
+          });
+          break;
+        case 'expo-router:page-preloaded':
+          // The screen rendered as part of a preload. Mark it as already rendered so
+          // the eventual page focus resolves to `warm_ttr` rather than `cold_ttr`.
+          storage.renderedScreensIds.add(entry.detail.screenId);
+          break;
+        case 'expo-router:page-focused':
+          onPageFocused(entry.detail, entry.startTime);
+          break;
+      }
+    }
   });
-  cleanup.add(unsubscribeAction);
+  observer.observe({ type: 'mark' });
 
-  const unsubscribePreload = navigationEvents.addListener('pagePreloaded', (e) => {
-    // The screen rendered as part of a preload. Mark it as already rendered so
-    // the eventual `pageFocused` resolves to `warm_ttr` rather than `cold_ttr`.
-    storage.renderedScreensIds.add(e.screenId);
-  });
-  cleanup.add(unsubscribePreload);
-
-  const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
-    // Snapshot both clocks once so every metric written below is stamped with
-    // the moment the focus event fired, not the moment `addMetric` happens to run
-    // after the surrounding async work.
-    const now = performance.now();
+  async function onPageFocused(e: RouterPageMarkDetail, now: number) {
+    // Stamp every metric written below with the moment of the focus mark, not
+    // the moment `addMetric` happens to run after the surrounding async work.
     const timestamp = new Date().toISOString();
 
     // Snapshot BEFORE seeding dispatchTime below so the deferred-TTI check
@@ -132,11 +138,7 @@ export function initListeners(
         config: routerIntegrationConfig,
       });
     }
-  });
-  cleanup.add(unsubscribeFocus);
+  }
 
-  return () => {
-    cleanup.forEach((c) => c());
-    cleanup.clear();
-  };
+  return () => observer.disconnect();
 }

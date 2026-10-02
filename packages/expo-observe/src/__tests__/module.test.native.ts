@@ -296,6 +296,20 @@ describe('module Proxy', () => {
     );
   });
 
+  it('warns to upgrade expo-router when the installed version has no performance API', () => {
+    jest.doMock('../integrations/expo-router/router', () => ({
+      isRouterInstalled: false,
+      isRouterOutdated: true,
+      optionalRouter: undefined,
+    }));
+    const Observe = loadModule();
+    Observe.configure({ integrations: { 'expo-router': true } });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      "[expo-observe] `integrations: { 'expo-router': true }` was set, but the installed `expo-router` does not support `unstable_PerformanceObserver`. Upgrade `expo-router` to enable the integration."
+    );
+  });
+
   it('warns when react-navigation integration is enabled but @react-navigation/native is not installed', () => {
     jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
       isReactNavigationInstalled: false,
