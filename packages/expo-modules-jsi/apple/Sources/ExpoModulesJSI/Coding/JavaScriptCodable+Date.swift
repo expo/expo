@@ -26,14 +26,14 @@ extension Date: JavaScriptCodable {
     -> Date
   {
     // The cheap tag checks come before the `instanceof` check, which needs a global lookup; a number or
-    // a string can't be a `Date`, so the order is behavior-neutral. No branch copies the value: a
-    // string goes to the `Date` constructor as the borrowed argument it is.
+    // a string can't be a `Date`, so the order is behavior-neutral. Only the string branch copies the
+    // value, since the `Date` constructor takes owning arguments; a string is the rare input.
     if value.isNumber() {
       return try dateFromMilliseconds(value.getDouble())
     }
     if value.isString() {
       let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
-      let constructed = try dateConstructor.callAsConstructor(unownedArgument: value).asObject()
+      let constructed = try dateConstructor.callAsConstructor(value.copied(in: runtime)).asObject()
       return try dateFromMilliseconds(constructed.callFunction("getTime").asDouble())
     }
     if value.isObject() {
