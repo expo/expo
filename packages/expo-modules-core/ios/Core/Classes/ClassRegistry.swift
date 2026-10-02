@@ -3,12 +3,14 @@
 import ExpoModulesJSI
 
 internal final class ClassRegistry {
-  var nativeToJS = [ObjectIdentifier: JavaScriptValue]()
+  // Classes are kept behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and cannot be a
+  // Dictionary value.
+  var nativeToJS = [ObjectIdentifier: JavaScriptValue.Ref]()
 
   // MARK: - Accessing
 
   func getJavaScriptClass(nativeClassId: ObjectIdentifier) -> JavaScriptObject? {
-    return nativeToJS[nativeClassId]?.getObject()
+    return nativeToJS[nativeClassId]?.withUnwrappedValue { (value: borrowing JavaScriptValue) in value.getObject() }
   }
 
   func getJavaScriptClass(nativeClass: SharedObject.Type) -> JavaScriptObject? {
@@ -19,7 +21,7 @@ internal final class ClassRegistry {
   // MARK: - Registration
 
   func register(nativeClassId: ObjectIdentifier, javaScriptClass: borrowing JavaScriptObject) {
-    nativeToJS[nativeClassId] = javaScriptClass.asValue()
+    nativeToJS[nativeClassId] = javaScriptClass.refToValue()
   }
 
   func register(nativeClass: SharedObject.Type, javaScriptClass: borrowing JavaScriptObject) {

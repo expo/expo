@@ -145,7 +145,7 @@ struct JavaScriptCodableRecordTests {
   func `encodes a nil optional field as JS null`() throws {
     let runtime = try runtime
     let encoded = try CodableLabeledPoint.encode(CodableLabeledPoint(x: 1, label: nil, note: "b"), in: runtime)
-    #expect(encoded.getObject().getProperty("label").isNull())
+    #expect(encoded.getObject().getProperty("label").isNull() == true)
   }
 
   @Test
@@ -223,7 +223,7 @@ struct JavaScriptCodableRecordTests {
     let decoded = try CodableEmpty.decode(value, in: runtime)
     #expect(decoded == CodableEmpty())
     let reencoded = try CodableEmpty.encode(decoded, in: runtime)
-    #expect(reencoded.isObject())
+    #expect(reencoded.isObject() == true)
   }
 
   // MARK: - Binary fields
