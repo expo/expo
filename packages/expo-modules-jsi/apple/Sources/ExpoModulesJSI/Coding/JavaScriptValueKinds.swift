@@ -1,5 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+internal import jsi
+
 /// A set of JavaScript value kinds, as told apart by the value's type tag alone.
 ///
 /// Unlike `JavaScriptValue.Kind`, a function is an `object` here: telling it apart needs a call into
@@ -34,32 +36,22 @@ public struct JavaScriptValueKinds: OptionSet, Sendable {
   /// accepts every kind keeps doing so.
   @inlinable public static var all: JavaScriptValueKinds { JavaScriptValueKinds(rawValue: .max) }
 
-  /// The kind of `value`. The checks go from the most to the least common kind of an argument.
+  /// The kind of `value`.
   ///
   /// Not inlinable on purpose: the type checks read the `jsi::Value`, which clients can't see, so an
   /// inlined initializer would make one call into this module per check. Here it is a single call.
   public init(of value: borrowing JavaScriptValue) {
-    if value.isNumber() {
-      self = .number
-    } else if value.isString() {
-      self = .string
-    } else if value.isObject() {
-      self = .object
-    } else if value.isBool() {
-      self = .bool
-    } else if value.isNull() {
-      self = .null
-    } else if value.isUndefined() {
-      self = .undefined
-    } else if value.isBigInt() {
-      self = .bigint
-    } else {
-      self = .symbol
-    }
+    self.init(of: value.pointee)
   }
 
   /// The kind of the borrowed `value`, read the same way as from an owning value.
   public init(of value: borrowing JavaScriptUnownedValue) {
+    self.init(of: value.pointer.pointee)
+  }
+
+  /// Reads the kind from the `jsi::Value` both public initializers wrap. The checks go from the most to
+  /// the least common kind of an argument.
+  private init(of value: borrowing facebook.jsi.Value) {
     if value.isNumber() {
       self = .number
     } else if value.isString() {
