@@ -6,10 +6,10 @@ import { Text } from 'react-native';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
 import { NativeTabs } from '../../native-tabs';
-import { unstable_navigationEvents } from '../../navigationEvents';
 import { INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME } from '../../navigationParams';
 import type { NavigationState } from '../../react-navigation/routers';
 import { renderRouter } from '../../testing-library';
+import { internalNavigationEvents } from '../internalNavigationEvents';
 import { PreventRemovalProvider, RemovalPreventionProvider } from '../removalPrevention';
 import type { NavigationTreeReport } from '../useNavigationTreeReducer';
 import { useNavigationTreeReportEvents } from '../useNavigationTreeReportEvents';
@@ -32,7 +32,7 @@ function wrapper({ children }: PropsWithChildren) {
 test('emits and consumes only new report events', async () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
-  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+  const unsubscribe = internalNavigationEvents.addListener('actionDispatched', (event) =>
     actions.push(event.actionType)
   );
   const firstEvent = {
@@ -133,7 +133,7 @@ describe('unhandled action warnings', () => {
 test('does not emit twice in StrictMode', async () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
-  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+  const unsubscribe = internalNavigationEvents.addListener('actionDispatched', (event) =>
     actions.push(event.actionType)
   );
   const report: NavigationTreeReport = {
@@ -160,7 +160,7 @@ test('keeps emitting the remaining events when a listener throws', async () => {
   const actions: string[] = [];
   const consumeReportEvents = jest.fn();
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) => {
+  const unsubscribe = internalNavigationEvents.addListener('actionDispatched', (event) => {
     actions.push(event.actionType);
     if (event.actionType === 'FIRST') {
       throw new Error('listener failed');
@@ -214,7 +214,7 @@ test('prefetch emits the preloaded stack route and state with the preview id', a
     index: () => <Text>Index</Text>,
     details: () => <Text>Details</Text>,
   });
-  const unsubscribe = unstable_navigationEvents.addListener('routePreloaded', (event) =>
+  const unsubscribe = internalNavigationEvents.addListener('routePreloaded', (event) =>
     events.push(event)
   );
 
@@ -241,7 +241,7 @@ test('prefetch emits the tab route while navigate emits no preload event', async
     index: () => <Text>Index</Text>,
     second: () => <Text>Second</Text>,
   });
-  const unsubscribe = unstable_navigationEvents.addListener('routePreloaded', ({ routeKey }) =>
+  const unsubscribe = internalNavigationEvents.addListener('routePreloaded', ({ routeKey }) =>
     routeKeys.push(routeKey)
   );
 

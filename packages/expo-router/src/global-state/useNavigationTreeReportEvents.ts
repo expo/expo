@@ -2,10 +2,11 @@
 
 import * as React from 'react';
 
-import { unstable_navigationEvents } from '../navigationEvents';
+import { mark } from '../performance';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { NavigationAction } from '../react-navigation/routers';
 import type { BrowserHistoryAdapter } from './browserHistory.types';
+import { internalNavigationEvents } from './internalNavigationEvents';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 
@@ -95,7 +96,9 @@ export function useNavigationTreeReportEvents(
             break;
           case 'action-dispatched':
             // TODO(@ubax): emit an event when the action is enqueued.
-            unstable_navigationEvents.emit('actionDispatched', {
+            // `mark` does not throw, so it runs first and a throwing listener cannot skip it.
+            mark('expo-router:action-dispatched', { actionType: event.action.type });
+            internalNavigationEvents.emit('actionDispatched', {
               actionType: event.action.type,
               payload: event.action.payload,
               state: event.state,
@@ -105,7 +108,7 @@ export function useNavigationTreeReportEvents(
             browserHistory.apply(event);
             break;
           case 'route-preloaded':
-            unstable_navigationEvents.emit('routePreloaded', {
+            internalNavigationEvents.emit('routePreloaded', {
               routeKey: event.routeKey,
               state: event.state,
             });

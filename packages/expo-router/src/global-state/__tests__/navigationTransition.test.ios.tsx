@@ -4,9 +4,9 @@ import { Text } from 'react-native';
 
 import { unstable_useIsNavigating, usePathname } from '../../exports';
 import Stack from '../../layouts/StackClient';
-import { unstable_navigationEvents } from '../../navigationEvents';
 import { CommonActions } from '../../react-navigation/routers';
 import { renderRouter } from '../../testing-library';
+import { internalNavigationEvents } from '../internalNavigationEvents';
 import { navigationRef } from '../navigationRef';
 import { router } from '../router';
 
@@ -129,7 +129,7 @@ it('processes each intent once when one is queued during a pending transition', 
     slow: SlowScreen,
     sync: () => <Text testID="sync">Sync</Text>,
   });
-  const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
+  const unsubscribe = internalNavigationEvents.addListener('actionDispatched', (event) =>
     dispatchedActions.push(event.actionType)
   );
 
