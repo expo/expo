@@ -26,6 +26,32 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   let forwarder = SceneEventForwarder()
 
+  /**
+   Root properties handed to the React Native root component when the scene connects.
+
+   Under the app-delegate life cycle an app set these on `RCTAppDelegate.initialProps` before
+   starting React Native itself. React Native now starts from `scene(_:willConnectTo:)`, so this is
+   where to override them:
+   ```swift
+   class SceneDelegate: ExpoAppSceneDelegate {
+     override var initialProperties: [AnyHashable: Any]? {
+       return ["myProperty": true]
+     }
+   }
+   ```
+   To decide the value from the scene's connection options, override
+   `scene(_:willConnectTo:options:)`, store what you need, and call `super` — it reads this
+   afterwards.
+
+   Note that nothing available while the scene is connecting distinguishes a launch into the
+   background from a launch into the foreground: UIKit hands the app delegate empty launch options,
+   and both arrive here with the scene `.unattached` and the application `.background`. They diverge
+   on the next main-queue turn, where a foreground launch has moved to `.inactive`.
+   */
+  open var initialProperties: [AnyHashable: Any]? {
+    return nil
+  }
+
   open func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -62,6 +88,7 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     factory.startReactNative(
       withModuleName: provider.reactNativeFactoryModuleName,
       in: window,
+      initialProperties: initialProperties,
       launchOptions: Self.launchOptions(
         url: connectionOptions.urlContexts.first?.url,
         userActivity: browsingWebActivity
