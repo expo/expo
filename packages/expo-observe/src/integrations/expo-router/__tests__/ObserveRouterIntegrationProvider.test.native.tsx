@@ -34,7 +34,10 @@ jest.mock('../init', () => {
 });
 
 jest.mock('../router', () => ({
-  optionalRouter: { unstable_navigationEvents: { addListener: jest.fn(), emit: jest.fn() } },
+  optionalRouter: {
+    unstable_performance: { enable: jest.fn() },
+    unstable_PerformanceObserver: 'PerformanceObserver',
+  },
   isRouterInstalled: true,
 }));
 
@@ -90,7 +93,8 @@ describe('ObserveRouterIntegrationProvider', () => {
       </ObserveRouterIntegrationProvider>
     );
     expect(mockInitListeners).toHaveBeenCalledTimes(1);
-    const [storageArg] = mockInitListeners.mock.calls[0];
+    const [storageArg, PerformanceObserverArg] = mockInitListeners.mock.calls[0];
+    expect(PerformanceObserverArg).toBe('PerformanceObserver');
     expect(
       (storageArg as { interactiveScreensIds: Set<string> }).interactiveScreensIds
     ).toBeInstanceOf(Set);

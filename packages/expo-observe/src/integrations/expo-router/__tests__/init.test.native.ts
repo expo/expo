@@ -2,16 +2,8 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { initListeners, initRouterIntegration } from '../init';
+import type { RouterPerformanceObserver } from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
-
-// These are `expo-router`'s event types, but importing them here would pull expo-router's source
-// (and its vendored react-navigation global augmentation of `ReactNavigation.RootParamList`/`Theme`)
-// into the program, which clashes with the real `@react-navigation/core` augmentation loaded by the
-// sibling react-navigation integration tests. They're only used to shape test event payloads, so we
-// alias them to `any` to keep the clash out of this package.
-type ActionDispatchedEvent = any;
-type PageFocusedEvent = any;
-type PagePreloadedEvent = any;
 
 jest.mock('expo-app-metrics', () => {
   const mainSession = {
@@ -34,63 +26,53 @@ jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: fa
 const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 
-type Listener<T> = (event: T) => void;
+type ObserverCallback = ConstructorParameters<RouterPerformanceObserver>[0];
+type RouterPerformanceMark = ReturnType<Parameters<ObserverCallback>[0]['getEntries']>[number];
 
-interface FakeNavigationEvents {
-  addListener<T>(type: string, cb: Listener<T>): () => void;
-  emit<T>(type: string, event: T): void;
+interface FakeRouterPerformance {
+  PerformanceObserver: RouterPerformanceObserver;
+  mark(name: RouterPerformanceMark['name'], detail: object, startTime?: number): void;
 }
 
-function createFakeNavigationEvents(): FakeNavigationEvents {
-  const listeners: Record<string, Set<Listener<any>>> = {};
+function createFakeRouterPerformance(): FakeRouterPerformance {
+  const callbacks = new Set<ObserverCallback>();
   return {
-    addListener(type, cb) {
-      const set = listeners[type] ?? new Set();
-      listeners[type] = set;
-      set.add(cb);
-      return () => set.delete(cb);
+    PerformanceObserver: class {
+      constructor(private callback: ObserverCallback) {}
+      observe() {
+        callbacks.add(this.callback);
+      }
+      disconnect() {
+        callbacks.delete(this.callback);
+      }
     },
-    emit(type, event) {
-      listeners[type]?.forEach((cb) => cb(event));
+    mark(name, detail, startTime = performance.now()) {
+      // Tests pass partial or loosely typed details to cover edge cases.
+      const entries = [{ name, startTime, detail } as RouterPerformanceMark];
+      callbacks.forEach((callback) => callback({ getEntries: () => entries }));
     },
   };
 }
 
-function dispatch(events: FakeNavigationEvents, actionType: string) {
-  events.emit<Partial<ActionDispatchedEvent>>('actionDispatched', {
-    type: 'actionDispatched',
-    actionType: actionType as ActionDispatchedEvent['actionType'],
-  });
+function dispatch(events: FakeRouterPerformance, actionType: string, startTime?: number) {
+  events.mark('expo-router:action-dispatched', { actionType }, startTime);
+}
+
+function pageDetail(screenId: string, overrides?: object) {
+  return { screenId, pathname: `/${screenId}`, params: {}, segments: [screenId], ...overrides };
 }
 
 function focus(
-  events: FakeNavigationEvents,
+  events: FakeRouterPerformance,
   screenId: string,
-  overrides?: Partial<PageFocusedEvent>
+  overrides?: object,
+  startTime?: number
 ) {
-  events.emit<Partial<PageFocusedEvent>>('pageFocused', {
-    type: 'pageFocused',
-    screenId,
-    pathname: `/${screenId}`,
-    params: {},
-    segments: [screenId],
-    ...overrides,
-  });
+  events.mark('expo-router:page-focused', pageDetail(screenId, overrides), startTime);
 }
 
-function preload(
-  events: FakeNavigationEvents,
-  screenId: string,
-  overrides?: Partial<PagePreloadedEvent>
-) {
-  events.emit<Partial<PagePreloadedEvent>>('pagePreloaded', {
-    type: 'pagePreloaded',
-    screenId,
-    pathname: `/${screenId}`,
-    params: {},
-    segments: [screenId],
-    ...overrides,
-  });
+function preload(events: FakeRouterPerformance, screenId: string) {
+  events.mark('expo-router:page-preloaded', pageDetail(screenId));
 }
 
 function flushAsync() {
@@ -98,7 +80,7 @@ function flushAsync() {
 }
 
 let storage: RouterIntegrationStorage;
-let events: FakeNavigationEvents;
+let events: FakeRouterPerformance;
 let cleanup: () => void;
 let logSpy: jest.SpyInstance;
 let warnSpy: jest.SpyInstance;
@@ -109,14 +91,14 @@ beforeEach(() => {
   logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   storage = createRouterIntegrationStorage();
-  events = createFakeNavigationEvents();
-  cleanup = initListeners(storage, events as any);
+  events = createFakeRouterPerformance();
+  cleanup = initListeners(storage, events.PerformanceObserver);
 });
 
 function setRouterConfig(config: Parameters<typeof initRouterIntegration>[0]) {
   cleanup?.();
   initRouterIntegration(config);
-  cleanup = initListeners(storage, events as any);
+  cleanup = initListeners(storage, events.PerformanceObserver);
 }
 
 afterEach(() => {
@@ -128,9 +110,7 @@ afterEach(() => {
 
 describe('initListeners', () => {
   it('records cold_ttr with isAppLaunch=true on the first focus after a non-PRELOAD action', async () => {
-    const now = performance.now();
-    jest.spyOn(performance, 'now').mockReturnValue(now + 100);
-    focus(events, 'a');
+    focus(events, 'a', undefined, performance.now() + 100);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(1);
@@ -222,6 +202,17 @@ describe('initListeners', () => {
       dispatchTime: expect.any(Number),
       isAppLaunch: false,
     });
+  });
+
+  it('measures TTR between the startTime of the action and focus marks', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    dispatch(events, 'NAVIGATE', 1000);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
+    expect(storage.screenTimes['a']?.dispatchTime).toBe(1000);
   });
 
   it('records cold_ttr with isAppLaunch=false on subsequent focuses of a new screen', async () => {
@@ -440,11 +431,8 @@ describe('initListeners', () => {
     storage.hasRecordedInitialTtr = true;
     storage.screenTimes['b'] = { lastInteractiveCall: 1000 };
 
-    const nowSpy = jest.spyOn(performance, 'now');
-    nowSpy.mockReturnValue(2000);
-    dispatch(events, 'NAVIGATE');
-    nowSpy.mockReturnValue(2100);
-    focus(events, 'b');
+    dispatch(events, 'NAVIGATE', 2000);
+    focus(events, 'b', undefined, 2100);
     await flushAsync();
 
     // After pageFocused: dispatchTime < lastInteractiveCall (now), so a
@@ -472,8 +460,7 @@ describe('isInitialized + initRouterIntegration', () => {
       expect(init.isInitialized()).toBe(false);
 
       const fresh = createRouterIntegrationStorage();
-      const fakeEvents = createFakeNavigationEvents();
-      const dispose = init.initListeners(fresh, fakeEvents);
+      const dispose = init.initListeners(fresh, createFakeRouterPerformance().PerformanceObserver);
       expect(init.isInitialized()).toBe(false);
       dispose();
 

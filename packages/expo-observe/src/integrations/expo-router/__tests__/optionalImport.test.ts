@@ -12,10 +12,8 @@ jest.mock('../router', () => ({
     useRoute: jest.fn(),
     useNavigation: jest.fn(),
     useCurrentRouteInfo: jest.fn(),
-    unstable_navigationEvents: {
-      enable: jest.fn(),
-      addListener: jest.fn(() => ({ remove: jest.fn() })),
-    },
+    unstable_performance: { enable: jest.fn() },
+    unstable_PerformanceObserver: jest.fn(),
   },
 }));
 
