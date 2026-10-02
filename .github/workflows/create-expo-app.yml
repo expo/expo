@@ -3,15 +3,12 @@ name: Create Expo App
 on:
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/create-expo-app.yml
       - packages/create-expo/**
       - pnpm-lock.yaml
   pull_request:
-    paths:
-      - .github/workflows/create-expo-app.yml
-      - packages/create-expo/**
-      - pnpm-lock.yaml
+    paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
 

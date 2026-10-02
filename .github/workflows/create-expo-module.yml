@@ -3,15 +3,12 @@ name: Create Expo Module
 on:
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/create-expo-module.yml
       - packages/create-expo-module/**
       - pnpm-lock.yaml
   pull_request:
-    paths:
-      - .github/workflows/create-expo-module.yml
-      - packages/create-expo-module/**
-      - pnpm-lock.yaml
+    paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
 

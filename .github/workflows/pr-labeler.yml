@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main]
-    paths:
+    paths: &trigger_paths
       - .github/workflows/pr-labeler.yml
       - apps/bare-expo/**
       - apps/test-suite/**
@@ -13,12 +13,7 @@ on:
       # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     types: [opened, synchronize]
-    paths:
-      - .github/workflows/pr-labeler.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - pnpm-lock.yaml
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
