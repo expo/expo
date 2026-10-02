@@ -24,6 +24,11 @@ try {
 
 jestPreset = cloneDeep(jestPreset);
 
+// Use jest-expo's own copy of the React Native test environment. The upstream preset resolves
+// `jest-environment-node` from its own (Jest 29) dependencies, which must not be mixed into a Jest 30
+// runtime. The environment is otherwise identical to `@react-native/jest-preset/jest/react-native-env`.
+jestPreset.testEnvironment = require.resolve('./src/preset/nativeEnvironment.js');
+
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 const { resolveBabelOptions } = require('./src/resolveBabelOptions');
 
@@ -52,8 +57,12 @@ if (upstreamBabelJest) {
 }
 
 // transform
+// Resolve `babel-jest` from jest-expo so the Jest 30 version is used. `@react-native/jest-preset`
+// still depends on `babel-jest@29`, and a bare `'babel-jest'` would resolve from the project root,
+// where hoisting decides which of the two copies wins.
+const babelJestPath = require.resolve('babel-jest');
 const babelOpts = resolveBabelOptions(process.cwd());
-jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
+jestPreset.transform['\\.[jt]sx?$'] = [babelJestPath, babelOpts];
 
 /* Update this when metro changes their default extensions */
 const defaultMetroAssetExts = [
