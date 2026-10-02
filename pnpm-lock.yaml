@@ -4027,6 +4027,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-asset:
     dependencies:
@@ -4536,6 +4539,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-dev-client:
     dependencies:
@@ -4908,6 +4914,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-modules-cli:
+        specifier: workspace:*
+        version: link:../expo-modules-cli
 
   packages/expo-image:
     dependencies:
@@ -5377,6 +5386,25 @@ importers:
       memfs:
         specifier: ^3.6.0
         version: 3.6.0
+
+  packages/expo-modules-cli:
+    dependencies:
+      commander:
+        specifier: ^14.0.3
+        version: 14.0.3
+      expo-modules-macros:
+        specifier: ^0.14.0
+        version: 0.14.0
+    devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
 
   packages/expo-modules-core:
     dependencies:
