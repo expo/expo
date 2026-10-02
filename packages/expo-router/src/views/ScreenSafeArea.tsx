@@ -1,5 +1,13 @@
-import type { PropsWithChildren } from 'react';
+import { use, type PropsWithChildren } from 'react';
+import { SafeAreaView } from 'react-native-screens/experimental';
+
+import { SafeAreaEdgesContext } from './SafeAreaEdgesContext';
 
 export function ScreenSafeArea({ children }: PropsWithChildren) {
-  return children;
+  const edges = use(SafeAreaEdgesContext);
+  return (
+    <SafeAreaView style={{ flex: 1 }} collapsable={false} edges={edges}>
+      {children}
+    </SafeAreaView>
+  );
 }
