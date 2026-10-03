@@ -174,7 +174,13 @@ private fun evictCacheEntry(url: String, storageKey: String) {
 }
 
 fun buildMediaSourceFactory(context: Context, dataSourceFactory: DataSource.Factory): MediaSource.Factory {
-  return DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory)
+  val extractorsFactory = androidx.media3.extractor.DefaultExtractorsFactory()
+    .setTsExtractorFlags(
+      androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES or
+      androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_IGNORE_SPLICE_INFO_STREAM or
+      androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
+    )
+  return DefaultMediaSourceFactory(context, extractorsFactory).setDataSourceFactory(dataSourceFactory)
 }
 
 @OptIn(UnstableApi::class)
