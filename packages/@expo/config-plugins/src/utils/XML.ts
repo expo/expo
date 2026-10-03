@@ -139,12 +139,37 @@ export function escapeAndroidString(value: string): string {
         throw new Error(`Cannot escape unhandled XML character: ${m}`);
     }
   });
-  if (value.match(/(^\s|\s$)/)) {
+  // Android trims and collapses whitespace outside double quotes.
+  if (value.match(/(^\s|\s$|\s\s)/)) {
     value = '"' + value + '"';
   }
   return value;
 }
 
+/**
+ * Reverses `escapeAndroidString`. Like Android, it turns `\n`, `\r`, `\t` and `\uXXXX` into the
+ * characters they stand for, drops the backslash from any other escaped character, and drops
+ * unescaped double quotes (which Android uses to keep whitespace).
+ *
+ * @param value escaped Android XML string literal.
+ */
 export function unescapeAndroidString(value: string): string {
-  return value.replace(/\\(.)/g, '$1');
+  return value.replace(/\\u([0-9a-fA-F]{4})|\\(.)|"/g, (m, hex?: string, char?: string) => {
+    if (hex) {
+      return String.fromCharCode(parseInt(hex, 16));
+    }
+    switch (char) {
+      case undefined:
+        // An unescaped double quote.
+        return '';
+      case 'n':
+        return '\n';
+      case 'r':
+        return '\r';
+      case 't':
+        return '\t';
+      default:
+        return char;
+    }
+  });
 }
