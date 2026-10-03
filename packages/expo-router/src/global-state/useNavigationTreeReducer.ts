@@ -25,6 +25,7 @@ import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types
 import {
   completeNavigationState,
   createSeededNavigationState,
+  resolveInitialLayoutState,
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
@@ -56,6 +57,11 @@ type TreeOperation =
     })
   | {
       type: 'NAVIGATOR_UNMOUNTED';
+      stateKey: string;
+      routeNode: RouteNode;
+    }
+  | {
+      type: 'INITIAL_LAYOUT_RESOLVED';
       stateKey: string;
       routeNode: RouteNode;
     }
@@ -170,7 +176,9 @@ function navigationTreeReducer(
   }
   // Structural repairs are not navigations, so they never move the browser.
   const projected =
-    operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
+    operation.type === 'NAVIGATOR_UNMOUNTED' ||
+    operation.type === 'NAVIGATOR_CHANGED' ||
+    operation.type === 'INITIAL_LAYOUT_RESOLVED'
       ? updateCurrentHistoryEntry(next.history, next.state, config)
       : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
@@ -332,6 +340,14 @@ function reduceTree(
         : nextState;
       return { ...result, state: deepFreeze(completeState) };
     }
+    case 'INITIAL_LAYOUT_RESOLVED': {
+      const current = findStateByKey(state, operation.stateKey);
+      if (!current) return result;
+      const resolved = resolveInitialLayoutState(current, operation.routeNode);
+      if (resolved === current) return result;
+      const nextState = replaceNavigationState(state, operation.stateKey, resolved);
+      return { ...result, state: deepFreeze(nextState) };
+    }
     case 'NAVIGATOR_CHANGED': {
       const navigatorState = findStateByKey(state, operation.stateKey);
       if (!navigatorState) {
@@ -451,6 +467,9 @@ export function useNavigationTreeReducer({
     warnIfScreenParam(params);
     reactDispatch({ type: 'ACTION', payload: { action, originKey } });
   });
+  const resolveInitialLayout = useLatestCallback((stateKey: string, routeNode: RouteNode) => {
+    reactDispatch({ type: 'INITIAL_LAYOUT_RESOLVED', stateKey, routeNode });
+  });
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
@@ -478,6 +497,7 @@ export function useNavigationTreeReducer({
     report: result.report,
     consumeReportEvents,
     resetNavigator,
+    resolveInitialLayout,
     handleAction,
     processIntent,
   };

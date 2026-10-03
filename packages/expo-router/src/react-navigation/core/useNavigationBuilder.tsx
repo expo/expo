@@ -6,6 +6,7 @@ import { isValidElementType } from 'react-is';
 
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
+import { resolveInitialLayoutState } from '../../global-state/createSeededNavigationState';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
@@ -329,7 +330,7 @@ export function useNavigationBuilder<
   const { state: currentState } = use(NavigationStateContext);
   const rootState = use(RootNavigationStateContext);
 
-  const { resetNavigator, handleAction } = use(NavigationBuilderContext);
+  const { resetNavigator, resolveInitialLayout, handleAction } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -344,10 +345,14 @@ export function useNavigationBuilder<
   const treeState = rootState
     ? (findStateByKey(rootState, currentState.key) ?? currentState)
     : currentState;
+  const initialState = React.useMemo(
+    () => resolveInitialLayoutState(treeState, routeNode),
+    [treeState, routeNode, routeNode?.initialRouteName]
+  );
   const isForeignType = treeState.type !== undefined && treeState.type !== router.type;
   // The reset keeps the complete fields required by every navigator state.
   const committedState = (
-    isForeignType ? resetNavigatorState(treeState, router.type) : treeState
+    isForeignType ? resetNavigatorState(treeState, router.type) : initialState
   ) as State;
   const state = React.useMemo(() => {
     const declaredState = router.getStateForDeclaredRoutes(committedState, routeNames);
@@ -455,6 +460,9 @@ export function useNavigationBuilder<
   useClientLayoutEffect(() => {
     if (isForeignType) {
       resetNavigator(committedState.key, router.type);
+    } else if (initialState !== treeState && routeNode) {
+      // Let suspended descendants finish hydrating before committing the repaired tree.
+      React.startTransition(() => resolveInitialLayout(treeState.key, routeNode));
     }
   });
 

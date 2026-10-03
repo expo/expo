@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 
+import type { RouteNode } from '../../Route';
 import type { NavigationAction, ParamListBase } from '../routers';
 import type { NavigationHelpers } from './types';
 
@@ -23,8 +24,10 @@ export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<
 export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
+  resolveInitialLayout: (stateKey: string, routeNode: RouteNode) => void;
   addListener?: AddListener;
 }>({
   handleAction: () => undefined,
   resetNavigator: () => undefined,
+  resolveInitialLayout: () => undefined,
 });

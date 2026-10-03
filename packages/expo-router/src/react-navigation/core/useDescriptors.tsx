@@ -107,16 +107,17 @@ export function useDescriptors<
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { handleAction, resetNavigator } = use(NavigationBuilderContext);
+  const { handleAction, resetNavigator, resolveInitialLayout } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
       navigation,
       handleAction,
       resetNavigator,
+      resolveInitialLayout,
       addListener,
     }),
-    [navigation, handleAction, resetNavigator, addListener]
+    [navigation, handleAction, resetNavigator, resolveInitialLayout, addListener]
   );
 
   const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
