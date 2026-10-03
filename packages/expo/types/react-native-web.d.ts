@@ -11,6 +11,9 @@ declare module 'react-native' {
     className?: string;
   }
 
+  // Don't redeclare properties that React Native's own `ViewStyle` already declares (for example `position`,
+  // `boxSizing` or `backgroundImage`) with a different type. The merged type would then no longer match the
+  // `style` prop of `View`, and `StyleProp<ViewStyle>` couldn't be passed to it.
   interface ViewStyle {
     /** @platform web */
     backdropFilter?: string;
@@ -37,17 +40,7 @@ declare module 'react-native' {
     /** @platform web */
     backgroundClip?: string;
     /** @platform web */
-    backgroundImage?: string;
-    /** @platform web */
     backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
-    /** @platform web */
-    backgroundPosition?: string;
-    /** @platform web */
-    backgroundRepeat?: string;
-    /** @platform web */
-    backgroundSize?: string;
-    /** @platform web */
-    boxSizing?: string;
     /** @platform web */
     clip?: string;
     /** @platform web */
@@ -106,8 +99,6 @@ declare module 'react-native' {
     visibility?: string;
     /** @platform web */
     willChange?: string;
-    /** @platform web */
-    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
   }
 
   /**
