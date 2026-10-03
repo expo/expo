@@ -217,9 +217,19 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       throw Exceptions.FileSystemModuleNotFound()
     }
 
-    guard let pathUrl = URL(string: path) else {
-      throw DatabaseInvalidPathException(path)
+    // `URL(fileURLWithPath:)` reads a `file://` string as a relative path, so keep
+    // parsing those as URLs. Plain paths with spaces or non-ASCII characters make
+    // `URL(string:)` return nil on iOS 16 and percent-encode on iOS 17+.
+    let pathUrl: URL
+    if path.hasPrefix("file:") {
+      guard let url = URL(string: path) else {
+        throw DatabaseInvalidPathException(path)
+      }
+      pathUrl = url
+    } else {
+      pathUrl = URL(fileURLWithPath: path)
     }
+
     fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().toFilePath())
 
     return pathUrl
@@ -393,7 +403,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       fileManager.fileExists(atPath: assetPath) else {
       throw DatabaseNotFoundException(assetDatabasePath)
     }
-    try? fileManager.removeItem(atPath: path.absoluteString)
+    try? fileManager.removeItem(atPath: path.toFilePath())
     try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
   }
 
