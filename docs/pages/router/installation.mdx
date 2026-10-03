@@ -44,6 +44,48 @@ You'll need to install the following dependencies:
 
 The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
 
+If you are developing your app for web, install the following dependencies:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-web react-dom'],
+    yarn: ['$ yarn expo install react-native-web react-dom'],
+    pnpm: ['$ pnpm expo install react-native-web react-dom'],
+    bun: ['$ bun expo install react-native-web react-dom'],
+  }}
+/>
+
+In SDK 58 and later, `expo-symbols` and `@expo/ui` are optional peer dependencies of Expo Router. Install only the dependency required by the APIs your app uses:
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Android md icons in native tabs',
+      '$ npx expo install expo-symbols',
+      '# Android Stack.Toolbar',
+      '$ npx expo install @expo/ui',
+    ],
+    yarn: [
+      '# Android md icons in native tabs',
+      '$ yarn expo install expo-symbols',
+      '# Android Stack.Toolbar',
+      '$ yarn expo install @expo/ui',
+    ],
+    pnpm: [
+      '# Android md icons in native tabs',
+      '$ pnpm expo install expo-symbols',
+      '# Android Stack.Toolbar',
+      '$ pnpm expo install @expo/ui',
+    ],
+    bun: [
+      '# Android md icons in native tabs',
+      '$ bun expo install expo-symbols',
+      '# Android Stack.Toolbar',
+      '$ bun expo install @expo/ui',
+    ],
+  }}
+/>
+
 </Step>
 
 <Step label="2">
@@ -97,37 +139,15 @@ You can create a custom entry point in your Expo Router project to initialize an
 
 ### Modify project configuration
 
-Add a deep linking `scheme` and enable [typed routes](/router/reference/typed-routes/) in your [app config](/workflow/configuration/):
+Add a deep linking `scheme`, add the [`expo-router` config plugin](/versions/latest/sdk/router/#configuration-in-app-config), and enable [typed routes](/router/reference/typed-routes/) in your [app config](/workflow/configuration/):
 
 ```json app.json
 {
   "expo": {
     "scheme": "your-app-scheme",
+    "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
-    }
-  }
-}
-```
-
-If you are developing your app for web, install the following dependencies:
-
-<Terminal
-  cmd={{
-    npm: ['$ npx expo install react-native-web react-dom'],
-    yarn: ['$ yarn expo install react-native-web react-dom'],
-    pnpm: ['$ pnpm expo install react-native-web react-dom'],
-    bun: ['$ bun expo install react-native-web react-dom'],
-  }}
-/>
-
-Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro) support by adding the following to your [app config](/workflow/configuration/):
-
-```json app.json
-{
-  "expo": {
-    "web": {
-      "bundler": "metro"
     }
   }
 }
@@ -189,13 +209,5 @@ After updating the configuration, run the following command to clear the bundler
     bun: ['$ bun expo start --clear'],
   }}
 />
-
-</Step>
-
-<Step label="7">
-
-### Update resolutions
-
-If you're upgrading from an older version of Expo Router, ensure you remove all outdated Yarn resolutions or npm overrides in your **package.json**. Specifically, remove `metro`, `metro-resolver`, `react-refresh` resolutions from your **package.json**.
 
 </Step>
