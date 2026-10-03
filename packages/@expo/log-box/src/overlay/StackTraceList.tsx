@@ -181,6 +181,12 @@ export function StackTraceList({
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }) {
   const [collapsed, setCollapsed] = useState(true);
+  const hasVisibleFrames = stack?.some((frame) => !frame.collapse) ?? true;
+  React.useEffect(() => {
+    if (!hasVisibleFrames) {
+      setCollapsed(false);
+    }
+  }, [hasVisibleFrames]);
 
   const stackCount = stack?.length;
 
