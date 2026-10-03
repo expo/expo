@@ -363,6 +363,26 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     return didRelease.withLock { $0 }
   }
 
+  // AVKit observes the player from the main thread. Changing the playback state from the JS thread
+  // can race with those KVO registrations, which crashes inside the pending KVO notification stack.
+  func play() {
+    runOnMainThread { [weak self] in
+      guard let self, !self.hasBeenReleased else {
+        return
+      }
+      self.ref.play()
+    }
+  }
+
+  func pause() {
+    runOnMainThread { [weak self] in
+      guard let self, !self.hasBeenReleased else {
+        return
+      }
+      self.ref.pause()
+    }
+  }
+
   private func getBufferedPosition() -> Double {
     guard let currentItem = ref.currentItem else {
       return -1
