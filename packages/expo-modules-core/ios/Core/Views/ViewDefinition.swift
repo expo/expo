@@ -16,6 +16,15 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
    */
   public var name: String
 
+  /// Resolved from the view type itself, so a view opts in by overriding
+  /// `ExpoFabricView.receivesDecodedProps` rather than by being classified here.
+  public var receivesDecodedProps: Bool {
+    guard let fabricViewType = ViewType.self as? ExpoFabricView.Type else {
+      return false
+    }
+    return fabricViewType.receivesDecodedProps
+  }
+
   /**
    Names of the events that the view can send to JavaScript.
    */
