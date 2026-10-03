@@ -11,7 +11,6 @@ import {
   createChunkCollector,
   createChunkSerializer,
   createRuntimeChunk,
-  pathToRegex,
 } from './chunkingStrategy';
 
 export function createLegacyChunkingStrategy(context: ChunkingContext): ChunkingImplementation {
@@ -20,19 +19,8 @@ export function createLegacyChunkingStrategy(context: ChunkingContext): Chunking
     async serializeAsync() {
       // Create chunks for splitting.
       const chunks = new Set<Chunk>();
-      const gatherChunks = createChunkCollector(context, strategy, () => true);
-      const entryChunks = gatherChunks(
-        chunks,
-        { test: pathToRegex(entryFile) },
-        preModules,
-        false,
-        true
-      );
-
-      // TODO(@kitten): We know that the returned `entryChunks` should only have a single value
-      // with `!isAsync` and matching `.hasAbsolutePath(entryFile)` due to us only starting with
-      // an entry module. This is temporarily implicit and not enforced by an invariant
-      const entryChunk = entryChunks.values().next().value;
+      const collectChunk = createChunkCollector(context, strategy, chunks, () => true);
+      const entryChunk = collectChunk(entryFile, preModules, false, true);
       if (entryChunk) {
         removeEntryDepsFromAsyncChunks(entryChunk, chunks);
 
