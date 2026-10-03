@@ -30,7 +30,6 @@ type Props = BottomTabNavigationConfig & {
   popNestedStackToTop: (routeKey: string) => void;
 };
 
-const EPSILON = 1e-5;
 const STATE_INACTIVE = 0;
 const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
 const STATE_ON_TOP = 2;
@@ -80,12 +79,31 @@ export function BottomTabView(props: Props) {
   const previousRouteKeyRef = React.useRef(focusedRouteKey);
   const tabAnims = useAnimatedHashMap(state);
 
+  const [lastUpdate, setLastUpdate] = React.useState<{
+    current: string;
+    previous?: string;
+    animating: boolean;
+  }>({
+    current: focusedRouteKey,
+    animating: false,
+  });
+
+  if (lastUpdate.current !== focusedRouteKey) {
+    setLastUpdate({
+      current: focusedRouteKey,
+      previous: lastUpdate.current,
+      animating: true,
+    });
+  }
+
   React.useEffect(() => {
     const previousRouteKey = previousRouteKeyRef.current;
 
     const shouldPopPreviousToTop =
       previousRouteKey !== focusedRouteKey &&
       !!descriptors[previousRouteKey]?.options.popToTopOnBlur;
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
 
     const animateToIndex = () => {
       if (previousRouteKey !== focusedRouteKey) {
@@ -134,12 +152,28 @@ export function BottomTabView(props: Props) {
             target: focusedRouteKey,
           });
         }
+
+        if (finished) {
+          // Delay clearing so the previous screen stays attached
+          // This will give time for any native logic to run
+          timer = setTimeout(() => {
+            setLastUpdate((update) =>
+              update.animating ? { ...update, animating: false } : update
+            );
+          }, 32);
+        }
       });
     };
 
     animateToIndex();
 
     previousRouteKeyRef.current = focusedRouteKey;
+
+    return () => {
+      if (timer !== undefined) {
+        clearTimeout(timer);
+      }
+    };
   }, [
     descriptors,
     focusedRouteKey,
@@ -240,18 +274,14 @@ export function BottomTabView(props: Props) {
             }) ?? {};
 
           const animationEnabled = hasAnimation(descriptor.options);
+          const isAnimatingRoute =
+            lastUpdate.animating &&
+            (lastUpdate.previous === route.key || lastUpdate.current === route.key);
+
           const activityState = isFocused
             ? STATE_ON_TOP // the screen is on top after the transition
-            : animationEnabled // is animation is not enabled, immediately move to inactive state
-              ? tabAnims[route.key]!.interpolate({
-                  inputRange: [0, 1 - EPSILON, 1],
-                  outputRange: [
-                    STATE_TRANSITIONING_OR_BELOW_TOP, // screen visible during transition
-                    STATE_TRANSITIONING_OR_BELOW_TOP,
-                    STATE_INACTIVE, // the screen is detached after transition
-                  ],
-                  extrapolate: 'extend',
-                })
+            : animationEnabled && isAnimatingRoute // if animation is not enabled, immediately move to inactive state
+              ? STATE_TRANSITIONING_OR_BELOW_TOP // screen visible during transition
               : STATE_INACTIVE;
 
           return (
