@@ -41,7 +41,7 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
         "expo-audio",
         {
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
-          "enableBackgroundPlayback": true,
+          "enableBackgroundPlayback": false,
           "enableBackgroundRecording": false
         }
       ]
@@ -77,8 +77,8 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
     {
       name: 'enableBackgroundPlayback',
       description:
-        'A boolean that determines whether to enable background audio playback. On Android, this adds a media playback foreground service and allows you to display the lockscreen controls and is required for sustained background playback. On iOS, this adds the `audio` background mode.',
-      default: 'true',
+        'A boolean that determines whether to enable background audio playback. On Android, this adds a media playback foreground service and allows you to display the lockscreen controls and is required for sustained background playback. On iOS, this adds the `audio` background mode. Set to `true` if your app plays audio in the background.',
+      default: 'false',
     },
   ]}
 />
@@ -199,7 +199,7 @@ On Android and iOS, `expo-audio` saves recordings in the app's cache directory b
 
 ### Playing audio in the background
 
-Background audio playback allows your app to continue playing audio when it moves to the background or when the device screen locks.
+Background audio playback allows your app to continue playing audio when it moves to the background or when the device screen locks. It is disabled by default. Apps that need it (for example music or podcast players) should set `enableBackgroundPlayback` to `true`.
 
 #### Configuration
 
