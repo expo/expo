@@ -272,6 +272,39 @@ export type PushToStartTokenEvent = {
 };
 
 /**
+ * The alert the system shows when a scheduled Live Activity starts.
+ */
+export type LiveActivityAlertConfiguration = {
+  /**
+   * The title of the alert.
+   */
+  title: string;
+  /**
+   * The body of the alert.
+   */
+  body: string;
+  /**
+   * The name of a sound file in the app bundle to play with the alert. When not set, the system plays the default sound.
+   */
+  sound?: string;
+};
+
+/**
+ * Options for scheduling a Live Activity to start at a future date.
+ * @platform ios 26.0+
+ */
+export type LiveActivityScheduleOptions = {
+  /**
+   * The date when the system starts the Live Activity. The app doesn't need to be running at that time.
+   */
+  startDate: Date;
+  /**
+   * The alert the system shows when it starts the Live Activity. Apple requires an alert for scheduled Live Activities.
+   */
+  alertConfiguration: LiveActivityAlertConfiguration;
+};
+
+/**
  * Dismissal policy for ending a live activity.
  * - `'default'` - The system’s default dismissal policy for the Live Activity.
  * - `'immediate'` - The system immediately removes the Live Activity that ended.
@@ -309,9 +342,19 @@ export declare class NativeWidgetObject extends SharedObject {
   setConfigurationParameterEnum(parameterName: string, options?: WidgetConfigurationEnum[]): void;
 }
 
+export type NativeLiveActivitySchedule = {
+  startDate: number;
+  alertConfiguration: LiveActivityAlertConfiguration;
+};
+
 export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
-  start(props?: string, url?: string, staleDate?: number): NativeLiveActivity;
+  start(
+    props?: string,
+    url?: string,
+    staleDate?: number,
+    schedule?: NativeLiveActivitySchedule
+  ): NativeLiveActivity;
   getInstances(): NativeLiveActivity[];
 }
 
