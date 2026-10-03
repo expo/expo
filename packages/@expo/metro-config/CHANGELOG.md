@@ -1,14 +1,30 @@
 # Changelog
 
-## Unpublished
+## 58.0.8
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Preserve bundled, external, and inline stylesheet order across static and server rendering. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
+- Stop collapsing every `node_modules` stack frame, so errors thrown inside a library point to where they were thrown. ([#50973](https://github.com/expo/expo/pull/50973) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config@58.0.2
 
-### 🐛 Bug fixes
+## 58.0.7
 
-### 💡 Others
+### Patch Changes
+
+- Keep `EXPO_ROUTER_IMPORT_MODE` synchronous in server bundles when async routes are enabled, matching `babel-preset-expo`. ([#50867](https://github.com/expo/expo/pull/50867) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/config@58.0.1
+  - @expo/env@2.5.1
+  - @expo/json-file@11.2.1
+  - @expo/require-utils@58.0.2
 
 ## 58.0.5 — 2026-09-28
 

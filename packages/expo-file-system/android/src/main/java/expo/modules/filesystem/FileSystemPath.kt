@@ -276,7 +276,13 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     val currentPath = currentUri.trimEnd('/')
     val parentUri = currentUri.substring(0, currentPath.lastIndexOf('/') + 1)
     val renamedUri = Uri.parse(parentUri).buildUpon().appendPath(newName).build().toString()
-    return Uri.parse(if (this is FileSystemDirectory) "$renamedUri/" else renamedUri)
+    return Uri.parse(
+      if (this is FileSystemDirectory) {
+        "$renamedUri/"
+      } else {
+        renamedUri
+      }
+    )
   }
 
   val modificationTime: Long?

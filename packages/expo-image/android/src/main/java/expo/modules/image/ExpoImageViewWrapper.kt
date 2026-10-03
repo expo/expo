@@ -613,7 +613,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       val newTarget = when (foregroundTarget) {
         firstTarget -> secondTarget
         secondTarget -> firstTarget
-        else -> if (secondTarget.isUsed) firstTarget else secondTarget
+        else -> if (secondTarget.isUsed) {
+          firstTarget
+        } else {
+          secondTarget
+        }
       }
       newTarget.hasSource = sourceToLoad != null
       newTarget.cacheType = ImageCacheType.NONE

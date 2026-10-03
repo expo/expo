@@ -1,16 +1,23 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump `@expo/sdk-runtime-versions` to `^1.0.1`. ([#50955](https://github.com/expo/expo/pull/50955) by [@kitten](https://github.com/kitten))
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
 
-- Added `updates.maxUpdatesToKeep` support for expo-updates native configuration. ([#45964](https://github.com/expo/expo/pull/45964) by [@kudo](https://github.com/kudo))
+## 58.0.4
 
-### 🐛 Bug fixes
+### Patch Changes
 
-### 💡 Others
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Added `updates.maxUpdatesToKeep` support for expo-updates native configuration. ([#45964](https://github.com/expo/expo/pull/45964) by [@Kudo](https://github.com/Kudo))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/config-types@58.0.2
+  - @expo/json-file@11.2.1
+  - @expo/plist@0.10.1
+  - @expo/require-utils@58.0.2
 
 ## 58.0.3 — 2026-09-28
 

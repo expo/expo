@@ -21,6 +21,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/brownfield.yml
       - packages/expo-brownfield/**

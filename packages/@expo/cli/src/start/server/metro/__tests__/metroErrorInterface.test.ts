@@ -1,9 +1,18 @@
+import { LogBoxLog } from '../log-box/LogBoxLog';
 import {
   attachImportStackToRootMessage,
   nearestImportStack,
   likelyContainsCodeFrame,
   dropStackIfContainsCodeFrame,
+  logMetroError,
 } from '../metroErrorInterface';
+
+jest.mock('../../../../log');
+jest.mock('../log-box/LogBoxLog', () => ({
+  LogBoxLog: jest.fn(() => ({
+    symbolicate: (_type: string, callback: () => void) => callback(),
+  })),
+}));
 
 interface ErrorWithImportStack extends Error {
   _expoImportStack?: string;
@@ -247,5 +256,23 @@ describe('dropStackIfContainsCodeFrame', () => {
       `);
     dropStackIfContainsCodeFrame(error);
     expect(error.stack).toBeUndefined();
+  });
+});
+
+describe('logMetroError', () => {
+  it('symbolicates server bundle frames inside node_modules', async () => {
+    const error = new Error('fake-lib: failed during module init');
+    error.stack = [
+      'Error: fake-lib: failed during module init',
+      '    at initializeLibrary (/app/node_modules/@expo/router-server/node/render.js.bundle?platform=web&dev=true:128083:11)',
+    ].join('\n');
+
+    await logMetroError('/app', { error });
+
+    expect(LogBoxLog).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stack: [expect.objectContaining({ methodName: 'initializeLibrary', lineNumber: 128083 })],
+      })
+    );
   });
 });

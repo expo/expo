@@ -1,14 +1,25 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 58.0.10
 
-### 💡 Others
+### Patch Changes
+
+- [iOS] Remove the legacy `metrics.json` file left behind by the JSON storage that was replaced with SQLite. ([#50752](https://github.com/expo/expo/pull/50752) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add privacy manifest describing required reason API usage. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-updates-interface@58.0.1
 
 ## 58.0.8 — 2026-09-28
 

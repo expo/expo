@@ -1,14 +1,21 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Fix `TaskService` losing its `Context` (it held a `WeakReference` to the creating `ReactContext`), after which registering or unregistering a task threw a `NullPointerException` from `SharedPreferences.getAll()`. ([#49498](https://github.com/expo/expo/pull/49498) by [@retu2libc](https://github.com/retu2libc))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - unimodules-app-loader@58.0.2
 
-### 🐛 Bug fixes
+## 58.0.10
 
-### 💡 Others
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - unimodules-app-loader@58.0.1
 
 ## 58.0.9 — 2026-09-28
 

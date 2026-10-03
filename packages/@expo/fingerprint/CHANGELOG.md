@@ -1,14 +1,18 @@
 # Changelog
 
-## Unpublished
+## 0.21.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
 
-### 🐛 Bug fixes
+## 0.21.2
 
-### 💡 Others
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/env@2.5.1
 
 ## 0.21.1 — 2026-09-15
 

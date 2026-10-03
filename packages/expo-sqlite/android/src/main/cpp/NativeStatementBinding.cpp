@@ -59,7 +59,9 @@ std::string NativeStatementBinding::sqlite3_column_name(int index) {
 }
 
 int NativeStatementBinding::sqlite3_finalize() {
-  return ::exsqlite3_finalize(stmt);
+  int ret = ::exsqlite3_finalize(stmt);
+  stmt = nullptr;
+  return ret;
 }
 
 int NativeStatementBinding::sqlite3_reset() { return ::exsqlite3_reset(stmt); }

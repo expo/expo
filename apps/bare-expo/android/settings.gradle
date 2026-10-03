@@ -40,3 +40,6 @@ include ':macrobenchmark'
 project(':macrobenchmark').projectDir = new File('../macrobenchmark')
 
 includeBuild(expoAutolinking.reactNativeGradlePlugin)
+
+// Custom ktlint rules loaded by Spotless (see `customRuleSets` in build.gradle)
+includeBuild("../../../packages/expo-ktlint-rules")

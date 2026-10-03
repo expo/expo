@@ -40,6 +40,7 @@ export async function _getMultiBundlerStartOptions(
     maxWorkers: options.maxWorkers,
     resetDevServer: options.clear,
     minify: options.minify,
+    tunnelProvider: options.tunnelProvider ?? undefined,
     location: {
       hostType: options.host,
       scheme: options.scheme,

@@ -77,7 +77,13 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
         notificationCategory.encodedInBase64()
       )
       .commit()
-      .let { if (it) notificationCategory else null }
+      .let {
+        if (it) {
+          notificationCategory
+        } else {
+          null
+        }
+      }
 
   /**
    * Removes notification category for the given identifier.

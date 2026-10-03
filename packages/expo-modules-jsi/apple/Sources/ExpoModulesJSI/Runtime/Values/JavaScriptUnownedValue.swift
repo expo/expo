@@ -130,6 +130,23 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
   }
 
+  /// Whether the value is an array. The zero-copy counterpart of ``JavaScriptValue/isArray()``.
+  public func isArray() -> Bool {
+    return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isArray(runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptArray``, or asserts if it is not an array. The zero-copy
+  /// counterpart of ``JavaScriptValue/getArray()``, with the same runtime contract as
+  /// ``getObject(in:)``.
+  public func getArray(in runtime: JavaScriptRuntime) -> JavaScriptArray {
+    assert(isArray(), "Value is not an array")
+    assert(
+      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      "`getArray(in:)` must be passed the runtime that owns the borrowed value"
+    )
+    return JavaScriptArray(runtime, pointer.pointee.getObject(self.runtime).getArray(self.runtime))
+  }
+
   // MARK: - Throwing conversions ("as functions")
 
   /// Returns the value as a boolean, or throws `TypeError` if it is not a boolean.

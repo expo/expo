@@ -34,7 +34,7 @@ object ExpoModulesV2Host {
         val registry = ModuleRegistry()
         modules.forEach(registry::register)
         runtime = ReactRuntime.attach(reactContext, registry)
-        logger.info("✅ Expo Modules v2 installed ${modules.size} module(s) on globalThis.expoV2")
+        logger.info("✅ Expo Modules v2 installed ${modules.size} module(s) on globalThis.expo.modules")
       } catch (e: Throwable) {
         logger.error("❌ Cannot install Expo Modules v2: $e", e)
       }

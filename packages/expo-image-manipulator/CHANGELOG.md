@@ -1,16 +1,26 @@
 # Changelog
 
-## Unpublished
+## 58.0.12
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS] Added missing `import UIKit` statements so the module builds from source with Swift Package Manager. ([#50961](https://github.com/expo/expo/pull/50961) by [@chrfalch](https://github.com/chrfalch))
 
-### 🐛 Bug fixes
+## 58.0.11
 
-- [Android] Fixed `renderAsync()` rejecting with a `JobCancellationException` when the context is released while the render is still in flight — including the release `useImageManipulator` performs on unmount. ([#50218](https://github.com/expo/expo/pull/50218) by [@dev-eyoungmin](https://github.com/dev-eyoungmin))
+### Patch Changes
 
-### 💡 Others
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-image-loader@58.0.3
+
+## 58.0.10
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-image-loader@58.0.2
 
 ## 58.0.9 — 2026-09-28
 

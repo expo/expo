@@ -284,20 +284,20 @@ extension JavaScriptRuntime {
   /// optimize like any other closure.
   @JavaScriptActor
   fileprivate func deferredPromiseFactory() throws -> JavaScriptValue {
-    if let factory = cachedDeferredPromiseFactory {
-      return factory
+    return try cached(deferredPromiseFactoryKey) {
+      return try eval(
+        label: "expo-modules-jsi/deferred-promise.js",
+        """
+        (function () {
+          let resolve, reject;
+          const promise = new Promise(function (a, b) { resolve = a; reject = b; });
+          return [promise, resolve, reject];
+        })
+        """
+      )
     }
-    let factory = try eval(
-      label: "expo-modules-jsi/deferred-promise.js",
-      """
-      (function () {
-        let resolve, reject;
-        const promise = new Promise(function (a, b) { resolve = a; reject = b; });
-        return [promise, resolve, reject];
-      })
-      """
-    )
-    cachedDeferredPromiseFactory = factory
-    return factory
   }
 }
+
+/// Key of the deferred promise factory in each runtime's cache.
+private let deferredPromiseFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()

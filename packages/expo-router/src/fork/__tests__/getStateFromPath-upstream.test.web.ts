@@ -45,7 +45,7 @@ test('converts path string to initial state', () => {
 
   expect(getStateFromPath<object>(path)).toEqual(state);
   expect(getStateFromPath<object>(getPathFromState<object>(state))).toEqual(
-    changePath(state, '/foo/bar/baz%20qux?author=jane%20%26%20co&valid=true')
+    changePath(state, '/foo/bar/baz%20qux?author=jane+%26+co&valid=true')
   );
 });
 
@@ -2796,7 +2796,7 @@ test('throws when invalid properties are specified in the config', () => {
 
     If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
-    See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
+    Expo Router generates its linking configuration from files in the app directory."
   `);
 
   expect(() =>
@@ -2828,7 +2828,7 @@ test('throws when invalid properties are specified in the config', () => {
 
     If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
-    See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
+    Expo Router generates its linking configuration from files in the app directory."
   `);
 
   expect(() =>

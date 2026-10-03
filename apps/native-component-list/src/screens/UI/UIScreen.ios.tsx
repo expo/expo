@@ -11,6 +11,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyVStack.ForEach / LazyHStack.ForEach data',
+    route: 'ui/lazy-stack-for-each',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyStackForEachScreen'));
+    },
+  },
+  {
     name: 'Label component',
     route: 'ui/label',
     options: {},

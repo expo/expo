@@ -31,3 +31,43 @@ it.each([
     resolveOptionsAsync.mock.invocationCallOrder[0]!
   );
 });
+
+describe('tunnel arguments', () => {
+  beforeEach(() => {
+    assertArgs.mockImplementation(jest.requireActual('../../utils/args').assertArgs);
+  });
+
+  it.each([
+    { argv: ['--tunnel'], provider: 'expo', positional: [] },
+    { argv: ['--tunnel', 'ngrok'], provider: 'ngrok', positional: [] },
+    { argv: ['--tunnel=ngrok'], provider: 'ngrok', positional: [] },
+    { argv: ['--tunnel', 'expo'], provider: 'expo', positional: [] },
+    {
+      argv: ['my-app', '--tunnel', 'ngrok'],
+      provider: 'ngrok',
+      positional: ['my-app'],
+    },
+    {
+      argv: ['--tunnel', 'ngrok', 'my-app'],
+      provider: 'ngrok',
+      positional: ['my-app'],
+    },
+    { argv: ['--tunnel', 'my-app'], provider: 'expo', positional: ['my-app'] },
+    { argv: ['--tunnel', '--clear'], provider: 'expo', positional: [] },
+    {
+      argv: ['--', '--tunnel', 'ngrok'],
+      provider: undefined,
+      positional: ['--tunnel', 'ngrok'],
+    },
+  ])('parses $argv', async ({ argv, provider, positional }) => {
+    await expoStart(argv);
+    expect(resolveOptionsAsync).toHaveBeenLastCalledWith(
+      '/app',
+      expect.objectContaining({
+        _: positional,
+        ...(provider ? { '--tunnel': provider } : {}),
+      })
+    );
+    expect(resolveOptionsAsync.mock.calls.at(-1)[1]['--tunnel']).toBe(provider);
+  });
+});

@@ -15,8 +15,8 @@ jest.mock('../../utils/splash', () => {
   };
 });
 
-it('hides the splash screen when the root router falls back to the built-in unmatched screen', () => {
-  renderRouter(
+it('hides the splash screen when the root router falls back to the built-in unmatched screen', async () => {
+  await renderRouter(
     {
       index: () => null,
     },
@@ -29,8 +29,8 @@ it('hides the splash screen when the root router falls back to the built-in unma
   expect(SplashScreen.hideAsync).toHaveBeenCalled();
 });
 
-it('does not hide the splash screen when a route matches', () => {
-  renderRouter({
+it('does not hide the splash screen when a route matches', async () => {
+  await renderRouter({
     index: () => <Text>Hello</Text>,
   });
 
@@ -38,8 +38,8 @@ it('does not hide the splash screen when a route matches', () => {
   expect(SplashScreen.hideAsync).not.toHaveBeenCalled();
 });
 
-it('does not hide the splash screen when a user-defined +not-found matches', () => {
-  renderRouter(
+it('does not hide the splash screen when a user-defined +not-found matches', async () => {
+  await renderRouter(
     {
       index: () => null,
       '+not-found': () => <Text>Custom not found</Text>,
@@ -53,8 +53,8 @@ it('does not hide the splash screen when a user-defined +not-found matches', () 
   expect(SplashScreen.hideAsync).not.toHaveBeenCalled();
 });
 
-it('does not hide the splash screen when the app renders Unmatched itself inside its own layout', () => {
-  renderRouter(
+it('does not hide the splash screen when the app renders Unmatched itself inside its own layout', async () => {
+  await renderRouter(
     {
       index: () => null,
       '+not-found': () => <Unmatched />,

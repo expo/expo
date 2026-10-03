@@ -1,14 +1,27 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Request the local network permission on Android 17 so the launcher can discover and load development servers. ([#50951](https://github.com/expo/expo/pull/50951) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 🐛 Bug fixes
+## 58.0.10
 
-### 💡 Others
+### Patch Changes
+
+- Updated dependencies. ([#50900](https://github.com/expo/expo/pull/50900))
+  - expo-dev-menu@58.0.10
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/schema-utils@58.0.1
+  - expo-dev-menu@58.0.9
+  - expo-manifests@58.0.1
 
 ## 58.0.8 — 2026-09-28
 
@@ -18,7 +31,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Add __expo_* reserved namespace for deep linking URLs. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add \__expo_\* reserved namespace for deep linking URLs. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 58.0.6 — 2026-09-23
 
