@@ -39,7 +39,7 @@ struct JavaScriptCodableDataTests {
     // `Data` does not override the zero-copy overload, so this goes through the default that copies
     // the borrowed value into an owning one and forwards. It should still decode correctly.
     let value = try runtime.eval("new Uint8Array([1, 2, 3])")
-    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValueRef(value)])
     let decoded = try Data.decode(buffer.unownedValue(at: 0), in: runtime)
     #expect(Array(decoded) == [1, 2, 3])
   }

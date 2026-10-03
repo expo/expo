@@ -116,9 +116,16 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
   public func asValue() -> JavaScriptValue {
     // Read without consuming, so the state keeps owning the object (unlike `Ref.asValue()`).
-    return longLivedState.object.withValue { object in
-      return object
+    return longLivedState.object.withValue { (object: borrowing JavaScriptValue?) in
+      // The explicit type picks the optional-taking overload; the borrowed reference is copied out.
+      return copy object
     } ?? .undefined
+  }
+
+  /// Resolves the promise with a JavaScript value. The value is moved into a `JavaScriptRef` so the
+  /// hop to the JavaScript thread can carry it; see the representable overload for the semantics.
+  public func resolve(_ value: JavaScriptValue) {
+    resolve(value.ref())
   }
 
   /// Resolves the promise with a value that has a direct JavaScript representation.
@@ -245,7 +252,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     try await runtime.execute { [longLivedState, deferredPromise] in
       let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined }
-        let value = arguments[0]
+        // Moved into a `JavaScriptRef` so the task can carry the value off the JavaScript thread.
+        let value = arguments[0].ref()
         Task.immediate_polyfill {
           await deferredPromise.resolve(value)
         }

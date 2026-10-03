@@ -90,6 +90,12 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     self.pointee = value.toJSIValue(in: runtime.pointee)
   }
 
+  /// Whether the value may be used with the given runtime: it belongs to it, or it is runtime-free
+  /// (undefined, null, a boolean or a number) and so fits any runtime.
+  internal func belongs(to runtime: borrowing JavaScriptRuntime) -> Bool {
+    return runtimeHandle == nil || runtimeHandle === runtime.handle
+  }
+
   /// Copies the value.
   public func copy() -> JavaScriptValue {
     if let runtimeHandle, let jsiRuntime = runtimeHandle.pointee {

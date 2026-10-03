@@ -47,7 +47,7 @@ struct JavaScriptCodableDateTests {
     // `Date` does not override the zero-copy overload (it needs a `getTime()` call), so this goes
     // through the default that copies the borrowed value into an owning one and forwards.
     let value = try runtime.eval("new Date(5000)")
-    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValueRef(value)])
     let decoded = try Date.decode(buffer.unownedValue(at: 0), in: runtime)
     #expect(decoded.timeIntervalSince1970 == 5.0)
   }

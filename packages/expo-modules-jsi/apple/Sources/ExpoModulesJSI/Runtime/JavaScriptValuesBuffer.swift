@@ -192,16 +192,44 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   /// Allocates a new owning buffer holding a runtime-aware copy of each value's
   /// underlying `facebook.jsi.Value`. The given `JavaScriptValue`s must all belong
   /// to `runtime` or be runtime-free; mixing runtimes will crash deep inside JSI.
+  @available(
+    *,
+    deprecated,
+    message:
+      "JavaScriptValue becomes non-copyable in SDK 59 and cannot be an array element; pass [JavaScriptValueRef] instead"
+  )
   @JavaScriptActor
   public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
     for (index, value) in values.enumerated() {
       // Runtime-free values (undefined, null, booleans and numbers) have no handle and fit any runtime.
       assert(
-        value.runtimeHandle == nil || value.runtimeHandle === runtime.handle,
+        value.belongs(to: runtime),
         "JavaScriptValue belongs to a different runtime than the buffer being initialized"
       )
       buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+  }
+
+  /// Allocates a new owning buffer holding a runtime-aware copy of each referenced value's
+  /// underlying `facebook.jsi.Value`. The values are passed through ``JavaScriptValueRef`` because
+  /// Swift arrays hold copyable elements only once `JavaScriptValue` becomes non-copyable. They must
+  /// all belong to `runtime` or be runtime-free; mixing runtimes will crash deep inside JSI. An empty
+  /// reference yields `undefined`.
+  @JavaScriptActor
+  public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValueRef]) -> JavaScriptValuesBuffer {
+    let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
+    for (index, ref) in values.enumerated() {
+      let jsiValue = ref.withUnwrappedValue { (value: borrowing JavaScriptValue) -> facebook.jsi.Value in
+        // Runtime-free values (undefined, null, booleans and numbers) have no handle and fit any runtime.
+        assert(
+          value.belongs(to: runtime),
+          "JavaScriptValue belongs to a different runtime than the buffer being initialized"
+        )
+        return value.toJSIValue(in: runtime.pointee)
+      }
+      buffer.initializeElement(at: index, to: jsiValue ?? .undefined())
     }
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
   }

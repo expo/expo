@@ -1,18 +1,21 @@
 import Foundation
 internal import jsi
 
-/// Reference to a non-copyable JavaScript value. Use it only when you have to:
+/// A reference to a ``JavaScriptValue``: the counterpart of ``JavaScriptRef`` for the one wrapper that
+/// travels through `Any`-based and generic APIs. `JavaScriptValue` becomes a non-copyable struct in
+/// SDK 59; from then on this is `JavaScriptValue.Ref` and the type to use when a value has to:
 /// - Switch from value semantics to reference semantics.
-/// - Send a value through different isolation contexts.
-/// - Capture by escaping closures.
-/// - Store in containers that do not support non-copyable types.
-/// Swift (v6.2 at the time of writing) still has very limited support for non-copyable types.
-/// Many built-in types (including collections, containers, tuples) and protocols are not supporting them.
-/// There is a new ``InlineArray`` that supports them, but it requires iOS 26.
+/// - Be sent to another isolation context or captured by an escaping closure.
+/// - Be stored in a container, a tuple or a generic type that takes copyable types only.
+/// - Be boxed in `Any`, for example as a DSL `Function` argument or a `Field` type.
+///
+/// It is a dedicated class rather than `JavaScriptRef<JavaScriptValue>` because forming an `Any` from
+/// a generic type with a non-copyable type argument needs runtime support that is only available from
+/// iOS 18, and the deployment target is lower. A non-generic class has no such restriction.
 /// - TODO: Annotate `value` and friends with `@JavaScriptActor`.
-public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType, Sendable, Copyable, Escapable {
-  /// The referenced non-copyable value. It is consumed by the ref until it is taken (see `take()`) by a new owner.
-  nonisolated(unsafe) private var value: T?
+public final class JavaScriptValueRef: JavaScriptType, Sendable, Copyable, Escapable {
+  /// The referenced value. It is consumed by the ref until it is taken (see `take()`) by a new owner.
+  nonisolated(unsafe) private var value: JavaScriptValue?
 
   /// Returns `true` if the reference does not reference any value, `false` otherwise.
   public var isEmpty: Bool {
@@ -23,12 +26,23 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
   public init() {}
 
   /// Makes a reference to the value. The value is consumed and cannot be used anymore in the calling scope.
-  public init(_ value: consuming sending T) {
+  public init(_ value: consuming sending JavaScriptValue) {
     self.value = consume value
   }
 
+  /// Makes a reference to the wrapped value, or `nil` when the optional is empty. Handy for passing an
+  /// optional value where only copyable types are accepted, such as a parameter pack.
+  public convenience init?(optional value: consuming sending JavaScriptValue?) {
+    switch consume value {
+    case .some(let value):
+      self.init(value)
+    case .none:
+      return nil
+    }
+  }
+
   /// Replaces the referenced value with a new value.
-  public func reset(_ value: consuming sending T) {
+  public func reset(_ value: consuming sending JavaScriptValue) {
     self.value = consume value
   }
 
@@ -39,7 +53,7 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
 
   /// Takes the value out of the reference and transfers the ownership to the caller.
   /// Throws when the reference does not hold any value, i.e. it has already been taken or never set.
-  public func take() throws(InvalidRefError) -> sending T {
+  public func take() throws(InvalidRefError) -> sending JavaScriptValue {
     guard let value = value.take() else {
       throw InvalidRefError()
     }
@@ -48,19 +62,17 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
 
   /// Takes the value out of the reference and transfers the ownership to the caller.
   /// Returns `nil` if the reference does not hold any value, i.e. it has already been taken or never set.
-  public func take() -> sending T? {
+  public func take() -> sending JavaScriptValue? {
     return value.take()
   }
 
   /// Borrows the referenced value for the duration of `body` without consuming it, so the reference
   /// keeps holding the value and can be read again. `body` receives the value as a borrow, or `nil` when
   /// the reference is empty (already taken, released, or never set), and its result is returned as-is.
-  /// Use this instead of `take()` when the value must stay in the reference (e.g. a long-lived ref read
-  /// repeatedly).
   ///
   /// `body` returns `R` directly (rather than this method wrapping it in `R?`) so the result can itself
   /// be a non-`Copyable` optional like `JavaScriptObject?`, which can't be nested inside another optional.
-  public func withValue<R: ~Copyable>(_ body: (borrowing T?) throws -> R?) rethrows -> R? {
+  public func withValue<R: ~Copyable>(_ body: (borrowing JavaScriptValue?) throws -> R?) rethrows -> R? {
     return try body(value)
   }
 
@@ -68,7 +80,7 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
   /// returns `nil` without calling `body` when it is empty. Prefer this over `withValue(_:)` when
   /// `body` has nothing to do for an empty reference: a borrowed non-copyable optional cannot be
   /// unwrapped with `if let` or optional chaining, only with a `switch`.
-  public func withUnwrappedValue<R: ~Copyable>(_ body: (borrowing T) throws -> R) rethrows -> R? {
+  public func withUnwrappedValue<R: ~Copyable>(_ body: (borrowing JavaScriptValue) throws -> R) rethrows -> R? {
     switch value {
     case .some(let value):
       return try body(value)
@@ -77,9 +89,9 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
     }
   }
 
-  /// Takes the value as a `JavaScriptValue`. Returns `undefined` value if the reference does not hold any value.
+  /// Takes the value. Returns `undefined` value if the reference does not hold any value.
   public func asValue() -> JavaScriptValue {
-    return take()?.asValue() ?? .undefined
+    return take() ?? .undefined
   }
 
   /// An error thrown when attempting to `take()` a value from a ref that has already been taken, released, or was never set.
@@ -87,23 +99,25 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
     public init() {}
 
     public var description: String {
-      return "A reference to \(String(describing: T.self)) has been invalidated"
+      return "A reference to JavaScriptValue has been invalidated"
     }
   }
 }
 
-extension JavaScriptRef: JavaScriptRepresentable where T: JavaScriptRepresentable & ~Copyable {
-  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptRef<T> {
-    return JavaScriptRef(T.fromJavaScriptValue(value))
+extension JavaScriptValueRef: JavaScriptRepresentable {
+  public static func fromJavaScriptValue(_ value: JavaScriptValue) -> JavaScriptValueRef {
+    return JavaScriptValueRef(value.copy())
   }
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
-    return take()?.toJavaScriptValue(in: runtime) ?? .undefined
+    return take() ?? .undefined
   }
 }
 
-extension JavaScriptRef: JSIRepresentable where T: JSIRepresentable & ~Copyable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptRef {
+extension JavaScriptValueRef: JSIRepresentable {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime)
+    -> JavaScriptValueRef
+  {
     FatalError.unimplemented()
   }
 
