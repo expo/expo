@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { ImmutableRequest } from 'expo-server/private';
-import { vol } from 'memfs';
+import { fs, vol } from 'memfs';
 
 import type { ExportAssetMap } from '../../../../export/saveAssets';
 import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';
@@ -211,6 +211,53 @@ describe('watchEnvironmentVariables', () => {
     expect(getEnvFiles).toHaveBeenCalledWith('/', 'production');
     jest.mocked(observeFileChanges).mock.calls[0]![2]();
     expect(reloadEnvFiles).toHaveBeenCalledWith('/', 'production');
+  });
+});
+
+describe('watchConfig', () => {
+  let watchFile: jest.SpyInstance;
+
+  beforeEach(() => {
+    watchFile = jest.spyOn(fs, 'watchFile').mockImplementation(() => ({ unref: jest.fn() }) as any);
+  });
+
+  afterEach(() => {
+    watchFile.mockRestore();
+  });
+
+  // Every file that `@expo/metro-config/src/config/resolveMetroUserConfig.ts` can load a Metro config from.
+  it.each([
+    'metro.config.js',
+    'metro.config.cjs',
+    'metro.config.mjs',
+    'metro.config.json',
+    'metro.config.ts',
+    'metro.config.cts',
+    'metro.config.mts',
+    '.config/metro.js',
+    '.config/metro.ts',
+  ])('watches %s for changes', (configFile) => {
+    vol.fromJSON({ [`/${configFile}`]: '' }, '/');
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+
+    devServer['watchConfig']();
+
+    expect(watchFile).toHaveBeenCalledWith(`/${configFile}`, expect.any(Function));
+  });
+
+  it('does not watch rn-cli.config.js, which `@expo/metro-config` never loads', () => {
+    vol.fromJSON({ '/rn-cli.config.js': '' }, '/');
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+
+    devServer['watchConfig']();
+
+    expect(watchFile).not.toHaveBeenCalled();
   });
 });
 
