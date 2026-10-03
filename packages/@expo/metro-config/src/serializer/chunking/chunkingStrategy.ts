@@ -48,75 +48,27 @@ export type ChunkingImplementation = {
   ): Pick<SerialAsset['metadata'], 'chunkingStrategy' | 'entryPaths' | 'modulePaths'>;
 };
 
-type ChunkSettings = {
-  test: RegExp;
-};
-
-// Convert file paths to regex matchers.
-export function pathToRegex(path: string) {
-  // Escape regex special characters, except for '*'
-  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
-
-  // Replace '*' with '.*' to act as a wildcard in regex
-  regexSafePath = regexSafePath.replace(/\*/g, '.*');
-
-  // Create a RegExp object with the modified string
-  return new RegExp('^' + regexSafePath + '$');
-}
-
-function getEntryModulesForChunkSettings(
-  graph: ReadOnlyGraph,
-  settings: ChunkSettings
-): Set<Module<MixedOutput>> {
-  const modules = new Set<Module<MixedOutput>>();
-  for (const entry of graph.dependencies) {
-    if (settings.test.test(entry[0])) {
-      modules.add(entry[1]);
-    }
-  }
-  return modules;
-}
-
-function chunkIdForModules(modules: Iterable<Module>) {
-  const modPaths: string[] = [];
-  for (const mod of modules) modPaths.push(mod.path);
-  return modPaths.sort().join('=>');
-}
-
 export function createChunkCollector(
   { graph, options, preModules: runtimePremodules }: ChunkingContext,
   strategy: ChunkingImplementation,
+  chunks: Set<Chunk>,
   shouldTraverseDependency: (dependency: ResolvedDependency) => boolean
 ) {
-  return function gatherChunks(
-    chunks: Set<Chunk>,
-    settings: ChunkSettings,
+  const chunksByEntryPath = new Map<string, Chunk>();
+  return function collectChunk(
+    entryPath: string,
     preModules: readonly Module[],
     isAsync: boolean = false,
     isEntry: boolean = false
-  ): Set<Chunk> {
-    const entryModules = getEntryModulesForChunkSettings(graph, settings);
-    const entryChunks = new Set<Chunk>();
-    if (!entryModules.size) {
-      return entryChunks;
-    }
-
-    for (const chunk of chunks) {
-      for (const entry of chunk.entries) {
-        // Remove already processed entries
-        if (entryModules.delete(entry)) {
-          entryChunks.add(chunk);
-        }
-      }
-      // Prevent processing the same entry file twice.
-      if (!entryModules.size) {
-        return entryChunks;
-      }
-    }
+  ): Chunk | undefined {
+    const existingChunk = chunksByEntryPath.get(entryPath);
+    if (existingChunk) return existingChunk;
+    const entryModule = graph.dependencies.get(entryPath);
+    if (!entryModule) return undefined;
 
     const entryChunk = new Chunk(
-      chunkIdForModules(entryModules),
-      entryModules,
+      entryPath,
+      new Set([entryModule]),
       graph,
       options,
       strategy,
@@ -125,16 +77,10 @@ export function createChunkCollector(
       isEntry
     );
 
-    // Add all the pre-modules to the first chunk.
-    if (preModules.length) {
-      // On native, use the preModules in insert code in the entry chunk.
-      for (const module of preModules.values()) {
-        entryChunk.preModules.add(module);
-      }
-    }
-
+    entryChunk.preModules = new Set(preModules);
+    // Register before walking dependencies so circular imports reuse this chunk.
+    chunksByEntryPath.set(entryPath, entryChunk);
     chunks.add(entryChunk);
-    entryChunks.add(entryChunk);
 
     function includeModule(entryModule: Module<MixedOutput>) {
       const splitChunks = entryChunk.options.serializerOptions?.splitChunks !== false;
@@ -151,20 +97,17 @@ export function createChunkCollector(
           if (isWorker && options.includeAsyncPaths) {
             continue;
           }
-          const asyncChunks = gatherChunks(
-            chunks,
-            { test: pathToRegex(dependency.absolutePath) },
+          const asyncChunk = collectChunk(
+            dependency.absolutePath,
             isWorker ? runtimePremodules : [],
             true,
             isWorker
           );
 
-          // Seal all chunks that are for web workers, as these must be self-sufficient chunks
+          // Workers must be self-sufficient chunks.
           if (isWorker) {
-            assert(asyncChunks.size, `Worker chunk not found for: ${dependency.absolutePath}`);
-            for (const chunk of asyncChunks) {
-              chunk.seal();
-            }
+            assert(asyncChunk, `Worker chunk not found for: ${dependency.absolutePath}`);
+            asyncChunk.seal();
           }
         } else {
           const module = graph.dependencies.get(dependency.absolutePath);
@@ -179,11 +122,8 @@ export function createChunkCollector(
       }
     }
 
-    for (const entryModule of entryModules) {
-      includeModule(entryModule);
-    }
-
-    return entryChunks;
+    includeModule(entryModule);
+    return entryChunk;
   };
 }
 

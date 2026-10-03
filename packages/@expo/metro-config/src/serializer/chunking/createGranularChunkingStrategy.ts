@@ -14,7 +14,6 @@ import {
   createChunkCollector,
   createChunkSerializer,
   createRuntimeChunk,
-  pathToRegex,
 } from './chunkingStrategy';
 import { bitIndices, computeBitSetChunkPlan, type ChunkAtom } from './computeBitSetChunks';
 
@@ -119,21 +118,16 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
 
       // Workers keep their own copies of dependencies shared with the page.
       const workerChunks = new Set<Chunk>();
-      const gatherChunks = createChunkCollector(
+      const collectChunk = createChunkCollector(
         context,
         strategy,
+        workerChunks,
         (dependency) => dependency.data.data.asyncType !== 'weak'
       );
       for (const module of plan.workerEntries) {
-        for (const chunk of gatherChunks(
-          workerChunks,
-          { test: pathToRegex(module.path) },
-          preModules,
-          true,
-          true
-        )) {
-          chunk.seal();
-        }
+        const chunk = collectChunk(module.path, preModules, true, true);
+        assert(chunk, `Worker chunk not found for: ${module.path}`);
+        chunk.seal();
       }
       for (const workerChunk of workerChunks) {
         assert(
