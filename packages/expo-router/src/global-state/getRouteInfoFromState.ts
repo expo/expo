@@ -75,7 +75,14 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   }
 
   const { segments, params: mergedParams } = collectRouteState(route.state);
-  const params = decodeParams(mergedParams);
+  // Params are already decoded while the navigation state is built, so they are not decoded again.
+  // Copied into an ordinary object because `collectRouteState()` builds a prototype-less one.
+  // `Object.fromEntries()` defines own properties, so a param named `__proto__` is kept.
+  const params: Record<string, unknown> = Object.fromEntries(Object.entries(mergedParams));
+  // The hash is the exception: it is stored from `URL.hash`, which is still percent-encoded.
+  if ('#' in params) {
+    params['#'] = safeDecodeURIComponent(params['#']);
+  }
   const { pathname, pathParams } = resolvePathname(segments, params);
   const { searchParams, pathnameWithParams } = serializeQueryAndHash(pathname, params, pathParams);
 
@@ -117,20 +124,6 @@ function collectRouteState(state?: StrictState) {
   }
 
   return { segments, params };
-}
-
-function decodeParams(params: Record<string, unknown>): Record<string, unknown> {
-  return Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      if (typeof value === 'string') {
-        return [key, safeDecodeURIComponent(value)];
-      } else if (Array.isArray(value)) {
-        return [key, value.map((v) => (typeof v === 'string' ? safeDecodeURIComponent(v) : v))];
-      } else {
-        return [key, value];
-      }
-    })
-  );
 }
 
 function resolvePathname(segments: readonly string[], params: Record<string, unknown>) {

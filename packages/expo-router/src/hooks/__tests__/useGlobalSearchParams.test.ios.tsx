@@ -212,7 +212,7 @@ describe(useGlobalSearchParams, () => {
     await act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
 
     expect(result.current).toEqual({
-      test: '/hello/world/again',
+      test: '%2Fhello%2Fworld%2Fagain',
     });
 
     await act(() =>
@@ -225,7 +225,39 @@ describe(useGlobalSearchParams, () => {
     );
 
     expect(result.current).toEqual({
-      test: '/foo/bar/',
+      test: '%2Ffoo%2Fbar%2F',
     });
+  });
+
+  it(`decodes an encoded path segment exactly once`, () => {
+    const { result } = renderHook(() => useGlobalSearchParams(), ['[name]'], {
+      initialUrl: '/hello%20world',
+    });
+
+    expect(result.current).toEqual({
+      name: 'hello world',
+    });
+  });
+
+  it(`returns a pushed param unchanged when it contains percent-encoded characters`, () => {
+    // A value that has to stay percent-encoded to remain valid, such as an AWS SigV4 token.
+    const token = 'IQoJb3JpZ2luX2Vj%2FPB94qm%2Bx%2B4Ts';
+
+    const { result } = renderHook(() => useGlobalSearchParams(), ['index'], {
+      initialUrl: '/',
+    });
+
+    act(() => router.push({ pathname: '/', params: { token } }));
+
+    expect(result.current).toEqual({ token });
+  });
+
+  it(`decodes the hash from the URL exactly once`, () => {
+    // The hash is stored from `URL.hash`, which is still percent-encoded.
+    const { result } = renderHook(() => useGlobalSearchParams(), ['page'], {
+      initialUrl: '/page#100%25%20off',
+    });
+
+    expect(result.current).toEqual({ '#': '100% off' });
   });
 });
