@@ -2,6 +2,8 @@
 
 #import <ExpoModulesCore/Platform.h>
 
+@protocol RCTSurfacePresenterStub;
+
 #ifdef __cplusplus
 #import <ReactCommon/RCTHost.h>
 #endif
@@ -23,11 +25,10 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 - (nullable NSURL *)bundleURL;
 
 /**
- Adds an observer to the surface presenter of the host. The observer is held weakly and should implement
- the `RCTSurfacePresenterObserver` methods. It's typed as `id`, because the protocol comes from React,
- which ExpoModulesCore doesn't import publicly in Swift.
+ The surface presenter of the host. It's typed with the protocol, because `RCTSurfacePresenter` declares
+ its conformance only in a category interface, so a runtime cast to the protocol fails in Swift.
  */
-- (void)addSurfacePresenterObserver:(nonnull id)observer;
+- (nullable id<RCTSurfacePresenterStub>)surfacePresenter;
 
 @end
 

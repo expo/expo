@@ -60,6 +60,11 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   private var hostWrapper: ExpoHostWrapper?
 
   /**
+   Observes the surface presenter of the host to know when the views of this app context are created.
+   */
+  private var surfacePresenterObserver: SurfacePresenterObserver?
+
+  /**
    Underlying JSI runtime of the running app.
    */
   private var _runtime: ExpoRuntime? {
@@ -465,12 +470,16 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   /**
    Starts observing the surface presenter of the host, so the views created while the host is mounting
-   get this app context. The presenter keeps observers weakly, so they don't need to be removed.
-   Its header calls the observer API deprecated, but it's the only public notification
-   that is sent right before the host creates component views.
+   get this app context.
    */
   private func observeMounting(with hostWrapper: ExpoHostWrapper) {
-    hostWrapper.addSurfacePresenterObserver(self)
+    guard let surfacePresenter = hostWrapper.surfacePresenter() else {
+      log.warn("The host has no surface presenter, so its views are created for the app context that registered views last")
+      return
+    }
+    let observer = SurfacePresenterObserver(appContext: self)
+    observer.observe(surfacePresenter)
+    surfacePresenterObserver = observer
   }
 
   /**
@@ -903,23 +912,3 @@ public typealias AppContextLostException = Exceptions.AppContextLost
 // Deprecated since v1.0.0
 @available(*, deprecated, renamed: "Exceptions.RuntimeLost")
 public typealias RuntimeLostException = Exceptions.RuntimeLost
-
-// MARK: - RCTSurfacePresenterObserver
-
-// The surface presenter only checks whether the observer responds to these selectors. The conformance to
-// `RCTSurfacePresenterObserver` itself can't be declared, because React isn't imported publicly.
-extension AppContext {
-  @objc(willMountComponentsWithRootTag:)
-  internal func willMountComponents(withRootTag rootTag: Int) {
-    MainActor.assumeIsolated {
-      hostWillMountComponents()
-    }
-  }
-
-  @objc(didMountComponentsWithRootTag:)
-  internal func didMountComponents(withRootTag rootTag: Int) {
-    MainActor.assumeIsolated {
-      hostDidMountComponents()
-    }
-  }
-}
