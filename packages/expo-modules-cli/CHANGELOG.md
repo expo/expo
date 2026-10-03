@@ -1,5 +1,11 @@
 # expo-modules-cli
 
+## 0.2.1
+
+### Patch Changes
+
+- [iOS] Update `expo-modules-macros` to 0.15.0, which generates only the unowned decode for `@Union` and skips cases whose `decodableKinds` can't match. ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.2.0
 
 ### Minor Changes
