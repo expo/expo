@@ -50,7 +50,9 @@ data class LayoutProps(
   val verticalAlignment: VerticalAlignment? = null,
   val contentAlignment: ContentAlignment? = null,
   val floatingToolbarExitAlwaysScrollBehavior: FloatingToolbarExitAlwaysScrollBehavior? = null,
-  val modifiers: ModifierList = emptyList()
+  val modifiers: ModifierList = emptyList(),
+  // Universal `Row` and `Column` set this. Compose `Row` and `Column` leave it false.
+  val resolvesChildPercentages: Boolean = false
 ) : ComposeProps
 
 @Composable
@@ -60,20 +62,31 @@ internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
     ?.let {
       FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
-  Row(
-    horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
-    verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
-    modifier = ModifierRegistry
-      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
-      .then(
-        if (scrollBehavior != null) {
-          Modifier.nestedScroll(scrollBehavior)
-        } else {
-          Modifier
-        }
-      )
-  ) {
-    Children(UIComposableScope(rowScope = this@Row, nestedScrollConnection = scrollBehavior))
+  val modifier = ModifierRegistry
+    .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+    .then(
+      if (scrollBehavior != null) {
+        Modifier.nestedScroll(scrollBehavior)
+      } else {
+        Modifier
+      }
+    )
+  if (props.resolvesChildPercentages) {
+    UniversalRow(
+      horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
+      verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
+      modifier = modifier
+    ) {
+      Children(UIComposableScope(nestedScrollConnection = scrollBehavior))
+    }
+  } else {
+    Row(
+      horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
+      verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
+      modifier = modifier
+    ) {
+      Children(UIComposableScope(rowScope = this@Row, nestedScrollConnection = scrollBehavior))
+    }
   }
 }
 
@@ -96,20 +109,31 @@ internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
     ?.let {
       FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
-  Column(
-    verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
-    horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
-    modifier = ModifierRegistry
-      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
-      .then(
-        if (scrollBehavior != null) {
-          Modifier.nestedScroll(scrollBehavior)
-        } else {
-          Modifier
-        }
-      )
-  ) {
-    Children(UIComposableScope(columnScope = this@Column, nestedScrollConnection = scrollBehavior))
+  val modifier = ModifierRegistry
+    .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+    .then(
+      if (scrollBehavior != null) {
+        Modifier.nestedScroll(scrollBehavior)
+      } else {
+        Modifier
+      }
+    )
+  if (props.resolvesChildPercentages) {
+    UniversalColumn(
+      verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
+      horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
+      modifier = modifier
+    ) {
+      Children(UIComposableScope(nestedScrollConnection = scrollBehavior))
+    }
+  } else {
+    Column(
+      verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
+      horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
+      modifier = modifier
+    ) {
+      Children(UIComposableScope(columnScope = this@Column, nestedScrollConnection = scrollBehavior))
+    }
   }
 }
 

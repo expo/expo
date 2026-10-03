@@ -158,8 +158,7 @@ export function TextInput({
     <BasicTextField
       ref={innerRef}
       modifiers={[
-        ...(userModifiers ?? []),
-        ...transformToModifiers(style, {}),
+        ...transformToModifiers(style, {}, userModifiers, { componentName: 'TextInput' }),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
         ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
