@@ -45,6 +45,24 @@ export function test(t) {
         t.expect(fetchedValue).toBe(null);
       });
     });
+    t.describe('store -> hasItem -> delete -> hasItem:', () => {
+      t.it('Sets a value with a key', async () => {
+        const result = await SecureStore.setItemAsync(key, value, {});
+        t.expect(result).toBe(undefined);
+      });
+      t.it('hasItemAsync returns true', async () => {
+        const result = await SecureStore.hasItemAsync(key, {});
+        t.expect(result).toBe(true);
+      });
+      t.it('Delete the value associated with the key', async () => {
+        const result = await SecureStore.deleteItemAsync(key, {});
+        t.expect(result).toBe(undefined);
+      });
+      t.it('hasItemAsync returns false', async () => {
+        const result = await SecureStore.hasItemAsync(key, {});
+        t.expect(result).toBe(false);
+      });
+    });
     t.describe('store -> fetch -> delete -> fetch -> err with Options:', () => {
       t.it('Sets a value with a key and keychainService', async () => {
         const result = await SecureStore.setItemAsync(key, value, {

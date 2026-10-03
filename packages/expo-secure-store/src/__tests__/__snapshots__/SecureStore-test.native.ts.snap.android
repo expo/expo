@@ -10,6 +10,8 @@ exports[`checks for invalid keys 4`] = `[Error: Invalid key provided to SecureSt
 
 exports[`checks for invalid keys 5`] = `[Error: Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".]`;
 
+exports[`checks for invalid keys 6`] = `[Error: Invalid key provided to SecureStore. Keys must not be empty and contain only alphanumeric characters, ".", "-", and "_".]`;
+
 exports[`checks for invalid values 1`] = `[Error: Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.]`;
 
 exports[`checks for invalid values 2`] = `[Error: Invalid value provided to SecureStore. Values must be strings; consider JSON-encoding your values if they are serializable.]`;
