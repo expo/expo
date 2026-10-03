@@ -1,15 +1,10 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-/// - Warning: The ObjC name `ExpoFabricView` and the selector
-///   `makeViewClassForAppContext:moduleName:viewName:className:` are resolved at runtime via
-///   `NSClassFromString` / `NSSelectorFromString` from `ExpoFabricViewObjC.mm`.
-///   Renaming the class or that method will break those call sites silently at runtime.
 @objc(ExpoFabricView)
 open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
    A weak reference to the app context associated with this view.
-   The app context is injected into the class after the context is initialized.
-   see the `makeClass` static function.
+   It's passed to the initializer by the view definition, see `createComponentView`.
    */
   public weak var appContext: AppContext?
 
@@ -33,7 +28,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   // swiftlint:disable unavailable_function
   @objc
   public init() {
-    // For derived views, their initializer should be replaced by the 'class_replaceMethod'.
+    // Component views are created by `createComponentView` through `+new` instead.
     fatalError("Unsupported direct init() call for ExpoFabricView.")
   }
   // swiftlint:enable unavailable_function
@@ -55,13 +50,10 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
    The view creator expected to be called for derived ExpoFabricView, the `viewDefinition` and event dispatchers will be setup from here.
 
-   NOTE: We swizzle the initializers, e.g. `ViewManagerAdapter_ExpoImage.new()` to `ImageView.init(appContext:)`
+   NOTE: `ViewManagerAdapter_ExpoImage.new()` creates `ImageView` through `createComponentView`,
    and we also need viewDefinition (or moduleName) for the `installEventDispatchers()`.
-   Swizzling ExpoFabricView doesn't give us chance to inject iMethod or iVar of ImageView and pass the moduleName.
-   Alternatively, we try to add a dedicated `ExpoFabricView.create()` and passing viewDefinition into the class.
-   That's not a perfect implementation but turns out to be the only way to get the viewDefinition (or moduleName).
    The example call flow would be:
-   `ViewManagerAdapter_ExpoImage.new()` -> `ViewDefinition.createView()` -> `ExpoFabricView.create()` ->
+   `ViewManagerAdapter_ExpoImage.new()` -> `ExpoFabricView.createComponentView()` -> `ViewDefinition.createView()` -> `ExpoFabricView.create()` ->
    `ImageView.init(appContext:)` -> `ExpoFabricView.init(appContext:)` -> `view.viewDefinition = viewDefinition` here
    */
   internal static func create(viewType: ExpoFabricView.Type, viewDefinition: AnyViewDefinition, appContext: AppContext) -> ExpoFabricView {
@@ -155,69 +147,93 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     return false
   }
 
-  internal static var viewClassesRegistry = [String: AnyClass]()
+  /**
+   Prefix of the component names. It tells apart the components backed by Expo modules.
+   */
+  internal static let componentNamePrefix = "ViewManagerAdapter_"
 
   /**
-   Dynamically creates a subclass of the `ExpoFabricView` class with injected app context and name of the associated module.
-   The new subclass is saved in the registry, so when asked for the next time, it's returned from cache with the updated app context.
-   - Note: Apple's documentation says that classes created with `objc_allocateClassPair` should then be registered using `objc_registerClassPair`,
-   but we can't do that as there might be more than one class with the same name (Expo Go) and allocating another one would return `nil`.
+   View classes registered in `RCTComponentViewFactory`, keyed by the component name.
    */
-  @objc
-  public static func makeViewClass(forAppContext appContext: AppContext, moduleName: String, viewName: String, className: String) -> AnyClass? {
-    if let viewClass = viewClassesRegistry[className] {
-      inject(appContext: appContext)
-      injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
+  @MainActor
+  private static var viewClasses = [String: AnyClass]()
+
+  /**
+   Names of the module and the view that each class in `viewClasses` creates.
+   */
+  @MainActor
+  private static var componentsByViewClass = [ObjectIdentifier: (moduleName: String, viewName: String)]()
+
+  /**
+   Returns the name under which the view of the given module is registered in React Native.
+   It must stay in sync with `requireNativeComponent` in `NativeViewManagerAdapter.native.tsx`.
+   */
+  internal static func componentName(moduleName: String, viewName: String) -> String {
+    if viewName == DEFAULT_MODULE_VIEW {
+      return "\(componentNamePrefix)\(moduleName)"
+    }
+    return "\(componentNamePrefix)\(moduleName)_\(viewName)"
+  }
+
+  /**
+   Registers the view of the given module in `RCTComponentViewFactory`. Each component is registered once per process,
+   and the app context of each view is resolved when React Native creates it (see `createComponentView`).
+   */
+  @MainActor
+  internal static func registerComponent(moduleName: String, viewName: String) {
+    if viewClasses[componentName(moduleName: moduleName, viewName: viewName)] != nil {
+      return
+    }
+    ExpoFabricViewObjC.registerComponentViewClass(viewClass(moduleName: moduleName, viewName: viewName))
+  }
+
+  /**
+   Returns a subclass of `ExpoFabricView` named after the component, creating it the first time it's requested.
+   `RCTComponentViewFactory` maps each component to a class and creates views with `+[viewClass new]`, so every component
+   needs a class of its own. The class doesn't add or replace any methods, it only identifies the component.
+   */
+  @MainActor
+  internal static func viewClass(moduleName: String, viewName: String) -> AnyClass {
+    let className = componentName(moduleName: moduleName, viewName: viewName)
+
+    if let viewClass = viewClasses[className] {
       return viewClass
     }
     guard let viewClass = objc_allocateClassPair(ExpoFabricView.self, className, 0) else {
-      fatalError("Cannot allocate a Fabric view class for '\(className)'")
+      fatalError("Cannot allocate a Fabric view class for '\(className)' because a class with this name already exists")
     }
-    inject(appContext: appContext)
-    injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
+    objc_registerClassPair(viewClass)
 
-    // Save the allocated view class in the registry for the later use (e.g. when the app is reloaded).
-    viewClassesRegistry[className] = viewClass
-
+    viewClasses[className] = viewClass
+    componentsByViewClass[ObjectIdentifier(viewClass)] = (moduleName, viewName)
     return viewClass
   }
 
-  internal static func inject(appContext: AppContext) {
-    // Keep it weak so we don't leak the app context. We use `var` because `let` is only supported in Swift 6.0+
-    weak var weakAppContext = appContext
-    let appContextBlock: @convention(block) () -> AppContext? = { weakAppContext }
-    let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)
-    class_replaceMethod(object_getClass(ExpoFabricView.self), #selector(appContextFromClass), appContextBlockImp, "@@:")
-  }
-
-  internal static func injectInitializer(appContext: AppContext, moduleName: String, viewName: String, toViewClass viewClass: AnyClass) {
-    // The default initializer for native views. It will be called by Fabric.
-    let newBlock: @convention(block) () -> Any = {[weak appContext] in
-      guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
+  /**
+   Creates the view for the component that this class is registered for. It's called from `+new`, which is how
+   `RCTComponentViewFactory` creates component views. The view is created by the module of the app context
+   whose host is mounting. Returns `nil` for classes that aren't registered for any component.
+   */
+  public override class func createComponentView() -> Any? {
+    let view: AppleView? = MainActor.assumeIsolated {
+      guard let (moduleName, viewName) = componentsByViewClass[ObjectIdentifier(self)] else {
+        return nil
+      }
+      guard let appContext = AppContext.mountingAppContext else {
         fatalError(Exceptions.AppContextLost().reason)
       }
-      guard let view = moduleHolder.definition.views[viewName]?.createView(appContext: appContext) else {
-        fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)'")
+      guard let view = appContext.moduleRegistry.get(moduleHolderForName: moduleName)?.definition.views[viewName]?.createView(appContext: appContext) else {
+        fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)' because the module or its view isn't registered in the app context")
       }
-      switch view {
-      case .uikit(let view):
-        _ = Unmanaged.passRetained(view) // retain the view given this is an initializer
-        return view
-      case .swiftui(let view):
-        if let viewObject = view as AnyObject? {
-          _ = Unmanaged.passRetained(viewObject) // retain the view given this is an initializer
-        }
-        return view
-      }
+      return view
     }
-    let newBlockImp: IMP = imp_implementationWithBlock(newBlock)
-    class_replaceMethod(object_getClass(viewClass), Selector("new"), newBlockImp, "@@:")
+    switch view {
+    case .uikit(let view):
+      return view
+    case .swiftui(let view):
+      return view
+    case nil:
+      return nil
+    }
   }
-
-  // swiftlint:disable unavailable_function
-  @objc
-  private dynamic static func appContextFromClass() -> AppContext? {
-    fatalError("The AppContext must be injected in the 'ExpoFabricView' class")
-  }
-  // swiftlint:enable unavailable_function
 }

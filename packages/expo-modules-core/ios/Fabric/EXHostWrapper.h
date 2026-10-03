@@ -2,6 +2,8 @@
 
 #import <ExpoModulesCore/Platform.h>
 
+@protocol EXAppContextProtocol;
+
 #ifdef __cplusplus
 #import <ReactCommon/RCTHost.h>
 #endif
@@ -21,6 +23,12 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 - (nullable id)findModuleWithName:(nonnull NSString *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary;
 
 - (nullable NSURL *)bundleURL;
+
+/**
+ Notifies the app context when its host starts and finishes mounting views, so that the views
+ created in between can be given that app context.
+ */
+- (void)observeMountingForAppContext:(nonnull id<EXAppContextProtocol>)appContext NS_SWIFT_NAME(observeMounting(for:));
 
 @end
 
