@@ -2014,97 +2014,120 @@ describe('serializes', () => {
     expect(artifacts[1].filename).not.toEqual(artifacts2[1].filename);
   });
 
-  it(`invalidates parent chunk when a transitive async chunk changes`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `import('./math');`,
-      'math.js': `import('./util');`,
-      'util.js': `export const u = 'before';`,
+  describe.each(['legacy', 'bitset'] as const)('%s chunk filenames', (chunkingStrategy) => {
+    it(`invalidates parent chunk when a transitive async chunk changes`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `import('./math');`,
+          'math.js': `import('./util');`,
+          'util.js': `export const u = 'before';`,
+        },
+        { chunkingStrategy }
+      );
+
+      const artifacts2 = await serializeSplitAsync(
+        {
+          'index.js': `import('./math');`,
+          'math.js': `import('./util');`,
+          'util.js': `export const u = 'after';`,
+        },
+        { chunkingStrategy }
+      );
+
+      const byOrigin = (a: SerialAsset[]) =>
+        Object.fromEntries(a.map((art) => [art.originFilename, art]));
+      const a = byOrigin(artifacts);
+      const b = byOrigin(artifacts2);
+
+      expect(a['util.js']!.filename).not.toEqual(b['util.js']!.filename);
+      expect(a['math.js']!.filename).not.toEqual(b['math.js']!.filename);
+      expect(a['index.js']!.filename).not.toEqual(b['index.js']!.filename);
     });
 
-    const artifacts2 = await serializeSplitAsync({
-      'index.js': `import('./math');`,
-      'math.js': `import('./util');`,
-      'util.js': `export const u = 'after';`,
+    it(`invalidates both branches of a diamond when the shared leaf changes`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `import('./a'); import('./b');`,
+          'a.js': `import('./leaf'); export const a = 'a';`,
+          'b.js': `import('./leaf'); export const b = 'b';`,
+          'leaf.js': `export const leaf = 'before';`,
+        },
+        { chunkingStrategy }
+      );
+
+      const artifacts2 = await serializeSplitAsync(
+        {
+          'index.js': `import('./a'); import('./b');`,
+          'a.js': `import('./leaf'); export const a = 'a';`,
+          'b.js': `import('./leaf'); export const b = 'b';`,
+          'leaf.js': `export const leaf = 'after';`,
+        },
+        { chunkingStrategy }
+      );
+
+      const byOrigin = (a: SerialAsset[]) =>
+        Object.fromEntries(a.map((art) => [art.originFilename, art]));
+      const before = byOrigin(artifacts);
+      const after = byOrigin(artifacts2);
+
+      expect(before['leaf.js']!.filename).not.toEqual(after['leaf.js']!.filename);
+      expect(before['a.js']!.filename).not.toEqual(after['a.js']!.filename);
+      expect(before['b.js']!.filename).not.toEqual(after['b.js']!.filename);
+      expect(before['index.js']!.filename).not.toEqual(after['index.js']!.filename);
     });
 
-    const byOrigin = (a: SerialAsset[]) =>
-      Object.fromEntries(a.map((art) => [art.originFilename, art]));
-    const a = byOrigin(artifacts);
-    const b = byOrigin(artifacts2);
+    it(`parent chunk source references the child chunk's actual filename`, async () => {
+      const artifacts = await serializeSplitAsync(
+        {
+          'index.js': `import('./math');`,
+          'math.js': `import('./util'); export const m = 1;`,
+          'util.js': `export const u = 2;`,
+        },
+        { chunkingStrategy }
+      );
 
-    expect(a['util.js']!.filename).not.toEqual(b['util.js']!.filename);
-    expect(a['math.js']!.filename).not.toEqual(b['math.js']!.filename);
-    expect(a['index.js']!.filename).not.toEqual(b['index.js']!.filename);
-  });
-
-  it(`invalidates both branches of a diamond when the shared leaf changes`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `import('./a'); import('./b');`,
-      'a.js': `import('./leaf'); export const a = 'a';`,
-      'b.js': `import('./leaf'); export const b = 'b';`,
-      'leaf.js': `export const leaf = 'before';`,
+      const byOrigin = Object.fromEntries(
+        artifacts.map((art: SerialAsset) => [art.originFilename, art] as const)
+      );
+      expect(byOrigin['index.js']!.source).toContain(byOrigin['math.js']!.filename);
+      expect(byOrigin['math.js']!.source).toContain(byOrigin['util.js']!.filename);
     });
 
-    const artifacts2 = await serializeSplitAsync({
-      'index.js': `import('./a'); import('./b');`,
-      'a.js': `import('./leaf'); export const a = 'a';`,
-      'b.js': `import('./leaf'); export const b = 'b';`,
-      'leaf.js': `export const leaf = 'after';`,
+    it(`mutually async-importing chunks invalidate each other and reference each other's actual filenames`, async () => {
+      const sources = (aBody: string) => ({
+        'index.js': `import('./a');`,
+        'a.js': `import('./b'); export const a = ${JSON.stringify(aBody)};`,
+        'b.js': `import('./a'); export const b = 'b';`,
+      });
+
+      const artifacts = await serializeSplitAsync(sources('before'), {
+        chunkingStrategy,
+      });
+      const artifactsRepeat = await serializeSplitAsync(sources('before'), {
+        chunkingStrategy,
+      });
+      const artifactsChanged = await serializeSplitAsync(sources('after'), {
+        chunkingStrategy,
+      });
+
+      const byOrigin = (a: SerialAsset[]) =>
+        Object.fromEntries(a.map((art) => [art.originFilename, art]));
+      const first = byOrigin(artifacts);
+      const repeat = byOrigin(artifactsRepeat);
+      const changed = byOrigin(artifactsChanged);
+
+      // Deterministic: identical sources produce identical filenames.
+      expect(first['a.js']!.filename).toEqual(repeat['a.js']!.filename);
+      expect(first['b.js']!.filename).toEqual(repeat['b.js']!.filename);
+
+      // Cycle members cross-invalidate: changing only `a` shifts `b`'s filename too.
+      expect(first['a.js']!.filename).not.toEqual(changed['a.js']!.filename);
+      expect(first['b.js']!.filename).not.toEqual(changed['b.js']!.filename);
+
+      // Each member's emitted bundle references the other's actual filename.
+      expect(first['a.js']!.source).toContain(first['b.js']!.filename);
+      expect(first['b.js']!.source).toContain(first['a.js']!.filename);
     });
-
-    const byOrigin = (a: SerialAsset[]) =>
-      Object.fromEntries(a.map((art) => [art.originFilename, art]));
-    const before = byOrigin(artifacts);
-    const after = byOrigin(artifacts2);
-
-    expect(before['leaf.js']!.filename).not.toEqual(after['leaf.js']!.filename);
-    expect(before['a.js']!.filename).not.toEqual(after['a.js']!.filename);
-    expect(before['b.js']!.filename).not.toEqual(after['b.js']!.filename);
-    expect(before['index.js']!.filename).not.toEqual(after['index.js']!.filename);
-  });
-
-  it(`parent chunk source references the child chunk's actual filename`, async () => {
-    const artifacts = await serializeSplitAsync({
-      'index.js': `import('./math');`,
-      'math.js': `import('./util'); export const m = 1;`,
-      'util.js': `export const u = 2;`,
-    });
-
-    const byOrigin = Object.fromEntries(
-      artifacts.map((art: SerialAsset) => [art.originFilename, art] as const)
-    );
-    expect(byOrigin['index.js']!.source).toContain(byOrigin['math.js']!.filename);
-    expect(byOrigin['math.js']!.source).toContain(byOrigin['util.js']!.filename);
-  });
-
-  it(`mutually async-importing chunks invalidate each other and reference each other's actual filenames`, async () => {
-    const sources = (aBody: string) => ({
-      'index.js': `import('./a');`,
-      'a.js': `import('./b'); export const a = ${JSON.stringify(aBody)};`,
-      'b.js': `import('./a'); export const b = 'b';`,
-    });
-
-    const artifacts = await serializeSplitAsync(sources('before'));
-    const artifactsRepeat = await serializeSplitAsync(sources('before'));
-    const artifactsChanged = await serializeSplitAsync(sources('after'));
-
-    const byOrigin = (a: SerialAsset[]) =>
-      Object.fromEntries(a.map((art) => [art.originFilename, art]));
-    const first = byOrigin(artifacts);
-    const repeat = byOrigin(artifactsRepeat);
-    const changed = byOrigin(artifactsChanged);
-
-    // Deterministic: identical sources produce identical filenames.
-    expect(first['a.js']!.filename).toEqual(repeat['a.js']!.filename);
-    expect(first['b.js']!.filename).toEqual(repeat['b.js']!.filename);
-
-    // Cycle members cross-invalidate: changing only `a` shifts `b`'s filename too.
-    expect(first['a.js']!.filename).not.toEqual(changed['a.js']!.filename);
-    expect(first['b.js']!.filename).not.toEqual(changed['b.js']!.filename);
-
-    // Each member's emitted bundle references the other's actual filename.
-    expect(first['a.js']!.source).toContain(first['b.js']!.filename);
-    expect(first['b.js']!.source).toContain(first['a.js']!.filename);
   });
 
   describe('client references', () => {
