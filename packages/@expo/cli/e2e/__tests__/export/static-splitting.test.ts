@@ -15,7 +15,7 @@ import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
-describe('exports static with bitset bundle splitting', () => {
+describe('exports static with granular bundle splitting', () => {
   const projectRoot = getRouterE2ERoot();
   const outputName = 'dist-static-splitting';
   const outputDir = path.join(projectRoot, outputName);
@@ -29,7 +29,7 @@ describe('exports static with bitset bundle splitting', () => {
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
-          E2E_ROUTER_SPLIT_STRATEGY: 'bitset',
+          E2E_ROUTER_SPLIT_STRATEGY: 'granular',
           E2E_ROUTER_ASYNC: 'true',
         },
       }

@@ -28,7 +28,7 @@ async function helpWrap(src: string, options: Partial<Parameters<typeof wrapModu
 }
 
 describe(wrapModule, () => {
-  describe('BitSet callback emission', () => {
+  describe('Granular callback emission', () => {
     it('does not invoke the callback for unresolved dependencies', async () => {
       const [entry, , graph, options] = await microBundle({
         fs: { 'index.js': `import('./missing');`, 'missing.js': '' },

@@ -11,9 +11,9 @@ describe(serialAssetsToStaticContentAssets, () => {
   const js = (filename: string, metadata: any): SerialAsset =>
     ({ filename, originFilename: filename, type: 'js', metadata, source: '' }) as any;
 
-  const bitSetJs = (filename: string, metadata: SerialAsset['metadata'] = {}) =>
+  const granularJs = (filename: string, metadata: SerialAsset['metadata'] = {}) =>
     js(filename, {
-      chunkingStrategy: 'bitset',
+      chunkingStrategy: 'granular',
       entryPaths: [],
       modulePaths: [],
       requires: [],
@@ -21,9 +21,9 @@ describe(serialAssetsToStaticContentAssets, () => {
       ...metadata,
     });
 
-  function bitSetAssets() {
+  function granularAssets() {
     return [
-      bitSetJs('dist/entry.js', {
+      granularJs('dist/entry.js', {
         isAsync: false,
         entryPaths: ['/entry.js', '/app/inlined.tsx'],
         entryChunks: {
@@ -34,26 +34,26 @@ describe(serialAssetsToStaticContentAssets, () => {
         },
         requires: ['dist/runtime.js'],
       }),
-      bitSetJs('dist/page.js', {
+      granularJs('dist/page.js', {
         entryPaths: ['/app/nested/page.tsx'],
         requires: ['dist/runtime.js', 'dist/shared.js'],
       }),
-      bitSetJs('dist/unrelated.js'),
-      bitSetJs('dist/layout.js', {
+      granularJs('dist/unrelated.js'),
+      granularJs('dist/layout.js', {
         entryPaths: ['/app/_layout.tsx'],
         requires: ['dist/runtime.js', 'dist/shared.js'],
       }),
-      bitSetJs('dist/worker.js'),
-      bitSetJs('dist/shared.js', {
+      granularJs('dist/worker.js'),
+      granularJs('dist/shared.js', {
         modulePaths: ['/app/_layout.tsx'],
         requires: ['dist/runtime.js'],
       }),
-      bitSetJs('dist/runtime.js', { isAsync: false }),
+      granularJs('dist/runtime.js', { isAsync: false }),
     ];
   }
 
   it('expands semantic roots before the initial bundle without re-sorting prerequisites', () => {
-    const result = serialAssetsToStaticContentAssets(bitSetAssets(), {
+    const result = serialAssetsToStaticContentAssets(granularAssets(), {
       isExporting: true,
       baseUrl: '/sub/',
       route: {
@@ -74,7 +74,7 @@ describe(serialAssetsToStaticContentAssets, () => {
   });
 
   it('does not preload unrelated shared chunks, workers, or aliases owned by the initial bundle', () => {
-    const assets = bitSetAssets();
+    const assets = granularAssets();
     for (const route of [undefined, { entryPoints: ['/app/inlined.tsx'] } as any]) {
       expect(
         serialAssetsToStaticContentAssets(assets, { isExporting: true, baseUrl: '', route }).js
@@ -84,17 +84,17 @@ describe(serialAssetsToStaticContentAssets, () => {
 
   it('loads an entry from its owner without an empty facade', () => {
     const assets = [
-      bitSetJs('entry.js', {
+      granularJs('entry.js', {
         isAsync: false,
         requires: ['runtime.js'],
         entryChunks: { '/app/a.tsx': ['a.js'], '/app/b.tsx': ['a.js'] },
       }),
-      bitSetJs('a.js', {
+      granularJs('a.js', {
         entryPaths: ['/app/a.tsx'],
         modulePaths: ['/app/a.tsx', '/app/b.tsx'],
         requires: ['runtime.js'],
       }),
-      bitSetJs('runtime.js', { isAsync: false }),
+      granularJs('runtime.js', { isAsync: false }),
     ];
     expect(
       serialAssetsToStaticContentAssets(assets, {
@@ -107,7 +107,7 @@ describe(serialAssetsToStaticContentAssets, () => {
 
   it.each(['a', 'b'])('loads only the required owner for /%s/index without a facade', (route) => {
     const assets = [
-      bitSetJs('entry.js', {
+      granularJs('entry.js', {
         isAsync: false,
         requires: ['runtime.js'],
         entryChunks: {
@@ -115,9 +115,9 @@ describe(serialAssetsToStaticContentAssets, () => {
           '/app/b/index.tsx': ['shared-b.js'],
         },
       }),
-      bitSetJs('shared-a.js', { requires: ['runtime.js'] }),
-      bitSetJs('shared-b.js', { requires: ['runtime.js'] }),
-      bitSetJs('runtime.js', { isAsync: false }),
+      granularJs('shared-a.js', { requires: ['runtime.js'] }),
+      granularJs('shared-b.js', { requires: ['runtime.js'] }),
+      granularJs('runtime.js', { isAsync: false }),
     ];
     expect(
       serialAssetsToStaticContentAssets(assets, {
@@ -129,20 +129,20 @@ describe(serialAssetsToStaticContentAssets, () => {
   });
 
   it('rejects missing or duplicated entry-to-chunks mappings', () => {
-    const missing = bitSetJs('entry.js', { isAsync: false });
+    const missing = granularJs('entry.js', { isAsync: false });
     expect(() =>
       serialAssetsToStaticContentAssets([missing], { isExporting: true, baseUrl: '' })
     ).toThrow(/entry-to-chunks mapping/);
     expect(() =>
       serialAssetsToStaticContentAssets(
-        [bitSetJs('a.js', { entryChunks: {} }), bitSetJs('b.js', { entryChunks: {} })],
+        [granularJs('a.js', { entryChunks: {} }), granularJs('b.js', { entryChunks: {} })],
         { isExporting: true, baseUrl: '' }
       )
     ).toThrow(/entry-to-chunks mapping/);
   });
 
   it('rejects a missing file referenced by an entry', () => {
-    const entry = bitSetJs('entry.js', {
+    const entry = granularJs('entry.js', {
       isAsync: false,
       entryChunks: { '/app/page.tsx': ['missing.js'] },
     });
@@ -156,12 +156,12 @@ describe(serialAssetsToStaticContentAssets, () => {
   });
 
   it('rejects incomplete or mixed provenance instead of using legacy matching', () => {
-    const invalid = bitSetJs('bad.js', { entryPaths: undefined });
+    const invalid = granularJs('bad.js', { entryPaths: undefined });
     expect(() =>
       serialAssetsToStaticContentAssets([invalid], { isExporting: true, baseUrl: '' })
     ).toThrow(/entryPaths/);
     expect(() =>
-      serialAssetsToStaticContentAssets([bitSetJs('new.js'), js('legacy.js', {})], {
+      serialAssetsToStaticContentAssets([granularJs('new.js'), js('legacy.js', {})], {
         isExporting: true,
         baseUrl: '',
       })

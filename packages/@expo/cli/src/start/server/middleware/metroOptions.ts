@@ -34,7 +34,7 @@ export type ExpoMetroOptions = {
   /** Enable async routes (route-based bundle splitting) in Expo Router. */
   asyncRoutes?: boolean;
   /** The chunking strategy to use when `splitChunks` is enabled. */
-  chunkingStrategy?: 'bitset' | 'legacy';
+  chunkingStrategy?: 'granular' | 'legacy';
   /** Module ID relative to the projectRoot for the Expo Router app directory. */
   routerRoot?: string;
   /** Enable React compiler support in Babel. */
@@ -71,7 +71,7 @@ export type SerializerOptions = {
   includeSourceMaps?: boolean;
   output?: 'static';
   splitChunks?: boolean;
-  chunkingStrategy?: 'bitset' | 'legacy';
+  chunkingStrategy?: 'granular' | 'legacy';
   usedExports?: boolean;
   exporting?: boolean;
 };
@@ -157,11 +157,11 @@ export function getMetroDirectBundleOptionsForExpoConfig(
   });
 }
 
-export function getChunkingStrategyFromExpoConfig(exp: ExpoConfig): 'bitset' | 'legacy' {
+export function getChunkingStrategyFromExpoConfig(exp: ExpoConfig): 'granular' | 'legacy' {
   return exp.experiments?.chunking?.mode === 'granular' &&
     !exp.experiments?.reactServerComponentRoutes &&
     !exp.experiments?.reactServerFunctions
-    ? 'bitset'
+    ? 'granular'
     : 'legacy';
 }
 

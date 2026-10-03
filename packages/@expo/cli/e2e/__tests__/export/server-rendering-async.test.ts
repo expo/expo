@@ -17,7 +17,7 @@ describe('server rendering with async routes', () => {
         env: {
           EXPO_USE_STATIC: 'server',
           E2E_ROUTER_ASYNC: 'true',
-          E2E_ROUTER_SPLIT_STRATEGY: 'bitset',
+          E2E_ROUTER_SPLIT_STRATEGY: 'granular',
         },
       },
       serve: {

@@ -12,7 +12,7 @@ import getMetroAssets from '../transform-worker/getAssets';
 import type { ExpoCustomTransformOptions } from '../transform-worker/types';
 import { getBaseUrlOption, getPlatformOption } from './chunking/Chunk';
 import type { SerializeChunkOptions } from './chunking/chunkingStrategy';
-import { createBitSetChunkingStrategy } from './chunking/createBitSetChunkingStrategy';
+import { createGranularChunkingStrategy } from './chunking/createGranularChunkingStrategy';
 import { createLegacyChunkingStrategy } from './chunking/createLegacyChunkingStrategy';
 import { getCssSerialAssets } from './getCssDeps';
 import type { SerialAsset } from './serializerAssets';
@@ -47,8 +47,8 @@ export async function graphToSerialAssetsAsync(
     options,
   };
   const strategy =
-    serializeChunkOptions.chunkingStrategy === 'bitset'
-      ? createBitSetChunkingStrategy(context)
+    serializeChunkOptions.chunkingStrategy === 'granular'
+      ? createGranularChunkingStrategy(context)
       : createLegacyChunkingStrategy(context);
   const jsAssets = await strategy.serializeAsync();
 

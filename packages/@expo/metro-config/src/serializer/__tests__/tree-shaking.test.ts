@@ -36,10 +36,10 @@ it('plans opted-in async chunks after unused exports and dependencies are remove
       'values.js': `export const used = 'kept'; export { discarded } from './unused';`,
       'unused.js': `export const discarded = 'removed';`,
     },
-    { chunkingStrategy: 'bitset' }
+    { chunkingStrategy: 'granular' }
   );
   expect(graph.dependencies.has('/app/unused.js')).toBe(false);
-  expect(artifacts[0].metadata.chunkingStrategy).toBe('bitset');
+  expect(artifacts[0].metadata.chunkingStrategy).toBe('granular');
   expect(artifacts.some((asset: any) => asset.metadata.entryPaths?.includes('/app/route.js'))).toBe(
     true
   );

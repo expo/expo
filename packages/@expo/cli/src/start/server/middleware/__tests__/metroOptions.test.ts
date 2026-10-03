@@ -13,7 +13,7 @@ describe('chunking options', () => {
     { experiments: undefined, expectedStrategy: 'legacy' },
     { experiments: {}, expectedStrategy: 'legacy' },
     { experiments: { chunking: { mode: 'legacy' } }, expectedStrategy: 'legacy' },
-    { experiments: { chunking: { mode: 'granular' } }, expectedStrategy: 'bitset' },
+    { experiments: { chunking: { mode: 'granular' } }, expectedStrategy: 'granular' },
     {
       experiments: { chunking: { mode: 'granular' }, reactServerComponentRoutes: true },
       expectedStrategy: 'legacy',
@@ -61,9 +61,7 @@ describe('chunking options', () => {
         experiments: { chunking: { mode } },
         extra: { router: { asyncRoutes: false } },
       };
-      expect(getChunkingStrategyFromExpoConfig(config)).toBe(
-        mode === 'granular' ? 'bitset' : 'legacy'
-      );
+      expect(getChunkingStrategyFromExpoConfig(config)).toBe(mode);
       expect(getAsyncRoutesFromExpoConfig(config, 'production', 'web')).toBe(false);
     }
   );

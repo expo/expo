@@ -1,6 +1,6 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
 
-import { createBitSetChunkingStrategy } from '../chunking/createBitSetChunkingStrategy';
+import { createGranularChunkingStrategy } from '../chunking/createGranularChunkingStrategy';
 import * as workerScan from '../chunking/findUnsupportedWorkerAsyncDependency';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
 import {
@@ -16,7 +16,7 @@ import {
   withSerializerPlugins,
 } from '../withExpoSerializers';
 
-describe('BitSet chunk emission', () => {
+describe('Granular chunk emission', () => {
   const publicGraph = {
     'index.js': `import('./a'); import('./b');`,
     'a.js': `import './shared';`,
@@ -26,9 +26,9 @@ describe('BitSet chunk emission', () => {
 
   it('activates the complete opt-in path through the public serializer', async () => {
     const artifacts: SerialAsset[] = await serializeSplitAsync(publicGraph, {
-      chunkingStrategy: 'bitset',
+      chunkingStrategy: 'granular',
     });
-    expect(artifacts[0]!.metadata.chunkingStrategy).toBe('bitset');
+    expect(artifacts[0]!.metadata.chunkingStrategy).toBe('granular');
     expect(artifacts.some((asset) => asset.filename.includes('__shared-'))).toBe(true);
     expect(artifacts.some((asset) => asset.filename.includes('__common'))).toBe(false);
     const paths = Object.values(artifacts[0]!.metadata.paths!).flatMap(Object.values);
@@ -48,7 +48,7 @@ describe('BitSet chunk emission', () => {
     { isReactServer: true },
   ])('retains legacy output for %j', async (options) => {
     const artifacts: SerialAsset[] = await serializeSplitAsync(publicGraph, {
-      chunkingStrategy: 'bitset',
+      chunkingStrategy: 'granular',
       ...options,
     });
     expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === undefined)).toBe(true);
@@ -70,7 +70,7 @@ describe('BitSet chunk emission', () => {
         dev: false,
         output: 'static',
         splitChunks: true,
-        chunkingStrategy: 'bitset',
+        chunkingStrategy: 'granular',
       },
     });
     const domGraph = {
@@ -88,18 +88,18 @@ describe('BitSet chunk emission', () => {
     ).toBe(true);
   });
 
-  async function serializeBitSetAsync(fs: Record<string, string>, sourceMaps = false) {
+  async function serializeGranularAsync(fs: Record<string, string>, sourceMaps = false) {
     const [entry, premodules, graph, options] = await microBundle({
       fs,
       preModulesFs: { runtime: '/* runtime */' },
       options: { platform: 'web', dev: false, output: 'static', splitChunks: true, sourceMaps },
     });
-    return createBitSetChunkingStrategy({
+    return createGranularChunkingStrategy({
       serializerConfig: {},
       serializeChunkOptions: {
         includeSourceMaps: sourceMaps,
         splitChunks: true,
-        chunkingStrategy: 'bitset',
+        chunkingStrategy: 'granular',
       },
       entryFile: entry,
       preModules: premodules,
@@ -109,7 +109,7 @@ describe('BitSet chunk emission', () => {
   }
 
   it('emits separate AB and BC shared owners and complete async arrays', async () => {
-    const artifacts = await serializeBitSetAsync({
+    const artifacts = await serializeGranularAsync({
       'index.js': `import('./a'); import('./b'); import('./c');`,
       'a.js': `import './d';`,
       'b.js': `import './d'; import './e';`,
@@ -131,13 +131,13 @@ describe('BitSet chunk emission', () => {
     expect(paths).toContainEqual(
       expect.arrayContaining(['/' + b.filename, '/' + d.filename, '/' + e.filename])
     );
-    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === 'bitset')).toBe(true);
+    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === 'granular')).toBe(true);
     const modulePaths = artifacts.flatMap((asset) => asset.metadata.modulePaths ?? []);
     expect(new Set(modulePaths).size).toBe(modulePaths.length);
   });
 
   it('covers canonical requirements from an importer shared by multiple entries', async () => {
-    const artifacts = await serializeBitSetAsync({
+    const artifacts = await serializeGranularAsync({
       'index.js': `import('./a'); import('./b');`,
       'a.js': `import './importer'; import './d';`,
       'b.js': `import './importer';`,
@@ -168,7 +168,7 @@ describe('BitSet chunk emission', () => {
   });
 
   it('omits an empty facade while preserving its entry requirements', async () => {
-    const artifacts = await serializeBitSetAsync({
+    const artifacts = await serializeGranularAsync({
       'index.js': `import('./a');`,
       'a.js': `import './b'; export const load = () => import('./b');`,
       'b.js': `console.log('b');`,
@@ -184,7 +184,7 @@ describe('BitSet chunk emission', () => {
   it.each([false, true])(
     'omits empty same-basename facades (source maps: %s)',
     async (sourceMaps) => {
-      const artifacts = await serializeBitSetAsync(
+      const artifacts = await serializeGranularAsync(
         {
           'index.js': `import('./a/index'); import('./b/index'); import('./x'); import('./y');`,
           'a/index.js': `console.log('a');`,
@@ -223,7 +223,7 @@ describe('BitSet chunk emission', () => {
   );
 
   it('skips fully initial-owned facades and records their aliases', async () => {
-    const artifacts = await serializeBitSetAsync({
+    const artifacts = await serializeGranularAsync({
       'index.js': `import './a'; import('./a');`,
       'a.js': `console.log('a');`,
     });
@@ -237,7 +237,7 @@ describe('BitSet chunk emission', () => {
   });
 
   it('keeps worker closures isolated and their URLs scalar', async () => {
-    const artifacts = await serializeBitSetAsync({
+    const artifacts = await serializeGranularAsync({
       'index.js': `import './shared'; import('./a'); require.unstable_resolveWorker('./worker');`,
       'a.js': `console.log('a');`,
       'worker.js': `import './shared'; require.unstable_resolveWorker('./nested');`,
@@ -262,7 +262,7 @@ describe('BitSet chunk emission', () => {
   it.each([true, false])(
     'preserves weak worker IDs without collecting their targets (page imports target: %s)',
     async (pageImportsTarget) => {
-      const artifacts = await serializeBitSetAsync({
+      const artifacts = await serializeGranularAsync({
         'index.js': `${pageImportsTarget ? "import './target';" : ''} require.unstable_resolveWorker('./worker');`,
         'worker.js': `self.targetId = require.resolveWeak('./target');`,
         'target.js': `export const value = 42;`,
@@ -279,7 +279,7 @@ describe('BitSet chunk emission', () => {
   );
 
   it('emits acyclic requirements for circular dynamic imports', async () => {
-    const artifacts = await serializeBitSetAsync({
+    const artifacts = await serializeGranularAsync({
       'index.js': `import('./a');`,
       'a.js': `import './shared'; export const load = () => import('./b');`,
       'b.js': `import './shared'; export const load = () => import('./a');`,
@@ -306,8 +306,8 @@ describe('BitSet chunk emission', () => {
       'b.js': `import './shared';`,
       'shared.js': `console.log('before');`,
     };
-    const artifacts = await serializeBitSetAsync(fs);
-    const artifactsChanged = await serializeBitSetAsync({
+    const artifacts = await serializeGranularAsync(fs);
+    const artifactsChanged = await serializeGranularAsync({
       ...fs,
       'shared.js': `console.log('after');`,
     });
@@ -320,7 +320,7 @@ describe('BitSet chunk emission', () => {
     expect(artifactsChanged[0]!.filename).not.toBe(artifacts[0]!.filename);
     expect(artifactsChanged[0]!.source).toContain(updatedSharedChunk.filename);
     expect(artifactsChanged[0]!.source).not.toContain(originalSharedChunk.filename);
-    expect(await serializeBitSetAsync(fs)).toEqual(artifacts);
+    expect(await serializeGranularAsync(fs)).toEqual(artifacts);
   });
 
   it('retains per-chunk plugin preludes, maps and trailing annotations around completion', async () => {
@@ -343,12 +343,12 @@ describe('BitSet chunk emission', () => {
       ...premodules,
       createJSVirtualModule('plugin', 'globalThis.pluginRan = true;'),
     ]);
-    const artifacts = await createBitSetChunkingStrategy({
+    const artifacts = await createGranularChunkingStrategy({
       serializerConfig: {},
       serializeChunkOptions: {
         includeSourceMaps: true,
         splitChunks: true,
-        chunkingStrategy: 'bitset',
+        chunkingStrategy: 'granular',
         unstable_beforeAssetSerializationPlugins: [unstablePlugin],
       },
       entryFile: entry,
@@ -389,7 +389,7 @@ describe('worker compatibility', () => {
         dev: false,
         output: 'static',
         splitChunks: true,
-        chunkingStrategy: 'bitset',
+        chunkingStrategy: 'granular',
       },
     });
   });
@@ -419,7 +419,7 @@ describe('worker compatibility', () => {
         dev: false,
         output: 'static',
         splitChunks: true,
-        chunkingStrategy: 'bitset',
+        chunkingStrategy: 'granular',
       },
     });
   }
@@ -478,7 +478,7 @@ describe('worker compatibility', () => {
 
     expect(chunkSerializerSpy).toHaveBeenCalledWith(
       { projectRoot },
-      expect.objectContaining({ chunkingStrategy: 'bitset' }),
+      expect.objectContaining({ chunkingStrategy: 'granular' }),
       bundle[0],
       bundle[1],
       graph,
@@ -2014,7 +2014,7 @@ describe('serializes', () => {
     expect(artifacts[1].filename).not.toEqual(artifacts2[1].filename);
   });
 
-  describe.each(['legacy', 'bitset'] as const)('%s chunk filenames', (chunkingStrategy) => {
+  describe.each(['legacy', 'granular'] as const)('%s chunk filenames', (chunkingStrategy) => {
     it(`invalidates parent chunk when a transitive async chunk changes`, async () => {
       const artifacts = await serializeSplitAsync(
         {
