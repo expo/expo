@@ -66,6 +66,7 @@
   "scripts": {
     "build": "expo-build src",
     "precompile-ios": "et prebuild-package-for-publish",
+    "precompile-android": "et prebuild-android-package-for-publish",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
