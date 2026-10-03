@@ -29,6 +29,9 @@ module.exports = {
   jsEngine: 'hermes',
   newArchEnabled: true,
   experiments: {
+    chunking: {
+      mode: process.env.E2E_ROUTER_SPLIT_STRATEGY === 'bitset' ? 'granular' : 'legacy',
+    },
     noxcturnalTransformWorker: true,
     autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
@@ -63,7 +66,6 @@ module.exports = {
     [
       'expo-router',
       {
-        unstable_chunking: process.env.E2E_ROUTER_SPLIT_STRATEGY === 'bitset',
         asyncRoutes:
           process.env.E2E_ROUTER_ASYNC === 'true'
             ? true
