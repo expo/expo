@@ -1,12 +1,14 @@
 // Copyright © 2024 650 Industries.
 
-/// <reference path="ts-declarations/NativeComponentRegistry.d.ts" />
-
 'use client';
 
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
-import { type ReactNativeElement, findNodeHandle, type HostComponent } from 'react-native';
-import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
+import {
+  type ReactNativeElement,
+  findNodeHandle,
+  type HostComponent,
+  NativeComponentRegistry,
+} from 'react-native';
 
 import { SharedObject } from './SharedObject';
 import { requireNativeModule } from './requireNativeModule';
@@ -44,7 +46,7 @@ declare namespace globalThis {
 /**
  * Requires a React Native component using the static view config from an Expo module.
  */
-function requireNativeComponent<Props>(
+function requireNativeComponent<Props extends object>(
   moduleName: string,
   viewName?: string
 ): HostComponent<Props> {
@@ -55,7 +57,7 @@ function requireNativeComponent<Props>(
     ? `ViewManagerAdapter_${moduleName}_${viewName}${viewNameSuffix}`
     : `ViewManagerAdapter_${moduleName}${viewNameSuffix}`;
 
-  return componentRegistryGet<Props>(nativeViewName, () => {
+  return NativeComponentRegistry.get<Props>(nativeViewName, () => {
     const expoViewConfig = globalThis.expo?.getViewConfig(moduleName, viewName);
 
     if (!expoViewConfig) {
@@ -113,7 +115,7 @@ function addAttributeProcessing(validAttributes: Record<string, any>): Record<st
  * "Tried to register two views with the same name" errors on fast refresh, but
  * also when there are multiple versions of the same package with native component.
  */
-function requireCachedNativeComponent<Props>(
+function requireCachedNativeComponent<Props extends object>(
   moduleName: string,
   viewName?: string
 ): HostComponent<Props> {
@@ -211,7 +213,7 @@ function mapAriaProps(props: Record<string, any>): Record<string, any> {
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
-export function requireNativeViewManager<P>(
+export function requireNativeViewManager<P extends object>(
   moduleName: string,
   viewName?: string
 ): ComponentType<P> {
