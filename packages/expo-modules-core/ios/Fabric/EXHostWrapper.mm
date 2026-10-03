@@ -37,9 +37,9 @@
   return [_host.bundleManager bundleURL];
 }
 
-- (void)addSurfacePresenterObserver:(nonnull id)observer
+- (nullable id<RCTSurfacePresenterStub>)surfacePresenter
 {
-  [_host.surfacePresenter addObserver:observer];
+  return _host.surfacePresenter;
 }
 
 @end
