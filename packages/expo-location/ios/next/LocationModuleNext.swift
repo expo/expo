@@ -3,6 +3,7 @@ import ExpoModulesCore
 
 public final class LocationModuleNext: Module {
   private lazy var permissions = LocationPermissionsDelegate(appContext: appContext)
+  private lazy var accessGuard = LocationAccessGuard(appContext: appContext)
 
   public func definition() -> ModuleDefinition {
     Name("LocationModuleNext")
@@ -25,6 +26,16 @@ public final class LocationModuleNext: Module {
 
     AsyncFunction("requestBackgroundPermissions") { (options: PermissionsRequestOptions?, promise: Promise) in
       try permissions.requestBackgroundPermissions(options: options ?? PermissionsRequestOptions(), promise)
+    }
+
+    AsyncFunction("getPosition") { (options: GetPositionOptions?) -> Position? in
+      guard CLLocationManager.locationServicesEnabled() else {
+        throw LocationServicesDisabledGlobally()
+      }
+      try accessGuard.checkPermissions(.foreground)
+
+      let location = try await PositionRequester().get(options: options ?? GetPositionOptions())
+      return location?.toPosition()
     }
   }
 }
