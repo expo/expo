@@ -52,14 +52,19 @@ class LocalizationModule : Module() {
   }
 
   private fun setRTLFromStringResources(context: Context) {
-    val supportsRTL =
-      context.getString(R.string.ExpoLocalization_supportsRTL).toBooleanStrictOrNull() ?: true
-    val forcesRTL =
-      context.getString(R.string.ExpoLocalization_forcesRTL).toBooleanStrictOrNull() ?: false
+    // Only a value the app config sets is written ("unset" parses to null): an unset value leaves the
+    // preference to the app's own I18nManager.allowRTL / forceRTL calls, which would otherwise be reset to
+    // the defaults on every launch.
+    val supportsRTL = context.getString(R.string.ExpoLocalization_supportsRTL).toBooleanStrictOrNull()
+    val forcesRTL = context.getString(R.string.ExpoLocalization_forcesRTL).toBooleanStrictOrNull()
 
     // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
-    I18nUtil.instance.allowRTL(context, supportsRTL)
-    I18nUtil.instance.forceRTL(context, forcesRTL)
+    if (supportsRTL != null) {
+      I18nUtil.instance.allowRTL(context, supportsRTL)
+    }
+    if (forcesRTL != null) {
+      I18nUtil.instance.forceRTL(context, forcesRTL)
+    }
   }
 
   private fun getMeasurementSystem(locale: Locale): String? {
