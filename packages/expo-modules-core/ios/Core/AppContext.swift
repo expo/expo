@@ -133,7 +133,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   /// The application identifier that distinguishes app contexts that are alive at the same time,
   /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
-  /// app context, so its view names have no suffix.
+  /// app context.
   @objc
   public var appIdentifier: String? {
     return AppContext.appIdentifier(forIndex: appIndex)
@@ -432,9 +432,55 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   @MainActor
   private func registerNativeViews() {
     for holder in moduleRegistry {
-      for (key, viewDefinition) in holder.definition.views {
-        let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
-        ExpoFabricView.registerComponent(viewModule, appContext: self)
+      for viewName in holder.definition.views.keys {
+        ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
+      }
+    }
+    AppContext.viewsRegisteringAppContext = self
+  }
+
+  // MARK: - Mounting views
+
+  /**
+   App contexts whose hosts are mounting views right now, the innermost one last.
+   */
+  @MainActor
+  private static var mountingAppContexts = [AppContext]()
+
+  /**
+   The app context that registered native views most recently. Views are created for this context
+   when no host is mounting, for example when the host isn't wrapped by `ExpoHostWrapper`.
+   */
+  @MainActor
+  internal static weak var viewsRegisteringAppContext: AppContext?
+
+  /**
+   The app context that the views being created belong to. Component view classes are shared by all app contexts,
+   so this is how the views get their app context.
+   */
+  @MainActor
+  internal static var mountingAppContext: AppContext? {
+    return mountingAppContexts.last ?? viewsRegisteringAppContext
+  }
+
+  /**
+   Called by `ExpoHostWrapper` on the main thread right before the host of this app context mounts views.
+   */
+  @objc
+  public func hostWillMountComponents() {
+    MainActor.assumeIsolated {
+      AppContext.mountingAppContexts.append(self)
+    }
+  }
+
+  /**
+   Called by `ExpoHostWrapper` on the main thread right after the host of this app context mounted views.
+   */
+  @objc
+  public func hostDidMountComponents() {
+    MainActor.assumeIsolated {
+      if let index = AppContext.mountingAppContexts.lastIndex(where: { $0 === self }) {
+        AppContext.mountingAppContexts.remove(at: index)
       }
     }
   }
@@ -487,10 +533,6 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
     // runtime, so its teardown owns the app context's `destroy()`.
     installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
-
-    if let appIdentifier {
-      coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier)
-    }
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
@@ -727,6 +769,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
+    wrapper.observeMounting(for: self)
   }
 
   // MARK: - Statics

@@ -95,7 +95,7 @@ internal final class CoreModule: Module {
     Function("getViewConfig") { (moduleName: String, viewName: String?) -> [String: Any]? in
       var validAttributes: [String: Any] = [:]
       var directEventTypes: [String: Any] = [:]
-      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: getHolderName(moduleName))
+      let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
 
       guard let viewDefinition = moduleHolder?.definition.views[viewName ?? DEFAULT_MODULE_VIEW] else {
         return nil
@@ -121,14 +121,6 @@ internal final class CoreModule: Module {
     AsyncFunction("reloadAppAsync") { (reason: String) in
       appContext?.reloadAppAsync(reason)
     }
-  }
-
-  private func getHolderName(_ viewName: String) -> String {
-    if let appIdentifier = appContext?.appIdentifier, viewName.hasSuffix("_\(appIdentifier)") {
-      return String(viewName.dropLast("_\(appIdentifier)".count))
-    }
-
-    return viewName
   }
 }
 
