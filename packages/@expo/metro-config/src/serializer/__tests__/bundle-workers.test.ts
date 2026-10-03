@@ -385,7 +385,7 @@ describe('sealed worker chunks', () => {
     expect(commonChunk?.metadata.modulePaths).toEqual(['/app/shared.js']);
   });
 
-  it.each(['legacy', 'bitset'] as const)(
+  it.each(['legacy', 'granular'] as const)(
     'executes the emitted %s worker with an isolated module registry',
     async (chunkingStrategy) => {
       const [, artifacts] = await serializeShakingAsync(
@@ -412,10 +412,10 @@ describe('sealed worker chunks', () => {
 
       expect(sharedChunk).toBeDefined();
       expect(sharedChunk!.filename).toContain(
-        chunkingStrategy === 'bitset' ? '__shared-' : '__common-'
+        chunkingStrategy === 'granular' ? '__shared-' : '__common-'
       );
       expect(workerChunk.source).not.toContain('__expo_chunk_completion__');
-      if (chunkingStrategy === 'bitset') {
+      if (chunkingStrategy === 'granular') {
         expect(workerChunk.metadata.entryPaths).toEqual([]);
         expect(workerChunk.metadata.requires).toEqual([]);
       }

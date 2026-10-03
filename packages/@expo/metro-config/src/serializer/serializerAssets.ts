@@ -1,4 +1,4 @@
-export type ChunkingStrategy = 'bitset' | 'legacy';
+export type ChunkingStrategy = 'granular' | 'legacy';
 export type AsyncModulePath = string | readonly string[];
 export type AsyncModulePaths = Record<string, AsyncModulePath>;
 

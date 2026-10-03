@@ -34,7 +34,7 @@ import {
 } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
-  getBitSetAssetsForRoute,
+  getGranularAssetsForRoute,
   serialAssetsToStaticContentAssets,
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
@@ -427,18 +427,20 @@ export async function exportFromServerAsync(
         );
 
       const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
-      const isBitSet = jsArtifacts.some((asset) => asset.metadata.chunkingStrategy === 'bitset');
-      const toJsAssetUrl = isBitSet
+      const isGranular = jsArtifacts.some(
+        (asset) => asset.metadata.chunkingStrategy === 'granular'
+      );
+      const toJsAssetUrl = isGranular
         ? (filename: string) => getChunkUrl(baseUrl, filename)
         : toAssetUrl;
-      const orderedJsAssets = isBitSet
-        ? getBitSetAssetsForRoute(jsArtifacts)
+      const orderedJsAssets = isGranular
+        ? getGranularAssetsForRoute(jsArtifacts)
         : assetsRequiresSort(jsArtifacts);
       const syncJs = orderedJsAssets.filter((asset) => !asset.metadata.isAsync);
       const asyncJs = orderedJsAssets.filter((asset) => asset.metadata.isAsync);
 
       const topLevelJs = new Set(
-        isBitSet ? syncJs.filter((asset) => !asset.metadata.entryPaths?.length) : syncJs
+        isGranular ? syncJs.filter((asset) => !asset.metadata.entryPaths?.length) : syncJs
       );
       const topLevelJsAssets = [...topLevelJs].map((asset) => toJsAssetUrl(asset.filename));
       const fallbackJsAssets = syncJs
@@ -454,10 +456,10 @@ export async function exportFromServerAsync(
           continue;
         }
 
-        if (isBitSet) {
+        if (isGranular) {
           routeAssets.set(
             route.contextKey,
-            getBitSetAssetsForRoute(jsArtifacts, route.entryPoints)
+            getGranularAssetsForRoute(jsArtifacts, route.entryPoints)
               .filter((asset) => !topLevelJs.has(asset))
               .map((asset) => toJsAssetUrl(asset.filename))
           );
@@ -500,12 +502,12 @@ export async function exportFromServerAsync(
             file: '_expo/server/render.js',
           };
 
-          const routes = isBitSet
+          const routes = isGranular
             ? [...manifest.htmlRoutes, ...manifest.notFoundRoutes]
             : manifest.htmlRoutes;
           for (const route of routes) {
             const asyncChunks =
-              routeAssets.get(route.file) ?? (isBitSet ? fallbackJsAssets : undefined);
+              routeAssets.get(route.file) ?? (isGranular ? fallbackJsAssets : undefined);
             if (asyncChunks) {
               route.assets = { css: [], js: asyncChunks };
             }
