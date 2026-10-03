@@ -118,6 +118,94 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isWebPage detects HTML responses`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setResponseCode(200)
+        .setHeader("Content-Type", "text/html; charset=utf-8")
+    )
+    Truth.assertThat(manifestParser.isWebPage()).isTrue()
+    Truth.assertThat(server.takeRequest().method).isEqualTo("HEAD")
+
+    server.enqueue(
+      MockResponse().setResponseCode(200)
+        .setHeader("Content-Type", "application/javascript")
+    )
+    Truth.assertThat(manifestParser.isWebPage()).isFalse()
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    Truth.assertThat(manifestParser.isWebPage()).isFalse()
+
+    server.enqueue(
+      MockResponse().setResponseCode(404)
+        .setHeader("Content-Type", "text/html")
+    )
+    Truth.assertThat(manifestParser.isWebPage()).isFalse()
+  }
+
+  @Test
+  fun `isPackagerRunning checks the status endpoint at the URL origin`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/index.bundle?platform=android&dev=true").toString()),
+      null
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200).setBody("packager-status:running"))
+    Truth.assertThat(manifestParser.isPackagerRunning()).isTrue()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.path).isEqualTo("/status")
+    Truth.assertThat(request.getHeader("Expo-AppMetrics-Skip")).isEqualTo("1")
+  }
+
+  @Test
+  fun `isPackagerRunning returns false when a web page answers instead of a packager`() = runBlocking {
+    // A website page, like an EAS build page, answers HEAD with text/html just like the root of a
+    // React Native dev server does, so only the status endpoint tells the two apart.
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/accounts/example/projects/example/builds/1").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setResponseCode(200)
+        .setHeader("Content-Type", "text/html")
+        .setBody("<!DOCTYPE html><html></html>")
+    )
+    Truth.assertThat(manifestParser.isPackagerRunning()).isFalse()
+
+    server.enqueue(MockResponse().setResponseCode(404))
+    Truth.assertThat(manifestParser.isPackagerRunning()).isFalse()
+  }
+
+  @Test
+  fun `isPackagerRunning returns false when the status endpoint redirects to a web page`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/accounts/example/projects/example/builds/1").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setResponseCode(307)
+        .setHeader("Location", server.url("/status-page").toString())
+    )
+    server.enqueue(
+      MockResponse().setResponseCode(200)
+        .setHeader("Content-Type", "text/html")
+        .setBody("<!DOCTYPE html><html></html>")
+    )
+    Truth.assertThat(manifestParser.isPackagerRunning()).isFalse()
+  }
+
+  @Test
   fun `isManifestUrl includes expo-platform header`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,

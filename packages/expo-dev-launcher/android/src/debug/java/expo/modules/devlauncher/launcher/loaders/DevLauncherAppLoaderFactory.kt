@@ -55,6 +55,17 @@ suspend fun createAppLoader(
   val manifestParser = DevLauncherManifestParser(controller.httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
 
   if (!manifestParser.isManifestUrl()) {
+    // A website page (for example an EAS build page opened from a scanned QR code) would otherwise
+    // be treated as a dev server, and React Native would retry its packager WebSocket against the
+    // website for as long as the app stays open.
+    if (manifestParser.isWebPage() && !manifestParser.isPackagerRunning()) {
+      throw Exception(
+        "Failed to open app. $parsedUrl is not a development server or an update.\n\n" +
+          "The URL returned a web page, and no development server answered at its /status endpoint.\n\n" +
+          "If you scanned a QR code that installs a build, such as the one on an EAS build page, scan it with your device's camera app instead. " +
+          "To load your project, start your development server with `npx expo start` and open the URL that it prints."
+      )
+    }
     return AppLoaderResult(
       appLoader = DevLauncherReactNativeAppLoader(parsedUrl, appHost, context, controller),
       manifest = null,
