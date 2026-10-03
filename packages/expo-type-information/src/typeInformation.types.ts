@@ -109,6 +109,7 @@ export enum BasicType {
   BOOLEAN,
   VOID,
   UNDEFINED,
+  NULL,
   NEVER,
   OBJECT,
   /** Represents a type that couldn't be resolved */
@@ -126,6 +127,7 @@ export enum ConvertibleType {
   CG_VECTOR,
   CG_RECT,
   JS_FUNCTION,
+  SHARED_REF,
 }
 
 /**
