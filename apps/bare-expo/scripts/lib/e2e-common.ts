@@ -188,7 +188,7 @@ const getCustomMaestroFlowsAsync = async (
   e2eDir: string,
   platform?: 'android' | 'ios'
 ): Promise<string[]> => {
-  const ignore = ['maestro-generated.yaml', '_nested-flows/**'];
+  const ignore = ['maestro-generated.yaml', WAIT_FOR_HOME_FLOW, '_nested-flows/**'];
 
   // Exclude platform-specific files for other platforms
   if (platform === 'android') {
@@ -229,17 +229,41 @@ export function annotate(
   console.log(`::${level} ${properties.join(',')}::${message}`);
 }
 
+const WAIT_FOR_HOME_FLOW = '_wait-for-home.yaml';
+
+/**
+ * Writes a flow that only waits for the app's home screen. It runs first in every attempt: the
+ * app is launched immediately before, and a deep link sent while the JS bundle is still starting
+ * is dropped, which leaves the next flow running against the home screen.
+ */
+async function createWaitForHomeFlowAsync(e2eDir: string, appId: string): Promise<string> {
+  await fs.writeFile(
+    path.join(e2eDir, WAIT_FOR_HOME_FLOW),
+    `appId: ${appId}
+---
+- extendedWaitUntil:
+    visible: 'Expo Test Suite'
+    timeout: 60000
+`
+  );
+  return WAIT_FOR_HOME_FLOW;
+}
+
 export const runCustomMaestroFlowsAsync = async (
   e2eDir: string,
   platform: 'android' | 'ios',
+  appId: string,
   runFlowsAsync: RunMaestroFlowsFunction
 ) => {
   const maxAttempts = 3;
 
+  const waitForHomeFlow = await createWaitForHomeFlowAsync(e2eDir, appId);
   let flows = await getCustomMaestroFlowsAsync(e2eDir, platform);
   for (let attempt = 1; flows.length > 0; ++attempt) {
     console.log(`Custom e2e flows attempt ${attempt} of ${maxAttempts}: ${flows.join(', ')}`);
-    const failedFlows = await runFlowsAsync(flows, { attempt });
+    const failedFlows = (await runFlowsAsync([waitForHomeFlow, ...flows], { attempt })).filter(
+      (flow) => flow !== waitForHomeFlow
+    );
     if (failedFlows.length === 0) {
       return;
     }

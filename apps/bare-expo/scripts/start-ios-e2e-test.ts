@@ -8,6 +8,7 @@ import * as path from 'path';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 import {
   annotate,
   createMaestroFlowAsync,
@@ -22,7 +23,6 @@ import {
   startGroup,
   endGroup,
 } from './lib/e2e-common';
-import { getDylibPath } from '../e2e/image-comparison/inspector/ScreenInspectorIOS';
 
 const TARGET_DEVICE = 'iPhone 17 Pro';
 const TARGET_DEVICE_IOS_VERSION = 26;
@@ -59,14 +59,19 @@ const __dirname = dirname(__filename);
       await installAppAsync(deviceId, appBinaryPath);
       await launchAppWithInspectorAsync(deviceId);
 
-      await runCustomMaestroFlowsAsync(e2eDir, 'ios', async (flowRelativePaths, { attempt }) => {
-        if (attempt > 1) {
-          // Relaunch to reset any app state left over by the failed flows (e.g. a video stuck
-          // in fullscreen) and to restore the inspector dylib in case the app crashed.
-          await launchAppWithInspectorAsync(deviceId);
+      await runCustomMaestroFlowsAsync(
+        e2eDir,
+        'ios',
+        APP_ID,
+        async (flowRelativePaths, { attempt }) => {
+          if (attempt > 1) {
+            // Relaunch to reset any app state left over by the failed flows (e.g. a video stuck
+            // in fullscreen) and to restore the inspector dylib in case the app crashed.
+            await launchAppWithInspectorAsync(deviceId);
+          }
+          return await testAsync(flowRelativePaths, deviceId, e2eDir);
         }
-        return await testAsync(flowRelativePaths, deviceId, e2eDir);
-      });
+      );
 
       const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,

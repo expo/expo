@@ -3,6 +3,9 @@ appId: dev.expo.Payments
 jsEngine: graaljs
 ---
 - openLink: bareexpo://components/video/fullscreen
+- extendedWaitUntil:
+    visible: 'Enter Fullscreen'
+    timeout: 30000
 
 - tapOn: 'Enter Fullscreen'
 - runFlow:
@@ -32,16 +35,15 @@ jsEngine: graaljs
           delay: 400
           repeat: 2
 # iOS uses the native AVPlayerViewController chrome, whose controls auto-hide. Tap the
-# center to reveal them, then tap the close button in the top-left exactly once: a
-# second tap would land on the screen's back button and navigate away from the test.
+# center to reveal them, then tap the close button by its label: a fixed point in the
+# top-left sometimes lands on the screen's back button instead and navigates away.
 - runFlow:
     when:
       platform: iOS
     commands:
       - tapOn:
           point: 50%,50%
-      - tapOn:
-          point: 11%,10%
+      - tapOn: 'Close'
 
 - assertVisible: 'Enter Fullscreen'
 - assertVisible: '0 = onFullscreenEnter'

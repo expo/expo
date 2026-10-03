@@ -1,0 +1,14 @@
+# expo-clipboard: set a URL and read it back. The URL demos are iOS-only.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/clipboard"
+wait text "setStringAsync" 20000
+scroll bottom
+press label="setUrlAsync: RUN"
+wait text "setUrlAsync = undefined" 10000
+press label="getUrlAsync: RUN"
+wait text "getUrlAsync = https://expo.dev" 10000
+scroll top
+press label="hasXAsync: hasUrlAsync"
+wait text "hasXAsync = true" 10000
+close
