@@ -158,7 +158,7 @@ export function getMetroDirectBundleOptionsForExpoConfig(
 }
 
 export function getChunkingStrategyFromExpoConfig(exp: ExpoConfig): 'bitset' | 'legacy' {
-  return exp.extra?.router?.unstable_chunking === true &&
+  return exp.experiments?.chunking?.mode === 'granular' &&
     !exp.experiments?.reactServerComponentRoutes &&
     !exp.experiments?.reactServerFunctions
     ? 'bitset'
