@@ -69,6 +69,23 @@ struct NativeStatementJavaScriptTests {
   }
 
   @Test
+  func `run reports a last insert row id above 2^53 as a number`() throws {
+    let result = try runtime.eval(
+      """
+      (function () {
+        db.execSync('INSERT INTO t (id, value) VALUES (9007199254740993, "big")');
+        var statement = prepare('SELECT 1');
+        var result = statement.runSync(db, {}, {}, true);
+        return typeof result.lastInsertRowId + ' ' + result.lastInsertRowId;
+      })()
+      """
+    )
+    // Above 2^53 the number loses precision, as integer columns do, but it must not throw. The rowid is
+    // connection-wide, so a throw here would make every later run on the connection fail too.
+    #expect(try result.asString() == "number 9007199254740992")
+  }
+
+  @Test
   func `step and getAll return rows of column values`() throws {
     let result = try runtime.eval(
       """

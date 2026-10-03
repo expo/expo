@@ -175,7 +175,7 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
         throw SQLiteErrorException(database.lastErrorMessage())
       }
       return SQLiteRunResult(
-        lastInsertRowId: Int(exsqlite3_last_insert_rowid(database.pointer)),
+        lastInsertRowId: Double(exsqlite3_last_insert_rowid(database.pointer)),
         changes: Int(exsqlite3_changes(database.pointer)),
         firstRowValues: ret == SQLITE_ROW ? try columnValues() : []
       )
@@ -247,9 +247,12 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
 /// it returned, if any.
 @Record
 struct SQLiteRunResult {
-  // `Int` rather than SQLite's `Int64`: a 64-bit integer encodes as a JavaScript BigInt, and JavaScript
-  // reads these as numbers.
-  var lastInsertRowId: Int
+  // A `Double` rather than SQLite's `Int64` or an `Int`: JavaScript reads the row id as a number, an
+  // `Int64` would encode as a BigInt, and an `Int` throws above 2^53. The row id is connection-wide, so a
+  // throw would also fail every later run on the connection. Above 2^53 it loses precision, like integer
+  // columns do.
+  var lastInsertRowId: Double
+  // `sqlite3_changes` returns a 32-bit count, which always fits a JavaScript number.
   var changes: Int
   var firstRowValues: [SQLiteColumnValue?]
 }
