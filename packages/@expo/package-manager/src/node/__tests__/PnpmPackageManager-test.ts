@@ -311,7 +311,12 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['add', '@react-navigation/native', '@react-navigation/drawer', '--config.minimumReleaseAge=0'],
+        [
+          'add',
+          '@react-navigation/native',
+          '@react-navigation/drawer',
+          '--config.minimumReleaseAge=0',
+        ],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
