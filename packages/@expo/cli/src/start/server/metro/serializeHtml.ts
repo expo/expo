@@ -161,12 +161,7 @@ export function sortMatchedAssetsByEntryPoints(
 
   return matchedAssets.sort(
     (a, b) =>
-      getEntryPointIndex(
-        a.metadata.chunkingStrategy === 'granular' ? a.metadata.entryPaths : a.metadata.modulePaths
-      ) -
-      getEntryPointIndex(
-        b.metadata.chunkingStrategy === 'granular' ? b.metadata.entryPaths : b.metadata.modulePaths
-      )
+      getEntryPointIndex(a.metadata.modulePaths) - getEntryPointIndex(b.metadata.modulePaths)
   );
 }
 
