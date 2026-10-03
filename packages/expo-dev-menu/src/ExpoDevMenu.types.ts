@@ -1,3 +1,5 @@
+import type { SFSymbol } from 'sf-symbols-typescript';
+
 /**
  * An object representing the custom development client menu entry.
  */
@@ -15,6 +17,29 @@ export type ExpoDevMenuItem = {
    * @default false
    */
   shouldCollapse?: boolean;
+  /**
+   * Optional native icon displayed before the label. Omit a platform to show only the label there.
+   */
+  icon?: {
+    /** SF Symbol name, for example `'person.crop.circle'`. */
+    ios?: SFSymbol;
+    /**
+     * Drawable resource name bundled with the Android app, for example `'dev_menu_account'`.
+     * Adding a drawable requires rebuilding the development client. Missing resources show no icon.
+     */
+    android?: string;
+  };
+  /**
+   * Section heading. Items with the same group appear together, in registration order.
+   * Groups appear in the order they are first encountered. Blank or omitted groups use
+   * the default "Custom Menu Items" section. Item names must remain unique across groups.
+   */
+  group?: string;
+};
+
+/** @hidden */
+export type ExpoDevMenuCallback = Pick<ExpoDevMenuItem, 'name' | 'shouldCollapse' | 'group'> & {
+  icon?: string;
 };
 
 /**
@@ -25,5 +50,5 @@ export type ExpoDevMenu = {
   closeMenu(): void;
   hideMenu(): void;
   setToolsButtonVisible(visible: boolean): void;
-  addDevMenuCallbacks(callbacks: { name: string; shouldCollapse?: boolean }[]): void;
+  addDevMenuCallbacks(callbacks: ExpoDevMenuCallback[]): void;
 };
