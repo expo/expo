@@ -14,6 +14,8 @@
 
 ## 58.0.3 — 2026-09-28
 
+- Added static File.preview() and File.canPreview() methods for a file or array of files, with multi-file previews and initial selection on iOS. ([#50696](https://github.com/expo/expo/pull/50696) by [@eliotgevers](https://github.com/eliotgevers))
+
 ### 🐛 Bug fixes
 
 - [Android] Added missing permission checks to upload tasks and to file watchers. ([#50582](https://github.com/expo/expo/pull/50582) by [@barthap](https://github.com/barthap))

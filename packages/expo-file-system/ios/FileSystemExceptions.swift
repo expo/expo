@@ -204,3 +204,9 @@ internal final class FilePreviewFileNotFoundException: GenericException<URL>, @u
     "File does not exist: \(param.absoluteString)"
   }
 }
+
+internal final class FilePreviewInvalidInputException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    param
+  }
+}
