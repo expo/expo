@@ -314,6 +314,71 @@ The follow command exits when the session ends. Use `--id <session-id>` to inspe
 
 Session activity describes controller operations and interactions. It does not replace application runtime logs.
 
+## Record network traffic
+
+On iOS, a session can record the HTTP and HTTPS requests that apps on the device make. Add `--network-capture` when you start the session:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --build-id <build-id> --network-capture --non-interactive',
+  ]}
+/>
+
+While the session runs, the web preview lists each request in its network panel.
+
+> **warning** Network capture decrypts HTTPS, so recordings can contain credentials and cookies in cleartext. Keep only the fields you need, and treat the preview link and the downloaded file as secret.
+
+### What gets recorded
+
+Capture records every HTTP and HTTPS request that an app sends through `URLSession`, the iOS networking layer that React Native `fetch`, image loading, and most iOS SDKs use. This includes requests from libraries and SDKs inside the app, such as analytics, crash reporting, and update checks from `expo-updates`, not only the requests in your own code.
+
+- An app that the session installs with `--build-id`, `--application-archive-url`, or `--expo-go` is recorded from its first launch. Relaunch an app that was already running to record its traffic.
+- Apple system apps, such as Safari, are not recorded, and neither are requests made with `URLSession.shared`.
+- Network capture is not available on Android or together with `--egress local`.
+
+### Choose what to keep
+
+By default, a recording keeps only the method, URL, status, timing, and size of each request, and redacts query values in URLs. Use `--network-capture-field` to keep more:
+
+| Field           | What the recording also keeps                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `header`        | Request and response headers. Headers that usually hold credentials, such as `Authorization`, are redacted |
+| `query`         | Query values in URLs                                                                                       |
+| `request-body`  | Request bodies                                                                                             |
+| `response-body` | Response bodies                                                                                            |
+
+Repeat the flag, or pass a comma-separated list:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --expo-go --network-capture --network-capture-field header,response-body --non-interactive',
+  ]}
+/>
+
+### Download the recording
+
+The recording exists only while the session runs. It is not saved as a session artifact, so download it before you stop the session. The download is a HAR file, which browser developer tools and HTTP debugging tools can open.
+
+To download it in the browser, open the web preview and select **Download session as HAR** in the network panel.
+
+To download it from the command line, get the session's preview API URL:
+
+<Terminal cmd={['$ eas simulator:get --json']} />
+
+Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<preview-host>/?token=<token>`. Send the token in an `Authorization` header, because the capture routes do not accept it in the URL:
+
+<Terminal
+  cmd={[
+    '$ curl -fsS -H "Authorization: Bearer <token>" -o capture.har "https://<preview-host>/network-capture.har"',
+  ]}
+/>
+
+Each entry in the file has the request and response, the status, and timings, plus the headers and bodies that you chose to keep.
+
+### If the app behaves differently
+
+Capture sends the app's traffic through a proxy on the session's machine and decrypts it. Some apps react to that: apps that pin their server certificates cannot connect, and other requests can fail or time out. If the app behaves in an unexpected way while capture is on, start a new session without `--network-capture` to check whether capture causes it, and leave capture off when you do not need it.
+
 ## Use the iOS browser preview
 
 Supported iOS sessions return a `webPreviewUrl`. Open it in a desktop browser while the session is active.
