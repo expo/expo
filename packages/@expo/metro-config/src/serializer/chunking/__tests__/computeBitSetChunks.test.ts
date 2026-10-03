@@ -84,10 +84,10 @@ describe('BigInt bitsets', () => {
 
 describe('atoms and already-loaded ownership', () => {
   function owners(plan: ReturnType<typeof computeBitSetChunkPlan>, path: string) {
-    const module = [...plan.chunkByModule.keys()].find(
-      (module) => module.path === `/app/${path}.js`
+    const chunk = plan.chunks.find((chunk) =>
+      [...chunk.modules].some((module) => module.path === `/app/${path}.js`)
     )!;
-    return [...bitIndices(plan.chunkByModule.get(module)!.dependentEntries)].map(
+    return [...bitIndices(chunk.dependentEntries)].map(
       (index) => plan.entryPoints[index]!.module.path
     );
   }
@@ -115,9 +115,11 @@ describe('atoms and already-loaded ownership', () => {
         ['/app/left.js', 'initial'],
         ['/app/right.js', 'initial'],
       ]);
-      expect(plan.importerEntriesByDynamicEntry).toEqual([0b110n, 0n, 0n]);
+      expect(plan.dynamicImportsByEntry).toEqual([0n, 0b001n, 0b001n]);
       expect(owners(plan, 'shared')).toEqual(['/app/dynamic.js', '/app/left.js']);
-      expect(plan.chunkByModule.has(graph.dependencies.get('/app/index.js')!)).toBe(false);
+      expect(
+        plan.chunks.some((chunk) => chunk.modules.has(graph.dependencies.get('/app/index.js')!))
+      ).toBe(false);
     }
   );
 
@@ -232,7 +234,7 @@ describe('atoms and already-loaded ownership', () => {
       'shared.js': '',
     });
     const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
-    expect(plan.importerEntriesByDynamicEntry).toEqual([8n, 8n, 3n, 0n]);
+    expect(plan.dynamicImportsByEntry).toEqual([4n, 4n, 0n, 3n]);
     expect(owners(plan, 'shared')).toEqual(['/app/a.js', '/app/c.js']);
   });
 
@@ -272,7 +274,9 @@ describe('atoms and already-loaded ownership', () => {
     );
     const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
     expect(plan.entryPoints.map((e) => e.module.path)).toEqual(['/app/index.js']);
-    expect([...plan.chunkByModule.keys()].map((m) => m.path)).toEqual(['/app/index.js']);
+    expect(plan.chunks.flatMap((chunk) => [...chunk.modules].map((m) => m.path))).toEqual([
+      '/app/index.js',
+    ]);
   });
 
   it('keeps initial-owned dynamic aliases in the initial physical chunk', async () => {
@@ -409,7 +413,6 @@ describe('raw entrypoint reachability', () => {
         ['/app/a.js', 'dynamic'],
         ['/app/index.js', 'initial'],
       ]);
-      expect(analysis.importerEntriesByDynamicEntry).toEqual([0b10n, 0n]);
       expect(analysis.dynamicImportsByEntry).toEqual([0n, 0b01n]);
     }
   );
@@ -424,7 +427,6 @@ describe('raw entrypoint reachability', () => {
       ['/app/a.js', 'dynamic'],
       ['/app/index.js', 'initial'],
     ]);
-    expect(analysis.importerEntriesByDynamicEntry).toEqual([0b10n, 0n]);
     expect(analysis.dynamicImportsByEntry).toEqual([0n, 0b01n]);
   });
 
@@ -445,7 +447,6 @@ describe('raw entrypoint reachability', () => {
       '/app/c.js',
       '/app/index.js',
     ]);
-    expect(analysis.importerEntriesByDynamicEntry).toEqual([0b1000n, 0b1000n, 0b0011n, 0n]);
     expect(analysis.dynamicImportsByEntry).toEqual([0b0100n, 0b0100n, 0n, 0b0011n]);
   });
 
@@ -525,7 +526,8 @@ describe('raw entrypoint reachability', () => {
       0x3fffffffffffffffen
     );
     expect(
-      analysis.chunkByModule.get(graph.dependencies.get('/app/shared.js')!)!.dependentEntries
+      analysis.chunks.find((chunk) => chunk.modules.has(graph.dependencies.get('/app/shared.js')!))!
+        .dependentEntries
     ).toBe(0x3fffffffffffffffen);
   });
 });
