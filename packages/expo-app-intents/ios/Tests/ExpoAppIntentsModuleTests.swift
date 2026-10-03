@@ -1,5 +1,4 @@
 import AppIntents
-import ExpoModulesTestCore
 import Foundation
 import Testing
 
@@ -8,22 +7,15 @@ import Testing
 
 /// Covers the module's JavaScript-facing surface. These go through the runtime rather than calling the
 /// actors directly, because what matters here is whether the JavaScript promise resolves or rejects.
-///
-/// The module's async functions settle their promises from other threads, so the runtime needs a
-/// JavaScript thread of its own for those settles to land on.
 @Suite("ExpoAppIntentsModule", .serialized)
 @JavaScriptActor
 struct ExpoAppIntentsModuleTests {
-  let javaScriptThread = JavaScriptTestThread()
   let appContext: AppContext
-  var runtime: ExpoRuntime {
-    get throws {
-      return try appContext.runtime
-    }
-  }
+  let runtime: ExpoRuntime
 
-  init() async {
-    appContext = await javaScriptThread.makeAppContext()
+  init() throws {
+    appContext = TestAppContext()
+    runtime = try appContext.runtime
     appContext.moduleRegistry.register(
       holder: ModuleHolder(
         appContext: appContext,
