@@ -61,7 +61,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
       '    // Your code here\n' +
       '  }, [depA, depB])\n' +
       ');\n\n' +
-      'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop';
+      'See usage guide: https://docs.expo.dev/router/reference/focus-handling/#pass-dependencies-to-usefocuseffect';
 
     console.error(message);
   }
@@ -103,7 +103,7 @@ export function useFocusEffect(effect: EffectCallback, do_not_pass_a_second_prop
             '    fetchData();\n' +
             '  }, [someId])\n' +
             ');\n\n' +
-            'See usage guide: https://docs.expo.dev/versions/latest/sdk/router/#usefocuseffecteffect-do_not_pass_a_second_prop';
+            'See usage guide: https://docs.expo.dev/router/reference/focus-handling/';
         } else {
           message += ` You returned '${JSON.stringify(destroy)}'.`;
         }
