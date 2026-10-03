@@ -389,7 +389,26 @@ internal fun removeItem(
   key: String,
   keychainAwareKey: String
 ): Boolean {
+  // Read the stored entries before the removes. `SharedPreferencesImpl` drops them from its
+  // in-memory map before it tries the disk write, so they are already gone from the map when
+  // `commit` reports a failure.
+  val previousKeychainAwareItem = prefs.getString(keychainAwareKey, null)
+  val previousItem = prefs.getString(key, null)
+
   val removedFromPrefs = prefs.edit().remove(keychainAwareKey).remove(key).commit()
+  if (!removedFromPrefs) {
+    // The entries are still on the disk, so put them back into the map. `getItemImpl` gates on
+    // `SharedPreferences.contains`, so without this a value that is still stored reads as absent for
+    // the rest of the process. This restoring commit fails on the disk too, which is expected - only
+    // its in-memory effect is needed, and that is applied whether or not the disk write succeeds.
+    val restore = prefs.edit()
+    previousKeychainAwareItem?.let { restore.putString(keychainAwareKey, it) }
+    previousItem?.let { restore.putString(key, it) }
+    restore.commit()
+  }
+
+  // The restore above is driven by this file's own commit result, not by the value returned below:
+  // a failure of the legacy commit says nothing about whether this file was rewritten.
   val removedFromLegacyPrefs = legacyPrefs.edit().remove(key).commit()
   return removedFromPrefs && removedFromLegacyPrefs
 }

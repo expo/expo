@@ -1,7 +1,9 @@
 package expo.modules.securestore
 
 import android.content.Context
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -52,6 +54,73 @@ class SecureStoreDeleteTest {
       assertTrue(File(sharedPreferencesDir, "SecureStore.xml").readText().contains("ciphertext"))
     } finally {
       sharedPreferencesDir.setWritable(true)
+    }
+  }
+
+  @Test
+  fun `keeps the entries readable when the delete does not reach the disk`() {
+    prefs.edit().putString("keychain-key", "ciphertext").putString("key", "legacy-ciphertext").commit()
+    // Create the file up front so that only the SecureStore file can fail the write below.
+    legacyPrefs.edit().putString("unrelated", "value").commit()
+
+    assertTrue(sharedPreferencesDir.setWritable(false))
+    try {
+      assertFalse(removeItem(prefs, legacyPrefs, "key", "keychain-key"))
+
+      // Both entries are still on the disk, so the in-memory map must still report them.
+      // `getItemImpl` gates on `SharedPreferences.contains`, so a dropped entry makes a stored value
+      // read as absent for the rest of the process.
+      assertTrue(File(sharedPreferencesDir, "SecureStore.xml").readText().contains("ciphertext"))
+      assertTrue(prefs.contains("keychain-key"))
+      assertTrue(prefs.contains("key"))
+      assertEquals("ciphertext", prefs.getString("keychain-key", null))
+      assertEquals("legacy-ciphertext", prefs.getString("key", null))
+    } finally {
+      sharedPreferencesDir.setWritable(true)
+    }
+  }
+
+  @Test
+  fun `keeps the value on the disk when a later unrelated write succeeds`() {
+    prefs.edit().putString("keychain-key", "ciphertext").commit()
+    // Create the file up front so that only the SecureStore file can fail the write below.
+    legacyPrefs.edit().putString("unrelated", "value").commit()
+
+    assertTrue(sharedPreferencesDir.setWritable(false))
+    try {
+      assertFalse(removeItem(prefs, legacyPrefs, "key", "keychain-key"))
+    } finally {
+      assertTrue(sharedPreferencesDir.setWritable(true))
+    }
+
+    // `writeToFile` serializes the whole in-memory map. An unrelated write that does reach the disk
+    // therefore makes a failed delete permanent if the map no longer holds the entry.
+    assertTrue(prefs.edit().putString("unrelated-key", "value").commit())
+    assertTrue(File(sharedPreferencesDir, "SecureStore.xml").readText().contains("ciphertext"))
+  }
+
+  @Test
+  fun `keeps the entry removed when only the legacy file fails`() {
+    // Device-protected storage has its own directory, so the legacy file can fail its write while
+    // the SecureStore file succeeds.
+    val deviceContext = context.createDeviceProtectedStorageContext()
+    val deviceSharedPreferencesDir = File(deviceContext.dataDir, "shared_prefs")
+    val deviceLegacyPrefs = deviceContext.getSharedPreferences("legacy", Context.MODE_PRIVATE)
+
+    prefs.edit().putString("keychain-key", "ciphertext").commit()
+    deviceLegacyPrefs.edit().putString("key", "oldest").commit()
+    assertNotEquals(sharedPreferencesDir, deviceSharedPreferencesDir)
+
+    assertTrue(deviceSharedPreferencesDir.setWritable(false))
+    try {
+      assertFalse(removeItem(prefs, deviceLegacyPrefs, "key", "keychain-key"))
+
+      // The SecureStore file was rewritten, so its entry must stay removed. The combined result says
+      // nothing about which of the two files failed.
+      assertFalse(prefs.contains("keychain-key"))
+      assertNull(prefs.getString("keychain-key", null))
+    } finally {
+      deviceSharedPreferencesDir.setWritable(true)
     }
   }
 }
