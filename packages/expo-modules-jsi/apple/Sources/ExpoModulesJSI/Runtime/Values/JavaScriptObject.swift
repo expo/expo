@@ -375,8 +375,12 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    try! definePropertyFunction(in: runtime).function
-      .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+    do {
+      try definePropertyFunction(in: runtime).function
+        .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+    } catch {
+      FatalError.definePropertyFailed(name, error)
+    }
   }
 
   public func defineProperty(_ name: String, descriptor: consuming PropertyDescriptor = .init()) {
@@ -387,27 +391,32 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     let jsiRuntime = runtime.pointee
     let hasValue = descriptor.value != nil
     let value = descriptor.value?.toJSIValue(in: jsiRuntime) ?? facebook.jsi.Value.undefined()
-    var name = name
-    name.withUTF8 { nameUtf8 in
-      // A `jsi::Value` can't be thrown across Swift, so a JS error is captured and rethrown here.
-      try! capturingCppErrors {
-        expo.defineProperty(
-          jsiRuntime,
-          defineProperty.function.pointee,
-          defineProperty.configurableKey.pointee,
-          defineProperty.enumerableKey.pointee,
-          defineProperty.writableKey.pointee,
-          defineProperty.valueKey.pointee,
-          pointee,
-          // An empty buffer may have no base address; any non-null pointer works with a zero length.
-          nameUtf8.baseAddress ?? UnsafePointer(bitPattern: 1)!,
-          nameUtf8.count,
-          value,
-          hasValue,
-          descriptor.writable,
-          descriptor.enumerable,
-          descriptor.configurable
-        )
+    var utf8Name = name
+    utf8Name.withUTF8 { nameUtf8 in
+      // A JS error can't propagate through Swift, so `capturingCppErrors` captures it and rethrows it
+      // here; `defineProperty` doesn't throw, so it stops execution with that error.
+      do {
+        try capturingCppErrors {
+          expo.defineProperty(
+            jsiRuntime,
+            defineProperty.function.pointee,
+            defineProperty.configurableKey.pointee,
+            defineProperty.enumerableKey.pointee,
+            defineProperty.writableKey.pointee,
+            defineProperty.valueKey.pointee,
+            pointee,
+            // An empty buffer may have no base address; any non-null pointer works with a zero length.
+            nameUtf8.baseAddress ?? UnsafePointer(bitPattern: 1)!,
+            nameUtf8.count,
+            value,
+            hasValue,
+            descriptor.writable,
+            descriptor.enumerable,
+            descriptor.configurable
+          )
+        }
+      } catch {
+        FatalError.definePropertyFailed(name, error)
       }
     }
   }
@@ -724,10 +733,12 @@ private let definePropertyFunctionKey = JavaScriptRuntime.Cache.Key<DefineProper
 private func definePropertyFunction(in runtime: JavaScriptRuntime) -> DefinePropertyFunction {
   return JavaScriptActor.assumeIsolated {
     runtime.cached(definePropertyFunctionKey) {
-      DefinePropertyFunction(
-        try! runtime.global().getPropertyAsObject("Object").getPropertyAsFunction("defineProperty"),
-        in: runtime
-      )
+      do {
+        let function = try runtime.global().getPropertyAsObject("Object").getPropertyAsFunction("defineProperty")
+        return DefinePropertyFunction(function, in: runtime)
+      } catch {
+        FatalError.definePropertyUnavailable(error)
+      }
     }
   }
 }
