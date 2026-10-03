@@ -98,6 +98,12 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
  Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
  */
 func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 1.0, contentFit: ContentFit) -> CGSize {
+  guard contentPixelSize.width > 0, contentPixelSize.height > 0 else {
+    // Some decoders return an image with no pixels (e.g. an SVG with a 0x0 canvas).
+    // Dividing by that size gives infinity, and multiplying it back gives NaN,
+    // which crashes Core Animation once it reaches the layer geometry.
+    return containerSize
+  }
   switch contentFit {
   case .contain:
     let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
