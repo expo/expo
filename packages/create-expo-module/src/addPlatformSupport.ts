@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import prompts from 'prompts';
 
@@ -13,14 +12,15 @@ import { copyNativeFileSnippets, copyWebFileSnippets } from './snippets';
 import {
   buildAugmentedData,
   copyTemplateFiles,
-  downloadPackageAsync,
   getLocalSdkMajorVersion,
   handleSuffix,
   slugToAndroidPackage,
   updateWebStub,
+  withTemplateAsync,
 } from './templateUtils';
 import type { LocalSubstitutionData, SubstitutionData } from './types';
 import { isInteractive } from './utils/env';
+import { withFileRollback, type WriteFile } from './utils/files';
 import { newStep } from './utils/ora';
 
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -258,7 +258,8 @@ function buildSubstitutionData(
 async function updateModuleConfig(
   configPath: string,
   newPlatforms: Platform[],
-  data: SubstitutionData | LocalSubstitutionData
+  data: SubstitutionData | LocalSubstitutionData,
+  writeFile: WriteFile
 ): Promise<void> {
   const config = JSON.parse(await fs.promises.readFile(configPath, 'utf-8'));
   config.platforms = [...(config.platforms ?? []), ...newPlatforms];
@@ -272,18 +273,13 @@ async function updateModuleConfig(
     // web: no native config block needed
   }
 
-  await fs.promises.writeFile(configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
+  await writeFile(configPath, JSON.stringify(config, null, 2) + '\n');
 }
 
 export type AddPlatformSupportOptions = {
   platform?: string[];
   features?: string[];
   source?: string;
-};
-
-type TemplatePathInfo = {
-  templatePath: string;
-  templateTempDir: string | null;
 };
 
 function exitWithError(message: string): never {
@@ -453,42 +449,14 @@ async function updatePublicModuleNameFromSources(
   }
 }
 
-async function resolveTemplatePath(
-  options: AddPlatformSupportOptions,
-  moduleInfo: ExistingModuleInfo,
-  sdkVersion: number | null
-): Promise<TemplatePathInfo> {
-  if (options.source) {
-    const templatePath = path.resolve(CWD, options.source);
-    if (!fs.existsSync(templatePath)) {
-      exitWithError(
-        `❌ Template source directory does not exist: ${templatePath}.\n` +
-          `   Check the --source path and try again.`
-      );
-    }
-    if (!fs.statSync(templatePath).isDirectory()) {
-      exitWithError(
-        `❌ Template source is not a directory: ${templatePath}.\n` +
-          `   Pass the root directory of an expo-module-template package.`
-      );
-    }
-    return { templatePath, templateTempDir: null };
-  }
-
-  const templateTempDir = await fs.promises.mkdtemp(
-    path.join(os.tmpdir(), 'add-platform-support-')
-  );
-  const templatePath = await downloadPackageAsync(templateTempDir, moduleInfo.isLocal, sdkVersion);
-  return { templatePath, templateTempDir };
-}
-
 async function addNativePlatformFiles(
   templatePath: string,
   moduleRoot: string,
   moduleInfo: ExistingModuleInfo,
   platformsToAdd: Platform[],
   detectedFeatures: Feature[],
-  data: SubstitutionData | LocalSubstitutionData
+  data: SubstitutionData | LocalSubstitutionData,
+  writeFile: WriteFile
 ): Promise<void> {
   const nativePlatforms = platformsToAdd.filter(
     (p): p is 'apple' | 'android' => p === 'apple' || p === 'android'
@@ -500,16 +468,28 @@ async function addNativePlatformFiles(
   const snippetsDir = path.join(templatePath, 'snippets');
   const augmentedData = await buildAugmentedData(snippetsDir, data);
   await newStep('Adding platform files', async (step) => {
-    await copyTemplateFiles(templatePath, moduleRoot, augmentedData, {
-      platforms: nativePlatforms,
-      platformsOnly: true,
-      moduleType: moduleInfo.isLocal ? 'local' : 'standalone',
-    });
+    await copyTemplateFiles(
+      templatePath,
+      moduleRoot,
+      augmentedData,
+      {
+        platforms: nativePlatforms,
+        platformsOnly: true,
+        moduleType: moduleInfo.isLocal ? 'local' : 'standalone',
+      },
+      writeFile
+    );
     const dataForNewPlatforms = {
       ...augmentedData,
       project: { ...data.project, platforms: nativePlatforms },
     } as SubstitutionData | LocalSubstitutionData;
-    await copyNativeFileSnippets(snippetsDir, detectedFeatures, dataForNewPlatforms, moduleRoot);
+    await copyNativeFileSnippets(
+      snippetsDir,
+      detectedFeatures,
+      dataForNewPlatforms,
+      moduleRoot,
+      writeFile
+    );
     step.succeed('Added platform files');
   });
 }
@@ -519,7 +499,8 @@ async function addWebPlatformFiles(
   moduleRoot: string,
   platformsToAdd: Platform[],
   detectedFeatures: Feature[],
-  data: SubstitutionData | LocalSubstitutionData
+  data: SubstitutionData | LocalSubstitutionData,
+  writeFile: WriteFile
 ): Promise<void> {
   if (!platformsToAdd.includes('web')) {
     return;
@@ -527,12 +508,12 @@ async function addWebPlatformFiles(
 
   const snippetsDir = path.join(templatePath, 'snippets');
   await newStep('Updating web implementation', async (step) => {
-    const augmentedData = await updateWebStub(templatePath, moduleRoot, data);
+    const augmentedData = await updateWebStub(templatePath, moduleRoot, data, writeFile);
     const dataWithWeb = {
       ...augmentedData,
       project: { ...data.project, platforms: ['web'] as Platform[] },
     } as SubstitutionData | LocalSubstitutionData;
-    await copyWebFileSnippets(snippetsDir, detectedFeatures, dataWithWeb, moduleRoot);
+    await copyWebFileSnippets(snippetsDir, detectedFeatures, dataWithWeb, moduleRoot, writeFile);
     step.succeed('Updated web implementation');
   });
 }
@@ -585,32 +566,39 @@ export async function addPlatformSupport(
     sharedObjectName,
     sdkVersion
   );
-  const { templatePath, templateTempDir } = await resolveTemplatePath(
-    options,
-    moduleInfo,
-    sdkVersion
-  );
+  await withTemplateAsync(
+    {
+      source: options.source ? path.resolve(CWD, options.source) : undefined,
+      isLocal: moduleInfo.isLocal,
+      sdkVersion,
+    },
+    async (templatePath) => {
+      await withFileRollback(async (writeFile) => {
+        await addNativePlatformFiles(
+          templatePath,
+          moduleRoot,
+          moduleInfo,
+          platformsToAdd,
+          detectedFeatures,
+          data,
+          writeFile
+        );
+        await addWebPlatformFiles(
+          templatePath,
+          moduleRoot,
+          platformsToAdd,
+          detectedFeatures,
+          data,
+          writeFile
+        );
 
-  try {
-    await addNativePlatformFiles(
-      templatePath,
-      moduleRoot,
-      moduleInfo,
-      platformsToAdd,
-      detectedFeatures,
-      data
-    );
-    await addWebPlatformFiles(templatePath, moduleRoot, platformsToAdd, detectedFeatures, data);
-
-    await newStep('Updating expo-module.config.json', async (step) => {
-      await updateModuleConfig(configPath, platformsToAdd, data);
-      step.succeed('Updated expo-module.config.json');
-    });
-  } finally {
-    if (templateTempDir) {
-      await fs.promises.rm(templateTempDir, { recursive: true, force: true });
+        await newStep('Updating expo-module.config.json', async (step) => {
+          await updateModuleConfig(configPath, platformsToAdd, data, writeFile);
+          step.succeed('Updated expo-module.config.json');
+        });
+      });
     }
-  }
+  );
 
   console.log();
   console.log(`✅ Successfully added ${platformsToAdd.join(', ')} support to the module.`);
