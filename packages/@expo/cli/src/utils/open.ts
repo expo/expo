@@ -156,18 +156,49 @@ export async function openBrowserAsync(target: string): Promise<boolean> {
     return true;
   }
 
-  // WSL: when the user hasn't overridden BROWSER, route through Windows `cmd.exe` so
+  // WSL: when the user hasn't overridden BROWSER, route through Windows PowerShell so
   // the URL opens in the user's Windows browser. Falls through to `xdg-open` otherwise.
   if (!browserApp && isWsl()) {
-    await spawnAsync('/mnt/c/Windows/System32/cmd.exe', ['/c', 'start', '""', target], {
-      stdio: 'ignore',
-    });
+    await spawnAsync(
+      '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
+      buildStartProcessArgs(target, undefined, []),
+      { stdio: 'ignore' }
+    );
     return true;
   }
 
   const command = browserApp ?? 'xdg-open';
   await spawnAsync(command, [...browserArgs, target], { stdio: 'ignore' });
   return true;
+}
+
+/** Escapes a value for safe interpolation inside a PowerShell single-quoted string literal. */
+function escapePowerShellSingleQuoted(value: string): string {
+  return value.replace(/'/g, "''");
+}
+
+/**
+ * Builds the `powershell.exe` argv that opens `target` via `Start-Process`, optionally through
+ * a specific `browserApp` with `browserArgs`.
+ *
+ * Deliberately not `cmd.exe /c start`: `cmd.exe`'s `/c` flag re-tokenizes its entire argument
+ * list as a single command line, so any shell metacharacter in the URL - most commonly `&` in a
+ * query string - gets treated as a command separator no matter how the target argument itself is
+ * quoted. That silently truncates the URL (opening a broken partial one) and then crashes the
+ * whole process when the leftover fragments fail to run as bogus commands. `Start-Process`
+ * receives its `-FilePath`/`-ArgumentList` as genuine parameter values instead of reparsing a
+ * joined string, so it isn't subject to the same class of bug.
+ */
+function buildStartProcessArgs(
+  target: string,
+  browserApp: string | undefined,
+  browserArgs: string[]
+): string[] {
+  const quote = (value: string) => `'${escapePowerShellSingleQuoted(value)}'`;
+  const psCommand = browserApp
+    ? `Start-Process -FilePath ${quote(browserApp)} -ArgumentList ${[...browserArgs, target].map(quote).join(',')}`
+    : `Start-Process -FilePath ${quote(target)}`;
+  return ['-NoProfile', '-NonInteractive', '-Command', psCommand];
 }
 
 async function spawnWindowsStartAsync(
@@ -177,13 +208,16 @@ async function spawnWindowsStartAsync(
 ): Promise<void> {
   // Windows preserves env var case in Node, but the OS variable is `SystemRoot`.
   const systemRoot = process.env.SYSTEMROOT ?? process.env.SystemRoot ?? 'C:\\Windows';
-  const cmd = path.join(systemRoot, 'System32', 'cmd.exe');
-  // `start ""` — the empty quoted string is the window title, so the URL isn't
-  // interpreted as a title argument.
-  const startArgs = ['/c', 'start', '""'];
-  if (browserApp) startArgs.push(browserApp);
-  startArgs.push(target, ...browserArgs);
-  await spawnAsync(cmd, startArgs, { stdio: 'ignore' });
+  const powershell = path.join(
+    systemRoot,
+    'System32',
+    'WindowsPowerShell',
+    'v1.0',
+    'powershell.exe'
+  );
+  await spawnAsync(powershell, buildStartProcessArgs(target, browserApp, browserArgs), {
+    stdio: 'ignore',
+  });
 }
 
 function isWsl(): boolean {
