@@ -1,5 +1,6 @@
 export * from './Widgets';
 export type {
+  ActivityTokenEvent,
   ExpoWidgetsEvents,
   LevelOfDetail,
   LiveActivityComponent,
