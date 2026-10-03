@@ -1829,6 +1829,7 @@ it('preserves development deep React Native import warnings', async () => {
     export { default as Text } from "react-native/Libraries/Text/Text";
     const Image = require("react-native/Libraries/Image/Image");
     require("react-native/Libraries/Core/InitializeCore");
+    require("react-native/setup-env");
     export default [View, Text, Image];`;
   const result = await transformFileFullyWithNoxcturnal({
     filename: candidate,
@@ -1851,6 +1852,7 @@ it('preserves development deep React Native import warnings', async () => {
   expect(result.result.code).not.toContain(
     "deprecated ('react-native/Libraries/Core/InitializeCore')"
   );
+  expect(result.result.code).not.toContain("deprecated ('react-native/setup-env')");
 });
 
 it.each([
