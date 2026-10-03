@@ -58,8 +58,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ npx create-expo-app@latest StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -68,8 +68,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ yarn create expo-app StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -78,8 +78,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ pnpm create expo-app StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -88,8 +88,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ bun create expo StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 57.',
-      '$ Select an Expo SDK version > SDK 57',
+      '# The CLI asks for an Expo SDK version. Select Latest (SDK 58).',
+      '$ Select an Expo SDK version > Latest (SDK 58)',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -144,11 +144,13 @@ In this tutorial, we'll build our app from scratch and understand the fundamenta
   }}
 />
 
-After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **src/app** directory. The previous files from the **src** directory (including **components**, **constants**, and **hooks**) are moved inside the **example** directory by the script. We'll create our own directories and component files as we go along.
+The script asks whether to move the existing files to an **example** directory instead of deleting them. Press <kbd>Enter</kbd> to move them.
+
+After the script finishes, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **src/app** directory. The script moves the previous files from the **src** directory (including **components**, **constants**, and **hooks**) and the **scripts** directory into the **example** directory. We'll create our own directories and component files as we go along.
 
 <Collapsible summary={<>What does the <CODE>reset-project</CODE> script do?</>}>
 
-`reset-project` script resets the **src/app** directory structure in a project and moves the previous boilerplate files from the project's **src** directory to another sub-directory called **example**. We can delete it since it is not part of our main app's structure.
+The `reset-project` script resets the **src/app** directory structure in a project. It moves the previous boilerplate files from the project's **src** and **scripts** directories to another sub-directory called **example**. We can delete **example** since it is not part of our main app's structure. The script file also moves to **example**, so running `reset-project` again does not work.
 
 </Collapsible>
 
@@ -172,7 +174,7 @@ In the project directory, run the following command to start the [development se
 After running the above command:
 
 1. The development server will start, and you'll see a QR code inside the terminal window.
-2. Scan that QR code to open the app on the device. On Android, use the Expo Go > **Scan QR code** option. On iOS, use the default camera app.
+2. Scan that QR code to open the app on the device. On Android, use the Expo Go > **Scan QR** option. On iOS, use the default camera app.
 3. To run the web app, press <kbd>W</kbd> in the terminal. It will open the web app in the default web browser.
 
 > **info** On a physical iOS device, Expo Go opens your project only when Expo CLI and Expo Go are signed in to the same Expo account. Run `npx expo login` on your computer, then sign in to Expo Go with the same account. If the error remains, see [Expo Go sign-in required](/troubleshooting/expo-go-sign-in-required/).
@@ -181,7 +183,7 @@ Once it is running on all platforms, the app should look like this:
 
 <ContentSpotlight
   alt="App running on all platforms"
-  src="/static/images/tutorial/01-app-running-on-all-platforms.webp"
+  src="/static/images/tutorial/create-your-first-app-reset.webp"
   className="max-w-[720px]"
 />
 
@@ -191,25 +193,24 @@ Once it is running on all platforms, the app should look like this:
 
 ## Edit the index screen
 
-The **src/app/index.tsx** file defines the text displayed on the app's screen. It is the entry point of our app and executes when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
+The **src/app/index.tsx** file defines the text displayed on the app's screen. It is the first screen that our app shows. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
 
 Styles applied to these components use JavaScript objects rather than CSS, which is used on web. However, a lot of the properties will look familiar if you've previously used CSS on web. Most React Native components accept a `style` prop that accepts a JavaScript object as its value. For more details, see [Styling in React Native](https://reactnative.dev/docs/style).
 
 Let's modify **src/app/index.tsx** screen:
 
-1. Import `StyleSheet` from `react-native` and create a `styles` object to define our custom styles.
-2. Add a `styles.container.backgroundColor` property to `<View>` with the value of `#25292e`. This changes the background color.
-3. Replace the default value of `<Text>` with "Home screen".
-4. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
+1. Add a `backgroundColor` property with the value of `#25292e` to `styles.container`. This changes the background color.
+2. Replace the default value of `<Text>` with "Home screen".
+3. Add a `styles.text` object with a `color` property of `#fff` (white). Pass it to the `style` prop of `<Text>` to change the text color.
 
 {/* prettier-ignore */}
 ```tsx src/app/index.tsx|collapseHeight=340
-import { Text, View, /* @tutinfo Import `StyleSheet` to define styles. */ StyleSheet/* @end */ } from 'react-native';
+import { Text, View, StyleSheet } from 'react-native';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say "Edit src/app/index.tsx to edit this screen". Now it says, "Home screen". */
+      /* @tutinfo Apply `styles.text`. Replace "Edit src/app/index.tsx to edit this screen." with "Home screen". */
       <Text style={styles.text}>Home screen</Text>
       /* @end */
     </View>
@@ -219,15 +220,17 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    /* @tutinfo Add the value of `backgroundColor` property with `'#25292e'`.*/
+    /* @tutinfo Add a `backgroundColor` property with the value of `'#25292e'`. */
     backgroundColor: '#25292e',
     /* @end */
     alignItems: 'center',
     justifyContent: 'center',
   },
+  /* @tutinfo Add a `text` style with a `color` property of `'#fff'`. */
   text: {
     color: '#fff',
   },
+  /* @end */
 });
 ```
 
@@ -237,13 +240,13 @@ Once you save your changes, they're sent and applied to the running apps connect
 
 <ContentSpotlight
   alt="App with updated text and background color"
-  src="/static/images/tutorial/02-index-screen-changes.webp"
+  src="/static/images/tutorial/create-your-first-app-home-screen.webp"
   className="max-w-[720px]"
 />
 
-<Collapsible summary="What is the blue gear icon?">
+<Collapsible summary="What is the gear icon?">
 
-The blue gear icon is the **Tools button** for Android and iOS platforms. It's a floating shortcut that opens the [Developer menu](/debugging/tools/#developer-menu), which provides access to debugging functions such as reloading the app and toggling Fast Refresh. It appears only while developing and is never included in a production build.
+The gear icon is the **Tools button** for Android and iOS platforms. It's a floating shortcut that opens the [Developer menu](/debugging/tools/#developer-menu), which provides access to debugging functions such as reloading the app and toggling Fast Refresh. It appears only while developing and is never included in a production build.
 
 The remaining screenshots in this tutorial will have it hidden. To hide it:
 
