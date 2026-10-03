@@ -281,7 +281,7 @@ export class Chunk {
 
     const relativeEntry = path.relative(this.options.projectRoot, this.name);
 
-    const { modulePaths, ...chunkMetadata } = this.strategy.getMetadata(this);
+    const { modulePaths, ...chunkMetadata } = this.strategy.getMetadata(this, filenamesByChunk);
     const jsAsset: SerialAsset = {
       filename: outputFile,
       originFilename: relativeEntry,

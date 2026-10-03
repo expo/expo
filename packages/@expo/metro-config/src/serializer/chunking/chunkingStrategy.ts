@@ -44,8 +44,12 @@ export type ChunkingImplementation = {
     filenamesByChunk: Map<Chunk, string>
   ): ChunkSerializationOptions;
   getMetadata(
-    chunk: Chunk
-  ): Pick<SerialAsset['metadata'], 'chunkingStrategy' | 'entryPaths' | 'modulePaths'>;
+    chunk: Chunk,
+    filenamesByChunk: Map<Chunk, string>
+  ): Pick<
+    SerialAsset['metadata'],
+    'chunkingStrategy' | 'entryPaths' | 'entryChunks' | 'modulePaths'
+  >;
 };
 
 export function createChunkCollector(
@@ -189,10 +193,10 @@ function makeChunkByPathLookupMap(chunks: Set<Chunk>): Map<string, Chunk> {
   return chunkByPath;
 }
 
-export function createChunkSerializer(
+export async function serializeChunksAsync(
   chunks: Set<Chunk>,
   { serializerConfig, serializeChunkOptions, options }: ChunkingContext
-): (chunk: Chunk) => Promise<SerialAsset[]> {
+): Promise<SerialAsset[]> {
   const chunksByPath = makeChunkByPathLookupMap(chunks);
   const filenamesByChunk = precomputeChunkFilenames({
     chunks,
@@ -200,11 +204,15 @@ export function createChunkSerializer(
     serializerConfig,
     recomputeChunkNames: !!options.serializerOptions?.exporting,
   });
-  return (chunk) =>
-    chunk.serializeToAssetsAsync(
-      serializerConfig,
-      chunksByPath,
-      filenamesByChunk,
-      serializeChunkOptions
-    );
+  const assets = await Promise.all(
+    [...chunks].map((chunk) =>
+      chunk.serializeToAssetsAsync(
+        serializerConfig,
+        chunksByPath,
+        filenamesByChunk,
+        serializeChunkOptions
+      )
+    )
+  );
+  return assets.flat();
 }

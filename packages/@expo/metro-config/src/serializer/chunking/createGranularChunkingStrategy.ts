@@ -12,8 +12,8 @@ import {
   type ChunkingContext,
   type ChunkingImplementation,
   createChunkCollector,
-  createChunkSerializer,
   createRuntimeChunk,
+  serializeChunksAsync,
 } from './chunkingStrategy';
 import { bitIndices, computeBitSetChunkPlan, type ChunkAtom } from './computeBitSetChunks';
 
@@ -163,28 +163,7 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
         }
       }
       for (const modulePath of [...modulePaths].sort()) options.createModuleId(modulePath);
-      const results = await Promise.all(
-        [...orderedChunks].map(createChunkSerializer(orderedChunks, context))
-      );
-      const jsAssets = results.map((assets) => {
-        const asset = assets.find((asset) => asset.type === 'js');
-        assert(asset, 'Serialized chunk is missing its JavaScript asset.');
-        return asset;
-      });
-      const filenamesByChunk = new Map(
-        [...orderedChunks].map((chunk, index) => [chunk, jsAssets[index]!.filename] as const)
-      );
-      jsAssets[0]!.metadata.entryChunks = Object.fromEntries(
-        [...requiredChunksByEntryPath].map(([entryPath, requiredChunks]) => [
-          entryPath,
-          requiredChunks.map((chunk) => {
-            const filename = filenamesByChunk.get(chunk);
-            assert(filename, `Required chunk was not emitted: ${chunk.name}`);
-            return filename;
-          }),
-        ])
-      );
-      return results.flat();
+      return serializeChunksAsync(orderedChunks, context);
     },
     getAsyncChunkTargets(chunk) {
       const targets = new Set<Chunk>();
@@ -224,10 +203,23 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
         },
       };
     },
-    getMetadata(chunk) {
+    getMetadata(chunk, filenamesByChunk) {
       const modulePaths = [...chunk.deps].map((module) => module.path);
       return {
         chunkingStrategy: 'granular',
+        ...(chunk.isEntry &&
+          !chunk.sealed && {
+            entryChunks: Object.fromEntries(
+              [...requiredChunksByEntryPath].map(([entryPath, requiredChunks]) => [
+                entryPath,
+                requiredChunks.map((requiredChunk) => {
+                  const filename = filenamesByChunk.get(requiredChunk);
+                  assert(filename, `Required chunk was not emitted: ${requiredChunk.name}`);
+                  return filename;
+                }),
+              ])
+            ),
+          }),
         entryPaths: [...(entryPathsByChunk.get(chunk) ?? [])].sort(),
         modulePaths: chunk.sealed ? modulePaths : modulePaths.sort(),
       };
