@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import {
   type HorizontalAlignment,
   type HorizontalArrangement,
@@ -29,7 +28,7 @@ export interface ColumnProps extends PrimitiveBaseProps {
   verticalAlignment?: VerticalAlignment;
 }
 
-const ColumnNativeView: React.ComponentType<ColumnProps> = requireNativeView(
+const ColumnNativeView: React.ComponentType<ColumnProps> = requireNativeLayoutView(
   'ExpoUI',
   'ColumnView'
 );

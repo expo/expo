@@ -1,4 +1,4 @@
-import { Button, Column, Host, RNHostView } from '@expo/ui';
+import { Column, Host, RNHostView, Text as UIText } from '@expo/ui';
 import React from 'react';
 import { Text, View, type LayoutChangeEvent } from 'react-native';
 
@@ -249,14 +249,16 @@ function DivergenceProbe({ onMeasured }: { onMeasured: (widths: number[]) => voi
 
 // Regression test for https://github.com/expo/expo/issues/50451
 function NestedHostProbe({ onMeasured }: { onMeasured: (size: Axes) => void }) {
+  const onLayout = useSettledLayout(onMeasured);
+
   return (
     <View style={{ width: PARENT_WIDTH }}>
       <Host matchContents>
-        <RNHostView matchContents onLayout={({ nativeEvent }) => onMeasured(nativeEvent.layout)}>
+        <RNHostView matchContents onLayout={onLayout}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ width: BOX_WIDTH, height: BOX_HEIGHT }} />
             <Host matchContents={{ horizontal: true }} style={{ height: BOX_HEIGHT }}>
-              <Button label={TEXT} />
+              <UIText>{TEXT}</UIText>
             </Host>
           </View>
         </RNHostView>

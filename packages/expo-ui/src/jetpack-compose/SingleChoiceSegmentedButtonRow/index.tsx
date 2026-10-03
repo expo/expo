@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -15,7 +14,7 @@ export interface SingleChoiceSegmentedButtonRowProps {
 }
 
 const SingleChoiceSegmentedButtonRowNativeView: React.ComponentType<SingleChoiceSegmentedButtonRowProps> =
-  requireNativeView('ExpoUI', 'SingleChoiceSegmentedButtonRowView');
+  requireNativeLayoutView('ExpoUI', 'SingleChoiceSegmentedButtonRowView');
 
 /**
  * A row container for single-choice `SegmentedButton` children.

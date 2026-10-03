@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -12,7 +11,7 @@ export interface LabeledContentProps extends CommonViewModifierProps {
   children: React.ReactNode;
 }
 
-const LabeledContentNativeView: React.ComponentType<LabeledContentProps> = requireNativeView(
+const LabeledContentNativeView: React.ComponentType<LabeledContentProps> = requireNativeLayoutView(
   'ExpoUI',
   'LabeledContentView'
 );

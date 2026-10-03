@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ViewEvent } from '../../types';
 import { font, foregroundStyle } from '../modifiers';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -71,7 +71,7 @@ function transformNativeProps(props: ImageProps): NativeImageProps {
   };
 }
 
-const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeView(
+const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeLayoutView(
   'ExpoUI',
   'ImageView'
 );

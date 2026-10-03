@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -63,7 +62,7 @@ function transformProps<T extends { modifiers?: ModifierConfig[] }>(props: T): T
 function createCarouselComponent<P extends { modifiers?: ModifierConfig[] }>(
   viewName: string
 ): React.ComponentType<P> {
-  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  const NativeView: React.ComponentType<P> = requireNativeLayoutView('ExpoUI', viewName);
   return function CarouselComponent(props: P) {
     return <NativeView {...transformProps(props)} />;
   };

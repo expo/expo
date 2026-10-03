@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -38,7 +38,7 @@ type NativeConfirmationDialogProps = Omit<ConfirmationDialogProps, 'onIsPresente
 };
 
 const ConfirmationDialogNativeView: React.ComponentType<NativeConfirmationDialogProps> =
-  requireNativeView('ExpoUI', 'ConfirmationDialogView');
+  requireNativeLayoutView('ExpoUI', 'ConfirmationDialogView');
 
 /**
  * The component visible all the time that triggers the confirmation dialog presentation.

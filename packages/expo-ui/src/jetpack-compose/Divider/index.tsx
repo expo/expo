@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -29,7 +29,7 @@ function transformProps(props: DividerCommonConfig): DividerCommonConfig {
 }
 
 function createDividerComponent(viewName: string): React.ComponentType<DividerCommonConfig> {
-  const NativeView: React.ComponentType<DividerCommonConfig> = requireNativeView(
+  const NativeView: React.ComponentType<DividerCommonConfig> = requireNativeLayoutView(
     'ExpoUI',
     viewName
   );

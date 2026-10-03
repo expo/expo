@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
@@ -203,7 +203,10 @@ export interface ChartProps extends CommonViewModifierProps {
   ruleStyle?: RuleChartStyle;
 }
 
-const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('ExpoUI', 'ChartView');
+const ChartNativeView: React.ComponentType<ChartProps> = requireNativeLayoutView(
+  'ExpoUI',
+  'ChartView'
+);
 
 /**
  * Renders a native Chart component using Swift Charts.

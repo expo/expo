@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import { type ReactElement } from 'react';
 
 import { useItemKeys } from '../../recycling/useRecycledRows';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent } from '../../types';
 import { type CommonViewModifierProps } from '../types';
 import { DataListForEach, NativeSlot, type ListForEachProps } from './DataListForEach';
@@ -9,7 +9,7 @@ import { DataListForEach, NativeSlot, type ListForEachProps } from './DataListFo
 export { type ListForEachProps };
 
 const ListForEachNativeView: React.ComponentType<NativeListForEachProps> =
-  requireNativeView<NativeListForEachProps>('ExpoUI', 'ListForEachView');
+  requireNativeLayoutView<NativeListForEachProps>('ExpoUI', 'ListForEachView');
 
 type DeleteEvent = ViewEvent<'onDelete', { indices: number[] }>;
 

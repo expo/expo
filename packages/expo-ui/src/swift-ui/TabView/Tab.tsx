@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type CommonViewModifierProps } from '../types';
 
 export interface TabProps extends CommonViewModifierProps {
@@ -23,7 +23,7 @@ export interface TabProps extends CommonViewModifierProps {
   children: React.ReactNode;
 }
 
-const TabNativeView: React.ComponentType<TabProps> = requireNativeView('ExpoUI', 'Tab');
+const TabNativeView: React.ComponentType<TabProps> = requireNativeLayoutView('ExpoUI', 'Tab');
 
 /**
  * Defines a single tab inside a `TabView`.

@@ -1,7 +1,7 @@
-import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
 import { getStateId, useWorkletProp, worklets } from '../../State';
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import { type PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -122,7 +122,7 @@ type NativeHorizontalPagerProps = Omit<
     onPageScrollSync?: number | null;
   };
 
-const NativeView: React.ComponentType<NativeHorizontalPagerProps> = requireNativeView(
+const NativeView: React.ComponentType<NativeHorizontalPagerProps> = requireNativeLayoutView(
   'ExpoUI',
   'HorizontalPagerView'
 );

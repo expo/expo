@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent, ColorValue } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -45,7 +45,7 @@ type NativeCheckboxProps = Omit<CheckboxProps, 'onCheckedChange'> & {
   onCheckedChange: (event: NativeSyntheticEvent<{ value: boolean }>) => void;
 };
 
-const CheckboxNativeView: React.ComponentType<NativeCheckboxProps> = requireNativeView(
+const CheckboxNativeView: React.ComponentType<NativeCheckboxProps> = requireNativeLayoutView(
   'ExpoUI',
   'CheckboxView'
 );
@@ -104,7 +104,7 @@ type NativeTriStateCheckboxProps = Omit<TriStateCheckboxProps, 'onClick'> & {
 } & ViewEvent<'onNativeClick', void>;
 
 const TriStateCheckboxNativeView: React.ComponentType<NativeTriStateCheckboxProps> =
-  requireNativeView('ExpoUI', 'TriStateCheckboxView');
+  requireNativeLayoutView('ExpoUI', 'TriStateCheckboxView');
 
 function transformTriStateCheckboxProps(props: TriStateCheckboxProps): NativeTriStateCheckboxProps {
   const { modifiers, onClick, ...restProps } = props;

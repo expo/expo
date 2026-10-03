@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -57,7 +56,7 @@ type NativeNavigationSplitViewProps = Omit<
 };
 
 const NavigationSplitViewNativeView: React.ComponentType<NativeNavigationSplitViewProps> =
-  requireNativeView('ExpoUI', 'NavigationSplitViewView');
+  requireNativeLayoutView('ExpoUI', 'NavigationSplitViewView');
 
 function NavigationSplitViewSidebar(props: { children: React.ReactNode }) {
   return <Slot name="sidebar">{props.children}</Slot>;

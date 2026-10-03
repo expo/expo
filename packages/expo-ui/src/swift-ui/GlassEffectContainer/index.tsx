@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -19,7 +18,7 @@ export interface GlassEffectContainerProps extends CommonViewModifierProps {
 type NativeGlassEffectContainerProps = GlassEffectContainerProps;
 
 const GlassEffectContainerNativeView: React.ComponentType<NativeGlassEffectContainerProps> =
-  requireNativeView('ExpoUI', 'GlassEffectContainerView');
+  requireNativeLayoutView('ExpoUI', 'GlassEffectContainerView');
 
 export function GlassEffectContainer(props: GlassEffectContainerProps) {
   const eventProp = props.modifiers ? createViewModifierEventListener(props.modifiers) : undefined;

@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -46,7 +46,7 @@ export interface ButtonProps extends CommonViewModifierProps {
 
 type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
 
-const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeView(
+const ButtonNativeView: React.ComponentType<NativeButtonProps> = requireNativeLayoutView(
   'ExpoUI',
   'Button'
 );

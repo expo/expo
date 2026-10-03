@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ExpoModifier, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -37,9 +36,9 @@ type NativeSlotViewProps = {
 };
 
 const DockedSearchBarNativeView: React.ComponentType<NativeDockedSearchBarProps> =
-  requireNativeView('ExpoUI', 'DockedSearchBarView');
+  requireNativeLayoutView('ExpoUI', 'DockedSearchBarView');
 
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
   'ExpoUI',
   'SlotView'
 );

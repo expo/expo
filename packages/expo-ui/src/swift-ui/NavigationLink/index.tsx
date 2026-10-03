@@ -1,6 +1,6 @@
-import { requireNativeView } from 'expo';
 import { type ComponentType, type ReactNode } from 'react';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -16,7 +16,7 @@ export interface NavigationLinkProps extends CommonViewModifierProps {
   children: ReactNode;
 }
 
-const NavigationLinkNativeView: ComponentType<NavigationLinkProps> = requireNativeView(
+const NavigationLinkNativeView: ComponentType<NavigationLinkProps> = requireNativeLayoutView(
   'ExpoUI',
   'NavigationLinkView'
 );

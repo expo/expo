@@ -1,10 +1,10 @@
-import { requireNativeView } from 'expo';
 import {
   Image as ReactNativeImage,
   type ColorValue,
   type ImageResolvedAssetSource,
 } from 'react-native';
 
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent } from '../../types';
 import { type ContentAlignment, type PrimitiveBaseProps, transformProps } from '../layout-types';
 
@@ -112,7 +112,7 @@ export type NativeImageProps = Omit<ImageProps, 'source' | 'onLoad' | 'onError'>
     source: ImageResolvedAssetSource | null;
   };
 
-const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeView(
+const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeLayoutView(
   'ExpoUI',
   'ImageView'
 );

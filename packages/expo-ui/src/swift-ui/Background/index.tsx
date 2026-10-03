@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type Alignment, type CommonViewModifierProps } from '../types';
@@ -13,7 +12,7 @@ export interface BackgroundProps extends CommonViewModifierProps {
   alignment?: Alignment;
 }
 
-const BackgroundNativeView: React.ComponentType<BackgroundProps> = requireNativeView(
+const BackgroundNativeView: React.ComponentType<BackgroundProps> = requireNativeLayoutView(
   'ExpoUI',
   'BackgroundView'
 );

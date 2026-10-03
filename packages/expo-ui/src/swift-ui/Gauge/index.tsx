@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-
+import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -44,7 +43,7 @@ type NativeGaugeProps = Omit<
   children?: React.ReactNode;
 };
 
-const GaugeNativeView: React.ComponentType<NativeGaugeProps> = requireNativeView(
+const GaugeNativeView: React.ComponentType<NativeGaugeProps> = requireNativeLayoutView(
   'ExpoUI',
   'GaugeView'
 );
