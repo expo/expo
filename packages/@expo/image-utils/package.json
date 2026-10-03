@@ -1,6 +1,6 @@
 {
   "name": "@expo/image-utils",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "A package used by Expo CLI for processing images",
   "keywords": [
     "json"

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Bump `@expo/sdk-runtime-versions` to `^1.0.1`. ([#50955](https://github.com/expo/expo/pull/50955) by [@kitten](https://github.com/kitten))
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.4
 
 ### Patch Changes

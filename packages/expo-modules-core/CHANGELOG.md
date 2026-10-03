@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [Internal][Android] `expoPublish` now formats the updated `expo-module.config.json` with `oxfmt` instead of `prettier`. ([#47438](https://github.com/expo/expo/pull/47438) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] Add `decodableKinds` to `JavaScriptDecodable`: the kinds of JavaScript value (`JavaScriptValueKinds`) that `decode` can accept, so code that picks between several types can skip the ones that can't match. ([#50905](https://github.com/expo/expo/pull/50905) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptValue.withUnownedValue(in:_:)`, and give the owning `JavaScriptDecodable.decode` a default that borrows the value and decodes it through the `JavaScriptUnownedValue` overload, so a conformer can implement only that one. Arrays, dictionaries, dates, records and enums now decode unowned values without copying them first. ([#50960](https://github.com/expo/expo/pull/50960) by [@tsapeta](https://github.com/tsapeta))
+- Fixed native views ignoring `aria-*`, `id` and `tabIndex` props such as `aria-hidden` and `aria-label` ([#50782](https://github.com/expo/expo/issues/50782)). ([#50959](https://github.com/expo/expo/pull/50959) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed `release()` throwing on a shared object whose JS object is frozen, for example an `ImageRef` passed as a view prop in development ([#50962](https://github.com/expo/expo/issues/50962)). ([#50970](https://github.com/expo/expo/pull/50970) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50905](https://github.com/expo/expo/pull/50905), [#50698](https://github.com/expo/expo/pull/50698), [#50937](https://github.com/expo/expo/pull/50937), [#50888](https://github.com/expo/expo/pull/50888), [#50960](https://github.com/expo/expo/pull/50960), [#50980](https://github.com/expo/expo/pull/50980), [#50354](https://github.com/expo/expo/pull/50354))
+  - expo-modules-jsi@58.0.8
+
 ## 58.0.11
 
 ### Patch Changes

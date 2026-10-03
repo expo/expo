@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+- Fix platform-specific route parsing and loader keys. ([#49035](https://github.com/expo/expo/pull/49035) by [@hassankhan](https://github.com/hassankhan))
+- Generated route query strings now encode spaces as `+`, leave `*` unescaped, encode `~` as `%7E`, and write raw null values as `key=`. ([#50725](https://github.com/expo/expo/pull/50725) by [@Ubax](https://github.com/Ubax))
+- [Internal] Expose config plugin types. ([#50442](https://github.com/expo/expo/pull/50442) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50016](https://github.com/expo/expo/pull/50016), [#50458](https://github.com/expo/expo/pull/50458))
+  - expo-server@58.0.3
+  - @expo/log-box@58.0.9
+  - @expo/metro-runtime@58.0.11
+
 ## 58.0.12
 
 ### Patch Changes

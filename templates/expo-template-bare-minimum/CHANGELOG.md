@@ -1,5 +1,12 @@
 # expo-template-bare-minimum
 
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#50458](https://github.com/expo/expo/pull/50458), [#50853](https://github.com/expo/expo/pull/50853))
+  - expo@58.0.3
+
 ## 58.0.11
 
 ### Patch Changes

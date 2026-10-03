@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [Android][iOS] Fixed database closing failure with FTS ([#38168](https://github.com/expo/expo/issues/38168)). ([#50121](https://github.com/expo/expo/pull/50121) by [@savv](https://github.com/savv))
+
 ## 58.0.8
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Added the `smooth`, `snappy`, and `bouncy` spring presets to `Animation`. Like their SwiftUI counterparts, they take an optional `duration` and `extraBounce`. ([#50984](https://github.com/expo/expo/pull/50984) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Fixed `delay()` and `repeat()` modifying the animation they are called on. Chaining from a shared animation, such as `Animation.default` or one stored in a constant, no longer changes that animation everywhere else it is used. ([#50927](https://github.com/expo/expo/pull/50927) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Added the `navigationBarTitleDisplayMode` and `toolbarTitleDisplayMode` modifiers for controlling navigation and toolbar title presentation. ([#50687](https://github.com/expo/expo/pull/50687) by [@0x5bfa](https://github.com/0x5bfa))
+
 ## 58.0.11
 
 ### Patch Changes

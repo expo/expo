@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- Updated dependencies. ([#50965](https://github.com/expo/expo/pull/50965))
+  - expo-web-browser@58.0.5
+
 ## 58.0.7
 
 ### Patch Changes
