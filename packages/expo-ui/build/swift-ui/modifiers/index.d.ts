@@ -1363,5 +1363,5 @@ export * from './scrollPosition';
 export * from './symbolEffect';
 export * from './scrollObservation';
 export * from './widgets';
-export type { TimingAnimationParams, SpringAnimationParams, InterpolatingSpringAnimationParams, ChainableAnimationType, } from './animation/types';
+export type { TimingAnimationParams, SpringAnimationParams, InterpolatingSpringAnimationParams, SpringPresetAnimationParams, ChainableAnimationType, } from './animation/types';
 //# sourceMappingURL=index.d.ts.map

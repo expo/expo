@@ -9,6 +9,7 @@
 - [android] Added `IntrinsicSize` support to the `width` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
 - [iOS] Added the `preferredColorScheme` modifier, which sets the color scheme of a presentation such as `BottomSheet`, including its background. ([#50851](https://github.com/expo/expo/pull/50851) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `navigationBarTitleDisplayMode` and `toolbarTitleDisplayMode` modifiers for controlling navigation and toolbar title presentation. ([#50687](https://github.com/expo/expo/pull/50687) by [@0x5bfa](https://github.com/0x5bfa))
+- [iOS] Added the `smooth`, `snappy`, and `bouncy` spring presets to `Animation`. Like their SwiftUI counterparts, they take an optional `duration` and `extraBounce`. ([#50984](https://github.com/expo/expo/pull/50984) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🐛 Bug fixes
 

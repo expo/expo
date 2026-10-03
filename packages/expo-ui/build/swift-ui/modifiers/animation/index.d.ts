@@ -1,4 +1,4 @@
-import type { AnimationObject, ChainableAnimationType, InterpolatingSpringAnimationParams, SpringAnimationParams, TimingAnimationParams } from './types';
+import type { AnimationObject, ChainableAnimationType, InterpolatingSpringAnimationParams, SpringAnimationParams, SpringPresetAnimationParams, TimingAnimationParams } from './types';
 /**
  * Built-in animation presets for the `animation` modifier.
  * Presets:
@@ -7,6 +7,8 @@ import type { AnimationObject, ChainableAnimationType, InterpolatingSpringAnimat
  * - `spring` accepts [`SpringAnimationParams`](#springanimationparams).
  * - `interpolatingSpring` accepts
  * [`InterpolatingSpringAnimationParams`](#interpolatingspringanimationparams).
+ * - Spring presets (`smooth`, `snappy`, `bouncy`) accept
+ * [`SpringPresetAnimationParams`](#springpresetanimationparams).
  * - Chaining returns [`ChainableAnimationType`](#chainableanimationtype).
  *
  * @example
@@ -35,6 +37,9 @@ export declare const Animation: {
     linear: (params?: TimingAnimationParams) => ChainableAnimationType;
     spring: (params?: SpringAnimationParams) => ChainableAnimationType;
     interpolatingSpring: (params?: InterpolatingSpringAnimationParams) => ChainableAnimationType;
+    smooth: (params?: SpringPresetAnimationParams) => ChainableAnimationType;
+    snappy: (params?: SpringPresetAnimationParams) => ChainableAnimationType;
+    bouncy: (params?: SpringPresetAnimationParams) => ChainableAnimationType;
     default: ChainableAnimationType;
 };
 declare function ChainableAnimation(animation: AnimationObject): ChainableAnimationType;

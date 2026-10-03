@@ -60,3 +60,23 @@ describe(animation, () => {
     });
   });
 });
+
+describe('Animation spring presets', () => {
+  const presets = ['smooth', 'snappy', 'bouncy'];
+
+  it.each(presets)('passes %s without parameters to native', (preset) => {
+    expect(animation(Animation[preset](), true)).toEqual({
+      $type: 'animation',
+      animation: { type: preset },
+      animatedValue: true,
+    });
+  });
+
+  it.each(presets)('passes the duration and extra bounce of %s to native', (preset) => {
+    expect(animation(Animation[preset]({ duration: 0.4, extraBounce: 0.1 }), true)).toEqual({
+      $type: 'animation',
+      animation: { type: preset, duration: 0.4, extraBounce: 0.1 },
+      animatedValue: true,
+    });
+  });
+});

@@ -4,7 +4,7 @@ import { VALUE_SYMBOL } from './constants';
  * @hidden
  */
 export type AnimationObject = {
-    type: 'easeInOut' | 'easeIn' | 'easeOut' | 'linear' | 'spring' | 'interpolatingSpring' | 'default';
+    type: 'easeInOut' | 'easeIn' | 'easeOut' | 'linear' | 'spring' | 'interpolatingSpring' | 'smooth' | 'snappy' | 'bouncy' | 'default';
     duration?: number;
     response?: number;
     dampingFraction?: number;
@@ -14,6 +14,7 @@ export type AnimationObject = {
     stiffness?: number;
     damping?: number;
     initialVelocity?: number;
+    extraBounce?: number;
     delay?: number;
     repeatCount?: number;
     autoreverses?: boolean;
@@ -71,6 +72,19 @@ export type InterpolatingSpringAnimationParams = {
      * Extra bounce to apply to the spring animation.
      */
     bounce?: number;
+};
+export type SpringPresetAnimationParams = {
+    /**
+     * The perceptual duration, which defines the pace of the spring (in seconds). This is
+     * approximately equal to the settling duration, but for very bouncy springs, it is the period of
+     * oscillation of the spring.
+     */
+    duration?: number;
+    /**
+     * Bounce added to the base bounce of the preset: 0 for `smooth`, 0.15 for `snappy`, and 0.3 for
+     * `bouncy`. Keep the total below 1: at 1 and above, the spring oscillates without settling.
+     */
+    extraBounce?: number;
 };
 export type ChainableAnimationType = {
     /** Adds a delay before the animation starts (in seconds). */
