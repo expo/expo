@@ -4,8 +4,10 @@ import {
   ListItem,
   useMaterialColors,
 } from '@expo/ui/jetpack-compose';
-import { clip, fillMaxWidth, padding, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import { clickable, clip, fillMaxWidth, padding, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import { cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 
+import { ListItem as UniversalListItem, type ListItemProps } from '../ListItem';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import { extractFieldSectionSlots } from './FieldSectionSlots';
@@ -64,11 +66,31 @@ export function FieldSection({
         <ComposeColumn verticalArrangement={{ spacedBy: 2 }} modifiers={[fillMaxWidth()]}>
           {rows.map((child, index) => {
             const position = getFieldItemPosition(index, rows.length);
+            const rowModifiers = [
+              fillMaxWidth(),
+              clip(Shapes.RoundedCorner(cornerRadii(position))),
+            ];
+            if (isUniversalListItem(child)) {
+              // A `ListItem` already renders a Compose `ListItem`. Style it as the row instead of
+              // nesting it in another one, which would draw a second surface with its own padding.
+              const { onPress, modifiers, colors: itemColors } = child.props;
+              return cloneElement(child, {
+                key: index,
+                onPress: undefined,
+                colors: { containerColor: colors.surfaceContainer, ...itemColors },
+                // Clip before `clickable` so the ripple follows the rounded row.
+                modifiers: [
+                  ...rowModifiers,
+                  ...(onPress ? [clickable(onPress)] : []),
+                  ...(modifiers ?? []),
+                ],
+              });
+            }
             return (
               <ListItem
                 key={index}
                 colors={{ containerColor: colors.surfaceContainer }}
-                modifiers={[fillMaxWidth(), clip(Shapes.RoundedCorner(cornerRadii(position)))]}>
+                modifiers={rowModifiers}>
                 <ListItem.HeadlineContent>{child}</ListItem.HeadlineContent>
               </ListItem>
             );
@@ -78,6 +100,10 @@ export function FieldSection({
       {footer ? <ComposeColumn modifiers={[padding(16, 4, 16, 0)]}>{footer}</ComposeColumn> : null}
     </ComposeColumn>
   );
+}
+
+function isUniversalListItem(node: ReactNode): node is ReactElement<ListItemProps> {
+  return isValidElement(node) && node.type === UniversalListItem;
 }
 
 /**
