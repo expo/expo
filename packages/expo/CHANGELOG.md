@@ -1,5 +1,25 @@
 # Changelog
 
+## 58.0.3
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+- Use [the `TextDecoder` implementation](https://github.com/facebook/hermes/pull/1855) provided by Hermes in React Native 0.88. In addition to UTF-8, this new implementation supports more character encodings including UTF-16 LE and BE, Latin-1, and Windows-1252. Custom JavaScript runtimes must provide `TextDecoder` before initializing Expo. ([#50853](https://github.com/expo/expo/pull/50853) by [@savv](https://github.com/savv))
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50975](https://github.com/expo/expo/pull/50975), [#50974](https://github.com/expo/expo/pull/50974), [#47438](https://github.com/expo/expo/pull/47438), [#50016](https://github.com/expo/expo/pull/50016), [#50458](https://github.com/expo/expo/pull/50458), [#49305](https://github.com/expo/expo/pull/49305), [#50905](https://github.com/expo/expo/pull/50905), [#50960](https://github.com/expo/expo/pull/50960), [#50973](https://github.com/expo/expo/pull/50973), [#50959](https://github.com/expo/expo/pull/50959), [#50946](https://github.com/expo/expo/pull/50946), [#50965](https://github.com/expo/expo/pull/50965), [#50970](https://github.com/expo/expo/pull/50970), [#50354](https://github.com/expo/expo/pull/50354), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/cli@58.1.2
+  - @expo/config-plugins@58.0.5
+  - expo-modules-core@58.0.12
+  - @expo/metro-config@58.0.8
+  - babel-preset-expo@58.0.9
+  - @expo/log-box@58.0.9
+  - expo-modules-autolinking@58.0.8
+  - expo-font@58.0.6
+  - @expo/config@58.0.2
+  - @expo/fingerprint@0.21.3
+  - @expo/local-build-cache-provider@58.0.2
+  - expo-asset@58.0.11
+
 ## 58.0.2
 
 ### Patch Changes

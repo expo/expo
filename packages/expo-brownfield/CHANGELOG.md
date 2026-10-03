@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - expo-build-properties@58.0.10
+
 ## 58.0.10
 
 ### Patch Changes

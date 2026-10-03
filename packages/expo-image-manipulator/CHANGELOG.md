@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Added missing `import UIKit` statements so the module builds from source with Swift Package Manager. ([#50961](https://github.com/expo/expo/pull/50961) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.11
 
 ### Patch Changes

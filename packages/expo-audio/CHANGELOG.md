@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- [Android] Fixed `prepareToRecordAsync` rejecting when `allowsBackgroundRecording` is `true` and the notification permission is not granted ([#50705](https://github.com/expo/expo/issues/50705)). ([#50968](https://github.com/expo/expo/pull/50968) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fixed an uncaught promise rejection, and `playing` staying `true`, when the browser blocks playback before the user interacts with the page. The player now reports the rejection in `error` on its status ([#36264](https://github.com/expo/expo/issues/36264)). ([#50972](https://github.com/expo/expo/pull/50972) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `prepareToRecordAsync()` hanging forever when background recording is enabled and the recording service never connects. The binding timeout is now started, and the promise also rejects when the React context is lost. ([#50883](https://github.com/expo/expo/pull/50883) by [@Cedric921](https://github.com/Cedric921))
+
 ## 58.0.4
 
 ### Patch Changes

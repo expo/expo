@@ -1,5 +1,13 @@
 # Changelog
 
+## 56.0.6
+
+### Patch Changes
+
+- Upgrade to Jest 30. ([#50427](https://github.com/expo/expo/pull/50427) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50427](https://github.com/expo/expo/pull/50427), [#50444](https://github.com/expo/expo/pull/50444), [#50391](https://github.com/expo/expo/pull/50391))
+  - jest-expo@58.0.7
+
 ## 56.0.5
 
 ### Patch Changes

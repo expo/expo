@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- [Android][Web] Fixed `SymbolView` dropping view props such as `aria-hidden` and `aria-label`, and screen readers reading the symbol glyph ([#50782](https://github.com/expo/expo/issues/50782)). ([#50959](https://github.com/expo/expo/pull/50959) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.3
 
 ### Patch Changes

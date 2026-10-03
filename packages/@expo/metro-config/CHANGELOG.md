@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- Preserve bundled, external, and inline stylesheet order across static and server rendering. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
+- Stop collapsing every `node_modules` stack frame, so errors thrown inside a library point to where they were thrown. ([#50973](https://github.com/expo/expo/pull/50973) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config@58.0.2
+
 ## 58.0.7
 
 ### Patch Changes
