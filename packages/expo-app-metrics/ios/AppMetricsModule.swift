@@ -96,7 +96,11 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     AsyncFunction("clearStoredEntries") {
-      // no-op
+      try await AppMetricsActor.isolated {
+        // Fatal errors wait on disk until the next launch ingests them, so discard those too.
+        _ = PendingErrorStore.drain()
+        try AppMetrics.database?.clearStoredEntries()
+      }.value
     }
 
     // Debug-only: the inactive (ended) sessions
