@@ -34,6 +34,14 @@
     "react-native-web": "~0.21.3",
     "react-native-worklets": "0.13.0"
   },
+  "overrides": {
+    "react-native-reanimated": {
+      "react-native": "$react-native"
+    },
+    "react-native-worklets": {
+      "react-native": "$react-native"
+    }
+  },
   "devDependencies": {
     "@types/react": "~19.3.0",
     "typescript": "~6.0.3"
