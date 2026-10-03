@@ -37,7 +37,7 @@ npm install --save-dev expo-module-scripts
 
 ## Setup
 
-Add the following scripts to your `package.json` and run `yarn`
+Add the following scripts to your `package.json`:
 
 ```json
 {
@@ -45,14 +45,13 @@ Add the following scripts to your `package.json` and run `yarn`
     "build": "expo-module build",
     "clean": "expo-module clean",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   }
 }
 ```
 
-Running `yarn` will now run the `prepare` script, which generates any missing files:
+Then run `yarn expo-module configure` once to generate any missing files:
 
 - [`.npmignore`](./templates/.npmignore) ([docs](https://docs.npmjs.com/misc/developers)) currently only ignores the `babel.config.js` in your module. You might also want to add tests and docs.
   - Expo modules use `.npmignore` **instead of** the `files` field in the `package.json`.
@@ -63,7 +62,7 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
   - Try and incorporate a table of contents (TOC).
 - [`tsconfig.json`](./templates/tsconfig.json) ([docs](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)) extends [`tsconfig.base.json`](./tsconfig.base.json); this is important for ensuring all Unimodules use the same version of TypeScript.
 
-Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
+The `configure` command also synchronizes optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
 
 - [`oxlint.config.mjs`](./templates/oxlint.config.mjs): re-exports the shared [`oxlint.config.base`](./oxlint.config.base.js), which extends [`oxlint-config-universe`](https://github.com/expo/oxlint-config-universe). Lint with `oxlint`.
 - [`with-node.sh`](./templates/scripts/with-node.sh): An Xcode build phase script helper for Node.js binary resolution. It sources the project's **.xcode.env** and **.xcode.env.local** files, which may define an environment variable named `NODE_BINARY` to specify the file path of the Node.js binary to run.
@@ -139,7 +138,6 @@ Use the following scripts to interact with the plugin:
 - `yarn clean plugin`: Delete the `plugin/build` folder.
 - `yarn lint plugin`: Lint the `plugin/src` folder.
 - `yarn test plugin`: Alias for `npx jest --rootDir ./plugin --config ./plugin/jest.config.js`, uses the project's Jest preset if `plugin/jest.config.js` doesn't exist.
-- `yarn prepare`: Prepare the plugin and module for publishing.
 
 ### 🤡 Jest
 
@@ -236,7 +234,6 @@ For scripts that need to run as part of the npm lifecycle, you'd invoke the comm
 ```json
 {
   "scripts": {
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly"
   }
 }
@@ -299,7 +296,7 @@ These are commands to run as part of [the npm scripts lifecycle](https://docs.np
 
 ### prepare (npm lifecycle)
 
-Runs `configure`
+Does nothing except print a warning. Run `expo-module configure` once per package instead.
 
 ### prepublishOnly (npm lifecycle)
 
