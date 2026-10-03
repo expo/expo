@@ -912,7 +912,14 @@ public class AudioModule: Module {
       sessionOptions = categoryOptions
     }
 
-    if sessionOptions.isEmpty {
+    if let iosMode = mode.iosMode {
+      let avMode = iosMode.toAVMode()
+      if sessionOptions.isEmpty {
+        try session.setCategory(category, mode: avMode)
+      } else {
+        try session.setCategory(category, mode: avMode, options: sessionOptions)
+      }
+    } else if sessionOptions.isEmpty {
       try session.setCategory(category, mode: .default)
     } else {
       try session.setCategory(category, options: sessionOptions)
