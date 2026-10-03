@@ -81,6 +81,8 @@
 
 ## 58.0.8 — 2026-09-28
 
+- Allow provisioning updates in `expo run:ios --device` for projects that already use automatic signing. ([#50270](https://github.com/expo/expo/pull/50270) by [@tahakocal](https://github.com/tahakocal))
+
 ### 💡 Others
 
 - [Internal] Fix the `BundleOptions` import in `internal/unstable-expo-updates-exports.d.ts`, which pointed at a subpath `@expo/metro` doesn't ship. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
