@@ -30,6 +30,15 @@ public protocol JavaScriptDecodable {
   /// stay zero-copy.
   @JavaScriptActor
   static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
+
+  /// The kinds of JavaScript value `decode` can accept.
+  ///
+  /// A kind outside the set is definitive: `decode` would throw for a value of that kind. A kind in the
+  /// set only means the type may decode it, so `decode` can still throw, for example for an
+  /// out-of-range number or a missing record field. Code that picks between several types, like a
+  /// union, reads it to skip the ones that can't match without paying for a thrown error. Defaults to
+  /// `.all`, so a type that doesn't declare it is always tried.
+  static var decodableKinds: JavaScriptValueKinds { get }
 }
 
 extension JavaScriptDecodable {
@@ -57,5 +66,11 @@ extension JavaScriptDecodable {
     -> Self
   {
     return try decode(value.copied(in: runtime), in: runtime)
+  }
+
+  /// Default: every kind, so a conformer that doesn't declare its kinds is always tried.
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .all
   }
 }
