@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.util.Log
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
 import expo.modules.appmetrics.jserrors.PendingErrorStore
@@ -17,6 +18,12 @@ import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
 import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
+import expo.modules.appmetrics.spans.SpanHandle
+import expo.modules.appmetrics.spans.SpanRecorder
+import expo.modules.appmetrics.spans.SpanWriter
+import expo.modules.appmetrics.storage.Span
+import expo.modules.appmetrics.logevents.MAX_EVENT_NAME_LENGTH
+import expo.modules.appmetrics.logevents.RESERVED_EVENT_NAME_PREFIX
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateDisplayName
@@ -77,6 +84,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private var networkRequestPersistence: NetworkRequestPersistence? = null
 
   // Lazy-initialized metadata - created once when first needed
+  /** The shared sink every span producer writes completed rows through. Set in `OnCreate`. */
+  private lateinit var spanWriter: SpanWriter
+
   private val metadata: AppMetadata? by lazy {
     AppMetadataProvider.getAppMetadata(appContext.service<ConstantsInterface>(), context)
   }
@@ -138,6 +148,64 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         GlobalAttributes.set(attributes)
       }
 
+      Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanHandle? ->
+        val recorder = SpanRecorder(
+          name = validatedSpanName(name),
+          sessionId = mainSession.sessionId,
+          parentTraceId = parent?.recorder?.traceId,
+          parentSpanId = parent?.recorder?.spanId,
+          attributes = options?.attributes,
+          startTimestampMs = resolvedTimestamp(options?.startTime, "startTime")
+        )
+        SpanHandle(recorder = recorder, onEnd = spanWriter::write)
+      }
+
+      Function("recordSpan") { name: String, options: RecordSpanOptions ->
+        val startTime = options.startTime?.let(::unixMilliseconds) ?: throw MissingSpanWindowException()
+        val endTime = options.endTime?.let(::unixMilliseconds) ?: throw MissingSpanWindowException()
+        // One code path with `startSpan`: an ephemeral recorder validates the attributes and
+        // produces the same write-once row shape.
+        val recorder = SpanRecorder(
+          name = validatedSpanName(name),
+          sessionId = mainSession.sessionId,
+          attributes = options.attributes,
+          startTimestampMs = startTime,
+          attributeSource = "recordSpan"
+        )
+        recorder.end(statusCode = null, statusMessage = null, endTimestampMs = endTime)?.let {
+          spanWriter.write(it)
+        }
+      }
+
+      Class("Span", SpanHandle::class) {
+        Constructor { ->
+          throw SpanConstructorUnavailableException()
+        }
+
+        Property("traceId") { span: SpanHandle -> span.recorder.traceId }
+        Property("spanId") { span: SpanHandle -> span.recorder.spanId }
+
+        Function("setAttributes") { span: SpanHandle, attributes: Map<String, Any?> ->
+          span.recorder.setAttributes(attributes)
+        }
+
+        Function("addEvent") { span: SpanHandle, name: String, options: SpanEventOptions? ->
+          span.recorder.addEvent(
+            name = name,
+            attributes = options?.attributes,
+            timeMs = resolvedTimestamp(options?.time, "time")
+          )
+        }
+
+        Function("end") { span: SpanHandle, options: SpanEndOptions? ->
+          span.end(
+            statusCode = spanStatusCode(options?.status),
+            statusMessage = options?.message,
+            endTimestampMs = resolvedTimestamp(options?.endTime, "endTime")
+          )
+        }
+      }
+
       Function("setNetworkTracesConfig") { config: NetworkTracesConfigParam ->
         val configuration = NetworkTracesConfiguration(
           enabled = config.enabled,
@@ -174,6 +242,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         JvmCrashHandler.currentSessionId = mainSession.sessionId
 
+        spanWriter = SpanWriter(
+          database = MetricsDatabase.getDatabase(context),
+          scope = scope
+        ) {
+          mainSession.awaitSessionPersisted()
+        }
+
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
@@ -183,8 +258,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // the main session. The await above keeps the FK satisfied for every span insert;
           // installation also drains requests buffered since process start.
           val persistence = NetworkRequestPersistence(
-            database = MetricsDatabase.getDatabase(context),
-            scope = scope,
+            writer = spanWriter,
+            // Read here rather than left to the constructor default: recording is opt-in, so
+            // without the persisted policy every span before the first `configure` is dropped.
             initialConfiguration = AppMetricsPreferences.getNetworkTracesConfiguration(context),
             sessionId = mainSession.sessionId
           )
@@ -419,3 +495,133 @@ data class NetworkTracesConfigParam(
   @Field val enabled: Boolean = true,
   @Field val filter: NetworkRequestFilter? = null
 ) : Record
+
+@OptimizedRecord
+data class StartSpanOptions(
+  @Field val attributes: Map<String, Any?>? = null,
+  /** Unix-epoch milliseconds overriding "now" as the span start. */
+  @Field val startTime: Double? = null
+) : Record
+
+@OptimizedRecord
+data class SpanEventOptions(
+  @Field val attributes: Map<String, Any?>? = null,
+  /** Unix-epoch milliseconds overriding "now" as the event time. */
+  @Field val time: Double? = null
+) : Record
+
+@OptimizedRecord
+data class SpanEndOptions(
+  /** `"ok"` or `"error"`; anything else throws. Omitted means UNSET, per the conventions. */
+  @Field val status: String? = null,
+  @Field val message: String? = null,
+  /** Unix-epoch milliseconds overriding "now" as the span end. */
+  @Field val endTime: Double? = null
+) : Record
+
+@OptimizedRecord
+data class RecordSpanOptions(
+  @Field val startTime: Double? = null,
+  @Field val endTime: Double? = null,
+  @Field val attributes: Map<String, Any?>? = null
+) : Record
+
+/**
+ * Unix-epoch milliseconds from a JS number, or null when the value can't be one.
+ *
+ * `toLong()` saturates: NaN becomes 0 and anything past the Long range becomes its bounds, each
+ * of which would record a garbage timestamp. The range check keeps this in step with iOS, where
+ * the same inputs make `Int64(exactly:)` return nil.
+ *
+ * `Long.MAX_VALUE.toDouble()` rounds up to 2^63, so the upper bound is exclusive: comparing
+ * `<=` would admit a value `toLong()` cannot represent.
+ */
+/**
+ * Resolves a caller-supplied timestamp, falling back to now.
+ *
+ * A value that is present but unusable warns rather than passing silently: substituting now
+ * would otherwise record a plausible-looking span whose window the caller never chose. A common
+ * cause is passing `performance.now()`, which measures uptime rather than wall-clock time.
+ */
+private fun resolvedTimestamp(value: Double?, field: String): Long {
+  if (value == null) {
+    return TimeUtils.getWallClockMillis()
+  }
+  return unixMilliseconds(value) ?: run {
+    Log.w(
+      TAG,
+      "[AppMetrics] Ignoring `$field`: $value is not unix-epoch milliseconds. " +
+        "Using the current time instead; pass a value from `Date.now()`."
+    )
+    TimeUtils.getWallClockMillis()
+  }
+}
+
+private fun unixMilliseconds(value: Double): Long? {
+  if (!value.isFinite()) {
+    return null
+  }
+  if (value >= Long.MAX_VALUE.toDouble() || value < Long.MIN_VALUE.toDouble()) {
+    return null
+  }
+  return value.toLong()
+}
+
+/**
+ * Validates a caller-provided span name, applying the rules `validateEventName` applies to log
+ * events. Unlike `logEvent`, which drops a bad record, `startSpan` has to return a handle, so a
+ * rejection throws instead.
+ */
+private fun validatedSpanName(name: String): String {
+  val trimmed = name.trim()
+  if (trimmed.isEmpty()) {
+    throw EmptySpanNameException()
+  }
+  if (trimmed.startsWith(RESERVED_EVENT_NAME_PREFIX)) {
+    throw ReservedSpanNameException(trimmed)
+  }
+  if (trimmed.length > MAX_EVENT_NAME_LENGTH) {
+    throw SpanNameTooLongException(trimmed.length)
+  }
+  return trimmed
+}
+
+/** Maps the JS `status` option to the OTLP status code. `null` stays UNSET. */
+private fun spanStatusCode(status: String?): Int? = when (status) {
+  null -> null
+  "ok" -> Span.STATUS_OK
+  "error" -> Span.STATUS_ERROR
+  else -> throw InvalidSpanStatusException(status)
+}
+
+private class SpanConstructorUnavailableException : CodedException(
+  "Span objects can't be constructed directly because a span's identity and session " +
+    "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+)
+
+private class EmptySpanNameException : CodedException(
+  "A span needs a non-empty name because the server rejects nameless spans. " +
+    "Pass a short, stable identifier for the operation being measured, like 'checkout' or 'image-decode'."
+)
+
+private class ReservedSpanNameException(name: String) : CodedException(
+  "A span name can't start with `expo.` (got `$name`) because that prefix is reserved for " +
+    "spans the SDK itself records, like network requests. Pick a name from your own namespace, " +
+    "like 'checkout' or 'image-decode'."
+)
+
+private class SpanNameTooLongException(length: Int) : CodedException(
+  "A span name can't exceed $MAX_EVENT_NAME_LENGTH characters (got $length) because " +
+    "the server rejects longer ones. Use a short, stable identifier and move the variable " +
+    "details into attributes."
+)
+
+private class InvalidSpanStatusException(status: String) : CodedException(
+  "'$status' is not a valid span status. Pass 'error' for a failed operation, 'ok' to " +
+    "explicitly mark success, or omit the status to leave it unset (the usual choice for successful spans)."
+)
+
+private class MissingSpanWindowException : CodedException(
+  "recordSpan needs both startTime and endTime (unix-epoch milliseconds) because it records " +
+    "an already-measured operation. To time an operation as it runs, use startSpan() and end() instead."
+)
