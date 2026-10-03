@@ -132,7 +132,7 @@ func downloadFileWithStore(
   } else {
     let downloadTask = URLSession.shared.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
       guard errorOrNil == nil else {
-        return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
+        return promise.reject(UnableToDownloadException(errorOrNil.map(describeDownloadError) ?? "unspecified error"))
       }
       guard let httpResponse = responseOrNil as? HTTPURLResponse else {
         return promise.reject(UnableToDownloadException("no response"))
@@ -293,7 +293,7 @@ class DownloadDelegate: NSObject, URLSessionDownloadDelegate {
     if (error as NSError).code == NSURLErrorCancelled {
       promise.reject(DownloadCancelledException())
     } else {
-      promise.reject(UnableToDownloadException(error.localizedDescription))
+      promise.reject(UnableToDownloadException(describeDownloadError(error)))
     }
   }
 }
