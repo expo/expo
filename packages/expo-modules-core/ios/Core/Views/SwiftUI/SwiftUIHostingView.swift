@@ -223,7 +223,17 @@ extension ExpoSwiftUI {
       }
       #endif
 
-      if window != nil, let parentController = reactViewController() {
+      guard window != nil else {
+        hostingController.view.removeFromSuperview()
+        hostingController.removeFromParent()
+        return
+      }
+
+      // A view mounted directly on the window, such as react-native-screens' `FullWindowOverlay`,
+      // has no view controller in its responder chain. Its SwiftUI content still has to be added,
+      // just without view controller containment.
+      let parentController = reactViewController()
+      if let parentController {
         #if !os(macOS)
         if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
           // Swift automatically adds the hostingController in the correct place when the parentController
@@ -234,15 +244,14 @@ extension ExpoSwiftUI {
         #else
         parentController.addChild(hostingController)
         #endif
-        addSubview(hostingController.view)
-        #if os(iOS) || os(tvOS)
-        hostingController.didMove(toParent: parentController)
-        #endif
-        setupHostingViewConstraints()
-      } else {
-        hostingController.view.removeFromSuperview()
-        hostingController.removeFromParent()
       }
+      addSubview(hostingController.view)
+      #if os(iOS) || os(tvOS)
+      if let parentController {
+        hostingController.didMove(toParent: parentController)
+      }
+      #endif
+      setupHostingViewConstraints()
     }
 
 #if os(macOS)
