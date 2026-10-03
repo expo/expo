@@ -1,0 +1,8 @@
+{
+  "//": "Per-SDK overrides for values the templates otherwise hard-code for the SDK this template ships with. Read by create-expo-module when the host project targets an older SDK; templates fall back to their literal values when no entry applies or the CLI predates this file.",
+  "55": {
+    "iosDeploymentTarget": "15.1",
+    "composeVersions": { "foundation": "1.10.2", "ui": "1.10.2", "material3": "1.5.0-alpha13" },
+    "modernExpoUI": false
+  }
+}

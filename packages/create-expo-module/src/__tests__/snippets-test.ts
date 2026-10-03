@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import type { Feature } from '../features';
 import type { Platform } from '../prompts';
+import type { SdkCompat } from '../sdkCompat';
 import {
   buildAppSnippets,
   buildModuleSnippets,
@@ -13,8 +14,9 @@ import {
 } from '../snippets';
 import type { SubstitutionData } from '../types';
 
-// Minimal mock data matching SubstitutionData shape
-const mockData: SubstitutionData = {
+// Minimal mock data matching SubstitutionData shape, plus the (empty) `compat` overrides that
+// `buildAugmentedData` adds before any snippet is rendered.
+const mockData: SubstitutionData & { compat: SdkCompat } = {
   project: {
     slug: 'my-module',
     name: 'MyModule',
@@ -35,6 +37,7 @@ const mockData: SubstitutionData = {
   license: 'MIT',
   repo: 'https://github.com/test/test',
   type: 'standalone' as const,
+  compat: {},
 };
 
 // Path to the actual snippets directory in the template package

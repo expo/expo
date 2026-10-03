@@ -1,3 +1,4 @@
+<% const sdk = typeof compat === 'undefined' ? {} : compat; -%>
 <% if (usesCompose) { -%>
 buildscript {
   repositories {
@@ -38,9 +39,9 @@ android {
 <% if (usesCompose) { -%>
 
 dependencies {
-  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
-  implementation 'androidx.compose.ui:ui-android:1.10.6'
-  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha17'
+  implementation 'androidx.compose.foundation:foundation-android:<%- sdk.composeVersions?.foundation ?? '1.10.6' %>'
+  implementation 'androidx.compose.ui:ui-android:<%- sdk.composeVersions?.ui ?? '1.10.6' %>'
+  implementation 'androidx.compose.material3:material3-android:<%- sdk.composeVersions?.material3 ?? '1.5.0-alpha17' %>'
   if (findProject(':expo-ui') != null) {
     implementation project(':expo-ui')
   } else {

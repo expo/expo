@@ -1,3 +1,4 @@
+<% const sdk = typeof compat === 'undefined' ? {} : compat; -%>
 <% if (type === 'remote') { -%>
 require 'json'
 
@@ -21,8 +22,8 @@ Pod::Spec.new do |s|
   s.homepage       = 'https://docs.expo.dev/modules/'
 <% } -%>
   s.platforms      = {
-    :ios => '16.4',
-    :tvos => '16.4'
+    :ios => '<%- sdk.iosDeploymentTarget ?? '16.4' %>',
+    :tvos => '<%- sdk.iosDeploymentTarget ?? '16.4' %>'
   }
 <% if (type === 'remote') { -%>
   s.swift_version  = '5.9'
