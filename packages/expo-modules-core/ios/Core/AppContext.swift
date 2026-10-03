@@ -464,24 +464,30 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   }
 
   /**
-   Called by `ExpoHostWrapper` on the main thread right before the host of this app context mounts views.
+   Starts observing the surface presenter of the host, so the views created while the host is mounting
+   get this app context. The presenter keeps observers weakly, so they don't need to be removed.
+   Its header calls the observer API deprecated, but it's the only public notification
+   that is sent right before the host creates component views.
    */
-  @objc
-  public func hostWillMountComponents() {
-    MainActor.assumeIsolated {
-      AppContext.mountingAppContexts.append(self)
-    }
+  private func observeMounting(with hostWrapper: ExpoHostWrapper) {
+    hostWrapper.addSurfacePresenterObserver(self)
   }
 
   /**
-   Called by `ExpoHostWrapper` on the main thread right after the host of this app context mounted views.
+   Called on the main thread right before the host of this app context mounts views.
    */
-  @objc
-  public func hostDidMountComponents() {
-    MainActor.assumeIsolated {
-      if let index = AppContext.mountingAppContexts.lastIndex(where: { $0 === self }) {
-        AppContext.mountingAppContexts.remove(at: index)
-      }
+  @MainActor
+  internal func hostWillMountComponents() {
+    AppContext.mountingAppContexts.append(self)
+  }
+
+  /**
+   Called on the main thread right after the host of this app context mounted views.
+   */
+  @MainActor
+  internal func hostDidMountComponents() {
+    if let index = AppContext.mountingAppContexts.lastIndex(where: { $0 === self }) {
+      AppContext.mountingAppContexts.remove(at: index)
     }
   }
 
@@ -769,7 +775,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
-    wrapper.observeMounting(for: self)
+    observeMounting(with: wrapper)
   }
 
   // MARK: - Statics
@@ -897,3 +903,23 @@ public typealias AppContextLostException = Exceptions.AppContextLost
 // Deprecated since v1.0.0
 @available(*, deprecated, renamed: "Exceptions.RuntimeLost")
 public typealias RuntimeLostException = Exceptions.RuntimeLost
+
+// MARK: - RCTSurfacePresenterObserver
+
+// The surface presenter only checks whether the observer responds to these selectors. The conformance to
+// `RCTSurfacePresenterObserver` itself can't be declared, because React isn't imported publicly.
+extension AppContext {
+  @objc(willMountComponentsWithRootTag:)
+  internal func willMountComponents(withRootTag rootTag: Int) {
+    MainActor.assumeIsolated {
+      hostWillMountComponents()
+    }
+  }
+
+  @objc(didMountComponentsWithRootTag:)
+  internal func didMountComponents(withRootTag rootTag: Int) {
+    MainActor.assumeIsolated {
+      hostDidMountComponents()
+    }
+  }
+}

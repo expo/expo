@@ -49,18 +49,6 @@ typedef void (NS_SWIFT_SENDABLE ^EXPromiseRejectBlock)(NSString * _Nullable code
  */
 - (void)registerNativeModules;
 
-#pragma mark - Mounting
-
-/**
- Called on the main thread right before the host of this app context mounts views.
- */
-- (void)hostWillMountComponents;
-
-/**
- Called on the main thread right after the host of this app context mounted views.
- */
-- (void)hostDidMountComponents;
-
 @end
 
 

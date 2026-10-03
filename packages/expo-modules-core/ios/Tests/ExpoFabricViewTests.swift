@@ -81,6 +81,25 @@ struct ExpoFabricViewTests {
   }
 
   @Test
+  func `tracks mounting through the surface presenter observer selectors`() throws {
+    let moduleName = uniqueModuleName()
+    let appContext = makeAppContext(moduleName: moduleName)
+    let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
+    // `RCTSurfacePresenter` calls these on its observers around each mount transaction.
+    let willMount = NSSelectorFromString("willMountComponentsWithRootTag:")
+    let didMount = NSSelectorFromString("didMountComponentsWithRootTag:")
+
+    #expect(appContext.responds(to: willMount))
+    #expect(appContext.responds(to: didMount))
+
+    appContext.willMountComponents(withRootTag: 1)
+    let view = viewClass.createComponentView() as? TestFabricView
+    appContext.didMountComponents(withRootTag: 1)
+
+    #expect(view?.appContext === appContext)
+  }
+
+  @Test
   func `falls back to the app context that registered views last`() throws {
     let moduleName = uniqueModuleName()
     let appContext = makeAppContext(moduleName: moduleName)
