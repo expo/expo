@@ -92,28 +92,18 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
       }
       for (const [entryPath, atoms] of plan.requiredChunksByEntryPath) {
         const facade = facadesByEntryPath.get(entryPath)!;
-        const requiredChunks = new Set(atoms.map((atom) => chunksByAtom.get(atom)!));
-        if (facade !== entryChunk && [...requiredChunks].every((chunk) => chunk === entryChunk)) {
-          chunks.delete(facade);
-          entryPathsByChunk.get(entryChunk)!.push(entryPath);
-          requiredChunksByEntryPath.set(entryPath, []);
-          continue;
-        }
+        const requiredChunks = new Set([facade, ...atoms.map((atom) => chunksByAtom.get(atom)!)]);
+        requiredChunks.delete(entryChunk);
         if (facade !== entryChunk && facade.deps.size === 0) {
           chunks.delete(facade);
           entryPathsByChunk.delete(facade);
+          requiredChunks.delete(facade);
+          if (requiredChunks.size === 0) entryPathsByChunk.get(entryChunk)!.push(entryPath);
         }
         for (const ownerChunk of requiredChunks) {
-          if (ownerChunk !== entryChunk && ownerChunk !== facade)
-            facade.requiredChunks.add(ownerChunk);
+          if (ownerChunk !== facade) facade.requiredChunks.add(ownerChunk);
         }
-        requiredChunksByEntryPath.set(
-          entryPath,
-          [facade, ...requiredChunks].filter(
-            (chunk, index, all) =>
-              chunks.has(chunk) && chunk !== entryChunk && all.indexOf(chunk) === index
-          )
-        );
+        requiredChunksByEntryPath.set(entryPath, [...requiredChunks]);
       }
 
       // Workers keep their own copies of dependencies shared with the page.
