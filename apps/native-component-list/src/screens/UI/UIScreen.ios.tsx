@@ -179,6 +179,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ArrangementView component',
+    route: 'ui/arrangementview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ArrangementViewScreen'));
+    },
+  },
+  {
     name: 'Menu component',
     route: 'ui/menu',
     options: {},
