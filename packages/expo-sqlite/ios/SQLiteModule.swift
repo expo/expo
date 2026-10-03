@@ -321,7 +321,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
           databaseName: String(cString: UnsafePointer(databaseName)),
           databaseFilePath: String(cString: UnsafePointer(databaseFilePath)),
           tableName: String(cString: UnsafePointer(tableName)),
-          rowId: Int(rowId),
+          rowId: Double(rowId),
           typeId: SQLAction.fromCode(value: action)
         ))
       }
