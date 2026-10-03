@@ -57,6 +57,46 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
     try finalize(database: database)
   }
 
+  @JS(.concurrent)
+  func runAsync(
+    database: NativeDatabase,
+    bindParams: [String: SQLiteBindValue?],
+    bindBlobParams: [String: ArrayBuffer],
+    shouldPassAsArray: Bool
+  ) async throws -> SQLiteRunResult {
+    return try run(database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
+  }
+
+  @JS
+  func runSync(
+    database: NativeDatabase,
+    bindParams: [String: SQLiteBindValue?],
+    bindBlobParams: [String: ArrayBuffer],
+    shouldPassAsArray: Bool
+  ) throws -> SQLiteRunResult {
+    return try run(database: database, bindParams: bindParams, bindBlobParams: bindBlobParams, shouldPassAsArray: shouldPassAsArray)
+  }
+
+  @JS(.concurrent)
+  func stepAsync(database: NativeDatabase) async throws -> [SQLiteColumnValue?]? {
+    return try step(database: database)
+  }
+
+  @JS
+  func stepSync(database: NativeDatabase) throws -> [SQLiteColumnValue?]? {
+    return try step(database: database)
+  }
+
+  @JS(.concurrent)
+  func getAllAsync(database: NativeDatabase) async throws -> [[SQLiteColumnValue?]] {
+    return try getAll(database: database)
+  }
+
+  @JS
+  func getAllSync(database: NativeDatabase) throws -> [[SQLiteColumnValue?]] {
+    return try getAll(database: database)
+  }
+
   // MARK: - Implementation shared by the sync and async members
 
   private func reset(database: NativeDatabase) throws {
@@ -99,6 +139,122 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
       }
     }
   }
+
+  private func run(
+    database: NativeDatabase,
+    bindParams: [String: SQLiteBindValue?],
+    bindBlobParams: [String: ArrayBuffer],
+    shouldPassAsArray: Bool
+  ) throws -> SQLiteRunResult {
+    return try lock.withLock { _ in
+      try ensureNotFinalized()
+      try database.ensureOpen()
+
+      exsqlite3_reset(pointer)
+      exsqlite3_clear_bindings(pointer)
+      for (key, param) in bindParams {
+        let index = try bindParamIndex(for: key, shouldPassAsArray: shouldPassAsArray)
+        guard index > 0 else {
+          continue
+        }
+        if let param {
+          param.bind(to: pointer, at: index)
+        } else {
+          exsqlite3_bind_null(pointer, index)
+        }
+      }
+      for (key, param) in bindBlobParams {
+        let index = try bindParamIndex(for: key, shouldPassAsArray: shouldPassAsArray)
+        if index > 0 {
+          SQLiteBindValue.blob(param).bind(to: pointer, at: index)
+        }
+      }
+
+      let ret = exsqlite3_step(pointer)
+      if ret != SQLITE_ROW && ret != SQLITE_DONE {
+        throw SQLiteErrorException(database.lastErrorMessage())
+      }
+      return SQLiteRunResult(
+        lastInsertRowId: Double(exsqlite3_last_insert_rowid(database.pointer)),
+        changes: Int(exsqlite3_changes(database.pointer)),
+        firstRowValues: ret == SQLITE_ROW ? try columnValues() : []
+      )
+    }
+  }
+
+  private func step(database: NativeDatabase) throws -> [SQLiteColumnValue?]? {
+    return try lock.withLock { _ in
+      try ensureNotFinalized()
+      try database.ensureOpen()
+
+      let ret = exsqlite3_step(pointer)
+      if ret == SQLITE_ROW {
+        return try columnValues()
+      }
+      if ret != SQLITE_DONE {
+        throw SQLiteErrorException(database.lastErrorMessage())
+      }
+      return nil
+    }
+  }
+
+  private func getAll(database: NativeDatabase) throws -> [[SQLiteColumnValue?]] {
+    return try lock.withLock { _ in
+      try ensureNotFinalized()
+      try database.ensureOpen()
+
+      var rows: [[SQLiteColumnValue?]] = []
+      while true {
+        let ret = exsqlite3_step(pointer)
+        if ret == SQLITE_ROW {
+          rows.append(try columnValues())
+          continue
+        }
+        if ret == SQLITE_DONE {
+          break
+        }
+        throw SQLiteErrorException(database.lastErrorMessage())
+      }
+      return rows
+    }
+  }
+
+  /// The values of the current row. Call it inside `lock`, after a step that returned `SQLITE_ROW`.
+  private func columnValues() throws -> [SQLiteColumnValue?] {
+    let columnCount = exsqlite3_column_count(pointer)
+    var values: [SQLiteColumnValue?] = []
+    values.reserveCapacity(Int(columnCount))
+    for index in 0..<columnCount {
+      values.append(try SQLiteColumnValue.read(from: pointer, column: index))
+    }
+    return values
+  }
+
+  /// The 1-based SQLite index of a bind parameter: an array position for positional parameters, or the
+  /// index of the named parameter otherwise. Zero means the statement has no such parameter.
+  private func bindParamIndex(for key: String, shouldPassAsArray: Bool) throws -> Int32 {
+    if shouldPassAsArray {
+      guard let position = Int32(key) else {
+        throw InvalidBindParameterException()
+      }
+      return position + 1
+    }
+    return exsqlite3_bind_parameter_index(pointer, key)
+  }
+}
+
+/// The result of `NativeStatement.run`: the effect of the statement and the values of the first row
+/// it returned, if any.
+@Record
+struct SQLiteRunResult {
+  // A `Double` rather than SQLite's `Int64` or an `Int`: JavaScript reads the row id as a number, an
+  // `Int64` would encode as a BigInt, and an `Int` throws above 2^53. The row id is connection-wide, so a
+  // throw would also fail every later run on the connection. Above 2^53 it loses precision, like integer
+  // columns do.
+  var lastInsertRowId: Double
+  // `sqlite3_changes` returns a 32-bit count, which always fits a JavaScript number.
+  var changes: Int
+  var firstRowValues: [SQLiteColumnValue?]
 }
 
 // `==` lives in an extension: an operator declared inside a type that carries a member-attribute macro
