@@ -50,14 +50,20 @@ public class LocalizationModule: Module {
   }
 
   func setRTLPreferences() {
-    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool ?? true
-    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool ?? false
+    // Only a value the app config sets is written: an unset key leaves the preference to the app's own
+    // I18nManager.allowRTL / forceRTL calls, which would otherwise be reset to the defaults on every launch.
+    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool
+    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool
 
     // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
     // Uses required reason API based on the following reason: CA92.1
     if let i18nUtil = RCTI18nUtil.sharedInstance() {
-      i18nUtil.allowRTL(supportsRTL)
-      i18nUtil.forceRTL(forcesRTL)
+      if let supportsRTL {
+        i18nUtil.allowRTL(supportsRTL)
+      }
+      if let forcesRTL {
+        i18nUtil.forceRTL(forcesRTL)
+      }
     }
   }
 
