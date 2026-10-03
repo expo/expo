@@ -37,6 +37,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'swift-ui/AccessoryWidgetBackground/index.tsx',
     'expo-ui',
   ],
+  'expo-ui/swift-ui/background': ['swift-ui/Background/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -121,6 +122,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/icon': ['jetpack-compose/Icon/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/iconbutton': ['jetpack-compose/IconButton/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/image': ['jetpack-compose/Image/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/box': ['jetpack-compose/Box/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/row': ['jetpack-compose/Row/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
@@ -184,7 +186,9 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
 export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
+  'expo-ai': ['index.ts'],
   'expo-apple-authentication': ['index.ts'],
+  'expo-app-intents': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': ['index.ts'],
   'expo-auth-session': ['index.ts'],
@@ -286,6 +290,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-observe': ['index.ts'],
   'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
 };
@@ -372,9 +377,17 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    // Config plugin types belong on the package's main reference page only. Sub-page
+    // entries (e.g. `expo-router/stack`) share the package directory and would otherwise
+    // repeat them on every page.
+    const isMainPackageEntry = jsonFileName === packageName;
     const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
     const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
-    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+    if (
+      isMainPackageEntry &&
+      fs.existsSync(pluginEntryPath) &&
+      fs.existsSync(pluginTsConfigPath)
+    ) {
       const pluginApp = await Application.bootstrapWithPlugins(
         {
           ...typedocOptions,

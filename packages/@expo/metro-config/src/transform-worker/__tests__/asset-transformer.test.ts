@@ -28,6 +28,9 @@ function getMockFontDev(): AssetData {
     __packager_asset: true,
     fileSystemLocation: '/root/local',
     httpServerLocation: '/assets/?unstable_path=.%2Fassets%2Ffonts',
+    // `getAssetData()` only measures images, so fonts come back without dimensions.
+    width: undefined,
+    height: undefined,
     scales: [1],
     hash: '49a79d66bdea2debf1832bf4d7aca127',
     name: 'SpaceMono-Regular',

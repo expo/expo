@@ -82,25 +82,22 @@ extension VideoPlayerObserverDelegate {
   func onPlayerDeinit(player: VideoPlayer) {}
 }
 
-// Wrapper used to store WeakReferences to the observer delegate
+// Wrapper used to store WeakReferences to the observer delegate.
 final class WeakPlayerObserverDelegate: Hashable {
   private(set) weak var value: VideoPlayerObserverDelegate?
+  private let id: ObjectIdentifier
 
-  init(value: VideoPlayerObserverDelegate? = nil) {
+  init(value: VideoPlayerObserverDelegate) {
     self.value = value
+    self.id = ObjectIdentifier(value)
   }
 
   static func == (lhs: WeakPlayerObserverDelegate, rhs: WeakPlayerObserverDelegate) -> Bool {
-    guard let lhsValue = lhs.value, let rhsValue = rhs.value else {
-      return lhs.value == nil && rhs.value == nil
-    }
-    return ObjectIdentifier(lhsValue) == ObjectIdentifier(rhsValue)
+    return lhs.id == rhs.id
   }
 
   func hash(into hasher: inout Hasher) {
-    if let value {
-      hasher.combine(ObjectIdentifier(value))
-    }
+    hasher.combine(id)
   }
 }
 
@@ -112,7 +109,10 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   var player: AVPlayer? {
     owner?.ref
   }
-  var delegates = Set<WeakPlayerObserverDelegate>()
+  private let delegatesStore = Mutex(Set<WeakPlayerObserverDelegate>())
+  var delegates: Set<WeakPlayerObserverDelegate> {
+    delegatesStore.withLock { $0 }
+  }
   private var currentItem: VideoPlayerItem?
   private var isLoadingAsynchronously = false
   private var loadedCurrentItem = false
@@ -205,11 +205,16 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
 
   func registerDelegate(delegate: VideoPlayerObserverDelegate) {
     let weakDelegate = WeakPlayerObserverDelegate(value: delegate)
-    delegates.insert(weakDelegate)
+    delegatesStore.withLock { delegates in
+      delegates = delegates.filter { $0.value != nil }
+      delegates.insert(weakDelegate)
+    }
   }
 
   func unregisterDelegate(delegate: VideoPlayerObserverDelegate) {
-    delegates.remove(WeakPlayerObserverDelegate(value: delegate))
+    delegatesStore.withLock { delegates in
+      delegates.remove(WeakPlayerObserverDelegate(value: delegate))
+    }
   }
 
   func notifyPlayerDeinit(player: VideoPlayer) {
@@ -220,7 +225,7 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
 
   func cleanup() {
     self.videoSourceLoader?.unregisterListener(listener: self)
-    delegates.removeAll()
+    delegatesStore.withLock { $0.removeAll() }
     invalidatePlayerObservers()
     invalidateCurrentPlayerItemObservers()
     stopTimeUpdates()

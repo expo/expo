@@ -1,8 +1,10 @@
 import { requireNativeView } from 'expo';
 import type { ReactElement, ComponentType } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { LayoutChangeEvent } from 'react-native';
 
+import { PresentedContentContext, useIsPresentedInOwnWindow } from '../../PresentedContentContext';
 import type { ModifierConfig } from '../../types';
+import { resolveMatchContents } from '../../utils/matchContents';
 import type { PrimitiveBaseProps } from '../layout';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -10,10 +12,17 @@ export interface RNHostProps extends PrimitiveBaseProps {
   /**
    * When `true`, the RNHost will update its size in the Jetpack Compose view tree to match the children's size.
    * When `false`, the RNHost will use the size of the parent Jetpack Compose View.
+   * Pass an object to choose per axis. For example, `{ vertical: true }` takes the width from the
+   * parent and the height from the children, so text wraps and grows vertically.
    * Can be only set once on mount.
    * @default false
    */
-  matchContents?: boolean;
+  matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
+  /**
+   * Called on mount and whenever this view's layout in the React Native view tree changes.
+   * With `matchContents`, the reported size is the one measured from the hosted view.
+   */
+  onLayout?: (event: LayoutChangeEvent) => void;
   /**
    * The RN View to be hosted.
    */
@@ -22,37 +31,57 @@ export interface RNHostProps extends PrimitiveBaseProps {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-  /**
-   * Style applied to the host view's React Native shadow node. Useful for
-   * controlling its layout position (e.g. `position: 'absolute'`) so the shadow
-   * layout matches where the hosting Compose component draws the content —
-   * important for `measure()`-based hit-testing such as `Pressable`.
-   */
-  style?: StyleProp<ViewStyle>;
 }
 
-type NativeRNHostProps = RNHostProps;
+type NativeRNHostProps = Omit<RNHostProps, 'matchContents'> & {
+  layoutRoot: boolean;
+  matchContentsHorizontal: boolean;
+  matchContentsVertical: boolean;
+  /**
+   * Internal. Drives the shadow node's content measurement, see
+   * `ExpoViewShadowNode::sizesToContent`.
+   */
+  expoInternalSizeFromChildren?: boolean;
+};
 const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
   'ExpoUI',
   'RNHostView'
 );
 
-function transformProps(props: RNHostProps): NativeRNHostProps {
-  const { modifiers, ...restProps } = props;
+function transformProps(props: RNHostProps, layoutRoot: boolean): NativeRNHostProps {
+  const { modifiers, matchContents, ...restProps } = props;
+  const { horizontal: matchContentsHorizontal, vertical: matchContentsVertical } =
+    resolveMatchContents(matchContents);
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    layoutRoot,
+    matchContentsHorizontal,
+    matchContentsVertical,
+    expoInternalSizeFromChildren: matchContentsHorizontal || matchContentsVertical,
   };
 }
 
 export function RNHostView(props: RNHostProps) {
+  // Content presented in its own window — a modal bottom sheet, a dialog — has no React root above
+  // it, so it dispatches its own touches and is measured from itself. Everywhere else the surface
+  // root already streams this subtree's touches, and a second stream in a second coordinate space
+  // is what makes a `Pressable` drop its press on the first finger movement.
+  const layoutRoot = useIsPresentedInOwnWindow();
+
+  const nativeProps = transformProps(props, layoutRoot);
+
   return (
     <NativeRNHostView
-      {...transformProps(props)}
+      {...nativeProps}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
-      key={props.matchContents ? 'matchContents' : 'noMatchContents'}
-    />
+      key={`${nativeProps.matchContentsHorizontal}-${nativeProps.matchContentsVertical}`}>
+      {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
+      <PresentedContentContext.Provider value={false}>
+        {props.children}
+      </PresentedContentContext.Provider>
+    </NativeRNHostView>
   );
 }

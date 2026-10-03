@@ -45,7 +45,7 @@ test('converts path string to initial state', () => {
 
   expect(getStateFromPath<object>(path)).toEqual(state);
   expect(getStateFromPath<object>(getPathFromState<object>(state))).toEqual(
-    changePath(state, '/foo/bar/baz%20qux?author=jane%20%26%20co&valid=true')
+    changePath(state, '/foo/bar/baz%20qux?author=jane+%26+co&valid=true')
   );
 });
 
@@ -68,7 +68,7 @@ test('decodes encoded params in path', () => {
     routes: [
       {
         name: 'Foo',
-        params: { id: 'bar_#_foo' }, // Fork - Expo Router copies params to higher levels
+        params: { id: 'bar_#_foo' }, // Expo Router copies params to higher levels
         state: {
           routes: [
             {
@@ -105,7 +105,7 @@ test('decodes encoded params in path that have encoded /', () => {
     routes: [
       {
         name: 'Foo',
-        params: { id: 'bar_/_foo' }, // Fork - Expo Router copies params to higher levels
+        params: { id: 'bar_/_foo' }, // Expo Router copies params to higher levels
         state: {
           routes: [
             {
@@ -156,7 +156,7 @@ test('converts path string to initial state with config', () => {
       {
         name: 'Foo',
         params: {
-          // Fork - Expo Router copies params to higher levels
+          // Expo Router copies params to higher levels
           fruit: 'apple',
           type: 'sweet',
           author: 'Jane',
@@ -168,7 +168,7 @@ test('converts path string to initial state with config', () => {
               params: {
                 fruit: 'apple',
                 type: 'sweet',
-                author: 'Jane', // Fork - Expo Router copies params to higher levels
+                author: 'Jane', // Expo Router copies params to higher levels
               },
               state: {
                 routes: [
@@ -179,8 +179,8 @@ test('converts path string to initial state with config', () => {
                       count: 10,
                       answer: '42',
                       valid: true,
-                      fruit: 'apple', // Fork - Expo Router copies params to higher levels
-                      type: 'sweet', // Fork - Expo Router copies params to higher levels
+                      fruit: 'apple', // Expo Router copies params to higher levels
+                      type: 'sweet', // Expo Router copies params to higher levels
                     },
                     path,
                   },
@@ -297,7 +297,7 @@ test('converts path string to initial state with config with nested screens', ()
       {
         name: 'Foo',
         params: {
-          // Fork - Expo Router copies params to higher levels
+          // Expo Router copies params to higher levels
           fruit: 'apple',
           type: 'sweet',
           author: 'Jane',
@@ -307,7 +307,7 @@ test('converts path string to initial state with config with nested screens', ()
             {
               name: 'Foe',
               params: {
-                // Fork - Expo Router copies params to higher levels
+                // Expo Router copies params to higher levels
                 fruit: 'apple',
                 type: 'sweet',
                 author: 'Jane',
@@ -319,7 +319,7 @@ test('converts path string to initial state with config with nested screens', ()
                     params: {
                       fruit: 'apple',
                       type: 'sweet',
-                      author: 'Jane', // Fork - Expo Router copies params to higher levels
+                      author: 'Jane', // Expo Router copies params to higher levels
                     },
                     state: {
                       routes: [
@@ -330,8 +330,8 @@ test('converts path string to initial state with config with nested screens', ()
                             count: 10,
                             answer: '42',
                             valid: true,
-                            fruit: 'apple', // Fork - Expo Router copies params to higher levels
-                            type: 'sweet', // Fork - Expo Router copies params to higher levels
+                            fruit: 'apple', // Expo Router copies params to higher levels
+                            type: 'sweet', // Expo Router copies params to higher levels
                           },
                           path,
                         },
@@ -383,7 +383,7 @@ test('converts path string to initial state with config with nested screens and 
       {
         name: 'Foo',
         params: {
-          // Fork - Expo Router copies params to higher levels
+          // Expo Router copies params to higher levels
           author: 'Jane',
         },
         state: {
@@ -391,7 +391,7 @@ test('converts path string to initial state with config with nested screens and 
             {
               name: 'Foe',
               params: {
-                // Fork - Expo Router copies params to higher levels
+                // Expo Router copies params to higher levels
                 author: 'Jane',
               },
               state: {
@@ -468,14 +468,14 @@ test('handles nested object with unused configs and with parse in it', () => {
         params: {
           fruit: 'apple',
           type: 'sweet',
-          author: 'Jane', // Fork - Expo Router copies params to higher levels
+          author: 'Jane', // Expo Router copies params to higher levels
         },
         state: {
           routes: [
             {
               name: 'Foo',
               params: {
-                // Fork - Expo Router copies params to higher levels
+                // Expo Router copies params to higher levels
                 author: 'Jane',
                 fruit: 'apple',
                 type: 'sweet',
@@ -485,7 +485,7 @@ test('handles nested object with unused configs and with parse in it', () => {
                   {
                     name: 'Foe',
                     params: {
-                      // Fork - Expo Router copies params to higher levels
+                      // Expo Router copies params to higher levels
                       author: 'Jane',
                       fruit: 'apple',
                       type: 'sweet',
@@ -495,7 +495,7 @@ test('handles nested object with unused configs and with parse in it', () => {
                         {
                           name: 'Baz',
                           params: {
-                            // Fork - Expo Router copies params to higher levels
+                            // Expo Router copies params to higher levels
                             author: 'Jane',
                             fruit: 'apple',
                             type: 'sweet',
@@ -581,7 +581,7 @@ test('handles parse in nested object for second route depth', () => {
   expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-test('handles parse in nested object for second route depth and and path and parse in roots', () => {
+test('handles parse in nested object for second route depth and path and parse in roots', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -647,7 +647,7 @@ test('handles path at top level', () => {
     routes: [
       {
         name: 'Foo',
-        params: { fruit: 'apple' }, // Fork - Expo Router copies params to higher levels
+        params: { fruit: 'apple' }, // Expo Router copies params to higher levels
         state: {
           routes: [
             {
@@ -839,7 +839,7 @@ test('handles two initialRouteNames', () => {
         params: {
           fruit: 'apple',
           type: 'sweet',
-          author: 'Jane', // Fork - Expo Router copies params to higher levels
+          author: 'Jane', // Expo Router copies params to higher levels
         },
         state: {
           routes: [
@@ -847,7 +847,7 @@ test('handles two initialRouteNames', () => {
               name: 'Foo',
               params: {
                 author: 'Jane',
-                // Fork - Expo Router copies params to higher levels
+                // Expo Router copies params to higher levels
                 fruit: 'apple',
                 type: 'sweet',
               },
@@ -857,7 +857,7 @@ test('handles two initialRouteNames', () => {
                     name: 'Foe',
                     params: {
                       author: 'Jane',
-                      // Fork - Expo Router copies params to higher levels
+                      // Expo Router copies params to higher levels
                       fruit: 'apple',
                       type: 'sweet',
                     },
@@ -867,7 +867,7 @@ test('handles two initialRouteNames', () => {
                           name: 'Baz',
                           params: {
                             author: 'Jane',
-                            // Fork - Expo Router copies params to higher levels
+                            // Expo Router copies params to higher levels
                             fruit: 'apple',
                             type: 'sweet',
                           },
@@ -878,7 +878,7 @@ test('handles two initialRouteNames', () => {
                                 name: 'Bos',
                                 params: {
                                   author: 'Jane',
-                                  // Fork - Expo Router copies params to higher levels
+                                  // Expo Router copies params to higher levels
                                   fruit: 'apple',
                                   type: 'sweet',
                                 },
@@ -890,7 +890,7 @@ test('handles two initialRouteNames', () => {
                                   author: 'Jane',
                                   count: 10,
                                   valid: true,
-                                  // Fork - Expo Router copies params to higher levels
+                                  // Expo Router copies params to higher levels
                                   fruit: 'apple',
                                   type: 'sweet',
                                 },
@@ -963,14 +963,14 @@ test('accepts initialRouteName without config for it', () => {
         params: {
           fruit: 'apple',
           type: 'sweet',
-          author: 'Jane', // Fork - Expo Router copies params to higher levels
+          author: 'Jane', // Expo Router copies params to higher levels
         },
         state: {
           routes: [
             {
               name: 'Foo',
               params: {
-                // Fork - Expo Router copies params to higher levels
+                // Expo Router copies params to higher levels
                 author: 'Jane',
                 fruit: 'apple',
                 type: 'sweet',
@@ -980,7 +980,7 @@ test('accepts initialRouteName without config for it', () => {
                   {
                     name: 'Foe',
                     params: {
-                      // Fork - Expo Router copies params to higher levels
+                      // Expo Router copies params to higher levels
                       author: 'Jane',
                       fruit: 'apple',
                       type: 'sweet',
@@ -990,7 +990,7 @@ test('accepts initialRouteName without config for it', () => {
                         {
                           name: 'Baz',
                           params: {
-                            // Fork - Expo Router copies params to higher levels
+                            // Expo Router copies params to higher levels
                             author: 'Jane',
                             fruit: 'apple',
                             type: 'sweet',
@@ -1002,7 +1002,7 @@ test('accepts initialRouteName without config for it', () => {
                                 name: 'Bas',
                                 params: {
                                   author: 'Jane',
-                                  // Fork - Expo Router copies params to higher levels
+                                  // Expo Router copies params to higher levels
                                   fruit: 'apple',
                                   type: 'sweet',
                                 },
@@ -1014,7 +1014,7 @@ test('accepts initialRouteName without config for it', () => {
                                   author: 'Jane',
                                   count: 10,
                                   valid: true,
-                                  // Fork - Expo Router copies params to higher levels
+                                  // Expo Router copies params to higher levels
                                   fruit: 'apple',
                                   type: 'sweet',
                                 },
@@ -1281,7 +1281,7 @@ test('chooses more exhaustive pattern', () => {
       {
         name: 'Foe',
 
-        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1371,7 +1371,7 @@ test('handles same paths beginnings with params', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1426,7 +1426,7 @@ test('handles not taking path with too many segments', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1481,7 +1481,7 @@ test('handles differently ordered params v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1536,7 +1536,7 @@ test('handles differently ordered params v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1591,7 +1591,7 @@ test('handles differently ordered params v3', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1646,7 +1646,7 @@ test('handles differently ordered params v4', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, pwd: 20 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, pwd: 20 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1703,7 +1703,7 @@ test('handles simple optional params', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1758,7 +1758,7 @@ test('handle 2 optional params at the end v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1813,7 +1813,7 @@ test('handle 2 optional params at the end v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, nip: 10 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, nip: 10 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1871,7 +1871,7 @@ test('handle 2 optional params at the end v3', () => {
         name: 'Foe',
 
         params: {
-          // Fork - Expo Router copies params to higher levels
+          // Expo Router copies params to higher levels
           id: 5,
           nip: 10,
           pwd: 15,
@@ -1931,7 +1931,7 @@ test('handle optional params in the middle v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, pwd: 10 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, pwd: 10 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -1987,7 +1987,7 @@ test('handle optional params in the middle v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, nip: 10, pwd: 15 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, nip: 10, pwd: 15 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -2044,7 +2044,7 @@ test('handle optional params in the middle v3', () => {
     routes: [
       {
         name: 'Foe',
-        params: { id: 5, pwd: 10, smh: 15 }, // Fork - Expo Router copies params to higher levels
+        params: { id: 5, pwd: 10, smh: 15 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -2101,7 +2101,7 @@ test('handle optional params in the middle v4', () => {
     routes: [
       {
         name: 'Foe',
-        params: { pwd: 5, id: 10 }, // Fork - Expo Router copies params to higher levels
+        params: { pwd: 5, id: 10 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -2158,7 +2158,7 @@ test('handle optional params in the middle v5', () => {
     routes: [
       {
         name: 'Foe',
-        params: { nip: 5, pwd: 10, id: 15 }, // Fork - Expo Router copies params to higher levels
+        params: { nip: 5, pwd: 10, id: 15 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -2215,7 +2215,7 @@ test('handle optional params in the beginning v1', () => {
     routes: [
       {
         name: 'Foe',
-        params: { nip: 5, pwd: 10, id: 15 }, // Fork - Expo Router copies params to higher levels
+        params: { nip: 5, pwd: 10, id: 15 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -2274,7 +2274,7 @@ test('handle optional params in the beginning v2', () => {
     routes: [
       {
         name: 'Foe',
-        params: { nip: 5, pwd: 10, id: 15 }, // Fork - Expo Router copies params to higher levels
+        params: { nip: 5, pwd: 10, id: 15 }, // Expo Router copies params to higher levels
         state: {
           index: 1,
           routes: [
@@ -2322,7 +2322,7 @@ test('merges parent patterns if needed', () => {
         name: 'Foo',
         params: {
           bar: 42,
-          qux: 'babel', // Fork - Expo Router copies params to higher levels
+          qux: 'babel', // Expo Router copies params to higher levels
         },
         state: {
           routes: [
@@ -2330,7 +2330,7 @@ test('merges parent patterns if needed', () => {
               name: 'Baz',
               params: {
                 qux: 'babel',
-                bar: 42, // Fork - Expo Router copies params to higher levels
+                bar: 42, // Expo Router copies params to higher levels
               },
               path,
             },
@@ -2364,7 +2364,7 @@ test('ignores extra slashes in the pattern', () => {
     routes: [
       {
         name: 'Foo',
-        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+        params: { id: '42' }, // Expo Router copies params to higher levels
         state: {
           routes: [
             {
@@ -2428,7 +2428,7 @@ test('matches wildcard patterns at nested level', () => {
     routes: [
       {
         name: 'Foo',
-        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+        params: { id: '42' }, // Expo Router copies params to higher levels
         state: {
           routes: [
             {
@@ -2439,7 +2439,7 @@ test('matches wildcard patterns at nested level', () => {
                   {
                     name: '404',
                     path,
-                    params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+                    params: { id: '42' }, // Expo Router copies params to higher levels
                   },
                 ],
               },
@@ -2524,7 +2524,7 @@ test('tries to match wildcard patterns at the end', () => {
     routes: [
       {
         name: 'Foo',
-        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+        params: { id: '42' }, // Expo Router copies params to higher levels
         state: {
           routes: [
             {
@@ -2535,7 +2535,7 @@ test('tries to match wildcard patterns at the end', () => {
                   {
                     name: 'Test',
                     path,
-                    params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+                    params: { id: '42' }, // Expo Router copies params to higher levels
                   },
                 ],
               },
@@ -2607,7 +2607,7 @@ test('matches screen with overlapping initial path and wildcard', () => {
     routes: [
       {
         name: 'Foo',
-        params: { id: '42' }, // Fork - Expo Router copies params to higher levels
+        params: { id: '42' }, // Expo Router copies params to higher levels
         state: {
           routes: [{ name: 'Baz', params: { id: '42' }, path }],
         },
@@ -2796,7 +2796,7 @@ test('throws when invalid properties are specified in the config', () => {
 
     If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
-    See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
+    Expo Router generates its linking configuration from files in the app directory."
   `);
 
   expect(() =>
@@ -2821,15 +2821,26 @@ test('throws when invalid properties are specified in the config', () => {
     - path (string)
     - initialRouteName (string)
     - screens (object)
-    - alias (array)
+    - _route (object)
     - exact (boolean)
     - stringify (object)
     - parse (object)
 
     If you want to specify configuration for screens, you need to specify them under a 'screens' property.
 
-    See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
+    Expo Router generates its linking configuration from files in the app directory."
   `);
+
+  expect(() =>
+    getStateFromPath<object>('', {
+      screens: {
+        Foo: {
+          path: 'foo',
+          alias: ['bar'],
+        },
+      },
+    } as any)
+  ).toThrow('- alias (extraneous)');
 
   expect(() =>
     getStateFromPath<object>('', {
@@ -2886,46 +2897,43 @@ test('encodes special characters in params', () => {
   expect(getPathFromState<object>(getStateFromPath<object>(path, config)!, config)).toEqual(path);
 });
 
-// Start Fork
-// Expo Router changes this functionality so all segments see the last :id
-// test('resolves nested path params with same name to correct screen', () => {
-//   const path = '/foo/42/bar/43';
+test('resolves nested path params with same name to correct screen', () => {
+  const path = '/foo/42/bar/43';
 
-//   const config = {
-//     initialRouteName: 'Foo',
-//     screens: {
-//       Foo: {
-//         path: 'foo/:id',
-//         screens: {
-//           Bar: {
-//             path: 'bar/:id',
-//           },
-//         },
-//       },
-//     },
-//   };
+  const config = {
+    initialRouteName: 'Foo',
+    screens: {
+      Foo: {
+        path: 'foo/:id',
+        screens: {
+          Bar: {
+            path: 'bar/:id',
+          },
+        },
+      },
+    },
+  };
 
-//   const state = {
-//     routes: [
-//       {
-//         name: 'Foo',
-//         params: { id: '42' },
-//         state: {
-//           routes: [
-//             {
-//               name: 'Bar',
-//               params: { id: '43' },
-//               path,
-//             },
-//           ],
-//         },
-//       },
-//     ],
-//   };
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        params: { id: '42' },
+        state: {
+          routes: [
+            {
+              name: 'Bar',
+              params: { id: '43' },
+              path,
+            },
+          ],
+        },
+      },
+    ],
+  };
 
-//   expect(getStateFromPath<object>(path, config)).toEqual(state);
-// });
-// End Fork
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+});
 
 test('parses / same as empty string', () => {
   const config = {

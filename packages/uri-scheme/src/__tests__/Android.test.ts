@@ -9,7 +9,7 @@ describe(escapeUri, () => {
     );
   });
 
-  it('escapes special charactes in URI search parameter values', () => {
+  it('escapes special characters in URI search parameter values', () => {
     expect(escapeUri('myapp://home?test=normal')).toBe('myapp://home?test=normal');
     expect(escapeUri('myapp://home?test=a|b|c')).toBe('myapp://home?test=a%7Cb%7Cc');
     expect(escapeUri('myapp://home?test=@1')).toBe('myapp://home?test=%401');

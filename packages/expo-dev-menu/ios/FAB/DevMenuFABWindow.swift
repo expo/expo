@@ -2,6 +2,7 @@
 
 #if !os(macOS) && !os(tvOS)
 
+import ExpoModulesCore
 import UIKit
 import SwiftUI
 
@@ -46,8 +47,8 @@ class DevMenuFABWindow: UIWindow {
   }
 
   private var edgeTranslation: CGAffineTransform {
-    let screenWidth = windowScene?.screen.bounds.width ?? UIScreen.main.bounds.width
-    let isOnRight = fabFrame == .zero || fabFrame.midX > (screenWidth / 2)
+    let availableWidth = SceneGeometry.bounds(for: self).width
+    let isOnRight = fabFrame == .zero || fabFrame.midX > (availableWidth / 2)
     let dx: CGFloat = isOnRight ? 60 : -60
     return CGAffineTransform(translationX: dx, y: 0)
   }

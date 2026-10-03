@@ -13,7 +13,7 @@ import type { ServerContainerRef } from '../react-navigation/native';
 import { ServerContainer } from '../react-navigation/native';
 
 /**
- * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
+ * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. See [React Native for Web's root element setup](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */
 export const ScrollViewStyleReset: React.FC = () => {
   return (

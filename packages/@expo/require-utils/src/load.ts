@@ -34,6 +34,12 @@ function loadTypescript() {
   if (_ts === undefined) {
     try {
       _ts = require('typescript');
+      // NOTE(@kitten): typescript v7 ships without the necessary compiler/public APIs to use it
+      // for transpilation or other purposes
+      if (typeof _ts?.transpileModule !== 'function') {
+        _ts = null;
+        return null;
+      }
     } catch (error: any) {
       if (error.code !== 'MODULE_NOT_FOUND') {
         throw error;
@@ -272,6 +278,21 @@ function containsModuleSyntax(code: string): boolean {
 
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
 
+function supportsStripTypeScriptTypesTransform(): boolean {
+  const nodeVersion = process.versions.node.split('.', 1).map(Number);
+  return nodeVersion[0]! < 26;
+}
+
+function stripTypeScriptTypes(code: string): string {
+  if (!supportsStripTypeScriptTypesTransform()) {
+    return nodeModule.stripTypeScriptTypes(code);
+  }
+  return nodeModule.stripTypeScriptTypes(code, {
+    mode: 'transform',
+    sourceMap: true,
+  });
+}
+
 function evalModule(
   code: string,
   filename: string,
@@ -325,10 +346,10 @@ function evalModule(
 
     if (hasStripTypeScriptTypes && inputCode === code) {
       // This may throw its own error, but this contains a code-frame already
-      inputCode = nodeModule.stripTypeScriptTypes(code, {
-        mode: 'transform',
-        sourceMap: true,
-      });
+      inputCode = stripTypeScriptTypes(code);
+      if (format.mode === 'commonjs-typescript') {
+        inputCode = toCommonJS(filename, inputCode);
+      }
     }
 
     if (inputCode !== code) {

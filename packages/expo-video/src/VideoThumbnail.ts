@@ -1,6 +1,6 @@
 import { SharedRef } from 'expo';
 
-import NativeVideoModule from './NativeVideoModule';
+import NativeVideoModule from './ExpoVideo';
 
 /**
  * Represents a video thumbnail that references a native image.

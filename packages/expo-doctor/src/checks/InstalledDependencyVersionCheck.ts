@@ -41,7 +41,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       try {
         commandResult = await spawnExpoCLI(projectRoot, ['install', '--check', '--json'], {
           stdio: 'pipe',
-          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
+          env: { CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error) && error.status === 1) {
@@ -61,7 +61,7 @@ export class InstalledDependencyVersionCheck implements DoctorCheck {
       try {
         await spawnExpoCLI(projectRoot, ['install', '--check'], {
           stdio: 'pipe',
-          env: { ...process.env, CI: '1', EXPO_DEBUG: '0' },
+          env: { CI: '1', EXPO_DEBUG: '0' },
         });
       } catch (error: any) {
         if (isSpawnResult(error)) {

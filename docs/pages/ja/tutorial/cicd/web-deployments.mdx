@@ -1,0 +1,197 @@
+---
+title: 'EAS Workflows で web アプリを EAS Hosting にデプロイする'
+sidebar_title: web デプロイ
+description: 既存の EAS Workflows に web ビルドの EAS Hosting へのデプロイを追加し、Android と iOS のリリースと並行して配信する方法を学びます。
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+
+これまでの章で作ったワークフローは、Android と iOS を対象にしたものでした。これを拡張して、同じリリースに合わせて web ビルドも [EAS Hosting](/eas/hosting/introduction/) へデプロイしてみましょう。
+
+## この章で学べること
+
+- 静的な web ビルドを書き出すよう Expo プロジェクトを設定する
+- **preview.yml** に web デプロイのジョブを追加して、本番以外の web ビルドを作成する
+- **production.yml** に web デプロイのジョブを追加して、本番の web ビルドを作成する
+
+## EAS Hosting と deploy ジョブ
+
+**EAS Hosting** は、Expo アプリの web ビルドをホスティング・デプロイするためのサービスです。各デプロイには固有の URL が割り当てられ、プロジェクトごとに 1 つの本番 URL があり、最後に本番としてデプロイした内容を配信します。
+
+EAS Workflows の事前パッケージ済み [`deploy`](/eas/workflows/pre-packaged-jobs/#deploy) ジョブは、web のエクスポートを実行し、その出力を EAS Hosting にアップロードして、デプロイ先の URL をジョブの出力として返します。`deploy` ジョブには 2 つのパラメーターがあります。
+
+| パラメーター | 型      | 説明                                                                                                         |
+| ------------ | ------- | ------------------------------------------------------------------------------------------------------------ |
+| `prod`       | boolean | 任意。`true` の場合、プロジェクトの本番 URL にデプロイします。省略した場合はプレビューとしてデプロイします。 |
+| `alias`      | string  | 任意。`awesome-project--staging.expo.app` のような安定したエイリアス URL に名前を付けます。                  |
+
+## 静的エクスポートのために web.output を設定する
+
+ワークフローに web デプロイのジョブを追加する前に、[静的な web ビルド](/router/web/static-rendering/)を書き出すよう Expo プロジェクトを設定する必要があります。**app.json** で [`web.output`](/versions/latest/config/app/#web) フィールドを `static` に設定します。
+
+```json app.json
+{
+  "expo": {
+    /* @hide ... */ /* @end */
+    "web": {
+      "output": "static"
+    }
+  }
+}
+```
+
+`static` は、EAS Hosting が配信できる静的な HTML・JavaScript・アセットファイルのディレクトリを生成するよう Expo CLI に指示します。Expo は `single` と `server` の出力にも対応していますが、`static` はどのホストでも配信できるプレーンなファイルを生成するので、ここではそれで十分です。
+
+**app.json** を上のように設定したら、変更をコミットしてリポジトリの `main` ブランチにプッシュします。
+
+## web のプレビューデプロイを追加する
+
+プレビューデプロイと本番デプロイを分けるのが `prod: true` の指定です。プレビューにはデプロイごとに固有の URL が割り当てられます。プレビューワークフローは[第 3 章のステップ 1](/ja/tutorial/cicd/preview-builds/#previewyml-を追加する) で作成しました。そのワークフローに `deploy_web` ジョブを追加して、新しいプレビュービルドを作成するたびに新しい web デプロイも得られるようにしましょう。
+
+<Step label="1">
+
+### deploy_web ジョブを追加する
+
+**.eas/workflows/preview.yml** を開いて `deploy_web` ジョブを追加します。この新しいジョブは `needs` による依存関係を持たないため、既存のビルドジョブと並列に実行されます。
+
+```yaml .eas/workflows/preview.yml
+name: Preview builds
+
+jobs:
+  # ... existing fingerprint, get-build, build_android, build_ios, notify jobs
+
+  deploy_web:
+    name: Deploy web (preview)
+    type: deploy
+```
+
+`prod` パラメーターがないため、これは本番以外のバージョンとしてデプロイされます。プッシュのたびに `https://awesome-project--abc123.expo.app` のような固有の URL が割り当てられます。
+
+</Step>
+
+<Step label="2">
+
+### ワークフローの変更をリポジトリにプッシュする
+
+**preview.yml** の変更をコミットして、GitHub リポジトリの `main` ブランチにプッシュします。EAS Workflows はデフォルトブランチからワークフローファイルを読み取るため、これによって変更が有効になります。
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/preview.yml',
+    '',
+    '$ git commit -m "Add web preview deploy job to preview workflow"',
+    '',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/preview.yml && git commit -m 'Add web preview deploy job to preview workflow' && git push origin main"
+/>
+
+</Step>
+
+<Step label="3">
+
+### ワークフローをテストする
+
+続いて、次のコマンドでプレビューワークフローを手動で実行します。
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/preview.yml']} />
+
+EAS ダッシュボードでは、プレビューワークフローの実行にビルドジョブと並んで `deploy_web` ジョブが表示されます。
+
+<ContentSpotlight
+  alt="Android と iOS のビルドジョブと並列に deploy_web ジョブが実行されている EAS Workflows のプレビュー実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-web-deploy-preview-job.png"
+  className="max-w-160"
+/>
+
+**Deploy web (preview)** の下にある **View Deployment** リンクをクリックすると、デプロイされた web ビルドがブラウザーで開きます。
+
+<ContentSpotlight
+  alt="deploy_web ジョブが出力した EAS Hosting のデプロイ URL。デプロイごとに固有のプレビュー URL が表示されています。"
+  src="/static/images/tutorial/cicd/eas-hosting-deployment-url-output.webp"
+  className="max-w-160"
+/>
+
+</Step>
+
+## web の本番デプロイを追加する
+
+[第 6 章のステップ 1](/ja/tutorial/cicd/tag-based-releases/#トリガーを変更する) の本番ワークフローは、新しい Git タグをプッシュしたときに実行され、ネイティブアプリのビルドまたはアップデートを行います。そのワークフローに `deploy_web` ジョブを追加して、アプリの新しいバージョンをリリースすると web 版も本番 URL 上で更新されるようにしましょう。
+
+<Step label="1">
+
+### deploy_web ジョブを追加する
+
+**.eas/workflows/production.yml** を開いて `deploy_web` ジョブを追加します。この新しいジョブは `needs` による依存関係を持たないため、既存のビルドジョブと並列に実行されます。
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+jobs:
+  # ... existing fingerprint, get-build, build, update jobs ...
+
+  deploy_web:
+    name: Deploy web (production)
+    type: deploy
+    params:
+      prod: true
+```
+
+上のワークフローでは、`['v*.*.*']` が 3 つの数値からなる厳密なセマンティックバージョンに一致します。`params.prod: true` によって、web アプリが `https://awesome-project.expo.app` のような本番 URL にデプロイされます。
+
+</Step>
+
+<Step label="2">
+
+### タグを作成してワークフローをテストする
+
+ワークフローの変更をリポジトリの `main` ブランチにコミットします。
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/production.yml',
+    '',
+    '$ git commit -m "Add web production deploy to production workflow"',
+    '',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add .eas/workflows/production.yml && git commit -m 'Add web production deploy to production workflow' && git push origin main"
+/>
+
+ワークフローを実行するには、新しいタグを作成してリポジトリにプッシュします。
+
+<Terminal
+  cmd={['$ git tag v0.2.0', '', '$ git push origin v0.2.0']}
+  cmdCopy="git tag v0.2.0 && git push origin v0.2.0"
+/>
+
+これで `v0.2.0` タグのリリースに合わせて本番ワークフローが実行されます。`deploy_web` ジョブが web ビルドを本番 URL にデプロイします。
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/cicd/web-deployments"
+  name="CICD_TUTORIAL"
+  chapterTitle="第 7 章：web デプロイ"
+  summary={
+    <>
+      静的な web エクスポートのために Expo プロジェクトを設定し、本番以外の web URL 用の deploy
+      ジョブをプレビューワークフローに追加し、<CODE>prod: true</CODE> を指定した deploy
+      ジョブを本番ワークフローに追加して、リリースのたびにネイティブのリリースと一緒に web
+      ビルドも配信されるようにしました。
+    </>
+  }
+  nextChapterDescription="EAS Workflows を使いこなすための次のステップを学びましょう。"
+  nextChapterTitle="EAS Workflows を使いこなすための次のステップ"
+  nextChapterLink="/ja/tutorial/cicd/next-steps"
+/>

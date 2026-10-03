@@ -430,7 +430,11 @@ open class NotificationsService : BroadcastReceiver() {
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
@@ -480,7 +484,11 @@ open class NotificationsService : BroadcastReceiver() {
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
@@ -578,7 +586,7 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
-     * Marshals [Parcelable] into to a byte array.
+     * Marshals [Parcelable] into a byte array.
      *
      * @param notificationResponse Notification response to marshall
      * @return Given request marshalled to a byte array or null if the process failed.

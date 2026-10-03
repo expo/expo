@@ -7,8 +7,10 @@ import expo.modules.manifests.core.Manifest
 import okhttp3.Headers
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.OkHttpClient
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.Reader
+import java.net.URI
 
 class DevLauncherManifestParser(
   private val httpClient: OkHttpClient,
@@ -35,18 +37,75 @@ class DevLauncherManifestParser(
 
   suspend fun parseManifest(): Manifest {
     downloadManifest().use {
-      return Manifest.fromManifestJson(JSONObject(it.readText()))
+      return Manifest.fromManifestJson(resolveManifestUrls(JSONObject(it.readText())))
     }
+  }
+
+  private fun resolveManifestUrls(manifestJson: JSONObject): JSONObject {
+    if (manifestJson.has("bundleUrl")) {
+      manifestJson.put("bundleUrl", resolveUrl(manifestJson.getString("bundleUrl")))
+    }
+
+    manifestJson.optJSONObject("launchAsset")?.let { launchAsset ->
+      launchAsset.put("url", resolveUrl(launchAsset.getString("url")))
+    }
+
+    manifestJson.optJSONArray("assets")?.resolveAssetUrls()
+    return manifestJson
+  }
+
+  private fun JSONArray.resolveAssetUrls() {
+    for (i in 0 until length()) {
+      val asset = getJSONObject(i)
+      asset.put("url", resolveUrl(asset.getString("url")))
+    }
+  }
+
+  private fun resolveUrl(rawUrl: String): String {
+    return try {
+      URI(url.toString()).withRootPath().resolve(rawUrl).toString()
+    } catch (e: Exception) {
+      rawUrl
+    }
+  }
+
+  /**
+   * Works around Android's [URI.resolve] dropping the separator between the authority and a
+   * path-relative reference when the base path is empty, which splices the reference's first
+   * segment onto the port. Only the base is adjusted, so non-HTTP bases such as `exp://` still
+   * resolve.
+   */
+  private fun URI.withRootPath(): URI {
+    if (rawAuthority == null || !rawPath.isNullOrEmpty()) {
+      return this
+    }
+    // A base query or fragment is dropped during resolution anyway, so it doesn't need carrying.
+    return URI("$scheme://$rawAuthority/")
   }
 
   private fun getHeaders(): Headers {
     val headersMap = mutableMapOf(
       "expo-platform" to "android",
-      "accept" to "application/expo+json,application/json"
+      "accept" to "application/expo+json,application/json",
+      // Dev-launcher infrastructure, not app traffic. Without this the reachability probe wins
+      // `slowest` on nearly every dev launch and skews the launch metrics summary. Mirrors
+      // `INTERNAL_HEADER_NAME` in expo-app-metrics, which strips the header before sending.
+      "Expo-AppMetrics-Skip" to "1"
     )
+    headersMap.putAll(getForwardedHeaders(url))
     if (installationID != null) {
       headersMap["expo-dev-client-id"] = installationID
     }
     return headersMap.toHeaders()
+  }
+
+  private fun getForwardedHeaders(url: Uri): Map<String, String> {
+    val authority = url.encodedAuthority ?: return emptyMap()
+    val scheme = url.scheme ?: return emptyMap()
+    return mutableMapOf(
+      "forwarded" to "host=\"$authority\";proto=$scheme",
+      "x-forwarded-host" to authority,
+      "x-forwarded-proto" to scheme
+    )
   }
 }

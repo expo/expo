@@ -184,23 +184,4 @@ struct SyntaxHighlighter {
 
     return tokens
   }
-
-  static func highlight(_ code: String, theme: Theme) -> AttributedString {
-    let tokens = tokenize(code)
-    var result = AttributedString()
-
-    for token in tokens {
-      var attributed = AttributedString(token.text)
-      attributed.foregroundColor = token.type.color(in: theme)
-      result.append(attributed)
-    }
-
-    return result
-  }
-
-  static func highlightLines(_ lines: [String], theme: Theme) async -> [AttributedString] {
-    lines.map { line in
-      highlight(line.isEmpty ? " " : line, theme: theme)
-    }
-  }
 }

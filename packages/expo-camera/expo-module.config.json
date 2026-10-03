@@ -5,6 +5,11 @@
     "podspecPath": ["ios/ExpoCamera.podspec"]
   },
   "android": {
-    "modules": ["expo.modules.camera.CameraViewModule"]
+    "modules": ["expo.modules.camera.CameraViewModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.camera",
+      "repository": "local-maven-repo"
+    }
   }
 }

@@ -32,18 +32,20 @@ import { Terminal } from '~/ui/components/Snippet';
 
 **Supported image formats**
 
-|         Format          |   Android   |     iOS     |                          Web                           |
-| :---------------------: | :---------: | :---------: | :----------------------------------------------------: |
-|          WebP           | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
-|       PNG / APNG        | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
-|          AVIF           | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
-|          HEIC           | <YesIcon /> | <YesIcon /> | <NoIcon /> [not adopted yet](https://caniuse.com/heif) |
-|          JPEG           | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
-|           GIF           | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
-|           SVG           | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
-|           ICO           | <YesIcon /> | <YesIcon /> |                      <YesIcon />                       |
-|          ICNS           | <NoIcon />  | <YesIcon /> |                       <NoIcon />                       |
-| PSD (composite preview) | <NoIcon />  | <YesIcon /> |                       <NoIcon />                       |
+|         Format          |   Android   |      iOS      |                          Web                           |
+| :---------------------: | :---------: | :-----------: | :----------------------------------------------------: |
+|          WebP           | <YesIcon /> |  <YesIcon />  |                      <YesIcon />                       |
+|       PNG / APNG        | <YesIcon /> |  <YesIcon />  |                      <YesIcon />                       |
+|          AVIF           | <YesIcon /> |  <YesIcon />  |                      <YesIcon />                       |
+|          HEIC           | <YesIcon /> |  <YesIcon />  | <NoIcon /> [not adopted yet](https://caniuse.com/heif) |
+|          JPEG           | <YesIcon /> |  <YesIcon />  |                      <YesIcon />                       |
+|           GIF           | <YesIcon /> |  <YesIcon />  |                      <YesIcon />                       |
+|           SVG           | <YesIcon /> | <YesIcon /> † |                      <YesIcon />                       |
+|           ICO           | <YesIcon /> |  <YesIcon />  |                      <YesIcon />                       |
+|          ICNS           | <NoIcon />  |  <YesIcon />  |                       <NoIcon />                       |
+| PSD (composite preview) | <NoIcon />  |  <YesIcon />  |                       <NoIcon />                       |
+
+> † On iOS, the system SVG decoder does not handle every valid path. An elliptical arc command (`A` or `a`) with more than one parameter set and packed `large-arc-flag` and `sweep-flag` values can render distorted or not render at all. Most SVG minifiers emit this compact form, for example `a6 6 0 0111.573-2.226 3.75 3.75 0 014.133 4.303`. To fix the file, separate the two flags with spaces (`a6 6 0 0 1 11.573 -2.226 3.75 3.75 0 0 1 4.133 4.303`), or give each arc its own command. For broader SVG coverage, use [`react-native-svg`](/versions/latest/sdk/svg/), which renders these paths correctly.
 
 ## Installation
 

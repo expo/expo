@@ -1,6 +1,11 @@
 /**
  * Navigators
  */
+/**
+ * @deprecated Reserved for libraries that ship a self-contained navigator, which the `Stack` layout
+ * cannot express. There is no stable replacement yet, so expect this factory to change or be removed
+ * in a future release. App code should use `Stack` from `expo-router`.
+ */
 export { createNativeStackNavigator } from './navigators/createNativeStackNavigator';
 
 /**
@@ -17,6 +22,7 @@ export { useAnimatedHeaderHeight } from './utils/useAnimatedHeaderHeight';
  * Types
  */
 export type {
+  NativeStackEmit,
   NativeStackHeaderBackProps,
   NativeStackHeaderItem,
   NativeStackHeaderItemButton,
@@ -32,10 +38,13 @@ export type {
   NativeStackHeaderNativeProps,
   NativeStackNativeProps,
   NativeStackNavigationEventMap,
+  NativeStackDescriptorMap,
   NativeStackNavigationOptions,
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
   NativeStackOptionsArgs,
   NativeStackScreenNativeProps,
   NativeStackScreenProps,
+  NativeStackViewEmit,
+  NativeStackViewState,
 } from './types';

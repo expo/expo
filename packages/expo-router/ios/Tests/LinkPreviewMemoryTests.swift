@@ -31,9 +31,15 @@ struct LinkPreviewMemoryTests {
       let view = NativeLinkPreviewView(appContext: nil)
       let interaction = UIContextMenuInteraction(delegate: view)
       let configuration = UIContextMenuConfiguration(
-        identifier: nil, previewProvider: nil, actionProvider: nil)
+        identifier: nil,
+        previewProvider: nil,
+        actionProvider: nil
+      )
       view.contextMenuInteraction(
-        interaction, willEndFor: configuration, animator: animator)
+        interaction,
+        willEndFor: configuration,
+        animator: animator
+      )
 
       weakView = view
       #expect(weakView != nil)

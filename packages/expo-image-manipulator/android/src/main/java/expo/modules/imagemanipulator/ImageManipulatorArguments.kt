@@ -7,6 +7,18 @@ import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 
 /**
+ * Options for loading the source image.
+ */
+@OptimizedRecord
+class ImageLoadOptions : Record {
+  @Field
+  val maxWidth: Int? = null
+
+  @Field
+  val maxHeight: Int? = null
+}
+
+/**
  * Options provided for resize action.
  */
 @OptimizedRecord

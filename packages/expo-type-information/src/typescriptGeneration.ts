@@ -177,7 +177,7 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
       ]);
     }
     // Technically this one should only be the top one and it should be handled somewhere else
-    // for example when creating arguemnt adding the '?' token.
+    // for example when creating argument adding the '?' token.
     //
     // However we can just make it (type | undefined) in here.
     // TODO(@HubertBer): Maybe also need null?

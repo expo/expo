@@ -33,7 +33,7 @@ export interface ModuleAndroidProjectInfo {
   modules: ModuleAndroidModuleInfo[];
   services: string[];
   packages: string[];
-  publication?: AndroidPublication;
+  publication?: WithRequired<AndroidPublication, 'version'>;
   aarProjects?: AndroidGradleAarProjectDescriptor[];
   shouldUsePublicationScriptPath?: string;
 }
@@ -45,7 +45,10 @@ export interface ModuleAndroidModuleInfo {
 
 export interface ModuleAndroidPluginInfo {
   id: string;
-  sourceDir: string;
+  group: string;
+  sourceDir?: string;
+  version?: string;
+  applyToRootProject?: boolean;
 }
 
 export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDescriptor {
@@ -127,7 +130,13 @@ export interface AndroidGradlePluginDescriptor {
   /**
    * Relative path to the gradle plugin directory
    */
-  sourceDir: string;
+  sourceDir?: string;
+
+  /**
+   * Version of a published gradle plugin.
+   * Ignored when `sourceDir` is declared.
+   */
+  version?: string;
 
   /**
    * Whether to apply the plugin to the root project
@@ -155,15 +164,15 @@ export interface AndroidPublication {
   /**
    * The Maven artifact ID.
    */
-  id: string;
+  artifactId: string;
   /**
    * The Maven group ID.
    */
-  group: string;
+  groupId: string;
   /**
-   * The Maven version.
+   * The Maven version. Defaults to the package version when omitted from module config.
    */
-  version: string;
+  version?: string;
   /**
    * The Maven repository.
    */

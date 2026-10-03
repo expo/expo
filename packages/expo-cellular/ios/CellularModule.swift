@@ -29,23 +29,22 @@ public class CellularModule: Module {
 
     switch radioAccessTechnology {
     case CTRadioAccessTechnologyGPRS,
-         CTRadioAccessTechnologyEdge,
-         CTRadioAccessTechnologyCDMA1x:
+      CTRadioAccessTechnologyEdge,
+      CTRadioAccessTechnologyCDMA1x:
       return .cellular2G
     case CTRadioAccessTechnologyWCDMA,
-         CTRadioAccessTechnologyHSDPA,
-         CTRadioAccessTechnologyHSUPA,
-         CTRadioAccessTechnologyCDMAEVDORev0,
-         CTRadioAccessTechnologyCDMAEVDORevA,
-         CTRadioAccessTechnologyCDMAEVDORevB,
-         CTRadioAccessTechnologyeHRPD:
+      CTRadioAccessTechnologyHSDPA,
+      CTRadioAccessTechnologyHSUPA,
+      CTRadioAccessTechnologyCDMAEVDORev0,
+      CTRadioAccessTechnologyCDMAEVDORevA,
+      CTRadioAccessTechnologyCDMAEVDORevB,
+      CTRadioAccessTechnologyeHRPD:
       return .cellular3G
     case CTRadioAccessTechnologyLTE:
       return .cellular4G
     default:
       if #available(iOS 14.1, *) {
-        if radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
-            radioAccessTechnology == CTRadioAccessTechnologyNR {
+        if radioAccessTechnology == CTRadioAccessTechnologyNRNSA || radioAccessTechnology == CTRadioAccessTechnologyNR {
           return .cellular5G
         }
       }

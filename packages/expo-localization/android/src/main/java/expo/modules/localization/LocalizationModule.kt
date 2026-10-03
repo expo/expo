@@ -52,22 +52,14 @@ class LocalizationModule : Module() {
   }
 
   private fun setRTLFromStringResources(context: Context) {
-    // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
-    val supportsRTL = context.getString(R.string.ExpoLocalization_supportsRTL)
-    val forcesRTL = context.getString(R.string.ExpoLocalization_forcesRTL)
+    val supportsRTL =
+      context.getString(R.string.ExpoLocalization_supportsRTL).toBooleanStrictOrNull() ?: true
+    val forcesRTL =
+      context.getString(R.string.ExpoLocalization_forcesRTL).toBooleanStrictOrNull() ?: false
 
-    if (forcesRTL == "true") {
-      I18nUtil.instance.allowRTL(context, true)
-      I18nUtil.instance.forceRTL(context, true)
-    } else {
-      if (supportsRTL == "true" || supportsRTL == "false") {
-        val shouldSupport = supportsRTL == "true"
-        I18nUtil.instance.allowRTL(context, shouldSupport)
-        if (forcesRTL == "false") {
-          I18nUtil.instance.forceRTL(context, false)
-        }
-      }
-    }
+    // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
+    I18nUtil.instance.allowRTL(context, supportsRTL)
+    I18nUtil.instance.forceRTL(context, forcesRTL)
   }
 
   private fun getMeasurementSystem(locale: Locale): String? {
@@ -121,7 +113,11 @@ class LocalizationModule : Module() {
             // On Android `regionCode` is the same as `countryCode`, except for miui where there's an additional region picker.
             "regionCode" to getRegionCode(locale),
             "languageRegionCode" to getCountryCode(locale),
-            "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
+            "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) {
+              "rtl"
+            } else {
+              "ltr"
+            },
             "languageCode" to locale.language,
             "languageScriptCode" to locale.script.ifEmpty { null },
             // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
@@ -142,7 +138,9 @@ class LocalizationModule : Module() {
   }
 
   private fun uses24HourClock(): Boolean {
-    if (appContext.reactContext == null) return false
+    if (appContext.reactContext == null) {
+      return false
+    }
     return DateFormat.is24HourFormat(appContext.reactContext)
   }
 

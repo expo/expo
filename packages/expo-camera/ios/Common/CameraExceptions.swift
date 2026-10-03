@@ -50,7 +50,7 @@ internal final class CameraMetadataDecodingException: Exception, @unchecked Send
 
 internal final class CameraInvalidPhotoData: Exception, @unchecked Sendable {
   override var reason: String {
-    "An error occured while generating photo data"
+    "An error occurred while generating photo data"
   }
 }
 

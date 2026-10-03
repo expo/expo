@@ -38,7 +38,7 @@ export class MetroConfigCheck implements DoctorCheck {
       return {
         isSuccessful: false,
         issues: [
-          'It looks like that you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
+          'It looks like you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
             learnMore('https://docs.expo.dev/guides/customizing-metro/'),
         ],
         advice: [`Update your "metro.config.js" to extend "expo/metro-config".`],
@@ -69,9 +69,10 @@ export class MetroConfigCheck implements DoctorCheck {
     }
 
     if (userConfig.resolver) {
-      if (userConfig.resolver.blacklistRE != null) {
+      // Metro 0.87 removed `blacklistRE` from its config types and silently ignores it
+      if ((userConfig.resolver as { blacklistRE?: unknown }).blacklistRE != null) {
         issues.push(
-          `- "resolver.blacklistRE" is deprecated. Replace it with "resolver.blockList" or remove it.`
+          `- "resolver.blacklistRE" was removed in Metro 0.87 and has no effect. Replace it with "resolver.blockList" or remove it.`
         );
       }
 

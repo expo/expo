@@ -1,20 +1,70 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Fix `Contact.presentCreateForm` on iOS opening the read-only contact view instead of the new-contact editor, and resolve it with a boolean instead of `null`. ([#50957](https://github.com/expo/expo/pull/50957) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `Contact.getAllDetails` always returning `null` for `thumbnail`, `birthday` and `nonGregorianBirthday`. ([#48384](https://github.com/expo/expo/pull/48384) by [@martintreurnicht](https://github.com/martintreurnicht))
+- [iOS] Fix `Contact.getAll` and `Contact.getAllDetails` returning contacts linked across accounts once per account record, and honour the `rawContacts` query option. ([#48387](https://github.com/expo/expo/pull/48387) by [@martintreurnicht](https://github.com/martintreurnicht))
+- [iOS] Return contact image and thumbnail URIs instead of bare file paths, matching the documented contract and Android. ([#48385](https://github.com/expo/expo/pull/48385) by [@martintreurnicht](https://github.com/martintreurnicht))
+- [iOS] Map predefined `CNLabeledValue` labels to JS values (`CNLabelHome` → `"home"`) and JS labels back case-insensitively (`"Home"` → `CNLabelHome`). Default missing or blank labels to `"other"`/`CNLabelOther`. ([#49874](https://github.com/expo/expo/pull/49874) by [@Wenszel](https://github.com/Wenszel))
+
+## 57.0.3 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
 
 ### 🎉 New features
 
 - [iOS] Add `cancelButtonTitle` and `showsCancelButton` options to contact forms. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Add `preventAnimation` option to `presentCreateForm`. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
 
+## 56.0.9 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 - 2026-06-05
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `ContactField.THUMBNAIL` crash in bulk `getAllDetails` by reading `thumbnailImageData` instead of `imageData`. ([#47779](https://github.com/expo/expo/pull/47779) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 - Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
-
-### 💡 Others
+- [iOS] Fix contacts fetch failing for the whole batch when a contact identifier contains a slash, by sanitizing the identifier used as an image cache filename. ([#48201](https://github.com/expo/expo/pull/48201) by [@martintreurnicht](https://github.com/martintreurnicht))
 
 ## 56.0.7 — 2026-05-21
 

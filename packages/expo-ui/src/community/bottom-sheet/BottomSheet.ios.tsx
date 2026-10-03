@@ -132,7 +132,6 @@ export function BottomSheet(props: BottomSheetProps) {
   useEffect(() => {
     if (indexProp === -1) {
       setIsPresented(false);
-      fireCloseCallbacks();
     } else if (indexProp >= 0) {
       closedRef.current = false;
       setIsPresented(true);
@@ -140,17 +139,13 @@ export function BottomSheet(props: BottomSheetProps) {
       setCurrentIndex(clampedIndex);
       currentIndexRef.current = clampedIndex;
     }
-  }, [indexProp, detents.length, fireCloseCallbacks]);
+  }, [indexProp, detents.length]);
 
-  const handlePresentedChange = useCallback(
-    (presented: boolean) => {
-      if (!presented) {
-        setIsPresented(false);
-        fireCloseCallbacks();
-      }
-    },
-    [fireCloseCallbacks]
-  );
+  const handlePresentedChange = useCallback((presented: boolean) => {
+    if (!presented) {
+      setIsPresented(false);
+    }
+  }, []);
 
   const handleDetentChange = useCallback(
     (detent: PresentationDetent) => {
@@ -168,7 +163,6 @@ export function BottomSheet(props: BottomSheetProps) {
     const snapToIndex = (index: number) => {
       if (index === -1) {
         setIsPresented(false);
-        fireCloseCallbacks();
         return;
       }
       const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
@@ -179,14 +173,11 @@ export function BottomSheet(props: BottomSheetProps) {
       onChangeRef.current?.(clampedIndex);
     };
 
-    // Fire close callbacks immediately: the native `onIsPresentedChange` event is
-    // suppressed when JS drives the state change (the Swift layer guards against
-    // the feedback loop), so we can't rely on handlePresentedChange here. The
-    // closedRef guard inside fireCloseCallbacks prevents double-firing if a
-    // native user-dismiss event also arrives during the animation.
+    // Close callbacks fire from the native `onDismiss` event, which SwiftUI sends after
+    // the dismissal transition finishes, so they can present another modal without UIKit
+    // rejecting it. Android awaits `hide()` for the same reason.
     const close = () => {
       setIsPresented(false);
-      fireCloseCallbacks();
     };
 
     return {
@@ -200,7 +191,7 @@ export function BottomSheet(props: BottomSheetProps) {
       present: () => snapToIndex(0),
       dismiss: close,
     };
-  }, [detents, fireCloseCallbacks]);
+  }, [detents]);
 
   useImperativeHandle(ref, () => methods, [methods]);
 
@@ -237,17 +228,19 @@ export function BottomSheet(props: BottomSheetProps) {
           <NativeBottomSheet
             isPresented={isPresented}
             onIsPresentedChange={handlePresentedChange}
+            onDismiss={fireCloseCallbacks}
             fitToContents={fitToContents}>
             <Group modifiers={modifiers}>
               <RNHostView matchContents={fitToContents}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
                     compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
-                    height without inheriting the scrollable child's intrinsic content height. Omitted for fitToContents
-                    so RNHostView can measure natural content height. */}
+                    height without inheriting the scrollable child's intrinsic content height. With matchContents,
+                    RNHostView lays the hosted view out at its own size, so `width` gives it the sheet width
+                    while its height stays content-sized. */}
                 <View
                   style={
                     fitToContents
-                      ? { paddingTop: handleComponent !== null ? 16 : 0 }
+                      ? { width, paddingTop: handleComponent !== null ? 16 : 0 }
                       : { flexGrow: 1, height: 0, paddingTop: handleComponent !== null ? 16 : 0 }
                   }>
                   <SheetScrollContextReset>{children}</SheetScrollContextReset>

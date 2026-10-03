@@ -1,5 +1,5 @@
 declare module 'react-native/Libraries/Image/AssetSourceResolver' {
-  import type { PackagerAsset } from '@react-native/assets/registry';
+  import type { PackagerAsset } from 'react-native/asset-registry';
 
   export type ResolvedAssetSource = {
     __packager_asset: boolean;
@@ -41,9 +41,24 @@ declare module 'react-native/Libraries/Image/resolveAssetSource' {
   ): void;
 }
 
-declare module '@react-native/assets-registry/registry' {
-  import type { PackagerAsset } from '@react-native/assets/registry';
-  export * from '@react-native/assets/registry';
+// The `react-native/asset-registry` build entry point ships untyped. Its exports are the
+// `AssetRegistry` API from `react-native`, which Expo's Metro resolver serves on every platform.
+declare module 'react-native/asset-registry' {
+  export type AssetDestPathResolver = 'android' | 'generic';
+
+  export type PackagerAsset = Readonly<{
+    fileSystemLocation: string;
+    httpServerLocation: string;
+    width: number | undefined;
+    height: number | undefined;
+    scales: number[];
+    hash: string;
+    name: string;
+    type: string;
+    resolver?: AssetDestPathResolver | undefined;
+  }>;
+
+  export function registerAsset(asset: PackagerAsset): number;
 
   // NOTE(@kitten): Custom override supported in Expo only
   interface VirtualAssetModule {

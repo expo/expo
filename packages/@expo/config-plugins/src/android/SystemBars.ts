@@ -1,8 +1,8 @@
-import type { ResourceXML } from './Resources';
-import { assignStylesValue, getAppThemeGroup } from './Styles';
 import type { ConfigPlugin } from '../Plugin.types';
 import { withAndroidStyles } from '../plugins/android-plugins';
 import * as WarningAggregator from '../utils/warnings';
+import type { ResourceXML } from './Resources';
+import { assignStylesValue, getAppThemeGroup } from './Styles';
 
 const TAG = 'SYSTEM_BARS_PLUGIN';
 

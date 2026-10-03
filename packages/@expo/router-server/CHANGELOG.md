@@ -1,22 +1,89 @@
 # Changelog
 
-## Unpublished
+## 58.0.7
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Preserve bundled, external, and inline stylesheet order across static and server rendering. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.6
+
+No changes in this release.
+
+## 58.0.5
+
+No changes in this release.
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.3 — 2026-09-21
+
+### 💡 Others
+
+- [Internal] Use a relative import in `node/render.js` instead of a self-reference. ([#50238](https://github.com/expo/expo/pull/50238) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.1 — 2026-09-14
+
+### 🐛 Bug fixes
+
+- Fix JavaScript chunk execution order during streaming server rendering ([#50077](https://github.com/expo/expo/pull/50077) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
 
 - Compile `pageHeaders` rules into the routes manifest ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 
+### 💡 Others
+
+- [Internal] Inject CSS and JavaScript bundle tags within `getStaticContent()`. ([#47006](https://github.com/expo/expo/pull/47006) by [@hassankhan](https://github.com/hassankhan))
+
+## 57.0.4 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
 ### 🐛 Bug fixes
 
-- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 - Wrap `getStaticContent` and `getStreamingContent` in `expo-font`'s per-render `withServerContext` scope so concurrent server renders cannot share font registry state. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
 - Render external CSS imports as `<link rel="stylesheet">` nodes when using the streaming renderer ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
 - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+
+## 56.0.14 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 - 2026-06-05
+
+### 🐛 Bug fixes
+
+- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 
 ## 56.0.12 — 2026-05-26
 

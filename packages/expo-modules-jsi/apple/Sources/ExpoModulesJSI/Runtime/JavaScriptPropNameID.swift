@@ -1,3 +1,4 @@
+internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 /// Represents something that can be a JS property key.
@@ -14,23 +15,26 @@ public final class JavaScriptPropNameID: JavaScriptType {
   /// Creates a PropNameID from the string.
   public init(_ runtime: JavaScriptRuntime, string: String) {
     self.runtime = runtime
-    self.pointee = facebook.jsi.PropNameID.forUtf8(runtime.pointee, string, string.count)
+    self.pointee = string.toJSIPropNameID(in: runtime.pointee)
   }
 
-  /// Copies the data in a PropNameID as UTF8 into a string.
+  /// Copies the contents of the PropNameID into a string.
   public func utf8() -> String {
     guard let runtime else {
       FatalError.runtimeLost()
     }
+    // Property names are almost always short ASCII identifiers, and the engine's own `utf8()` is the
+    // fastest way to read those: the `std::string` stays inline and so does the resulting Swift
+    // string. Reading the internal representation through `getPropNameIdData`, as `String(jsiString:in:)`
+    // does for regular strings, measured about 40% slower for this case.
     return String(pointee.utf8(runtime.pointee))
   }
 
-  /// Copies the data in a PropNameID as UTF16 into a string.
+  /// Copies the contents of the PropNameID into a string. Same result as ``utf8()``.
   public func utf16() -> String {
-    guard let runtime else {
-      FatalError.runtimeLost()
-    }
-    return String(pointee.utf16(runtime.pointee))
+    // The engine's `utf16()` builds a `std::u16string` that Swift then has to transcode, which is
+    // several times slower than going through UTF-8 for the same result.
+    return utf8()
   }
 
   // MARK: - JavaScriptType

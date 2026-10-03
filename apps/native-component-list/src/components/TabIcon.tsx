@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import { useTheme } from 'ThemeProvider';
 import React from 'react';
 import { Platform } from 'react-native';

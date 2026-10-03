@@ -52,8 +52,11 @@ export default function App() {
   };
 
   useEffect(() => {
-    const subscription = subscribe();
-    return () => subscription && subscription.remove();
+    const subscriptionPromise = subscribe();
+
+    return () => {
+      subscriptionPromise.then(subscription => subscription?.remove());
+    };
   }, []);
 
   return (

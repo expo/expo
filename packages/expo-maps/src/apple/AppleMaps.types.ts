@@ -7,6 +7,21 @@ import type { CameraMoveEvent, CameraPosition, Coordinates } from '../shared.typ
 /**
  * @platform ios
  */
+export type AppleMapsAnchor = {
+  /**
+   * The normalized horizontal anchor point from 0.0 (left edge) to 1.0 (right edge).
+   */
+  x: number;
+
+  /**
+   * The normalized vertical anchor point from 0.0 (top edge) to 1.0 (bottom edge).
+   */
+  y: number;
+};
+
+/**
+ * @platform ios
+ */
 export type AppleMapsMarker = {
   /**
    * The unique identifier for the marker. This can be used to identify the clicked marker in the `onMarkerClick` event.
@@ -340,6 +355,22 @@ export type AppleMapsAnnotation = {
    * The custom icon to display in the annotation.
    */
   icon?: SharedRefType<'image'>;
+
+  /**
+   * The point of the annotation's content that is placed at its coordinates.
+   * The default centers the content on the coordinates, so a pin-shaped icon needs
+   * `{ x: 0.5, y: 1 }` for its tip to point at them.
+   *
+   * The anchor resolves against the whole annotation content, which is the icon
+   * together with `text`. When `text` is set, the content can be larger than the
+   * icon and the same values will anchor a different point of it.
+   *
+   * > **Note:** `GoogleMaps.Marker` uses the same coordinate system but defaults to
+   * > `{ x: 0.5, y: 1 }`, the bottom-center of the icon.
+   *
+   * @default { x: 0.5, y: 0.5 }
+   */
+  anchor?: AppleMapsAnchor;
 } & AppleMapsMarker;
 
 /**

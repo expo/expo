@@ -51,6 +51,15 @@ import React
     }
   }
 
+  static func payload(message: String, level: EXPackagerLogLevel) -> [String: Any] {
+    [
+      "type": "log",
+      "level": level.stringValue,
+      "data": [message],
+      "mode": "ios"
+    ]
+  }
+
   @objc static func logInfo(_ message: String, withBundleUrl url: URL) {
     log(message, withBundleUrl: url, level: .info)
   }
@@ -93,11 +102,7 @@ import React
       return
     }
 
-    let payload: [String: Any] = [
-      "type": "log",
-      "level": logLevel.stringValue,
-      "data": [message]
-    ]
+    let payload = Self.payload(message: message, level: logLevel)
 
     pendingMessage = nil
 
@@ -121,15 +126,18 @@ import React
   }
 
   private func createSocket() {
-    let serverHost = bundleURL.host ?? "localhost"
-    let serverPort = bundleURL.port ?? Int(kRCTBundleURLProviderDefaultPort)
     let scheme = (bundleURL.scheme == "exps" || bundleURL.scheme == "https") ? "https" : "http"
 
     var components = URLComponents()
-    components.host = serverHost
     components.scheme = scheme
-    components.port = serverPort
     components.path = "/hot"
+    if let serverHost = bundleURL.host {
+      components.host = serverHost
+      components.port = bundleURL.port
+    } else {
+      components.host = "localhost"
+      components.port = Int(kRCTBundleURLProviderDefaultPort)
+    }
 
     if let url = components.url {
       socket = SRWebSocket(url: url)

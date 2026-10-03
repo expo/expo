@@ -250,6 +250,36 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
   usePrecompiledHeaders?: boolean;
 
   /**
+   * Enable GIF support in React Native's `<Image>` component. This property does not affect
+   * `expo-image`, which uses Glide on Android.
+   *
+   * @see [Optimizing app size](/distribution/app-size/)
+   *
+   * @default true
+   */
+  gifEnabled?: boolean;
+
+  /**
+   * Enable WebP support in React Native's `<Image>` component. This property does not affect
+   * `expo-image`, which uses Glide on Android.
+   *
+   * @see [Optimizing app size](/distribution/app-size/)
+   *
+   * @default true
+   */
+  webpEnabled?: boolean;
+
+  /**
+   * Enable animated WebP support in React Native's `<Image>` component. Requires `webpEnabled`
+   * to also be `true`. iOS does not support animated WebP via React Native's `<Image>`.
+   *
+   * @see [Optimizing app size](/distribution/app-size/)
+   *
+   * @default false
+   */
+  webpAnimated?: boolean;
+
+  /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
    * @deprecated Use `buildReactNativeFromSource` instead.
    * @default false
@@ -275,6 +305,14 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
    * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
    */
   exclusiveMavenMirror?: string;
+  /**
+   * Compile the `expo-modules-core` native libraries from source instead of using the precompiled
+   * libraries shipped with the package. Turning this on will increase the build times.
+   * Enable it when you modify the C++ sources of `expo-modules-core`.
+   *
+   * @default false
+   */
+  buildExpoModulesCoreFromSource?: boolean;
 }
 
 // @docsMissing
@@ -452,6 +490,17 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * @default true
    */
   usePrecompiledModules?: boolean;
+
+  /**
+   * Adopt the UIKit scene lifecycle in an Expo SDK 57 iOS project, as required by the iOS 27 SDK (Xcode 27).
+   * When `true`, the AppDelegate exposes its `ExpoReactNativeFactory`, React Native startup moves to Expo's
+   * scene delegate, and the scene manifest is added to **Info.plist**. When `false`, these changes are reverted.
+   *
+   * Only the standard SDK 57 Swift AppDelegate template is supported. Requires Expo SDK 57.0.23 or newer.
+   *
+   * Expo SDK 58 and newer include scene lifecycle support, so this property is no longer required and can be removed.
+   */
+  enableSceneSupport?: boolean;
 }
 
 /**
@@ -769,10 +818,14 @@ const schema: JSONSchema<PluginConfigType> = {
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
         usePrecompiledHeaders: { type: 'boolean', nullable: true },
+        gifEnabled: { type: 'boolean', nullable: true },
+        webpEnabled: { type: 'boolean', nullable: true },
+        webpAnimated: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
         exclusiveMavenMirror: { type: 'string', nullable: true },
+        buildExpoModulesCoreFromSource: { type: 'boolean', nullable: true },
         reactNativeReleaseLevel: {
           type: 'string',
           enum: ['stable', 'canary', 'experimental'],
@@ -823,6 +876,7 @@ const schema: JSONSchema<PluginConfigType> = {
         },
         useHermesV1: { type: 'boolean', nullable: true },
         usePrecompiledModules: { type: 'boolean', nullable: true },
+        enableSceneSupport: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },

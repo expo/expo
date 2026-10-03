@@ -1,5 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// DispatchQueue below. CocoaPods compiles this module alongside an underlying
+// ObjC module that pulls Foundation in implicitly; a SwiftPM Swift-only target
+// does not, so import it explicitly.
+import Foundation
+
 private let lockQueue = DispatchQueue(label: "expo.modules.domWebView.RegistryQueue")
 
 internal typealias WebViewId = Int

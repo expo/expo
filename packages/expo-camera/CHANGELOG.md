@@ -1,33 +1,110 @@
 # Changelog
 
-## Unpublished
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Fixed the window staying white when the camera view unmounts during the shutter animation ([#50904](https://github.com/expo/expo/issues/50904)). ([#50950](https://github.com/expo/expo/pull/50950) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fire `onCameraReady` only once the video has a frame that can be captured, instead of as soon as the camera stream is obtained, so calling `takePictureAsync` from `onCameraReady` no longer throws `ERR_CAMERA_NOT_READY`. `takePictureAsync` now only requires a decoded frame instead of `HAVE_ENOUGH_DATA`, which live streams may never reach in Safari. `onCameraReady` is no longer called when the camera fails to start; use `onMountError` instead. ([#50884](https://github.com/expo/expo/pull/50884) by [@Cedric921](https://github.com/Cedric921))
+
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Bind the barcode image analyzer only while barcode scanning is enabled, so the camera preview and captured photo use the same frame. ([#50808](https://github.com/expo/expo/pull/50808) by [@hitanshur](https://github.com/hitanshur))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
+
+### 💡 Others
+
+- [iOS] Remove a dead `compilerFlags` block from the SwiftPM build configuration. It had no effect on either build path. ([#50417](https://github.com/expo/expo/pull/50417) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.3 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Import `CoreImage` in `BarcodeUtils`, which relied on another file in the module importing it. ([#50479](https://github.com/expo/expo/pull/50479) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Pin `ZXingObjC` by revision rather than by version, so that Swift Package Manager can resolve it. SwiftPM refuses a version-pinned remote dependency that declares `unsafeFlags`, which `zxingify-objc` does. ([#50491](https://github.com/expo/expo/pull/50491) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-11
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
+
+- [iOS] Changed `selectedLens` prop to use stable `deviceType` identifiers instead of locale-dependent `localizedName` strings, enabling reliable programmatic lens selection across all device languages. ([#42916](https://github.com/expo/expo/pull/42916) by [@mplumador](https://github.com/mplumador))
+
+### 🎉 New features
+
+- [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
+- Added `CameraView.scanDocumentAsync` to scan multi-page documents on Android and iOS. ([#47362](https://github.com/expo/expo/pull/47362) by [@alanjhughes](https://github.com/alanjhughes))
+- Added an `onRecordingProgress` event to `CameraView` that reports the recorded duration and file size while recording video, at a rate set by the new `progressUpdateInterval` recording option. ([#48871](https://github.com/expo/expo/pull/48871), [#48872](https://github.com/expo/expo/pull/48872), [#48873](https://github.com/expo/expo/pull/48873) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `CameraView` leaking its barcode scanner, metadata delegate and capture session on every mount, by no longer having the delegate retain the scanner it reports to. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix all barcode scanning stopping when the optional `ExpoCameraBarcodeScanning` companion pod is not linked. The AVFoundation scanner now runs on its own, so QR codes and every other natively supported symbology keep scanning; the ZXing provider is once again only the fallback for `pdf417`, `code39`, and `codabar`. ([#49692](https://github.com/expo/expo/pull/49692) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix repeatedly mounting and unmounting `CameraView` freezing the UI when the capture session cannot start, such as on a simulator. The session is now stopped before it is torn down and before the preview layer detaches from it, and it is no longer started at all when no capture device is available. ([#49028](https://github.com/expo/expo/pull/49028) by [@barthap](https://github.com/barthap))
+- [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
+- Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- [iOS] Fix the ZXing barcode fallback scanner returning raw AVFoundation type strings (e.g. `org.iso.PDF417`) instead of short expo `BarcodeType` values (e.g. `pdf417`) for `pdf417`, `code39`, and `codabar`, restoring the fix from [#44726](https://github.com/expo/expo/pull/44726) that was reverted by the `ExpoCameraBarcodeScanning` pod extraction in [#44766](https://github.com/expo/expo/pull/44766). ([#47613](https://github.com/expo/expo/pull/47613) by [@jensdev](https://github.com/jensdev))
+- [iOS] Preserve the capture orientation as EXIF metadata instead of rotating captured pixels, so `takePictureAsync` and `savePictureAsync` return the real orientation tag and dimensions. ([#47824](https://github.com/expo/expo/pull/47824) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Return zeroed `bounds` and `cornerPoints` from the ZXing fallback scanner so scanning a `pdf417`, `code39`, or `codabar` code no longer crashes with `Cannot read property 'origin' of undefined`. ([#47854](https://github.com/expo/expo/pull/47854) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix `responsiveOrientationWhenOrientationLocked: false` being ignored — photos and videos captured while the app orientation is locked now follow the locked interface orientation instead of the physical device rotation. ([#47881](https://github.com/expo/expo/pull/47881) by [@jiunshinn](https://github.com/jiunshinn))
+- [iOS] Read the capture interface orientation from the scene the camera view is in rather than an arbitrary connected scene. ([#48315](https://github.com/expo/expo/pull/48315) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Restore the shutter animation on capture, which stopped running when the photo capture delegate moved off `CameraView`, leaving `animateShutter` with no effect. ([#49591](https://github.com/expo/expo/pull/49591) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.3 - 2026-07-16
+
+### 🐛 Bug fixes
+
+- Process captured photos off the main thread on iOS so full-resolution captures no longer hang the UI on older devices. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- [iOS] Disable deferred photo delivery so responsive capture no longer hangs the capture promise on iOS 17 and later. ([#47816](https://github.com/expo/expo/pull/47816) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras. ([#47818](https://github.com/expo/expo/pull/47818) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-07
 
 ### 🎉 New features
 
 - Enabled responsive capture and fast capture prioritization on iOS for lower shutter lag and faster successive photo captures.
-- [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
-- Added `CameraView.scanDocumentAsync` to scan multi-page documents on Android and iOS. ([#47362](https://github.com/expo/expo/pull/47362) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
-- [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
 - Host the iOS camera preview on the view's backing layer so it no longer zooms into place on launch. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
 - Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix dark frames and the preview rotating into place on iOS launch by fully configuring the camera session before it starts running. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
 - Default the iOS camera `pictureSize` to `photo` instead of `high`. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
-- Process captured photos off the main thread on iOS so full-resolution captures no longer hang the UI on older devices. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
-- Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
-- Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
-- [iOS] Fix the ZXing barcode fallback scanner returning raw AVFoundation type strings (e.g. `org.iso.PDF417`) instead of short expo `BarcodeType` values (e.g. `pdf417`) for `pdf417`, `code39`, and `codabar`, restoring the fix from [#44726](https://github.com/expo/expo/pull/44726) that was reverted by the `ExpoCameraBarcodeScanning` pod extraction in [#44766](https://github.com/expo/expo/pull/44766). ([#47613](https://github.com/expo/expo/pull/47613) by [@jensdev](https://github.com/jensdev))
-- [iOS] Disable deferred photo delivery so responsive capture no longer hangs the capture promise on iOS 17 and later. ([#47816](https://github.com/expo/expo/pull/47816) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras. ([#47818](https://github.com/expo/expo/pull/47818) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Preserve the capture orientation as EXIF metadata instead of rotating captured pixels, so `takePictureAsync` and `savePictureAsync` return the real orientation tag and dimensions. ([#47824](https://github.com/expo/expo/pull/47824) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Return zeroed `bounds` and `cornerPoints` from the ZXing fallback scanner so scanning a `pdf417`, `code39`, or `codabar` code no longer crashes with `Cannot read property 'origin' of undefined`. ([#47854](https://github.com/expo/expo/pull/47854) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix `responsiveOrientationWhenOrientationLocked: false` being ignored — photos and videos captured while the app orientation is locked now follow the locked interface orientation instead of the physical device rotation. ([#47881](https://github.com/expo/expo/pull/47881) by [@jiunshinn](https://github.com/jiunshinn))
 
-### 💡 Others
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.7 — 2026-05-21
 

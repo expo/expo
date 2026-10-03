@@ -17,11 +17,11 @@ import { CODE } from '~/ui/components/Text';
 
 ## Prerequisites
 
-<Prerequisites numberOfRequirements={3}>
-  <Requirement number={1} title="Sign up for an Apple Developer account">
+<Prerequisites>
+  <Requirement title="Sign up for an Apple Developer account">
     A paid Apple Developer account is required to submit apps to the Apple App Store. Sign up on the [Apple Developer Portal](https://developer.apple.com/account/).
   </Requirement>
-  <Requirement number={2} title="Include a bundle identifier in app config">
+  <Requirement title="Include a bundle identifier in app config">
     Include your app's bundle identifier in **app.json**:
 
     ```json app.json
@@ -33,7 +33,7 @@ import { CODE } from '~/ui/components/Text';
     ```
 
   </Requirement>
-  <Requirement number={3} title="Install EAS CLI and authenticate with your Expo account">
+  <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and log in with your Expo account:
 
     <Terminal
@@ -62,7 +62,7 @@ Once the build is ready, submit it to the Apple App Store:
 
 <Terminal cmd={['$ eas submit --platform ios']} />
 
-The command will walk you through selecting a build, prompt for your Apple ID on first run, and upload the binary to App Store Connect. The build appears in TestFlight after processing (usually 10-15 minutes). To release to production, log in to [App Store Connect](https://appstoreconnect.apple.com/) and submit the build for App Review.
+The command will walk you through selecting a build, prompt for your Apple ID on first run, and upload the binary to App Store Connect. The build appears in [TestFlight](/submit/testflight/) after processing (usually 10-15 minutes). To release to production, log in to [App Store Connect](https://appstoreconnect.apple.com/) and submit the build for App Review.
 
 ### Configure a submission profile
 
@@ -90,7 +90,7 @@ Add a submission profile in **eas.json** with your App Store Connect app ID:
 
   <ContentSpotlight
     alt="Apple ID and Apple Team ID in App Store Connect"
-    src="/static/images/eas-submit/finding-ascAppId.png"
+    src="/static/images/eas-submit/finding-ascAppId.webp"
     className="max-w-[800px]"
   />
 </Collapsible>

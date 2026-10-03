@@ -193,7 +193,7 @@ open class ExpoNotificationBuilder(
   }
 
   /**
-   * Marshalls [NotificationRequest] into to a byte array.
+   * Marshalls [NotificationRequest] into a byte array.
    *
    * @param request Notification request to marshall
    * @return Given request marshalled to a byte array or null if the process failed.
@@ -210,7 +210,7 @@ open class ExpoNotificationBuilder(
       // The request is only used to extract source request when fetching displayed notifications.
       Log.e(
         "expo-notifications",
-        "Could not marshalled notification request: ${request.identifier}.",
+        "Could not marshall notification request: ${request.identifier}.",
         e
       )
       return null
@@ -317,27 +317,7 @@ open class ExpoNotificationBuilder(
     }
 
   protected val largeIcon: Bitmap?
-    /**
-     * The method first tries to get the large icon from the manifest's meta-data [.META_DATA_DEFAULT_ICON_KEY].
-     * If a custom setting is not found, the method falls back to null.
-     *
-     * @return Bitmap containing larger icon or null if a custom settings was not provided.
-     */
-    get() {
-      try {
-        val ai = context.packageManager.getApplicationInfo(
-          context.packageName,
-          PackageManager.GET_META_DATA
-        )
-        if (ai.metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
-          val resourceId = ai.metaData.getInt(META_DATA_LARGE_ICON_KEY)
-          return BitmapFactory.decodeResource(context.resources, resourceId)
-        }
-      } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched large notification icon.", e)
-      }
-      return null
-    }
+    get() = largeIconFromManifest(context)
 
   protected open val icon: Int
     /**
@@ -356,7 +336,7 @@ open class ExpoNotificationBuilder(
           return ai.metaData.getInt(META_DATA_DEFAULT_ICON_KEY)
         }
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched default notification icon.", e)
+        Log.e("expo-notifications", "Could not fetch default notification icon.", e)
       }
       return context.applicationInfo.icon
     }
@@ -386,7 +366,7 @@ open class ExpoNotificationBuilder(
         } catch (e: Exception) {
           Log.e(
             "expo-notifications",
-            "Could not have fetched default notification color.",
+            "Could not fetch default notification color.",
             e
           )
         }
@@ -405,5 +385,22 @@ open class ExpoNotificationBuilder(
       "expo.modules.notifications.default_notification_color"
     const val EXTRAS_MARSHALLED_NOTIFICATION_REQUEST_KEY: String = "expo.notification_request"
     const val EXTRAS_BODY_KEY = "body"
+
+    @JvmStatic
+    fun largeIconFromManifest(context: Context): Bitmap? {
+      try {
+        val metaData = context.packageManager.getApplicationInfo(
+          context.packageName,
+          PackageManager.GET_META_DATA
+        ).metaData
+        if (metaData != null && metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
+          val resourceId = metaData.getInt(META_DATA_LARGE_ICON_KEY)
+          return BitmapFactory.decodeResource(context.resources, resourceId)
+        }
+      } catch (e: Exception) {
+        Log.e("expo-notifications", "Could not fetch large notification icon.", e)
+      }
+      return null
+    }
   }
 }

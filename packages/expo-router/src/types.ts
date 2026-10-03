@@ -41,7 +41,7 @@ export type NativeIntent = {
    * Note that throwing errors within this method may result in app crashes. It's recommended to
    * wrap your code inside a `try/catch` block and utilize `.catch()` when appropriate.
    *
-   * @see For usage information, see [Redirecting system paths](/router/advanced/native-intent/#redirectsystempath).
+   * @see For usage information, see [Redirecting system paths](/router/advanced/native-intent/#using-redirectsystempath).
    */
   redirectSystemPath?: (event: {
     path: string;

@@ -310,7 +310,7 @@ public class X509Certificate: CustomStringConvertible {
         OID.cRLDistributionPoints.rawValue: CRLDistributionPointsExtension.self
     ]
     
-    // read possibile PEM encoding
+    // read possible PEM encoding
     private static func decodeToDER(pem pemData: Data) -> Data? {
         if
             let pem = String(data: pemData, encoding: .ascii),

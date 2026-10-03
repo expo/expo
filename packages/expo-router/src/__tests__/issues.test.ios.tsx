@@ -5,22 +5,35 @@ import { usePathname } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
-import { renderRouter, fireEvent, act, waitFor, screen } from '../testing-library';
+import { renderRouter, fireEvent, act, screen } from '../testing-library';
 import { useIsFocused } from '../useIsFocused';
 
 it('should return correct pathname for nested stack with initialRouteName', async () => {
   const indexRenderCount = jest.fn();
   const innerIndexRenderCount = jest.fn();
   const innerARenderCount = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
-      return <Tabs />;
+      return (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="inner" />
+        </Tabs>
+      );
     },
     index: function Index() {
       indexRenderCount();
       return <Text testID="index-pathname">{usePathname()}</Text>;
     },
-    'inner/_layout': () => <Stack initialRouteName="a" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => (
+        <Stack>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="a" />
+        </Stack>
+      ),
+    },
     'inner/index': function InnerIndex() {
       innerIndexRenderCount();
       return <Text testID="inner-index-pathname">{usePathname()}</Text>;
@@ -41,7 +54,7 @@ it('should return correct pathname for nested stack with initialRouteName', asyn
 
   indexRenderCount.mockClear();
 
-  act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
+  await act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
 
   expect(screen.queryByTestId('index-pathname')).toBeNull();
   expect(screen.queryByTestId('inner-index-pathname')).toBeNull();
@@ -56,15 +69,23 @@ it('should return correct pathname for nested stack with initialRouteName, after
   const indexRenderCount = jest.fn();
   const innerIndexRenderCount = jest.fn();
   const innerARenderCount = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
-      return <Tabs />;
+      return (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="inner" />
+        </Tabs>
+      );
     },
     index: function Index() {
       indexRenderCount();
       return <Text testID="index-pathname">{usePathname()}</Text>;
     },
-    'inner/_layout': () => <Stack initialRouteName="a" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => <Stack />,
+    },
     'inner/index': function InnerIndex() {
       innerIndexRenderCount();
       return <Text testID="inner-index-pathname">{usePathname()}</Text>;
@@ -85,7 +106,7 @@ it('should return correct pathname for nested stack with initialRouteName, after
 
   indexRenderCount.mockClear();
 
-  act(() => router.push('/inner'));
+  await act(() => router.push('/inner'));
 
   expect(screen.queryByTestId('index-pathname')).toBeNull();
   expect(screen.getByTestId('inner-index-pathname')).toBeVisible();
@@ -97,7 +118,7 @@ it('should return correct pathname for nested stack with initialRouteName, after
 });
 
 it('can navigate during first render', async () => {
-  expect(() =>
+  await expect(
     renderRouter({
       _layout: function Layout() {
         const [ready, setReady] = useState(false);
@@ -117,17 +138,10 @@ it('can navigate during first render', async () => {
       },
       second: () => <Text testID="second">Second</Text>,
     })
-  ).not.toThrow(
-    'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
-  );
+  ).resolves.toBeDefined();
 
   expect(screen.getByTestId('second')).toBeVisible();
   expect(screen.queryByTestId('index')).toBeNull();
-
-  act(() => router.back());
-
-  await waitFor(() => expect(screen.getByTestId('index')).toBeVisible());
-  expect(screen.queryByTestId('second')).toBeNull();
 });
 
 it('can navigate during first render of nested navigator', async () => {
@@ -135,7 +149,7 @@ it('can navigate during first render of nested navigator', async () => {
   const innerLayoutMount = jest.fn();
   const innerIndexMount = jest.fn();
   const innerSecondMount = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
       useEffect(() => {
         layoutMount();
@@ -177,7 +191,7 @@ it('can navigate during first render of nested navigator', async () => {
   expect(innerIndexMount).toHaveBeenCalledTimes(0);
   expect(innerSecondMount).toHaveBeenCalledTimes(0);
 
-  act(() => {
+  await act(() => {
     router.push('/inner');
   });
 

@@ -83,7 +83,7 @@ For iOS, the default submission behavior is to submit the build to TestFlight, b
 - The build is submitted to TestFlight and becomes available for internal testing.
 - If you have "Enable automatic distribution" turned on in App Store Connect, TestFlight will automatically create a group and invite all your internal TestFlight users to test the build.
 - You can also specify additional TestFlight groups using the [`groups`](/eas/json/#groups) field in your **eas.json** submission profile.
-- Using TestFlight, you can release a version of your app available for internal and external testing. TestFlight allows sharing with up to 100 testers internally and provides a public link to share with up to 10,000 external testers.
+- Using [TestFlight](/submit/testflight/), you can release a version of your app available for internal and external testing. TestFlight allows sharing with up to 100 testers internally and provides a public link to share with up to 10,000 external testers.
 - The release to Apple App Store review is a manual process. Once you have made a submission to TestFlight, you'll have to manually promote the build to the App Store.
 
 This behavior ensures that all iOS releases go through TestFlight when using `--auto-submit`, allowing you to test the release before deciding to make it available to the public.

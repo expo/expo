@@ -31,7 +31,11 @@ export default {
     if (typeof localStorage === 'undefined') {
       return null;
     }
-    return localStorage.getItem(REGISTRATION_INFO_KEY);
+    try {
+      return localStorage.getItem(REGISTRATION_INFO_KEY);
+    } catch {
+      return null;
+    }
   },
   setRegistrationInfoAsync: async (registrationInfo: string | null) => {
     if (typeof localStorage === 'undefined') {

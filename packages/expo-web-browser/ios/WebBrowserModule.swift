@@ -20,6 +20,9 @@ final public class WebBrowserModule: Module {
       if vcDidPresent {
         self.currentWebBrowserSession = nil
         vcDidPresent = false
+      } else if let session = currentWebBrowserSession, !session.isPresented {
+        // The presentation was dropped, so no delegate callback will ever release this session.
+        session.onDismiss("cancel")
       }
 
       guard self.currentWebBrowserSession == nil else {

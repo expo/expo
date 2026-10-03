@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { execFileSync } from 'child_process';
 import { readFileSync, unlinkSync } from 'fs';
 
 // --- Types ---
@@ -303,6 +304,28 @@ function formatCommentBody(comment: ReviewComment): string {
 
 // --- GitHub API ---
 
+let cachedGitHubToken: string | undefined;
+
+function getGitHubToken(): string {
+  if (cachedGitHubToken) {
+    return cachedGitHubToken;
+  }
+  // Prefer the gh CLI login, so the review is posted as the user who runs the skill.
+  let token = '';
+  try {
+    token = execFileSync('gh', ['auth', 'token'], { encoding: 'utf8' }).trim();
+  } catch {}
+  token ||= process.env.GITHUB_TOKEN ?? '';
+  if (!token) {
+    throw new Error(
+      "Couldn't get a GitHub token: `gh auth token` failed (the gh CLI isn't installed or isn't logged in) and GITHUB_TOKEN isn't set.\n" +
+        'Run `gh auth login`, or set GITHUB_TOKEN, then run this command again.'
+    );
+  }
+  cachedGitHubToken = token;
+  return token;
+}
+
 async function githubRequest(
   path: string,
   options: {
@@ -311,14 +334,7 @@ async function githubRequest(
     accept?: string;
   } = {}
 ): Promise<unknown> {
-  const token = process.env.GITHUB_TOKEN;
-  if (!token) {
-    throw new Error(
-      'GITHUB_TOKEN environment variable is required.\n' +
-        'Set it with: export GITHUB_TOKEN=$(gh auth token)'
-    );
-  }
-
+  const token = getGitHubToken();
   const accept = options.accept ?? 'application/vnd.github+json';
   const url = `https://api.github.com${path}`;
   const resp = await fetch(url, {

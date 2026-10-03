@@ -1,5 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 internal protocol StartupProcedureDelegate: AnyObject {
   func startupProcedureDidLaunch(_ startupProcedure: StartupProcedure)
   func startupProcedure(_ startupProcedure: StartupProcedure, errorRecoveryDidRequestRelaunchWithCompletion completion: @escaping (Error?, Bool) -> Void)
@@ -43,7 +45,13 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   // swiftlint:enable implicitly_unwrapped_optional
 
   private var candidateLauncher: AppLauncher?
-  internal private(set) var launcher: AppLauncher?
+  // Written from the controller queue during launch and read by `EnabledAppController`'s
+  // `UpdatesInterface` accessors on other threads, so the reference is synchronized.
+  private let launcherStorage = Mutex<AppLauncher?>(nil)
+  internal private(set) var launcher: AppLauncher? {
+    get { launcherStorage.withLock { $0 } }
+    set { launcherStorage.withLock { $0 = newValue } }
+  }
   internal func setLauncher(_ launcher: AppLauncher) {
     self.launcher = launcher
   }
@@ -203,10 +211,21 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
-      if self.procedureContext.getCurrentState() == .checking {
+      switch self.procedureContext.getCurrentState() {
+      case .checking:
         self.procedureContext.processStateEvent(.checkError(errorMessage: error.localizedDescription))
-      } else if self.procedureContext.getCurrentState() == .downloading {
+      case .downloading:
         self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
+      case .idle:
+        // `downloadError` on its own is an illegal transition out of idle and would be dropped,
+        // leaving `useUpdates()` with no record of the failure. Move into the downloading state
+        // first, as the Android implementation does.
+        self.procedureContext.processStateEvent(.download)
+        self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
+      case .restarting:
+        // The machine accepts no events while restarting, so there is nowhere to report this. The
+        // error is already recorded in the log above.
+        logger.warn(message: "Background update failed while restarting: \(error.localizedDescription)")
       }
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded

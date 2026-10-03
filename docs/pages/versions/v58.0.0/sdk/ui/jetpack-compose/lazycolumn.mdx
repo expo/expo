@@ -1,0 +1,157 @@
+---
+title: LazyColumn
+description: A Jetpack Compose LazyColumn component for displaying scrollable lists.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-58/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI LazyColumn matches the official Jetpack Compose [LazyColumn API](https://developer.android.com/develop/ui/compose/lists) and displays a vertically scrolling list.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/lazycolumn/android-light.webp"
+  darkSrc="/static/images/expo-ui/lazycolumn/android-dark.webp"
+  alt="LazyColumn rendering a settings list of five Material 3 list items"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic lazy column
+
+Each child of [`LazyColumn`](#lazycolumn) is one row. Use the `verticalArrangement` prop to space the rows and the `contentPadding` prop to add padding around the list content.
+
+<ComponentExample
+  title="BasicLazyColumn.tsx"
+  src="/static/images/expo-ui/examples/lazycolumn-static-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazycolumn-static-android-dark.webp"
+  alt="A list of three settings rows, each with a title and a description">
+
+```tsx
+import {
+  Host,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
+
+export default function BasicLazyColumn() {
+  return (
+    <Host style={{ height: 400 }}>
+      <LazyColumn verticalArrangement={{ spacedBy: 8 }}>
+        <ListItem>
+          <ListItem.HeadlineContent>
+            <Text>Wi-Fi</Text>
+          </ListItem.HeadlineContent>
+          <ListItem.SupportingContent>
+            <Text>Connected to Home</Text>
+          </ListItem.SupportingContent>
+        </ListItem>
+        <ListItem>
+          <ListItem.HeadlineContent>
+            <Text>Bluetooth</Text>
+          </ListItem.HeadlineContent>
+          <ListItem.SupportingContent>
+            <Text>On</Text>
+          </ListItem.SupportingContent>
+        </ListItem>
+        <ListItem>
+          <ListItem.HeadlineContent>
+            <Text>Notifications</Text>
+          </ListItem.HeadlineContent>
+          <ListItem.SupportingContent>
+            <Text>Allowed for all apps</Text>
+          </ListItem.SupportingContent>
+        </ListItem>
+      </LazyColumn>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Large lists
+
+Use [`LazyColumn.Items`](#lazyitems) to render rows from an array. Pass the items as `data`, a unique key for each item with `keyExtractor`, and a `children` function that returns the row for an item. `LazyColumn.Items` renders only the rows near the visible area and reuses them while you scroll.
+
+<ComponentExample
+  title="LargeLazyColumn.tsx"
+  src="/static/images/expo-ui/examples/lazycolumn-large-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazycolumn-large-android-dark.webp"
+  alt="A scrollable list showing the first seven of ten thousand contacts">
+
+```tsx
+import {
+  Host,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
+
+type Contact = { id: string; name: string };
+
+const contacts: Contact[] = Array.from(
+  { length: 10000 },
+  (_, i) => ({
+    id: String(i),
+    name: `Contact ${i + 1}`,
+  })
+);
+
+function renderContact({ item }: { item: Contact }) {
+  return (
+    <ListItem>
+      <ListItem.HeadlineContent>
+        <Text>{item.name}</Text>
+      </ListItem.HeadlineContent>
+    </ListItem>
+  );
+}
+
+export default function LargeLazyColumn() {
+  return (
+    <Host style={{ height: 400 }}>
+      <LazyColumn>
+        <LazyColumn.Items
+          data={contacts}
+          keyExtractor={contact => contact.id}>
+          {renderContact}
+        </LazyColumn.Items>
+      </LazyColumn>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+Follow these rules when you render rows:
+
+- Define the `children` function outside the component, or wrap it in `useCallback`. Otherwise, the rows near the visible area render again each time the component renders.
+- A reused row keeps the local state (`useState`) of the item it showed before. Reset the state when the item changes, or keep the state outside the row.
+- A row that is not ready yet shows an empty placeholder. Set `estimatedItemSize` close to the height of your rows, in density-independent pixels (dp).
+- Use `overscanCount` to prepare more rows above and below the visible rows.
+- To update the rows, pass a new `data` array. Do not change the array in place.
+- Set `recycling={false}` to render every row up front.
+
+## API
+
+```tsx
+import { LazyColumn } from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/lazycolumn"
+  apiName="LazyColumn"
+/>

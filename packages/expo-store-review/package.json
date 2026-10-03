@@ -1,6 +1,6 @@
 {
   "name": "expo-store-review",
-  "version": "56.0.3",
+  "version": "58.0.2",
   "description": "Provides access to native APIs for in-app reviews.",
   "keywords": [
     "app-store",
@@ -24,13 +24,17 @@
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {},
   "devDependencies": {

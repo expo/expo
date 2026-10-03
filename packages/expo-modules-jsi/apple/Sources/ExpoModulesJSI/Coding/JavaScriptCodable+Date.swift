@@ -9,22 +9,44 @@ import Foundation
 // A `Date` is an absolute instant with no timezone/calendar; resolution is milliseconds.
 
 extension Date: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .string, .object]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Date
   {
-    // The cheap tag checks come before `is("Date")`, which does a global lookup plus an `instanceof`
-    // walk; a number or string can't be a `Date`, so the order is behavior-neutral.
+    // Forwards to the unowned overload, which holds the implementation.
+    let runtime = copy runtime
+    return try value.withUnownedValue(in: runtime) { unownedValue in
+      return try decode(unownedValue, in: runtime)
+    }
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> Date
+  {
+    // The cheap tag checks come before the `instanceof` check, which needs a global lookup; a number or
+    // a string can't be a `Date`, so the order is behavior-neutral. Only the string branch copies the
+    // value, since the `Date` constructor takes owning arguments; a string is the rare input.
     if value.isNumber() {
       return try dateFromMilliseconds(value.getDouble())
     }
     if value.isString() {
       let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
-      let constructed = try dateConstructor.callAsConstructor(value.copy()).asObject()
+      let constructed = try dateConstructor.callAsConstructor(value.copied(in: runtime)).asObject()
       return try dateFromMilliseconds(constructed.callFunction("getTime").asDouble())
     }
-    if value.is("Date") {
-      return try dateFromMilliseconds(value.asObject().callFunction("getTime").asDouble())
+    if value.isObject() {
+      let dateConstructor = try runtime.global().getPropertyAsFunction("Date")
+      let object = value.getObject(in: runtime)
+      if object.instanceOf(dateConstructor) {
+        return try dateFromMilliseconds(object.callFunction("getTime").asDouble())
+      }
     }
     throw InvalidDateException()
   }
@@ -50,7 +72,7 @@ let maxJavaScriptDateMilliseconds: Double = 8_640_000_000_000_000
 /// faithful to `new Date(number)`; the `Date`/string branches pass an already-clipped `getTime()` through.
 @usableFromInline
 func dateFromMilliseconds(_ milliseconds: Double) throws -> Date {
-  guard milliseconds.isFinite, abs(milliseconds) <= maxJavaScriptDateMilliseconds else {
+  guard milliseconds.isFinite, milliseconds.magnitude <= maxJavaScriptDateMilliseconds else {
     throw InvalidDateException()
   }
   return Date(timeIntervalSince1970: milliseconds.rounded(.towardZero) / 1000.0)

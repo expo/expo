@@ -8,10 +8,9 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
-Expo UI LazyVStack matches the official SwiftUI [LazyVStack API](https://developer.apple.com/documentation/swiftui/lazyvstack) and arranges its children vertically, creating items only as needed (when they become visible during scrolling).
-
-> **info** `LazyVStack` is not truly lazy yet: the native side only builds visible items, but React still creates every child up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
+Expo UI LazyVStack matches the official SwiftUI [LazyVStack API](https://developer.apple.com/documentation/swiftui/lazyvstack) and arranges its children vertically.
 
 ## Installation
 
@@ -21,19 +20,30 @@ Expo UI LazyVStack matches the official SwiftUI [LazyVStack API](https://develop
 
 ### Basic lazy vertical stack
 
-LazyVStack should be used inside a `ScrollView` to enable lazy rendering.
+Put [`LazyVStack`](#lazyvstack) inside a `ScrollView`. Each child of `LazyVStack` is one row. Use the `spacing` and `alignment` props to space and align the rows.
 
-```tsx BasicLazyVStackExample.tsx
-import { Host, ScrollView, LazyVStack, Text } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="BasicLazyVStackExample.tsx"
+  src="/static/images/expo-ui/examples/lazyvstack-static-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyvstack-static-ios-dark.webp"
+  alt="Three rows stacked vertically, separated by a small gap">
+
+```tsx
+import {
+  Host,
+  ScrollView,
+  LazyVStack,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function BasicLazyVStackExample() {
   return (
     <Host style={{ flex: 1 }}>
       <ScrollView>
         <LazyVStack spacing={12}>
-          {Array.from({ length: 100 }, (_, i) => (
-            <Text key={i}>{`Item ${i}`}</Text>
-          ))}
+          <Text>Wi-Fi</Text>
+          <Text>Bluetooth</Text>
+          <Text>Notifications</Text>
         </LazyVStack>
       </ScrollView>
     </Host>
@@ -41,28 +51,68 @@ export default function BasicLazyVStackExample() {
 }
 ```
 
-### With alignment
+</ComponentExample>
 
-The `alignment` prop controls horizontal alignment of children. Available options are: `leading`, `center`, and `trailing`.
+### Large lists
 
-```tsx LazyVStackAlignmentExample.tsx
-import { Host, ScrollView, LazyVStack, Rectangle } from '@expo/ui/swift-ui';
-import { frame } from '@expo/ui/swift-ui/modifiers';
+Use [`LazyVStack.ForEach`](#lazyvstackforeach) to render rows from an array. Pass the items as `data`, a unique key for each item with `keyExtractor`, and a `children` function that returns the row for an item. `LazyVStack.ForEach` renders only the rows near the visible area and reuses them while you scroll.
 
-export default function LazyVStackAlignmentExample() {
+<ComponentExample
+  title="LargeLazyVStackExample.tsx"
+  src="/static/images/expo-ui/examples/lazyvstack-large-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyvstack-large-ios-dark.webp"
+  alt="A vertical list showing the first rows of ten thousand contacts">
+
+```tsx
+import {
+  Host,
+  ScrollView,
+  LazyVStack,
+  Text,
+} from '@expo/ui/swift-ui';
+
+type Contact = { id: string; name: string };
+
+const contacts: Contact[] = Array.from(
+  { length: 10000 },
+  (_, i) => ({
+    id: String(i),
+    name: `Contact ${i + 1}`,
+  })
+);
+
+function renderContact({ item }: { item: Contact }) {
+  return <Text>{item.name}</Text>;
+}
+
+export default function LargeLazyVStackExample() {
   return (
     <Host style={{ flex: 1 }}>
       <ScrollView>
-        <LazyVStack spacing={12} alignment="leading">
-          <Rectangle modifiers={[frame({ width: 50, height: 50 })]} />
-          <Rectangle modifiers={[frame({ width: 100, height: 50 })]} />
-          <Rectangle modifiers={[frame({ width: 75, height: 50 })]} />
+        <LazyVStack spacing={12}>
+          <LazyVStack.ForEach
+            data={contacts}
+            keyExtractor={contact => contact.id}
+            estimatedItemSize={20}>
+            {renderContact}
+          </LazyVStack.ForEach>
         </LazyVStack>
       </ScrollView>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
+
+Follow these rules when you render rows:
+
+- Define the `children` function outside the component, or wrap it in `useCallback`. Otherwise, the rows near the visible area render again each time the component renders.
+- A reused row keeps the local state (`useState`) of the item it showed before. Reset the state when the item changes, or keep the state outside the row.
+- A row that is not ready yet shows an empty placeholder. Set `estimatedItemSize` close to the height of your rows, in points.
+- Use `overscanCount` to prepare more rows above and below the visible rows.
+- To update the rows, pass a new `data` array. Do not change the array in place.
+- Set `recycling={false}` to render every row up front.
 
 ## API
 
@@ -70,4 +120,7 @@ export default function LazyVStackAlignmentExample() {
 import { LazyVStack } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/lazyvstack" apiName="LazyVStack" />
+<APISection
+  packageName="expo-ui/swift-ui/lazyvstack"
+  apiName="LazyVStack"
+/>

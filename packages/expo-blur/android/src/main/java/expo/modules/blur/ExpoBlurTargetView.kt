@@ -109,6 +109,30 @@ class ExpoBlurTargetView(context: Context, appContext: AppContext) : ExpoView(co
     return blurTargetView.indexOfChild(child)
   }
 
+  // `ViewGroup.startViewTransition` records the view in the *receiver's* `mTransitioningViews`,
+  // guarded by `if (view.mParent == this)`. Every proxied child's real parent is
+  // `blurTargetView`, so calling it on this host silently does nothing and the child is detached
+  // for real as soon as its React element unmounts — even mid-animation.
+  // `react-native-screens` relies on this call (`Screen.startRemovalTransition`, which walks the
+  // tree with the public `getChildCount`/`getChildAt` overridden above) to keep an outgoing
+  // screen painted while it animates out, so without the proxy a blur target's contents vanish
+  // on pop while its siblings animate normally. Mirror the add/remove overrides above.
+  override fun startViewTransition(view: View?) {
+    if (view === blurTargetView) {
+      super.startViewTransition(view)
+      return
+    }
+    blurTargetView.startViewTransition(view)
+  }
+
+  override fun endViewTransition(view: View?) {
+    if (view === blurTargetView) {
+      super.endViewTransition(view)
+      return
+    }
+    blurTargetView.endViewTransition(view)
+  }
+
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
     val width = MeasureSpec.getSize(widthMeasureSpec)
     val height = MeasureSpec.getSize(heightMeasureSpec)

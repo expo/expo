@@ -80,7 +80,7 @@ export const cliExtensionMenuItemHandler = async (
       onOutput: (output) => handleOutput(output, spinner),
     });
 
-    // Format with warning or success depending on wether the client reported any errors
+    // Format with warning or success depending on whether the client reported any errors
     formatResults(command.title, results, spinner);
   } catch (error: any) {
     spinner.fail(`Failed to execute command "${command.title}".\n${error.toString().trim()}`);

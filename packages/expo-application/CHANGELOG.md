@@ -1,16 +1,41 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-14
 
 ### 💡 Others
 
+- [iOS] Rename the `EXApplication` pod to `ExpoApplication`. ([#50059](https://github.com/expo/expo/pull/50059) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Migrate to the Expo Modules API 2.0 macros. ([#50059](https://github.com/expo/expo/pull/50059) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 — 2026-07-17
+
+### 🎉 New features
+
 - [iOS] Expose the embedded provisioning profile's `expirationDate`. ([#47190](https://github.com/expo/expo/pull/47190) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 57.0.1 — 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 — 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.3 — 2026-05-06
 

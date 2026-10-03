@@ -51,9 +51,14 @@ class DevLauncherLoadErrorMessageTests: XCTestCase {
     XCTAssertTrue(message.lowercased().contains("lan ip"))
   }
 
-  func testOffline() {
-    let message = DevLauncherLoadErrorMessage.message(for: urlError(NSURLErrorNotConnectedToInternet), url: "http://192.168.1.5:8081")
+  func testOfflineOnPublicHostMentionsOffline() {
+    let message = DevLauncherLoadErrorMessage.message(for: urlError(NSURLErrorNotConnectedToInternet), url: "https://u.expo.dev/abc")
     XCTAssertTrue(message.lowercased().contains("offline"))
+  }
+
+  func testNotConnectedOnLocalHostMentionsLocalNetwork() {
+    let message = DevLauncherLoadErrorMessage.message(for: urlError(NSURLErrorNotConnectedToInternet), url: "http://192.168.1.5:8081")
+    XCTAssertTrue(message.lowercased().contains("local network"))
   }
 
   func testDevelopmentClientErrorsPassThrough() {

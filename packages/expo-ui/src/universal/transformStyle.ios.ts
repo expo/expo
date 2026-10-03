@@ -2,6 +2,7 @@ import {
   background,
   border,
   clipShape,
+  contentShape,
   disabled as disabledMod,
   font,
   foregroundStyle,
@@ -15,6 +16,7 @@ import {
   onTapGesture,
   opacity,
   padding,
+  shapes,
   type ModifierConfig,
 } from '@expo/ui/swift-ui/modifiers';
 
@@ -131,12 +133,12 @@ export function transformToModifiers(
 
     // Background (fills the frame area including padding)
     if (style.backgroundColor) {
-      mods.push(background(String(style.backgroundColor)));
+      mods.push(background(style.backgroundColor));
     }
 
     // Border (before clip so the clip rounds the border corners too)
     if (style.borderWidth != null && style.borderColor != null) {
-      mods.push(border({ color: String(style.borderColor), width: style.borderWidth }));
+      mods.push(border({ content: style.borderColor, width: style.borderWidth }));
     }
 
     // Clip (border radius — rounds both background and border)
@@ -154,8 +156,9 @@ export function transformToModifiers(
   // type. The event, lifecycle, and behavior modifiers below are never dropped.
   mods = omitUserOverridden(mods, extraModifiers);
 
-  // Events
-  if (props.onPress) mods.push(onTapGesture(props.onPress));
+  // Events. SwiftUI only hit-tests drawn content, so the `contentShape` lets
+  // taps on empty space (for example a `Spacer` in a `Row`) reach `onPress`.
+  if (props.onPress) mods.push(contentShape(shapes.rectangle()), onTapGesture(props.onPress));
 
   // Lifecycle
   if (props.onAppear) mods.push(onAppear(props.onAppear));

@@ -36,7 +36,8 @@ struct AppStartupMonitoringTests {
         isConstrained: false,
         unsatisfiedReason: nil,
         timestamp: 0
-      ))
+      )
+    )
     return monitoring
   }
 

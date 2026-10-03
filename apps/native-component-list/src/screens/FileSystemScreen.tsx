@@ -1,6 +1,10 @@
 import { Asset } from 'expo-asset';
 import Checkbox from 'expo-checkbox';
-import * as Contacts from 'expo-contacts';
+import {
+  Contact,
+  ContactField,
+  requestPermissionsAsync as requestContactsPermissionsAsync,
+} from 'expo-contacts';
 import { File, Directory, Paths, FileMode, UploadType, DownloadTask } from 'expo-file-system';
 import type {
   FileHandle,
@@ -229,20 +233,17 @@ function FileSourcesSection({ setCurrentFile }: { setCurrentFile: (f: File) => v
         title="Pick from Contacts"
         onPress={async () => {
           try {
-            const { status } = await Contacts.requestPermissionsAsync();
+            const { status } = await requestContactsPermissionsAsync();
             if (status !== 'granted') {
               Alert.alert('Permission denied');
               return;
             }
-            const { data: contacts } = await Contacts.getContactsAsync({
-              fields: ['imageAvailable', 'image'],
-              pageSize: 100,
-            });
+            const contacts = await Contact.getAllDetails([ContactField.IMAGE], { limit: 100 });
             if (contacts.length === 0) {
               Alert.alert('No contacts found');
               return;
             }
-            const contactImageURI = contacts.find((contact) => contact.imageAvailable)?.image?.uri;
+            const contactImageURI = contacts.find((contact) => contact.image)?.image;
             if (!contactImageURI) {
               Alert.alert('No contact with profile image found');
               return;
@@ -292,7 +293,8 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           exists: file.exists,
           size: file.size,
           type: file.type,
-          md5: file.md5,
+          md5: await file.digest('MD5'),
+          sha256: await file.digest('SHA-256'),
           modificationTime: file.modificationTime,
           creationTime: file.creationTime,
         }))}
@@ -306,10 +308,7 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           }))}
         />
       )}
-      <SimpleActionDemo
-        title="Show info({ md5: true })"
-        action={withCurrentFile(async (file) => file.info({ md5: true }))}
-      />
+      <SimpleActionDemo title="Show info()" action={withCurrentFile(async (file) => file.info())} />
     </>
   );
 }

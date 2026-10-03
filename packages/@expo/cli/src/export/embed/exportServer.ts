@@ -138,7 +138,7 @@ export async function exportStandaloneServerAsync(
   }
   Log.log('Writing generated server URL to app.json');
 
-  // NOTE: Is is it possible to assert that the config needs to be modifiable before building the app?
+  // NOTE: Is it possible to assert that the config needs to be modifiable before building the app?
   const modification = await modifyConfigAsync(
     projectRoot,
     {

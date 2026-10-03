@@ -1,13 +1,13 @@
 import { getConfig, modifyConfigAsync } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Security from './Security';
-import { getLastDeveloperCodeSigningIdAsync, setLastDeveloperCodeSigningIdAsync } from './settings';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
 import { selectAsync } from '../../../utils/prompts';
+import * as Security from './Security';
+import { getLastDeveloperCodeSigningIdAsync, setLastDeveloperCodeSigningIdAsync } from './settings';
 
 /**
  * Sort the code signing items so the last selected item (user's default) is the first suggested.
@@ -59,7 +59,7 @@ export async function resolveCertificateSigningIdentityAsync(
 
   //  One ID available 🤝 Program is not interactive
   //
-  //     using the the first available option
+  //     using the first available option
   if (ids.length === 1 || !isInteractive()) {
     // This method is cheaper than `resolveIdentitiesAsync` and checking the
     // cached user preference so we should use this as early as possible.

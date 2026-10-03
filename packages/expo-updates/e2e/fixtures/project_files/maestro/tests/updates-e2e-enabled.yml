@@ -7,13 +7,19 @@ appId: dev.expo.updatese2e
 - runFlow:
     file: basic_reload.yml
 - runFlow:
+    file: reload_update.yml
+- runFlow:
     file: basic_runUpdate.yml
+- runFlow:
+    file: basic_updateRetention.yml
 - runFlow:
     file: basic_updateInvalidHash.yml
 - runFlow:
     file: basic_updateInvalidAssetHash.yml
 - runFlow:
     file: basic_updateMultipleAssets.yml
+- runFlow:
+    file: basic_updateReusesEmbeddedAssets.yml
 - runFlow:
     file: basic_updateOldCommitTime.yml
 - runFlow:

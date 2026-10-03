@@ -18,11 +18,10 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.header_dir     = 'ExpoModulesTestCore'
 
-  s.source_files   = '**/*.{h,m,mm,swift}'
-
+  # Test specs depend on this pod to pull in the JS runtime that ExpoModulesCore requires when running
+  # tests, and to share the benchmark runner (see `Benchmarks`).
+  s.source_files   = 'Benchmarks/**/*.swift'
   s.dependency 'ExpoModulesCore'
-  s.dependency 'Quick', '~> 7.3.0'
-  s.dependency 'Nimble', '~> 13.0.0'
 
   # react_native_pods.rb will add the ENV['USE_HERMES'],
   # we could use this to check current js runtime.

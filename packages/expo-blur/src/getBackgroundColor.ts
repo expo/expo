@@ -4,7 +4,6 @@ export default function getBackgroundColor(intensity: number, tint: BlurTint): s
   const opacity = intensity / 100;
   switch (tint) {
     // From Apple iOS 14 Sketch Kit - https://developer.apple.com/design/resources/
-    // From Apple iOS 14 Sketch Kit - https://developer.apple.com/design/resources/
     case 'dark':
     case 'systemMaterialDark':
       return `rgba(25,25,25,${opacity * 0.78})`;

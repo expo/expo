@@ -32,7 +32,7 @@ export default class BundlerController {
               process.kill(pid, 0);
             } catch {
               clearInterval(interval);
-              // the process does not exists anymore
+              // the process does not exist anymore
               resolve();
             }
             if ((count += 100) > timeout) {

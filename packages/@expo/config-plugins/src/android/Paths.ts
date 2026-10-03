@@ -3,9 +3,9 @@ import fs from 'fs';
 import { globSync } from 'glob';
 import * as path from 'path';
 
-import type { ResourceKind } from './Resources';
 import { UnexpectedError } from '../utils/errors';
 import { directoryExistsAsync } from '../utils/modules';
+import type { ResourceKind } from './Resources';
 
 export interface ProjectFile<L extends string = string> {
   path: string;

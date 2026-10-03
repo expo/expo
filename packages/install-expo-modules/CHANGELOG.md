@@ -1,14 +1,32 @@
 # Changelog
 
-## Unpublished
+## 0.18.2
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 0.18.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 0.18.0 — 2026-09-15
 
 ### 🎉 New features
 
+- Migrate iOS projects to the UIKit scene-based life cycle when installing SDK 58 or newer. ([#50174](https://github.com/expo/expo/pull/50174) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 0.17.0 — 2026-09-10
+
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
+
+## 0.16.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 0.15.0 — 2026-05-20
 

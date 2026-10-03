@@ -222,7 +222,7 @@ export type GoogleMapsUISettings = {
   compassEnabled?: boolean;
 
   /**
-   * Whether the indoor level picker is enabled .
+   * Whether the indoor level picker is enabled.
    */
   indoorLevelPickerEnabled?: boolean;
 

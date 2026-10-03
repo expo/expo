@@ -139,16 +139,13 @@ public struct Utilities {
   }
 
   /**
-   Returns the app's key window. On iOS and tvOS it is resolved across all connected scenes,
-   which is more reliable than the deprecated `UIApplication.keyWindow` once the app has multiple scenes.
+   Returns the app's key window. On iOS and tvOS it is resolved from the foregrounded scene, so
+   callers presenting UI don't reach a window in a scene the user isn't looking at.
    */
   @MainActor
   public static func keyWindow() -> UIWindow? {
 #if os(iOS) || os(tvOS)
-    return UIApplication.shared.connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }
+    return SceneGeometry.keyWindow()
 #elseif os(macOS)
     return NSApplication.shared.keyWindow
 #endif

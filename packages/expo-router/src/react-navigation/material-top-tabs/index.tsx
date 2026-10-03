@@ -1,13 +1,15 @@
+import { MaterialTopTabView } from './views/MaterialTopTabView';
+
 /**
- * Navigators
+ * > **warning** This API is unstable and may change between minor releases.
  */
-export { createMaterialTopTabNavigator } from './navigators/createMaterialTopTabNavigator';
+export { createStandardMaterialTopTabNavigator } from './navigators/createMaterialTopTabNavigator';
 
 /**
  * Views
  */
 export { MaterialTopTabBar } from './views/MaterialTopTabBar';
-export { MaterialTopTabView } from './views/MaterialTopTabView';
+export { MaterialTopTabView };
 
 /**
  * Utilities
@@ -19,10 +21,11 @@ export { useTabAnimation } from './utils/useTabAnimation';
  */
 export type {
   MaterialTopTabBarProps,
+  MaterialTopTabEmitter,
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationProp,
-  MaterialTopTabNavigatorProps,
   MaterialTopTabOptionsArgs,
   MaterialTopTabScreenProps,
+  MaterialTopTabViewState,
 } from './types';

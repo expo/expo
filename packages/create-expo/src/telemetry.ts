@@ -6,13 +6,20 @@ import os from 'os';
 import { dotExpoHomeDirectory, getStateJsonPath } from './paths';
 import { getSession } from './sessionStorage';
 import { env } from './utils/env';
+import { PACKAGE_NAME } from './utils/update-check';
 
-const packageJSON = require('../package.json');
+const getPackageJson = () => {
+  try {
+    return require('create-expo/package.json');
+  } catch {
+    return null;
+  }
+};
 
 const xdlUnifiedWriteKey = '1wabJGd5IiuF9Q8SGlcI90v8WTs';
 const analyticsEndpoint = 'https://cdp.expo.dev/v1/batch';
 const version = '1.0.0';
-const library = packageJSON.name;
+const library = PACKAGE_NAME;
 
 //#region mostly copied from @expo/rudder-sdk-node https://github.com/expo/rudder-sdk-node/blob/main/index.ts
 // some changes include:
@@ -120,7 +127,7 @@ function enqueue(type: 'identify' | 'track', message: any) {
   }
 
   if (!message.messageId) {
-    // We md5 the messaage to add more randomness. This is primarily meant
+    // We md5 the message to add more randomness. This is primarily meant
     // for use in the browser where the uuid package falls back to Math.random()
     // which is not a great source of randomness.
     // Borrowed from analytics.js (https://github.com/segment-integrations/analytics.js-integration-segmentio/blob/a20d2a2d222aeb3ab2a8c7e72280f1df2618440e/lib/index.js#L255-L256).
@@ -132,7 +139,7 @@ function enqueue(type: 'identify' | 'track', message: any) {
   messageBatch.push(message);
 }
 
-// very barebones implemention...
+// very barebones implementation...
 // does not support multiple concurrent flushes or large numbers of messages
 export async function flushAsync() {
   if (env.EXPO_NO_TELEMETRY) return;
@@ -158,7 +165,7 @@ export async function flushAsync() {
     // Note(cedric): try to use the global fetch instance, but silently fail if its disabled in Node 18
     await fetch(analyticsEndpoint, request);
   } catch {
-    // supress errors - likely due to network connectivity or endpoint health
+    // suppress errors - likely due to network connectivity or endpoint health
   }
   // clear array so we don't resend events in subsequent flushes
   messageBatch.splice(0, messageBatch.length);
@@ -177,7 +184,7 @@ function getAnalyticsContext(): Record<string, any> {
   return {
     os: { name: platform, version: os.release() },
     device: { type: platform, model: platform },
-    app: { name: library, version: packageJSON.version },
+    app: { name: library, version: getPackageJson()?.version ?? undefined },
   };
 }
 //#endregion
@@ -188,7 +195,7 @@ function uuidv4() {
     // https://github.com/denoland/deno/issues/12754
     return (crypto as any).randomUUID();
   } catch {
-    // supress errors due to node 13 or less not having randomUUID
+    // suppress errors due to node 13 or less not having randomUUID
     return null;
   }
 }

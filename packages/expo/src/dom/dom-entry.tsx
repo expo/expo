@@ -4,7 +4,7 @@ import React from 'react';
 
 import registerRootComponent from '../launch/registerRootComponent';
 import type { JSONValue } from './dom.types';
-import { addEventListener, getActionsObject } from './marshal';
+import { addEventListener, getActionsObject, notifyDOMReady } from './marshal';
 
 export interface MarshalledProps {
   names: string[];
@@ -81,6 +81,8 @@ export function registerDOMComponent(AppModule: any) {
           setProps(msg.data as MarshalledProps);
         }
       });
+      // Must stay after `addEventListener`: props emitted before it existed were dropped.
+      notifyDOMReady();
       return () => {
         remove();
       };

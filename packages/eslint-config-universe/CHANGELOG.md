@@ -1,14 +1,24 @@
 # Changelog
 
-## Unpublished
+## 16.1.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 16.1.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 16.1.0 — 2026-09-10
 
 ### 💡 Others
+
+- Disable the `prettier/prettier` ESLint rule, since the repo now formats with `oxfmt`. ([#48264](https://github.com/expo/expo/pull/48264) by [@zoontek](https://github.com/zoontek))
+
+## 16.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 15.2.0 — 2026-05-20
 

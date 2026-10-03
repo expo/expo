@@ -18,6 +18,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationTrigger
 import expo.modules.notifications.notifications.interfaces.SchedulableNotificationTrigger
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.triggers.AlarmClockAwareTrigger
 import expo.modules.notifications.notifications.triggers.ChannelAwareTrigger
 import expo.modules.notifications.notifications.triggers.DailyTrigger
 import expo.modules.notifications.notifications.triggers.DateTrigger
@@ -105,7 +106,11 @@ open class NotificationScheduler : Module() {
             promise.resolve(nextTriggerDate.time.toDouble())
           }
         } else {
-          val triggerDescription = if (trigger == null) "null" else trigger.javaClass.name
+          val triggerDescription = if (trigger == null) {
+            "null"
+          } else {
+            trigger.javaClass.name
+          }
           val message = String.format("It is not possible to get next trigger date for triggers other than calendar-based. Provided trigger resulted in %s trigger.", triggerDescription)
           promise.reject("ERR_NOTIFICATIONS_INVALID_CALENDAR_TRIGGER", message, null)
         }
@@ -146,6 +151,18 @@ open class NotificationScheduler : Module() {
     )
   }
 
+  private fun usesAlarmClock(params: ReadableArguments): Boolean {
+    val bestEffort = AlarmClockAwareTrigger.DELIVERY_BEST_EFFORT
+    val alarmClock = AlarmClockAwareTrigger.DELIVERY_ALARM_CLOCK
+    return when (val delivery = params.getString("delivery", bestEffort)) {
+      bestEffort -> false
+      alarmClock -> true
+      else -> throw InvalidArgumentException(
+        "Unsupported trigger delivery \"$delivery\". Use \"$bestEffort\" or \"$alarmClock\"."
+      )
+    }
+  }
+
   @Throws(InvalidArgumentException::class)
   protected fun triggerFromParams(params: ReadableArguments?): NotificationTrigger? {
     if (params == null) {
@@ -164,7 +181,7 @@ open class NotificationScheduler : Module() {
         val timestamp = params["timestamp"] as? Number
           ?: throw InvalidArgumentException("Invalid value provided as date of trigger.")
 
-        DateTrigger(channelId, timestamp.toLong())
+        DateTrigger(channelId, timestamp.toLong(), usesAlarmClock(params))
       }
 
       "daily" -> {
@@ -178,7 +195,8 @@ open class NotificationScheduler : Module() {
         DailyTrigger(
           channelId,
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          usesAlarmClock(params)
         )
       }
 
@@ -194,7 +212,8 @@ open class NotificationScheduler : Module() {
           channelId,
           weekday.toInt(),
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          usesAlarmClock(params)
         )
       }
 
@@ -211,7 +230,8 @@ open class NotificationScheduler : Module() {
           channelId,
           day.toInt(),
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          usesAlarmClock(params)
         )
       }
 
@@ -230,7 +250,8 @@ open class NotificationScheduler : Module() {
           day.toInt(),
           month.toInt(),
           hour.toInt(),
-          minute.toInt()
+          minute.toInt(),
+          usesAlarmClock(params)
         )
       }
 

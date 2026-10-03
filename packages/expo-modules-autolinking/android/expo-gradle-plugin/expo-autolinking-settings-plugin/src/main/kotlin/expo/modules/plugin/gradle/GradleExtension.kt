@@ -4,7 +4,7 @@ import org.gradle.api.Project
 import org.gradle.api.invocation.Gradle
 
 /**
- * Adds an action to be called immediately before a root project is evaluate.
+ * Adds an action to be called immediately before a root project is evaluated.
  */
 internal inline fun Gradle.beforeRootProject(crossinline action: (rootProject: Project) -> Unit) {
   beforeProject { project ->

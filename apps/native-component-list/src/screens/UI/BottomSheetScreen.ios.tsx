@@ -20,6 +20,7 @@ import {
   presentationDragIndicator,
   presentationBackground,
   presentationBackgroundInteraction,
+  presentationCornerRadius,
   interactiveDismissDisabled,
   tag,
   foregroundStyle,
@@ -42,6 +43,10 @@ export default function BottomSheetScreen() {
 
   const [showBackgroundColor, setShowBackgroundColor] = React.useState(false);
 
+  const [showBackgroundMaterial, setShowBackgroundMaterial] = React.useState(false);
+
+  const [showBackgroundGradient, setShowBackgroundGradient] = React.useState(false);
+
   const [showConfigured, setShowConfigured] = React.useState(false);
   const [useMedium, setUseMedium] = React.useState(true);
   const [useLarge, setUseLarge] = React.useState(true);
@@ -49,6 +54,7 @@ export default function BottomSheetScreen() {
   const [dragIndicator, setDragIndicator] = React.useState<DragIndicatorOption>('automatic');
   const [backgroundInteractionEnabled, setBackgroundInteractionEnabled] = React.useState(false);
   const [dismissDisabled, setDismissDisabled] = React.useState(false);
+  const [customCornerRadius, setCustomCornerRadius] = React.useState(false);
 
   const [showSelectionTracking, setShowSelectionTracking] = React.useState(false);
   const selectionDetents: PresentationDetent[] = [
@@ -83,6 +89,10 @@ export default function BottomSheetScreen() {
       mods.push(interactiveDismissDisabled());
     }
 
+    if (customCornerRadius) {
+      mods.push(presentationCornerRadius(12));
+    }
+
     return mods;
   })();
 
@@ -96,7 +106,23 @@ export default function BottomSheetScreen() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Basic">
-          <Button label="Open Basic Sheet" onPress={() => setShowBasic(true)} />
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            The open button is passed as the `anchor` prop
+          </Text>
+          <BottomSheet
+            isPresented={showBasic}
+            onIsPresentedChange={setShowBasic}
+            anchor={<Button label="Open Basic Sheet" onPress={() => setShowBasic(true)} />}>
+            <Group modifiers={[presentationDetents(['medium', 'large'])]}>
+              <VStack modifiers={[padding({ all: 20 })]}>
+                <Text>Basic Bottom Sheet</Text>
+                <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+                  Swipe down or tap outside to dismiss
+                </Text>
+                <Button label="Close" onPress={() => setShowBasic(false)} />
+              </VStack>
+            </Group>
+          </BottomSheet>
         </Section>
 
         <Section title="Fits Content">
@@ -114,6 +140,20 @@ export default function BottomSheetScreen() {
           <Button
             label="Open Solid Background Sheet"
             onPress={() => setShowBackgroundColor(true)}
+          />
+        </Section>
+
+        <Section title="Material and Gradient Background">
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            presentationBackground takes any ShapeStyle, not just a color
+          </Text>
+          <Button
+            label="Open Material Background Sheet"
+            onPress={() => setShowBackgroundMaterial(true)}
+          />
+          <Button
+            label="Open Gradient Background Sheet"
+            onPress={() => setShowBackgroundGradient(true)}
           />
         </Section>
 
@@ -142,6 +182,11 @@ export default function BottomSheetScreen() {
             isOn={dismissDisabled}
             onIsOnChange={setDismissDisabled}
             label="Dismiss Disabled"
+          />
+          <Toggle
+            isOn={customCornerRadius}
+            onIsOnChange={setCustomCornerRadius}
+            label="Corner Radius 12"
           />
         </Section>
 
@@ -172,19 +217,6 @@ export default function BottomSheetScreen() {
         </Section>
       </Form>
 
-      {/* Basic Sheet */}
-      <BottomSheet isPresented={showBasic} onIsPresentedChange={setShowBasic}>
-        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
-          <VStack modifiers={[padding({ all: 20 })]}>
-            <Text>Basic Bottom Sheet</Text>
-            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
-              Swipe down or tap outside to dismiss
-            </Text>
-            <Button label="Close" onPress={() => setShowBasic(false)} />
-          </VStack>
-        </Group>
-      </BottomSheet>
-
       {/* Fits Content Sheet */}
       <BottomSheet
         isPresented={showFitsContent}
@@ -211,6 +243,50 @@ export default function BottomSheetScreen() {
               presentationBackground replaces the default translucent material
             </Text>
             <Button label="Close" onPress={() => setShowBackgroundColor(false)} />
+          </VStack>
+        </Group>
+      </BottomSheet>
+
+      {/* Material Background Sheet */}
+      <BottomSheet
+        isPresented={showBackgroundMaterial}
+        onIsPresentedChange={setShowBackgroundMaterial}>
+        <Group
+          modifiers={[
+            presentationDetents(['medium', 'large']),
+            presentationBackground({ type: 'material', material: 'ultraThin' }),
+          ]}>
+          <VStack modifiers={[padding({ all: 20 })]}>
+            <Text>Ultra thin material sheet background</Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              The material follows the color scheme. iOS 26 renders it as a flat color rather than a
+              translucent blur
+            </Text>
+            <Button label="Close" onPress={() => setShowBackgroundMaterial(false)} />
+          </VStack>
+        </Group>
+      </BottomSheet>
+
+      {/* Gradient Background Sheet */}
+      <BottomSheet
+        isPresented={showBackgroundGradient}
+        onIsPresentedChange={setShowBackgroundGradient}>
+        <Group
+          modifiers={[
+            presentationDetents(['medium', 'large']),
+            presentationBackground({
+              type: 'linearGradient',
+              colors: ['#7B4DFF', '#00C2FF'],
+              startPoint: { x: 0, y: 0 },
+              endPoint: { x: 1, y: 1 },
+            }),
+          ]}>
+          <VStack modifiers={[padding({ all: 20 })]}>
+            <Text>Linear gradient sheet background</Text>
+            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+              The gradient paints the whole sheet surface, including the drag-indicator zone
+            </Text>
+            <Button label="Close" onPress={() => setShowBackgroundGradient(false)} />
           </VStack>
         </Group>
       </BottomSheet>

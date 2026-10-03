@@ -3,16 +3,17 @@ import type { Dispatch, SetStateAction } from 'react';
 import { createContext, use, useState } from 'react';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
+import JSStack from '../layouts/JSStack';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
 
-it('redirects a guarded route to the anchor default during the initial load', () => {
+it('redirects a guarded route to the anchor default during the initial load', async () => {
   let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: function Layout() {
         useStateResult = useState(false);
@@ -39,25 +40,30 @@ it('redirects a guarded route to the anchor default during the initial load', ()
   expect(screen).toHavePathname('/');
 
   // Enable the /a route
-  act(() => {
+  await act(() => {
     useStateResult[1](true);
   });
 
   // Now we should be able to navigate to /a
   // TODO: Allow navigation events while updating state
-  act(() => router.replace('/a'));
+  await act(() => router.replace('/a'));
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'index', 'b', 'c']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'index',
+    'b',
+    'c',
+  ]);
 });
 
-it('redirects nested guarded routes to the anchor and unlocks them as guards flip', () => {
+it('redirects nested guarded routes to the anchor and unlocks them as guards flip', async () => {
   let useStateResultA: [boolean, Dispatch<SetStateAction<boolean>>];
   let useStateResultB: [boolean, Dispatch<SetStateAction<boolean>>];
   let useStateResultC: [boolean, Dispatch<SetStateAction<boolean>>];
 
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
       useStateResultA = useState(false);
       useStateResultB = useState(false);
@@ -89,62 +95,67 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
 
   // try to navigate to all protected routes should not change the current
   // route since all the guards are false
-  act(() => router.replace('/a'));
+  await act(() => router.replace('/a'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
-  act(() => router.replace('/b'));
+  await act(() => router.replace('/b'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
-  act(() => router.replace('/c'));
+  await act(() => router.replace('/c'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
   // change the guards for routes A and C to true: should make A available but
   // not C as it is nested under B and the guard for B is still false
-  act(() => {
+  await act(() => {
     useStateResultA[1](true);
     useStateResultC[1](true);
   });
 
-  act(() => router.replace('/a'));
+  await act(() => router.replace('/a'));
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
 
-  act(() => router.replace('/b'));
+  await act(() => router.replace('/b'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
-  act(() => router.replace('/c'));
+  await act(() => router.replace('/c'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
   // change the guard for route B to true: should make B available and also C
   // should be available now as all its parents guards are true
-  act(() => {
+  await act(() => {
     useStateResultB[1](true);
   });
 
-  act(() => router.replace('/a'));
+  await act(() => router.replace('/a'));
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
 
-  act(() => router.replace('/b'));
+  await act(() => router.replace('/b'));
   expect(screen.getByTestId('b')).toBeVisible();
   expect(screen).toHavePathname('/b');
 
-  act(() => router.replace('/c'));
+  await act(() => router.replace('/c'));
   expect(screen.getByTestId('c')).toBeVisible();
   expect(screen).toHavePathname('/c');
 
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'b',
+    'c',
+    'index',
+  ]);
 });
 
-it('defaults a guarded route to the navigator anchor', () => {
+it('defaults a guarded route to the navigator anchor', async () => {
   let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: {
         unstable_settings: {
@@ -177,21 +188,25 @@ it('defaults a guarded route to the navigator anchor', () => {
   expect(screen).toHavePathname('/b');
 
   // Enable the /a route
-  act(() => {
+  await act(() => {
     useStateResult[1](true);
   });
 
   // Now we should be able to navigate to /a
   // TODO: Allow navigation events while updating state
-  act(() => router.replace('/a'));
+  await act(() => router.replace('/a'));
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'index']);
+  expect(navigationRef.getRootState().routes[0]!.state!.routeNames).toStrictEqual([
+    'a',
+    'b',
+    'index',
+  ]);
 });
 
-it('redirects a guarded route to an explicit redirectTo target', () => {
-  renderRouter(
+it('redirects a guarded route to an explicit redirectTo target', async () => {
+  await renderRouter(
     {
       _layout: function Layout() {
         return (
@@ -214,8 +229,8 @@ it('redirects a guarded route to an explicit redirectTo target', () => {
   expect(screen).toHavePathname('/login');
 });
 
-it('redirects a guarded route in a nested navigator to that navigator anchor', () => {
-  renderRouter(
+it('redirects a guarded route in a nested navigator to that navigator anchor', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack id={undefined} />,
       index: () => <Text testID="index">index</Text>,
@@ -242,8 +257,8 @@ it('redirects a guarded route in a nested navigator to that navigator anchor', (
   expect(screen).toHavePathname('/nested/home');
 });
 
-it('uses the innermost failing guard redirectTo for a nested guarded route', () => {
-  renderRouter(
+it('uses the innermost failing guard redirectTo for a nested guarded route', async () => {
+  await renderRouter(
     {
       _layout: function Layout() {
         return (
@@ -270,8 +285,8 @@ it('uses the innermost failing guard redirectTo for a nested guarded route', () 
   expect(screen).toHavePathname('/inner');
 });
 
-it('applies the parent guard redirectTo to a route nested in a passing child guard', () => {
-  renderRouter(
+it('applies the parent guard redirectTo to a route nested in a passing child guard', async () => {
+  await renderRouter(
     {
       _layout: function Layout() {
         return (
@@ -296,8 +311,8 @@ it('applies the parent guard redirectTo to a route nested in a passing child gua
   expect(screen).toHavePathname('/login');
 });
 
-it('does not apply the parent guard redirectTo to a route nested in a passing child guard when parent guard is true', () => {
-  renderRouter(
+it('does not apply the parent guard redirectTo to a route nested in a passing child guard when parent guard is true', async () => {
+  await renderRouter(
     {
       _layout: function Layout() {
         return (
@@ -322,11 +337,10 @@ it('does not apply the parent guard redirectTo to a route nested in a passing ch
   expect(screen).toHavePathname('/');
 });
 
-
-it('should move away from a focused route when its guard flips false', () => {
+it('should move away from a focused route when its guard flips false', async () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: function Layout() {
         const [guard, setState] = useState(true);
@@ -348,7 +362,7 @@ it('should move away from a focused route when its guard flips false', () => {
   expect(screen.getByTestId('secret')).toBeVisible();
   expect(screen).toHavePathname('/secret');
 
-  act(() => {
+  await act(() => {
     setGuard(false);
   });
 
@@ -356,10 +370,10 @@ it('should move away from a focused route when its guard flips false', () => {
   expect(screen).toHavePathname('/');
 });
 
-it('should remove guarded routes from history when a guard flips false', () => {
+it('should remove guarded routes from history when a guard flips false', async () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
       const [guard, setState] = useState(true);
       setGuard = setState;
@@ -377,29 +391,60 @@ it('should remove guarded routes from history when a guard flips false', () => {
     other: () => <Text testID="other">other</Text>,
   });
 
-  act(() => router.push('/secret'));
+  await act(() => router.push('/secret'));
   expect(screen.getByTestId('secret')).toBeVisible();
   expect(screen).toHavePathname('/secret');
 
-  act(() => router.push('/other'));
+  await act(() => router.push('/other'));
   expect(screen.getByTestId('other')).toBeVisible();
   expect(screen).toHavePathname('/other');
 
-  act(() => {
+  await act(() => {
     setGuard(false);
   });
 
-  act(() => router.back());
+  await act(() => router.back());
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
   expect(router.canGoBack()).toBe(false);
 });
 
-it('should not restore pruned guarded history when a guard flips true->false->true', () => {
+it('should remove guarded routes from JavaScript stack history when a guard flips false', async () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
-  renderRouter({
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <JSStack>
+          <JSStack.Protected guard={guard}>
+            <JSStack.Screen name="secret" />
+          </JSStack.Protected>
+          <JSStack.Screen name="other" />
+        </JSStack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    other: () => <Text testID="other">other</Text>,
+  });
+
+  await act(() => router.push('/secret'));
+  await act(() => router.push('/other'));
+  await act(() => setGuard(false));
+  await act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('should not restore pruned guarded history when a guard flips true->false->true', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
     _layout: function Layout() {
       const [guard, setState] = useState(true);
       setGuard = setState;
@@ -417,36 +462,36 @@ it('should not restore pruned guarded history when a guard flips true->false->tr
     other: () => <Text testID="other">other</Text>,
   });
 
-  act(() => router.push('/secret'));
+  await act(() => router.push('/secret'));
   expect(screen.getByTestId('secret')).toBeVisible();
   expect(screen).toHavePathname('/secret');
 
-  act(() => router.push('/other'));
+  await act(() => router.push('/other'));
   expect(screen.getByTestId('other')).toBeVisible();
   expect(screen).toHavePathname('/other');
 
   // Revoke access: the guarded /secret history entry is pruned.
-  act(() => {
+  await act(() => {
     setGuard(false);
   });
 
   // Re-grant access while still on /other.
-  act(() => {
+  await act(() => {
     setGuard(true);
   });
 
   // Flipping the guard back to true must not resurrect the pruned /secret entry.
-  act(() => router.back());
+  await act(() => router.back());
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
   expect(router.canGoBack()).toBe(false);
 });
 
-it('should use the anchor when a focused route guard flips false', () => {
+it('should use the anchor when a focused route guard flips false', async () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: {
         unstable_settings: {
@@ -475,7 +520,7 @@ it('should use the anchor when a focused route guard flips false', () => {
   expect(screen.getByTestId('secret')).toBeVisible();
   expect(screen).toHavePathname('/secret');
 
-  act(() => {
+  await act(() => {
     setGuard(false);
   });
 
@@ -486,7 +531,7 @@ it('should use the anchor when a focused route guard flips false', () => {
 it('will wait for React state updates before pushing', async () => {
   const SetterContext = createContext<Dispatch<SetStateAction<boolean>>>(() => {});
 
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
       const [value, setState] = useState(false);
 
@@ -519,15 +564,15 @@ it('will wait for React state updates before pushing', async () => {
     },
   });
 
-  fireEvent.press(screen.getByTestId('index'));
+  await fireEvent.press(screen.getByTestId('index'));
 
   expect(screen).toHavePathname('/protected');
 });
 
-it('works with tabs', () => {
+it('works with tabs', async () => {
   const SetterContext = createContext<Dispatch<SetStateAction<boolean>>>(() => {});
 
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
       const [value, setState] = useState(false);
 
@@ -567,22 +612,387 @@ it('works with tabs', () => {
 
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeNull();
 
-  fireEvent.press(screen.getByTestId('index'));
+  await fireEvent.press(screen.getByTestId('index'));
 
   expect(screen).toHavePathname('/');
 
-  fireEvent(screen.getByTestId('index'), 'longPress');
+  await fireEvent(screen.getByTestId('index'), 'longPress');
 
   expect(screen).toHavePathname('/protected');
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });
 
+describe('all routes guarded', () => {
+  let consoleWarnSpy: jest.SpyInstance<void, Parameters<typeof console.warn>>;
+
+  beforeEach(() => {
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('renders nothing without crashing when every route is guarded from the start', async () => {
+    await renderRouter({
+      _layout: function Layout() {
+        return (
+          <>
+            <Text testID="layout">layout</Text>
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="second" />
+              </Stack.Protected>
+            </Stack>
+          </>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      second: () => <Text testID="second">second</Text>,
+    });
+
+    expect(screen.getByTestId('layout')).toBeVisible();
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.queryByTestId('second')).toBeNull();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'All routes in this navigator are protected. Ensure at least one route is accessible.'
+    );
+    // The navigator itself stays mounted (previously it rendered null when all
+    // its routes were guarded).
+    expect(JSON.stringify(screen.toJSON())).toContain('RNSScreenStack');
+  });
+
+  it('keeps navigation state when all guards flip false and back to true', async () => {
+    let setGuard: Dispatch<SetStateAction<boolean>>;
+
+    await renderRouter({
+      _layout: function Layout() {
+        const [guard, setState] = useState(true);
+        setGuard = setState;
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={guard}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="second" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      second: () => <Text testID="second">second</Text>,
+    });
+
+    await act(() => router.push('/second'));
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(screen).toHavePathname('/second');
+
+    const stateBefore = navigationRef.getRootState().routes[0]!.state!;
+    const focusedKeyBefore = stateBefore.routes[stateBefore.index!]!.key;
+
+    // Guard everything: content hides but the navigator must stay mounted.
+    await act(() => {
+      setGuard(false);
+    });
+
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.queryByTestId('second')).toBeNull();
+
+    // Restore access: the same navigation state is still there, not reinitialized.
+    await act(() => {
+      setGuard(true);
+    });
+
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(screen).toHavePathname('/second');
+    const stateAfter = navigationRef.getRootState().routes[0]!.state!;
+    expect(stateAfter.routes[stateAfter.index!]!.key).toBe(focusedKeyBefore);
+    // Non-focused guarded history entries are pruned while the guard is down,
+    // so only the focused route survives the flip.
+    expect(stateAfter.routes).toHaveLength(1);
+  });
+
+  it('redirects to the parent anchor when all nested guards flip false', async () => {
+    let setGuard: Dispatch<SetStateAction<boolean>>;
+
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'index' },
+          default: () => <Stack id={undefined} />,
+        },
+        index: () => <Text testID="index">index</Text>,
+        'nested/_layout': function NestedLayout() {
+          const [guard, setState] = useState(true);
+          setGuard = setState;
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={guard}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="second" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/index': () => <Text testID="nested-index">nested index</Text>,
+        'nested/second': () => <Text testID="second">second</Text>,
+      },
+      { initialUrl: '/nested/second' }
+    );
+
+    expect(screen.getByTestId('second')).toBeVisible();
+
+    await act(() => setGuard(false));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen).toHavePathname('/');
+  });
+
+  it('does not redirect when the parent anchor is the fully guarded navigator', async () => {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'nested' },
+          default: () => <Stack id={undefined} />,
+        },
+        index: () => <Text testID="index">index</Text>,
+        'nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/index': () => <Text testID="nested-index">nested index</Text>,
+      },
+      { initialUrl: '/nested' }
+    );
+
+    expect(screen.queryByTestId('nested-index')).toBeNull();
+    expect(screen).toHavePathname('/nested');
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'All routes in this navigator are protected. Ensure at least one route is accessible.'
+    );
+  });
+
+  it('skips a self-targeting parent anchor and redirects to the grandparent anchor', async () => {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'home' },
+          default: () => <Stack id={undefined} />,
+        },
+        home: () => <Text testID="home">home</Text>,
+        'nested/_layout': {
+          unstable_settings: { anchor: 'deep' },
+          default: () => <Stack id={undefined} />,
+        },
+        'nested/deep/_layout': function DeepLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/deep/index': () => <Text testID="deep-index">deep index</Text>,
+      },
+      { initialUrl: '/nested/deep' }
+    );
+
+    expect(screen.getByTestId('home')).toBeVisible();
+    expect(screen).toHavePathname('/home');
+  });
+
+  it('uses updated params from an object redirectTo', async () => {
+    let setId: Dispatch<SetStateAction<string>>;
+
+    await renderRouter({
+      _layout: function Layout() {
+        const [id, setState] = useState('one');
+        setId = setState;
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false} redirectTo={{ pathname: '/login/[id]', params: { id } }}>
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+      'login/[id]': () => <Text testID="login">login</Text>,
+    });
+
+    await act(() => setId('two'));
+    await act(() => router.push('/secret'));
+
+    expect(screen.getByTestId('login')).toBeVisible();
+    expect(screen).toHavePathname('/login/two');
+  });
+
+  it('preserves a parent anchor whose name ends in index', async () => {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'reindex' },
+          default: () => <Stack id={undefined} />,
+        },
+        reindex: () => <Text testID="reindex">reindex</Text>,
+        'nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/index': () => <Text testID="nested-index">nested index</Text>,
+      },
+      { initialUrl: '/nested' }
+    );
+
+    expect(screen.getByTestId('reindex')).toBeVisible();
+    expect(screen).toHavePathname('/reindex');
+  });
+
+  it('redirects out of a pathless group to the parent index', async () => {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'index' },
+          default: () => <Stack id={undefined} />,
+        },
+        index: () => <Text testID="index">index</Text>,
+        '(app)/_layout': function AppLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        '(app)/secret': () => <Text testID="secret">secret</Text>,
+      },
+      { initialUrl: '/secret' }
+    );
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen).toHavePathname('/');
+  });
+
+  it('redirects to the configured pathless group when groups share a URL', async () => {
+    await renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: '(two)' },
+          default: () => (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack>
+          ),
+        },
+        '(one)/_layout': () => <Stack id={undefined} />,
+        '(one)/index': () => <Text testID="one">one</Text>,
+        '(two)/_layout': () => <Stack id={undefined} />,
+        '(two)/index': () => <Text testID="two">two</Text>,
+        secret: () => <Text testID="secret">secret</Text>,
+      },
+      { initialUrl: '/secret' }
+    );
+
+    expect(screen.getByTestId('two')).toBeVisible();
+    expect(screen.queryByTestId('one')).toBeNull();
+    expect(screen).toHavePathname('/');
+  });
+
+  it('preserves params in a dynamic parent anchor', async () => {
+    await renderRouter(
+      {
+        _layout: () => <Stack id={undefined} />,
+        '[id]/_layout': {
+          unstable_settings: { anchor: 'index' },
+          default: () => <Stack id={undefined} />,
+        },
+        '[id]/index': () => <Text testID="profile">profile</Text>,
+        '[id]/nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        '[id]/nested/index': () => <Text testID="nested-index">nested index</Text>,
+      },
+      { initialUrl: '/alice/nested' }
+    );
+
+    expect(screen.getByTestId('profile')).toBeVisible();
+    expect(screen).toHavePathname('/alice');
+  });
+
+  it('does not render guarded content when pushing directly to a route guarded with no destination', async () => {
+    await renderRouter({
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="second" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      second: () => <Text testID="second">second</Text>,
+    });
+
+    await act(() => router.push('/second'));
+
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.queryByTestId('second')).toBeNull();
+  });
+
+  it('redirects out of a fully guarded nested navigator via redirectTo', async () => {
+    await renderRouter(
+      {
+        _layout: () => <Stack id={undefined} />,
+        index: () => <Text testID="index">index</Text>,
+        login: () => <Text testID="login">login</Text>,
+        'nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false} redirectTo="/login">
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/secret': () => <Text testID="secret">secret</Text>,
+      },
+      { initialUrl: '/nested/secret' }
+    );
+
+    expect(screen.getByTestId('login')).toBeVisible();
+    expect(screen).toHavePathname('/login');
+  });
+});
+
 describe('routes without /index suffix', () => {
   describe('Protected', () => {
-    it('should protect dynamic routes without explicit /index suffix', () => {
+    it('should protect dynamic routes without explicit /index suffix', async () => {
       let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
-      renderRouter(
+      await renderRouter(
         {
           _layout: function Layout() {
             useStateResult = useState(false);
@@ -603,20 +1013,20 @@ describe('routes without /index suffix', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       expect(screen).toHavePathname('/');
 
-      act(() => {
+      await act(() => {
         useStateResult[1](true);
       });
 
-      act(() => router.replace('/otp/signin'));
+      await act(() => router.replace('/otp/signin'));
 
       expect(screen.getByTestId('otp')).toBeVisible();
       expect(screen).toHavePathname('/otp/signin');
     });
 
-    it('should protect routes when _layout exists alongside index', () => {
+    it('should protect routes when _layout exists alongside index', async () => {
       let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
-      renderRouter(
+      await renderRouter(
         {
           _layout: function Layout() {
             useStateResult = useState(false);
@@ -638,20 +1048,20 @@ describe('routes without /index suffix', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       expect(screen).toHavePathname('/');
 
-      act(() => {
+      await act(() => {
         useStateResult[1](true);
       });
 
-      act(() => router.replace('/otp/signin'));
+      await act(() => router.replace('/otp/signin'));
 
       expect(screen.getByTestId('otp')).toBeVisible();
       expect(screen).toHavePathname('/otp/signin');
     });
 
-    it('should protect routes when _layout exists without index', () => {
+    it('should protect routes when _layout exists without index', async () => {
       let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
 
-      renderRouter(
+      await renderRouter(
         {
           _layout: function Layout() {
             useStateResult = useState(false);
@@ -673,37 +1083,38 @@ describe('routes without /index suffix', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       expect(screen).toHavePathname('/');
 
-      act(() => {
+      await act(() => {
         useStateResult[1](true);
       });
 
-      act(() => router.replace('/otp/signin/step1'));
+      await act(() => router.replace('/otp/signin/step1'));
 
       expect(screen.getByTestId('step1')).toBeVisible();
       expect(screen).toHavePathname('/otp/signin/step1');
     });
 
-    it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', () => {
-      expect(() =>
-        renderRouter(
-          {
-            _layout: function Layout() {
-              const [guard] = useState(false);
-              return (
-                <Stack id={undefined}>
-                  <Stack.Protected guard={guard}>
-                    <Stack.Screen name="otp/[flow]" />
-                    <Stack.Screen name="otp/[flow]/index" />
-                  </Stack.Protected>
-                </Stack>
-              );
+    it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', async () => {
+      await expect(
+        async () =>
+          await renderRouter(
+            {
+              _layout: function Layout() {
+                const [guard] = useState(false);
+                return (
+                  <Stack id={undefined}>
+                    <Stack.Protected guard={guard}>
+                      <Stack.Screen name="otp/[flow]" />
+                      <Stack.Screen name="otp/[flow]/index" />
+                    </Stack.Protected>
+                  </Stack>
+                );
+              },
+              index: () => <Text testID="index">index</Text>,
+              'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
             },
-            index: () => <Text testID="index">index</Text>,
-            'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
-          },
-          { initialUrl: '/otp/signin' }
-        )
-      ).toThrow('Screen names must be unique');
+            { initialUrl: '/otp/signin' }
+          )
+      ).rejects.toThrow('Screen names must be unique');
     });
   });
 });

@@ -1,34 +1,52 @@
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import {
+  Stack,
+  type NativeStackNavigationOptions,
+  type NativeStackNavigationProp,
+  useNavigation,
+} from 'expo-router';
 import Fuse from 'fuse.js';
 import React from 'react';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import type { SearchBarCommands } from 'react-native-screens';
 
-import { useTheme } from '../../../common/ThemeProvider';
+import { ThemeType, useTheme } from '../../../common/ThemeProvider';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import { screenApiItems as ApiScreenApiItems } from '../navigation/ExpoApisStackNavigator';
-import { screenApiItems as ComponentScreenApiItems } from '../navigation/ExpoComponentsStackNavigator';
+import { screenApiItems as ApiScreenApiItems } from '../navigation/apiScreens';
+import { screenApiItems as ComponentScreenApiItems } from '../navigation/componentScreens';
 import ComponentListScreen from './ComponentListScreen';
 
 const fuse = new Fuse(ApiScreenApiItems.concat(ComponentScreenApiItems), { keys: ['name'] });
 
-function SearchScreen({ navigation }: NativeStackScreenProps<SearchStack, 'search'>) {
+// The header comes from the stack that renders this screen, so hosts must apply
+// `getSearchScreenOptions` to that stack screen.
+export function getSearchScreenOptions(theme: ThemeType): NativeStackNavigationOptions {
+  return {
+    title: 'Search',
+    headerShown: true,
+    headerBackButtonDisplayMode: 'minimal',
+    headerStyle: { backgroundColor: theme.background.default },
+    headerTintColor: theme.icon.info,
+    headerTitleStyle: { color: theme.text.default },
+  };
+}
+
+export default function SearchScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<Record<string, object | undefined>>>();
   const { theme } = useTheme();
   const [query, setQuery] = React.useState('');
+  const searchBarRef = React.useRef<SearchBarCommands>(null);
 
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerSearchBarOptions: {
-        placeholder: 'Search',
-        autoFocus: true,
-        textColor: theme.text.default,
-        tintColor: theme.icon.info,
-        headerIconColor: theme.icon.secondary,
-        hintTextColor: theme.text.quaternary,
-        onChangeText: (event: { nativeEvent: { text: string } }) =>
-          setQuery(event.nativeEvent.text),
-        onCancelButtonPress: () => navigation.goBack(),
-      },
+  // `autoFocus` is Android-only, so focus the iOS search bar once the screen finishes opening.
+  React.useEffect(() => {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    return navigation.addListener('transitionEnd', ({ data }) => {
+      if (!data.closing) {
+        searchBarRef.current?.focus();
+      }
     });
-  }, [navigation, theme]);
+  }, [navigation]);
 
   const apis = React.useMemo(() => {
     if (!query) return [];
@@ -42,25 +60,57 @@ function SearchScreen({ navigation }: NativeStackScreenProps<SearchStack, 'searc
     []
   );
 
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
-}
+  const list = <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
 
-type SearchStack = {
-  search: undefined;
-};
+  if (Platform.OS !== 'web') {
+    return (
+      <>
+        <Stack.SearchBar
+          ref={searchBarRef}
+          autoFocus
+          placeholder="Search"
+          // Without this iOS hides the navigation bar while searching, which slides the results
+          // under the search field and swallows taps on the first row.
+          hideNavigationBar={false}
+          textColor={theme.text.default}
+          tintColor={theme.icon.info}
+          headerIconColor={theme.icon.secondary}
+          hintTextColor={theme.text.quaternary}
+          onChangeText={(event) => setQuery(event.nativeEvent.text)}
+          onCancelButtonPress={() => navigation.goBack()}
+        />
+        {list}
+      </>
+    );
+  }
 
-const Stack = createNativeStackNavigator<SearchStack>();
-
-export default function SearchScreenStack() {
-  const { theme } = useTheme();
+  // On web the search bar turns into a header button that expands its own field, so web gets a
+  // plain input above the results instead.
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: theme.background.default },
-        headerTintColor: theme.icon.info,
-        headerTitleStyle: { color: theme.text.default },
-      }}>
-      <Stack.Screen name="search" component={SearchScreen} options={{ title: 'Search' }} />
-    </Stack.Navigator>
+    <View style={[styles.webContainer, { backgroundColor: theme.background.default }]}>
+      <TextInput
+        autoFocus
+        placeholder="Search"
+        placeholderTextColor={theme.text.quaternary}
+        value={query}
+        onChangeText={setQuery}
+        style={[
+          styles.webInput,
+          { borderBottomColor: theme.border.default, color: theme.text.default },
+        ]}
+      />
+      {list}
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  webContainer: {
+    flex: 1,
+  },
+  webInput: {
+    borderBottomWidth: 1,
+    fontSize: 16,
+    padding: 12,
+  },
+});

@@ -6,8 +6,8 @@ import Stack from '../layouts/StackClient';
 import { act, renderRouter } from '../testing-library';
 import { useFocusEffect } from '../useFocusEffect';
 
-it('can use imperative API inside a useFocusEffect', () => {
-  renderRouter({
+it('can use imperative API inside a useFocusEffect', async () => {
+  await renderRouter({
     index: function Index() {
       useFocusEffect(() => {
         router.push('/second');
@@ -19,9 +19,9 @@ it('can use imperative API inside a useFocusEffect', () => {
   });
 });
 
-it('is called once on focus', () => {
+it('is called once on focus', async () => {
   const onFocus = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: function Index() {
       const f = useCallback(() => {
@@ -37,13 +37,13 @@ it('is called once on focus', () => {
   expect(onFocus).toHaveBeenCalledTimes(1);
   onFocus.mockClear();
 
-  act(() => {
+  await act(() => {
     router.push('/second');
   });
 
   expect(onFocus).not.toHaveBeenCalled();
 
-  act(() => {
+  await act(() => {
     router.back();
   });
 

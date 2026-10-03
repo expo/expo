@@ -76,7 +76,7 @@ export function SidebarCollapsible({ info, children }: Props) {
       <ButtonBase
         ref={ref}
         className={mergeClasses(
-          'relative flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 transition duration-150 select-none',
+          'relative flex w-full cursor-pointer items-center gap-2 rounded-lg px-3 py-1.5 transition duration-150 select-none',
           'hocus:bg-element'
         )}
         aria-expanded={isOpen ? 'true' : 'false'}

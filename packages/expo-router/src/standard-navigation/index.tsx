@@ -4,11 +4,12 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
+import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
+import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
   type DefaultRouterOptions,
-  type EventMapBase,
   type NavigationAction,
   type NavigationState,
   type RouterFactory,
@@ -21,7 +22,6 @@ import type {
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
 } from './types';
-import { useProjectedDescriptors } from './useProjectedDescriptors';
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
@@ -29,19 +29,50 @@ import { useStandardState } from './useStandardState';
 export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
+  StandardNavigatorDescriptor,
+  StandardNavigatorEmit,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
+export { IsWithinNativeNavigator } from './IsWithinNativeNavigator';
 
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
 
+// A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
+// required otherwise; a normal optional parameter would accept `undefined` in both cases.
+type IntegrateWithRouterOptionsTuple<
+  State extends NavigationState,
+  CreateProps extends object,
+  NavigatorOptions extends object,
+  EventMap extends StandardNavigatorEventMapBase,
+> = [keyof CreateProps] extends [never]
+  ? [options?: IntegrateWithRouterOptions<State, CreateProps, NavigatorOptions, EventMap>]
+  : [options: IntegrateWithRouterOptions<State, CreateProps, NavigatorOptions, EventMap>];
+
+type StandardRouterNavigatorComponent<
+  NavigatorOptions extends object,
+  State extends NavigationState,
+  EventMap extends StandardNavigatorEventMapBase,
+  NavigatorProps extends object,
+  RouterOptions extends DefaultRouterOptions,
+> = ReturnType<
+  typeof withLayoutContext<
+    NavigatorOptions,
+    ComponentType<
+      StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>
+    >,
+    State,
+    EventMap
+  >
+>;
+
 /**
- * > **warning** This API is unstable and may change between minor releases.
- *
  * Creates a [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) navigator and
- * wires it into Expo Router in one step. Use `unstable_integrateWithRouter` instead if you already
+ * wires it into Expo Router in one step. Use `integrateWithRouter` instead if you already
  * have a navigator from `createStandardNavigator`.
+ * Props declared in both `NavigatorProps` and `CreateProps` are intersected, so incompatible types
+ * produce `never` rather than a type error at this call.
  *
  * @param NavigatorContent Renders the navigator UI; receives the standard-navigation `state`,
  * `descriptors`, `actions`, and `emitter`.
@@ -50,42 +81,55 @@ const STANDARD_NAVIGATOR_TYPE = 'standard';
  *
  * @example
  * ```tsx
- * import { unstable_createStandardRouterNavigator, TabRouter } from 'expo-router';
+ * import { createStandardRouterNavigator, TabRouter } from 'expo-router';
  *
- * export const Tabs = unstable_createStandardRouterNavigator(MyTabsContent, TabRouter);
+ * export const Tabs = createStandardRouterNavigator(MyTabsContent, TabRouter);
  * ```
  */
-export function unstable_createStandardRouterNavigator<
+export function createStandardRouterNavigator<
   NavigatorOptions extends object,
   State extends NavigationState,
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
   NavigatorContent: ComponentType<
-    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
+    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps, CreateProps>
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
-) {
-  const navigator = createStandardNavigator<NavigatorOptions, EventMap, NavigatorProps>(
-    NavigatorContent
-  );
-  return unstable_integrateWithRouter<
+  ...options: IntegrateWithRouterOptionsTuple<
+    State,
+    NoInfer<CreateProps>,
+    NavigatorOptions,
+    EventMap
+  >
+): StandardRouterNavigatorComponent<
+  NavigatorOptions,
+  State,
+  EventMap,
+  NavigatorProps,
+  RouterOptions
+> {
+  const navigator = createStandardNavigator<
+    NavigatorOptions,
+    EventMap,
+    NavigatorProps & CreateProps
+  >(NavigatorContent);
+  return integrateWithRouter<
     NavigatorOptions,
     State,
     EventMap,
     NavigatorProps,
-    RouterOptions
-  >(navigator, router, options);
+    RouterOptions,
+    CreateProps
+  >(navigator, router, ...options);
 }
 
 /**
- * > **warning** This API is unstable and may change between minor releases.
- *
  * Wires an existing [`standard-navigation`](https://www.npmjs.com/package/standard-navigation)
  * navigator into Expo Router, returning a navigator component (with a `.Screen` child) usable as a
- * layout. Use `unstable_createStandardRouterNavigator` to create and integrate in one step.
+ * layout. Use `createStandardRouterNavigator` to create and integrate in one step.
  *
  * @param navigator The object returned by `createStandardNavigator(...)`.
  * @param router The router factory to use. For example, `StackRouter` or `TabRouter`.
@@ -94,22 +138,28 @@ export function unstable_createStandardRouterNavigator<
  * @example
  * ```tsx
  * import { createStandardNavigator } from 'standard-navigation';
- * import { unstable_integrateWithRouter, TabRouter } from 'expo-router';
+ * import { integrateWithRouter, TabRouter } from 'expo-router';
  *
  * const navigator = createStandardNavigator(MyTabsContent);
- * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter);
+ * export const Tabs = integrateWithRouter(navigator, TabRouter);
  * ```
  */
-export function unstable_integrateWithRouter<
+export function integrateWithRouter<
   NavigatorOptions extends object,
   State extends NavigationState,
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
-  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps>,
+  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
+  ...[options]: IntegrateWithRouterOptionsTuple<
+    State,
+    NoInfer<CreateProps>,
+    NavigatorOptions,
+    EventMap
+  >
 ) {
   assertStandardNavigator(navigator);
   const { NavigatorContent } = navigator;
@@ -122,37 +172,64 @@ export function unstable_integrateWithRouter<
     RouterOptions
   >;
 
-  function StandardRouterNavigator(props: NavPropsType) {
+  function StandardRouterNavigator(allProps: NavPropsType) {
+    const { unstable_screenErrorBoundary, ...rest } = allProps;
+    const props = rest as NavPropsType;
+    const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
       State,
       EventMap,
       NavigatorProps,
       RouterOptions
-    >(props);
-    const { state, navigation, descriptors, describe, NavigationContent } = useNavigationBuilder<
+    >(props, getValidInitialRouteName(routeNode));
+    const { state, navigation, describe, descriptors, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
       NavigatorOptions,
       EventMap
-    >(router, useNavigationBuilderProps);
+    >(router, useNavigationBuilderProps, {
+      activityDefaultThreshold: options?.activityDefaultThreshold,
+    });
 
-    const { dispatch } = navigation;
+    const { dispatch, dispatchSync } = navigation;
+    const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 
-    const derivedProps = useMemo<Partial<NavigatorProps>>(
-      () => options?.createProps?.({ state, dispatch, navigation }) ?? {},
-      [state, dispatch, navigation, options]
+    const processedDescriptors = useMemo(
+      () =>
+        (options?.processDescriptors?.(descriptors, state, describe) as
+          | typeof descriptors
+          | undefined) ?? descriptors,
+      [state, descriptors, describe, options]
+    );
+    const processedState = useMemo(
+      () => options?.processState?.(state, processedDescriptors, describe) ?? state,
+      [state, processedDescriptors, describe, options]
+    );
+
+    const derivedProps = useMemo<Partial<CreateProps>>(
+      () =>
+        options?.createProps?.({
+          state: processedState,
+          dispatch,
+          dispatchSync,
+          navigation,
+          isPreloaded: (key) =>
+            processedState.routes.find((route) => route.key === key)?.isPreloaded === true,
+          isRemovalPrevented: (key) => routesWithRemovalPrevented.has(key),
+        }) ?? {},
+      [processedState, dispatch, dispatchSync, navigation, options, routesWithRemovalPrevented]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
-      state: useStandardState(state),
-      descriptors: useProjectedDescriptors(state, descriptors, describe),
+      state: useStandardState(processedState),
+      descriptors: processedDescriptors,
       actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };
 
-    return (
+    const content = (
       <NavigationContent>
         <NavigatorContent
           // `extraProps` is everything that is not a `useNavigationBuilder` option, which is the
@@ -162,20 +239,34 @@ export function unstable_integrateWithRouter<
           // its type, so the TS contract keeps users from reading router options off `NavigatorContent`
           // in the common case, even though they are physically present on the object.
           {...(extraProps as unknown as NavigatorProps)}
-          {...derivedProps}
+          // `derivedProps` is partial only when `CreateProps` is empty; otherwise `createProps` is
+          // required and returns the complete shape.
+          {...(derivedProps as CreateProps)}
           {...standardArgs}
         />
       </NavigationContent>
     );
+
+    return unstable_screenErrorBoundary ? (
+      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+        {content}
+      </ScreenErrorBoundaryContext>
+    ) : (
+      content
+    );
   }
 
-  return withLayoutContext<
-    NavigatorOptions,
-    typeof StandardRouterNavigator,
-    State,
-    EventMap & EventMapBase
-  >(StandardRouterNavigator, undefined, options?.useOnlyUserDefinedScreens);
+  return withLayoutContext<NavigatorOptions, typeof StandardRouterNavigator, State, EventMap>(
+    StandardRouterNavigator,
+    options?.processScreens
+  );
 }
+
+/** @deprecated Use `createStandardRouterNavigator` instead. */
+export const unstable_createStandardRouterNavigator = createStandardRouterNavigator;
+
+/** @deprecated Use `integrateWithRouter` instead. */
+export const unstable_integrateWithRouter = integrateWithRouter;
 
 /**
  * Partitions a navigator's props into the subset consumed by `useNavigationBuilder`
@@ -195,13 +286,16 @@ function partitionNavigatorProps<
     NavigatorProps,
     RouterOptions
   > & {
+    initialRouteName?: unknown;
     ref?: unknown;
-  }
+  },
+  routeNodeInitialRouteName?: string
 ) {
   const {
     id,
     children,
-    initialRouteName,
+    activityEnabled,
+    initialRouteName: _initialRouteName,
     layout,
     // `ref` is supplied by `withLayoutContext` and consumed by React; it must not be forwarded
     // to `NavigatorContent`, so it is pulled out of the props here and intentionally dropped.
@@ -209,7 +303,6 @@ function partitionNavigatorProps<
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
     ...extraProps
   } = props;
@@ -225,12 +318,12 @@ function partitionNavigatorProps<
   > = {
     id,
     children,
-    initialRouteName,
+    activityEnabled,
+    initialRouteName: routeNodeInitialRouteName,
     layout,
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
   };
   return {
@@ -251,7 +344,7 @@ function assertStandardNavigator(navigator: unknown): asserts navigator is {
     throw new Error(
       'Could not integrate a standard navigator because no navigator was provided. ' +
         'Pass the object returned by `createStandardNavigator(...)` from the `standard-navigation` package, ' +
-        'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)` which creates it for you.'
+        'or use `createStandardRouterNavigator(NavigatorContent, router)` which creates it for you.'
     );
   }
 
@@ -262,7 +355,7 @@ function assertStandardNavigator(navigator: unknown): asserts navigator is {
       `Could not integrate a standard navigator because its \`type\` is ${JSON.stringify(type)}, not "standard". ` +
         'This value is likely not a standard-navigation navigator. ' +
         'Create it with `createStandardNavigator(...)` from the `standard-navigation` package, ' +
-        'or use `unstable_createStandardRouterNavigator(NavigatorContent, router)`.'
+        'or use `createStandardRouterNavigator(NavigatorContent, router)`.'
     );
   }
 

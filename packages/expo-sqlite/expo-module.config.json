@@ -5,7 +5,12 @@
   },
   "android": {
     "modules": ["expo.modules.sqlite.SQLiteModule"],
-    "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy"
+    "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy",
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.sqlite",
+      "repository": "local-maven-repo"
+    }
   },
   "devtools": {
     "webpageRoot": "dev-plugin-dist"

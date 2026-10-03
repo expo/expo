@@ -1,23 +1,27 @@
-import { SharedObject } from 'expo';
+import { CodedError, SharedObject } from 'expo';
 
 import type { ActionCrop, ActionExtent, FlipType } from '../ImageManipulator.types';
 import ImageManipulatorImageRef from './ImageManipulatorImageRef.web';
 import { crop, extent, flip, resize, rotate } from './actions/index.web';
+import { releaseCanvas } from './utils.web';
 
 type ContextLoader = () => HTMLCanvasElement | Promise<HTMLCanvasElement>;
 
 export default class ImageManipulatorContext extends SharedObject {
-  private loader: ContextLoader;
+  private loader: ContextLoader | undefined;
+  private isReleased = false;
 
   private _currentTask: Promise<HTMLCanvasElement> | undefined;
   get currentTask() {
+    this.ensureNotReleased();
     if (this._currentTask) {
       return this._currentTask;
     }
-    this._currentTask = new Promise((resolve) => resolve(this.loader()));
+    this._currentTask = new Promise((resolve) => resolve(this.loader!()));
     return this._currentTask;
   }
   set currentTask(task) {
+    this.ensureNotReleased();
     this._currentTask = task;
   }
 
@@ -47,8 +51,23 @@ export default class ImageManipulatorContext extends SharedObject {
   }
 
   reset(): ImageManipulatorContext {
-    this.currentTask = new Promise((resolve) => resolve(this.loader()));
+    this.ensureNotReleased();
+    const previousTask = this._currentTask;
+    this.currentTask = new Promise((resolve) => resolve(this.loader!()));
+    this.releaseTask(previousTask);
     return this;
+  }
+
+  release(): void {
+    if (this.isReleased) {
+      return;
+    }
+    this.isReleased = true;
+
+    this.releaseTask(this._currentTask);
+    this._currentTask = undefined;
+    this.loader = undefined;
+    super.release();
   }
 
   async renderAsync(): Promise<ImageManipulatorImageRef> {
@@ -64,10 +83,10 @@ export default class ImageManipulatorContext extends SharedObject {
     clonedCanvasCtx?.drawImage(canvas, 0, 0);
 
     return new Promise((resolve) => {
-      // Create a full-sized, full-quality blob from the original canvas.
-      canvas.toBlob(
+      // Encode the clone, which remains valid if the context is released or reset.
+      clonedCanvas.toBlob(
         (blob) => {
-          const url = blob ? URL.createObjectURL(blob) : canvas.toDataURL();
+          const url = blob ? URL.createObjectURL(blob) : clonedCanvas.toDataURL();
           const image = new ImageManipulatorImageRef(url, clonedCanvas);
 
           resolve(image);
@@ -82,9 +101,32 @@ export default class ImageManipulatorContext extends SharedObject {
   private addTask(
     task: (canvas: HTMLCanvasElement) => HTMLCanvasElement | Promise<HTMLCanvasElement>
   ): ImageManipulatorContext {
-    this.currentTask = this.currentTask.then((canvas) => {
-      return task(canvas);
+    this.currentTask = this.currentTask.then(async (canvas) => {
+      try {
+        const result = await task(canvas);
+        if (result !== canvas) {
+          releaseCanvas(canvas);
+        }
+        return result;
+      } catch (error) {
+        releaseCanvas(canvas);
+        throw error;
+      }
     });
     return this;
+  }
+
+  private ensureNotReleased(): void {
+    if (this.isReleased) {
+      throw new CodedError(
+        'ERR_IMAGE_MANIPULATOR_RELEASED',
+        'This image manipulation context was released by release() or by useImageManipulator when its source changed or its component unmounted. Create a new context with ImageManipulator.manipulate(...).'
+      );
+    }
+  }
+
+  private releaseTask(task: Promise<HTMLCanvasElement> | undefined): void {
+    // Failed tasks clean up their own canvases.
+    task?.then(releaseCanvas, () => {});
   }
 }

@@ -33,21 +33,4 @@ public final class MainSession: Session, @unchecked Sendable {
   init(id: String, startDate: Date, endDate: Date?) {
     super.init(id: id, type: .main, startDate: startDate, endDate: endDate)
   }
-
-  // MARK: - Crash reports
-
-  /// Persists a crash report attributed to this session. Replaces any previously stored report for
-  /// this session id (only one crash per session is meaningful).
-  @AppMetricsActor
-  func storeCrashReport(_ crashReport: CrashReport) {
-    logger.warn("[AppMetrics] Received crash report:\n\(crashReport)")
-    guard let payload = encodeAsJSONString(crashReport) else {
-      return
-    }
-    do {
-      try AppMetrics.database?.setCrashReport(sessionId: self.id, payload: payload)
-    } catch {
-      logger.warn("[AppMetrics] Failed to persist crash report for session \(self.id): \(error.localizedDescription)")
-    }
-  }
 }

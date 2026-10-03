@@ -39,6 +39,7 @@ struct HomeRootView: View {
     self.viewModel = viewModel
     let shouldSkip = DevelopmentServerService.isSimulator
       || UserDefaults.standard.bool(forKey: DevelopmentServerService.networkPermissionGrantedKey)
+      || !UserDefaults.standard.bool(forKey: "ExpoGoOnboardingFinished")
     _hasCompletedPermissionFlow = State(initialValue: shouldSkip)
   }
 
@@ -88,9 +89,19 @@ struct HomeRootView: View {
         AccountSheet()
           .environmentObject(viewModel)
       }
+      .sheet(item: $viewModel.deviceLoginRequest) { request in
+        DeviceLoginSheet(authService: viewModel.authService, verificationURI: request.verificationURI) { signedIn in
+          request.completion.resolve(signedIn)
+          viewModel.deviceLoginRequest = nil
+        }
+        // Catches swipe-to-dismiss, which never calls the content closure above.
+        .onDisappear {
+          request.completion.resolve(false)
+        }
+      }
       .alert(item: $viewModel.errorToShow) { error in
         Alert(
-          title: Text("Error"),
+          title: Text(error.title),
           message: Text(error.message),
           dismissButton: .default(Text("OK"))
         )

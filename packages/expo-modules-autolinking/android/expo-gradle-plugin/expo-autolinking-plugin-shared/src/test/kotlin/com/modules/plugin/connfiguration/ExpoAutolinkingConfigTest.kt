@@ -68,8 +68,6 @@ class ExpoAutolinkingConfigTest {
 
     Truth.assertThat(expoModule.projects.firstOrNull()?.sourceDir)
       .isEqualTo("/Users/lukasz/work/expo/packages/expo/android")
-    Truth.assertThat(expoModule.modules.firstOrNull())
-      .isEqualTo("expo.modules.fetch.ExpoFetchModule")
 
     Truth.assertThat(expoNetworkAddonsModule.projects.firstOrNull()?.sourceDir)
       .isEqualTo("/Users/lukasz/work/expo/packages/expo-network-addons/android")
@@ -143,5 +141,39 @@ class ExpoAutolinkingConfigTest {
     val awsCredentials = repo3.credentials as AWSMavenCredentials
     Truth.assertThat(awsCredentials.accessKey).isEqualTo("accessKey")
     Truth.assertThat(awsCredentials.secretKey).isEqualTo("secretKey")
+  }
+
+  @Test
+  fun `can deserialize published gradle plugin`() {
+    // language=JSON
+    val mockedConfig = """
+{
+  "extraDependencies": [],
+  "modules": [
+    {
+      "packageName": "expo-third-party",
+      "packageVersion": "1.0.0",
+      "projects": [],
+      "plugins": [
+        {
+          "id": "io.github.example.some-plugin",
+          "group": "io.github.example",
+          "version": "1.0.0",
+          "applyToRootProject": true
+        }
+      ]
+    }
+  ]
+}
+    """.trimIndent()
+
+    val config = ExpoAutolinkingConfig.decodeFromString(mockedConfig)
+    val plugin = config.allPlugins.single()
+
+    Truth.assertThat(plugin.sourceDir).isNull()
+    Truth.assertThat(plugin.classpathCoordinate)
+      .isEqualTo(
+        "io.github.example.some-plugin:io.github.example.some-plugin.gradle.plugin:1.0.0"
+      )
   }
 }

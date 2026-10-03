@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Link matches the official SwiftUI [Link API](https://developer.apple.com/documentation/swiftui/link).
@@ -28,7 +29,13 @@ Expo UI Link matches the official SwiftUI [Link API](https://developer.apple.com
 
 ### Basic link
 
-```tsx BasicLinkExample.tsx
+<ComponentExample
+  title="BasicLinkExample.tsx"
+  src="/static/images/expo-ui/examples/link-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/link-basic-ios-dark.webp"
+  alt="A blue Visit Expo text link">
+
+```tsx
 import { Host, Link } from '@expo/ui/swift-ui';
 
 export default function BasicLinkExample() {
@@ -40,16 +47,24 @@ export default function BasicLinkExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom label content
 
 You can pass custom components as `children` for more complex link label content.
 
-```tsx CustomContentExample.tsx
+<ComponentExample
+  title="CustomContentExample.tsx"
+  src="/static/images/expo-ui/examples/link-custom-content-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/link-custom-content-ios-dark.webp"
+  alt="A link SF Symbol above the text Expo, both tinted blue">
+
+```tsx
 import { Host, Link, VStack, Image, Text } from '@expo/ui/swift-ui';
 
 export default function CustomContentExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Link destination="https://expo.dev">
         <VStack spacing={4}>
           <Image systemName="link" />
@@ -60,6 +75,8 @@ export default function CustomContentExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

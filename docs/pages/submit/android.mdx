@@ -13,14 +13,14 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 ## Prerequisites
 
-<Prerequisites numberOfRequirements={5}>
-  <Requirement number={1} title="Sign up for a Google Play Developer account">
+<Prerequisites>
+  <Requirement title="Sign up for a Google Play Developer account">
     A Google Play Developer account is required to submit your app to the Google Play Store. Sign up on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
   </Requirement>
-  <Requirement number={2} title="Create an app on Google Play Console">
+  <Requirement title="Create an app on Google Play Console">
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
-  <Requirement number={3} title="Create a Google Service Account key and upload it to EAS">
+  <Requirement title="Create a Google Service Account key and upload it to EAS">
     EAS requires a Google Service Account key to submit on your behalf. Follow the [Creating a Google Service Account key](https://expo.fyi/creating-google-service-account) guide to create one. Then, upload the key to your project's credentials with the EAS dashboard or EAS CLI:
 
     <Tabs>
@@ -44,7 +44,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
     </Tabs>
 
   </Requirement>
-  <Requirement number={4} title="Include a package name in app config">
+  <Requirement title="Include a package name in app config">
     Include your app's package name in **app.json**:
 
     ```json app.json
@@ -56,7 +56,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
     ```
 
   </Requirement>
-  <Requirement number={5} title="Install EAS CLI and authenticate with your Expo account">
+  <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and log in with your Expo account:
 
     <Terminal

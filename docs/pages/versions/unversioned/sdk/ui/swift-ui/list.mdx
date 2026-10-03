@@ -8,13 +8,12 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`List`](../universal/list) — it renders the appropriate native component per platform.
 
 Expo UI List matches the official SwiftUI [List API](https://developer.apple.com/documentation/swiftui/list) and supports styling via the [`listStyle`](modifiers/#liststylestyle) modifier, various row/section modifiers, as well as selection, reordering, and editing capabilities.
-
-> **info** `List` does not lazily render rows yet: React creates every row up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
 
 <ContentSpotlight
   variant="component"
@@ -32,7 +31,13 @@ Expo UI List matches the official SwiftUI [List API](https://developer.apple.com
 
 ### Basic list
 
-```tsx BasicListExample.tsx
+<ComponentExample
+  title="BasicListExample.tsx"
+  src="/static/images/expo-ui/examples/list-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-basic-ios-dark.webp"
+  alt="A list with Fruits and Vegetables sections">
+
+```tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 
 export default function BasicListExample() {
@@ -55,9 +60,17 @@ export default function BasicListExample() {
 }
 ```
 
+</ComponentExample>
+
 ### List with labels and icons
 
-```tsx ListWithLabelsExample.tsx
+<ComponentExample
+  title="ListWithLabelsExample.tsx"
+  src="/static/images/expo-ui/examples/list-with-labels-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-with-labels-ios-dark.webp"
+  alt="A Settings list with Wi-Fi, Bluetooth, and Cellular rows with blue SF Symbol icons">
+
+```tsx
 import { Host, List, Label, Section } from '@expo/ui/swift-ui';
 
 export default function ListWithLabelsExample() {
@@ -66,8 +79,14 @@ export default function ListWithLabelsExample() {
       <List>
         <Section title="Settings">
           <Label title="Wi-Fi" systemImage="wifi" />
-          <Label title="Bluetooth" systemImage="antenna.radiowaves.left.and.right" />
-          <Label title="Cellular" systemImage="antenna.radiowaves.left.and.right.circle" />
+          <Label
+            title="Bluetooth"
+            systemImage="antenna.radiowaves.left.and.right"
+          />
+          <Label
+            title="Cellular"
+            systemImage="antenna.radiowaves.left.and.right.circle"
+          />
         </Section>
       </List>
     </Host>
@@ -75,18 +94,96 @@ export default function ListWithLabelsExample() {
 }
 ```
 
+</ComponentExample>
+
+### Large lists
+
+Use [`List.ForEach`](#listforeach) to render rows from an array. Pass the items as `data`, a unique key for each item with `keyExtractor`, and a `children` function that returns the row for an item. `List.ForEach` renders only the rows near the visible area and reuses them while you scroll.
+
+<ComponentExample
+  title="LargeListExample.tsx"
+  src="/static/images/expo-ui/examples/list-large-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-large-ios-dark.webp"
+  alt="A list showing the first rows of ten thousand contacts">
+
+```tsx
+import { Host, List, Text } from '@expo/ui/swift-ui';
+
+type Contact = { id: string; name: string };
+
+const contacts: Contact[] = Array.from(
+  { length: 10000 },
+  (_, i) => ({
+    id: String(i),
+    name: `Contact ${i + 1}`,
+  })
+);
+
+function renderContact({ item }: { item: Contact }) {
+  return <Text>{item.name}</Text>;
+}
+
+export default function LargeListExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <List.ForEach
+          data={contacts}
+          keyExtractor={contact => contact.id}>
+          {renderContact}
+        </List.ForEach>
+      </List>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+Follow these rules when you render rows:
+
+- Define the `children` function outside the component, or wrap it in `useCallback`. Otherwise, the rows near the visible area render again each time the component renders.
+- A reused row keeps the local state (`useState`) of the item it showed before. Reset the state when the item changes, or keep the state outside the row.
+- A row that is not ready yet shows an empty placeholder. Set `estimatedItemSize` close to the height of your row content, excluding the `List` insets, in points.
+- Use `overscanCount` to prepare more rows above and below the visible rows.
+- To update the rows, pass a new `data` array. Do not change the array in place.
+- Set `recycling={false}` to render every row up front.
+
 ### List styles
 
 Use the [`listStyle`](modifiers/#liststylestyle) modifier to change the list's appearance.
 
 > **Note:** The `inset`, `insetGrouped`, and `sidebar` styles are not available on tvOS.
 
-```tsx ListStylesExample.tsx
-import { useState } from 'react';
-import { Host, List, Text, Section, Picker } from '@expo/ui/swift-ui';
-import { listStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+<ComponentExample
+  title="ListStylesExample.tsx"
+  src="/static/images/expo-ui/examples/list-styles-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-styles-ios-dark.webp"
+  alt="A list with a List Style menu picker set to automatic and three sample items">
 
-const styles = ['automatic', 'plain', 'inset', 'insetGrouped', 'grouped', 'sidebar'] as const;
+```tsx
+import { useState } from 'react';
+import {
+  Host,
+  List,
+  Text,
+  Section,
+  Picker,
+} from '@expo/ui/swift-ui';
+import {
+  listStyle,
+  pickerStyle,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
+
+const styles = [
+  'automatic',
+  'plain',
+  'inset',
+  'insetGrouped',
+  'grouped',
+  'sidebar',
+] as const;
 
 export default function ListStylesExample() {
   const [styleIndex, setStyleIndex] = useState(0);
@@ -118,19 +215,34 @@ export default function ListStylesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Selection and edit mode
 
 Enable selection, deletion, and reordering of list items using the [`List.ForEach`](#listforeach) compound component with `onDelete` and `onMove` props.
 
-- Use the [`environment`](modifiers/#environment) modifier to enable edit mode
-- Use the [`tag`](modifiers/#tagtag) modifier to identify items
+- Use the [`environment`](modifiers/#environmentkey-value) modifier to enable edit mode
+- Use the `keyExtractor` prop to identify items
 - Use the [`selection`](#selection) prop to control selected items
 - Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items
 
-```tsx EditableListExample.tsx
+<ComponentExample
+  title="EditableListExample.tsx"
+  src="/static/images/expo-ui/examples/list-editable-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-editable-ios-dark.webp"
+  alt="A list with an Edit mode toggle and four task rows">
+
+```tsx
 import { useState } from 'react';
-import { Host, List, Label, Section, Button, Toggle } from '@expo/ui/swift-ui';
-import { environment, tag } from '@expo/ui/swift-ui/modifiers';
+import {
+  Host,
+  List,
+  Label,
+  Section,
+  Button,
+  Toggle,
+} from '@expo/ui/swift-ui';
+import { environment } from '@expo/ui/swift-ui/modifiers';
 
 type Task = { id: string; title: string };
 
@@ -141,6 +253,10 @@ const INITIAL_TASKS: Task[] = [
   { id: '4', title: 'Task 4' },
 ];
 
+function renderTask({ item }: { item: Task }) {
+  return <Label title={item.title} />;
+}
+
 export default function EditableListExample() {
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -150,11 +266,17 @@ export default function EditableListExample() {
     setTasks(prev => prev.filter((_, i) => !indices.includes(i)));
   };
 
-  const handleMove = (sourceIndices: number[], destination: number) => {
+  const handleMove = (
+    sourceIndices: number[],
+    destination: number
+  ) => {
     setTasks(prev => {
       const newTasks = [...prev];
       const [removed] = newTasks.splice(sourceIndices[0], 1);
-      const adjustedDest = sourceIndices[0] < destination ? destination - 1 : destination;
+      const adjustedDest =
+        sourceIndices[0] < destination
+          ? destination - 1
+          : destination;
       newTasks.splice(adjustedDest, 0, removed);
       return newTasks;
     });
@@ -165,15 +287,23 @@ export default function EditableListExample() {
       <List
         selection={selectedIds}
         onSelectionChange={ids => setSelectedIds(ids.map(String))}
-        modifiers={[environment('editMode', editMode ? 'active' : 'inactive')]}>
+        modifiers={[
+          environment('editMode', editMode ? 'active' : 'inactive'),
+        ]}>
         <Section title="Settings">
-          <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
+          <Toggle
+            label="Edit mode"
+            isOn={editMode}
+            onIsOnChange={setEditMode}
+          />
         </Section>
         <Section title="Tasks">
-          <List.ForEach onDelete={handleDelete} onMove={handleMove}>
-            {tasks.map(task => (
-              <Label key={task.id} title={task.title} modifiers={[tag(task.id)]} />
-            ))}
+          <List.ForEach
+            data={tasks}
+            keyExtractor={task => task.id}
+            onDelete={handleDelete}
+            onMove={handleMove}>
+            {renderTask}
           </List.ForEach>
         </Section>
       </List>
@@ -182,11 +312,19 @@ export default function EditableListExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Pull to refresh
 
 Use the [`refreshable`](modifiers/#refreshablehandler) modifier to enable pull-to-refresh functionality.
 
-```tsx RefreshableListExample.tsx
+<ComponentExample
+  title="RefreshableListExample.tsx"
+  src="/static/images/expo-ui/examples/list-refreshable-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-refreshable-ios-dark.webp"
+  alt="A list with a Pull down to refresh row">
+
+```tsx
 import { useState } from 'react';
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 import { refreshable } from '@expo/ui/swift-ui/modifiers';
@@ -205,7 +343,11 @@ export default function RefreshableListExample() {
       <List modifiers={[refreshable(handleRefresh)]}>
         <Section title="Data">
           <Text>Pull down to refresh</Text>
-          {lastRefresh && <Text>Last refresh: {lastRefresh.toLocaleTimeString()}</Text>}
+          {lastRefresh && (
+            <Text>
+              Last refresh: {lastRefresh.toLocaleTimeString()}
+            </Text>
+          )}
         </Section>
       </List>
     </Host>
@@ -213,23 +355,57 @@ export default function RefreshableListExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Row styling
 
-Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows.
+Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), [`listRowSeparatorTint`](modifiers/#listrowseparatortintcolor-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows. Use [`alignmentGuide`](modifiers/#alignmentguideguide-value) with the `listRowSeparatorLeading` guide to set where a row separator starts.
 
-```tsx RowStylingExample.tsx
+<ComponentExample
+  title="RowStylingExample.tsx"
+  src="/static/images/expo-ui/examples/list-row-styling-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-row-styling-ios-dark.webp"
+  alt="A grouped list with a blue row, a red separator, an indented row, and a row flush to the edges">
+
+```tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
-import { listRowBackground, listRowSeparator, listRowInsets } from '@expo/ui/swift-ui/modifiers';
+import {
+  alignmentGuide,
+  listRowBackground,
+  listRowSeparator,
+  listRowSeparatorTint,
+  listRowInsets,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function RowStylingExample() {
   return (
     <Host style={{ flex: 1 }}>
       <List>
         <Section title="Styled Rows">
-          <Text modifiers={[listRowBackground('blue')]}>Blue background</Text>
-          <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
-          <Text modifiers={[listRowInsets({ leading: 40 })]}>Extra leading inset</Text>
-          <Text modifiers={[listRowInsets({ leading: 0, trailing: 0 })]}>No horizontal insets</Text>
+          <Text modifiers={[listRowBackground('blue')]}>
+            Blue background
+          </Text>
+          <Text modifiers={[listRowSeparator('hidden')]}>
+            Hidden separator
+          </Text>
+          <Text modifiers={[listRowSeparatorTint('red')]}>
+            Red separator
+          </Text>
+          <Text modifiers={[listRowInsets({ leading: 40 })]}>
+            Extra leading inset
+          </Text>
+          <Text
+            modifiers={[
+              listRowInsets({ leading: 0, trailing: 0 }),
+            ]}>
+            No horizontal insets
+          </Text>
+          <Text
+            modifiers={[
+              alignmentGuide('listRowSeparatorLeading', 32),
+            ]}>
+            Separator starts 32 points in
+          </Text>
         </Section>
       </List>
     </Host>
@@ -237,11 +413,19 @@ export default function RowStylingExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Keyboard dismiss behavior
 
 Use the [`scrollDismissesKeyboard`](modifiers/#scrolldismisseskeyboardmode) modifier to control how the keyboard is dismissed when scrolling.
 
-```tsx KeyboardDismissExample.tsx
+<ComponentExample
+  title="KeyboardDismissExample.tsx"
+  src="/static/images/expo-ui/examples/list-keyboard-dismiss-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-keyboard-dismiss-ios-dark.webp"
+  alt="A form list with Name, Email, and Phone text fields">
+
+```tsx
 import { Host, List, Section, TextField } from '@expo/ui/swift-ui';
 import { scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
 
@@ -260,11 +444,19 @@ export default function KeyboardDismissExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Header prominence
 
 Use the [`headerProminence`](modifiers/#headerprominenceprominence) modifier to adjust the visual prominence of section headers.
 
-```tsx HeaderProminenceExample.tsx
+<ComponentExample
+  title="HeaderProminenceExample.tsx"
+  src="/static/images/expo-ui/examples/list-header-prominence-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-header-prominence-ios-dark.webp"
+  alt="Two list sections with large prominent headers">
+
+```tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 import { headerProminence } from '@expo/ui/swift-ui/modifiers';
 
@@ -283,6 +475,8 @@ export default function HeaderProminenceExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

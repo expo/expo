@@ -10,8 +10,11 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+// expo-modules-core has pch-ccache.cmake, which CMakeLists.txt uses when it can find it.
+def expoModulesCoreProject = rootProject.findProject(":expo-modules-core")
+
 group = 'host.exp.exponent'
-version = '56.0.5'
+version = '58.0.3'
 
 android {
   if (rootProject.hasProperty("ndkPath")) {
@@ -24,13 +27,21 @@ android {
   namespace "expo.modules.gl"
   defaultConfig {
     versionCode 31
-    versionName "56.0.5"
+    versionName "58.0.3"
 
     externalNativeBuild {
       cmake {
-        abiFilters (*reactNativeArchitectures())
-        arguments "-DANDROID_STL=c++_shared",
+        def cppArguments = [
+          "-DANDROID_STL=c++_shared",
           "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
+        ]
+
+        if (expoModulesCoreProject != null) {
+          cppArguments += "-DEXPO_MODULES_CORE_CMAKE_DIR=${expoModulesCoreProject.projectDir}/cmake"
+        }
+
+        abiFilters (*reactNativeArchitectures())
+        arguments(*cppArguments)
       }
     }
   }

@@ -23,7 +23,7 @@ export function AndroidPermissions({ permissions }: AndroidPermissionsProps) {
     <Table>
       <TableHead>
         <Row>
-          <HeaderCell>Android Permission</HeaderCell>
+          <HeaderCell>Android permission</HeaderCell>
           {/* <HeaderCell>Granted by <QuestionIcon size={12} title={grantedByInfo} /></HeaderCell> */}
           <HeaderCell>Description</HeaderCell>
         </Row>

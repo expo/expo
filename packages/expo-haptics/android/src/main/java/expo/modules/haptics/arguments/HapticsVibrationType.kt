@@ -6,14 +6,24 @@ data class HapticsVibrationType(
   val oldSDKPattern: LongArray
 ) {
   override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (javaClass != other?.javaClass) return false
+    if (this === other) {
+      return true
+    }
+    if (javaClass != other?.javaClass) {
+      return false
+    }
 
     other as HapticsVibrationType
 
-    if (!timings.contentEquals(other.timings)) return false
-    if (!amplitudes.contentEquals(other.amplitudes)) return false
-    if (!oldSDKPattern.contentEquals(other.oldSDKPattern)) return false
+    if (!timings.contentEquals(other.timings)) {
+      return false
+    }
+    if (!amplitudes.contentEquals(other.amplitudes)) {
+      return false
+    }
+    if (!oldSDKPattern.contentEquals(other.oldSDKPattern)) {
+      return false
+    }
 
     return true
   }
