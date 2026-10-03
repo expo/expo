@@ -91,10 +91,12 @@ export function serialAssetsToStaticContentAssets(
     return { css, js: [bundleUrl], favicon };
   }
 
-  if (assets.some((asset) => asset.type === 'js' && asset.metadata.chunkingStrategy === 'bitset')) {
+  if (
+    assets.some((asset) => asset.type === 'js' && asset.metadata.chunkingStrategy === 'granular')
+  ) {
     return {
       css,
-      js: getBitSetAssetsForRoute(assets, route?.entryPoints).map((asset) =>
+      js: getGranularAssetsForRoute(assets, route?.entryPoints).map((asset) =>
         getChunkUrl(baseUrl, asset.filename)
       ),
       favicon,
@@ -162,34 +164,34 @@ export function sortMatchedAssetsByEntryPoints(
   return matchedAssets.sort(
     (a, b) =>
       getEntryPointIndex(
-        a.metadata.chunkingStrategy === 'bitset' ? a.metadata.entryPaths : a.metadata.modulePaths
+        a.metadata.chunkingStrategy === 'granular' ? a.metadata.entryPaths : a.metadata.modulePaths
       ) -
       getEntryPointIndex(
-        b.metadata.chunkingStrategy === 'bitset' ? b.metadata.entryPaths : b.metadata.modulePaths
+        b.metadata.chunkingStrategy === 'granular' ? b.metadata.entryPaths : b.metadata.modulePaths
       )
   );
 }
 
-export function getBitSetAssetsForRoute(
+export function getGranularAssetsForRoute(
   assets: SerialAsset[],
   entryPoints: readonly string[] = []
 ): SerialAsset[] {
   const jsAssets = assets.filter((asset) => asset.type === 'js');
   for (const asset of jsAssets) {
-    if (asset.metadata.chunkingStrategy !== 'bitset') {
+    if (asset.metadata.chunkingStrategy !== 'granular') {
       throw new Error(
         `Mixed chunking strategy for ${asset.filename}. Serialize the page with one strategy.`
       );
     }
     if (!Array.isArray(asset.metadata.entryPaths) || !Array.isArray(asset.metadata.requires)) {
       throw new Error(
-        `Missing entryPaths or requires for BitSet asset ${asset.filename}. Regenerate the export with canonical chunk metadata.`
+        `Missing entryPaths or requires for Granular asset ${asset.filename}. Regenerate the export with canonical chunk metadata.`
       );
     }
   }
   const entryAssets = jsAssets.filter((asset) => asset.metadata.entryChunks !== undefined);
   if (entryAssets.length !== 1) {
-    throw new Error('Expected one BitSet entry-to-chunks mapping.');
+    throw new Error('Expected one Granular entry-to-chunks mapping.');
   }
   const entryChunks = entryAssets[0]!.metadata.entryChunks!;
   const assetsByFilename = new Map(jsAssets.map((asset) => [asset.filename, asset]));

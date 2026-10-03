@@ -18,7 +18,7 @@ import {
 } from './chunkingStrategy';
 import { bitIndices, computeBitSetChunkPlan, type ChunkAtom } from './computeBitSetChunks';
 
-export function createBitSetChunkingStrategy(context: ChunkingContext): ChunkingImplementation {
+export function createGranularChunkingStrategy(context: ChunkingContext): ChunkingImplementation {
   const { entryFile, preModules, graph, options } = context;
   const entryPathsByChunk = new Map<Chunk, string[]>();
   const requiredChunksByEntryPath = new Map<string, readonly Chunk[]>();
@@ -33,14 +33,14 @@ export function createBitSetChunkingStrategy(context: ChunkingContext): Chunking
       return [workerChunk];
     }
     const targets = requiredChunksByEntryPath.get(dependency.absolutePath);
-    assert(targets, `BitSet async entry not found: ${dependency.absolutePath}`);
+    assert(targets, `Granular async entry not found: ${dependency.absolutePath}`);
     return targets.filter((target) => target !== chunk);
   }
 
   const strategy: ChunkingImplementation = {
     async serializeAsync() {
       const entryModule = graph.dependencies.get(entryFile);
-      assert(entryModule, `BitSet entry is missing from the export graph: ${entryFile}`);
+      assert(entryModule, `Granular entry is missing from the export graph: ${entryFile}`);
       const plan = computeBitSetChunkPlan([entryModule], graph, {
         isLazyBundle: options.includeAsyncPaths,
       });
@@ -138,7 +138,7 @@ export function createBitSetChunkingStrategy(context: ChunkingContext): Chunking
       for (const workerChunk of workerChunks) {
         assert(
           workerChunk.sealed,
-          'Worker async edges must fall back to legacy before BitSet planning.'
+          'Worker async edges must fall back to legacy before Granular planning.'
         );
         for (const module of workerChunk.entries)
           workerChunksByEntryPath.set(module.path, workerChunk);
@@ -233,7 +233,7 @@ export function createBitSetChunkingStrategy(context: ChunkingContext): Chunking
     getMetadata(chunk) {
       const modulePaths = [...chunk.deps].map((module) => module.path);
       return {
-        chunkingStrategy: 'bitset',
+        chunkingStrategy: 'granular',
         entryPaths: [...(entryPathsByChunk.get(chunk) ?? [])].sort(),
         modulePaths: chunk.sealed ? modulePaths : modulePaths.sort(),
       };

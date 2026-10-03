@@ -358,8 +358,8 @@ function getDefaultSerializer(
 
     const customTransformOptions = graph.transformOptions.customTransformOptions;
     const isLazyBundle = options.includeAsyncPaths;
-    const isBitSetEligible =
-      customSerializerOptions?.chunkingStrategy === 'bitset' &&
+    const isGranularEligible =
+      customSerializerOptions?.chunkingStrategy === 'granular' &&
       customSerializerOptions.exporting &&
       serializerOptions.splitChunks &&
       context.platform === 'web' &&
@@ -368,8 +368,8 @@ function getDefaultSerializer(
       !options.dev &&
       !isLazyBundle;
     const chunkingStrategy: ChunkingStrategy =
-      isBitSetEligible && !findUnsupportedWorkerAsyncDependency(entryPoint, graph)
-        ? 'bitset'
+      isGranularEligible && !findUnsupportedWorkerAsyncDependency(entryPoint, graph)
+        ? 'granular'
         : 'legacy';
 
     const assets = await graphToSerialAssetsAsync(
