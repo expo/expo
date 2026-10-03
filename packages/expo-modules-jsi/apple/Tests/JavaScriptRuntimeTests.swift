@@ -93,6 +93,23 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `evaluate to promise on the JavaScript thread when called from another thread`() async throws {
+    // The test body runs on a cooperative thread, not on the scheduler's thread. Evaluating there
+    // would run JavaScript concurrently with the work the scheduler runs, such as settling a promise.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    try await testRuntime.scheduler.runIsolated {
+      let isOnJavaScriptThread = runtime.createFunction("isOnJavaScriptThread") { _, _ in
+        return JavaScriptValue(runtime, runtime.isOnJavaScriptThread())
+      }
+      runtime.global().setProperty("isOnJavaScriptThread", value: isOnJavaScriptThread.asValue())
+    }
+
+    let result = try await runtime.evalAsync("Promise.resolve(isOnJavaScriptThread())")
+    #expect(result.getBool() == true)
+  }
+
+  @Test
   func `is equatable`() {
     #expect((runtime == runtime) == true)
     #expect((runtime != JavaScriptRuntime()) == true)

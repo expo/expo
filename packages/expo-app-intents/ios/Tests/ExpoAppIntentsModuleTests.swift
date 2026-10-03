@@ -14,7 +14,7 @@ struct ExpoAppIntentsModuleTests {
   let runtime: ExpoRuntime
 
   init() throws {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
     runtime = try appContext.runtime
     appContext.moduleRegistry.register(
       holder: ModuleHolder(
