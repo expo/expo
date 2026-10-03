@@ -1,0 +1,27 @@
+# expo-file-system: create a file, read and overwrite it, then create, check, and delete
+# a second file through the lifecycle demos. Sections are reached through the section index.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/filesystem"
+wait text "File Sources" 20000
+press label="Create local file"
+alert accept
+press label="Jump to Read Operations"
+press label="text()"
+wait text "text() = \"Hello from FileSystem sandbox!" 10000
+# The section index scrolls away with the content, so return to the top before each jump.
+scroll top
+press label="Jump to Write Operations"
+press label="write() base64"
+wait text "write() base64 = \"OK - text() = Hello Base64!\"" 10000
+scroll top
+press label="Jump to File Lifecycle"
+press label="Create new file in cache"
+wait text "Create new file in cache = " 10000
+press label="Check exists"
+wait text "Check exists = {" 10000
+wait text "\"exists\": true" 5000
+press label="Delete current file"
+wait text "Delete current file = {" 10000
+wait text "\"existsAfter\": false" 5000
+close

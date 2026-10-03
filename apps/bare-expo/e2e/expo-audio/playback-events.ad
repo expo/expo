@@ -1,0 +1,24 @@
+# expo-audio: play, pause, seek, loop, and finish a bundled track and observe the status rows.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/audio/expo-audio-events"
+wait text "isLoaded = true" 20000
+wait text "playing = false"
+press label="Play"
+wait text "playing = true" 10000
+# Toggle loop while playing. On Android a loop change while paused is not reported until the
+# next playback status event.
+press label="Loop: OFF"
+wait text "loop = true" 10000
+press label="Loop: ON"
+wait text "loop = false" 10000
+press label="Pause"
+wait text "playing = false" 10000
+press label="Seek to Start"
+wait text "currentTime = 0.00" 10000
+wait text "didJustFinishCount = 0"
+press label="Seek Near End (-2s)"
+press label="Play"
+wait text "didJustFinishCount = 1" 15000
+wait text "playing = false" 10000
+close
