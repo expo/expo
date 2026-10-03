@@ -63,6 +63,27 @@ describe(useSQLiteContext, () => {
     openDatabaseSpy.mockRestore();
   });
 
+  it('should re-render when only `children` changes', async () => {
+    function App({ flag }: { flag: boolean }) {
+      return (
+        <SQLiteProvider databaseName=":memory:">
+          {flag ? <Text>after</Text> : <Text>before</Text>}
+        </SQLiteProvider>
+      );
+    }
+
+    const { rerender } = render(<App flag={false} />);
+    await waitFor(() => {
+      expect(screen.queryByText('before')).not.toBeNull();
+    });
+
+    rerender(<App flag />);
+    await waitFor(() => {
+      expect(screen.queryByText('after')).not.toBeNull();
+    });
+    expect(screen.queryByText('before')).toBeNull();
+  });
+
   it('should return the same SQLite instance on subsequent calls', async () => {
     const wrapper = ({ children }: React.PropsWithChildren) => (
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>

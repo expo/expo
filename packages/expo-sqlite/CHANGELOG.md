@@ -30,6 +30,8 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.4 — 2026-09-21
 
+- Fix `SQLiteProvider` skipping re-renders when only `children` change. ([#45099](https://github.com/expo/expo/pull/45099) by [@vladlenskiy](https://github.com/vladlenskiy))
+
 ### 💡 Others
 
 - [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
