@@ -290,7 +290,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         state.mapCameraPosition = convertToMapCamera(position: newValue)
       }
       .onChange(of: state.selection, perform: handleSelectionChange)
-      .onMapCameraChange(frequency: .onEnd) { context in
+      .onMapCameraChange(frequency: props.cameraUpdateFrequency.toMapCameraUpdateFrequency()) { context in
         state.lastKnownDistance = context.camera.distance
         state.lastKnownHeading = context.camera.heading
         state.lastKnownPitch = context.camera.pitch

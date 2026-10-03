@@ -128,7 +128,7 @@ struct AppleMapsViewiOS17: View, AppleMapsViewProtocol {
       .onChange(of: props.cameraPosition) { _, newValue in
         state.mapCameraPosition = convertToMapCamera(position: newValue)
       }
-      .onMapCameraChange(frequency: .onEnd) { context in
+      .onMapCameraChange(frequency: props.cameraUpdateFrequency.toMapCameraUpdateFrequency()) { context in
         let cameraPosition = context.region.center
         let longitudeDelta = context.region.span.longitudeDelta
         let latitudeDelta = context.region.span.latitudeDelta
