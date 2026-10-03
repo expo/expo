@@ -63,3 +63,9 @@ jobs:
         run: pnpm expotools validate-issue --issue "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+      - name: 🔮 Label and triage issue with Jev
+        continue-on-error: true
+        run: pnpm expotools classify-issue --issue "${{ github.event.issue.number }}" --tag --close-invalid
+        env:
+          GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
