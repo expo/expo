@@ -2,53 +2,69 @@ import { env } from 'node:process';
 
 import {
   createBundleUrlPath,
+  getAsyncRoutesFromExpoConfig,
+  getChunkingStrategyFromExpoConfig,
   getMetroDirectBundleOptions,
   getMetroDirectBundleOptionsForExpoConfig,
 } from '../metroOptions';
 
 describe('chunking options', () => {
   it.each([
-    { unstable_chunking: true, experiments: {}, expectedStrategy: 'bitset' },
-    { unstable_chunking: false, experiments: {}, expectedStrategy: 'legacy' },
-    { unstable_chunking: undefined, experiments: {}, expectedStrategy: 'legacy' },
+    { experiments: undefined, expectedStrategy: 'legacy' },
+    { experiments: {}, expectedStrategy: 'legacy' },
+    { experiments: { chunking: { mode: 'legacy' } }, expectedStrategy: 'legacy' },
+    { experiments: { chunking: { mode: 'granular' } }, expectedStrategy: 'bitset' },
     {
-      unstable_chunking: true,
-      experiments: { reactServerComponentRoutes: true },
+      experiments: { chunking: { mode: 'granular' }, reactServerComponentRoutes: true },
       expectedStrategy: 'legacy',
     },
     {
-      unstable_chunking: true,
-      experiments: { reactServerFunctions: true },
+      experiments: { chunking: { mode: 'granular' }, reactServerFunctions: true },
       expectedStrategy: 'legacy',
     },
     {
-      unstable_chunking: true,
-      experiments: { reactServerComponentRoutes: true, reactServerFunctions: true },
+      experiments: {
+        chunking: { mode: 'granular' },
+        reactServerComponentRoutes: true,
+        reactServerFunctions: true,
+      },
       expectedStrategy: 'legacy',
     },
-  ])(
-    'selects $expectedStrategy for Router opt-in $unstable_chunking and $experiments',
-    ({ unstable_chunking, experiments, expectedStrategy }) => {
-      const result = getMetroDirectBundleOptionsForExpoConfig(
-        '/app',
-        {
-          name: 'test',
-          slug: 'test',
-          extra: { router: { unstable_chunking } },
-          experiments,
-        },
-        {
-          mainModuleName: '/app/index.js',
-          mode: 'production',
-          platform: 'web',
-          isExporting: true,
-          splitChunks: true,
-        }
-      );
-      expect(result.serializerOptions).toMatchObject({
-        chunkingStrategy: expectedStrategy,
+  ] as const)('selects $expectedStrategy for $experiments', ({ experiments, expectedStrategy }) => {
+    const result = getMetroDirectBundleOptionsForExpoConfig(
+      '/app',
+      {
+        name: 'test',
+        slug: 'test',
+        experiments,
+      },
+      {
+        mainModuleName: '/app/index.js',
+        mode: 'production',
+        platform: 'web',
+        isExporting: true,
         splitChunks: true,
-      });
+      }
+    );
+    expect(result.serializerOptions).toMatchObject({
+      chunkingStrategy: expectedStrategy,
+      splitChunks: true,
+    });
+  });
+
+  it.each(['legacy', 'granular'] as const)(
+    'keeps %s chunking independent of the async routes setting',
+    (mode) => {
+      const config = {
+        name: 'test',
+        slug: 'test',
+        experiments: { chunking: { mode } },
+        extra: { router: { asyncRoutes: false } },
+      };
+      expect(getChunkingStrategyFromExpoConfig(config)).toBe(
+        mode === 'granular' ? 'bitset' : 'legacy'
+      );
+      expect(getAsyncRoutesFromExpoConfig(config, 'production', 'web')).toBe(false);
     }
   );
 });
