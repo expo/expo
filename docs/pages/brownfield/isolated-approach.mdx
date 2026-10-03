@@ -408,6 +408,28 @@ struct ContentView: View {
 </Tab>
 </Tabs>
 
+### Run a debug XCFramework without Metro
+
+By default, a debug build loads JavaScript from a Metro dev server, so native developers consuming the framework need to run Metro to see a screen. To ship debug artifacts that run on their own, enable `ios.bundleInDebug`:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-brownfield", { "ios": { "bundleInDebug": true } }]]
+  }
+}
+```
+
+This embeds a JavaScript bundle in the debug XCFramework. Initialize with `useDevSupport: false` to load it instead of connecting to Metro:
+
+```swift
+ReactNativeHostManager.shared.initialize(turboModuleClasses: [:], useDevSupport: false)
+```
+
+Leave `useDevSupport` at its default to keep using Metro, with fast refresh and the dev menu, while developing the React Native side.
+
+> **info** Enabling this option forces React Native to bundle JavaScript for debug builds, which adds the bundling step to every debug build.
+
 </Step>
 
 </Tab>

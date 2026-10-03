@@ -73,12 +73,36 @@ export const configureBuildPhases = (
   );
 };
 
+/**
+ * Per-configuration build settings for the brownfield target.
+ *
+ * The target reuses the app target's "Bundle React Native code and images" phase, which runs
+ * `react-native-xcode.sh`. That script skips bundling in Debug for the simulator unless
+ * `FORCE_BUNDLING` is set, so a debug XCFramework would otherwise ship without `main.jsbundle`.
+ * Release always bundles, so the flag is only needed on Debug.
+ */
+export const getBuildConfigurationSettings = (
+  commonBuildSettings: Record<string, string>,
+  bundleInDebug: boolean
+): { Debug: Record<string, string>; Release: Record<string, string> } => {
+  return {
+    Debug: {
+      ...commonBuildSettings,
+      ...(bundleInDebug ? { FORCE_BUNDLING: '1' } : {}),
+    },
+    Release: {
+      ...commonBuildSettings,
+    },
+  };
+};
+
 export const configureBuildSettings = (
   project: XcodeProject,
   targetName: string,
   currentProjectVersion: string,
   bundleIdentifier: string,
-  version: string = '1.0'
+  version: string = '1.0',
+  bundleInDebug: boolean = false
 ) => {
   const commonBuildSettings = getCommonBuildSettings(
     targetName,
@@ -86,21 +110,18 @@ export const configureBuildSettings = (
     bundleIdentifier,
     version
   );
+  const settings = getBuildConfigurationSettings(commonBuildSettings, bundleInDebug);
 
   const buildConfigurationList = [
     {
       name: 'Debug',
       isa: 'XCBuildConfiguration',
-      buildSettings: {
-        ...commonBuildSettings,
-      },
+      buildSettings: settings.Debug,
     },
     {
       name: 'Release',
       isa: 'XCBuildConfiguration',
-      buildSettings: {
-        ...commonBuildSettings,
-      },
+      buildSettings: settings.Release,
     },
   ];
 

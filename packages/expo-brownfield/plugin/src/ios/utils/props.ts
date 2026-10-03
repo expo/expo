@@ -8,6 +8,7 @@ export const getPluginConfig = (props: PluginProps, config: ExpoConfig): PluginC
   const targetName = getTargetName(props, config);
 
   return {
+    bundleInDebug: props?.bundleInDebug ?? false,
     bundleIdentifier: validateBundleIdentifier(
       getBundleIdentifier(props, config, targetName),
       'ios.bundleIdentifier'

@@ -24,31 +24,44 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
 
   override func bundleURL() -> URL? {
     #if DEBUG
-      return RCTBundleURLProvider.sharedSettings().jsBundleURL(
-        forBundleRoot: ".expo/.virtual-metro-entry")
-    #else
-      // `main.jsbundle` isn't part of the main app bundle
-      // so we need to load it from the framework bundle
-      // and ensure that it's present in the framework
-      let frameworkBundle = Bundle(for: ReactNativeHostManager.self)
-      if let bundleURL = frameworkBundle.url(forResource: "main", withExtension: "jsbundle") {
-        return bundleURL
+      // Compile-time `#if` keeps the Metro branch out of release binaries entirely; the runtime
+      // check lets a debug build opt out of it and run against the embedded bundle instead.
+      if ReactNativeHostManager.shared.useDevSupport {
+        return RCTBundleURLProvider.sharedSettings().jsBundleURL(
+          forBundleRoot: ".expo/.virtual-metro-entry")
       }
-
-      let availableBundles =
-        frameworkBundle.urls(forResourcesWithExtension: "jsbundle", subdirectory: nil)
-        ?? []
-      let bundleList =
-        availableBundles.isEmpty
-        ? "None"
-        : availableBundles.map { "- \($0.lastPathComponent)" }.joined(separator: "\n")
-
-      fatalError(
-        """
-        Cannot find `main.jsbundle` in the XCFramework bundle
-        Available JS bundles:
-        \(bundleList)
-        """)
     #endif
+
+    return embeddedBundleURL()
+  }
+
+  /**
+   * `main.jsbundle` isn't part of the main app bundle, so it has to be loaded from the framework
+   * bundle — and we need to be sure it was actually packaged into the framework.
+   */
+  private func embeddedBundleURL() -> URL? {
+    let frameworkBundle = Bundle(for: ReactNativeHostManager.self)
+    if let bundleURL = frameworkBundle.url(forResource: "main", withExtension: "jsbundle") {
+      return bundleURL
+    }
+
+    let availableBundles =
+      frameworkBundle.urls(forResourcesWithExtension: "jsbundle", subdirectory: nil)
+      ?? []
+    let bundleList =
+      availableBundles.isEmpty
+      ? "None"
+      : availableBundles.map { "- \($0.lastPathComponent)" }.joined(separator: "\n")
+
+    fatalError(
+      """
+      Cannot find `main.jsbundle` in the XCFramework bundle.
+      React Native was started without dev support, so it loads JavaScript from the bundle
+      embedded in the framework, but no bundle was packaged.
+      In a debug build, enable the `ios.bundleInDebug` option on the expo-brownfield config
+      plugin and rebuild. Otherwise initialize with `useDevSupport: true` to run against Metro.
+      Available JS bundles:
+      \(bundleList)
+      """)
   }
 }

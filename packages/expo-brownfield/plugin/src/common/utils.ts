@@ -48,3 +48,17 @@ const checkPackageJson = (config: ExpoConfig, pluginName: string): boolean => {
 
   return false;
 };
+
+/**
+ * Resolve the `bundleInDebug` option for one platform.
+ *
+ * It is the only option that means the same thing on both platforms, so it can be set once at the
+ * top level of the plugin props and overridden per platform — the same shape expo-dev-launcher
+ * uses for its shared options (`props.<platform>?.x ?? props.x`).
+ */
+export const resolveBundleInDebug = (
+  platformProps: { bundleInDebug?: boolean } | undefined,
+  topLevel: boolean | undefined
+): boolean => {
+  return platformProps?.bundleInDebug ?? topLevel ?? false;
+};

@@ -20,6 +20,24 @@ public class ReactNativeHostManager: NSObject {
   private var devMenuInitialized: Bool = false
   private var turboModuleClasses: [String: AnyClass] = [:]
 
+  /**
+   * Whether React Native loads JavaScript from a Metro dev server rather than the bundle embedded
+   * in the framework. Read by `ReactNativeDelegate.bundleURL()`.
+   *
+   * Defaults to the build type, so debug builds use Metro and release builds use the embedded
+   * bundle.
+   */
+  @objc public private(set) var useDevSupport: Bool = ReactNativeHostManager.defaultUseDevSupport
+
+  /// `true` in debug builds, `false` in release builds.
+  @objc public static let defaultUseDevSupport: Bool = {
+    #if DEBUG
+      return true
+    #else
+      return false
+    #endif
+  }()
+
   private override init() {
     super.init()
   }
@@ -27,12 +45,29 @@ public class ReactNativeHostManager: NSObject {
    * Initializes ReactNativeHostManager instance
    * Instance can be initialized only once
    */
-  @objc public func initialize(turboModuleClasses: [String: AnyClass] = [:]) {
+  @objc(initializeWithTurboModuleClasses:)
+  public func initialize(turboModuleClasses: [String: AnyClass] = [:]) {
+    initialize(
+      turboModuleClasses: turboModuleClasses,
+      useDevSupport: ReactNativeHostManager.defaultUseDevSupport)
+  }
+
+  /**
+   * Initializes ReactNativeHostManager instance
+   * Instance can be initialized only once
+   *
+   * - Parameter useDevSupport: Whether to load JavaScript from a Metro dev server. Pass `false` in
+   *   a debug build to run against the bundle embedded in the framework instead — that bundle only
+   *   exists if the `ios.bundleInDebug` config plugin option is enabled.
+   */
+  @objc(initializeWithTurboModuleClasses:useDevSupport:)
+  public func initialize(turboModuleClasses: [String: AnyClass], useDevSupport: Bool) {
     if firstLoadInitialized {
       return
     }
 
     self.turboModuleClasses = turboModuleClasses
+    self.useDevSupport = useDevSupport
     firstLoadInitialized = true
     initializeInstance()
     // Ensure this won't get stripped by the Swift compiler

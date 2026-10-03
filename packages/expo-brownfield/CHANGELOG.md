@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- [android] Add an `android.bundleInDebug` config plugin option that embeds a JS bundle in the debug AAR, and a `useDevSupport` parameter on `ReactNativeHostManager.initialize` / `showReactNativeFragment` so a host can run a debug build without a Metro dev server. ([#49XXX](https://github.com/expo/expo/pull/49XXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add a `bundleInDebug` config plugin option (settable per platform as `android.bundleInDebug` / `ios.bundleInDebug`) that embeds a JS bundle in the debug artifacts, plus a `useDevSupport` option on `ReactNativeHostManager.initialize` on both platforms, so a host can run a debug build without a Metro dev server. ([#49XXX](https://github.com/expo/expo/pull/49XXX) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

@@ -1,4 +1,11 @@
 export interface PluginConfig {
+  /**
+   * Embed a JavaScript bundle in the debug XCFramework so a host app can run without a Metro dev
+   * server. Call `ReactNativeHostManager.initialize` with `useDevSupport: false` to load it.
+   *
+   * @default false
+   */
+  bundleInDebug: boolean;
   bundleIdentifier: string;
   targetName: string;
   buildReactNativeFromSource: boolean;
