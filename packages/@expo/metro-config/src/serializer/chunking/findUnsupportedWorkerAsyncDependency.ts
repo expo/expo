@@ -15,40 +15,23 @@ export function findUnsupportedWorkerAsyncDependency(
     }
   | undefined {
   // A module can run in both realms, so visit page and worker dependencies separately.
-  const pendingPages = [entryFile];
+  const pending: { modulePath: string; workerEntry?: string }[] = [{ modulePath: entryFile }];
   const visitedPages = new Set<string>();
-  const pendingWorkers: { modulePath: string; workerEntry: string }[] = [];
-  for (let index = 0; index < pendingPages.length; index++) {
-    const modulePath = pendingPages[index]!;
-    if (visitedPages.has(modulePath)) continue;
-    visitedPages.add(modulePath);
-    const module = graph.dependencies.get(modulePath);
-    if (!module) continue;
-    for (const dependency of module.dependencies.values()) {
-      const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
-      if (!isResolvedDependency(dependency) || asyncType === 'weak') continue;
-      if (asyncType === 'worker') {
-        pendingWorkers.push({
-          modulePath: dependency.absolutePath,
-          workerEntry: dependency.absolutePath,
-        });
-      } else {
-        pendingPages.push(dependency.absolutePath);
-      }
-    }
-  }
-
   const visitedWorkers = new Set<string>();
-  for (let index = 0; index < pendingWorkers.length; index++) {
-    const { modulePath, workerEntry } = pendingWorkers[index]!;
-    if (visitedWorkers.has(modulePath)) continue;
-    visitedWorkers.add(modulePath);
+  for (let index = 0; index < pending.length; index++) {
+    const { modulePath, workerEntry } = pending[index]!;
+    const visited = workerEntry === undefined ? visitedPages : visitedWorkers;
+    if (visited.has(modulePath)) continue;
+    visited.add(modulePath);
     const module = graph.dependencies.get(modulePath);
     if (!module) continue;
     for (const dependency of module.dependencies.values()) {
       const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
       if (!isResolvedDependency(dependency) || asyncType === 'weak') continue;
-      if (asyncType === 'async' || asyncType === 'maybeSync' || asyncType === 'prefetch') {
+      if (
+        workerEntry !== undefined &&
+        (asyncType === 'async' || asyncType === 'maybeSync' || asyncType === 'prefetch')
+      ) {
         return {
           workerEntry,
           importer: modulePath,
@@ -56,7 +39,7 @@ export function findUnsupportedWorkerAsyncDependency(
           asyncType,
         };
       }
-      pendingWorkers.push({
+      pending.push({
         modulePath: dependency.absolutePath,
         workerEntry: asyncType === 'worker' ? dependency.absolutePath : workerEntry,
       });
