@@ -25,6 +25,13 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+  var automaticallyWaitsToMinimizeStalling: Bool? {
+    didSet {
+      if let automaticallyWaitsToMinimizeStalling {
+        ref.automaticallyWaitsToMinimizeStalling = automaticallyWaitsToMinimizeStalling
+      }
+    }
+  }
   var onRelease: (() -> Void)?
 
   var isLooping = false {
@@ -318,6 +325,9 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     teardownPlayer()
 
     ref = AudioUtils.createAVPlayer(from: source)
+    if let automaticallyWaitsToMinimizeStalling {
+      ref.automaticallyWaitsToMinimizeStalling = automaticallyWaitsToMinimizeStalling
+    }
     setupPublisher()
 
     if restoreSampling {

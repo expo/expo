@@ -14,6 +14,8 @@
 
 ## 58.0.2 — 2026-09-22
 
+- [iOS] Added the `automaticallyWaitsToMinimizeStalling` player option to start remote or live streams without waiting for the buffer to fill. ([#50506](https://github.com/expo/expo/issues/50506) by [@rmotafreitas](https://github.com/rmotafreitas)) ([#50535](https://github.com/expo/expo/pull/50535) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read. ([#50327](https://github.com/expo/expo/pull/50327) by [@alanjhughes](https://github.com/alanjhughes))
