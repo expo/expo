@@ -2015,6 +2015,24 @@ describe('serializes', () => {
   });
 
   describe.each(['legacy', 'granular'] as const)('%s chunk filenames', (chunkingStrategy) => {
+    it('treats worker entry paths literally instead of matching other graph entries', async () => {
+      const artifacts: SerialAsset[] = await serializeSplitAsync(
+        {
+          'index.js': `require.unstable_resolveWorker('./worker*'); import('./worker-other');`,
+          'worker*.js': `console.log('worker');`,
+          'worker-other.js': `console.log('page route');`,
+        },
+        { chunkingStrategy }
+      );
+      const worker = artifacts.find((asset) =>
+        asset.metadata.modulePaths?.includes('/app/worker*.js')
+      )!;
+      expect(worker.metadata.modulePaths).toEqual(['/app/worker*.js']);
+      expect(
+        artifacts.some((asset) => asset.metadata.modulePaths?.includes('/app/worker-other.js'))
+      ).toBe(true);
+    });
+
     it(`invalidates parent chunk when a transitive async chunk changes`, async () => {
       const artifacts = await serializeSplitAsync(
         {
