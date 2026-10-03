@@ -77,6 +77,10 @@ struct MapAnnotation: Record, Identifiable {
   @Field var text: String = ""
   @Field var icon: SharedRef<UIImage>?
   @Field var anchor: MapAnchor = MapAnchor()
+  @Field var pulseColor: Color?
+  @Field var pulseRadius: Double = 0
+  @Field var pulseDuration: Double = 2.4
+  @Field var moveDuration: Double = 0
 
   var clLocationCoordinate2D: CLLocationCoordinate2D {
     CLLocationCoordinate2D(
