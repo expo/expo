@@ -294,11 +294,11 @@ export interface ExpoConfig {
       xcodeProjectTargets?: string[];
     };
     /**
-     * Configure experimental bundle splitting for production web client exports. Requires bundle splitting to be enabled and does not enable or disable async routes.
+     * Configure how JavaScript is split for async routes in production web apps. Requires `asyncRoutes` to be enabled.
      */
     chunking?: {
       /**
-       * The bundle splitting strategy. Use `granular` to group shared dependencies by the entrypoints that need them. Defaults to `legacy` when `chunking` is omitted. Native, development, DOM component, and React Server Component exports use legacy chunking.
+       * The strategy used to split JavaScript for async routes. Use `granular` to group shared dependencies by the async routes that need them. Defaults to `legacy` when `chunking` is omitted.
        */
       mode: 'legacy' | 'granular';
     };
