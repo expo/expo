@@ -1,7 +1,7 @@
 import ExpoModulesJSI
 
 /**
- An alias to `Result<JavaScriptRef<JavaScriptValue>, Exception>` which can be passed to the function callback.
+ An alias to `Result<JavaScriptValue, Exception>` which can be passed to the function callback.
  */
 public typealias FunctionCallResult = Result<JavaScriptValue, Exception>
 

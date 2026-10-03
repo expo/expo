@@ -94,7 +94,7 @@ struct JavaScriptCodableTypedArrayTests {
     let encoded = try Uint8Array.encode(decoded, in: runtime)
 
     // The conversion preserves identity: re-encoding hands back the original JS object, not a copy.
-    let isSame = try runtime.eval("v => v === globalThis.original").getFunction().call(arguments: encoded)
+    let isSame = try runtime.eval("v => v === globalThis.original").getFunction().call(arguments: encoded.refToValue())
     #expect(try isSame.asBool() == true)
   }
 
@@ -132,7 +132,7 @@ struct JavaScriptCodableTypedArrayTests {
   func `decodes from a borrowed argument buffer`() throws {
     let runtime = try runtime
     let value = try runtime.eval("new Uint8Array([5, 6])")
-    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValueRef(value)])
 
     let decoded = try Uint8Array.decode(buffer.unownedValue(at: 0), in: runtime)
 
