@@ -53,7 +53,16 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
   }
 
   func cancelStreaming() {
-    if isInvalidState(.bodyStreamingStarted) {
+    // Cancelling a stream that already settled is legal consumer cleanup — WHATWG Streams defines
+    // `reader.cancel()` on a closed stream as a no-op — so it must not be reported as a state error.
+    if state == .bodyCompleted || state == .bodyStreamingCanceled || state == .errorReceived {
+      return
+    }
+    // A consumer may also cancel before ever reading. The JS stream keeps `pull` lazy, so
+    // `startStreaming()` never ran and the state is still `.responseReceived`. Accept that as a
+    // cancel source: it silences the same spurious error and lets `didReceive data` drop further
+    // chunks instead of buffering a body nobody will read.
+    if isInvalidState(.responseReceived, .bodyStreamingStarted) {
       return
     }
     state = .bodyStreamingCanceled
