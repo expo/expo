@@ -8,7 +8,7 @@ import ExpoModulesCore
 /// `INTEGER` columns are read as `double`, so they reach JavaScript as a number, not a `bigint`. That
 /// loses precision above 2^53, as the type-erased conversion did before.
 @Union
-enum SQLiteColumnValue: Sendable {
+enum SQLiteColumnValue: Sendable, Equatable {
   case double(Double)
   case text(String)
   case blob(ArrayBuffer)
@@ -38,12 +38,7 @@ enum SQLiteColumnValue: Sendable {
       throw InvalidConvertibleException("Unsupported column type: \(type)")
     }
   }
-}
 
-// `==` lives in an extension: an operator declared inside a type that carries a member-attribute macro
-// is seen twice by the compiler and fails the `Equatable` conformance check.
-// swiftlint:disable:next no_grouping_extension
-extension SQLiteColumnValue: Equatable {
   static func == (lhs: SQLiteColumnValue, rhs: SQLiteColumnValue) -> Bool {
     switch (lhs, rhs) {
     case let (.double(lhs), .double(rhs)):
