@@ -18,7 +18,10 @@ const newTokenEventName = 'onDevicePushToken';
  * In rare situations, a push token may be changed by the push notification service while the app is running.
  * When a token is rolled, the old one becomes invalid and sending notifications to it will fail.
  * A push token listener will let you handle this situation gracefully by registering the new token with your backend right away.
- * @param listener A function accepting a push token as an argument, it will be called whenever the push token changes.
+ * On Android, the listener is also called after every successful `getDevicePushTokenAsync()` call, even when the token
+ * returned is the same as before. If your listener sends the token to a server, compare it with the token you already
+ * stored before writing, otherwise a repeated fetch will cause a write on every call.
+ * @param listener A function accepting a push token as an argument, it will be called whenever the push token changes and, on Android, after every `getDevicePushTokenAsync()` call.
  * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @header fetch
  * @example Registering a push token listener using a React hook.
