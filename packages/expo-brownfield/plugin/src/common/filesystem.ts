@@ -15,6 +15,11 @@ const interpolateVariables = (str: string, variables: Record<string, unknown>): 
   let match = variableRegex.exec(str);
   while (match) {
     const variable = match[0].slice(3, -2);
+    if (!(variable in variables)) {
+      throw new Error(
+        `The expo-brownfield template variable "${variable}" has no value, so the generated file would contain the literal string "undefined" and fail to build. This usually means the plugin passed an incomplete variable set for this template — report this at https://github.com/expo/expo/issues.`
+      );
+    }
     str = str.replace(match[0], String(variables[variable]));
     match = variableRegex.exec(str);
   }

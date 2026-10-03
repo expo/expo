@@ -15,7 +15,8 @@ type ErrorType =
 class CLIError {
   private static readonly errorSymbol: string = '✖';
   private static readonly errorMessages: Record<ErrorType, string> = {
-    'android-task-repo': 'At least one task or repository must be specified',
+    'android-task-repo':
+      'At least one task or repository must be specified. The app config declares no local Maven repositories to default to, and remote repositories are never published to implicitly — pass `--repo <name>` or `-t <gradle task>` explicitly.',
     'android-directory-not-found': 'Cannot find `android` directory in the project',
     'android-library-unknown-error': 'Unknown error occurred while finding brownfield library',
     'android-library-not-found': 'Could not find brownfield library in the project',
