@@ -107,6 +107,16 @@ export class Asset {
         this.localUri = null;
       } else if (this.localUri) {
         this.downloaded = true;
+      } else if (!this.uri) {
+        // The asset is expected to be available locally (see `selectAssetSource`), but its hash is
+        // absent from the local asset map, so it has neither a local nor a remote URI and cannot
+        // load. Deliberately not `__DEV__`-gated: this only occurs in release builds.
+        console.warn(
+          `[expo-asset] Asset "${name}.${type}" (hash: ${hash}) was not found in the local asset ` +
+            `map and has no remote URL, so it will resolve to an empty URI and fail to load. This ` +
+            `usually means the embedded update manifest is out of date with the JS bundle — try a ` +
+            `clean build.`
+        );
       }
     }
 
