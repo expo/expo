@@ -9,26 +9,28 @@ import Testing
 /// Covers the module's JavaScript-facing surface. These go through the runtime rather than calling the
 /// actors directly, because what matters here is whether the JavaScript promise resolves or rejects.
 ///
-/// The module's async functions suspend before they settle, so they settle from another thread. The
-/// runtime needs a JavaScript thread for that settle to land on, or it runs JavaScript concurrently
-/// with the test body, so every evaluation goes through `TestAppContext`.
+/// The module's async functions settle their promises from other threads, so the runtime needs a
+/// JavaScript thread of its own for those settles to land on.
 @Suite("ExpoAppIntentsModule", .serialized)
+@JavaScriptActor
 struct ExpoAppIntentsModuleTests {
-  let context: TestAppContext
-
-  init() async throws {
-    let context = await TestAppContext()
-    let appContext = context.appContext
-    try await context.run { _ in
-      appContext.moduleRegistry.register(
-        holder: ModuleHolder(
-          appContext: appContext,
-          module: ExpoAppIntentsModule(appContext: appContext),
-          name: "ExpoAppIntents"
-        )
-      )
+  let javaScriptThread = JavaScriptTestThread()
+  let appContext: AppContext
+  var runtime: ExpoRuntime {
+    get throws {
+      return try appContext.runtime
     }
-    self.context = context
+  }
+
+  init() async {
+    appContext = await javaScriptThread.makeAppContext()
+    appContext.moduleRegistry.register(
+      holder: ModuleHolder(
+        appContext: appContext,
+        module: ExpoAppIntentsModule(appContext: appContext),
+        name: "ExpoAppIntents"
+      )
+    )
   }
 
   /// A scaffold with no App Shortcut phrases has no `AppShortcutsProvider`, so nothing registers a
@@ -54,9 +56,9 @@ struct ExpoAppIntentsModuleTests {
 
     var thrown: (any Error)?
     do {
-      _ = try await context.evalAsync(
+      _ = try await runtime.evalAsync(
         "expo.modules.ExpoAppIntents.setEntityCatalogAsync('\(kind)', [{ id: 'a', title: 'A' }])"
-      ) { _ in }
+      )
     } catch {
       thrown = error
     }
@@ -73,7 +75,7 @@ struct ExpoAppIntentsModuleTests {
     await AppIntentDispatcher.shared.setShortcutsRefreshHandler(nil)
 
     await #expect(throws: (any Error).self) {
-      _ = try await context.evalAsync("expo.modules.ExpoAppIntents.refreshShortcutsAsync()") { _ in }
+      _ = try await runtime.evalAsync("expo.modules.ExpoAppIntents.refreshShortcutsAsync()")
     }
   }
 
@@ -90,12 +92,11 @@ struct ExpoAppIntentsModuleTests {
     ("deleteDonationsAsync({ entity: 'testUnregisteredEntity' })", "exactly one"),
   ])
   func `donation calls reject what they cannot act on`(call: String, expectedMessage: String) async throws {
-    let message = try await context.evalAsync(
+    let outcome = try await runtime.evalAsync(
       "expo.modules.ExpoAppIntents.\(call).then(() => 'resolved', (error) => error.message)"
-    ) { outcome in
-      outcome.getString()
-    }
+    )
 
+    let message = outcome.getString()
     #expect(message.contains(expectedMessage), "\(call) settled with: \(message)")
   }
 
@@ -109,12 +110,11 @@ struct ExpoAppIntentsModuleTests {
   func `donating rejects params that do not fit the record`(call: String, expectedMessage: String) async throws {
     AppIntentDonationRegistry.shared.register("testRequiredParamDonation", as: RequiredParamDonationIntent.self)
 
-    let message = try await context.evalAsync(
+    let outcome = try await runtime.evalAsync(
       "expo.modules.ExpoAppIntents.\(call).then(() => 'resolved', (error) => error.message)"
-    ) { outcome in
-      outcome.getString()
-    }
+    )
 
+    let message = outcome.getString()
     #expect(message.contains("DonationParams"), "\(call) settled with: \(message)")
     #expect(message.contains(expectedMessage), "\(call) settled with: \(message)")
   }
