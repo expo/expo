@@ -1,4 +1,3 @@
-import { safeIdOfAppAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 import path from 'node:path';
 
@@ -14,23 +13,15 @@ export class SimulatorAppPrerequisite extends Prerequisite {
   static instance = new SimulatorAppPrerequisite();
 
   async assertImplementation(): Promise<void> {
-    // Xcode 27 replaces Simulator with DeviceHub
-    // See: https://developer.apple.com/documentation/xcode/device-hub
-    // TODO(cedric): once Xcode 27 stable is released, resolve DeviceHub first
-    let appId = await safeIdOfAppAsync('Simulator').then((appId) => {
-      return appId || safeIdOfAppAsync('DeviceHub');
-    });
-
-    if (!appId) {
-      const xcodePath = await getXcodeSelectPath();
-      debugEvent('simulator_xcode_select_path', { path: xcodePath });
-      if (xcodePath) {
-        appId = await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_SIMULATOR_PATH)).then(
-          (appId) => {
-            return appId || getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_DEVICE_HUB_PATH));
-          }
-        );
-      }
+    // AppleScript app-name lookups open an application chooser when the app is missing.
+    // Read the selected Xcode installation instead, where Xcode 27 replaces Simulator with DeviceHub.
+    const xcodePath = await getXcodeSelectPath();
+    debugEvent('simulator_xcode_select_path', { path: xcodePath });
+    let appId: string | null = null;
+    if (xcodePath) {
+      appId =
+        (await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_SIMULATOR_PATH))) ||
+        (await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_DEVICE_HUB_PATH)));
     }
 
     if (!appId) {
