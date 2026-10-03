@@ -2,8 +2,6 @@
 
 #import <ExpoModulesCore/Platform.h>
 
-@protocol EXAppContextProtocol;
-
 #ifdef __cplusplus
 #import <ReactCommon/RCTHost.h>
 #endif
@@ -25,10 +23,11 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 - (nullable NSURL *)bundleURL;
 
 /**
- Notifies the app context when its host starts and finishes mounting views, so that the views
- created in between can be given that app context.
+ Adds an observer to the surface presenter of the host. The observer is held weakly and should implement
+ the `RCTSurfacePresenterObserver` methods. It's typed as `id`, because the protocol comes from React,
+ which ExpoModulesCore doesn't import publicly in Swift.
  */
-- (void)observeMountingForAppContext:(nonnull id<EXAppContextProtocol>)appContext NS_SWIFT_NAME(observeMounting(for:));
+- (void)addSurfacePresenterObserver:(nonnull id)observer;
 
 @end
 
