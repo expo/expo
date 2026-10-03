@@ -114,7 +114,9 @@ class AudioLockScreenOptions(
   @Field val showSeekBackward: Boolean,
   @Field val showNextTrack: Boolean = false,
   @Field val showPreviousTrack: Boolean = false,
-  @Field val isLiveStream: Boolean? = null
+  @Field val isLiveStream: Boolean? = null,
+  @Field val seekForwardIntervalSeconds: Double = 10.0,
+  @Field val seekBackwardIntervalSeconds: Double = 10.0
 ) : Record
 
 enum class InterruptionMode(val value: String) : Enumerable {

@@ -31,6 +31,7 @@
     "test": "jest",
     "format": "expo-module format",
     "prepublishOnly": "expo-module prepublishOnly",
+    "test": "jest",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json",
     "prepack": "expo-module prepack"
@@ -41,7 +42,8 @@
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-asset": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "jest-expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

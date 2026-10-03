@@ -14,6 +14,8 @@
 
 ## 58.0.2 — 2026-09-22
 
+- Added `seekForwardIntervalSeconds` and `seekBackwardIntervalSeconds` options to `AudioLockScreenOptions` for customizable lock screen skip intervals. ([#44804](https://github.com/expo/expo/pull/44804) by [@radko93](https://github.com/radko93))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read. ([#50327](https://github.com/expo/expo/pull/50327) by [@alanjhughes](https://github.com/alanjhughes))
