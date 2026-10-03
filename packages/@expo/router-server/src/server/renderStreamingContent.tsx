@@ -52,6 +52,9 @@ export type GetStreamingContentOptions = {
   request?: Request;
   /** Assets for hydration bundles and development-only inline CSS. */
   assets?: AssetInfo;
+  /** Static output waits for Suspense and returns complete HTML. Defaults to live SSR. */
+  output?: 'static' | 'server';
+  hydrate?: boolean;
 };
 
 /**
@@ -101,14 +104,22 @@ function FontResources() {
 }
 
 /**
- * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
- * that emits the full HTML document with head injections applied.
+ * Renders the document using `renderToReadableStream`. Static output waits for Suspense
+ * and returns HTML; server output returns a progressive stream.
  */
+export function getStreamingContent(
+  location: URL,
+  options: GetStreamingContentOptions & { output: 'static' }
+): Promise<string>;
+export function getStreamingContent(
+  location: URL,
+  options?: GetStreamingContentOptions & { output?: 'server' }
+): Promise<ReadableStream<Uint8Array>>;
 export async function getStreamingContent(
   location: URL,
   options?: GetStreamingContentOptions
-): Promise<ReadableStream<Uint8Array>> {
-  return Font.withServerContext(() => {
+): Promise<string | ReadableStream<Uint8Array>> {
+  return Font.withServerContext(async () => {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
       location,
       options
@@ -136,28 +147,45 @@ export async function getStreamingContent(
       bodyNodes: [<FontResources key="font-resources" />, ...(bodyJsNodes ?? [])],
     };
 
-    return ReactDOMServer.renderToReadableStream(
+    const isStatic = options?.output === 'static';
+    const renderErrors: unknown[] = [];
+    const stream = await ReactDOMServer.renderToReadableStream(
       <ServerDocument data={serverDocumentData}>
-        {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
+        {/* Retain the provider so existing <Head> components can render. */}
         <Head.Provider context={headContext}>
           <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
         </Head.Provider>
       </ServerDocument>,
       {
-        // TODO(@hassankhan): Experiment and see if we can calculate a better default
-        // We're doubling the default here so non-JavaScript renders show some content
-        progressiveChunkSize: 12800 * 2,
-        bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
+        // Static output must keep large resolved Suspense content visible without JavaScript.
+        progressiveChunkSize: isStatic ? Number.POSITIVE_INFINITY : 12800 * 2,
+        bootstrapScriptContent:
+          getBootstrapContents({
+            hydrate: options?.hydrate ?? true,
+            loadedData,
+          }) || undefined,
         signal: options?.request?.signal,
         onError(error) {
           if (options?.request?.signal.aborted) {
             return;
           }
 
-          console.error('SSR streaming render error:', error);
+          if (isStatic) {
+            renderErrors.push(error);
+          } else {
+            console.error('SSR streaming render error:', error);
+          }
         },
       }
     );
+    if (isStatic) {
+      await stream.allReady;
+      if (renderErrors.length > 0) {
+        throw renderErrors[0];
+      }
+      return new Response(stream).text();
+    }
+    return stream;
   });
 }
 

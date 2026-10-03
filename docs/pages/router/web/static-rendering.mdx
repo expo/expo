@@ -221,26 +221,29 @@ The exports from `expo-router/html` are related to the Root HTML component.
 
 ## Meta tags
 
-You can add meta tags to your pages with the `<Head />` module from `expo-router`:
+In SDK 58 and later, export a `generateMetadata()` function from a route to include metadata in its generated HTML. Expo CLI resolves this function at build time for each static path.
 
 ```tsx src/app/about.tsx
-import Head from 'expo-router/head';
+import type { Metadata } from 'expo-router/server';
 import { Text } from 'react-native';
 
+export function generateMetadata(): Metadata {
+  return {
+    title: 'My Blog Website',
+    description: 'This is my blog.',
+  };
+}
+
 export default function Page() {
-  return (
-    <>
-      <Head>
-        <title>My Blog Website</title>
-        <meta name="description" content="This is my blog." />
-      </Head>
-      <Text>About my blog</Text>
-    </>
-  );
+  return <Text>About my blog</Text>;
 }
 ```
 
-The head elements can be updated dynamically using the same API. However, it's useful for SEO to have static head elements rendered ahead of time.
+The function can be asynchronous and receives `undefined` as its first argument and the route's parameters as its second argument. Static rendering does not provide a request, including during development. See [metadata with server rendering](/router/web/server-rendering/#metadata) for supported fields and dynamic examples.
+
+Use `generateMetadata()` for metadata that must be present before JavaScript runs. The `<Head>` component from `expo-router/head` can update metadata after hydration, but its tags are not included in the initial static HTML. In SDK 57 and earlier, use `<Head>` for initial static metadata.
+
+When upgrading from SDK 57, follow [Migrate static page metadata](/router/migrate/sdk-57-to-58/#migrate-static-page-metadata) to move existing `Head` tags and document attributes.
 
 ## Static files
 

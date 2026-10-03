@@ -62,10 +62,7 @@ describe('static-rendering with a custom base path', () => {
       expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/entry-.*\.js/),
     ]);
 
-    const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
-      // Fonts are tested elsewhere
-      return link.attributes.as !== 'font';
-    });
+    const links = indexHtml.querySelectorAll('head link[rel="stylesheet"], head link[as="style"]');
 
     const cssFiles = links
       .map((link) => link.attributes.href)

@@ -10,7 +10,7 @@ type ResolveMetadataOptions = {
     file: string;
     page: string;
   };
-  request: ImmutableRequest;
+  request?: ImmutableRequest;
   params: Record<string, string | string[]>;
 };
 
