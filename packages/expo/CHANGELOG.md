@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- [iOS] Add an overridable `initialProperties` to `ExpoAppSceneDelegate`, restoring the root properties apps could pass through `RCTAppDelegate.initialProps` before React Native moved its startup into `scene(_:willConnectTo:)`. ([#50997](https://github.com/expo/expo/pull/50997) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated dependencies. ([#50995](https://github.com/expo/expo/pull/50995), [#50894](https://github.com/expo/expo/pull/50894))
+  - expo-modules-core@58.0.13
+
 ## 58.0.3
 
 ### Patch Changes
