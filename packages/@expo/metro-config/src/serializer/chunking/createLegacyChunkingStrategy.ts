@@ -3,14 +3,13 @@ import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency
 import assert from 'assert';
 
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
-import type { SerialAsset } from '../serializerAssets';
 import { Chunk, getBaseUrlOption } from './Chunk';
 import {
   type ChunkingContext,
   type ChunkingImplementation,
   createChunkCollector,
-  createChunkSerializer,
   createRuntimeChunk,
+  serializeChunksAsync,
 } from './chunkingStrategy';
 
 export function createLegacyChunkingStrategy(context: ChunkingContext): ChunkingImplementation {
@@ -38,14 +37,7 @@ export function createLegacyChunkingStrategy(context: ChunkingContext): Chunking
         }
       }
 
-      const serializeChunk = createChunkSerializer(chunks, context);
-      const assets: SerialAsset[] = [];
-      await Promise.all(
-        [...chunks].map(async (chunk) => {
-          assets.push(...(await serializeChunk(chunk)));
-        })
-      );
-      return assets;
+      return serializeChunksAsync(chunks, context);
     },
     getAsyncChunkTargets(chunk, chunksByPath) {
       const targets = new Set<Chunk>();
