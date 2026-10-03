@@ -12,7 +12,8 @@
       "benchmarking": ["../bare-expo/modules/benchmarking"],
       "expo-v2-demo": ["../bare-expo/modules/expo-v2-demo"],
       "worklets-tester": ["../bare-expo/modules/worklets-tester"],
-      "test-expo-ui": ["../bare-expo/modules/test-expo-ui"]
+      "test-expo-ui": ["../bare-expo/modules/test-expo-ui"],
+      "callback-test": ["../bare-expo/modules/callback-test"]
     },
     "types": ["jest"],
     "strictNullChecks": true,
