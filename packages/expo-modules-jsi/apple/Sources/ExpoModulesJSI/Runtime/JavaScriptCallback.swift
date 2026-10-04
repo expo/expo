@@ -1,7 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
-import Foundation
 internal import ExpoModulesJSI_Cxx
+import Foundation
 
 /// A JavaScript function that native code can keep and call later, from any thread.
 ///
@@ -122,8 +122,9 @@ public final class JavaScriptCallback: Sendable {
   /// Calls the function without waiting for it. Runs inline on the JavaScript thread, and schedules
   /// the call from any other thread. A JavaScript error, or a lost runtime, is reported with
   /// ``reportError(_:)`` rather than thrown.
-  public func invokeDetached(arguments: sending @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue])
-  {
+  public func invokeDetached(
+    arguments: sending @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue]
+  ) {
     nonisolated(unsafe) let arguments = arguments
     runOnJavaScriptThread { runtime in
       do {
@@ -201,9 +202,9 @@ public final class JavaScriptCallback: Sendable {
     }
   }
 
-  /// Reports an error from a closure that can't throw it. The error goes to React Native's global
-  /// `ErrorUtils.reportError` on the JavaScript thread, as an uncaught JavaScript exception would.
-  /// Without `ErrorUtils`, as in a standalone runtime, the error is printed instead.
+  /// Reports an error from a closure that can't throw it. On the JavaScript thread, the error goes to
+  /// React Native's global `ErrorUtils.reportError`, as an uncaught JavaScript exception would.
+  /// Without `ErrorUtils`, it goes to `console.error`, and without a console, it is printed.
   public func reportError(_ error: any Error) {
     runOnJavaScriptThread { runtime in
       self.report(error, in: runtime)
@@ -243,19 +244,11 @@ public final class JavaScriptCallback: Sendable {
     return then.isObject() && then.isFunction()
   }
 
+  /// Reports the error as an uncaught JavaScript exception would be: through React Native's
+  /// `ErrorUtils.reportError`, which also logs it with `console.error`. Without `ErrorUtils`, logs it
+  /// with `console.error`, and without a console either, prints it.
   @JavaScriptActor
   private func report(_ error: any Error, in runtime: JavaScriptRuntime) {
-    // `isFunction()` needs the value to be an object, so each check tests that first.
-    let errorUtils = runtime.global().getProperty("ErrorUtils")
-    guard errorUtils.isObject() else {
-      print("Error in a JavaScript callback: \(error)")
-      return
-    }
-    let reportError = errorUtils.getObject().getProperty("reportError")
-    guard reportError.isObject(), reportError.isFunction() else {
-      print("Error in a JavaScript callback: \(error)")
-      return
-    }
     // A JavaScript exception reaches Swift as a `CppError` that keeps only the message, so it is
     // reported as a new `Error` with that message.
     let jsError =
@@ -264,10 +257,39 @@ public final class JavaScriptCallback: Sendable {
       } else {
         JavaScriptError.from(error, in: runtime)
       }
+    let global = runtime.global()
+    if Self.callGlobalMethod(global, object: "ErrorUtils", method: "reportError", argument: jsError.toValue()) {
+      return
+    }
+    if Self.callGlobalMethod(global, object: "console", method: "error", argument: jsError.toValue()) {
+      return
+    }
+    print("Error in a JavaScript callback: \(error)")
+  }
+
+  /// Calls `globalThis[object][method](argument)`. Returns `false` when the object or the method is
+  /// missing, or when the call throws.
+  @JavaScriptActor
+  private static func callGlobalMethod(
+    _ global: borrowing JavaScriptObject,
+    object objectName: String,
+    method methodName: String,
+    argument: JavaScriptValue
+  ) -> Bool {
+    // `isFunction()` needs the value to be an object, so each check tests that first.
+    let object = global.getProperty(objectName)
+    guard object.isObject() else {
+      return false
+    }
+    let method = object.getObject().getProperty(methodName)
+    guard method.isObject(), method.isFunction() else {
+      return false
+    }
     do {
-      try reportError.getFunction().call(this: errorUtils.getObject(), arguments: jsError.toValue())
+      try method.getFunction().call(this: object.getObject(), arguments: argument)
+      return true
     } catch {
-      print("Error in a JavaScript callback: \(error)")
+      return false
     }
   }
 

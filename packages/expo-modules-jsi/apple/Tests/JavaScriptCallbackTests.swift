@@ -89,7 +89,7 @@ struct JavaScriptCallbackTests {
     try callback.invokeBlocking { runtime in
       try [String.encode("hello", in: runtime)]
     }
-    #expect(try runtime.eval("globalThis.received").getString() == "hello")
+    #expect(try runtime.eval("globalThis.received").asString() == "hello")
   }
 
   @Test
@@ -108,7 +108,7 @@ struct JavaScriptCallbackTests {
     callback.invokeDetached { runtime in
       try [Int.encode(7, in: runtime)]
     }
-    #expect(try runtime.eval("globalThis.received").getInt() == 7)
+    #expect(try runtime.eval("globalThis.received").asInt() == 7)
   }
 
   @Test
@@ -116,7 +116,7 @@ struct JavaScriptCallbackTests {
     try installErrorUtils()
     let callback = try callback("() => { throw new Error('boom') }")
     callback.invokeDetached { _ in [] }
-    #expect(try runtime.eval("globalThis.reported").getString() == "boom")
+    #expect(try runtime.eval("globalThis.reported").asString() == "boom")
   }
 
   // MARK: - reportError
@@ -126,7 +126,25 @@ struct JavaScriptCallbackTests {
     try installErrorUtils()
     let callback = try callback("() => {}")
     callback.reportError(NativeError())
-    #expect(try runtime.eval("globalThis.reported").getString() == "native failure")
+    #expect(try runtime.eval("globalThis.reported").asString() == "native failure")
+  }
+
+  @Test
+  func `reportError falls back to console.error without ErrorUtils`() throws {
+    try runtime.eval("globalThis.console = { error(error) { globalThis.logged = error.message } }")
+    let callback = try callback("() => {}")
+    callback.reportError(NativeError())
+    #expect(try runtime.eval("globalThis.logged").asString() == "native failure")
+  }
+
+  @Test
+  func `reportError prefers ErrorUtils over console.error`() throws {
+    try installErrorUtils()
+    try runtime.eval("globalThis.console = { error(error) { globalThis.logged = error.message } }")
+    let callback = try callback("() => {}")
+    callback.reportError(NativeError())
+    #expect(try runtime.eval("globalThis.reported").asString() == "native failure")
+    #expect(try runtime.eval("typeof globalThis.logged").getString() == "undefined")
   }
 
   @Test
@@ -232,10 +250,13 @@ struct JavaScriptCallbackThreadingTests {
         DispatchQueue.global().async {
           continuation.resume(
             with: Result {
-              try callback.invokeBlocking { _ in [] } decodeResult: { result, runtime in
+              try callback.invokeBlocking { _ in
+                []
+              } decodeResult: { result, runtime in
                 try Int.decode(result, in: runtime)
               }
-            })
+            }
+          )
         }
       }
       #expect(result == 42)
@@ -251,7 +272,9 @@ struct JavaScriptCallbackThreadingTests {
     do {
       let callback = try await makeRecordingCallback(testRuntime, flag: flag)
 
-      let result = try await callback.invokeAsync { _ in [] } decodeResult: { result, runtime in
+      let result = try await callback.invokeAsync { _ in
+        []
+      } decodeResult: { result, runtime in
         try Int.decode(result, in: runtime)
       }
       #expect(result == 42)
@@ -364,7 +387,7 @@ struct JavaScriptCallbackGeneratedCodeTests {
       }
     }
     arg0(Point(x: 3))
-    #expect(try runtime.eval("globalThis.received").getInt() == 3)
+    #expect(try runtime.eval("globalThis.received").asInt() == 3)
   }
 
   @Test
@@ -395,7 +418,7 @@ struct JavaScriptCallbackGeneratedCodeTests {
       }
     }
     await arg0()
-    #expect(try runtime.eval("globalThis.reported").getString() == "async boom")
+    #expect(try runtime.eval("globalThis.reported").asString() == "async boom")
   }
 
   @Test
