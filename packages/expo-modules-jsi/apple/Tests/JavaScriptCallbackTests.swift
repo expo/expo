@@ -32,7 +32,7 @@ struct JavaScriptCallbackTests {
   private func callback(_ source: String) throws -> JavaScriptCallback {
     let value = try runtime.eval(source)
     return try value.withUnownedValue(in: runtime) { unownedValue in
-      try JavaScriptCallback(unownedValue, in: runtime)
+      try JavaScriptCallback.decode(unownedValue, in: runtime)
     }
   }
 
@@ -233,7 +233,7 @@ struct JavaScriptCallbackThreadingTests {
         return JavaScriptValue(runtime, 42)
       }
       return try function.asValue().withUnownedValue(in: runtime) { unownedValue in
-        try JavaScriptCallback(unownedValue, in: runtime)
+        try JavaScriptCallback.decode(unownedValue, in: runtime)
       }
     }
   }
@@ -303,7 +303,7 @@ struct JavaScriptCallbackThreadingTests {
     let callback = try await scheduler.runIsolated {
       let function = try runtime.eval("() => 1")
       return try function.withUnownedValue(in: runtime) { unownedValue in
-        try JavaScriptCallback(unownedValue, in: runtime)
+        try JavaScriptCallback.decode(unownedValue, in: runtime)
       }
     }
 
@@ -359,7 +359,7 @@ struct JavaScriptCallbackGeneratedCodeTests {
   private func callback(_ source: String) throws -> JavaScriptCallback {
     let value = try runtime.eval(source)
     return try value.withUnownedValue(in: runtime) { unownedValue in
-      try JavaScriptCallback(unownedValue, in: runtime)
+      try JavaScriptCallback.decode(unownedValue, in: runtime)
     }
   }
 

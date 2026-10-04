@@ -69,12 +69,32 @@ public final class JavaScriptCallback: Sendable {
 
   /// Wraps the function in `value`. Throws when the value isn't a function.
   @JavaScriptActor
-  public init(_ value: borrowing JavaScriptUnownedValue, in runtime: JavaScriptRuntime) throws {
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptCallback
+  {
     let function = value.copied(in: runtime)
     guard function.isFunction() else {
       throw JavaScriptValue.TypeError(type: JavaScriptFunction.self)
     }
-    // A callback is created while decoding a call's arguments, so this is the JavaScript thread.
+    return JavaScriptCallback(function, in: runtime)
+  }
+
+  /// Wraps the function in `value`, or returns `nil` when the value is `undefined` or `null`. Throws
+  /// for any other value that isn't a function.
+  @JavaScriptActor
+  public static func decodeIfPresent(
+    _ value: borrowing JavaScriptUnownedValue,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws -> JavaScriptCallback? {
+    if value.isUndefined() || value.isNull() {
+      return nil
+    }
+    return try decode(value, in: runtime)
+  }
+
+  @JavaScriptActor
+  private init(_ function: JavaScriptValue, in runtime: borrowing JavaScriptRuntime) {
+    // A callback is decoded from a call's arguments, so this is the JavaScript thread.
     var threadID: UInt64 = 0
     pthread_threadid_np(nil, &threadID)
 
@@ -86,18 +106,6 @@ public final class JavaScriptCallback: Sendable {
 
     longLivedState.function.reset(function)
     longLivedObjects.add(longLivedState)
-  }
-
-  /// Wraps the function in `value`, or returns `nil` when the value is `undefined` or `null`. Throws
-  /// for any other value that isn't a function.
-  @JavaScriptActor
-  public static func decodeIfPresent(_ value: borrowing JavaScriptUnownedValue, in runtime: JavaScriptRuntime) throws
-    -> JavaScriptCallback?
-  {
-    if value.isUndefined() || value.isNull() {
-      return nil
-    }
-    return try JavaScriptCallback(value, in: runtime)
   }
 
   deinit {
