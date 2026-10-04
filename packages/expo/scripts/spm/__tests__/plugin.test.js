@@ -42,6 +42,11 @@ jest.mock('../manifests', () => {
   const actual = jest.requireActual('../manifests');
   return { ...actual, emitPureSwiftSourcePackage: jest.fn(actual.emitPureSwiftSourcePackage) };
 });
+// The real direct emitter builds a compile-only xcframework with xcrun.
+jest.mock('../direct', () => ({
+  ...jest.requireActual('../direct'),
+  emitDirectPackage: jest.fn(),
+}));
 
 const {
   resolveExpoModules,
@@ -53,6 +58,7 @@ const { resolveAppTarget } = require('../app-target');
 const { findModuleRoot } = require('../classify');
 const { spmUpdateCommand } = require('../commands');
 const { UnsupportedModulesError } = require('../diagnostics');
+const { emitDirectPackage } = require('../direct');
 const { emitPureSwiftSourcePackage } = require('../manifests');
 const {
   artifactBaseDirs,
@@ -963,6 +969,54 @@ describe('the checked-in manifest branch', () => {
     expect(
       fs.existsSync(path.join(outDir, 'expo', 'expo-source', 'ExpoVendored', 'Package.swift'))
     ).toBe(false);
+  });
+});
+
+describe.each([
+  ['a checked-in manifest', true],
+  ['no checked-in manifest', false],
+])('a direct module with a precompiled artifact and %s', (_, hasManifest) => {
+  captureConsole();
+  let result;
+
+  beforeAll(() => {
+    const tmp = makeTempDir('expo-spm-direct-precompiled-');
+    const core = pureSwiftModule(path.join(tmp, 'expo-modules-core'), 'ExpoModulesCore', spec());
+    const haptics = path.join(tmp, 'expo-haptics');
+    const hapticsPodspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
+    if (hasManifest) {
+      fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
+    }
+    resolveExpoModules.mockReturnValue(
+      modulesOf([coreAt(core), ['expo-haptics', [['ExpoHaptics', hapticsPodspecDir]]]])
+    );
+    resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
+      ['ExpoModulesCore', 'ExpoHaptics'].includes(frameworkName)
+        ? { id: frameworkName.toLowerCase(), frameworkName }
+        : null
+    );
+    emitDirectPackage.mockReturnValue({
+      ok: {
+        packageDep: { name: 'ExpoHaptics', path: haptics },
+        productDeps: [{ name: 'ExpoHaptics', package: 'ExpoHaptics' }],
+        spmProductNames: [],
+        partlyProvidedPackages: [],
+      },
+    });
+    providerWrittenTo(path.join(tmp, 'out'));
+    result = runPlugin(tmp);
+  });
+
+  afterAll(() => {
+    emitDirectPackage.mockReset();
+    restoreModuleMocks();
+  });
+
+  it(`is ${hasManifest ? 'emitted from its manifest' : 'linked precompiled'}`, () => {
+    expect(emitDirectPackage).toHaveBeenCalledTimes(hasManifest ? 1 : 0);
+    expect(result.flavoredFrameworks.map((f) => f.frameworkName).sort()).toEqual(
+      hasManifest ? ['ExpoModulesCore'] : ['ExpoHaptics', 'ExpoModulesCore']
+    );
   });
 });
 
