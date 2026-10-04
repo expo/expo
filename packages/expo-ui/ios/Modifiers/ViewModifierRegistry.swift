@@ -1860,10 +1860,11 @@ internal enum ToolbarTitleDisplayModeType: String, Enumerable {
     case .inline:
       return .inline
     case .inlineLarge:
-      if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
-        return .inlineLarge
-      }
+#if os(tvOS)
       return nil
+#else
+      return .inlineLarge
+#endif
     case .large:
 #if os(iOS)
       return .large
