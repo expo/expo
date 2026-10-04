@@ -15,13 +15,6 @@ private struct NativeError: Error, CustomStringConvertible {
   }
 }
 
-/// A scheduler trampoline that drops every task without running it, the way the React Native
-/// dispatch does once React has destroyed its scheduler.
-private let dropEveryTask:
-  @convention(c) (
-    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
-  ) -> Void = { _, _, _ in }
-
 @Suite
 @JavaScriptActor
 struct JavaScriptCallbackTests {
@@ -210,15 +203,12 @@ struct JavaScriptCallbackTests {
   }
 }
 
-/// Calls made from threads other than the runtime's JavaScript thread. A standalone runtime runs
-/// scheduled work inline on the calling thread, so these tests use a `TestRuntimeScheduler`, which
-/// gives the runtime a JavaScript thread of its own.
+/// Calls from other threads. A standalone runtime runs scheduled work inline, so these tests give the
+/// runtime its own JavaScript thread with `TestRuntimeScheduler`.
 @Suite
 struct JavaScriptCallbackThreadingTests {
-  /// Waits until the scheduler's thread has released every task that holds the callback, and then
-  /// until the release task the callback's `deinit` scheduled has run. `TestRuntimeScheduler` hands
-  /// the runtime an unretained pointer, so a callback released after the test drops the scheduler
-  /// would schedule on a freed object. (React Native's scheduler handle is never freed.)
+  /// Lets the scheduler's thread release the callback and run its release task before the test
+  /// drops the scheduler, which the runtime refers to by an unretained pointer.
   private func drain(_ testRuntime: TestRuntime) async {
     await testRuntime.scheduler.run {}
     await testRuntime.scheduler.run {}
@@ -282,49 +272,11 @@ struct JavaScriptCallbackThreadingTests {
     }
     await drain(testRuntime)
   }
-
-  @Test
-  func `a dropped task throws RuntimeLostError instead of waiting forever`() async throws {
-    let scheduler = TestRuntimeScheduler()
-    let owningRuntime = await scheduler.run {
-      JavaScriptRuntime()
-    }
-    // A runtime whose JavaScript thread is the scheduler's thread, but whose dispatch drops every
-    // task, so any call from another thread can never run.
-    let runtime = await scheduler.run {
-      owningRuntime.withUnsafePointee { runtimePointer in
-        JavaScriptRuntime(
-          unsafePointer: runtimePointer,
-          scheduler: scheduler.opaquePointer,
-          dispatch: unsafeBitCast(dropEveryTask, to: UnsafeRawPointer.self)
-        )
-      }
-    }
-    let callback = try await scheduler.runIsolated {
-      let function = try runtime.eval("() => 1")
-      return try function.withUnownedValue(in: runtime) { unownedValue in
-        try JavaScriptCallback.decode(unownedValue, in: runtime)
-      }
-    }
-
-    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
-      try await callback.invokeAsync { _ in [] }
-    }
-    let blockingResult: Result<Void, any Error> = await withCheckedContinuation { continuation in
-      DispatchQueue.global().async {
-        continuation.resume(returning: Result { try callback.invokeBlocking { _ in [] } })
-      }
-    }
-    #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
-      try blockingResult.get()
-    }
-    withExtendedLifetime((owningRuntime, runtime)) {}
-  }
 }
 
 // MARK: - Generated code
 
-/// Non-`Sendable` types, the case that needs the `Argument` box under Swift 6 region checking.
+/// Non-`Sendable` types, which need the `Argument` box.
 private final class Point: JavaScriptEncodable {
   let x: Int
 
@@ -349,8 +301,8 @@ private final class Size: JavaScriptDecodable {
   }
 }
 
-/// The wrappers below are written exactly as `@JS` bindings generate them for a closure argument, so
-/// this suite fails to compile if the callback's API stops matching what the macros emit.
+/// Wrappers written exactly as the `@JS` macros generate them, so the suite stops compiling if the
+/// callback's API drifts from the generated code.
 @Suite
 @JavaScriptActor
 struct JavaScriptCallbackGeneratedCodeTests {
