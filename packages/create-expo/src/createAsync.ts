@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import type { SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -30,8 +32,10 @@ import {
   initializeAnalyticsIdentityAsync,
   track,
 } from './telemetry';
+import { env } from './utils/env';
 import { initGitRepoAsync } from './utils/git';
 import { withSectionLog } from './utils/log';
+import { resolveSetupAppleSpmScript } from './utils/swiftpm';
 
 export type Options = {
   install: boolean;
@@ -39,7 +43,33 @@ export type Options = {
   example?: string | true;
   yes: boolean;
   agentsMd: boolean;
+  /** Set up iOS with Swift Package Manager instead of CocoaPods (preview). */
+  swiftpm?: boolean;
 };
+
+type Command = [command: string, ...args: string[]];
+
+type SwiftPMSetupStep = {
+  title: string;
+  success: string;
+  formatNextStep: (projectRoot: string) => string;
+  /** Throws an error that tells the user how to proceed when the step cannot run in this project. */
+  resolveCommand: (projectRoot: string) => Command;
+};
+
+// The command the template Podfile passes to `use_native_modules!`. Without it, React Native
+// falls back to `@react-native-community/cli config`, which Expo templates do not install.
+const AUTOLINKING_CONFIG_COMMAND = JSON.stringify([
+  'node',
+  '--no-warnings',
+  '--eval',
+  "require('expo/bin/autolinking')",
+  'expo-modules-autolinking',
+  'react-native-config',
+  '--json',
+  '--platform',
+  'ios',
+]);
 
 const debug = require('debug')('expo:init:create') as typeof console.log;
 
@@ -58,7 +88,10 @@ async function resolveProjectRootArgAsync(
   }
 }
 
-export async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
+export async function setupDependenciesAsync(
+  projectRoot: string,
+  props: Pick<Options, 'install' | 'swiftpm'>
+) {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
 
@@ -73,11 +106,17 @@ export async function setupDependenciesAsync(projectRoot: string, props: Pick<Op
   // Install dependencies
   let podsInstalled: boolean = false;
   let nodeModulesInstalled: boolean = false;
-  const needsPodsInstalled = await fs.existsSync(path.join(projectRoot, 'ios'));
+  const hasIosDirectory = await fs.existsSync(path.join(projectRoot, 'ios'));
+  const needsPodsInstalled = hasIosDirectory && !props.swiftpm;
+  let pendingSwiftPMSteps = props.swiftpm ? getSwiftPMSetupSteps(hasIosDirectory) : [];
   if (shouldInstall) {
     nodeModulesInstalled = await installNodeDependenciesAsync(projectRoot, packageManager);
     if (needsPodsInstalled) {
       podsInstalled = await installCocoaPodsAsync(projectRoot);
+    }
+    // Both steps resolve from the project's node modules, and SwiftPM needs Xcode (macOS only).
+    if (nodeModulesInstalled && process.platform === 'darwin') {
+      pendingSwiftPMSteps = await runSwiftPMSetupAsync(projectRoot, pendingSwiftPMSteps);
     }
   }
   const cdPath = getChangeDirectoryPath(projectRoot);
@@ -87,6 +126,84 @@ export async function setupDependenciesAsync(projectRoot: string, props: Pick<Op
   if (!nodeModulesInstalled) {
     logNodeInstallWarning(cdPath, packageManager, needsPodsInstalled && !podsInstalled);
   }
+  if (props.swiftpm) {
+    logSwiftPMWarning(projectRoot, cdPath, pendingSwiftPMSteps);
+  }
+}
+
+function getSwiftPMSetupSteps(hasIosDirectory: boolean): SwiftPMSetupStep[] {
+  const setupArgs = [
+    'add',
+    '--deintegrate',
+    '--yes',
+    '--config-command',
+    AUTOLINKING_CONFIG_COMMAND,
+  ];
+  const addSwiftPM: SwiftPMSetupStep = {
+    title: 'Setting up Swift Package Manager for iOS',
+    success: 'Set up Swift Package Manager for iOS.',
+    formatNextStep(projectRoot) {
+      const script = resolveSetupAppleSpmScript(projectRoot);
+      const displayedScript = script
+        ? path.relative(projectRoot, script).split(path.sep).join('/')
+        : 'node_modules/react-native/scripts/setup-apple-spm.js';
+      return formatShellCommand(['node', displayedScript, ...setupArgs]);
+    },
+    resolveCommand(projectRoot) {
+      const script = resolveSetupAppleSpmScript(projectRoot);
+      if (!script) {
+        throw new Error(
+          `Could not set up Swift Package Manager because this project's React Native version does not include react-native/scripts/setup-apple-spm.js. Swift Package Manager requires React Native 0.88 or later. Upgrade react-native and run the remaining steps below, or create the project without --swiftpm to use CocoaPods.`
+        );
+      }
+      return [process.execPath, script, ...setupArgs];
+    },
+  };
+  const prebuild: Command = ['npx', 'expo', 'prebuild', '--platform', 'ios', '--no-install'];
+  const generateIosProject: SwiftPMSetupStep = {
+    title: 'Generating the native iOS project',
+    success: 'Generated the native iOS project.',
+    formatNextStep: () => formatShellCommand(prebuild),
+    resolveCommand: () => prebuild,
+  };
+  return hasIosDirectory ? [addSwiftPM] : [generateIosProject, addSwiftPM];
+}
+
+async function runSwiftPMSetupAsync(
+  projectRoot: string,
+  steps: SwiftPMSetupStep[]
+): Promise<SwiftPMSetupStep[]> {
+  for (const [index, step] of steps.entries()) {
+    try {
+      const [command, ...args] = step.resolveCommand(projectRoot);
+      await withSectionLog(
+        async () => {
+          await spawnAsync(command, args, {
+            cwd: projectRoot,
+            stdio: env.EXPO_DEBUG ? 'inherit' : 'pipe',
+          });
+        },
+        {
+          pending: chalk.bold(`${step.title}.`),
+          success: step.success,
+          error: () =>
+            `${step.title} failed. Continuing to create the app, you can run the remaining steps afterwards.`,
+        }
+      );
+    } catch (error) {
+      debug(`Error in step "${step.title}": %O`, error);
+      const { stderr } = error as Partial<SpawnResult>;
+      Log.error(stderr || chalk.red((error as Error).message));
+      return steps.slice(index);
+    }
+  }
+  return [];
+}
+
+function formatShellCommand(argv: string[]): string {
+  return argv
+    .map((arg) => (/^[\w@%+=:,./-]+$/.test(arg) ? arg : `'${arg.replace(/'/g, `'\\''`)}'`))
+    .join(' ');
 }
 
 export async function createAsync(inputPath: string, options: Options): Promise<void> {
@@ -325,6 +442,24 @@ export function logNodeInstallWarning(
     console.log(`  npx pod-install`);
   }
   console.log();
+}
+
+function logSwiftPMWarning(
+  projectRoot: string,
+  cdPath: string,
+  pendingSteps: SwiftPMSetupStep[]
+): void {
+  console.log(
+    `\n⚠️  This project uses Swift Package Manager for iOS instead of CocoaPods. This is a preview. Do not run \`pod install\` in this project.\n`
+  );
+  if (pendingSteps.length) {
+    console.log(`To finish setting up iOS, run:\n`);
+    console.log(`  cd ${cdPath || '.'}${path.sep}`);
+    for (const step of pendingSteps) {
+      console.log(`  ${step.formatNextStep(projectRoot)}`);
+    }
+    console.log();
+  }
 }
 
 function getDeprecatedExampleErrorMessage(example: string, metadata: ExamplesMetadata) {

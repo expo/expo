@@ -25,6 +25,7 @@ async function run() {
     '--yes': Boolean,
     '--no-install': Boolean,
     '--no-agents-md': Boolean,
+    '--swiftpm': Boolean,
     '--help': Boolean,
     '--version': Boolean,
     // Aliases
@@ -50,6 +51,7 @@ async function run() {
         `-y, --yes             Use the default options for creating a project`,
         `    --no-install      Skip installing npm packages or CocoaPods`,
         `    --no-agents-md    Skip generating AGENTS.md and .claude/settings.json`,
+        `    --swiftpm         iOS: use Swift Package Manager instead of CocoaPods (preview)`,
         chalk`-t, --template {gray [pkg]}  NPM template to use: default, blank, blank-typescript, tabs, bare-minimum. Default: default`,
         chalk`-e, --example {gray [name]}  Example name from {underline https://github.com/expo/examples}.`,
         `-v, --version         Version number`,
@@ -96,6 +98,7 @@ async function run() {
       example: parsed.args['--example'],
       install: !args['--no-install'],
       agentsMd: !args['--no-agents-md'],
+      swiftpm: !!args['--swiftpm'],
     });
 
     // Track successful event.
