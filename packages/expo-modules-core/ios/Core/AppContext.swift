@@ -59,9 +59,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   private var hostWrapper: ExpoHostWrapper?
 
-  /**
-   Observes the surface presenter of the host to know when the views of this app context are created.
-   */
+  /// Observes the surface presenter of the host to know when the views of this app context are created.
   private var surfacePresenterObserver: SurfacePresenterObserver?
 
   /**
@@ -446,32 +444,24 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   // MARK: - Mounting views
 
-  /**
-   App contexts whose hosts are mounting views right now, the innermost one last.
-   */
+  /// App contexts whose hosts are mounting views right now, the innermost one last.
   @MainActor
   private static var mountingAppContexts = [AppContext]()
 
-  /**
-   The app context that registered native views most recently. Views are created for this context
-   when no host is mounting, for example when the host isn't wrapped by `ExpoHostWrapper`.
-   */
+  /// The app context that registered native views most recently. Views are created for this context
+  /// when no host is mounting, for example when the host isn't wrapped by `ExpoHostWrapper`.
   @MainActor
   internal static weak var viewsRegisteringAppContext: AppContext?
 
-  /**
-   The app context that the views being created belong to. Component view classes are shared by all app contexts,
-   so this is how the views get their app context.
-   */
+  /// The app context that the views being created belong to. Component view classes are shared by all app contexts,
+  /// so this is how the views get their app context.
   @MainActor
   internal static var mountingAppContext: AppContext? {
     return mountingAppContexts.last ?? viewsRegisteringAppContext
   }
 
-  /**
-   Starts observing the surface presenter of the host, so the views created while the host is mounting
-   get this app context.
-   */
+  /// Starts observing the surface presenter of the host, so the views created while the host is mounting
+  /// get this app context.
   private func observeMounting(with hostWrapper: ExpoHostWrapper) {
     guard let surfacePresenter = hostWrapper.surfacePresenter() else {
       log.warn("The host has no surface presenter, so its views are created for the app context that registered views last")
@@ -482,17 +472,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     surfacePresenterObserver = observer
   }
 
-  /**
-   Called on the main thread right before the host of this app context mounts views.
-   */
+  /// Called on the main thread right before the host of this app context mounts views.
   @MainActor
   internal func hostWillMountComponents() {
     AppContext.mountingAppContexts.append(self)
   }
 
-  /**
-   Called on the main thread right after the host of this app context mounted views.
-   */
+  /// Called on the main thread right after the host of this app context mounted views.
   @MainActor
   internal func hostDidMountComponents() {
     if let index = AppContext.mountingAppContexts.lastIndex(where: { $0 === self }) {

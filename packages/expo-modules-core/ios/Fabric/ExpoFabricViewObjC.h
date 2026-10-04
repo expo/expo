@@ -67,10 +67,8 @@
  */
 + (void)registerComponentViewClass:(nonnull Class)viewClass;
 
-/**
- Creates the view for the component that this class is registered for. `+new` returns its result,
- or falls back to the default behavior when it returns `nil`. Overridden by `ExpoFabricView`.
- */
+/// Creates the view for the component that this class is registered for. `+new` returns its result,
+/// or falls back to the default behavior when it returns `nil`. Overridden by `ExpoFabricView`.
 + (nullable id)createComponentView;
 
 @end

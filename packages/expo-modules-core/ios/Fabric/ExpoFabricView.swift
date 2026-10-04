@@ -147,9 +147,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     return false
   }
 
-  /**
-   Prefix of the component names. It tells apart the components backed by Expo modules.
-   */
+  /// Prefix of the component names. It tells apart the components backed by Expo modules.
   internal static let componentNamePrefix = "ViewManagerAdapter_"
 
   /**
@@ -158,16 +156,12 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   @MainActor
   private static var viewClasses = [String: AnyClass]()
 
-  /**
-   Names of the module and the view that each class in `viewClasses` creates.
-   */
+  /// Names of the module and the view that each class in `viewClasses` creates.
   @MainActor
   private static var componentsByViewClass = [ObjectIdentifier: (moduleName: String, viewName: String)]()
 
-  /**
-   Returns the name under which the view of the given module is registered in React Native.
-   It must stay in sync with `requireNativeComponent` in `NativeViewManagerAdapter.native.tsx`.
-   */
+  /// Returns the name under which the view of the given module is registered in React Native.
+  /// It must stay in sync with `requireNativeComponent` in `NativeViewManagerAdapter.native.tsx`.
   internal static func componentName(moduleName: String, viewName: String) -> String {
     if viewName == DEFAULT_MODULE_VIEW {
       return "\(componentNamePrefix)\(moduleName)"
@@ -175,10 +169,8 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     return "\(componentNamePrefix)\(moduleName)_\(viewName)"
   }
 
-  /**
-   Registers the view of the given module in `RCTComponentViewFactory`. Each component is registered once per process,
-   and the app context of each view is resolved when React Native creates it (see `createComponentView`).
-   */
+  /// Registers the view of the given module in `RCTComponentViewFactory`. Each component is registered once per process,
+  /// and the app context of each view is resolved when React Native creates it (see `createComponentView`).
   @MainActor
   internal static func registerComponent(moduleName: String, viewName: String) {
     if viewClasses[componentName(moduleName: moduleName, viewName: viewName)] != nil {
@@ -187,11 +179,9 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     ExpoFabricViewObjC.registerComponentViewClass(viewClass(moduleName: moduleName, viewName: viewName))
   }
 
-  /**
-   Returns a subclass of `ExpoFabricView` named after the component, creating it the first time it's requested.
-   `RCTComponentViewFactory` maps each component to a class and creates views with `+[viewClass new]`, so every component
-   needs a class of its own. The class doesn't add or replace any methods, it only identifies the component.
-   */
+  /// Returns a subclass of `ExpoFabricView` named after the component, creating it the first time it's requested.
+  /// `RCTComponentViewFactory` maps each component to a class and creates views with `+[viewClass new]`, so every component
+  /// needs a class of its own. The class doesn't add or replace any methods, it only identifies the component.
   @MainActor
   internal static func viewClass(moduleName: String, viewName: String) -> AnyClass {
     let className = componentName(moduleName: moduleName, viewName: viewName)
@@ -209,11 +199,9 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     return viewClass
   }
 
-  /**
-   Creates the view for the component that this class is registered for. It's called from `+new`, which is how
-   `RCTComponentViewFactory` creates component views. The view is created by the module of the app context
-   whose host is mounting. Returns `nil` for classes that aren't registered for any component.
-   */
+  /// Creates the view for the component that this class is registered for. It's called from `+new`, which is how
+  /// `RCTComponentViewFactory` creates component views. The view is created by the module of the app context
+  /// whose host is mounting. Returns `nil` for classes that aren't registered for any component.
   public override class func createComponentView() -> Any? {
     let view: AppleView? = MainActor.assumeIsolated {
       guard let (moduleName, viewName) = componentsByViewClass[ObjectIdentifier(self)] else {
