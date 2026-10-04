@@ -30,7 +30,9 @@ internal func exportLocation(_ location: CLLocation) -> [String: Any] {
       "heading": location.course,
       "speed": location.speed
     ],
-    "timestamp": location.timestamp.timeIntervalSince1970 * 1000
+    "timestamp": location.timestamp.timeIntervalSince1970 * 1000,
+    // `sourceInformation` is nil for ordinary fixes; it is set for simulated or accessory-produced ones.
+    "mocked": location.sourceInformation?.isSimulatedBySoftware ?? false
   ]
 }
 
