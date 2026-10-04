@@ -184,10 +184,10 @@ function emitDirectPackage({ moduleRoot, packageName, outDir, compileInterfacesD
   const directDir = path.join(outDir, 'direct');
   fs.mkdirSync(directDir, { recursive: true });
   emitCoreHeadersPackage(directDir, compileInterfacesDir);
-  // BUILD_DIR is set only when sync runs as the scheme pre-action, which precedes every build.
-  if (process.env.BUILD_DIR) {
-    fs.mkdirSync(process.env.BUILD_DIR, { recursive: true });
-    relativeSymlink(macroTool, path.join(process.env.BUILD_DIR, 'ExpoModulesMacros'));
+  const macroLink = macroPluginLink();
+  if (macroLink) {
+    fs.mkdirSync(path.dirname(macroLink), { recursive: true });
+    relativeSymlink(macroTool, macroLink);
   }
   const link = path.join(directDir, packageName);
   relativeSymlink(moduleRoot, link);
@@ -204,4 +204,33 @@ function emitDirectPackage({ moduleRoot, packageName, outDir, compileInterfacesD
   };
 }
 
-module.exports = { DIRECT_MODULES, emitDirectPackage };
+function macroPluginLink() {
+  return process.env.BUILD_DIR ? path.join(process.env.BUILD_DIR, 'ExpoModulesMacros') : null;
+}
+
+// Far enough ahead that every later sync stamp is older.
+const PENDING_MARKER_MTIME = new Date('2100-01-01T00:00:00Z');
+
+/**
+ * Only a sync inside a build knows BUILD_DIR, so only it can create the macro plugin link.
+ * RN re-syncs in the build when a watched path has vanished or is newer than its stamp,
+ * and drops watched paths that do not exist.
+ * - In a build: watch the link, since Clean Build Folder deletes it but keeps the stamp.
+ * - Outside a build: the link cannot be made, yet the stamp is fresh. Watch a marker
+ *   dated in the future, so the next build always re-syncs; that sync removes it.
+ */
+function prepareDirectWatchPaths(emittedPackages, outDir) {
+  const marker = path.join(outDir, 'direct', '.macro-plugin-link-pending');
+  const macroLink = macroPluginLink();
+  const hasDirect = emittedPackages.some((name) => DIRECT_MODULES.has(name));
+  if (!hasDirect || macroLink) {
+    fs.rmSync(marker, { force: true });
+    return hasDirect ? [macroLink] : [];
+  }
+  fs.mkdirSync(path.dirname(marker), { recursive: true });
+  fs.writeFileSync(marker, '');
+  fs.utimesSync(marker, PENDING_MARKER_MTIME, PENDING_MARKER_MTIME);
+  return [marker];
+}
+
+module.exports = { DIRECT_MODULES, emitDirectPackage, prepareDirectWatchPaths };
