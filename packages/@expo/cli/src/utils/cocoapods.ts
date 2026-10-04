@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
+import { getSwiftPMMarkerPath } from '../prebuild/setupSwiftPM';
 import { hashForDependencyMap } from '../prebuild/updatePackageJson';
 import { ensureDirectoryAsync } from './dir';
 import { env } from './env';
@@ -147,6 +148,13 @@ function isPodFolderCreated(projectRoot: string): boolean {
 // TODO: Same process but with app.config changes + default plugins.
 // This will ensure the user is prompted for extra setup.
 export async function maybePromptToSyncPodsAsync(projectRoot: string) {
+  const swiftPMMarker = getSwiftPMMarkerPath(projectRoot);
+  if (swiftPMMarker) {
+    Log.log(
+      chalk`Skipping CocoaPods because this project uses Swift Package Manager for iOS ({bold ${path.relative(projectRoot, swiftPMMarker)}} exists).`
+    );
+    return;
+  }
   if (!doesProjectUseCocoaPods(projectRoot)) {
     // Project does not use CocoaPods
     return;
