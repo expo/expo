@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`checks the number of arguments passed to bridged methods 1`] = `"Native method ExpoTest.testAsync expects 1 argument but received 0"`;
 

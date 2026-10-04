@@ -70,7 +70,9 @@ class ApplicationModule : Module() {
 
       referrerClient.startConnection(object : InstallReferrerStateListener {
         override fun onInstallReferrerSetupFinished(responseCode: Int) {
-          if (isSettled) return
+          if (isSettled) {
+            return
+          }
 
           when (responseCode) {
             InstallReferrerClient.InstallReferrerResponse.OK -> {
@@ -106,7 +108,9 @@ class ApplicationModule : Module() {
         }
 
         override fun onInstallReferrerServiceDisconnected() {
-          if (isSettled) return
+          if (isSettled) {
+            return
+          }
           isSettled = true
           promise.reject("ERR_APPLICATION_INSTALL_REFERRER_SERVICE_DISCONNECTED", "Connection to install referrer service was lost.", null)
         }

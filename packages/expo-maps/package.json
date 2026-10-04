@@ -1,6 +1,6 @@
 {
   "name": "expo-maps",
-  "version": "58.0.2",
+  "version": "58.0.5",
   "description": "Provides a Map component that uses Google Maps on Android and Apple Maps on iOS.",
   "keywords": [
     "UI components",
@@ -28,10 +28,12 @@
     },
     "./app.plugin": "./app.plugin.js",
     "./app.plugin.js": "./app.plugin.js",
+    "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json"
   },
   "scripts": {
     "precompile-ios": "et prebuild-package-for-publish",
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -44,7 +46,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",

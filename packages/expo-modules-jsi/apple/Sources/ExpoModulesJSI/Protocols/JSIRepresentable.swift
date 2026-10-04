@@ -12,10 +12,10 @@ internal protocol JSIRepresentable: JavaScriptRepresentable, Sendable, ~Copyable
 
 extension JSIRepresentable {
   public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
-    guard let jsiRuntime = value.runtime else {
+    guard let jsiRuntime = value.jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return Self.fromJSIValue(value.pointee, in: jsiRuntime.pointee)
+    return Self.fromJSIValue(value.pointee, in: jsiRuntime)
   }
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
@@ -93,14 +93,16 @@ extension String: JSIRepresentable {
     // allocation, copy and free per string. `withUTF8` is mutating (it makes a bridged string
     // contiguous first), hence the local copy; native strings are already contiguous and pay nothing.
     // The value is moved out through a local because `withUTF8` needs a `Copyable` closure result.
+    // The C++ helper moves the engine's `jsi::String` into the value, so this costs one engine handle;
+    // `jsi::Value(runtime, string)` would clone it and then release the original.
     var string = self
     var value = facebook.jsi.Value.undefined()
     string.withUTF8 { utf8 in
       guard let base = utf8.baseAddress else {
-        value = facebook.jsi.Value(runtime, facebook.jsi.String.createFromAscii(runtime, "", 0))
+        value = expo.createStringValueFromAscii(runtime, "", 0)
         return
       }
-      value = facebook.jsi.Value(runtime, facebook.jsi.String.createFromUtf8(runtime, base, utf8.count))
+      value = expo.createStringValueFromUtf8(runtime, base, utf8.count)
     }
     return value
   }

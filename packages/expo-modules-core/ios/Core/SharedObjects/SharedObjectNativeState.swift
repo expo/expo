@@ -13,6 +13,10 @@ import ExpoModulesJSI
 internal final class SharedObjectNativeState: JavaScriptNativeState {
   internal let native: SharedObject
 
+  /// Whether the native object was released. A JS object can keep its native state after the release
+  /// (for example a frozen one, whose native state can't be reset), so lookups check this flag.
+  internal private(set) var isReleased = false
+
   /// The JS object paired with the native object in each runtime, keyed by runtime identity and held
   /// weakly. One native object can be exposed to several runtimes (e.g. the main and UI runtimes, or
   /// worklet contexts), each with its own JS counterpart.
@@ -21,6 +25,10 @@ internal final class SharedObjectNativeState: JavaScriptNativeState {
   internal init(native: SharedObject, factory: @escaping JavaScriptNativeState.Factory) {
     self.native = native
     super.init(factory: factory)
+  }
+
+  internal func markReleased() {
+    isReleased = true
   }
 
   /// Records `jsObject` as the native object's JS counterpart in `runtime`. The caller is responsible

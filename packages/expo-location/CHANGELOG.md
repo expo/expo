@@ -1,16 +1,31 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/image-utils@0.12.3
 
-### 🐛 Bug fixes
+## 58.0.10
 
-- [Android] Reject `geocodeAsync` and `reverseGeocodeAsync` when the geocoder fails on Android 13+ instead of leaving the promise pending forever. ([#50657](https://github.com/expo/expo/pull/50657) by [@ramen2020](https://github.com/ramen2020))
+### Patch Changes
 
-### 💡 Others
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Add the core functionalities for the **next** version: permission getters and requesters, position getter, and `enableLocationServices` prompt. Introduce `LocationProvider` interface to allow for multiple implementations: for now `gms` and `android.location`. ([#49988](https://github.com/expo/expo/pull/49988) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Add the position watchers to the **next** implementation. Update the `LocationProvider` interface to also support watchers and implement it in both GMS and Android providers. ([#49992](https://github.com/expo/expo/pull/49992) by [@HubertBer](https://github.com/HubertBer))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/image-utils@0.12.2
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.7 — 2026-09-25
 
@@ -606,13 +621,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Allow location to work on Android with only coarse location permission. All apps do not require fine/precise location permission, but in past Expo was enforcing fine/precise even if you only needed coarse level location. ([#15760](https://github.com/expo/expo/pull/15760) by [@Noitidart](https://github.com/Noitidart))
-
-## Unpublished
-
-### 🛠 Breaking changes
-
-- Add an option to whether kill or keep the foreground service when app is killed on Android. ([#15633](https://github.com/expo/expo/pull/15633) by [@islamouzou](https://github.com/islamouzou))
-- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 14.0.2 — 2022-02-01
 

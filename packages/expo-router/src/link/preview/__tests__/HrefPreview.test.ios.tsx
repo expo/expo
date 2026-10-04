@@ -52,7 +52,7 @@ it.each([
   { visible: 'foo', hidden: 'bar' },
   { visible: 'bar', hidden: 'foo' },
 ])('renders preview for $visible href', async ({ visible, hidden }) => {
-  renderRouter({
+  await renderRouter({
     index: () => (
       <View testID="index">
         <HrefPreview href={`/${visible}`} />
@@ -70,7 +70,7 @@ it.each([
   { visible: 'foo', hidden: 'foo/bar' },
   { visible: 'foo/bar', hidden: 'foo' },
 ])('renders preview for $visible in nested stack href', async ({ visible, hidden }) => {
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => (
       <View testID="index">
@@ -104,7 +104,7 @@ it.each([
         </View>
       );
     };
-    renderRouter({
+    await renderRouter({
       index: () => (
         <View testID="index">
           <HrefPreview href={`/${paramA}/${paramB}`} />
@@ -121,8 +121,8 @@ it.each([
   }
 );
 
-it('renders correct preview for relative path', () => {
-  renderRouter(
+it('renders correct preview for relative path', async () => {
+  await renderRouter(
     {
       index: () => <View testID="index" />,
       'inner/_layout': () => <Stack />,
@@ -151,7 +151,7 @@ it('usePathname() returns the correct path', async () => {
       </View>
     );
   };
-  renderRouter({
+  await renderRouter({
     index: () => (
       <View testID="index">
         <HrefPreview href="/foo" />
@@ -173,7 +173,7 @@ it('useSegments() returns the correct path', async () => {
       </View>
     );
   };
-  renderRouter({
+  await renderRouter({
     index: () => (
       <View testID="index">
         <HrefPreview href="/foo" />
@@ -205,7 +205,7 @@ describe('useNavigation in preview', () => {
       }, []);
       return <View testID="nav-setter">{children}</View>;
     };
-    renderRouter({
+    await renderRouter({
       index: () => (
         <NavigationSetter>
           <HrefPreview href="/preview" />
@@ -228,10 +228,10 @@ describe('useNavigation in preview', () => {
       }, []);
       return <View testID="nav-setter">{children}</View>;
     };
-    renderRouter({
+    await renderRouter({
       index: () => (
         <View testID="index">
-          <HrefPreview href="/preview" />,
+          <HrefPreview href="/preview" />
         </View>
       ),
       preview: () => <NavigationSetter />,
@@ -259,7 +259,7 @@ describe('useRouter in preview', () => {
   });
 
   it('Redirect should redirect in host view', async () => {
-    renderRouter({
+    await renderRouter({
       index: () => (
         <View testID="index">
           <Redirect href="/foo" />
@@ -276,7 +276,7 @@ describe('useRouter in preview', () => {
   });
 
   it('Redirect should not redirect in preview', async () => {
-    renderRouter({
+    await renderRouter({
       index: () => (
         <View testID="index">
           <HrefPreview href="/preview" />
@@ -298,7 +298,7 @@ describe('useRouter in preview', () => {
       }, [router]);
       return <View testID="component-with-push" />;
     };
-    renderRouter({
+    await renderRouter({
       index: () => (
         <View testID="index">
           <HrefPreview href="/preview" />
@@ -318,7 +318,7 @@ describe('useRouter in preview', () => {
 });
 
 it('Renders not found for not existing href', async () => {
-  renderRouter({
+  await renderRouter({
     index: () => (
       <View testID="index">
         <HrefPreview href="/preview" />
@@ -342,9 +342,9 @@ describe('Setting Stack.Screen options in preview', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('can use Stack.Screen inside screen presented in HrefPreview', () => {
+  it('can use Stack.Screen inside screen presented in HrefPreview', async () => {
     const headerTitle = jest.fn(() => null);
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack screenOptions={{ headerTitle }} />,
       index: () => (
         <View testID="index">
@@ -368,13 +368,13 @@ describe('Setting Stack.Screen options in preview', () => {
 });
 
 describe('Stack Composition API', () => {
-  it('does not throw when useCompositionOption is directly called inside HrefPreview', () => {
+  it('does not throw when useCompositionOption is directly called inside HrefPreview', async () => {
     function PreviewScreen() {
       useCompositionOption({ title: 'Direct Hook Title' });
       return <View testID="preview" />;
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => (
         <View testID="index">
@@ -388,13 +388,13 @@ describe('Stack Composition API', () => {
     expect(screen.getByTestId('preview')).toBeVisible();
   });
 
-  it('does not set options when useCompositionOption is directly called inside HrefPreview', () => {
+  it('does not set options when useCompositionOption is directly called inside HrefPreview', async () => {
     function PreviewScreen() {
       useCompositionOption({ title: 'Direct Hook Title' });
       return <View testID="preview" />;
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => (
         <View testID="index">
@@ -447,8 +447,8 @@ describe('Stack Composition API', () => {
 
   it.each(cases)(
     'does not throw when $name is used inside HrefPreview',
-    ({ component: CompositionComponent }) => {
-      renderRouter({
+    async ({ component: CompositionComponent }) => {
+      await renderRouter({
         _layout: () => <Stack />,
         index: () => (
           <View testID="index">
@@ -469,8 +469,8 @@ describe('Stack Composition API', () => {
 
   it.each(cases)(
     'does not set options when $name is used inside HrefPreview',
-    ({ component: CompositionComponent }) => {
-      renderRouter({
+    async ({ component: CompositionComponent }) => {
+      await renderRouter({
         _layout: () => <Stack />,
         index: () => (
           <View testID="index">
@@ -503,13 +503,13 @@ describe('usePreventZoomTransitionDismissal in preview', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('does not throw when called inside HrefPreview', () => {
+  it('does not throw when called inside HrefPreview', async () => {
     function PreviewScreen() {
       usePreventZoomTransitionDismissal();
       return <View testID="preview" />;
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => (
         <View testID="index">
@@ -524,7 +524,7 @@ describe('usePreventZoomTransitionDismissal in preview', () => {
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it('does not throw with dismissalBoundsRect option', () => {
+  it('does not throw with dismissalBoundsRect option', async () => {
     function PreviewScreen() {
       usePreventZoomTransitionDismissal({
         unstable_dismissalBoundsRect: { minX: 0, maxX: 100, minY: 0, maxY: 200 },
@@ -532,7 +532,7 @@ describe('usePreventZoomTransitionDismissal in preview', () => {
       return <View testID="preview" />;
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => (
         <View testID="index">
@@ -549,7 +549,7 @@ describe('usePreventZoomTransitionDismissal in preview', () => {
 });
 
 describe('ZoomTransitionEnabler in preview', () => {
-  it('does not render LinkZoomTransitionEnabler', () => {
+  it('does not render LinkZoomTransitionEnabler', async () => {
     const routeWithZoomParams = {
       key: 'preview-key',
       name: 'preview',
@@ -567,7 +567,7 @@ describe('ZoomTransitionEnabler in preview', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => (
         <View testID="index">
@@ -582,7 +582,7 @@ describe('ZoomTransitionEnabler in preview', () => {
     expect(MockedLinkZoomTransitionEnabler).not.toHaveBeenCalled();
   });
 
-  it('does not call addEnabler or setDismissalBoundsRect', () => {
+  it('does not call addEnabler or setDismissalBoundsRect', async () => {
     const addEnabler = jest.fn();
     const removeEnabler = jest.fn();
     const setDismissalBoundsRect = jest.fn();
@@ -613,7 +613,7 @@ describe('ZoomTransitionEnabler in preview', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: () => (
         <View testID="index">

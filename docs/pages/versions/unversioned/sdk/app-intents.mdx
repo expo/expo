@@ -170,6 +170,41 @@ struct NoteQuery: EntityStringQuery {
 
 The kind string must match the value passed to `setEntityCatalogAsync()`. Each `AppIntentEntityRecord` contains an `id` and a display `title`. It can also contain a `subtitle` and `synonyms`. Convert the record into your concrete `AppEntity` in an initializer such as `init(record:)`. The device stores catalogs, so keep them compact and publish only the values Siri and Shortcuts need.
 
+### Donate an intent
+
+A donation tells the system that the user performed an intent's action inside your app. The system learns from donations and can suggest the action later on the Lock Screen, in Siri Suggestions, and in Spotlight. Only Swift can create an intent, so make the intent conform to `DonatableAppIntent` and build it from the parameters that JavaScript passes. Declare those parameters as a `DonationParams` record with `@Field` properties:
+
+```swift
+extension SaveNoteIntent: DonatableAppIntent {
+  struct DonationParams: Record {
+    @Field(.required) var text: String = ""
+  }
+
+  init(donationParams: DonationParams) {
+    self.init()
+    self.text = donationParams.text
+  }
+}
+```
+
+Register the intent in the `OnCreate` of your `AppIntentsSetup` module. JavaScript donates by the registered name. Nothing requires it to match the name that the intent passes to `dispatch()`, but reusing that name gives each intent one name in JavaScript:
+
+```swift
+AppIntentDonationRegistry.shared.register("saveNote", as: SaveNoteIntent.self)
+```
+
+Then call `donateIntentAsync()` after the user saves a note in your app. Call `deleteDonationsAsync()` when donations no longer apply, for example after the user signs out:
+
+```ts
+await AppIntents.donateIntentAsync('saveNote', { text: 'Buy milk' });
+
+await AppIntents.deleteDonationsAsync({ intent: 'saveNote' });
+```
+
+The donation is rejected when a required field of `DonationParams` is missing or a field has the wrong type. An intent without parameters only needs to conform to `DonatableAppIntent`.
+
+`donateIntentAsync()` also returns an ID for the donation. Pass it to `deleteDonationsAsync({ ids })` to delete only that donation.
+
 ### Add shortcut phrases when needed
 
 Use an `AppShortcutsProvider` when you want compiled launch phrases such as "Save a note in MyApp".

@@ -46,11 +46,25 @@ describe('rewriteDocsLinksToMarkdown', () => {
 
     expect(rewriteDocsLinksToMarkdown(content)).toBe(
       [
-        '[Create a project](/get-started/create-a-project.md)',
+        '[Create a project](https://docs.expo.dev/get-started/create-a-project.md)',
         '[Files](https://docs.expo.dev/versions/latest/sdk/filesystem.md#usage)',
-        '[Titled](/guides/overview.md "Guides overview")',
-        '[llms](/llms.txt)',
+        '[Titled](https://docs.expo.dev/guides/overview.md "Guides overview")',
+        '[llms](https://docs.expo.dev/llms.txt)',
         '[External](https://expo.dev)',
+      ].join('\n')
+    );
+  });
+
+  it('rewrites links whose text contains brackets', () => {
+    const content = [
+      '[SQLiteBindValue[]](/versions/latest/sdk/sqlite#sqlitebindvalue)',
+      '[`Edge[]`](/versions/latest/sdk/safe-area-context#edge)',
+    ].join('\n');
+
+    expect(rewriteDocsLinksToMarkdown(content)).toBe(
+      [
+        '[SQLiteBindValue[]](https://docs.expo.dev/versions/latest/sdk/sqlite.md#sqlitebindvalue)',
+        '[`Edge[]`](https://docs.expo.dev/versions/latest/sdk/safe-area-context.md#edge)',
       ].join('\n')
     );
   });
@@ -65,7 +79,7 @@ describe('rewriteDocsLinksToMarkdown', () => {
 
     expect(rewriteDocsLinksToMarkdown(content)).toBe(
       [
-        '[Outside](/get-started/create-a-project.md)',
+        '[Outside](https://docs.expo.dev/get-started/create-a-project.md)',
         '```md',
         '[Inside](/get-started/create-a-project/)',
         '```',
@@ -94,7 +108,7 @@ describe('rewriteDocsLinksToMarkdown', () => {
         '~~~md',
         '[Tilde](/get-started/create-a-project/)',
         '~~~',
-        '[Outside](/get-started/create-a-project.md)',
+        '[Outside](https://docs.expo.dev/get-started/create-a-project.md)',
       ].join('\n')
     );
   });

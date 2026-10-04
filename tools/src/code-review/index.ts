@@ -1,10 +1,14 @@
 import chalk from 'chalk';
 
+import Git from '../Git';
+import * as GitHub from '../GitHub';
+import logger from '../Logger';
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
 import lintSwiftFiles from './reviewers/lintSwiftFiles';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
 import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
+import reviewSeeReferences from './reviewers/reviewSeeReferences';
 import {
   ReviewEvent,
   ReviewComment,
@@ -13,14 +17,15 @@ import {
   ReviewStatus,
   Reviewer,
 } from './types';
-import Git from '../Git';
-import * as GitHub from '../GitHub';
-import logger from '../Logger';
 
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
 const REVIEWERS: Reviewer[] = [
+  {
+    id: 'changeset-references',
+    action: reviewSeeReferences,
+  },
   {
     id: 'changelog-checks',
     action: checkMissingChangelogs,

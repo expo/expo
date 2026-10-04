@@ -377,9 +377,17 @@ const executeCommand = async (
         .sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    // Config plugin types belong on the package's main reference page only. Sub-page
+    // entries (e.g. `expo-router/stack`) share the package directory and would otherwise
+    // repeat them on every page.
+    const isMainPackageEntry = jsonFileName === packageName;
     const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
     const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
-    if (fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+    if (
+      isMainPackageEntry &&
+      fs.existsSync(pluginEntryPath) &&
+      fs.existsSync(pluginTsConfigPath)
+    ) {
       const pluginApp = await Application.bootstrapWithPlugins(
         {
           ...typedocOptions,

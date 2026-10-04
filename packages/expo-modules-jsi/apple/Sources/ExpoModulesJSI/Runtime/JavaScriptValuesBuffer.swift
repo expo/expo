@@ -191,13 +191,14 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
 
   /// Allocates a new owning buffer holding a runtime-aware copy of each value's
   /// underlying `facebook.jsi.Value`. The given `JavaScriptValue`s must all belong
-  /// to `runtime`; mixing runtimes will crash deep inside JSI.
+  /// to `runtime` or be runtime-free; mixing runtimes will crash deep inside JSI.
   @JavaScriptActor
   public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
     for (index, value) in values.enumerated() {
+      // Runtime-free values (undefined, null, booleans and numbers) have no handle and fit any runtime.
       assert(
-        value.runtime === runtime,
+        value.runtimeHandle == nil || value.runtimeHandle === runtime.handle,
         "JavaScriptValue belongs to a different runtime than the buffer being initialized"
       )
       buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))

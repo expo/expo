@@ -119,7 +119,9 @@ internal fun String?.toVisualTransformation(): VisualTransformation = when (this
 }
 
 internal fun TextFieldTextStyleRecord?.toTextStyle(context: Context?): TextStyle {
-  if (this == null) return TextStyle.Default
+  if (this == null) {
+    return TextStyle.Default
+  }
   return TextStyle(
     color = colorToComposeColorOrNull(color) ?: androidx.compose.ui.graphics.Color.Unspecified,
     fontSize = fontSize?.sp ?: TextUnit.Unspecified,

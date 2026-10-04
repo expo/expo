@@ -76,7 +76,13 @@ fun SnackRow(snack: Home_AccountSnacksQuery.Node) {
     Column(
       modifier = Modifier
         .weight(1f)
-        .alpha(if (isSupported) 1f else 0.5f)
+        .alpha(
+          if (isSupported) {
+            1f
+          } else {
+            0.5f
+          }
+        )
     ) {
       Text(
         text = snack.commonSnackData.name,

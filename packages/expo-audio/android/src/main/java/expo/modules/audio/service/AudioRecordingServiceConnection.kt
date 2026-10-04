@@ -40,16 +40,25 @@ class AudioRecordingServiceConnection(
     bindingTimeoutJob?.cancel()
     bindingTimeoutJob = CoroutineScope(Dispatchers.Default).launch {
       delay(timeoutMs)
-      if (bindingState == ServiceBindingState.BINDING) {
-        bindingContinuation?.resumeWithException(AudioRecordingServiceException("The recording service connection has failed to connect with the recording service within ${timeoutMs}ms"))
-        unbind()
-      }
+      // Only the side that takes the continuation settles the binding. If a service callback
+      // got it first, the binding has already been handled and must not be unbound here.
+      val continuation = takeBindingContinuation() ?: return@launch
+      continuation.resumeWithException(AudioRecordingServiceException("The recording service connection has failed to connect with the recording service within ${timeoutMs}ms"))
+      unbind()
     }
   }
 
   private fun cancelBindingTimeout() {
     bindingTimeoutJob?.cancel()
     bindingTimeoutJob = null
+  }
+
+  /**
+   * Returns the pending binding continuation and clears it, so that it can be resumed at most once,
+   * even if the binding timeout races with a service connection callback.
+   */
+  private fun takeBindingContinuation(): Continuation<Unit>? = synchronized(this) {
+    bindingContinuation.also { bindingContinuation = null }
   }
 
   /**
@@ -71,7 +80,9 @@ class AudioRecordingServiceConnection(
     suspendCoroutine { continuation ->
       if (bindingState == ServiceBindingState.UNBOUND || bindingState == ServiceBindingState.FAILED) {
         val reactContext = appContext.reactContext ?: run {
-          onBindingFailed("Binding with the expo-audio playback service failed: React context lost")
+          val message = "Binding with the expo-audio recording service failed: React context lost"
+          onBindingFailed(message)
+          continuation.resumeWithException(AudioRecordingServiceException(message))
           return@suspendCoroutine
         }
         val serviceRunning = startServiceAndBind(appContext, reactContext, this, AudioRecordingService::class.java, AudioRecordingService.ACTION_START_RECORDING)
@@ -83,6 +94,8 @@ class AudioRecordingServiceConnection(
 
         transitionToState(ServiceBindingState.BINDING)
         bindingContinuation = continuation
+        // Without a timeout, the promise would never settle if the system never calls back.
+        startBindingTimeout()
       }
     }
   }
@@ -93,18 +106,18 @@ class AudioRecordingServiceConnection(
     val recorder = recorder.get()
     if (recorder == null || isRecorderReleased) {
       transitionToState(ServiceBindingState.FAILED)
-      bindingContinuation?.resumeWithException(AudioRecordingServiceException("The recorder has been deallocated"))
+      takeBindingContinuation()?.resumeWithException(AudioRecordingServiceException("The recorder has been deallocated"))
       return
     }
 
     val serviceBinder: AudioRecordingServiceBinder = binder as? AudioRecordingServiceBinder ?: run {
-      bindingContinuation?.resumeWithException(AudioRecordingServiceException("Could not bind to the recording service - invalid binder type"))
+      takeBindingContinuation()?.resumeWithException(AudioRecordingServiceException("Could not bind to the recording service - invalid binder type"))
       transitionToState(ServiceBindingState.FAILED)
       return
     }
     transitionToState(ServiceBindingState.BOUND)
 
-    bindingContinuation?.resume(Unit)
+    takeBindingContinuation()?.resume(Unit)
     recordingServiceBinder = serviceBinder
     serviceBinder.service.appContext = appContext
   }
@@ -117,19 +130,17 @@ class AudioRecordingServiceConnection(
 
   override fun onBindingDied(name: ComponentName?) {
     cancelBindingTimeout()
-    bindingContinuation?.resumeWithException(
+    takeBindingContinuation()?.resumeWithException(
       AudioRecordingServiceException("Service binding died")
     )
-    bindingContinuation = null
     super.onBindingDied(name)
   }
 
   override fun onNullBinding(componentName: ComponentName) {
     cancelBindingTimeout()
-    bindingContinuation?.resumeWithException(
+    takeBindingContinuation()?.resumeWithException(
       AudioRecordingServiceException("Service returned null binding")
     )
-    bindingContinuation = null
     super.onNullBinding(componentName)
   }
 
