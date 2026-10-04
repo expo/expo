@@ -13,17 +13,17 @@
     "expo-background-task": "workspace:*",
     "expo-clipboard": "workspace:*",
     "expo-dev-client": "workspace:*",
-    "expo-router": "workspace:*",
     "expo-image": "workspace:*",
     "expo-image-manipulator": "workspace:*",
     "expo-media-library": "workspace:*",
     "expo-notifications": "workspace:*",
     "expo-observe": "workspace:*",
+    "expo-router": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "expo-updates": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.1"
+    "react-native": "0.88.0-rc.3"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

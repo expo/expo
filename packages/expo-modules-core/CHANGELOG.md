@@ -1,14 +1,57 @@
 # Changelog
 
-## Unpublished
+## 58.0.12
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Internal][Android] `expoPublish` now formats the updated `expo-module.config.json` with `oxfmt` instead of `prettier`. ([#47438](https://github.com/expo/expo/pull/47438) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] Add `decodableKinds` to `JavaScriptDecodable`: the kinds of JavaScript value (`JavaScriptValueKinds`) that `decode` can accept, so code that picks between several types can skip the ones that can't match. ([#50905](https://github.com/expo/expo/pull/50905) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptValue.withUnownedValue(in:_:)`, and give the owning `JavaScriptDecodable.decode` a default that borrows the value and decodes it through the `JavaScriptUnownedValue` overload, so a conformer can implement only that one. Arrays, dictionaries, dates, records and enums now decode unowned values without copying them first. ([#50960](https://github.com/expo/expo/pull/50960) by [@tsapeta](https://github.com/tsapeta))
+- Fixed native views ignoring `aria-*`, `id` and `tabIndex` props such as `aria-hidden` and `aria-label` ([#50782](https://github.com/expo/expo/issues/50782)). ([#50959](https://github.com/expo/expo/pull/50959) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed `release()` throwing on a shared object whose JS object is frozen, for example an `ImageRef` passed as a view prop in development ([#50962](https://github.com/expo/expo/issues/50962)). ([#50970](https://github.com/expo/expo/pull/50970) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50905](https://github.com/expo/expo/pull/50905), [#50698](https://github.com/expo/expo/pull/50698), [#50937](https://github.com/expo/expo/pull/50937), [#50888](https://github.com/expo/expo/pull/50888), [#50960](https://github.com/expo/expo/pull/50960), [#50980](https://github.com/expo/expo/pull/50980), [#50354](https://github.com/expo/expo/pull/50354))
+  - expo-modules-jsi@58.0.8
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [iOS] `@Record` now accepts properties that hold free-form `Any` values, such as `[String: Any]?` or `[Any]`. ([#50660](https://github.com/expo/expo/pull/50660) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed Expo views using Android layout not completing system-forced layout passes. ([#48679](https://github.com/expo/expo/pull/48679) by [@lujjjh](https://github.com/lujjjh))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#50660](https://github.com/expo/expo/pull/50660))
+  - expo-modules-jsi@58.0.7
+
+## 58.0.10
+
+### Patch Changes
+
+- Lay out `RNHostView` hosted content at the size SwiftUI or Compose gives it on an axis that `matchContents` does not match. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#50805](https://github.com/expo/expo/pull/50805), [#50844](https://github.com/expo/expo/pull/50844), [#50806](https://github.com/expo/expo/pull/50806))
+  - expo-modules-jsi@58.0.6
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Depend on `expo-modules-macros`, the new name of the `@expo/expo-modules-macros-plugin` package. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a crash (`The app context has been lost`) when an Expo view mounts during a reload. ([#50721](https://github.com/expo/expo/pull/50721) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-modules-jsi@58.0.5
+
+## 58.0.8 — 2026-09-28
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Throw a JavaScript error instead of aborting when returning a shared object whose JavaScript instance is no longer available. ([#50667](https://github.com/expo/expo/pull/50667) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.7 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- Fixed listeners removed with `subscription.remove()` never being garbage-collected, together with their emitter and everything their closure references, when the closure can reach the subscription (as in `useEvent`, `useEventListener` or a `useEffect` that returns `() => subscription.remove()`). ([#50603](https://github.com/expo/expo/pull/50603) by [@gkueny](https://github.com/gkueny))
+- [iOS] Fixed `Exception` reporting `undefined reason` to JavaScript instead of the description it was created with, which also affected every `promise.reject(code, description)` call. ([#50215](https://github.com/expo/expo/pull/50215) by [@Maher-Reven](https://github.com/Maher-Reven))
 
 ## 58.0.6 — 2026-09-23
 
@@ -126,6 +169,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Measure hosted React Native views where SwiftUI placed them, instead of at their Yoga box. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Measure hosted React Native views where Jetpack Compose placed them, instead of at their Yoga box. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed `ActivityResultLauncher.launch()` throwing `IllegalStateException: Attempting to launch an unregistered ActivityResultLauncher` after the Activity is recreated, by registering the launcher again against the live Activity. ([#49634](https://github.com/expo/expo/pull/49634) by [@idoyana](https://github.com/idoyana))
 
 ### 💡 Others
 

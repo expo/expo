@@ -1,6 +1,6 @@
 {
   "name": "expo-app-intents",
-  "version": "0.4.4",
+  "version": "0.5.1",
   "description": "Expose Apple App Intents (Siri, Shortcuts, Spotlight, Apple Intelligence) from Expo apps",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -40,8 +40,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/app-intents",
   "devDependencies": {
-    "@testing-library/react-native": "^13.3.0",
-    "@types/jest": "^29.2.1",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.4.9",
     "@types/react": "~19.3.0",
@@ -49,7 +49,7 @@
     "expo-module-scripts": "workspace:*"
   },
   "dependencies": {
-    "@expo/ui": "workspace:^58.0.6",
+    "@expo/ui": "workspace:^58.0.12",
     "commander": "^12.1.0",
     "prompts": "^2.4.2"
   },

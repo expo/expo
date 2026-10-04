@@ -1,16 +1,45 @@
 # Changelog
 
-## Unpublished
+## 58.0.8
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS] Add `decodableKinds` to `JavaScriptDecodable`: the kinds of JavaScript value (`JavaScriptValueKinds`) that `decode` can accept, so code that picks between several types can skip the ones that can't match. ([#50905](https://github.com/expo/expo/pull/50905) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix crash reports symbolicated on the device showing no function names for `ExpoModulesJSI` frames. ([#50698](https://github.com/expo/expo/pull/50698) by [@tsapeta](https://github.com/tsapeta))
+- Return strings, objects and arrays from host functions and host object getters without cloning the engine handle, and build short ASCII strings from JS inline. ([#50937](https://github.com/expo/expo/pull/50937) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptRuntime.cached(_:_:)` with typed `JavaScriptRuntime.Cache.Key`s, to create a value once per runtime and reuse it, for example a JavaScript constructor or a property name. A lookup reads one array slot, about 5× faster than the string-keyed `JavaScriptPropNameID.cached(_:_:)`. ([#50888](https://github.com/expo/expo/pull/50888) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptValue.withUnownedValue(in:_:)`, and give the owning `JavaScriptDecodable.decode` a default that borrows the value and decodes it through the `JavaScriptUnownedValue` overload, so a conformer can implement only that one. Arrays, dictionaries, dates, records and enums now decode unowned values without copying them first. ([#50960](https://github.com/expo/expo/pull/50960) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptArray.mapUnowned(_:)`, `JavaScriptObject.withUnownedProperty(_:_:)`, and `isArray()` and `getArray(in:)` on `JavaScriptUnownedValue`. Arrays, dictionaries and dates now decode through their unowned overload without copying the value or wrapping each element in a `JavaScriptValue`, and their owning decodes forward to it. ([#50980](https://github.com/expo/expo/pull/50980) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Keep checkout paths out of the Swift compilation cache key so modules importing ExpoModulesCore can reuse cached compilation results across checkouts and worktrees. ([#50354](https://github.com/expo/expo/pull/50354) by [@janicduplessis](https://github.com/janicduplessis))
+
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [iOS] Add conversions between JavaScript values and free-form `Any`, `[Any]` and `[String: Any]` values. ([#50660](https://github.com/expo/expo/pull/50660) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.6
+
+### Patch Changes
+
+- [iOS] Read host object property names through `getPropNameIdData` instead of building a `std::string` for every access, making property access from JavaScript up to 14% faster for long names. ([#50805](https://github.com/expo/expo/pull/50805) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] The `JavaScriptValue`, `JavaScriptObject` and `JavaScriptArray` initializers now take the runtime as `borrowing`, so callers no longer retain it for the call, making host functions that return strings or numbers up to ~15% faster. ([#50844](https://github.com/expo/expo/pull/50844) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptValue`, `JavaScriptObject` and `JavaScriptArray` now hold a strong runtime handle instead of a `weak` reference to the runtime, which removes the weak reference traffic and slow-path reference counting from their hot paths (for example `getObject()` ~16×, `getArray()` ~12× and `getProperty(_:)` ~1.8× faster). ([#50806](https://github.com/expo/expo/pull/50806) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-25
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix the `.swiftinterface` failing to compile with Xcode 27 (Swift 6.4), because a C++ type extension was no longer stripped from it. ([#50569](https://github.com/expo/expo/pull/50569) by [@chrfalch](https://github.com/chrfalch))
-
-### 💡 Others
+- [iOS] Fix the xcframework build phase failing iOS archives under Xcode 27. ([#50587](https://github.com/expo/expo/pull/50587) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the xcframework build warning about jsi headers missing from the umbrella header. ([#50588](https://github.com/expo/expo/pull/50588) by [@tsapeta](https://github.com/tsapeta))
 
 ## 58.0.3 — 2026-09-21
 

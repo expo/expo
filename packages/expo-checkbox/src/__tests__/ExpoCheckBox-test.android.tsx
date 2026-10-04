@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react-native';
 import Checkbox from '../Checkbox';
 
 describe('Checkbox', () => {
-  it('renders a native checkbox', () => {
-    render(<Checkbox value color="#4630EB" />);
+  it('renders a native checkbox', async () => {
+    await render(<Checkbox value color="#4630EB" />);
     expect(screen.toJSON()).toMatchInlineSnapshot(`
       <View
         accessibilityRole="checkbox"

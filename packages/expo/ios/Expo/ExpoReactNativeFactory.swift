@@ -127,7 +127,6 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
 
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {
-      // RCTDevMenuConfiguration is only available in react-native 0.83+
       // bundleConfiguration is only accepted in react-native 0.84+
 #if os(iOS) || os(tvOS)
       let bundleConfiguration = ExpoBundleConfiguration.configuration(
@@ -146,7 +145,8 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       rootView = factory.superView(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
-        launchOptions: launchOptions ?? [:]
+        launchOptions: launchOptions ?? [:],
+        devMenuConfiguration: self.devMenuConfiguration
       )
 #endif
     } else {

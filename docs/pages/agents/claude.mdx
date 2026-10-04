@@ -11,7 +11,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-Claude Code is Anthropic's terminal-based AI coding agent. It can understand your entire codebase, propose edits, run terminal commands, and manage git operations. Expo projects created with `create-expo-app` are scaffolded with files for Claude Code through **CLAUDE.md** and **.claude/settings.json**. It can also check EAS and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
+Claude Code is Anthropic's terminal-based AI coding agent. It can understand your entire codebase, propose edits, run terminal commands, and manage git operations. Expo projects created with `create-expo-app` include **AGENTS.md** for project context. When Claude Code is installed, these projects also include **.claude/settings.json** to enable the Expo plugin. It can also check EAS and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
 
 ## Quick start
 
@@ -98,10 +98,12 @@ If the agent replies with the SDK version from **package.json**, the agent is re
 
 When you start Claude Code in your project, it reads two of the scaffolded files:
 
-- **CLAUDE.md** contains a single line: `@AGENTS.md`. This line imports **AGENTS.md** into Claude Code's context. **AGENTS.md** points Claude Code to the documentation for your project's Expo SDK version. Add project-level instructions to **AGENTS.md**, not **CLAUDE.md**, so they stay in one place.
+- **AGENTS.md** points Claude Code to the documentation for your project's Expo SDK version. Add project-level instructions to this file so your agents read the same context.
 - **.claude/settings.json** enables the official Expo plugin ([`expo@claude-plugins-official`](https://claude.com/plugins/expo)) from the Claude Code plugin marketplace.
 
 Both files are committed to your project, so a developer's Claude Code session starts from the same context.
+
+> **info** Reading **AGENTS.md** directly requires Claude Code v2.1.277 or later. See the [Claude Code documentation](https://code.claude.com/docs/en/memory#agentsmd) for loading rules and availability.
 
 ## Example prompts
 

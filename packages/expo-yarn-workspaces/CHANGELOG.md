@@ -1,15 +1,5 @@
 # Changelog
 
-## Unpublished
-
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
-
 ## 2.3.1 - 2023-12-19
 
 _This version does not introduce any user-facing changes._

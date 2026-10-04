@@ -120,8 +120,8 @@ describe(convertStackToolbarButtonPropsToRNHeaderItem, () => {
 });
 
 describe('StackToolbarButton component', () => {
-  it('renders RouterToolbarItem in bottom placement', () => {
-    render(
+  it('renders RouterToolbarItem in bottom placement', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton icon="star.fill">Test</StackToolbarButton>
       </ToolbarPlacementContext.Provider>
@@ -133,21 +133,21 @@ describe('StackToolbarButton component', () => {
 
   it.each(['left', 'right', undefined, 'xyz'] as const)(
     'throws error when not in bottom placement (placement=%s)',
-    (placement) => {
+    async (placement) => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
-      expect(() => {
-        render(
+      await expect(async () => {
+        await render(
           <ToolbarPlacementContext.Provider value={placement as any}>
             <StackToolbarButton icon="star.fill">Test</StackToolbarButton>
           </ToolbarPlacementContext.Provider>
         );
-      }).toThrow('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
+      }).rejects.toThrow('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
       jest.restoreAllMocks();
     }
   );
 
-  it('passes SF Symbol icon to RouterToolbarItem', () => {
-    render(
+  it('passes SF Symbol icon to RouterToolbarItem', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton icon="star.fill" />
       </ToolbarPlacementContext.Provider>
@@ -161,8 +161,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes variant done as barButtonItemStyle prominent', () => {
-    render(
+  it('passes variant done as barButtonItemStyle prominent', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton variant="done">Done</StackToolbarButton>
       </ToolbarPlacementContext.Provider>
@@ -176,8 +176,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes variant plain correctly', () => {
-    render(
+  it('passes variant plain correctly', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton variant="plain">Plain</StackToolbarButton>
       </ToolbarPlacementContext.Provider>
@@ -191,9 +191,9 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes onPress as onSelected', () => {
+  it('passes onPress as onSelected', async () => {
     const onPress = jest.fn();
-    render(
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton onPress={onPress}>Test</StackToolbarButton>
       </ToolbarPlacementContext.Provider>
@@ -207,8 +207,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it.each([true, false, undefined])('passes disabled=%s prop', (disabled) => {
-    render(
+  it.each([true, false, undefined])('passes disabled=%s prop', async (disabled) => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton disabled={disabled}>Test</StackToolbarButton>
       </ToolbarPlacementContext.Provider>
@@ -222,8 +222,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it.each([true, false, undefined])('passes hidden=%s prop', (hidden) => {
-    render(
+  it.each([true, false, undefined])('passes hidden=%s prop', async (hidden) => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton hidden={hidden}>Test</StackToolbarButton>
       </ToolbarPlacementContext.Provider>
@@ -237,8 +237,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes tintColor prop', () => {
-    render(
+  it('passes tintColor prop', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton tintColor="red">Test</StackToolbarButton>
       </ToolbarPlacementContext.Provider>
@@ -252,8 +252,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes xcassetName from StackToolbarIcon xcasset child', () => {
-    render(
+  it('passes xcassetName from StackToolbarIcon xcasset child', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton>
           <StackToolbarIcon xcasset="custom-icon" />
@@ -270,8 +270,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes imageRenderingMode as template for xcasset icon when tintColor is set', () => {
-    render(
+  it('passes imageRenderingMode as template for xcasset icon when tintColor is set', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton tintColor="blue">
           <StackToolbarIcon xcasset="custom-icon" />
@@ -288,8 +288,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes imageRenderingMode as original for xcasset icon without tintColor', () => {
-    render(
+  it('passes imageRenderingMode as original for xcasset icon without tintColor', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton>
           <StackToolbarIcon xcasset="custom-icon" />
@@ -306,8 +306,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('passes explicit iconRenderingMode for xcasset icon', () => {
-    render(
+  it('passes explicit iconRenderingMode for xcasset icon', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton iconRenderingMode="template">
           <StackToolbarIcon xcasset="custom-icon" />
@@ -324,8 +324,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', () => {
-    render(
+  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton iconRenderingMode="template" tintColor="blue">
           <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />
@@ -342,8 +342,8 @@ describe('StackToolbarButton component', () => {
     );
   });
 
-  it('extracts label from StackToolbarLabel child in bottom placement', () => {
-    render(
+  it('extracts label from StackToolbarLabel child in bottom placement', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarButton>
           <StackToolbarLabel>Custom Label</StackToolbarLabel>
@@ -371,18 +371,18 @@ describe('StackToolbarButton component', () => {
       jest.restoreAllMocks();
     });
 
-    it('throws error for invalid children in development', () => {
+    it('throws error for invalid children in development', async () => {
       process.env.NODE_ENV = 'development';
 
-      expect(() => {
-        render(
+      await expect(async () => {
+        await render(
           <ToolbarPlacementContext.Provider value="bottom">
             <StackToolbarButton>
               <div>Invalid Child</div>
             </StackToolbarButton>
           </ToolbarPlacementContext.Provider>
         );
-      }).toThrow(
+      }).rejects.toThrow(
         'Stack.Toolbar.Button only accepts a single string or Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.'
       );
     });
@@ -401,10 +401,10 @@ describe('StackToolbarButton component', () => {
       consoleSpy.mockRestore();
     });
 
-    it('warns about Badge in bottom placement', () => {
+    it('warns about Badge in bottom placement', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarButton>
             <StackToolbarBadge>3</StackToolbarBadge>
@@ -434,10 +434,10 @@ describe('StackToolbarButton component', () => {
       consoleSpy.mockRestore();
     });
 
-    it('warns when icon prop is an image source in development', () => {
+    it('warns when icon prop is an image source in development', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarButton icon={{ uri: 'image' }}>Test</StackToolbarButton>
         </ToolbarPlacementContext.Provider>
@@ -446,10 +446,10 @@ describe('StackToolbarButton component', () => {
       expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
     });
 
-    it('warns when <StackToolbarIcon src> child is used in development', () => {
+    it('warns when <StackToolbarIcon src> child is used in development', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarButton>
             <StackToolbarIcon src={{ uri: 'image' }} />
@@ -460,10 +460,10 @@ describe('StackToolbarButton component', () => {
       expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
     });
 
-    it('does not warn in production', () => {
+    it('does not warn in production', async () => {
       process.env.NODE_ENV = 'production';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarButton icon={{ uri: 'image' }}>Test</StackToolbarButton>
         </ToolbarPlacementContext.Provider>
@@ -472,10 +472,10 @@ describe('StackToolbarButton component', () => {
       expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
     });
 
-    it('does not warn for SF Symbol string icon', () => {
+    it('does not warn for SF Symbol string icon', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarButton icon="star.fill">Test</StackToolbarButton>
         </ToolbarPlacementContext.Provider>
@@ -484,10 +484,10 @@ describe('StackToolbarButton component', () => {
       expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
     });
 
-    it('does not warn for xcasset icon child', () => {
+    it('does not warn for xcasset icon child', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarButton>
             <StackToolbarIcon xcasset="custom-icon" />

@@ -1,14 +1,26 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Load app config and `.env` files in the build's mode: development for configurations containing `Debug`, production otherwise. ([#49511](https://github.com/expo/expo/pull/49511) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [Android] Load app config and `.env` files in each build variant's mode: development for `debug` and `debugOptimized` build types, production otherwise. ([#50661](https://github.com/expo/expo/pull/50661) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/env@2.5.1
+  - @expo/require-utils@58.0.2
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Generate the embedded `app.config` in apps built with SwiftPM instead of CocoaPods, fixing the "Unable to find the embedded app config" warning there. The generator no longer requires the Pods project, can be pointed at another destination, and creates `EXConstants.bundle` itself rather than relying on CocoaPods' `resource_bundles`. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.6 — 2026-09-23
 

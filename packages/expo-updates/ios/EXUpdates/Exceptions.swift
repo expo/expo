@@ -101,12 +101,7 @@ internal final class InvalidRequestHeadersOverrideException: Exception {
 
 /**
  * Base class for exceptions that wrap an underlying error and need its description to reach
- * JavaScript.
- *
- * `Promise.reject(code:description:)` and `Exception(name:description:code:)` cannot be used for
- * this: they set `description` but leave `reason` at its default, and the JS-facing message is
- * derived from `reason`, so the description is dropped before it reaches the caller. Overriding
- * `reason` is the supported way to control that message.
+ * JavaScript. Subclasses override `reason` to include the underlying error's description.
  */
 internal class UpdatesUnderlyingErrorException: Exception, @unchecked Sendable {
   internal let underlyingError: Error

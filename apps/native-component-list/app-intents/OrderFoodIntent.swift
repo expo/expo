@@ -1,5 +1,6 @@
 import AppIntents
 internal import ExpoAppIntents
+internal import ExpoModulesCore
 
 /// A phrase-based shortcut that orders a dish.
 ///
@@ -27,5 +28,31 @@ struct OrderFoodIntent: AppIntent {
     )
 
     return .result(dialog: "Ordering \(dish.name).")
+  }
+}
+
+/// Lets the order screen donate an order that the user placed in the app, so the system can suggest
+/// ordering the same dish again.
+extension OrderFoodIntent: DonatableAppIntent {
+  struct DonationParams: Record {
+    @Field(.required) var dishId: String = ""
+  }
+
+  struct UnknownDish: Error, CustomStringConvertible {
+    let dishId: String
+
+    var description: String {
+      "no dish '\(dishId)' is in the published 'dish' catalog; publish it with setEntityCatalogAsync() first"
+    }
+  }
+
+  /// Only the id comes from JavaScript. The dish is read from the published catalog, the same way
+  /// Siri resolves it, so the donated intent refers to a dish that Siri can find again.
+  init(donationParams: DonationParams) async throws {
+    self.init()
+    guard let dish = try await DishQuery().entities(for: [donationParams.dishId]).first else {
+      throw UnknownDish(dishId: donationParams.dishId)
+    }
+    self.dish = dish
   }
 }

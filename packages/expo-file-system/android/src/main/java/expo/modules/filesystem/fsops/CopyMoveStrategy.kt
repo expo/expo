@@ -69,24 +69,32 @@ sealed class CopyMoveStrategy(
           if (file.exists()) {
             JavaFile(File(file, fileName).toUri())
           } else {
-            if (file.parentFile?.exists() != true) throw DestinationDoesNotExistException()
+            if (file.parentFile?.exists() != true) {
+              throw DestinationDoesNotExistException()
+            }
             file
           }
         }
         // File → Directory
         !sourceIsDir && spec.isDirectory -> {
-          if (!file.exists()) throw DestinationDoesNotExistException()
+          if (!file.exists()) {
+            throw DestinationDoesNotExistException()
+          }
           JavaFile(File(file, fileName).toUri())
         }
         // File → File
         else -> {
-          if (file.parentFile?.exists() != true) throw DestinationDoesNotExistException()
+          if (file.parentFile?.exists() != true) {
+            throw DestinationDoesNotExistException()
+          }
           file
         }
       }
 
       target.takeIf { it.exists() }?.let {
-        if (!spec.overwrite) throw DestinationAlreadyExistsException()
+        if (!spec.overwrite) {
+          throw DestinationAlreadyExistsException()
+        }
         it.deleteRecursively()
       }
 
@@ -125,7 +133,9 @@ sealed class CopyMoveStrategy(
       // → SAF File (not a directory spec)
       if (!spec.isDirectory) {
         if (file.exists()) {
-          if (!spec.overwrite) throw DestinationAlreadyExistsException()
+          if (!spec.overwrite) {
+            throw DestinationAlreadyExistsException()
+          }
           file.deleteRecursively()
         }
         return DestinationSink.SAF(spec, file, isContainer = false)
@@ -134,7 +144,9 @@ sealed class CopyMoveStrategy(
       // → SAF Directory that doesn't exist
       if (!file.exists()) {
         if (source.isDirectory()) {
-          if (file.parentFile?.exists() != true) throw DestinationDoesNotExistException()
+          if (file.parentFile?.exists() != true) {
+            throw DestinationDoesNotExistException()
+          }
           return DestinationSink.SAF(spec, file, isContainer = false)
         } else {
           throw DestinationDoesNotExistException()
@@ -180,7 +192,9 @@ sealed class CopyMoveStrategy(
 
   class ContentProvider(override val file: ContentProviderFile) : CopyMoveStrategy(file) {
     override fun prepareAsDestination(source: UnifiedFileInterface, spec: DestinationSpec): DestinationSink {
-      if (file.exists() && !spec.overwrite) throw DestinationAlreadyExistsException()
+      if (file.exists() && !spec.overwrite) {
+        throw DestinationAlreadyExistsException()
+      }
       return DestinationSink.ContentResource(spec)
     }
 
@@ -191,7 +205,9 @@ sealed class CopyMoveStrategy(
 
   class Asset(override val file: AssetFile) : CopyMoveStrategy(file) {
     override fun prepareAsDestination(source: UnifiedFileInterface, spec: DestinationSpec): DestinationSink {
-      if (file.exists() && !spec.overwrite) throw DestinationAlreadyExistsException()
+      if (file.exists() && !spec.overwrite) {
+        throw DestinationAlreadyExistsException()
+      }
       return DestinationSink.Asset(spec)
     }
 

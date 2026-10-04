@@ -17,25 +17,29 @@ function hostedViewStyle() {
 }
 
 describe('BottomSheet', () => {
-  it('gives the hosted content the sheet width when the sheet sizes to its content', () => {
-    render(
+  it('gives the hosted content the sheet width when the sheet sizes to its content', async () => {
+    await render(
       <BottomSheet index={0}>
         <View />
       </BottomSheet>
     );
 
-    expect(findNativeViewProps('RNHostView')?.matchContents).toBe(true);
+    expect(findNativeViewProps('RNHostView')).toEqual(
+      expect.objectContaining({ matchContentsHorizontal: true, matchContentsVertical: true })
+    );
     expect(hostedViewStyle()?.width).toBe(Dimensions.get('window').width);
   });
 
-  it('fills the snap point height when snap points are set', () => {
-    render(
+  it('fills the snap point height when snap points are set', async () => {
+    await render(
       <BottomSheet index={0} snapPoints={['50%']}>
         <View />
       </BottomSheet>
     );
 
-    expect(findNativeViewProps('RNHostView')?.matchContents).toBe(false);
+    expect(findNativeViewProps('RNHostView')).toEqual(
+      expect.objectContaining({ matchContentsHorizontal: false, matchContentsVertical: false })
+    );
     expect(hostedViewStyle()).toEqual(expect.objectContaining({ flexGrow: 1, height: 0 }));
   });
 });

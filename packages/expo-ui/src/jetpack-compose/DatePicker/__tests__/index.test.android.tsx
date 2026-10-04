@@ -28,13 +28,13 @@ function getNativeProps(viewName: string) {
 }
 
 describe('DateRangePicker', () => {
-  it('converts initial and selectable dates to timestamps', () => {
+  it('converts initial and selectable dates to timestamps', async () => {
     const initialStartDate = '2026-08-10T00:00:00.000Z';
     const initialEndDate = '2026-08-14T00:00:00.000Z';
     const selectableStart = new Date('2026-08-01T00:00:00.000Z');
     const selectableEnd = new Date('2026-08-31T00:00:00.000Z');
 
-    render(
+    await render(
       <DateRangePicker
         initialStartDate={initialStartDate}
         initialEndDate={initialEndDate}
@@ -58,9 +58,9 @@ describe('DateRangePicker', () => {
     );
   });
 
-  it('unwraps complete and incomplete range events', () => {
+  it('unwraps complete and incomplete range events', async () => {
     const onDateRangeSelected = jest.fn();
-    render(<DateRangePicker onDateRangeSelected={onDateRangeSelected} />);
+    await render(<DateRangePicker onDateRangeSelected={onDateRangeSelected} />);
 
     const props = getNativeProps('DateRangePickerView');
     const start = Date.UTC(2026, 7, 10);
@@ -81,13 +81,13 @@ describe('DateRangePicker', () => {
 });
 
 describe('DateRangePickerDialog', () => {
-  it('converts props and unwraps native events', () => {
+  it('converts props and unwraps native events', async () => {
     const onDateRangeSelected = jest.fn();
     const onDismissRequest = jest.fn();
     const start = Date.UTC(2026, 7, 10);
     const end = Date.UTC(2026, 7, 14);
 
-    render(
+    await render(
       <DateRangePickerDialog
         initialStartDate={new Date(start).toISOString()}
         initialEndDate={new Date(end).toISOString()}

@@ -1,14 +1,35 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Only enable LogBox WebView debugging in debuggable apps. ([#49529](https://github.com/expo/expo/pull/49529) by [@kosumic](https://github.com/kosumic))
+
+## 58.0.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/dom-webview@58.0.2
+  - @expo/log-box-utils@58.0.1
+
+## 58.0.6 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-25
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.4 — 2026-09-21
 

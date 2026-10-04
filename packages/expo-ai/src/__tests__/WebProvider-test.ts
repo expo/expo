@@ -68,7 +68,13 @@ class FakeBrowserModel implements BrowserLanguageModel {
 
 const globals = ['window', 'LanguageModel', 'isSecureContext'] as const;
 const originalGlobals = globals.map((key) => Object.getOwnPropertyDescriptor(globalThis, key));
+// In jsdom (the web preset) `window` is unforgeable, so it can neither be redefined nor deleted.
+// It already points at the test's global object there, so only stub it where that is possible.
+const stubbableGlobals = globals.filter(
+  (key) => Object.getOwnPropertyDescriptor(globalThis, key)?.configurable !== false
+);
 function setGlobal(key: (typeof globals)[number], value: unknown) {
+  if (!stubbableGlobals.includes(key)) return;
   Object.defineProperty(globalThis, key, { value, writable: true, configurable: true });
 }
 let provider: BrowserLanguageModels;
@@ -112,6 +118,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   globals.forEach((key, index) => {
+    if (!stubbableGlobals.includes(key)) return;
     const descriptor = originalGlobals[index];
     if (descriptor) Object.defineProperty(globalThis, key, descriptor);
     else Reflect.deleteProperty(globalThis, key);
@@ -129,17 +136,14 @@ it('builds the browser provider and its sessions on the shared core classes', as
   expect(session.listenerCount('onText')).toBe(0);
 });
 
-it.each(['window', 'LanguageModel', 'isSecureContext'] as const)(
-  'reports unavailable without %s',
-  async (key) => {
-    setGlobal(key, key === 'isSecureContext' ? false : undefined);
-    expect(JSON.parse(await provider.getAvailabilityAsync([], null))).toMatchObject({
-      status: 'unavailable',
-    });
-    await expect(open()).rejects.toMatchObject({ code: 'ERR_MODEL_UNAVAILABLE' });
-    expect(api.create).not.toHaveBeenCalled();
-  }
-);
+it.each(stubbableGlobals)('reports unavailable without %s', async (key) => {
+  setGlobal(key, key === 'isSecureContext' ? false : undefined);
+  expect(JSON.parse(await provider.getAvailabilityAsync([], null))).toMatchObject({
+    status: 'unavailable',
+  });
+  await expect(open()).rejects.toMatchObject({ code: 'ERR_MODEL_UNAVAILABLE' });
+  expect(api.create).not.toHaveBeenCalled();
+});
 
 it.each(['downloadable', 'downloading', 'unavailable'] as const)(
   'does not create or download for %s readiness',

@@ -1,6 +1,6 @@
 {
   "name": "expo-blur",
-  "version": "58.0.1",
+  "version": "58.0.3",
   "description": "A component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.",
   "keywords": [
     "expo",
@@ -22,6 +22,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -29,14 +30,15 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {},
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

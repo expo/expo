@@ -1,14 +1,22 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Fixed the typed config plugin (`expo-document-picker/plugin`) not accepting `iCloudContainerEnvironment` and `kvStoreIdentifier` props. ([#50601](https://github.com/expo/expo/issues/50601) by [@rvieceli](https://github.com/rvieceli), [#50606](https://github.com/expo/expo/pull/50606) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 58.0.1 — 2026-09-22
 
