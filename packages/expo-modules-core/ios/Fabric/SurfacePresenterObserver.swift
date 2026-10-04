@@ -2,13 +2,11 @@
 
 @preconcurrency internal import React
 
-/**
- Observes the surface presenter of the app context's host and tells the app context when the host mounts views.
- Views created in between get that app context, see `ExpoFabricView.createComponentView`.
-
- The surface presenter's header calls the observer API deprecated, but it's the only public notification
- that is sent right before the host creates component views.
- */
+/// Observes the surface presenter of the app context's host and tells the app context when the host mounts views.
+/// Views created in between get that app context, see `ExpoFabricView.createComponentView`.
+///
+/// The surface presenter's header calls the observer API deprecated, but it's the only public notification
+/// that is sent right before the host creates component views.
 internal final class SurfacePresenterObserver: NSObject, RCTSurfacePresenterObserver {
   private weak var appContext: AppContext?
 
@@ -16,10 +14,8 @@ internal final class SurfacePresenterObserver: NSObject, RCTSurfacePresenterObse
     self.appContext = appContext
   }
 
-  /**
-   Starts observing the given surface presenter. The presenter keeps observers weakly,
-   so the owner of this object must keep it alive.
-   */
+  /// Starts observing the given surface presenter. The presenter keeps observers weakly,
+  /// so the owner of this object must keep it alive.
   func observe(_ surfacePresenter: RCTSurfacePresenterStub) {
     surfacePresenter.add(self)
   }
