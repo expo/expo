@@ -45,19 +45,15 @@ public struct HStackView: ExpoSwiftUI.View {
 
   public var body: some View {
     if props.resolvesChildPercentages {
-      if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-        ParentAwareHStackLayout(
-          alignment: props.alignment ?? .center,
-          spacing: props.spacing.map { CGFloat($0) },
-          ownDimensions: universalLayoutDimensions(from: props.modifiers),
-          resolvesOwnPercentage: resolvesOwnPercentage
-        ) {
-          Children()
-        }
-        .environment(\.universalPercentageParent, true)
-      } else {
-        platformStack
+      ParentAwareHStackLayout(
+        alignment: props.alignment ?? .center,
+        spacing: props.spacing.map { CGFloat($0) },
+        ownDimensions: universalLayoutDimensions(from: props.modifiers),
+        resolvesOwnPercentage: resolvesOwnPercentage
+      ) {
+        Children()
       }
+      .environment(\.universalPercentageParent, true)
     } else {
       platformStack
     }

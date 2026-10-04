@@ -64,21 +64,16 @@ internal struct UniversalLayoutModifier: ViewModifier, Record {
     return value
   }
 
-  @ViewBuilder
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-      ResolvedUniversalLayout(
-        dimensions: UniversalLayoutDimensions(
-          widthPoints: validated(widthPoints),
-          widthFraction: validated(widthFraction),
-          heightPoints: validated(heightPoints),
-          heightFraction: validated(heightFraction)
-        ),
-        content: content
-      )
-    } else {
-      content
-    }
+    ResolvedUniversalLayout(
+      dimensions: UniversalLayoutDimensions(
+        widthPoints: validated(widthPoints),
+        widthFraction: validated(widthFraction),
+        heightPoints: validated(heightPoints),
+        heightFraction: validated(heightFraction)
+      ),
+      content: content
+    )
   }
 }
 
