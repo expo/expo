@@ -48,48 +48,58 @@ struct ExpoFabricViewTests {
   }
 
   @Test
-  func `creates views for the app context that is mounting`() throws {
+  func `creates views for the app context whose host is mounting`() throws {
     let moduleName = uniqueModuleName()
     let first = makeAppContext(moduleName: moduleName)
     let second = makeAppContext(moduleName: moduleName)
+    let firstObserver = SurfacePresenterObserver(appContext: first)
+    let secondObserver = SurfacePresenterObserver(appContext: second)
     let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
 
-    first.hostWillMountComponents()
+    // `RCTSurfacePresenter` calls these on its observers around each mount transaction.
+    firstObserver.willMountComponents(withRootTag: 1)
     let firstView = viewClass.createComponentView() as? TestFabricView
-    first.hostDidMountComponents()
+    firstObserver.didMountComponents(withRootTag: 1)
 
-    second.hostWillMountComponents()
+    secondObserver.willMountComponents(withRootTag: 1)
     let secondView = viewClass.createComponentView() as? TestFabricView
-    second.hostDidMountComponents()
+    secondObserver.didMountComponents(withRootTag: 1)
 
     #expect(firstView?.appContext === first)
     #expect(secondView?.appContext === second)
   }
 
   @Test
-  func `creates views from the class initializer used by React Native`() throws {
+  func `restores the outer app context after a nested mount of another host`() throws {
     let moduleName = uniqueModuleName()
-    let appContext = makeAppContext(moduleName: moduleName)
-    let viewClass: AnyClass = ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW)
+    let outer = makeAppContext(moduleName: moduleName)
+    let inner = makeAppContext(moduleName: moduleName)
+    let outerObserver = SurfacePresenterObserver(appContext: outer)
+    let innerObserver = SurfacePresenterObserver(appContext: inner)
+    let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
 
-    appContext.hostWillMountComponents()
-    // `RCTComponentViewFactory` creates component views with `[viewClass new]`.
-    let view = (viewClass as AnyObject).perform(NSSelectorFromString("new"))?.takeRetainedValue() as? TestFabricView
-    appContext.hostDidMountComponents()
+    outerObserver.willMountComponents(withRootTag: 1)
+    innerObserver.willMountComponents(withRootTag: 1)
+    let innerView = viewClass.createComponentView() as? TestFabricView
+    innerObserver.didMountComponents(withRootTag: 1)
+    let outerView = viewClass.createComponentView() as? TestFabricView
+    outerObserver.didMountComponents(withRootTag: 1)
 
-    #expect(view?.appContext === appContext)
+    #expect(innerView?.appContext === inner)
+    #expect(outerView?.appContext === outer)
+    #expect(AppContext.mountingAppContext == nil)
   }
 
   @Test
-  func `creates views for the app context whose surface presenter is mounting`() throws {
+  func `creates views from the class initializer used by React Native`() throws {
     let moduleName = uniqueModuleName()
     let appContext = makeAppContext(moduleName: moduleName)
     let observer = SurfacePresenterObserver(appContext: appContext)
-    let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
+    let viewClass: AnyClass = ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW)
 
-    // `RCTSurfacePresenter` calls these on its observers around each mount transaction.
     observer.willMountComponents(withRootTag: 1)
-    let view = viewClass.createComponentView() as? TestFabricView
+    // `RCTComponentViewFactory` creates component views with `[viewClass new]`.
+    let view = (viewClass as AnyObject).perform(NSSelectorFromString("new"))?.takeRetainedValue() as? TestFabricView
     observer.didMountComponents(withRootTag: 1)
 
     #expect(view?.appContext === appContext)

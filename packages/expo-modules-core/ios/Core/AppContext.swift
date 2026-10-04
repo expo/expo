@@ -444,9 +444,9 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   // MARK: - Mounting views
 
-  /// App contexts whose hosts are mounting views right now, the innermost one last.
+  /// The app context whose host is mounting views right now. It's set by `SurfacePresenterObserver`.
   @MainActor
-  private static var mountingAppContexts = [AppContext]()
+  internal static weak var mountingAppContext: AppContext?
 
   /// The app context that registered native views most recently. Views are created for this context
   /// when no host is mounting, for example when the host isn't wrapped by `ExpoHostWrapper`.
@@ -456,8 +456,8 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   /// The app context that the views being created belong to. Component view classes are shared by all app contexts,
   /// so this is how the views get their app context.
   @MainActor
-  internal static var mountingAppContext: AppContext? {
-    return mountingAppContexts.last ?? viewsRegisteringAppContext
+  internal static var appContextForNewViews: AppContext? {
+    return mountingAppContext ?? viewsRegisteringAppContext
   }
 
   /// Starts observing the surface presenter of the host, so the views created while the host is mounting
@@ -470,20 +470,6 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     let observer = SurfacePresenterObserver(appContext: self)
     observer.observe(surfacePresenter)
     surfacePresenterObserver = observer
-  }
-
-  /// Called on the main thread right before the host of this app context mounts views.
-  @MainActor
-  internal func hostWillMountComponents() {
-    AppContext.mountingAppContexts.append(self)
-  }
-
-  /// Called on the main thread right after the host of this app context mounted views.
-  @MainActor
-  internal func hostDidMountComponents() {
-    if let index = AppContext.mountingAppContexts.lastIndex(where: { $0 === self }) {
-      AppContext.mountingAppContexts.remove(at: index)
-    }
   }
 
   // MARK: - Runtime

@@ -207,7 +207,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
       guard let (moduleName, viewName) = componentsByViewClass[ObjectIdentifier(self)] else {
         return nil
       }
-      guard let appContext = AppContext.mountingAppContext else {
+      guard let appContext = AppContext.appContextForNewViews else {
         fatalError(Exceptions.AppContextLost().reason)
       }
       guard let view = appContext.moduleRegistry.get(moduleHolderForName: moduleName)?.definition.views[viewName]?.createView(appContext: appContext) else {
