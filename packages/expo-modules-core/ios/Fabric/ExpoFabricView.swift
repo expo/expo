@@ -150,9 +150,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /// Prefix of the component names. It tells apart the components backed by Expo modules.
   internal static let componentNamePrefix = "ViewManagerAdapter_"
 
-  /**
-   View classes registered in `RCTComponentViewFactory`, keyed by the component name.
-   */
+  /// View classes registered in `RCTComponentViewFactory`, keyed by the component name.
   @MainActor
   private static var viewClasses = [String: AnyClass]()
 
