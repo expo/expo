@@ -339,13 +339,20 @@ function linkExpoModulesJSI(records, outDir, cacheDir) {
  * once one flavor exists, the resolver requires and prepares both before RN
  * receives the plugin result. No runtime binary enters the SwiftPM graph.
  * A pod name several packages list is looked up from each of them, in order,
- * until one has an artifact. Returns the records it linked, in that order.
+ * until one has an artifact. A direct module's checked-in manifest outranks its
+ * artifact. Returns the records it linked, in that order.
  */
 function linkPrecompiledPods(identities, records, cacheDir) {
   const linked = [];
   for (const identity of identities.values()) {
     const record = records.get(identity.podName);
     if (record.linkedAs != null) continue;
+    if (
+      DIRECT_MODULES.has(identity.packageName) &&
+      fs.existsSync(path.join(identity.moduleRoot, 'Package.swift'))
+    ) {
+      continue;
+    }
     const framework = resolveFlavoredFramework({
       packageName: identity.packageName,
       moduleRoot: identity.moduleRoot,
