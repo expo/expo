@@ -126,7 +126,7 @@ export function resolvePackageModuleId(moduleId: string) {
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
-  { npmPackage }: { npmPackage?: string | null }
+  { npmPackage, swiftpm }: { npmPackage?: string | null; swiftpm?: boolean }
 ): Promise<string> {
   const projectName = path.basename(projectRoot);
 
@@ -163,7 +163,7 @@ export async function extractAndPrepareTemplateAppAsync(
     throw error;
   }
 
-  await sanitizeTemplateAsync(projectRoot);
+  await sanitizeTemplateAsync(projectRoot, { swiftpm });
 
   return projectRoot;
 }
@@ -387,7 +387,10 @@ function templateHasNativeCode(root: string): boolean {
 /**
  * Sanitize a template (or example) with expected `package.json` properties and files.
  */
-export async function sanitizeTemplateAsync(projectRoot: string) {
+export async function sanitizeTemplateAsync(
+  projectRoot: string,
+  { swiftpm = false }: { swiftpm?: boolean } = {}
+) {
   const projectName = path.basename(projectRoot);
 
   debug(`Sanitizing template or example app (projectName: ${projectName})`);
@@ -411,9 +414,11 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     }
   }
 
-  const defaultConfig: ExpoConfig = {
+  // `experiments.swiftPackageManager` is not in the generated ExpoConfig schema yet.
+  const defaultConfig: ExpoConfig & { experiments?: { swiftPackageManager?: boolean } } = {
     name: projectName,
     slug: projectName,
+    ...(swiftpm && { experiments: { swiftPackageManager: true } }),
   };
 
   const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
