@@ -220,6 +220,47 @@ inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Functi
   });
 }
 
+/**
+ Calls `defineProperty`, the runtime's `Object.defineProperty`, on `object` with a new descriptor that holds
+ `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
+ JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
+ and building the descriptor and the arguments here avoids a round trip through Swift for each of them.
+ */
+inline void defineProperty(
+  jsi::IRuntime &runtime,
+  const jsi::Function &defineProperty,
+  const jsi::PropNameID &configurableKey,
+  const jsi::PropNameID &enumerableKey,
+  const jsi::PropNameID &writableKey,
+  const jsi::PropNameID &valueKey,
+  const jsi::Object &object,
+  const uint8_t *_Nonnull nameUtf8,
+  size_t nameLength,
+  const jsi::Value &value,
+  bool hasValue,
+  bool writable,
+  bool enumerable,
+  bool configurable
+) {
+  expo::CppError::tryCatch(runtime, [&] {
+    jsi::Object descriptor(runtime);
+    if (configurable) {
+      descriptor.setProperty(runtime, configurableKey, true);
+    }
+    if (enumerable) {
+      descriptor.setProperty(runtime, enumerableKey, true);
+    }
+    if (writable) {
+      descriptor.setProperty(runtime, writableKey, true);
+    }
+    if (hasValue) {
+      descriptor.setProperty(runtime, valueKey, value);
+    }
+    defineProperty.call(runtime, object, jsi::String::createFromUtf8(runtime, nameUtf8, nameLength), descriptor);
+    return jsi::Value::undefined();
+  });
+}
+
 inline jsi::Value callAsConstructor(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, [&] {
     return function.callAsConstructor(runtime, args, count);

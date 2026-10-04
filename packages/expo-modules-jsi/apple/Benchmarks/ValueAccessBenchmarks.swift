@@ -129,4 +129,27 @@ extension JSIBenchmarks {
       }
     }
   }
+
+  @Test
+  func `define a property`() async throws {
+    try await benchmarkCase { runtime in
+      try benchmark("JavaScriptObject.defineProperty(_:value:options:)", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          let object = runtime.createObject()
+          object.defineProperty("__expo_shared_object_id__", value: index, options: [.writable])
+        }
+      }
+    }
+  }
+
+  @Test
+  func `create an object`() async throws {
+    try await benchmarkCase { runtime in
+      try benchmark("JavaScriptRuntime.createObject()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = runtime.createObject()
+        }
+      }
+    }
+  }
 }
