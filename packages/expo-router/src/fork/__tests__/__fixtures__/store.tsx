@@ -12,6 +12,7 @@ import type { RoutingIntent } from '../../../global-state/routingQueue';
 import type { RouteNode } from '../../../Route';
 import { defaultRouteInfo, getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
 import { RouteInfoContext } from '../../../global-state/routeInfoContext';
+import { RemovalPreventionProvider } from '../../../global-state/removalPrevention';
 import { RouterConfigContext } from '../../../global-state/routerConfigContext';
 import type { NavigationState } from '../../../react-navigation/routers';
 
@@ -45,7 +46,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   return (
     <RoutingQueueProvider>
       <RouterConfigContext.Provider value={{ linking: undefined, redirects: [], routeNode }}>
-        <RouteInfoContext.Provider value={routeInfo}>{children}</RouteInfoContext.Provider>
+        <RemovalPreventionProvider>
+          <RouteInfoContext.Provider value={routeInfo}>{children}</RouteInfoContext.Provider>
+        </RemovalPreventionProvider>
         <PendingIntentsProbe />
       </RouterConfigContext.Provider>
     </RoutingQueueProvider>

@@ -1,16 +1,10 @@
 package expo.modules.notifications.notifications.model;
 
-import static expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder.META_DATA_LARGE_ICON_KEY;
-
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import expo.modules.notifications.notifications.enums.NotificationPriority;
 import expo.modules.notifications.notifications.interfaces.INotificationContent;
+import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder;
 import kotlin.coroutines.Continuation;
 
 /**
@@ -103,16 +98,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
   @Nullable
   @Override
   public Object getImage(@NonNull Context context, @NonNull Continuation<? super Bitmap> $completion) {
-    try {
-      ApplicationInfo ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-      if (ai.metaData.containsKey(META_DATA_LARGE_ICON_KEY)) {
-        int resourceId = ai.metaData.getInt(META_DATA_LARGE_ICON_KEY);
-        return BitmapFactory.decodeResource(context.getResources(), resourceId);
-      }
-    } catch (PackageManager.NameNotFoundException | ClassCastException e) {
-      Log.e("expo-notifications", "Could not fetch large notification icon.", e);
-    }
-    return null;
+    return ExpoNotificationBuilder.largeIconFromManifest(context);
   }
 
   @Override

@@ -27,10 +27,19 @@ internal class InvalidConvertibleException(message: String) :
 
 @DoNotStrip
 internal class UnsupportedOperationException(message: String) :
-  CodedException(if (message.isNotEmpty()) "Unsupported operations: $message" else "Unsupported operations")
+  CodedException(
+    if (message.isNotEmpty()) {
+      "Unsupported operations: $message"
+    } else {
+      "Unsupported operations"
+    }
+  )
 
 internal class AccessClosedResourceException :
   CodedException("Access to closed resource")
+
+internal class DatabaseClosingException :
+  CodedException("Cannot interrupt while the database is closing. Interrupt pending operations before closing.")
 
 internal class InvalidBindParameterException :
   CodedException("Invalid bind parameter")

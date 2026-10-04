@@ -4,9 +4,12 @@ sidebar_title: Troubleshooting
 description: Learn how to diagnose and fix common issues when running EAS Workflows.
 ---
 
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
 This page lists common EAS Workflows failure modes and how to fix them. If a workflow doesn't start or a job fails, start with the workflow run's detail page on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows). It shows each job's status, logs, and errors.
+
+<FAQ>
 
 ## Validate the workflow file
 
@@ -39,6 +42,8 @@ Add the profile to **eas.json**, or run `eas build:configure` to generate the fi
 [EAS environment variables](/eas/environment-variables/) are scoped to an environment: `production`, `preview`, or `development`. A job only sees variables from the environment set by its [`environment` key](/eas/workflows/syntax/#jobsjob_idenvironment), which defaults to `production`. If a variable is empty in a job, confirm the variable exists in the environment the job uses, or set the job's `environment` to match where the variable is defined.
 
 Also note that the [`env` key](/eas/workflows/syntax/#jobsjob_idenv) is not available on the `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, and `slack` jobs.
+
+</FAQ>
 
 ## More help
 

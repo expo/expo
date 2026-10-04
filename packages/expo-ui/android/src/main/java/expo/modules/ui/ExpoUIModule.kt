@@ -167,7 +167,11 @@ class ExpoUIModule : Module() {
         ?: appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
       val resolvedScheme = options?.scheme
-        ?: if (context.isSystemInDarkTheme()) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+        ?: if (context.isSystemInDarkTheme()) {
+          ExpoColorScheme.DARK
+        } else {
+          ExpoColorScheme.LIGHT
+        }
       val isDark = resolvedScheme == ExpoColorScheme.DARK
       val seedArgb = options?.seedColor?.composeOrNull?.toArgb()
       val colorScheme = if (seedArgb != null) {
@@ -203,6 +207,15 @@ class ExpoUIModule : Module() {
     }
     View(LazyColumnView::class)
     View(LazyRowView::class)
+    View(LazyItemsView::class) {
+      Events("onWindowChange")
+
+      OnViewDestroys { view: LazyItemsView ->
+        view.cancelPendingWindowChange()
+      }
+    }
+    View(LazyItemsPoolView::class)
+    View(LazyItemsSlotView::class)
 
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
@@ -350,6 +363,14 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
+      Events("onValueChange", "onValueChangeFinished")
+
+      Content { props ->
+        VerticalSliderContent(props)
+      }
+    }
+
     ExpoUIView<ShapeProps>("ShapeView") {
       Content { props ->
         ShapeContent(props)
@@ -376,12 +397,29 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<DateRangePickerProps>("DateRangePickerView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+
+      Content { props ->
+        DateRangePickerContent(props) { onDateRangeSelected(it) }
+      }
+    }
+
     ExpoUIView<DatePickerDialogProps>("DatePickerDialogView") {
       val onDateSelected by Event<DatePickerResult>()
       val onDismissRequest by Event<Unit>()
 
       Content { props ->
         ExpoDatePickerDialogContent(props, { onDateSelected(it) }, { onDismissRequest(Unit) })
+      }
+    }
+
+    ExpoUIView<DateRangePickerDialogProps>("DateRangePickerDialogView") {
+      val onDateRangeSelected by Event<DateRangePickerResult>()
+      val onDismissRequest by Event<Unit>()
+
+      Content { props ->
+        ExpoDateRangePickerDialogContent(props, { onDateRangeSelected(it) }, { onDismissRequest(Unit) })
       }
     }
 

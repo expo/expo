@@ -15,8 +15,8 @@ internal enum MenuOrderType: String, Enumerable {
     case .fixed:
       return .fixed
     case .priority:
-      // `.priority` is unavailable on tvOS; fall back to the platform default there.
-      #if os(tvOS)
+      // `.priority` is unavailable on tvOS and macOS; fall back to the platform default there.
+      #if os(tvOS) || os(macOS)
       return .automatic
       #else
       return .priority

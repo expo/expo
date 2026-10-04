@@ -2,7 +2,7 @@ name: Updates E2E (dev client)
 
 defaults:
   tools:
-    pnpm: '10.34.5'
+    pnpm: '12.2.1'
 
 on:
   push:
@@ -18,6 +18,7 @@ on:
       - packages/expo-dev-launcher/**
       - templates/expo-template-bare-minimum/**
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/updates-e2e-dev-client.yml
       - packages/expo-asset/**

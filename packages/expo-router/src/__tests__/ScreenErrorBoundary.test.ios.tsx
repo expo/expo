@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 
 import type { ErrorBoundaryProps } from '../exports';
 import { Stack } from '../layouts/Stack';
-import { renderRouterAsync } from '../testing-library';
+import { renderRouter } from '../testing-library';
 
 function ThrowingRoute(): never {
   throw new Error('Expected route error');
@@ -18,7 +18,7 @@ function boundary(testID: string) {
 it('uses a layout screen error boundary for a child route', async () => {
   const LayoutBoundary = boundary('layout-boundary');
 
-  await renderRouterAsync({
+  await renderRouter({
     _layout: {
       default: () => <Stack />,
       unstable_settings: { screenErrorBoundary: LayoutBoundary },
@@ -32,7 +32,7 @@ it('uses a layout screen error boundary for a child route', async () => {
 it('uses the parent layout boundary for a nested layout without one', async () => {
   const LayoutBoundary = boundary('layout-boundary');
 
-  await renderRouterAsync(
+  await renderRouter(
     {
       _layout: {
         default: () => <Stack />,
@@ -55,7 +55,7 @@ it('uses the parent layout boundary for a nested layout without one', async () =
 it('uses the parent layout boundary when the nested layout clears it', async () => {
   const LayoutBoundary = boundary('layout-boundary');
 
-  await renderRouterAsync(
+  await renderRouter(
     {
       _layout: {
         default: () => <Stack />,
@@ -87,7 +87,7 @@ it('uses the navigator boundary before the layout boundary', async () => {
   const LayoutBoundary = boundary('layout-boundary');
   const NavigatorBoundary = boundary('navigator-boundary');
 
-  await renderRouterAsync({
+  await renderRouter({
     _layout: {
       default: () => <Stack unstable_screenErrorBoundary={NavigatorBoundary} />,
       unstable_settings: { screenErrorBoundary: LayoutBoundary },
@@ -104,7 +104,7 @@ it('uses the route boundary before navigator and layout boundaries', async () =>
   const NavigatorBoundary = boundary('navigator-boundary');
   const RouteBoundary = boundary('route-boundary');
 
-  await renderRouterAsync({
+  await renderRouter({
     _layout: {
       default: () => <Stack unstable_screenErrorBoundary={NavigatorBoundary} />,
       unstable_settings: { screenErrorBoundary: LayoutBoundary },

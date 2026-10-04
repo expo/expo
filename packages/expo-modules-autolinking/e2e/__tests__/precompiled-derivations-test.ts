@@ -3,6 +3,8 @@ import fs from 'fs';
 import os from 'os';
 import { join, resolve } from 'path';
 
+import { createAutolinkingOptionsLoader } from '../../src/commands/autolinkingOptions';
+import { resolvePrebuiltMetadataAsync } from '../../src/prebuiltMetadata';
 import { autolinkingRunAsync } from '../TestUtils';
 
 jest.unmock('fs');
@@ -66,24 +68,38 @@ const canRun = rubyAvailable() && fs.existsSync(join(repoRoot, 'apps/bare-expo/n
     const { stdout } = await autolinkingRunAsync(['prebuilt-metadata', '--json'], {
       cwd: bareExpoIosPath,
     });
-    const pickIdentity = (entries: Record<string, any>, normalizePaths: boolean) =>
-      Object.fromEntries(
-        Object.entries(entries).map(([podName, e]) => [
-          podName,
-          {
-            type: e.type,
-            npmPackage: e.npmPackage,
-            packageRoot: normalizePaths ? repoRelative(e.packageRoot) : e.packageRoot,
-            podspecDir: normalizePaths ? repoRelative(e.podspecDir) : e.podspecDir,
-            productName: e.productName,
-          },
-        ])
-      );
     const actual = pickIdentity(JSON.parse(stdout), true);
     const expected = pickIdentity(JSON.parse(fs.readFileSync(fixturePath, 'utf8')), false);
     expect(actual).toEqual(expected);
   });
+
+  // The app-plan projection is resolution-scoped: it must contain every fixture
+  // entry except packages nothing in the app's dependency graph depends on.
+  it('app-plan resolution matches the fixture minus app-independent packages', async () => {
+    const optionsLoader = createAutolinkingOptionsLoader({
+      projectRoot: join(repoRoot, 'apps/bare-expo'),
+    });
+    const document = await resolvePrebuiltMetadataAsync(optionsLoader, { mode: 'app-plan' });
+    const fixture = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+    delete fixture.ExpoWidgets;
+    expect(pickIdentity(document, true)).toEqual(pickIdentity(fixture, false));
+  });
 });
+
+function pickIdentity(entries: Record<string, any>, normalizePaths: boolean) {
+  return Object.fromEntries(
+    Object.entries(entries).map(([podName, e]) => [
+      podName,
+      {
+        type: e.type,
+        npmPackage: e.npmPackage,
+        packageRoot: normalizePaths ? repoRelative(e.packageRoot) : e.packageRoot,
+        podspecDir: normalizePaths ? repoRelative(e.podspecDir) : e.podspecDir,
+        productName: e.productName,
+      },
+    ])
+  );
+}
 
 // Mirrors the Ruby dump's path canonicalization: repo-relative, pnpm store collapsed.
 function repoRelative(p: string): string {

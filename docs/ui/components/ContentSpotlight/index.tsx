@@ -80,7 +80,7 @@ export function ContentSpotlight({
   return (
     <figure
       className={mergeClasses(
-        'my-5 cursor-pointer rounded-lg py-2.5 text-center',
+        'my-5 cursor-pointer overflow-hidden rounded-3xl py-2.5 text-center',
         containerClassName,
         !isVideo && !isComponentVariant && 'bg-subtle',
         isComponentVariant &&
@@ -119,7 +119,7 @@ export function ContentSpotlight({
       ) : isVideo ? (
         <div
           className={mergeClasses(
-            'relative overflow-hidden rounded-lg bg-palette-black',
+            'relative overflow-hidden rounded-3xl bg-palette-black',
             hasCustomPlayerSize ? 'mx-auto' : 'aspect-video'
           )}
           ref={playerRef}

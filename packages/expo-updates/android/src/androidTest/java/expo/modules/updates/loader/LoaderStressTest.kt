@@ -70,7 +70,7 @@ class LoaderStressTest {
           manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(manifest),
           directiveUpdateResponsePart = null
         )
-        coEvery { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any()) } coAnswers {
+        coEvery { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) } coAnswers {
           // jitter so download completions overlap instead of serializing
           delay((0..2).random().toLong())
           FileDownloader.AssetDownloadResult(firstArg<AssetEntity>(), true)

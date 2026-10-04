@@ -11,7 +11,9 @@ internal fun getMD5HashOfFileContent(file: File): String? {
     FileInputStream(file).use { inputStream ->
       while (true) {
         val bytesRead = inputStream.read(buffer)
-        if (bytesRead == -1) break
+        if (bytesRead == -1) {
+          break
+        }
         digest.update(buffer, 0, bytesRead)
       }
     }

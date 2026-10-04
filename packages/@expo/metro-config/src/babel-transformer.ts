@@ -45,6 +45,28 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   isDomComponent?: boolean;
 };
 
+export type ExpoBabelTransformerCacheKeyOptions = BabelTransformerCacheKeyOptions & {
+  extendsBabelConfigPath?: string;
+};
+
+/**
+ * Metro's Babel transformer options plus the fields Metro's transform worker passes through
+ * from `JsTransformOptions` without declaring them on the Babel transformer's own type.
+ */
+export type ExpoBabelTransformerOptions = BabelTransformerArgs['options'] & {
+  /** The kind of file being transformed, forwarded from `JsTransformOptions['type']`. */
+  type?: 'script' | 'module' | 'asset';
+};
+
+export type ExpoBabelTransformerArgs = Omit<BabelTransformerArgs, 'options'> & {
+  options: ExpoBabelTransformerOptions;
+};
+
+export type ExpoBabelTransformer = Omit<BabelTransformer, 'getCacheKey'> & {
+  getCacheKey?: (options?: ExpoBabelTransformerCacheKeyOptions) => string;
+  isDefaultConfig: typeof isDefaultConfig;
+};
+
 function isCustomTruthy(value: any): boolean {
   return String(value) === 'true';
 }
@@ -69,7 +91,7 @@ const memoizeWarning = memoize((message: string) => {
 function getBabelCaller({
   filename,
   options,
-}: Pick<BabelTransformerArgs, 'filename' | 'options'>): ExpoBabelCaller {
+}: Pick<ExpoBabelTransformerArgs, 'filename' | 'options'>): ExpoBabelCaller {
   const isNodeModule = filename.includes('node_modules');
   const isReactServer = options.customTransformOptions?.environment === 'react-server';
   const isGenericServer = options.customTransformOptions?.environment === 'node';
@@ -383,7 +405,7 @@ const transform: BabelTransformer['transform'] = ({
  *
  * This is called once by the main thread (not on worker instances).
  */
-function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
+function getCacheKey(options?: ExpoBabelTransformerCacheKeyOptions): string {
   if (options?.projectRoot == null || options.enableBabelRCLookup === false) {
     return '';
   }
@@ -411,9 +433,7 @@ function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
   return getFileCacheKey([...files].sort());
 }
 
-const babelTransformer: BabelTransformer & {
-  isDefaultConfig: typeof isDefaultConfig;
-} = {
+const babelTransformer: ExpoBabelTransformer = {
   transform,
   getCacheKey,
   // This is an Expo extension consumed by the matching Metro worker.

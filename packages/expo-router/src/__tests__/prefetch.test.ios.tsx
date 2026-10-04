@@ -26,8 +26,8 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-it('prefetch a sibling route', () => {
-  renderRouter({
+it('prefetch a sibling route', async () => {
+  await renderRouter({
     index: function Index() {
       return null;
     },
@@ -64,7 +64,7 @@ it('prefetch a sibling route', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/test');
   });
 
@@ -90,6 +90,7 @@ it('prefetch a sibling route', () => {
               key: expect.any(String),
               name: 'test',
               params: {},
+              isPreloaded: true,
             },
           ],
           stale: false,
@@ -103,19 +104,19 @@ it('prefetch a sibling route', () => {
   });
 });
 
-it('orders the most recently prefetched route first', () => {
-  renderRouter({
+it('orders the most recently prefetched route first', async () => {
+  await renderRouter({
     index: () => null,
     a: () => null,
     b: () => null,
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/a');
     router.prefetch('/b');
   });
 
-  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
   const stackState = state?.routes[0]?.state;
   if (!stackState) {
     throw new Error('Expected a stack navigator');
@@ -129,8 +130,8 @@ it('orders the most recently prefetched route first', () => {
   expect(stackState.routes[index + 2]?.name).toBe('a');
 });
 
-it('will prefetch the correct route within a group', () => {
-  renderRouter({
+it('will prefetch the correct route within a group', async () => {
+  await renderRouter({
     '(a)/index': () => null,
     '(a)/test': () => null,
     '(b)/index': () => null,
@@ -165,7 +166,7 @@ it('will prefetch the correct route within a group', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/test');
   });
 
@@ -191,6 +192,7 @@ it('will prefetch the correct route within a group', () => {
               key: expect.any(String),
               name: '(a)/test',
               params: {},
+              isPreloaded: true,
             },
           ],
           stale: false,
@@ -204,8 +206,8 @@ it('will prefetch the correct route within a group', () => {
   });
 });
 
-it('will prefetch the correct route within nested groups', () => {
-  renderRouter({
+it('will prefetch the correct route within nested groups', async () => {
+  await renderRouter({
     '(a)/index': () => null,
     '(a)/(c)/test': () => null,
     '(b)/index': () => null,
@@ -240,7 +242,7 @@ it('will prefetch the correct route within nested groups', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/test');
   });
 
@@ -266,6 +268,7 @@ it('will prefetch the correct route within nested groups', () => {
               key: expect.any(String),
               name: '(a)/(c)/test',
               params: {},
+              isPreloaded: true,
             },
           ],
           stale: false,
@@ -279,8 +282,8 @@ it('will prefetch the correct route within nested groups', () => {
   });
 });
 
-it('works with relative Href', () => {
-  renderRouter({
+it('works with relative Href', async () => {
+  await renderRouter({
     index: () => null,
     test: () => null,
   });
@@ -313,7 +316,7 @@ it('works with relative Href', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('./test');
   });
 
@@ -339,6 +342,7 @@ it('works with relative Href', () => {
               key: expect.any(String),
               name: 'test',
               params: {},
+              isPreloaded: true,
             },
           ],
           stale: false,
@@ -352,8 +356,8 @@ it('works with relative Href', () => {
   });
 });
 
-it('works with params', () => {
-  renderRouter({
+it('works with params', async () => {
+  await renderRouter({
     index: () => null,
     test: () => null,
   });
@@ -386,7 +390,7 @@ it('works with params', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('./test?foo=bar');
   });
 
@@ -414,6 +418,7 @@ it('works with params', () => {
               params: {
                 foo: 'bar',
               },
+              isPreloaded: true,
             },
           ],
           stale: false,
@@ -427,8 +432,8 @@ it('works with params', () => {
   });
 });
 
-it('ignores the current route', () => {
-  renderRouter(
+it('ignores the current route', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       index: () => null,
@@ -481,7 +486,7 @@ it('ignores the current route', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/directory');
   });
 
@@ -515,6 +520,7 @@ it('ignores the current route', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    isPreloaded: true,
                   },
                 ],
                 stale: false,
@@ -533,10 +539,10 @@ it('ignores the current route', () => {
   });
 });
 
-it('can prefetch a deeply nested route', () => {
+it('can prefetch a deeply nested route', async () => {
   const jestFn = jest.fn();
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => <Stack />,
       index: () => null,
@@ -601,7 +607,7 @@ it('can prefetch a deeply nested route', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/directory/apple/banana');
   });
 
@@ -638,6 +644,7 @@ it('can prefetch a deeply nested route', () => {
                     key: expect.any(String),
                     name: 'apple',
                     params: {},
+                    isPreloaded: true,
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -685,8 +692,8 @@ it('can prefetch a deeply nested route', () => {
   });
 });
 
-it('can prefetch a parent route', () => {
-  renderRouter(
+it('can prefetch a parent route', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       index: () => null,
@@ -774,7 +781,7 @@ it('can prefetch a parent route', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/directory/test');
   });
 
@@ -836,6 +843,7 @@ it('can prefetch a parent route', () => {
                     key: expect.any(String),
                     name: 'test',
                     params: {},
+                    isPreloaded: true,
                   },
                 ],
                 stale: false,
@@ -854,9 +862,9 @@ it('can prefetch a parent route', () => {
   });
 });
 
-it('can update <Screen /> options while prefetching in stack', () => {
+it('can update <Screen /> options while prefetching in stack', async () => {
   const headerTitle = jest.fn(() => null);
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack screenOptions={{ headerTitle }}>
         <Stack.Screen name="index" options={{ title: 'index' }} />
@@ -884,10 +892,12 @@ it('can update <Screen /> options while prefetching in stack', () => {
   ]);
 
   // Check that it actually prefetched the screen
-  expect(screen.UNSAFE_getByProps({ title: 'Updated while preloaded' })).toBeDefined();
+  expect(
+    screen.container.queryAll((node) => node.props.title === 'Updated while preloaded')
+  ).not.toHaveLength(0);
 
   headerTitle.mockClear();
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls).toStrictEqual([
     // Call after navigation
@@ -904,10 +914,10 @@ it('can update <Screen /> options while prefetching in stack', () => {
   ]);
 });
 
-it('ignores navigation actions dispatched while prefetching in stack', () => {
+it('ignores navigation actions dispatched while prefetching in stack', async () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index">Index</Text>,
     second: function Second() {
@@ -918,16 +928,16 @@ it('ignores navigation actions dispatched while prefetching in stack', () => {
     },
   });
 
-  act(() => router.prefetch('/second'));
+  await act(() => router.prefetch('/second'));
 
   expect(warn).toHaveBeenCalledWith(expect.stringContaining("preloaded screen 'second'"));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 });
 
-it('can still use <Screen /> while prefetching in tabs', () => {
+it('can still use <Screen /> while prefetching in tabs', async () => {
   const headerTitle = jest.fn((...args: Parameters<HeaderTitleFunction>) => null);
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs screenOptions={{ headerTitle }}>
         <Tabs.Screen name="index" options={{ title: 'index' }} />
@@ -954,7 +964,7 @@ it('can still use <Screen /> while prefetching in tabs', () => {
   ]);
 
   headerTitle.mockClear();
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   expect(headerTitle.mock.calls.map((call) => call[0].children)).toStrictEqual([
     'index',
@@ -964,14 +974,14 @@ it('can still use <Screen /> while prefetching in tabs', () => {
   ]);
 });
 
-it('stamps zoom transition screen ID on preloaded route', () => {
-  renderRouter({
+it('stamps zoom transition screen ID on preloaded route', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => null,
     target: () => null,
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch({
       pathname: '/target',
       params: {
@@ -980,7 +990,7 @@ it('stamps zoom transition screen ID on preloaded route', () => {
     });
   });
 
-  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
   const innerState = state?.routes[0]!.state;
   if (!innerState) {
     throw new Error('Expected a stack navigator');
@@ -996,18 +1006,18 @@ it('stamps zoom transition screen ID on preloaded route', () => {
   );
 });
 
-it('does not stamp zoom transition screen ID without zoom source param', () => {
-  renderRouter({
+it('does not stamp zoom transition screen ID without zoom source param', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => null,
     target: () => null,
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch('/target');
   });
 
-  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
   const innerState = state?.routes[0]!.state;
   if (!innerState) {
     throw new Error('Expected a stack navigator');
@@ -1022,14 +1032,14 @@ it('does not stamp zoom transition screen ID without zoom source param', () => {
   );
 });
 
-it('stamps zoom transition screen ID on preloaded route that is navigated to', () => {
-  renderRouter({
+it('stamps zoom transition screen ID on preloaded route that is navigated to', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => null,
     target: () => <Text testID="target">Target</Text>,
   });
 
-  act(() => {
+  await act(() => {
     router.prefetch({
       pathname: '/target',
       params: {
@@ -1039,7 +1049,7 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
   });
 
   // Navigate to the preloaded route (with zoom params so it goes through the NAVIGATE/PUSH stamping)
-  act(() => {
+  await act(() => {
     router.push({
       pathname: '/target',
       params: {
@@ -1048,7 +1058,7 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
     });
   });
 
-  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const state = (screen as Awaited<ReturnType<typeof renderRouter>>).getRouterState();
   const innerState = state?.routes[0]!.state;
   if (!innerState) {
     throw new Error('Expected a stack navigator');

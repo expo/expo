@@ -18,6 +18,10 @@ def getExtOrIntegerDefault(prop) {
   return rootProject.ext.has(prop) ? rootProject.ext.get(prop) : (project.properties['ReactNativeWebView_' + prop]).toInteger()
 }
 
+def getReactNativeWebViewMinSdkVersion() {
+  return Math.max(getExtOrIntegerDefault('minSdkVersion').toInteger(), 24)
+}
+
 static def findNodeModulePath(baseDir, packageName) {
     def basePath = baseDir.toPath().normalize()
     // Node's module resolution algorithm searches up to the root directory,
@@ -82,7 +86,7 @@ android {
     compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
 
     defaultConfig {
-        minSdkVersion getExtOrIntegerDefault('minSdkVersion')
+        minSdkVersion getReactNativeWebViewMinSdkVersion()
         targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
     }

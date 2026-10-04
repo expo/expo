@@ -14,7 +14,7 @@ import {
   isExternalPackage,
   SPMPackageSource,
 } from './ExternalPackage';
-import { SPMProduct } from './SPMConfig.types';
+import { FrameworkTarget, SPMProduct } from './SPMConfig.types';
 import { resolvePackagePath } from './resolvePackage';
 
 /**
@@ -52,6 +52,32 @@ export function runWithLogPrefix<T>(prefix: string, fn: () => T): T {
 
 export function getActiveLogPrefix(): string | null {
   return _logPrefixStorage.getStore() ?? null;
+}
+
+/**
+ * Resolves the directory holding a framework target's xcframework.
+ *
+ * By default the xcframework ships inside the package being built. Some packages ship their
+ * binaries in a separate npm package instead (e.g. `@shopify/react-native-skia` publishes its
+ * Skia slices as `react-native-skia-apple-ios`); those targets name it in `package` and their
+ * `path` is then relative to that package's root.
+ */
+export function resolveFrameworkTargetPath(packagePath: string, target: FrameworkTarget): string {
+  if (!target.package) {
+    return path.join(packagePath, target.path);
+  }
+  let packageJsonPath: string;
+  try {
+    packageJsonPath = require.resolve(`${target.package}/package.json`, { paths: [packagePath] });
+  } catch {
+    throw new Error(
+      `Cannot find "${target.package}", the package that ships the "${target.name}" xcframework. ` +
+        `Its spm.config.json expects it next to "${packagePath}", so it is either not a dependency ` +
+        `of that package anymore or node_modules is out of date. Run \`pnpm install\` and, if it ` +
+        `still fails, update the framework targets in the package's spm.config.json.`
+    );
+  }
+  return path.join(path.dirname(packageJsonPath), target.path);
 }
 
 /**
@@ -145,37 +171,14 @@ export const discoverAllSPMPackagesAsync = async (): Promise<SPMPackageSource[]>
   return [...expoPackages, ...externalPackages];
 };
 
-/**
- * Packages whose iOS prebuilt xcframeworks are distributed by default: built by
- * `et prebuild-packages` with no arguments and bundled into the published npm tarballs.
- * Many more packages have an `spm.config.json`; pass `--all-packages` to build those too.
- */
-export const IOS_PREBUILD_PACKAGES = [
-  'expo-brownfield',
-  'expo-camera',
-  'expo-contacts',
-  'expo-file-system',
-  'expo-font',
-  'expo-image',
-  'expo-image-manipulator',
-  'expo-live-photo',
-  'expo-location',
-  'expo-maps',
-  'expo-media-library',
-  'expo-modules-core',
-  'expo-print',
-  'expo-ui',
-  'expo-video',
-];
-
-export const selectDistributedPackages = <T extends { packageName: string }>(
-  expoPackages: T[],
+export const selectDistributedPackages = (
+  expoPackages: Package[],
   allPackages: boolean
-): T[] => {
+): Package[] => {
   if (allPackages) {
     return expoPackages;
   }
-  return expoPackages.filter((pkg) => IOS_PREBUILD_PACKAGES.includes(pkg.packageName));
+  return expoPackages.filter((pkg) => pkg.getSwiftPMConfiguration().publishPrebuilds === true);
 };
 
 /**

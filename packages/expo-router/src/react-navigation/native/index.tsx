@@ -18,7 +18,6 @@ export { DarkTheme } from './theming/DarkTheme';
  */
 export { DefaultTheme } from './theming/DefaultTheme';
 export * from './types';
-export { UnhandledLinkingContext as UNSTABLE_UnhandledLinkingContext } from './UnhandledLinkingContext';
 /**
  * @deprecated Use `Link` from `expo-router`. Will be removed in a future SDK.
  */

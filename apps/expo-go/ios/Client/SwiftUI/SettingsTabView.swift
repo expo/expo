@@ -3,7 +3,7 @@
 import SwiftUI
 import AuthenticationServices
 import AppTrackingTransparency
-import EXApplication
+import ExpoApplication
 import ExpoModulesCore
 
 struct SettingsTabView: View {

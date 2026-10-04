@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
@@ -21,22 +21,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
-    paths:
-      - .github/actions/detect-platform-change/action.yml
-      - .github/workflows/test-suite.yml
-      - .github/actions/use-android-emulator/action.yml
-      - .github/actions/setup-maestro/action.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
-      - '!packages/create-expo/**'
-      - '!packages/create-expo-nightly/**'
-      - '!packages/create-expo-module/**'
-      - '!**.md'
-      - '!**/__tests__/**'
-      - '!**/__mocks__/**'
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -44,6 +29,10 @@ concurrency:
 
 jobs:
   detect-platform-changes:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository ||
+      !startsWith(github.head_ref, 'changeset-release/')
     runs-on: ubuntu-24.04
     outputs:
       should_build_ios: ${{ steps.build.outputs.should_run_ios }}
@@ -90,6 +79,7 @@ jobs:
             "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-autolinking/**/android/**",
             "packages/expo/**/android/**",
+            "packages/expo-app-metrics/**/android/**",
             "packages/expo-constants/**/android/**",
             "packages/expo-crypto/**/android/**",
             "packages/expo-file-system/**/android/**",
@@ -97,6 +87,7 @@ jobs:
             "packages/expo-image/**/android/**",
             "packages/expo-keep-awake/**/android/**",
             "packages/expo-localization/**/android/**",
+            "packages/expo-router/**/android/**",
             "packages/expo-sqlite/**/android/**",
             "packages/expo-video/**/android/**",
             "apps/bare-expo/**/android/**"
@@ -113,6 +104,7 @@ jobs:
             "packages/expo-image/**/ios/**",
             "packages/expo-keep-awake/**/ios/**",
             "packages/expo-localization/**/ios/**",
+            "packages/expo-router/**/ios/**",
             "packages/expo-sqlite/**/ios/**",
             "packages/expo-video/**/ios/**",
             "apps/bare-expo/**/ios/**"
@@ -134,6 +126,7 @@ jobs:
             "packages/expo-image/**",
             "packages/expo-keep-awake/**",
             "packages/expo-localization/**",
+            "packages/expo-router/**",
             "packages/expo-sqlite/**",
             "packages/expo-video/**",
             pnpm-lock.yaml,
@@ -168,9 +161,9 @@ jobs:
       - name: Setup ccache
         uses: ./.github/actions/setup-ccache
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -182,6 +175,7 @@ jobs:
         with:
           ccache: 'true'
           bare-expo-pods: 'true'
+          ccache-variant: 'e2e-release'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
@@ -277,9 +271,9 @@ jobs:
         with:
           version: 2.6.1
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -378,9 +372,9 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -477,9 +471,9 @@ jobs:
           # the Android emulator in CI.
           version: 2.4.0
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:

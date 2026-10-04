@@ -1,9 +1,10 @@
 import { act, fireEvent, screen, userEvent } from '@testing-library/react-native';
 import type { Ref } from 'react';
-import React, { forwardRef, useEffect, useState } from 'react';
+import React, { act as reactAct, forwardRef, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
+import { unstable_useIsNavigating } from '../exports';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { useGuardRedirect } from '../layouts/GuardContext';
@@ -18,6 +19,16 @@ import { useNavigation } from '../useNavigation';
 import { useNavigatorContext } from '../views/Navigator';
 import type { PressableProps } from '../views/Pressable';
 import { Pressable } from '../views/Pressable';
+
+afterEach(() => router.setTransitionMode('preload-only'));
+
+function createDeferred() {
+  let resolve!: (value: string) => void;
+  const promise = new Promise<string>((resolvePromise) => {
+    resolve = resolvePromise;
+  });
+  return { promise, resolve };
+}
 
 const renderFruitApp = (options: RenderRouterOptions = {}) =>
   renderRouter(
@@ -91,27 +102,76 @@ const renderFruitApp = (options: RenderRouterOptions = {}) =>
     options
   );
 
-it('should render the correct screen with nested navigators', () => {
-  renderFruitApp({ initialUrl: '/apple' });
+it('keeps the current tab visible while a queued tab switch suspends', async () => {
+  const deferred = createDeferred();
+
+  function Layout() {
+    const isNavigating = unstable_useIsNavigating();
+    return (
+      <>
+        <Text testID="is-navigating">{String(isNavigating)}</Text>
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" testID="goto-index" />
+            <TabTrigger name="slow" href="/slow" testID="goto-slow" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      </>
+    );
+  }
+
+  function SlowScreen() {
+    return <Text testID="slow">{React.use(deferred.promise)}</Text>;
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: () => <Text testID="index">Index</Text>,
+    slow: {
+      default: SlowScreen,
+      SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
+    },
+  });
+
+  await act(() => router.setTransitionMode('always'));
+
+  const navigationAct = reactAct(() => {
+    screen.getByTestId('goto-slow').props.onClick();
+  });
+
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('fallback')).toBeNull();
+
+  deferred.resolve('Slow');
+  await navigationAct;
+
+  await waitFor(() => expect(screen.getByTestId('is-navigating')).toHaveTextContent('false'));
+  expect(screen.getByTestId('slow')).toBeVisible();
+});
+
+it('should render the correct screen with nested navigators', async () => {
+  await renderFruitApp({ initialUrl: '/apple' });
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
-  fireEvent.press(screen.getByTestId('goto-banana'));
+  await fireEvent.press(screen.getByTestId('goto-banana'));
   expect(screen.getByTestId('banana-dynamic')).toBeVisible();
   expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
-  act(() => router.push('/banana/shape'));
+  await act(() => router.push('/banana/shape'));
   expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
   expect(screen.getByTestId('banana-shape')).toBeVisible();
 
-  fireEvent.press(screen.getByTestId('goto-apple'));
+  await fireEvent.press(screen.getByTestId('goto-apple'));
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
   // A deep trigger resolves its destination against the preserved stack.
-  fireEvent.press(screen.getByTestId('goto-banana'));
+  await fireEvent.press(screen.getByTestId('goto-banana'));
   expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
 });
 
-it('pressing a deep trigger resolves its href in the focused tab', () => {
-  renderRouter(
+it('pressing a deep trigger resolves its href in the focused tab', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -129,12 +189,12 @@ it('pressing a deep trigger resolves its href in the focused tab', () => {
     { initialUrl: '/banana' }
   );
 
-  fireEvent.press(screen.getByTestId('deep-trigger'));
+  await fireEvent.press(screen.getByTestId('deep-trigger'));
   expect(screen.getByTestId('banana-details')).toBeVisible();
 });
 
-it('pressing an inherited deep trigger resolves its href in the focused parent tab', () => {
-  renderRouter(
+it('pressing an inherited deep trigger resolves its href in the focused parent tab', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -160,38 +220,38 @@ it('pressing an inherited deep trigger resolves its href in the focused parent t
     { initialUrl: '/a' }
   );
 
-  fireEvent.press(screen.getByTestId('deep-parent-trigger'));
+  await fireEvent.press(screen.getByTestId('deep-parent-trigger'));
   expect(screen.getByTestId('a-b')).toBeVisible();
 });
 
-it('should respect `unstable_settings on native', () => {
-  renderFruitApp({ initialUrl: '/orange' });
+it('should respect `unstable_settings on native', async () => {
+  await renderFruitApp({ initialUrl: '/orange' });
   expect(screen).toHaveSegments(['(group)', 'orange']);
 
   expect(screen.getByTestId('orange')).toBeVisible();
   expect(router.canGoBack()).toBe(false);
 
   // Reset the app, but start at /banana
-  screen.unmount();
-  renderFruitApp({ initialUrl: '/banana' });
+  await screen.unmount();
+  await renderFruitApp({ initialUrl: '/banana' });
 
   // Orange should be the initialRouteName, because we are now in (two)
   expect(screen.getByTestId('banana')).toBeVisible();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('orange')).toBeVisible();
 });
 
-it('should allow Href objects', () => {
-  renderFruitApp({ initialUrl: '/pear/color' });
+it('should allow Href objects', async () => {
+  await renderFruitApp({ initialUrl: '/pear/color' });
   expect(screen).toHaveSegments(['(group)', '[fruit]', 'color']);
   expect(screen.getByTestId('[fruit]-color')).toBeVisible();
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHaveSegments(['(group)', '[fruit]']);
   expect(screen.getByTestId('[fruit]')).toBeVisible();
 });
 
-it('allows for custom elements', () => {
+it('allows for custom elements', async () => {
   const CustomTabs = forwardRef(({ children, ...props }: ViewProps, ref: Ref<View>) => {
     return (
       <View ref={ref} testID="custom-tabs" {...props}>
@@ -210,7 +270,7 @@ it('allows for custom elements', () => {
     return <Pressable ref={ref} testID="custom-trigger" {...props} />;
   });
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => {
         return (
@@ -249,15 +309,15 @@ it('allows for custom elements', () => {
   expect(screen.getByTestId('custom-trigger')).toBeVisible();
 
   expect(screen).toHaveSegments(['apple']);
-  act(() => router.push('/orange'));
+  await act(() => router.push('/orange'));
   expect(screen).toHaveSegments(['orange']);
 
-  fireEvent.press(screen.getByTestId('goto-apple'));
+  await fireEvent.press(screen.getByTestId('goto-apple'));
   expect(screen).toHaveSegments(['apple']);
 });
 
-it('can dynamically add and remove tabs', () => {
-  renderRouter(
+it('can dynamically add and remove tabs', async () => {
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [showAll, setShowAll] = useState(false);
@@ -290,21 +350,21 @@ it('can dynamically add and remove tabs', () => {
   expect(screen).toHaveSegments(['apple']);
 
   // This stays on /apple because there is no orange tab
-  act(() => router.push('/orange'));
+  await act(() => router.push('/orange'));
   expect(screen).toHaveSegments(['apple']);
 
-  fireEvent.press(screen.getByTestId('toggle-all'));
+  await fireEvent.press(screen.getByTestId('toggle-all'));
 
   // This now works because there is an orange tab
-  act(() => router.push('/orange'));
+  await act(() => router.push('/orange'));
   expect(screen).toHaveSegments(['orange']);
 
-  fireEvent.press(screen.getByTestId('toggle-all'));
+  await fireEvent.press(screen.getByTestId('toggle-all'));
   expect(screen).toHaveSegments(['apple']);
 });
 
-it('can dynamically remove the active tab', () => {
-  renderRouter(
+it('can dynamically remove the active tab', async () => {
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [showAll, setShowAll] = useState(true);
@@ -330,12 +390,12 @@ it('can dynamically remove the active tab', () => {
 
   expect(screen).toHaveSegments(['orange']);
 
-  fireEvent.press(screen.getByTestId('hide-orange'));
+  await fireEvent.press(screen.getByTestId('hide-orange'));
 
   expect(screen).toHaveSegments(['apple']);
 });
 
-it('preserves surviving tab content when the trigger set changes', () => {
+it('preserves surviving tab content when the trigger set changes', async () => {
   let appleMounts = 0;
 
   function Apple() {
@@ -343,7 +403,7 @@ it('preserves surviving tab content when the trigger set changes', () => {
     return null;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [showOrange, setShowOrange] = useState(true);
@@ -365,11 +425,11 @@ it('preserves surviving tab content when the trigger set changes', () => {
   );
 
   expect(appleMounts).toBe(1);
-  fireEvent.press(screen.getByTestId('hide-orange'));
+  await fireEvent.press(screen.getByTestId('hide-orange'));
   expect(appleMounts).toBe(1);
 });
 
-it('does not reset tab content when only a trigger href changes', () => {
+it('does not reset tab content when only a trigger href changes', async () => {
   let appleMounts = 0;
 
   function Apple() {
@@ -377,7 +437,7 @@ it('does not reset tab content when only a trigger href changes', () => {
     return null;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [withQuery, setWithQuery] = useState(false);
@@ -397,11 +457,11 @@ it('does not reset tab content when only a trigger href changes', () => {
   );
 
   expect(appleMounts).toBe(1);
-  fireEvent.press(screen.getByTestId('change-href'));
+  await fireEvent.press(screen.getByTestId('change-href'));
   expect(appleMounts).toBe(1);
 });
 
-it('does not reset tab content when triggers are reordered', () => {
+it('does not reset tab content when triggers are reordered', async () => {
   let appleMounts = 0;
   let tabState: { routeNames: string[]; routes: string[] } | undefined;
 
@@ -419,7 +479,7 @@ it('does not reset tab content when triggers are reordered', () => {
     return null;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [reversed, setReversed] = useState(false);
@@ -443,18 +503,18 @@ it('does not reset tab content when triggers are reordered', () => {
   );
 
   expect(appleMounts).toBe(1);
-  fireEvent.press(screen.getByTestId('reorder'));
+  await fireEvent.press(screen.getByTestId('reorder'));
   expect(appleMounts).toBe(1);
   expect(tabState).toEqual({
     routeNames: ['orange', 'apple'],
     routes: ['apple'],
   });
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHaveSegments(['orange']);
 });
 
-it('uses the new trigger order for order back behavior', () => {
-  renderRouter(
+it('uses the new trigger order for order back behavior', async () => {
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [reordered, setReordered] = useState(false);
@@ -485,15 +545,15 @@ it('uses the new trigger order for order back behavior', () => {
     { initialUrl: '/pear' }
   );
 
-  fireEvent.press(screen.getByTestId('reorder'));
-  act(() => router.back());
+  await fireEvent.press(screen.getByTestId('reorder'));
+  await act(() => router.back());
   expect(screen).toHaveSegments(['apple']);
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHaveSegments(['orange']);
 });
 
-it('returns to the initial route after triggers are reordered', () => {
-  renderRouter(
+it('returns to the initial route after triggers are reordered', async () => {
+  await renderRouter(
     {
       _layout: {
         unstable_settings: { initialRouteName: 'orange' },
@@ -521,13 +581,13 @@ it('returns to the initial route after triggers are reordered', () => {
     { initialUrl: '/pear' }
   );
 
-  fireEvent.press(screen.getByTestId('reorder'));
-  act(() => router.back());
+  await fireEvent.press(screen.getByTestId('reorder'));
+  await act(() => router.back());
   expect(screen).toHaveSegments(['orange']);
 });
 
-it('preserves visit history when triggers are reordered', () => {
-  renderRouter(
+it('preserves visit history when triggers are reordered', async () => {
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [reordered, setReordered] = useState(false);
@@ -552,14 +612,14 @@ it('preserves visit history when triggers are reordered', () => {
     { initialUrl: '/apple' }
   );
 
-  fireEvent.press(screen.getByTestId('goto-orange'));
-  fireEvent.press(screen.getByTestId('goto-pear'));
-  fireEvent.press(screen.getByTestId('reorder'));
-  act(() => router.back());
+  await fireEvent.press(screen.getByTestId('goto-orange'));
+  await fireEvent.press(screen.getByTestId('goto-pear'));
+  await fireEvent.press(screen.getByTestId('reorder'));
+  await act(() => router.back());
   expect(screen).toHaveSegments(['orange']);
 });
 
-it('scopes trigger reordering to a nested tab navigator', () => {
+it('scopes trigger reordering to a nested tab navigator', async () => {
   let parentState: string | undefined;
 
   function ParentStateProbe() {
@@ -573,7 +633,7 @@ it('scopes trigger reordering to a nested tab navigator', () => {
     return null;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs options={{ backBehavior: 'history' }}>
@@ -616,18 +676,18 @@ it('scopes trigger reordering to a nested tab navigator', () => {
   );
 
   const stateBeforeReorder = parentState;
-  fireEvent.press(screen.getByTestId('reorder-child'));
+  await fireEvent.press(screen.getByTestId('reorder-child'));
   expect(parentState).toBe(stateBeforeReorder);
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHaveSegments(['fruit', 'apple']);
 });
 
-it('keeps focus hooks correct after removing the active trigger', () => {
+it('keeps focus hooks correct after removing the active trigger', async () => {
   function Apple() {
     return <Text testID="apple-focus">{useIsFocused() ? 'focused' : 'not focused'}</Text>;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: function TabLayout() {
         const [showOrange, setShowOrange] = useState(true);
@@ -648,12 +708,12 @@ it('keeps focus hooks correct after removing the active trigger', () => {
     { initialUrl: '/orange' }
   );
 
-  fireEvent.press(screen.getByTestId('hide-orange'));
+  await fireEvent.press(screen.getByTestId('hide-orange'));
   expect(screen.getByTestId('apple-focus')).toHaveTextContent('focused');
 });
 
-it('removes the active trigger from a nested dynamic tab navigator', () => {
-  renderRouter(
+it('removes the active trigger from a nested dynamic tab navigator', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -682,14 +742,14 @@ it('removes the active trigger from a nested dynamic tab navigator', () => {
     { initialUrl: '/fruit/orange' }
   );
 
-  fireEvent.press(screen.getByTestId('hide-orange'));
+  await fireEvent.press(screen.getByTestId('hide-orange'));
   expect(screen).toHaveSegments(['fruit', 'apple']);
 });
 
-it('does not redirect from an inactive nested tab navigator', () => {
+it('does not redirect from an inactive nested tab navigator', async () => {
   let hideOrange!: () => void;
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -720,13 +780,13 @@ it('does not redirect from an inactive nested tab navigator', () => {
     { initialUrl: '/fruit/orange' }
   );
 
-  fireEvent.press(screen.getByTestId('goto-index'));
-  act(hideOrange);
+  await fireEvent.press(screen.getByTestId('goto-index'));
+  await act(hideOrange);
   expect(screen).toHavePathname('/');
 });
 
-it('does works with shared groups', () => {
-  renderRouter(
+it('does works with shared groups', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -759,13 +819,13 @@ it('does works with shared groups', () => {
   expect(screen.getByTestId('apple')).toBeVisible();
   expect(screen).toHaveSegments(['(one)', '[fruit]']);
 
-  fireEvent.press(screen.getByTestId('goto-orange'));
+  await fireEvent.press(screen.getByTestId('goto-orange'));
   expect(screen.getByTestId('orange')).toBeVisible();
   expect(screen).toHaveSegments(['(two)', '[fruit]']);
 });
 
-it('works with nested layouts', () => {
-  renderRouter({
+it('works with nested layouts', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -787,12 +847,12 @@ it('works with nested layouts', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHaveSegments(['(group)']);
 
-  fireEvent.press(screen.getByTestId('goto-page'));
+  await fireEvent.press(screen.getByTestId('goto-page'));
   expect(screen.getByTestId('page')).toBeVisible();
   expect(screen).toHaveSegments(['page']);
 });
 
-it('starts with only the initial declared route', () => {
+it('starts with only the initial declared route', async () => {
   function StateProbe() {
     const { state } = useNavigatorContext();
     return (
@@ -802,7 +862,7 @@ it('starts with only the initial declared route', () => {
     );
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -823,8 +883,8 @@ it('starts with only the initial declared route', () => {
   expect(screen.getByTestId('tab-state')).toHaveTextContent('apple:apple');
 });
 
-it('redirects router.push from a filesystem route without a trigger', () => {
-  renderRouter({
+it('redirects router.push from a filesystem route without a trigger', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -839,14 +899,14 @@ it('redirects router.push from a filesystem route without a trigger', () => {
     hidden: () => <Text testID="hidden">Hidden</Text>,
   });
 
-  act(() => router.push('/hidden'));
+  await act(() => router.push('/hidden'));
   expect(screen).toHavePathname('/');
   expect(screen.queryByTestId('hidden')).toBeNull();
   expect(screen.getByTestId('goto-index')).toHaveProp('isFocused', true);
 });
 
-it('removes a redirected filesystem route from tab history', () => {
-  renderRouter({
+it('removes a redirected filesystem route from tab history', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs options={{ backBehavior: 'history' }}>
         <TabList>
@@ -861,16 +921,16 @@ it('removes a redirected filesystem route from tab history', () => {
     hidden: () => null,
   });
 
-  fireEvent.press(screen.getByTestId('goto-visible'));
-  act(() => router.push('/hidden'));
+  await fireEvent.press(screen.getByTestId('goto-visible'));
+  await act(() => router.push('/hidden'));
   expect(screen).toHavePathname('/');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/visible');
 });
 
-it('redirects a Link from a filesystem route without a trigger', () => {
-  renderRouter({
+it('redirects a Link from a filesystem route without a trigger', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -883,13 +943,13 @@ it('redirects a Link from a filesystem route without a trigger', () => {
     hidden: () => <Text testID="hidden">Hidden</Text>,
   });
 
-  fireEvent.press(screen.getByTestId('hidden-link'));
+  await fireEvent.press(screen.getByTestId('hidden-link'));
   expect(screen).toHavePathname('/');
   expect(screen.queryByTestId('hidden')).toBeNull();
 });
 
-it('redirects a deep link from a filesystem route without a trigger', () => {
-  renderRouter(
+it('redirects a deep link from a filesystem route without a trigger', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -910,8 +970,8 @@ it('redirects a deep link from a filesystem route without a trigger', () => {
   expect(screen.queryByTestId('hidden')).toBeNull();
 });
 
-it.each(['second', 'second/index'])('redirects to initial route %s', (initialRouteName) => {
-  renderRouter(
+it.each(['second', 'second/index'])('redirects to initial route %s', async (initialRouteName) => {
+  await renderRouter(
     {
       _layout: {
         unstable_settings: { initialRouteName },
@@ -937,8 +997,8 @@ it.each(['second', 'second/index'])('redirects to initial route %s', (initialRou
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
-it('falls back to the first trigger when the initial route has no trigger', () => {
-  renderRouter(
+it('falls back to the first trigger when the initial route has no trigger', async () => {
+  await renderRouter(
     {
       _layout: {
         unstable_settings: { initialRouteName: 'hidden' },
@@ -963,26 +1023,27 @@ it('falls back to the first trigger when the initial route has no trigger', () =
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-it('throws when the configured initial route does not exist', () => {
-  expect(() =>
-    renderRouter({
-      _layout: {
-        unstable_settings: { initialRouteName: 'missing' },
-        default: () => (
-          <Tabs>
-            <TabList>
-              <TabTrigger name="index" href="/" />
-              <TabTrigger name="second" href="/second" />
-            </TabList>
-            <TabSlot />
-          </Tabs>
-        ),
-      },
-      index: () => <Text testID="index">Index</Text>,
-      second: () => <Text testID="second">Second</Text>,
-    })
-  ).toThrow(
-    'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "index", "second". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+it('throws when the configured initial route does not exist', async () => {
+  await expect(
+    async () =>
+      await renderRouter({
+        _layout: {
+          unstable_settings: { initialRouteName: 'missing' },
+          default: () => (
+            <Tabs>
+              <TabList>
+                <TabTrigger name="index" href="/" />
+                <TabTrigger name="second" href="/second" />
+              </TabList>
+              <TabSlot />
+            </Tabs>
+          ),
+        },
+        index: () => <Text testID="index">Index</Text>,
+        second: () => <Text testID="second">Second</Text>,
+      })
+  ).rejects.toThrow(
+    'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "index", "second". Set `unstable_settings.anchor` to the name of a route in this layout.'
   );
 });
 
@@ -1002,8 +1063,8 @@ describe('warnings/errors', () => {
     console.error = originalError;
   });
 
-  it('should warn when using an invalid href', () => {
-    renderRouter({
+  it('should warn when using an invalid href', async () => {
+    await renderRouter({
       _layout: () => {
         return (
           <Tabs>
@@ -1024,9 +1085,9 @@ describe('warnings/errors', () => {
     );
   });
 
-  it('does not allow for nested triggers with the same name', () => {
-    expect(() => {
-      renderRouter(
+  it('does not allow for nested triggers with the same name', async () => {
+    await expect(async () => {
+      await renderRouter(
         {
           _layout: () => (
             <Tabs>
@@ -1057,39 +1118,40 @@ describe('warnings/errors', () => {
           initialUrl: '/two',
         }
       );
-    }).toThrow(
+    }).rejects.toThrow(
       'Trigger {"name":"duplicate","href":"http://expo.dev"} has the same name as parent trigger {"name":"duplicate","href":"/two"}. Triggers must have unique names.'
     );
   });
 
-  it('does not allow trigger hrefs outside a nested tabs layout', () => {
-    expect(() =>
-      renderRouter(
-        {
-          _layout: () => <Stack />,
-          'fruit/_layout': () => (
-            <Tabs>
-              <TabList>
-                <TabTrigger name="apple" href="/other/apple" />
-              </TabList>
-              <TabSlot />
-            </Tabs>
-          ),
-          'fruit/apple': () => null,
-          'other/_layout': () => <Stack />,
-          'other/apple': () => null,
-        },
-        { initialUrl: '/fruit/apple' }
-      )
-    ).toThrow(
+  it('does not allow trigger hrefs outside a nested tabs layout', async () => {
+    await expect(
+      async () =>
+        await renderRouter(
+          {
+            _layout: () => <Stack />,
+            'fruit/_layout': () => (
+              <Tabs>
+                <TabList>
+                  <TabTrigger name="apple" href="/other/apple" />
+                </TabList>
+                <TabSlot />
+              </Tabs>
+            ),
+            'fruit/apple': () => null,
+            'other/_layout': () => <Stack />,
+            'other/apple': () => null,
+          },
+          { initialUrl: '/fruit/apple' }
+        )
+    ).rejects.toThrow(
       `Tab trigger 'apple' with href '/other/apple' must point to a route within the tabs layout.`
     );
   });
 });
 
-it('can update a tab trigger href', () => {
+it('can update a tab trigger href', async () => {
   const MockContext = React.createContext({ href: '/a', setHref: (href: string) => {} });
-  renderRouter({
+  await renderRouter({
     _layout: function TabLayout() {
       const [href, setHref] = useState('/a');
       return (
@@ -1126,16 +1188,16 @@ it('can update a tab trigger href', () => {
     },
   });
   expect(screen.getByTestId('index')).toBeVisible();
-  fireEvent.press(screen.getByText('/a'));
+  await fireEvent.press(screen.getByText('/a'));
   expect(screen.getByTestId('page')).toHaveTextContent('a:undefined');
-  fireEvent.press(screen.getByText('Index'));
-  fireEvent.press(screen.getByTestId('toggle'));
-  fireEvent.press(screen.getByText('/b?updated=true'));
+  await fireEvent.press(screen.getByText('Index'));
+  await fireEvent.press(screen.getByTestId('toggle'));
+  await fireEvent.press(screen.getByText('/b?updated=true'));
   expect(screen.getByTestId('page')).toHaveTextContent('b:true');
 });
 
-it('passes query params to a direct child navigator', () => {
-  renderRouter({
+it('passes query params to a direct child navigator', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1155,12 +1217,12 @@ it('passes query params to a direct child navigator', () => {
     },
   });
 
-  fireEvent.press(screen.getByTestId('goto-movies'));
+  await fireEvent.press(screen.getByTestId('goto-movies'));
   expect(screen.getByTestId('filter')).toHaveTextContent('recent');
 });
 
-it('can reference a parent trigger from nested tabs', () => {
-  renderRouter(
+it('can reference a parent trigger from nested tabs', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -1189,7 +1251,7 @@ it('can reference a parent trigger from nested tabs', () => {
 
   expect(screen.getByTestId('current-parent')).toHaveProp('isFocused', true);
   expect(screen.getByTestId('goto-parent')).toHaveProp('isFocused', false);
-  fireEvent.press(screen.getByTestId('goto-parent'));
+  await fireEvent.press(screen.getByTestId('goto-parent'));
   expect(screen.getByTestId('current-parent', { includeHiddenElements: true })).toHaveProp(
     'isFocused',
     false
@@ -1201,8 +1263,8 @@ it('can reference a parent trigger from nested tabs', () => {
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-it('can reference a parent trigger from tabs nested three navigators deep', () => {
-  renderRouter(
+it('can reference a parent trigger from tabs nested three navigators deep', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -1239,12 +1301,12 @@ it('can reference a parent trigger from tabs nested three navigators deep', () =
 
   expect(screen.getByTestId('current-root')).toHaveProp('isFocused', true);
   expect(screen.getByTestId('goto-root')).toHaveProp('isFocused', false);
-  fireEvent.press(screen.getByTestId('goto-root'));
+  await fireEvent.press(screen.getByTestId('goto-root'));
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-it('does not reset on focus when resetOnFocus is false', () => {
-  renderRouter({
+it('does not reset on focus when resetOnFocus is false', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1267,27 +1329,27 @@ it('does not reset on focus when resetOnFocus is false', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHaveSegments([]);
 
-  fireEvent.press(screen.getByTestId('goto-stack'));
+  await fireEvent.press(screen.getByTestId('goto-stack'));
   expect(screen.getByTestId('stack-index')).toBeVisible();
   expect(screen).toHaveSegments(['stack']);
 
-  act(() => router.push('/stack/page'));
+  await act(() => router.push('/stack/page'));
   expect(screen.getByTestId('stack-page')).toBeVisible();
   expect(screen).toHaveSegments(['stack', 'page']);
 
   // Go back to index
-  fireEvent.press(screen.getByTestId('goto-index'));
+  await fireEvent.press(screen.getByTestId('goto-index'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHaveSegments([]);
 
   // Go to stack, should reset to index
-  fireEvent.press(screen.getByTestId('goto-stack'));
+  await fireEvent.press(screen.getByTestId('goto-stack'));
   expect(screen.getByTestId('stack-page')).toBeVisible();
   expect(screen).toHaveSegments(['stack', 'page']);
 });
 
-it('resets on focus when resetOnFocus is true', () => {
-  renderRouter({
+it('resets on focus when resetOnFocus is true', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1310,27 +1372,27 @@ it('resets on focus when resetOnFocus is true', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHaveSegments([]);
 
-  fireEvent.press(screen.getByTestId('goto-stack'));
+  await fireEvent.press(screen.getByTestId('goto-stack'));
   expect(screen.getByTestId('stack-index')).toBeVisible();
   expect(screen).toHaveSegments(['stack']);
 
-  act(() => router.push('/stack/page'));
+  await act(() => router.push('/stack/page'));
   expect(screen.getByTestId('stack-page')).toBeVisible();
   expect(screen).toHaveSegments(['stack', 'page']);
 
   // Go back to index
-  fireEvent.press(screen.getByTestId('goto-index'));
+  await fireEvent.press(screen.getByTestId('goto-index'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHaveSegments([]);
 
   // Go to stack, should reset to index
-  fireEvent.press(screen.getByTestId('goto-stack'));
+  await fireEvent.press(screen.getByTestId('goto-stack'));
   expect(screen.getByTestId('stack-index')).toBeVisible();
   expect(screen).toHaveSegments(['stack']);
 });
 
-it('resets before resolving a deep trigger destination', () => {
-  renderRouter({
+it('resets before resolving a deep trigger destination', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1347,18 +1409,18 @@ it('resets before resolving a deep trigger destination', () => {
     'stack/details': () => <Text testID="stack-details">Details</Text>,
   });
 
-  fireEvent.press(screen.getByTestId('goto-stack'));
-  act(() => router.push('/stack/page'));
-  fireEvent.press(screen.getByTestId('goto-index'));
-  fireEvent.press(screen.getByTestId('goto-stack'));
+  await fireEvent.press(screen.getByTestId('goto-stack'));
+  await act(() => router.push('/stack/page'));
+  await fireEvent.press(screen.getByTestId('goto-index'));
+  await fireEvent.press(screen.getByTestId('goto-stack'));
   expect(screen.getByTestId('stack-details')).toBeVisible();
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/');
 });
 
 it('resets when focused tab is pressed again', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1385,7 +1447,7 @@ it('resets when focused tab is pressed again', async () => {
   expect(screen.getByTestId('stack-index')).toBeVisible();
   expect(screen).toHaveSegments(['stack']);
 
-  act(() => router.push('/stack/page'));
+  await act(() => router.push('/stack/page'));
   expect(screen.getByTestId('stack-page')).toBeVisible();
   expect(screen).toHaveSegments(['stack', 'page']);
 
@@ -1399,7 +1461,7 @@ it('resets when focused tab is pressed again', async () => {
 it('dispatches only one action when re-tapping active tab with nested stack', async () => {
   const dispatchedActions: string[] = [];
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1430,10 +1492,10 @@ it('dispatches only one action when re-tapping active tab with nested stack', as
   expect(screen.getByTestId('movies-index')).toBeVisible();
 
   // Navigate deep into nested stacks
-  act(() => router.push('/movies/nested'));
+  await act(() => router.push('/movies/nested'));
   expect(screen.getByTestId('movies-nested')).toBeVisible();
 
-  act(() => router.push('/movies/nested/details'));
+  await act(() => router.push('/movies/nested/details'));
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
@@ -1457,7 +1519,7 @@ it('dispatches only one action when re-tapping active tab with nested stack', as
 it('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
   const dispatchedActions: string[] = [];
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <JSTabs>
         <JSTabs.Screen name="index" />
@@ -1481,10 +1543,10 @@ it('JSTabs dispatches only one action when re-tapping active tab with nested sta
   expect(screen.getByTestId('movies-index')).toBeVisible();
 
   // Navigate deep into nested stacks
-  act(() => router.push('/movies/nested'));
+  await act(() => router.push('/movies/nested'));
   expect(screen.getByTestId('movies-nested')).toBeVisible();
 
-  act(() => router.push('/movies/nested/details'));
+  await act(() => router.push('/movies/nested/details'));
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
   // Set up listener to track dispatched actions before re-tapping
@@ -1506,7 +1568,7 @@ it('JSTabs dispatches only one action when re-tapping active tab with nested sta
 });
 
 it('does not reset when focused tab is pressed again, but the press is prevented', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1537,7 +1599,7 @@ it('does not reset when focused tab is pressed again, but the press is prevented
   expect(screen.getByTestId('stack-index')).toBeVisible();
   expect(screen).toHaveSegments(['stack']);
 
-  act(() => router.push('/stack/page'));
+  await act(() => router.push('/stack/page'));
   expect(screen.getByTestId('stack-page')).toBeVisible();
   expect(screen).toHaveSegments(['stack', 'page']);
 
@@ -1549,7 +1611,7 @@ it('does not reset when focused tab is pressed again, but the press is prevented
 });
 
 it('redirects to index when rendering a <Redirect/> inside a tab route', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -1575,7 +1637,7 @@ it('redirects to index when rendering a <Redirect/> inside a tab route', async (
 });
 
 it('router.replace works in headless tabs', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1595,7 +1657,7 @@ it('router.replace works in headless tabs', async () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
 
-  act(() => {
+  await act(() => {
     router.replace('/second');
   });
 
@@ -1603,8 +1665,8 @@ it('router.replace works in headless tabs', async () => {
   expect(router.canGoBack()).toBe(false);
 });
 
-it('router.replace only removes the latest visit with full history', () => {
-  renderRouter({
+it('router.replace only removes the latest visit with full history', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs options={{ backBehavior: 'fullHistory' }}>
         <TabList>
@@ -1620,18 +1682,18 @@ it('router.replace only removes the latest visit with full history', () => {
     third: () => null,
   });
 
-  fireEvent.press(screen.getByTestId('goto-second'));
-  act(() => router.push('/'));
-  act(() => router.replace('/third'));
+  await fireEvent.press(screen.getByTestId('goto-second'));
+  await act(() => router.push('/'));
+  await act(() => router.replace('/third'));
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/second');
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/');
 });
 
 it('Link with replace works in headless tabs', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -1665,14 +1727,14 @@ it('Link with replace works in headless tabs', async () => {
   expect(router.canGoBack()).toBe(false);
 });
 
-it('hides a trigger when its screen sets hidden options', () => {
+it('hides a trigger when its screen sets hidden options', async () => {
   function Second() {
     const navigation = useNavigation();
     useEffect(() => navigation.setOptions({ hidden: true }), [navigation]);
     return <Text testID="second">Second</Text>;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -1694,14 +1756,14 @@ it('hides a trigger when its screen sets hidden options', () => {
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-it('does not hide an inherited trigger when a nested screen is hidden', () => {
+it('does not hide an inherited trigger when a nested screen is hidden', async () => {
   function HiddenTab() {
     const navigation = useNavigation();
     useEffect(() => navigation.setOptions({ hidden: true }), [navigation]);
     return <Text>Hidden</Text>;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -1732,7 +1794,7 @@ it('does not hide an inherited trigger when a nested screen is hidden', () => {
   expect(screen.getByTestId('outer-b')).toBeVisible();
 });
 
-it('exposes hidden options from useTabTrigger', () => {
+it('exposes hidden options from useTabTrigger', async () => {
   function Second() {
     const navigation = useNavigation();
     useEffect(() => navigation.setOptions({ hidden: true }), [navigation]);
@@ -1748,7 +1810,7 @@ it('exposes hidden options from useTabTrigger', () => {
     );
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -1769,8 +1831,8 @@ it('exposes hidden options from useTabTrigger', () => {
   expect(screen.getByTestId('custom-trigger')).toHaveTextContent('true true');
 });
 
-it('renders an external trigger without a navigator route', () => {
-  renderRouter({
+it('renders an external trigger without a navigator route', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <TabList>
@@ -1786,7 +1848,7 @@ it('renders an external trigger without a navigator route', () => {
   expect(screen.getByTestId('external')).toBeVisible();
 });
 
-it('does not use a parent guard redirect for a tab with the same route name', () => {
+it('does not use a parent guard redirect for a tab with the same route name', async () => {
   let inheritedGuardRedirect: ReturnType<typeof useGuardRedirect>;
   function TabsLayout() {
     inheritedGuardRedirect = useGuardRedirect('settings');
@@ -1800,7 +1862,7 @@ it('does not use a parent guard redirect for a tab with the same route name', ()
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: {
       unstable_settings: { initialRouteName: '(tabs)' },
       default: () => (
@@ -1824,7 +1886,7 @@ it('does not use a parent guard redirect for a tab with the same route name', ()
   });
 
   expect(inheritedGuardRedirect).toBe('/login');
-  act(() => router.push('/(tabs)/settings'));
+  await act(() => router.push('/(tabs)/settings'));
 
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('tabs-index')).toBeVisible();

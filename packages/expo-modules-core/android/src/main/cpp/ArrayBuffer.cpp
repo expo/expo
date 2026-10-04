@@ -1,4 +1,5 @@
 #include "ArrayBuffer.h"
+#include "MutableBufferNativeState.h"
 
 #include "Exceptions.h"
 #include "JavaReferencesCache.h"
@@ -184,7 +185,7 @@ jni::local_ref<ArrayBuffer::javaobject> makeArrayBufferFromJSIArrayBuffer(
   size_t length,
   const std::function<uint8_t *(jsi::ArrayBuffer &)> &copySourceProvider
 ) {
-  auto mutableBuffer = arrayBuffer.tryGetMutableBuffer(runtime);
+  auto mutableBuffer = expo::tryGetMutableBuffer(runtime, arrayBuffer);
   if (mutableBuffer) {
     return makeArrayBufferObject(
       jsiContext,
@@ -285,7 +286,7 @@ std::shared_ptr<jsi::MutableBuffer> ByteBufferArrayBufferStorage::jsiMutableBuff
 }
 
 jsi::Value ByteBufferArrayBufferStorage::toJSIValue(jsi::Runtime &runtime) {
-  return jsi::Value(runtime, runtime.createArrayBuffer(jsiMutableBuffer()));
+  return jsi::Value(runtime, createNativeBackedArrayBuffer(runtime, jsiMutableBuffer()));
 }
 
 jni::local_ref<jni::JObject> ByteBufferArrayBufferStorage::withJSBytes(
@@ -328,7 +329,7 @@ std::shared_ptr<jsi::MutableBuffer> MutableBufferViewArrayBufferStorage::jsiMuta
 }
 
 jsi::Value MutableBufferViewArrayBufferStorage::toJSIValue(jsi::Runtime &runtime) {
-  return jsi::Value(runtime, runtime.createArrayBuffer(jsiMutableBuffer()));
+  return jsi::Value(runtime, createNativeBackedArrayBuffer(runtime, jsiMutableBuffer()));
 }
 
 jni::local_ref<jni::JObject> MutableBufferViewArrayBufferStorage::withJSBytes(
@@ -446,11 +447,11 @@ jsi::Value JavaScriptBackedArrayBufferStorage::toJSIValue(jsi::Runtime &runtime)
       }
       auto byteBuffer = copyToDirectBuffer(_arrayBuffer->data(runtime) + _offset, _length);
       auto mutableBuffer = std::make_shared<ByteBufferJSIMutableBuffer>(byteBuffer);
-      return jsi::Value(runtime, runtime.createArrayBuffer(std::move(mutableBuffer)));
+      return jsi::Value(runtime, createNativeBackedArrayBuffer(runtime, std::move(mutableBuffer)));
     }
   }
 
-  return jsi::Value(runtime, runtime.createArrayBuffer(jsiMutableBuffer()));
+  return jsi::Value(runtime, createNativeBackedArrayBuffer(runtime, jsiMutableBuffer()));
 }
 
 jni::local_ref<jni::JObject> JavaScriptBackedArrayBufferStorage::withJSBytes(

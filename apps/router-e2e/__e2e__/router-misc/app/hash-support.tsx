@@ -17,6 +17,9 @@ export default function Page() {
       <button data-testid="clear-hash" onClick={() => router.setParams({ '#': '' })}>
         Clear hash
       </button>
+      <a data-testid="anchor-link" href="#anchor">
+        Anchor link
+      </a>
     </>
   );
 }

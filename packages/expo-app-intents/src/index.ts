@@ -2,13 +2,18 @@ import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useRef } from 'react';
 
 import type {
+  AppEntityIdentifierModifier,
+  AppIntentDonationFilter,
   AppIntentEntity,
   AppIntentInvocation,
+  AppIntentJSONValue,
   AppIntentsHandler,
 } from './ExpoAppIntents.types';
 import ExpoAppIntents from './ExpoAppIntentsModule';
 
 export type * from './ExpoAppIntents.types';
+export { default as AppEntityView } from './AppEntityView';
+export type { AppEntityViewProps } from './AppEntityView.types';
 
 const MAX_SEEN_INVOCATION_IDS = 100;
 
@@ -185,6 +190,11 @@ export async function clearPendingInvocationsAsync(): Promise<void> {
 /**
  * Replaces the entity catalog of the given kind and asks the system to retrain
  * parameterized shortcut phrases against the new values.
+ * Entities registered natively with
+ * `registerIndexed` also have their Spotlight index rebuilt from the new catalog.
+ *
+ * Publishing a catalog that matches the stored catalog does nothing, so apps can safely call this
+ * function on every start.
  *
  * The native store uses `UserDefaults`, which is best suited to compact catalogs. For large
  * datasets, such as thousands of contacts or songs, apps should store the full data locally and
@@ -203,6 +213,30 @@ export async function setEntityCatalogAsync(
     return;
   }
   return ExpoAppIntents.setEntityCatalogAsync(kind, entities);
+}
+
+/**
+ * Rebuilds the Spotlight index from the stored entity catalog, whether or not the catalog
+ * changed. `setEntityCatalogAsync` already keeps the index in step, so this is only needed to
+ * recover from an index that no longer matches the catalog: one the system evicted, or one left
+ * stale by an app update that changed how entities describe themselves.
+ *
+ * Pass a `kind` to rebuild one catalog, or omit it to rebuild every kind registered natively with
+ * `registerIndexed`. Kinds with no indexed registration are ignored.
+ *
+ * Rejects when a catalog cannot be read or the index cannot be written, because this is the retry
+ * path and a caller that asked for a rebuild has no other way to learn it did not happen. Every
+ * kind is attempted before the first failure is reported, so one unreadable catalog does not skip
+ * the rest. A kind whose rebuild failed is retried by the next `setEntityCatalogAsync`, even when
+ * the catalog it publishes is unchanged.
+ *
+ * @platform ios
+ */
+export async function reindexEntitiesAsync(kind?: string): Promise<void> {
+  if (!ExpoAppIntents) {
+    return;
+  }
+  return ExpoAppIntents.reindexEntitiesAsync(kind ?? null);
 }
 
 /**
@@ -232,4 +266,79 @@ export async function refreshShortcutsAsync(): Promise<void> {
     throw new UnavailabilityError('expo-app-intents', 'refreshShortcutsAsync');
   }
   return ExpoAppIntents.refreshShortcutsAsync();
+}
+
+/**
+ * Tells the system that the user just performed an App Intent's action in your app, for example
+ * ordering food from a screen rather than through Siri. The system learns from donations and can
+ * suggest the action later on the Lock Screen, in Siri Suggestions, and in Spotlight.
+ *
+ * The `name` must be registered from app-target Swift with
+ * `AppIntentDonationRegistry.shared.register(_:as:)`, on an intent that conforms to
+ * `DonatableAppIntent`. Native code converts `params` to the `DonationParams` record of that intent,
+ * and the intent builds itself from the record in its `init(donationParams:)`.
+ *
+ * The returned promise is fulfilled with an ID for the donation, which
+ * [`deleteDonationsAsync()`](#appintentsdeletedonationsasyncfilter) accepts, or with `null` when
+ * App Intents are unavailable. It is rejected when no intent is registered as `name`, when `params`
+ * misses a required field of the record or has a field of the wrong type, when the intent cannot be
+ * built from the record, or when the system fails to record the donation.
+ *
+ * > **Note:** The ID is the system's donation identifier in its encoded form. Store it only for as
+ * > long as you need it. An iOS update may change how the system encodes identifiers, and an ID
+ * > stored before such an update may then be rejected. To delete donations without stored IDs,
+ * > delete by `intent` or by `entity`.
+ *
+ * @platform ios
+ */
+export async function donateIntentAsync(
+  name: string,
+  params?: Record<string, AppIntentJSONValue>
+): Promise<string | null> {
+  if (!ExpoAppIntents) {
+    return null;
+  }
+  return ExpoAppIntents.donateIntentAsync(name, params);
+}
+
+/**
+ * Deletes donations made with [`donateIntentAsync()`](#appintentsdonateintentasyncname-params), so
+ * the system stops suggesting them. Delete donations when what they refer to is gone, for example
+ * after the user deletes an order, or when the user signs out.
+ *
+ * The returned promise is fulfilled with the IDs of the deleted donations, or with an empty array
+ * when App Intents are unavailable. It is rejected when `filter` names an intent or entity that is
+ * not registered, contains an ID that cannot be read, or contains an entity `id` that cannot be
+ * converted to the ID type of that entity. In those cases nothing is deleted. With `ids`, every ID
+ * is attempted. When the system fails to delete one or more of them, the promise is rejected with
+ * an error that lists the deleted IDs and the IDs that were not deleted. With `intent` or
+ * `entity`, the promise is rejected with the system error when the system fails to delete.
+ *
+ * @platform ios
+ */
+export async function deleteDonationsAsync(filter: AppIntentDonationFilter): Promise<string[]> {
+  if (!ExpoAppIntents) {
+    return [];
+  }
+  return ExpoAppIntents.deleteDonationsAsync(filter);
+}
+
+/**
+ * Returns an ExpoUI SwiftUI modifier config that ties a view to an AppEntity identifier.
+ *
+ * The `entity` value must be registered from app-target Swift with
+ * `AppEntityIdentifierRegistry.shared.register(_:as:)` or
+ * `AppEntityIdentifierRegistry.shared.registerIndexed(_:as:)`.
+ *
+ * > **Note:** The entity association requires iOS 18.4 or later and a project compiled with Xcode 27
+ * > or later. Otherwise the view renders normally without it.
+ *
+ * @platform ios
+ */
+export function appEntityIdentifier(entity: string, id: string): AppEntityIdentifierModifier {
+  return {
+    $type: 'appEntityIdentifier',
+    entity,
+    id,
+  };
 }

@@ -7,7 +7,9 @@ import Testing
 /// Whether benchmark suites are enabled for this test run. Benchmarks are opt-in:
 /// regular test runs skip them. Run `pnpm benchmark`, which enables them by forwarding
 /// the `EXPO_BENCHMARK` environment variable to the test runner and builds the package
-/// in the Release configuration so the numbers are meaningful.
+/// in the Release configuration so the numbers are meaningful. It also turns code coverage
+/// off: `xcodebuild test` instruments every function and closure with profile counters
+/// otherwise, even in Release, which adds a few nanoseconds to each measured call.
 let benchmarksEnabled = ProcessInfo.processInfo.environment["EXPO_BENCHMARK"] == "1"
 
 /// Umbrella suite that all benchmarks belong to (as extensions in the other files).

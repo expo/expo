@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react-native';
+import { useLayoutEffect } from 'react';
 
 import type { NavigationAction, NavigationState } from '../../react-navigation/routers';
 import { getNavigateAction } from '../getNavigationAction';
@@ -27,7 +28,7 @@ const initialState: NavigationState = {
   ],
 };
 
-function renderReducer({
+async function renderReducer({
   state = initialState,
   registry,
   routesWithRemovalPrevented = new Set(),
@@ -37,7 +38,8 @@ function renderReducer({
   routesWithRemovalPrevented?: ReadonlySet<string>;
 }) {
   const reports: NonNullable<ReturnType<typeof useNavigationTreeReducer>['report']>[] = [];
-  const result = renderHook<
+  const committedStates: NavigationState[] = [];
+  const result = await renderHook<
     ReturnType<typeof useNavigationTreeReducer>,
     {
       registry: RouterRegistry;
@@ -53,16 +55,19 @@ function renderReducer({
       if (reducer.report) {
         reports.push(reducer.report);
       }
+      useLayoutEffect(() => {
+        committedStates.push(reducer.state);
+      });
       return reducer;
     },
     { initialProps: { registry, routesWithRemovalPrevented } }
   );
-  return { ...result, reports };
+  return { ...result, committedStates, reports };
 }
 
-test('reports and vetoes removal of a prevented route', () => {
+test('reports and vetoes removal of a prevented route', async () => {
   const action = { type: 'REMOVE' };
-  const result = renderReducer({
+  const result = await renderReducer({
     registry: new Map([
       [
         'root',
@@ -75,7 +80,7 @@ test('reports and vetoes removal of a prevented route', () => {
     routesWithRemovalPrevented: new Set(['third']),
   });
 
-  act(() => result.result.current.handleAction(action));
+  await act(() => result.result.current.handleAction(action));
 
   expect(result.result.current.state).toBe(initialState);
   expect(result.reports.at(-1)).toMatchObject({
@@ -86,9 +91,9 @@ test('reports and vetoes removal of a prevented route', () => {
   });
 });
 
-test('commits removal and reports removed routes when none are prevented', () => {
+test('commits removal and reports removed routes when none are prevented', async () => {
   const action = { type: 'REMOVE' };
-  const result = renderReducer({
+  const result = await renderReducer({
     registry: new Map([
       [
         'root',
@@ -100,7 +105,7 @@ test('commits removal and reports removed routes when none are prevented', () =>
     ]),
   });
 
-  act(() => result.result.current.handleAction(action));
+  await act(() => result.result.current.handleAction(action));
 
   expect(result.result.current.state.routes).toHaveLength(1);
   expect(result.reports.at(-1)).toMatchObject({
@@ -111,14 +116,17 @@ test('commits removal and reports removed routes when none are prevented', () =>
   });
 });
 
-test('does not let a preloaded stack route prevent removal', () => {
-  const stackState: NavigationState = {
+test('does not let a preloaded route prevent removal', async () => {
+  const tabState: NavigationState = {
     ...initialState,
-    type: 'stack',
+    type: 'tab',
     index: 0,
+    routes: initialState.routes
+      .slice(0, 2)
+      .map((route, index) => (index === 1 ? { ...route, isPreloaded: true } : route)),
   };
-  const result = renderReducer({
-    state: stackState,
+  const result = await renderReducer({
+    state: tabState,
     registry: new Map([
       [
         'root',
@@ -131,7 +139,7 @@ test('does not let a preloaded stack route prevent removal', () => {
     routesWithRemovalPrevented: new Set(['second']),
   });
 
-  act(() => result.result.current.handleAction({ type: 'REMOVE_PRELOAD' }));
+  await act(() => result.result.current.handleAction({ type: 'REMOVE_PRELOAD' }));
 
   expect(result.result.current.state.routes).toHaveLength(1);
   expect(result.reports.at(-1)?.events).toEqual([
@@ -142,19 +150,25 @@ test('does not let a preloaded stack route prevent removal', () => {
   ]);
 });
 
-test('prevents moving an active route into the preloaded region', () => {
+test('prevents moving an active route into the preloaded region', async () => {
   const stackState: NavigationState = {
     ...initialState,
     type: 'stack',
     index: 2,
   };
-  const result = renderReducer({
+  const result = await renderReducer({
     state: stackState,
     registry: new Map([
       [
         'root',
         entry((state) => ({
-          state: { ...state, index: 0 },
+          state: {
+            ...state,
+            index: 0,
+            routes: state.routes.map((route, index) =>
+              index > 0 ? { ...route, isPreloaded: true } : route
+            ),
+          },
           affectedRouteKey: state.routes[0]!.key,
         })),
       ],
@@ -162,7 +176,7 @@ test('prevents moving an active route into the preloaded region', () => {
     routesWithRemovalPrevented: new Set(['second']),
   });
 
-  act(() => result.result.current.handleAction({ type: 'RESET_INDEX' }));
+  await act(() => result.result.current.handleAction({ type: 'RESET_INDEX' }));
 
   expect(result.result.current.state).toBe(stackState);
   expect(result.reports.at(-1)?.events).toEqual([
@@ -175,9 +189,9 @@ test('prevents moving an active route into the preloaded region', () => {
   ]);
 });
 
-test('does not veto route name changes', () => {
+test('does not veto route name changes', async () => {
   const action = { type: 'ROUTE_NAMES_CHANGED' };
-  const result = renderReducer({
+  const result = await renderReducer({
     registry: new Map([
       [
         'root',
@@ -190,7 +204,7 @@ test('does not veto route name changes', () => {
     routesWithRemovalPrevented: new Set(['third']),
   });
 
-  act(() => result.result.current.handleAction(action));
+  await act(() => result.result.current.handleAction(action));
 
   expect(result.result.current.state.routes).toHaveLength(1);
   expect(result.reports.at(-1)?.events).toEqual([
@@ -199,18 +213,18 @@ test('does not veto route name changes', () => {
   ]);
 });
 
-it('reduces consecutive actions against accumulated state with one committed update', () => {
+it('reduces consecutive actions against accumulated state with one committed update', async () => {
   const reduce = jest.fn((state: NavigationState) => ({
     state: { ...state, index: state.index + 1 },
     affectedRouteKey: state.routes[state.index + 1]!.key,
   }));
-  const result = renderReducer({
+  const result = await renderReducer({
     registry: new Map([['root', entry(reduce)]]),
   });
 
   const firstAction = { type: 'NEXT_FIRST' };
   const secondAction = { type: 'NEXT_SECOND' };
-  act(() => {
+  await act(() => {
     result.result.current.handleAction(firstAction);
     result.result.current.handleAction(secondAction);
   });
@@ -232,8 +246,8 @@ it('reduces consecutive actions against accumulated state with one committed upd
   ]);
 });
 
-it('assigns increasing ids to events across actions', () => {
-  const result = renderReducer({
+it('assigns increasing ids to events across actions', async () => {
+  const result = await renderReducer({
     registry: new Map([
       [
         'root',
@@ -245,14 +259,14 @@ it('assigns increasing ids to events across actions', () => {
     ]),
   });
 
-  act(() => result.result.current.handleAction({ type: 'FIRST' }));
-  act(() => result.result.current.handleAction({ type: 'SECOND' }));
+  await act(() => result.result.current.handleAction({ type: 'FIRST' }));
+  await act(() => result.result.current.handleAction({ type: 'SECOND' }));
 
   expect(result.result.current.report?.events.map((event) => event.id)).toEqual([0, 1]);
 });
 
-it('consumes only the listed report events', () => {
-  const result = renderReducer({
+it('consumes only the listed report events', async () => {
+  const result = await renderReducer({
     registry: new Map([
       [
         'root',
@@ -264,23 +278,23 @@ it('consumes only the listed report events', () => {
     ]),
   });
 
-  act(() => {
+  await act(() => {
     result.result.current.handleAction({ type: 'FIRST' });
     result.result.current.handleAction({ type: 'SECOND' });
   });
-  act(() => result.result.current.consumeReportEvents([0]));
+  await act(() => result.result.current.consumeReportEvents([0]));
 
   expect(result.result.current.report?.events.map((event) => event.id)).toEqual([1]);
 
   const report = result.result.current.report;
-  act(() => result.result.current.consumeReportEvents([99]));
+  await act(() => result.result.current.consumeReportEvents([99]));
   expect(result.result.current.report).toBe(report);
 
-  act(() => result.result.current.consumeReportEvents([1]));
+  await act(() => result.result.current.consumeReportEvents([1]));
   expect(result.result.current.report).toBeUndefined();
 });
 
-it('logs an error for stale focused state after commit', () => {
+it('logs an error for stale focused state after commit', async () => {
   const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   const nodeEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = 'development';
@@ -292,18 +306,16 @@ it('logs an error for stale focused state after commit', () => {
     } as unknown as NavigationState;
     return { state: staleState, affectedRouteKey: state.routes[0]!.key };
   });
-  const result = renderReducer({
-    registry: new Map([['root', entry(reduce)]]),
-  });
+  const result = await renderReducer({ registry: new Map([['root', entry(reduce)]]) });
 
-  act(() => result.result.current.handleAction({ type: 'STALE' }));
+  await act(() => result.result.current.handleAction({ type: 'STALE' }));
 
   expect(error).toHaveBeenCalledWith('Detected stale state. This is likely a bug in Expo Router.');
   process.env.NODE_ENV = nodeEnv;
   error.mockRestore();
 });
 
-it('logs an error for focused state without an index after commit', () => {
+it('logs an error for focused state without an index after commit', async () => {
   const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   const nodeEnv = process.env.NODE_ENV;
   process.env.NODE_ENV = 'development';
@@ -326,25 +338,27 @@ it('logs an error for focused state without an index after commit', () => {
     } as unknown as NavigationState;
     return { state: incompleteState, affectedRouteKey: state.routes[0]!.key };
   });
-  const result = renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  const result = await renderReducer({
+    registry: new Map([['root', entry(reduce)]]),
+  });
 
-  act(() => result.result.current.handleAction({ type: 'INCOMPLETE' }));
+  await act(() => result.result.current.handleAction({ type: 'INCOMPLETE' }));
 
   expect(error).toHaveBeenCalledWith('Detected stale state. This is likely a bug in Expo Router.');
   process.env.NODE_ENV = nodeEnv;
   error.mockRestore();
 });
 
-it('reduces consecutive queued intents against accumulated state', () => {
+it('reduces consecutive queued intents against accumulated state', async () => {
   const reduce = jest.fn((state: NavigationState) => ({
     state: { ...state, index: state.index + 1 },
     affectedRouteKey: state.routes[state.index + 1]!.key,
   }));
-  const result = renderReducer({
+  const result = await renderReducer({
     registry: new Map([['root', entry(reduce)]]),
   });
 
-  act(() => {
+  await act(() => {
     result.result.current.processIntent({
       type: 'ACTION',
       payload: { action: { type: 'NEXT' } },
@@ -360,9 +374,119 @@ it('reduces consecutive queued intents against accumulated state', () => {
   expect(result.result.current.state.index).toBe(2);
 });
 
-it('warns for direct navigation actions carrying a screen param', () => {
+it('uses the registry from the render that reduces an operation', async () => {
+  const firstReduce = jest.fn(() => null);
+  const secondReduce = jest.fn((state: NavigationState) => ({
+    state: { ...state, index: 1 },
+    affectedRouteKey: state.routes[1]!.key,
+  }));
+  const result = await renderReducer({ registry: new Map([['root', entry(firstReduce)]]) });
+  const processIntent = result.result.current.processIntent;
+
+  await result.rerender({
+    registry: new Map([['root', entry(secondReduce)]]),
+    routesWithRemovalPrevented: new Set(),
+  });
+  await act(() =>
+    processIntent({ type: 'ACTION', payload: { action: { type: 'USE_CURRENT_REGISTRY' } } })
+  );
+
+  expect(result.result.current.processIntent).toBe(processIntent);
+  expect(firstReduce).not.toHaveBeenCalled();
+  expect(secondReduce).toHaveBeenCalledTimes(1);
+  expect(result.result.current.state.index).toBe(1);
+});
+
+it('uses removal prevention from the render that reduces an operation', async () => {
+  const reduce = jest.fn((state: NavigationState) => ({
+    state: { ...state, routes: state.routes.slice(0, 1) },
+    affectedRouteKey: state.routes[0]!.key,
+  }));
+  const result = await renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  const processIntent = result.result.current.processIntent;
+
+  await result.rerender({
+    registry: new Map([['root', entry(reduce)]]),
+    routesWithRemovalPrevented: new Set(['third']),
+  });
+  await act(() => processIntent({ type: 'ACTION', payload: { action: { type: 'REMOVE' } } }));
+
+  expect(result.result.current.state).toBe(initialState);
+  expect(result.result.current.report?.events).toEqual([
+    expect.objectContaining({ type: 'prevented-routes', routeKeys: ['third'] }),
+  ]);
+});
+
+it('computes a queued action from accumulated state', async () => {
+  const tabState: NavigationState = {
+    ...initialState,
+    type: 'tab',
+    routeNames: ['first', 'second'],
+    routes: [
+      { key: 'first', name: 'first', state: { ...initialState, key: 'first-stack' } },
+      { key: 'second', name: 'second', state: { ...initialState, key: 'second-stack' } },
+    ],
+  };
+  const reduce = jest.fn((state: NavigationState, action: NavigationAction) => {
+    if (action.type === 'FOCUS_SECOND') {
+      return { state: { ...state, index: 1 }, affectedRouteKey: state.routes[1]!.key };
+    }
+    if (action.type === 'JUMP_TO' || action.type === 'NAVIGATE') {
+      return { state: { ...state, index: 0 }, affectedRouteKey: state.routes[0]!.key };
+    }
+    return null;
+  });
+  const result = await renderReducer({
+    state: tabState,
+    registry: new Map([['root', entry(reduce)]]),
+  });
+
+  await act(() => {
+    result.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'FOCUS_SECOND' } },
+    });
+    result.result.current.processIntent({
+      type: 'COMPUTED_ACTION',
+      payload: {
+        originKey: 'root',
+        compute: (state) => ({
+          type: state.index === 1 ? 'JUMP_TO' : 'NAVIGATE',
+          payload: { name: 'first' },
+        }),
+      },
+    });
+  });
+
+  expect(reduce).toHaveBeenCalledTimes(2);
+  expect(reduce.mock.calls[1]![0].index).toBe(1);
+  expect(reduce.mock.calls[1]![1].type).toBe('JUMP_TO');
+  expect(result.result.current.state.index).toBe(0);
+});
+
+it('warns and keeps the state when computing a queued action throws', async () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  const result = renderReducer({
+  const result = await renderReducer({ registry: new Map([['root', entry(() => null)]]) });
+
+  await act(() =>
+    result.result.current.processIntent({
+      type: 'COMPUTED_ACTION',
+      payload: {
+        compute() {
+          throw new Error('boom');
+        },
+      },
+    })
+  );
+
+  expect(warn).toHaveBeenCalledWith(expect.stringContaining('boom'));
+  expect(result.result.current.state).toBe(initialState);
+  warn.mockRestore();
+});
+
+it('warns for direct navigation actions carrying a screen param', async () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const result = await renderReducer({
     registry: new Map([
       [
         'root',
@@ -374,7 +498,7 @@ it('warns for direct navigation actions carrying a screen param', () => {
     ]),
   });
 
-  act(() => {
+  await act(() => {
     result.result.current.handleAction({
       type: 'NAVIGATE',
       payload: { name: 'first', params: { screen: 'nested' } },
@@ -385,19 +509,38 @@ it('warns for direct navigation actions carrying a screen param', () => {
   warn.mockRestore();
 });
 
-it('logs an error when an action is dispatched before its router registers', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
-  const result = renderReducer({ registry: new Map() });
+it('reports an action dispatched before its router registers as unhandled', async () => {
+  const result = await renderReducer({ registry: new Map() });
+  const action = { type: 'TEST' };
 
-  act(() => result.result.current.handleAction({ type: 'TEST' }));
+  await act(() => result.result.current.handleAction(action));
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'TEST'"));
+  expect(result.result.current.report?.events).toEqual([
+    { id: 0, type: 'unhandled-action', action },
+  ]);
   expect(result.result.current.state).toBe(initialState);
-  error.mockRestore();
 });
 
-it('logs an error for a later action after a same-batch reset changes the registered state key', () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+it('does not report an unhandled action in production', async () => {
+  const nodeEnv = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'production';
+  try {
+    const result = await renderReducer({ registry: new Map() });
+
+    await act(() => result.result.current.handleAction({ type: 'TEST' }));
+
+    expect(result.result.current.report).toBeUndefined();
+    expect(result.result.current.state).toBe(initialState);
+  } finally {
+    if (nodeEnv === undefined) {
+      Reflect.deleteProperty(process.env, 'NODE_ENV');
+    } else {
+      process.env.NODE_ENV = nodeEnv;
+    }
+  }
+});
+
+it('reports a later action as unhandled after a same-batch reset changes the state key', async () => {
   const registryEntry = entry((state, action) =>
     action.type === 'RESET_KEY'
       ? {
@@ -406,29 +549,32 @@ it('logs an error for a later action after a same-batch reset changes the regist
         }
       : null
   );
-  const result = renderReducer({
+  const result = await renderReducer({
     registry: new Map([['root', registryEntry]]),
   });
 
-  act(() => {
+  await act(() => {
     result.result.current.handleAction({ type: 'RESET_KEY' });
     result.result.current.handleAction({ type: 'NEXT' });
   });
 
-  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'NEXT'"));
+  expect(result.result.current.report?.events).toEqual([
+    expect.objectContaining({ id: 0, type: 'action-dispatched', action: { type: 'RESET_KEY' } }),
+    { id: 1, type: 'unhandled-action', action: { type: 'NEXT' } },
+  ]);
   expect(result.result.current.state.key).toBe('next-root');
-  error.mockRestore();
 });
 
-it('resets a state slice when its router unregisters', () => {
+it('resets a state slice when its router unregisters', async () => {
   const routeNode = node('root', [node('first'), node('second'), node('third')]);
   routeNode.initialRouteName = 'second';
   const registryEntry = { ...entry(() => null), routeNode };
-  const result = renderReducer({
+  const result = await renderReducer({
     registry: new Map([['root', registryEntry]]),
   });
+  result.committedStates.length = 0;
 
-  result.rerender({
+  await result.rerender({
     registry: new Map(),
     routesWithRemovalPrevented: new Set(),
   });
@@ -438,12 +584,13 @@ it('resets a state slice when its router unregisters', () => {
     routeNames: ['second', 'first', 'third'],
     routes: [{ name: 'second' }],
   });
+  expect(result.committedStates).toEqual([result.result.current.state]);
 });
 
-it('resets a state slice when its router type changes', () => {
-  const result = renderReducer({ registry: new Map() });
+it('resets a state slice when its router type changes', async () => {
+  const result = await renderReducer({ registry: new Map() });
 
-  act(() => result.result.current.resetNavigator('root', 'tab'));
+  await act(() => result.result.current.resetNavigator('root', 'tab'));
 
   expect(result.result.current.state).toEqual({
     stale: false,
@@ -456,20 +603,20 @@ it('resets a state slice when its router type changes', () => {
   });
 });
 
-it('ignores a router type change for an unknown state key', () => {
-  const result = renderReducer({ registry: new Map() });
+it('ignores a router type change for an unknown state key', async () => {
+  const result = await renderReducer({ registry: new Map() });
 
-  act(() => result.result.current.resetNavigator('missing', 'tab'));
+  await act(() => result.result.current.resetNavigator('missing', 'tab'));
 
   expect(result.result.current.state).toBe(initialState);
 });
 
-it('does not reset a state slice when its router entry is replaced', () => {
-  const result = renderReducer({
+it('does not reset a state slice when its router entry is replaced', async () => {
+  const result = await renderReducer({
     registry: new Map([['root', entry(() => null)]]),
   });
 
-  result.rerender({
+  await result.rerender({
     registry: new Map([['root', entry(() => null)]]),
     routesWithRemovalPrevented: new Set(),
   });
@@ -489,15 +636,15 @@ describe('NAVIGATE_TO_HREF', () => {
     mockGetNavigateAction.mockReset();
   });
 
-  function navigateToHref(
-    result: ReturnType<typeof renderReducer>,
+  async function navigateToHref(
+    result: Awaited<ReturnType<typeof renderReducer>>,
     payload: {
       href?: string;
       options?: LinkToOptions;
       originalHref?: string;
     } = {}
   ) {
-    act(() =>
+    await act(() =>
       result.result.current.processIntent({
         type: 'NAVIGATE_TO_HREF',
         payload: { href: '/second', options: {}, ...payload },
@@ -505,46 +652,46 @@ describe('NAVIGATE_TO_HREF', () => {
     );
   }
 
-  it('warns and keeps the state when resolving the href throws', () => {
+  it('warns and keeps the state when resolving the href throws', async () => {
     mockGetNavigateAction.mockImplementation(() => {
       throw new Error('boom');
     });
-    const result = renderReducer({ registry: new Map() });
+    const result = await renderReducer({ registry: new Map() });
 
-    navigateToHref(result);
+    await navigateToHref(result);
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('boom'));
     expect(result.result.current.state).toBe(initialState);
   });
 
-  it('warns with the resolved href when the href is invalid', () => {
+  it('warns with the resolved href when the href is invalid', async () => {
     mockGetNavigateAction.mockReturnValue({
       status: 'invalid',
       href: '/resolved',
     });
-    const result = renderReducer({ registry: new Map() });
+    const result = await renderReducer({ registry: new Map() });
 
-    navigateToHref(result);
+    await navigateToHref(result);
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('/resolved'));
     expect(result.result.current.state).toBe(initialState);
   });
 
-  it('warns with the original href when the href is invalid after a redirect', () => {
+  it('warns with the original href when the href is invalid after a redirect', async () => {
     mockGetNavigateAction.mockReturnValue({
       status: 'invalid',
       href: '/resolved',
     });
-    const result = renderReducer({ registry: new Map() });
+    const result = await renderReducer({ registry: new Map() });
 
-    navigateToHref(result, { originalHref: 'myapp://original' });
+    await navigateToHref(result, { originalHref: 'myapp://original' });
 
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('myapp://original'));
     expect(warn).not.toHaveBeenCalledWith(expect.stringContaining('/resolved'));
     expect(result.result.current.state).toBe(initialState);
   });
 
-  it('reduces the resolved action against the current state', () => {
+  it('reduces the resolved action against the current state', async () => {
     const action = { type: 'NEXT' };
     const dangerouslySingular = () => 'singular';
     mockGetNavigateAction.mockReturnValue({ status: 'action', action });
@@ -553,9 +700,9 @@ describe('NAVIGATE_TO_HREF', () => {
       affectedRouteKey: state.routes[state.index + 1]!.key,
     }));
     const registry: RouterRegistry = new Map([['root', entry(reduce)]]);
-    const result = renderReducer({ registry });
+    const result = await renderReducer({ registry });
 
-    navigateToHref(result, {
+    await navigateToHref(result, {
       options: {
         event: 'PUSH',
         withAnchor: true,
@@ -576,23 +723,25 @@ describe('NAVIGATE_TO_HREF', () => {
         linking: undefined,
         redirects: undefined,
         routesWithRemovalPrevented: new Set(),
+        browserHistoryIdPrefix: expect.any(String),
       },
       'PUSH',
       true,
       dangerouslySingular,
-      true,
+      'preview',
       initialState
     );
   });
 });
 
-it('throws for an incomplete initial state', () => {
-  expect(() =>
-    renderHook(() =>
-      useNavigationTreeReducer({
-        initialState: { routes: [{ name: 'first' }] },
-        registry: new Map(),
-      })
-    )
-  ).toThrow('incomplete initial state');
+it('throws for an incomplete initial state', async () => {
+  await expect(
+    async () =>
+      await renderHook(() =>
+        useNavigationTreeReducer({
+          initialState: { routes: [{ name: 'first' }] },
+          registry: new Map(),
+        })
+      )
+  ).rejects.toThrow('incomplete initial state');
 });

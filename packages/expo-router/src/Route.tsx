@@ -129,7 +129,7 @@ export function getValidInitialRoute(
     throw new Error(
       `The initial route name "${initialRouteName}"${groupName ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
         `Available routes are: ${node.children.map(({ route }) => `"${route}"`).join(', ')}. ` +
-        'Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+        'Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   }
   return route;

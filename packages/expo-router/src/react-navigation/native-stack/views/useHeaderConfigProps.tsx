@@ -15,7 +15,7 @@ import {
   SearchBar,
 } from 'react-native-screens';
 
-import { Color } from '../../../utils/color';
+import { isLight } from '../../../utils/color';
 import { getHeaderTitle, HeaderTitle } from '../../elements';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
 import type {
@@ -98,7 +98,7 @@ const processBarButtonItems = (
 
         if (badge) {
           const badgeBackgroundColor = badge.style?.backgroundColor ?? colors.notification;
-          const badgeTextColor = Color(badgeBackgroundColor)?.isLight() ? 'black' : 'white';
+          const badgeTextColor = isLight(badgeBackgroundColor) ? 'black' : 'white';
 
           processedItem = {
             ...processedItem,
@@ -184,6 +184,7 @@ export function useHeaderConfigProps({
   headerShown,
   headerStyle,
   headerBlurEffect,
+  headerUserInterfaceStyle,
   headerTintColor,
   headerTitle,
   headerTitleAlign,
@@ -476,7 +477,7 @@ export function useHeaderConfigProps({
     children,
     headerLeftBarButtonItems: processBarButtonItems(leftItems, colors, fonts),
     headerRightBarButtonItems: processBarButtonItems(rightItems, colors, fonts),
-    experimental_userInterfaceStyle: dark ? 'dark' : 'light',
+    experimental_userInterfaceStyle: headerUserInterfaceStyle ?? (dark ? 'dark' : 'light'),
     ...headerNativeProps,
   } as const;
 }

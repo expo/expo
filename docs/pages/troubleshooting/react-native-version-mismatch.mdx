@@ -26,9 +26,9 @@ The bundler that you're running in your terminal (using `npx expo start`) is usi
 
 - Close out any development servers that you have running (you can list all terminal processes with the `ps` command, and search for Expo CLI or React Native community CLI processes with `ps -A | grep "expo\|react-native"`).
 
-- If this is a Expo project, either remove the `sdkVersion` field from your **app.json** file, or make sure it matches the value of the `expo` dependency in your **package.json** file.
+- If this is an Expo project, either remove the `sdkVersion` field from your **app.json** file, or make sure it matches the value of the `expo` dependency in your **package.json** file.
 
-- If this is a Expo project, you should make sure your `react-native` version is correct. Run `npx expo-doctor` will show a warning where the `react-native` version you should install. If you did upgrade to a newer SDK, make sure to run `npx expo install --fix` and follow the prompts. Expo CLI will make sure that your dependency versions for packages like `expo` and `react-native` are aligned.
+- If this is an Expo project, you should make sure your `react-native` version is correct. Run `npx expo-doctor` to see which `react-native` version to install. If you did upgrade to a newer SDK, make sure to run `npx expo install --fix` and follow the prompts. Expo CLI will make sure that your dependency versions for packages like `expo` and `react-native` are aligned.
 
 - If this is an [existing React Native project](/bare/overview/), and this error is occurring right after upgrading your React Native version, you should double-check that you have performed each of the upgrade steps correctly.
 

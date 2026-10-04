@@ -6,32 +6,53 @@ internal import jsi
 /// A Swift representation of a JavaScript object. Provides access to JavaScript object properties and methods,
 /// supporting property access, modification, enumeration, prototype manipulation, and function calling.
 public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  /// Handle to the runtime the object belongs to.
+  internal let runtimeHandle: JavaScriptRuntimeHandle
   internal var pointee: facebook.jsi.Object
 
+  /// The runtime the object belongs to, or `nil` if it has been deallocated. Prefer ``jsiRuntime`` on
+  /// hot paths: it costs no reference counting.
+  internal var runtime: JavaScriptRuntime? {
+    return runtimeHandle.runtime
+  }
+
+  /// The engine runtime the object belongs to, or `nil` if the runtime has been deallocated.
+  internal var jsiRuntime: facebook.jsi.IRuntime? {
+    return runtimeHandle.pointee
+  }
+
   /// Creates a new object in the given runtime.
-  public init(_ runtime: JavaScriptRuntime) {
+  public init(_ runtime: borrowing JavaScriptRuntime) {
     self.init(runtime, facebook.jsi.Object(runtime.pointee))
   }
 
   /// Creates a new object from the dictionary whose values are representable in JS.
-  public init<DictValue: JavaScriptRepresentable>(_ runtime: JavaScriptRuntime, _ dictionary: [String: DictValue]) {
-    self.runtime = runtime
+  public init<DictValue: JavaScriptRepresentable>(
+    _ runtime: borrowing JavaScriptRuntime,
+    _ dictionary: [String: DictValue]
+  ) {
+    self.runtimeHandle = runtime.handle
     self.pointee = dictionary.toJavaScriptValue(in: runtime).getObject().pointee
   }
 
   /// Creates a new object from existing JSI object.
-  internal init(_ runtime: JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
-    self.runtime = runtime
+  internal init(_ runtime: borrowing JavaScriptRuntime, _ object: consuming facebook.jsi.Object) {
+    self.runtimeHandle = runtime.handle
+    self.pointee = object
+  }
+
+  /// Creates a new object from existing JSI object, which belongs to the runtime behind `runtimeHandle`.
+  internal init(_ runtimeHandle: JavaScriptRuntimeHandle, _ object: consuming facebook.jsi.Object) {
+    self.runtimeHandle = runtimeHandle
     self.pointee = object
   }
 
   /// Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
   public func instanceOf(_ constructor: borrowing JavaScriptFunction) -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.instanceOf(runtime.pointee, constructor.pointee)
+    return pointee.instanceOf(jsiRuntime, constructor.pointee)
   }
 
   /// Result of `object instanceof constructor`, which tests if the prototype property of a constructor appears anywhere in the prototype chain of an object.
@@ -41,34 +62,42 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Equivalent to `Array.isArray()` in JS. If it returns `true`, then `getArray()` will succeed.
   public func isArray() -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isArray(runtime.pointee)
+    return pointee.isArray(jsiRuntime)
   }
 
   /// Returns `true` if the object is callable. If so, then `getFunction()` will succeed.
   public func isFunction() -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.isFunction(runtime.pointee)
+    return pointee.isFunction(jsiRuntime)
   }
 
   /// Returns `true` if the object is backed by a `jsi::HostObject`, including host objects
   /// created via `JavaScriptRuntime.createHostObject` and ones produced by other native code.
   public func isHostObject() -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return expo.isHostObject(runtime.pointee, pointee)
+    return expo.isHostObject(jsiRuntime, pointee)
   }
 
   public func isArrayBuffer() -> Bool {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    return pointee.isArrayBuffer(jsiRuntime)
+  }
+
+  /// Returns `true` if the object is a typed array, such as `Uint8Array`.
+  internal func isTypedArray() -> Bool {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    return pointee.isArrayBuffer(runtime.pointee)
+    return expo.isTypedArray(runtime.pointee, pointee)
   }
 
   /// Returns the object as an array buffer, or asserts if not an array buffer.
@@ -82,11 +111,11 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns the object as an array, or asserts if not an array.
   public func getArray() -> JavaScriptArray {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     assert(isArray(), "Object is not an array")
-    return JavaScriptArray(runtime, pointee.getArray(runtime.pointee))
+    return JavaScriptArray(runtimeHandle, pointee.getArray(jsiRuntime))
   }
 
   /// Returns the object as a function, or asserts if not a function.
@@ -102,28 +131,50 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Checks whether the object has a property with the given name.
   public func hasProperty(_ name: String) -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return pointee.hasProperty(runtime.pointee, name)
+    return pointee.hasProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime))
   }
 
   /// Returns the property of the object with the given name,
   /// or `undefined` value if the name is not a property of the object.
   public func getProperty(_ name: String) -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, name))
+    return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime)))
+  }
+
+  /// Calls `body` with the property of the object with the given name, or `undefined` if there is no
+  /// such property, lent as a `JavaScriptUnownedValue` instead of wrapped in a new `JavaScriptValue`.
+  /// The value is valid only for the duration of the closure and must not be stored or escaped.
+  public func withUnownedProperty<R>(_ name: String, _ body: (borrowing JavaScriptUnownedValue) throws -> R) rethrows
+    -> R
+  {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let property = pointee.getProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime))
+    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
+    return try withUnsafeBytes(of: property) { bytes in
+      guard let baseAddress = bytes.baseAddress else {
+        preconditionFailure(
+          "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
+        )
+      }
+      let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
+      return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
+    }
   }
 
   /// Returns the property of the object with the given prop name id,
   /// or `undefined` value if the name is not a property of the object.
   public func getProperty(_ propName: JavaScriptPropNameID) -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, pointee.getProperty(runtime.pointee, propName.pointee))
+    return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, propName.pointee))
   }
 
   /// Accesses nested properties in a single subscript operation by traversing the object chain.
@@ -138,16 +189,15 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// - Note: Each intermediate value in the chain (except the last) must be an object.
   ///   If any intermediate value is not an object, the behavior is undefined and may crash.
   public subscript(_ key: String, _ nestedKeys: String...) -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    let jsiRuntime = runtime.pointee
     var value = pointee.getProperty(jsiRuntime, key)
 
     for key in nestedKeys {
       value = value.getObject(jsiRuntime).getProperty(jsiRuntime, key)
     }
-    return JavaScriptValue(runtime, value)
+    return JavaScriptValue(runtimeHandle, value)
   }
 
   /// Returns an array of the object's own enumerable property names.
@@ -156,14 +206,14 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   ///
   /// - Returns: An array of property names as strings
   public func getPropertyNames() -> [String] {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     let propertyNames: facebook.jsi.Array = pointee.getPropertyNames(jsiRuntime)
     let count = propertyNames.size(jsiRuntime)
 
     return (0..<count).map { i in
-      return String(propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime).utf8(jsiRuntime))
+      return String(jsiString: propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime), in: jsiRuntime)
     }
   }
 
@@ -209,28 +259,33 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
 
   /// Returns a prototype of the object. Same as `Object.getPrototypeOf(object)` in JS.
   public func getPrototype() -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, pointee.getPrototype(runtime.pointee))
+    return JavaScriptValue(runtimeHandle, pointee.getPrototype(jsiRuntime))
   }
 
   /// Sets a prototype of the object. Same as `Object.setPrototypeOf(object, prototype)` in JS.
   public func setPrototype(_ prototype: JavaScriptValue) {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    pointee.setPrototype(runtime.pointee, prototype.pointee)
+    pointee.setPrototype(jsiRuntime, prototype.pointee)
   }
 
   // MARK: - Modifying object properties
 
   public func setProperty(_ name: String, value: JavaScriptValue) {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
     // This specialization is to avoid copying the value; `asValue()` on `JavaScriptValue` needs to do a copy.
-    expo.setProperty(runtime.pointee, pointee, name, value.toJSIValue(in: runtime.pointee))
+    expo.setProperty(
+      jsiRuntime,
+      pointee,
+      name.toJSIPropNameID(in: jsiRuntime),
+      value.toJSIValue(in: jsiRuntime)
+    )
   }
 
   public func setProperty<T: JavaScriptRepresentable & ~Copyable>(_ name: String, value: consuming T) {
@@ -238,22 +293,27 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
       FatalError.runtimeLost()
     }
     let jsiValue = value.toJavaScriptValue(in: runtime).toJSIValue(in: runtime.pointee)
-    expo.setProperty(runtime.pointee, pointee, name, jsiValue)
+    expo.setProperty(runtime.pointee, pointee, name.toJSIPropNameID(in: runtime.pointee), jsiValue)
   }
 
   internal func setProperty<T: JavaScriptRepresentable>(_ name: String, value: consuming T) where T: JSIRepresentable {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    let jsiValue = value.toJSIValue(in: runtime.pointee)
-    expo.setProperty(runtime.pointee, pointee, name, jsiValue)
+    let jsiValue = value.toJSIValue(in: jsiRuntime)
+    expo.setProperty(jsiRuntime, pointee, name.toJSIPropNameID(in: jsiRuntime), jsiValue)
   }
 
   public func setProperty(_ name: String, _ object: consuming JavaScriptObject) {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    expo.setProperty(runtime.pointee, pointee, name, facebook.jsi.Value(runtime.pointee, object.pointee))
+    expo.setProperty(
+      jsiRuntime,
+      pointee,
+      name.toJSIPropNameID(in: jsiRuntime),
+      facebook.jsi.Value(jsiRuntime, object.pointee)
+    )
   }
 
   /// Sets a property to a synchronous host function created from the given closure. The function
@@ -304,10 +364,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   #if !os(macOS)
   // TODO: remove when bumping to react-native-macos 0.86
   public func deleteProperty(_ name: String) {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    pointee.deleteProperty(runtime.pointee, name)
+    pointee.deleteProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime))
   }
   #endif
 
@@ -371,18 +431,18 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   // MARK: - Conversions
 
   public func asValue() -> JavaScriptValue {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, facebook.jsi.Value(runtime.pointee, pointee))
+    return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
   /// Returns the object as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return facebook.jsi.Value(runtime.pointee, pointee)
+    return facebook.jsi.Value(jsiRuntime, pointee)
   }
 
   /// Provides scoped access to a raw pointer to the underlying `facebook.jsi.Object`.
@@ -418,10 +478,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// wrapper: C++-produced states carry a null context and are unrecoverable from
   /// the Swift side by design.
   public func hasNativeState() -> Bool {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return expo.hasNativeState(runtime.pointee, pointee)
+    return expo.hasNativeState(jsiRuntime, pointee)
   }
 
   /// Returns the Swift `JavaScriptNativeState` wrapper attached to this object via
@@ -429,10 +489,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// produced C++-side without a Swift back-pointer, or its concrete type doesn't
   /// match `T`.
   public func getNativeState<T: JavaScriptNativeState>(as: T.Type = JavaScriptNativeState.self) -> T? {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    guard let cxxNativeState = expo.getExpoNativeState(runtime.pointee, pointee) else {
+    guard let cxxNativeState = expo.getExpoNativeState(jsiRuntime, pointee) else {
       return nil
     }
     return T.from(cxx: cxxNativeState)
@@ -442,27 +502,27 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   /// Creates a new shared_ptr to the object managed by state, which will live until the value at this property becomes unreachable.
   /// - TODO: throw a type error if this object is a proxy or host object.
   public func setNativeState<T: JavaScriptNativeState>(_ nativeState: T) {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    expo.setNativeState(runtime.pointee, self.pointee, nativeState.acquireShared())
+    expo.setNativeState(jsiRuntime, self.pointee, nativeState.acquireShared())
   }
 
   /// Unsets the native state of this object.
   public func unsetNativeState() {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    expo.unsetNativeState(runtime.pointee, pointee)
+    expo.unsetNativeState(jsiRuntime, pointee)
   }
 
   // MARK: - Memory pressure
 
   public func setExternalMemoryPressure(_ size: Int) {
-    guard let runtime else {
+    guard let jsiRuntime else {
       FatalError.runtimeLost()
     }
-    pointee.setExternalMemoryPressure(runtime.pointee, size)
+    pointee.setExternalMemoryPressure(jsiRuntime, size)
   }
 
   // MARK: - Equality

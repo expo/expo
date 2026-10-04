@@ -15,15 +15,15 @@ import {
 import {
   type DescriptorRouteProp,
   type ParamListBase,
-  StackActions,
   type StackNavigationState,
   type StackRouterOptions,
 } from '../react-navigation/native';
-import { makePopAction, type NativeStackNavigationOptions } from '../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../react-navigation/native-stack/types';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { IsWithinNativeNavigator, integrateWithRouter } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
+import { createNativeStackProps } from './createNativeStackProps';
 import { StackRouter } from './stack-router';
 import {
   type StackScreenProps,
@@ -37,7 +37,7 @@ import {
   validateStackPresentation,
 } from './stack-utils';
 
-const RNStack = unstable_integrateWithRouter<
+const RNStack = integrateWithRouter<
   NativeStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardNativeStackEventMap,
@@ -45,25 +45,8 @@ const RNStack = unstable_integrateWithRouter<
   StackRouterOptions,
   NativeStackNavigatorCreateProps
 >(createStandardNativeStackNavigator, StackRouter, {
-  createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
-    pop: makePopAction(dispatchSync, state.key),
-    removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-    subscribePopToTopOnParentTabPress: () =>
-      // @ts-expect-error: there may not be a tab navigator in parent
-      navigation.addListener?.('tabPress', (e) => {
-        const isFocused = navigation.isFocused();
-        requestAnimationFrame(() => {
-          if (
-            state.index > 0 &&
-            isFocused &&
-            !e.defaultPrevented &&
-            e.data?.__internalTabsType !== 'native'
-          ) {
-            dispatch({ ...StackActions.popToTop(), target: state.key });
-          }
-        });
-      }),
-  }),
+  activityDefaultThreshold: 2,
+  createProps: createNativeStackProps,
 });
 
 /**
@@ -114,7 +97,11 @@ const Stack = Object.assign(
       [props.children]
     );
 
-    return <RNStack {...props} children={rnChildren} screenOptions={screenOptions} />;
+    return (
+      <IsWithinNativeNavigator value>
+        <RNStack {...props} children={rnChildren} screenOptions={screenOptions} />
+      </IsWithinNativeNavigator>
+    );
   },
   {
     Screen: StackScreen,

@@ -1,4 +1,4 @@
-import { Link, usePathname } from 'expo-router';
+import { Link, router, usePathname } from 'expo-router';
 import { useState } from 'react';
 import { Button, Text, View } from 'react-native';
 
@@ -8,6 +8,7 @@ export default function DetailsScreen() {
   return (
     <View>
       <Text testID="details-content">{pathname}</Text>
+      <Button testID="details-back" title="Back" onPress={() => router.back()} />
       <Text testID="details-count">{count}</Text>
       <Button testID="increment-details" title="Increment" onPress={() => setCount(count + 1)} />
       <Link href="/(tabs)/explore/final" testID="go-final">

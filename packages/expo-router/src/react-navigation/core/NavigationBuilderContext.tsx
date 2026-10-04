@@ -24,9 +24,7 @@ export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
   addListener?: AddListener;
-  onOptionsChange: (options: object, routeKey?: string) => void;
 }>({
   handleAction: () => undefined,
   resetNavigator: () => undefined,
-  onOptionsChange: () => undefined,
 });

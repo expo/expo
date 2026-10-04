@@ -71,7 +71,11 @@ class TestStorageProvider : DocumentsProvider() {
         add(Document.COLUMN_DISPLAY_NAME, file.name)
         add(
           Document.COLUMN_MIME_TYPE,
-          if (file.isDirectory) Document.MIME_TYPE_DIR else "application/octet-stream"
+          if (file.isDirectory) {
+            Document.MIME_TYPE_DIR
+          } else {
+            "application/octet-stream"
+          }
         )
         add(
           Document.COLUMN_FLAGS,
@@ -80,7 +84,14 @@ class TestStorageProvider : DocumentsProvider() {
             Document.FLAG_SUPPORTS_MOVE or
             Document.FLAG_SUPPORTS_RENAME
         )
-        add(Document.COLUMN_SIZE, if (file.isFile) file.length() else 0)
+        add(
+          Document.COLUMN_SIZE,
+          if (file.isFile) {
+            file.length()
+          } else {
+            0
+          }
+        )
         add(Document.COLUMN_LAST_MODIFIED, file.lastModified())
       }
     }
@@ -107,13 +118,24 @@ class TestStorageProvider : DocumentsProvider() {
           add(Document.COLUMN_DISPLAY_NAME, file.name)
           add(
             Document.COLUMN_MIME_TYPE,
-            if (file.isDirectory) Document.MIME_TYPE_DIR else "text/plain"
+            if (file.isDirectory) {
+              Document.MIME_TYPE_DIR
+            } else {
+              "text/plain"
+            }
           )
           add(
             Document.COLUMN_FLAGS,
             Document.FLAG_SUPPORTS_WRITE or Document.FLAG_SUPPORTS_DELETE
           )
-          add(Document.COLUMN_SIZE, if (file.isFile) file.length() else 0)
+          add(
+            Document.COLUMN_SIZE,
+            if (file.isFile) {
+              file.length()
+            } else {
+              0
+            }
+          )
         }
       }
     }
@@ -169,12 +191,16 @@ class TestStorageProvider : DocumentsProvider() {
 
   override fun renameDocument(documentId: String, displayName: String): String? {
     val file = getFileForDocId(documentId)
-    if (!file.exists()) return null
+    if (!file.exists()) {
+      return null
+    }
 
     val parent = file.parentFile ?: return null
     val newFile = File(parent, displayName)
 
-    if (!file.renameTo(newFile)) return null
+    if (!file.renameTo(newFile)) {
+      return null
+    }
     return getDocIdForFile(newFile)
   }
 
@@ -184,14 +210,20 @@ class TestStorageProvider : DocumentsProvider() {
     targetParentDocumentId: String
   ): String? {
     val sourceFile = getFileForDocId(sourceDocumentId)
-    if (!sourceFile.exists()) return null
+    if (!sourceFile.exists()) {
+      return null
+    }
 
     val targetParent = getFileForDocId(targetParentDocumentId)
-    if (!targetParent.exists() || !targetParent.isDirectory) return null
+    if (!targetParent.exists() || !targetParent.isDirectory) {
+      return null
+    }
 
     val targetFile = File(targetParent, sourceFile.name)
 
-    if (!sourceFile.renameTo(targetFile)) return null
+    if (!sourceFile.renameTo(targetFile)) {
+      return null
+    }
     return getDocIdForFile(targetFile)
   }
 
@@ -222,7 +254,9 @@ class TestStorageProvider : DocumentsProvider() {
   }
 
   private fun getDocIdForFile(file: File): String {
-    if (file == baseDir) return ROOT_DOC_ID
+    if (file == baseDir) {
+      return ROOT_DOC_ID
+    }
 
     // Document ID is the relative path from baseDir
     return file.relativeTo(baseDir).path

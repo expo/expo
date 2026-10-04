@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Image wraps the official Jetpack Compose [Image](https://developer.android.com/develop/ui/compose/graphics/images) API and displays a bundled or remote image. Set the size with modifiers such as `size`, `width`, or `fillMaxWidth`, then `contentScale` to control how the image fills those bounds.
@@ -26,7 +27,13 @@ Expo UI Image wraps the official Jetpack Compose [Image](https://developer.andro
 
 ## Usage
 
-```tsx ImageExample.tsx
+<ComponentExample
+  title="ImageExample.tsx"
+  src="/static/images/expo-ui/examples/image-usage-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/image-usage-android-dark.webp"
+  alt="A mountain at sunset cropped to a 240 by 160 box">
+
+```tsx
 import { Host, Image } from '@expo/ui/jetpack-compose';
 import { size } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -43,6 +50,8 @@ export default function ImageExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

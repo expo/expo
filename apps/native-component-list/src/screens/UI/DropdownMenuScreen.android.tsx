@@ -1,6 +1,7 @@
 import {
   Button,
   Checkbox,
+  Column,
   DropdownMenu,
   HorizontalDivider,
   DropdownMenuItem,
@@ -17,7 +18,7 @@ import { background, combinedClickable, paddingAll } from '@expo/ui/jetpack-comp
 import * as React from 'react';
 import { View, Text, Alert, Pressable } from 'react-native';
 
-import { Section } from '../../components/Page';
+import { ScrollPage, Section } from '../../components/Page';
 
 // This are random icons used for testing. Feel free to replace them with more fitting icons if needed.
 const faceIcon = require('../../../assets/icons/api/Camera.png');
@@ -44,6 +45,8 @@ export default function DropdownMenuScreen() {
   const [longPressTapCount, setLongPressTapCount] = React.useState(0);
   const [rnTriggerMenuExpanded, setRnTriggerMenuExpanded] = React.useState(false);
   const [rnTriggerTapCount, setRnTriggerTapCount] = React.useState(0);
+  const [shadowMenuExpanded, setShadowMenuExpanded] = React.useState(false);
+  const [shadowElevation, setShadowElevation] = React.useState<number | undefined>(undefined);
   const [roundedMenuExpanded, setRoundedMenuExpanded] = React.useState(false);
 
   React.useEffect(() => {
@@ -55,7 +58,7 @@ export default function DropdownMenuScreen() {
   const themeBackgroundColor = selectedTheme === 'Dark' ? 'black' : 'white';
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <ScrollPage>
       <Section title="Theme Dropdown Menu">
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -409,6 +412,40 @@ export default function DropdownMenuScreen() {
           </DropdownMenu>
         </Host>
       </Section>
+      <Section title="Custom shadowElevation">
+        <Host matchContents>
+          <Column>
+            <Row>
+              <Button onClick={() => setShadowElevation(undefined)}>
+                <ComposeText>Default</ComposeText>
+              </Button>
+              <Button onClick={() => setShadowElevation(1)}>
+                <ComposeText>1 dp</ComposeText>
+              </Button>
+              <Button onClick={() => setShadowElevation(0)}>
+                <ComposeText>0 dp</ComposeText>
+              </Button>
+            </Row>
+            <DropdownMenu
+              expanded={shadowMenuExpanded}
+              onDismissRequest={() => setShadowMenuExpanded(false)}
+              shadowElevation={shadowElevation}>
+              <DropdownMenu.Trigger>
+                <Button onClick={() => setShadowMenuExpanded(true)}>
+                  <ComposeText>{`Open menu (${shadowElevation ?? 'default'})`}</ComposeText>
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Items>
+                <DropdownMenuItem onClick={() => setShadowMenuExpanded(false)}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>Item 1</ComposeText>
+                  </DropdownMenuItem.Text>
+                </DropdownMenuItem>
+              </DropdownMenu.Items>
+            </DropdownMenu>
+          </Column>
+        </Host>
+      </Section>
       <Section title="Custom cornerRadius">
         <Host matchContents>
           <DropdownMenu
@@ -430,7 +467,7 @@ export default function DropdownMenuScreen() {
           </DropdownMenu>
         </Host>
       </Section>
-    </View>
+    </ScrollPage>
   );
 }
 

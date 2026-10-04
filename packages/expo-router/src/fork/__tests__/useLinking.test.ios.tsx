@@ -1,5 +1,5 @@
 import { expect, jest, test } from '@jest/globals';
-import { act, type RenderAPI } from '@testing-library/react-native';
+import { act, type RenderResult } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
@@ -34,33 +34,29 @@ afterEach(() => {
   errorSpy?.mockRestore();
 });
 
-test('queues an incoming deep link using its extracted app path', () => {
+test('queues an incoming deep link using its extracted app path', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   // Only `getRootState` is used by the linking subscription.
   ref.current = {
     getRootState: () => ({ routeNames: ['home'], routes: [{ name: '__root' }] }),
   } as typeof ref.current;
   let listener: ((url: string) => void) | undefined;
-  const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
+  const getStateFromPath = jest.fn((..._args: unknown[]) => ({ routes: [{ name: 'home' }] }));
 
   function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        getStateFromPath,
-        subscribe: (nextListener) => {
-          listener = nextListener;
-          return () => {};
-        },
+    useLinking(ref, {
+      prefixes: ['example://'],
+      getStateFromPath,
+      subscribe: (nextListener) => {
+        listener = nextListener;
+        return () => {};
       },
-      () => {}
-    );
+    });
     return null;
   }
 
-  render(<Sample />);
-  act(() => listener?.('example://home?from=link'));
+  await render(<Sample />);
+  await act(() => listener?.('example://home?from=link'));
 
   expect(getStateFromPath).toHaveBeenCalledWith('home?from=link', undefined, []);
   expect(getPendingIntents()).toEqual([
@@ -75,7 +71,7 @@ test('queues an incoming deep link using its extracted app path', () => {
   ]);
 });
 
-test('keeps the current route group when parsing an incoming deep link', () => {
+test('keeps the current route group when parsing an incoming deep link', async () => {
   const config = getMockConfig(['(a)/shared', '(b)/shared', '(a)/index', '(b)/other']);
   const currentState = completeParsedState(
     getStateFromPath('/other', config, ['(b)', 'other']),
@@ -90,24 +86,20 @@ test('keeps the current route group when parsing an incoming deep link', () => {
   const parsePath = jest.fn(getStateFromPath);
 
   function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        config,
-        getStateFromPath: parsePath,
-        subscribe: (nextListener) => {
-          listener = nextListener;
-          return () => {};
-        },
+    useLinking(ref, {
+      prefixes: ['example://'],
+      config,
+      getStateFromPath: parsePath,
+      subscribe: (nextListener) => {
+        listener = nextListener;
+        return () => {};
       },
-      () => {}
-    );
+    });
     return null;
   }
 
-  render(<Sample />);
-  act(() => listener?.('example://shared'));
+  await render(<Sample />);
+  await act(() => listener?.('example://shared'));
 
   expect(parsePath).toHaveBeenCalledWith('shared', config, ['(b)', 'other']);
   expect(
@@ -115,43 +107,9 @@ test('keeps the current route group when parsing an incoming deep link', () => {
   ).toEqual(['(b)', 'shared']);
 });
 
-test('reports an incoming deep link using its extracted app path', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-  // Only `getRootState` is used by the linking subscription.
-  ref.current = {
-    getRootState: () => ({ routeNames: ['home'], routes: [{ name: '__root' }] }),
-  } as typeof ref.current;
-  let listener: ((url: string) => void) | undefined;
-  const onUnhandledLinking = jest.fn();
-
-  function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['myapp://'],
-        getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
-        subscribe: (nextListener) => {
-          listener = nextListener;
-          return () => {};
-        },
-      },
-      onUnhandledLinking
-    );
-    return null;
-  }
-
-  render(<Sample />);
-  act(() => listener?.('myapp://foo/bar'));
-
-  expect(onUnhandledLinking).toHaveBeenCalledWith('/foo/bar');
-  expect(getPendingIntents()[0]).toMatchObject({
-    payload: { href: '/foo/bar' },
-  });
-});
-
 test('resolves a completed state from an async initial URL', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
-  const getStateFromPath = jest.fn(() => ({
+  const getStateFromPath = jest.fn((..._args: unknown[]) => ({
     routes: [
       {
         name: '__root',
@@ -167,16 +125,12 @@ test('resolves a completed state from an async initial URL', async () => {
     ],
   }));
 
-  const { result } = renderHook(() =>
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        getInitialURL: () => Promise.resolve('example://home/42'),
-        getStateFromPath,
-      },
-      () => {}
-    )
+  const { result } = await renderHook(() =>
+    useLinking(ref, {
+      prefixes: ['example://'],
+      getInitialURL: () => Promise.resolve('example://home/42'),
+      getStateFromPath,
+    })
   );
 
   const state = await result.current.getInitialState();
@@ -190,7 +144,7 @@ test('resolves a completed state from an async initial URL', async () => {
   });
 });
 
-test('resubscribes on re-render and cleans up the previous subscription', () => {
+test('resubscribes on re-render and cleans up the previous subscription', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
   // Only `getRootState` is used by the linking subscription.
   ref.current = {
@@ -204,21 +158,17 @@ test('resubscribes on re-render and cleans up the previous subscription', () => 
   });
 
   function Sample() {
-    useLinking(
-      ref,
-      {
-        prefixes: ['example://'],
-        getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
-        subscribe,
-      },
-      () => {}
-    );
+    useLinking(ref, {
+      prefixes: ['example://'],
+      getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
+      subscribe,
+    });
     return null;
   }
 
-  const element = render(<Sample />);
-  element.rerender(<Sample />);
-  act(() => listeners[1]?.('example://home'));
+  const element = await render(<Sample />);
+  await element.rerender(<Sample />);
+  await act(() => listeners[1]?.('example://home'));
 
   expect(subscribe).toHaveBeenCalledTimes(2);
   expect(unsubscribes[0]).toHaveBeenCalledTimes(1);
@@ -234,22 +184,22 @@ test('async initial URL is parsed with first-render options', async () => {
   const initialURL = new Promise<string>((resolve) => {
     resolveInitialURL = resolve;
   });
-  const firstGetStateFromPath = jest.fn(getParsedHomeState);
-  const secondGetStateFromPath = jest.fn(getParsedHomeState);
+  const firstGetStateFromPath = jest.fn((..._args: unknown[]) => getParsedHomeState());
+  const secondGetStateFromPath = jest.fn((..._args: unknown[]) => getParsedHomeState());
   let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
 
   function Sample({ getStateFromPath }: { getStateFromPath: typeof firstGetStateFromPath }) {
-    getInitialState = useLinking(
-      ref,
-      { prefixes: ['example://'], getInitialURL: () => initialURL, getStateFromPath },
-      () => {}
-    ).getInitialState;
+    getInitialState = useLinking(ref, {
+      prefixes: ['example://'],
+      getInitialURL: () => initialURL,
+      getStateFromPath,
+    }).getInitialState;
     return null;
   }
 
-  const element = render(<Sample getStateFromPath={firstGetStateFromPath} />);
+  const element = await render(<Sample getStateFromPath={firstGetStateFromPath} />);
   const statePromise = getInitialState?.();
-  element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
+  await element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
   resolveInitialURL?.('example://home');
   await statePromise;
 
@@ -257,9 +207,9 @@ test('async initial URL is parsed with first-render options', async () => {
   expect(secondGetStateFromPath).not.toHaveBeenCalled();
 });
 
-test('preserves seeded state on rerender', () => {
+test('preserves seeded state on rerender', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
-  const element = render(
+  const element = await render(
     <NavigationContainer
       ref={ref}
       linking={{
@@ -272,7 +222,7 @@ test('preserves seeded state on rerender', () => {
   );
   const seededState = ref.getRootState();
 
-  element.rerender(
+  await element.rerender(
     <NavigationContainer
       ref={ref}
       linking={{
@@ -287,8 +237,8 @@ test('preserves seeded state on rerender', () => {
   expect(ref.getRootState()).toBe(seededState);
 });
 
-test('renders children on first paint with a synchronous initial URL and no initialState prop', () => {
-  const element = render(
+test('renders children on first paint with a synchronous initial URL and no initialState prop', async () => {
+  const element = await render(
     <NavigationContainer
       fallback={<Text testID="loading">Loading</Text>}
       linking={{
@@ -314,7 +264,7 @@ test('shows fallback then content for an async initial URL', async () => {
     getInitialURL: () => initialURL,
     getStateFromPath: getParsedHomeState,
   };
-  const element = render(
+  const element = await render(
     <NavigationContainer fallback={<Text testID="loading">Loading</Text>} linking={linking}>
       <Text testID="content">Content</Text>
     </NavigationContainer>
@@ -325,13 +275,10 @@ test('shows fallback then content for an async initial URL', async () => {
   expect(element.getByTestId('content')).toBeTruthy();
 });
 
-test('seeds navigation state when a synchronous initial URL is absent', () => {
+test('seeds navigation state when a synchronous initial URL is absent', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
-  render(
-    <NavigationContainer
-      ref={ref}
-      documentTitle={{ enabled: false }}
-      linking={{ prefixes: [], getInitialURL: () => null }}>
+  await render(
+    <NavigationContainer ref={ref} linking={{ prefixes: [], getInitialURL: () => null }}>
       {null}
     </NavigationContainer>
   );
@@ -350,55 +297,55 @@ test('seeds navigation state when a synchronous initial URL is absent', () => {
   expect(getRouteInfoFromState(ref.getRootState()).pathname).toBe('/home');
 });
 
-test('throws when linking does not produce an initial state', () => {
+test('throws when linking does not produce an initial state', async () => {
   setRouteNode(null);
 
-  expect(() =>
+  await expect(async () =>
     render(
       <NavigationContainer linking={{ prefixes: [], getInitialURL: () => null }}>
         {null}
       </NavigationContainer>
     )
-  ).toThrow(
+  ).rejects.toThrow(
     'Linking did not produce an initial navigation state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
   );
 });
 
-test('throws if multiple instances of useLinking are used', () => {
+test('throws if multiple instances of useLinking are used', async () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const options = { prefixes: [] };
 
   function Sample() {
-    useLinking(ref, options, () => {});
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
+    useLinking(ref, options);
     return null;
   }
 
   errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  let element: RenderAPI | undefined;
+  let element: RenderResult | undefined;
 
-  element = render(<Sample />);
+  element = await render(<Sample />);
 
   expect(errorSpy).toHaveBeenCalledTimes(1);
   expect(errorSpy.mock.calls[0]![0]).toMatch(
     'Looks like you have configured linking in multiple places.'
   );
 
-  element?.unmount();
+  await element?.unmount();
 
   function A() {
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
     return null;
   }
 
   function B() {
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
     return null;
   }
 
-  element = render(
+  element = await render(
     <>
       <A />
       <B />
@@ -410,20 +357,21 @@ test('throws if multiple instances of useLinking are used', () => {
     'Looks like you have configured linking in multiple places.'
   );
 
-  element?.unmount();
+  await element?.unmount();
 
   function Sample2() {
-    useLinking(ref, options, () => {});
+    useLinking(ref, options);
     return null;
   }
 
   const wrapper2 = <Sample2 />;
 
-  render(wrapper2).unmount();
+  const root = await render(wrapper2);
+  await root.unmount();
 
-  element = render(wrapper2);
+  element = await render(wrapper2);
 
   expect(errorSpy).toHaveBeenCalledTimes(2);
 
-  element?.unmount();
+  await element?.unmount();
 });

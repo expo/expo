@@ -48,6 +48,7 @@ import expo.modules.location.LocationModule
 import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
 import expo.modules.medialibrary.MediaLibraryModule
+import expo.modules.medialibrary.next.MediaLibraryNextModule
 import expo.modules.navigationbar.NavigationBarModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
@@ -85,6 +86,7 @@ import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
 import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
+import expo.modules.webview.DomWebViewModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenModule
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenPackage
 
@@ -152,6 +154,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ContactsNextModule::class.java to null,
     DeviceModule::class.java to null,
     DocumentPickerModule::class.java to null,
+    DomWebViewModule::class.java to null,
     EASClientModule::class.java to null,
     ExpoFetchModule::class.java to null,
     FontUtilsModule::class.java to null,
@@ -175,6 +178,7 @@ object ExperiencePackagePicker : ModulesProvider {
     LocationModule::class.java to null,
     MailComposerModule::class.java to null,
     MediaLibraryModule::class.java to null,
+    MediaLibraryNextModule::class.java to null,
     NavigationBarModule::class.java to null,
     NetworkModule::class.java to null,
     ScreenCaptureModule::class.java to null,

@@ -1,17 +1,35 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
+
+### 💡 Others
+
+- [Internal] Remove the unused `forceNodeFilesystemAPI` option. ([#50193](https://github.com/expo/expo/pull/50193) by [@robhogan](https://github.com/robhogan))
+- [Internal] Declare the perf logger types locally and drop the `@expo/metro` devDependency. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-15
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
+
+- Pick up files written into a new directory while `FallbackWatcher` starts to watch it, so a package installed while the dev server runs is resolvable (fixes [#48950](https://github.com/expo/expo/issues/48950)). ([#49363](https://github.com/expo/expo/pull/49363) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
+- Bump to `@expo/metro@56.1.0` and `metro@0.84.6` ([#49671](https://github.com/expo/expo/pull/49671) by [@robhogan](https://github.com/robhogan))
 
 ## 57.0.1 - 2026-07-15
 

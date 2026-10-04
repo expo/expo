@@ -1,5 +1,5 @@
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react-native';
-import { use } from 'react';
+import { act as reactAct, use } from 'react';
 import { Text } from 'react-native';
 
 import { unstable_useIsNavigating, usePathname } from '../../exports';
@@ -38,28 +38,55 @@ it('keeps the current screen visible and reports pending while a navigation susp
     return <Text testID="slow">{content}</Text>;
   }
 
-  renderRouter({
-    _layout: PendingStackLayout,
-    index: () => <Text testID="index">Index</Text>,
-    slow: {
-      default: SlowScreen,
+  await renderRouter({
+    _layout: {
+      default: PendingStackLayout,
       SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
     },
+    index: () => <Text testID="index">Index</Text>,
+    slow: SlowScreen,
   });
 
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
   expect(screen.getByTestId('index')).toBeVisible();
 
-  const navigationAct = act(() => router.push('/slow'));
+  const navigationAct = reactAct(() => router.push('/slow', { inTransition: true }));
 
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.queryByTestId('fallback')).toBeNull();
 
-  deferred.resolve('Slow');
+  await act(async () => deferred.resolve('Slow'));
   await navigationAct;
 
   await waitFor(() => expect(screen.getByTestId('is-navigating')).toHaveTextContent('false'));
+  expect(screen.getByTestId('slow')).toBeVisible();
+});
+
+it('renders the suspense fallback when a navigation suspends by default', async () => {
+  const deferred = createDeferred();
+
+  function SlowScreen() {
+    return <Text testID="slow">{use(deferred.promise)}</Text>;
+  }
+
+  await renderRouter({
+    _layout: {
+      default: PendingStackLayout,
+      SuspenseFallback: () => <Text testID="fallback">Fallback</Text>,
+    },
+    index: () => <Text testID="index">Index</Text>,
+    slow: SlowScreen,
+  });
+
+  const navigationAct = reactAct(() => router.push('/slow'));
+
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
+  expect(screen.getByTestId('fallback')).toBeVisible();
+
+  await act(async () => deferred.resolve('Slow'));
+  await navigationAct;
+
   expect(screen.getByTestId('slow')).toBeVisible();
 });
 
@@ -71,7 +98,7 @@ it('commits two queued navigations in one transition', async () => {
     return <Stack />;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: Layout,
     index: () => <Text>Index</Text>,
     first: () => <Text>First</Text>,
@@ -79,8 +106,8 @@ it('commits two queued navigations in one transition', async () => {
   });
 
   await act(async () => {
-    router.push('/first');
-    router.push('/second');
+    router.push('/first', { inTransition: true });
+    router.push('/second', { inTransition: true });
   });
 
   expect(screen).toHavePathname('/second');
@@ -96,7 +123,7 @@ it('processes each intent once when one is queued during a pending transition', 
     return <Text testID="slow">{content}</Text>;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: PendingStackLayout,
     index: () => <Text testID="index">Index</Text>,
     slow: SlowScreen,
@@ -107,7 +134,7 @@ it('processes each intent once when one is queued during a pending transition', 
   );
 
   try {
-    const navigationAct = act(() => router.push('/slow'));
+    const navigationAct = reactAct(() => router.push('/slow', { inTransition: true }));
     expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -134,17 +161,17 @@ it('preserves action order when a synchronous dispatch interrupts a transition',
     return <Text testID="slow">{content}</Text>;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: PendingStackLayout,
     index: () => <Text testID="index">Index</Text>,
     sync: () => <Text testID="sync">Sync</Text>,
     slow: SlowScreen,
   });
 
-  const navigationAct = act(() => router.push('/slow'));
+  const navigationAct = reactAct(() => router.push('/slow', { inTransition: true }));
   expect(screen.getByTestId('is-navigating')).toHaveTextContent('true');
 
-  act(() => navigationRef.current?.dispatchSync(CommonActions.navigate('sync')));
+  await act(() => navigationRef.current?.dispatchSync(CommonActions.navigate('sync')));
 
   deferred.resolve('Slow');
   await navigationAct;
@@ -153,12 +180,12 @@ it('preserves action order when a synchronous dispatch interrupts a transition',
   expect(screen).toHavePathname('/sync');
 });
 
-it('reports no pending navigation outside ExpoRoot', () => {
+it('reports no pending navigation outside ExpoRoot', async () => {
   function Consumer() {
     return <Text testID="is-navigating">{String(unstable_useIsNavigating())}</Text>;
   }
 
-  const { getByTestId } = render(<Consumer />);
+  const { getByTestId } = await render(<Consumer />);
 
   expect(getByTestId('is-navigating')).toHaveTextContent('false');
 });

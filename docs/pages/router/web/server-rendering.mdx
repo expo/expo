@@ -1,7 +1,6 @@
 ---
 title: Server rendering
 description: Learn how to render Expo Router routes dynamically at request time using server-side rendering (SSR).
-isAlpha: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -11,7 +10,7 @@ import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Server rendering is in [alpha](/more/release-statuses/#alpha) and is available in SDK 55 and later. It requires a [deployed server](/router/web/api-routes/#deployment) for production use.
+> **important** Server rendering is stable in SDK 58 and later. For SDK 55–57, enable `unstable_useServerRendering` in the `expo-router` config plugin. It requires a [deployed server](/router/web/api-routes/#deployment) for production use.
 
 Server-side rendering (SSR) generates HTML dynamically on each request, as opposed to [static rendering](/router/web/static-rendering), which pre-renders HTML at build time. This guide walks you through enabling server rendering for your Expo Router app.
 
@@ -19,9 +18,11 @@ Server-side rendering (SSR) generates HTML dynamically on each request, as oppos
 
 ## Setup
 
+To keep the behavior of `web.output: "server"` from SDK 57 and earlier, use `web.output: "static"` with `apiRoutes: true` in the `expo-router` config plugin. This combines [prerendered HTML with API routes](/router/web/api-routes/#create-an-api-route).
+
 <Step label="1">
 
-Enable server rendering in your project's [app config](/versions/latest/config/app/):
+Set `web.output` to `server` in your project's [app config](/versions/latest/config/app/) to enable server rendering:
 
 ```json app.json
 {
@@ -31,16 +32,7 @@ Enable server rendering in your project's [app config](/versions/latest/config/a
     "web": {
       "output": "server"
     },
-    "plugins": [
-      [
-        "expo-router",
-        {
-          /* @info Enable server-side rendering */
-          "unstable_useServerRendering": true
-          /* @end */
-        }
-      ]
-    ]
+    "plugins": ["expo-router"]
   }
 }
 ```
@@ -127,12 +119,12 @@ In the above example, when the app user visits `/blog/my-post`, the page is rend
 
 You can customize the root HTML document by creating a **src/app/+html.tsx** file. This component wraps all routes and runs only on the server.
 
-The [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, and CSS are included in the response:
+The [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, CSS, and JavaScript bundles are included in the response:
 
 - `htmlAttributes`: attributes to add to the `<html>` element
 - `bodyAttributes`: attributes to add to the `<body>` element
 - `headNodes`: React nodes for the `<head>` element (metadata, CSS, and other assets)
-- `bodyNodes`: React nodes for the `<body>` element (fonts and other deferred assets)
+- `bodyNodes`: React nodes for the `<body>` element (fonts and JavaScript bundles required for hydration). Omitting these prevents the app from hydrating and becoming interactive.
 
 > **info** When creating a custom **+html.tsx** template, you must use all properties returned to you by [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext). Otherwise, your server-side rendered HTML may appear broken or your app may not function correctly.
 

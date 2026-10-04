@@ -37,7 +37,8 @@ object ExpoReactHostFactory {
     override val bindingsInstaller: BindingsInstaller? = null,
     override val turboModuleManagerDelegateBuilder: ReactPackageTurboModuleManagerDelegate.Builder =
       DefaultTurboModuleManagerDelegate.Builder(),
-    private val hostHandlers: List<ReactNativeHostHandler>
+    private val hostHandlers: List<ReactNativeHostHandler>,
+    override val jsRuntimeFactory: JSRuntimeFactory = HermesInstance()
   ) : ReactHostDelegate {
 
     val hostDelegateJsBundleFilePath: String?
@@ -78,9 +79,6 @@ object ExpoReactHostFactory {
         return JSBundleLoader.createAssetLoader(context, "assets://$hostDelegateJSBundleAssetPath", true)
       }
 
-    override val jsRuntimeFactory: JSRuntimeFactory
-      get() = HermesInstance()
-
     override val reactPackages: List<ReactPackage>
       get() = packageList
 
@@ -102,6 +100,7 @@ object ExpoReactHostFactory {
     jsMainModulePath: String = ".expo/.virtual-metro-entry",
     jsBundleAssetPath: String = "index.android.bundle",
     jsBundleFilePath: String? = null,
+    jsRuntimeFactory: JSRuntimeFactory? = null,
     useDevSupport: Boolean = ReactBuildConfig.DEBUG,
     bindingsInstaller: BindingsInstaller? = null
   ): ReactHost {
@@ -119,7 +118,8 @@ object ExpoReactHostFactory {
         jsBundleFilePath,
         useDevSupport,
         bindingsInstaller,
-        hostHandlers = hostHandlers
+        hostHandlers = hostHandlers,
+        jsRuntimeFactory = jsRuntimeFactory ?: HermesInstance()
       )
       val componentFactory = ComponentFactory()
       DefaultComponentsRegistry.register(componentFactory)

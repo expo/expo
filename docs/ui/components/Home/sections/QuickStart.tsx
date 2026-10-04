@@ -24,7 +24,7 @@ export function QuickStart() {
           )}>
           <div
             className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-linear-to-b from-subtle from-15% to-[#21262d00]',
+              'absolute inset-0 size-full rounded-3xl bg-linear-to-b from-subtle from-15% to-[#21262d00]',
               'dark:from-[#181a1b]'
             )}
           />
@@ -51,7 +51,7 @@ export function QuickStart() {
           )}>
           <div
             className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-linear-to-b from-palette-blue3 from-15% to-[#201d5200]',
+              'absolute inset-0 size-full rounded-3xl bg-linear-to-b from-palette-blue3 from-15% to-[#201d5200]',
               'dark:from-palette-blue3 dark:to-transparent'
             )}
           />
@@ -74,7 +74,7 @@ export function QuickStart() {
           )}>
           <div
             className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-linear-to-br from-palette-blue3 via-palette-purple3 to-palette-blue3 opacity-5',
+              'absolute inset-0 size-full rounded-3xl bg-linear-to-br from-palette-blue3 via-palette-purple3 to-palette-blue3 opacity-5',
               'dark:from-palette-blue3 dark:via-palette-purple3 dark:to-palette-blue3 dark:opacity-20'
             )}
           />
@@ -121,7 +121,7 @@ export function QuickStart() {
           )}>
           <div
             className={mergeClasses(
-              'absolute inset-0 size-full rounded-lg bg-linear-to-b from-palette-green3 from-15% to-transparent',
+              'absolute inset-0 size-full rounded-3xl bg-linear-to-b from-palette-green3 from-15% to-transparent',
               'dark:from-palette-green3 dark:to-transparent'
             )}
           />

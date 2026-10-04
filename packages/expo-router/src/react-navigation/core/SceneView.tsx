@@ -11,6 +11,7 @@ import type {
   Route,
 } from '../routers';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
+import { IsPreloadedContext } from './IsPreloadedContext';
 import {
   type FocusedRouteState,
   NavigationFocusedRouteStateContext,
@@ -59,6 +60,7 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   }, []);
 
   const parentFocusedRouteState = use(NavigationFocusedRouteStateContext);
+  const isPreloaded = use(IsPreloadedContext) || route.isPreloaded === true;
 
   const focusedRouteState = React.useMemo(() => {
     const state: FocusedRouteState = {
@@ -103,24 +105,26 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
 
   const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;
   return (
-    <PreventRemovalProvider routeKey={route.key} emitRemovalEvent={emitRemovalEvent}>
-      <NavigationStateContext.Provider value={context}>
-        <NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
-          <EnsureSingleNavigator>
-            <StaticContainer
-              name={screen.name}
-              render={ScreenComponent || screen.children}
-              navigation={navigation}
-              route={route}>
-              {ScreenComponent !== undefined ? (
-                <ScreenComponent navigation={navigation} route={route} />
-              ) : screen.children !== undefined ? (
-                screen.children({ navigation, route })
-              ) : null}
-            </StaticContainer>
-          </EnsureSingleNavigator>
-        </NavigationFocusedRouteStateContext.Provider>
-      </NavigationStateContext.Provider>
-    </PreventRemovalProvider>
+    <IsPreloadedContext value={isPreloaded}>
+      <PreventRemovalProvider routeKey={route.key} emitRemovalEvent={emitRemovalEvent}>
+        <NavigationStateContext.Provider value={context}>
+          <NavigationFocusedRouteStateContext.Provider value={focusedRouteState}>
+            <EnsureSingleNavigator>
+              <StaticContainer
+                name={screen.name}
+                render={ScreenComponent || screen.children}
+                navigation={navigation}
+                route={route}>
+                {ScreenComponent !== undefined ? (
+                  <ScreenComponent navigation={navigation} route={route} />
+                ) : screen.children !== undefined ? (
+                  screen.children({ navigation, route })
+                ) : null}
+              </StaticContainer>
+            </EnsureSingleNavigator>
+          </NavigationFocusedRouteStateContext.Provider>
+        </NavigationStateContext.Provider>
+      </PreventRemovalProvider>
+    </IsPreloadedContext>
   );
 }

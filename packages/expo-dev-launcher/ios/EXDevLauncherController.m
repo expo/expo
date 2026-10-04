@@ -314,11 +314,32 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (BOOL)onDeepLink:(NSURL *)url options:(NSDictionary *)options
 {
+  if ([EXDevLauncherFingerprintCheck handle:url]) {
+    return YES;
+  }
+
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
 
+  // The dev menu params apply to every launcher command, with or without a `__expo_url`.
+  [[DevMenuManager shared] applyLaunchParamsFromURL:url];
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
+
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
+    NSURL *externalDeepLink = [EXDevLauncherURLHelper externalDeepLinkFromLauncherURL:url];
+    if (externalDeepLink) {
+      // e.g. `myapp://login?__expo_disable_fab=1`: the reserved params are applied above, the app
+      // receives the rest as its initial URL. While the app is already running, the linking
+      // subscribers still deliver the original URL; `unwrapDevLaunchURL` in expo-linking drops
+      // the reserved params on the JS side.
+      return [self _handleExternalDeepLink:externalDeepLink options:options];
+    }
+    if ([self isAppRunning] && ![EXDevLauncherURLHelper isLegacyLauncherURL:url]) {
+      // e.g. `exp+slug://?__expo_disable_fab=1` while a project is open: the params are applied
+      // above and there is nothing to open, so keep the project running.
+      return true;
+    }
     // edgecase: this is a dev launcher url but it doesn't specify what url to open
     // fallback to navigating to the launcher home screen
     [self launchDefaultUrlFallbackOrNavigateToLauncher];
@@ -420,8 +441,10 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     projectUrl = expoUrl;
   }
 
-  // Disable onboarding popup if "&disableOnboarding=1" is a param
+  [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:url];
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
+
+  [[DevMenuManager shared] applyLaunchParamsFromURL:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {

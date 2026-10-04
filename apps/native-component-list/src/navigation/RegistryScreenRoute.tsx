@@ -1,5 +1,7 @@
 import { Stack, Unmatched, useLocalSearchParams, useNavigation } from 'expo-router';
 import * as React from 'react';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { type ScreenConfig } from '../types/ScreenConfig';
 import { SearchToolbar } from './StackConfig';
@@ -15,6 +17,7 @@ export default function RegistryScreenRoute({
   findScreen: (id: string) => ScreenConfig | undefined;
 }) {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { id, ...params } = useLocalSearchParams<{ id: string[] }>();
   const screenId = Array.isArray(id) ? id.join('/') : id;
   const config = screenId ? findScreen(screenId) : undefined;
@@ -29,8 +32,11 @@ export default function RegistryScreenRoute({
     <>
       <Stack.Screen options={{ title: config.name, ...config.options }} />
       <SearchToolbar />
-      {/* Pass react-navigation style props for screens that still read them. */}
-      <Component {...{ navigation, route: { params } }} />
+      {/* Horizontal insets are asymmetric where the system puts bars on one side, such as iPhone Duo. */}
+      <View style={{ flex: 1, paddingLeft: insets.left, paddingRight: insets.right }}>
+        {/* Pass react-navigation style props for screens that still read them. */}
+        <Component {...{ navigation, route: { params } }} />
+      </View>
     </>
   );
 }

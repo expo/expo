@@ -41,6 +41,7 @@ export type VersionsSdkSchema = Partial<{
   androidClientVersion: string;
   androidExpoViewUrl: string;
   expokitNpmPackage: string;
+  expoVersion: string;
   expoReactNativeTag: string;
   facebookReactNativeVersion: string;
   facebookReactVersion: string;
@@ -64,9 +65,12 @@ export async function getVersionsAsync(
       'Content-Type': 'application/json',
     },
   });
+  if (!resp.ok) {
+    throw new Error(`Failed to get versions from ${apiHost}: HTTP ${resp.status}`);
+  }
   const { data: result } = await resp.json();
-  if (process.env.CI) {
-    logger.debug('Received versions:', JSON.stringify(result, null, 2));
+  if (!result?.sdkVersions || typeof result.sdkVersions !== 'object') {
+    throw new Error(`Invalid versions response from ${apiHost}`);
   }
   return result;
 }
@@ -92,7 +96,6 @@ export async function setVersionsAsync(
 ): Promise<void> {
   if (process.env.CI) {
     logger.info(`Setting versions on API host: ${apiHost}`);
-    logger.debug('Setting versions data:', JSON.stringify(versions, null, 2));
   }
   if (!process.env.EXPO_VERSIONS_SECRET) {
     throw new Error('EXPO_VERSIONS_SECRET is not set');
@@ -108,6 +111,9 @@ export async function setVersionsAsync(
       secret: process.env.EXPO_VERSIONS_SECRET,
     }),
   });
+  if (!resp.ok) {
+    throw new Error(`Failed to update versions on ${apiHost}: HTTP ${resp.status}`);
+  }
   await resp.json();
 }
 
@@ -128,9 +134,6 @@ export async function modifySdkVersionsAsync(
     logger.info(`Modifying SDK version: ${sdkVersion}`);
   }
   const versions = await getVersionsAsync();
-  if (process.env.CI) {
-    logger.debug('Current versions before modification:', JSON.stringify(versions, null, 2));
-  }
 
   const sdkVersions = await modifier(versions.sdkVersions[sdkVersion] ?? {});
   if (process.env.CI) {

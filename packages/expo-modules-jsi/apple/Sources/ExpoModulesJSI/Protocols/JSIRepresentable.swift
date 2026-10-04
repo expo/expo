@@ -12,10 +12,10 @@ internal protocol JSIRepresentable: JavaScriptRepresentable, Sendable, ~Copyable
 
 extension JSIRepresentable {
   public static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self {
-    guard let jsiRuntime = value.runtime else {
+    guard let jsiRuntime = value.jsiRuntime else {
       FatalError.runtimeLost()
     }
-    return Self.fromJSIValue(value.pointee, in: jsiRuntime.pointee)
+    return Self.fromJSIValue(value.pointee, in: jsiRuntime)
   }
 
   public func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue {
@@ -84,11 +84,27 @@ extension CGFloat: JSIRepresentableNumber {}
 
 extension String: JSIRepresentable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> String {
-    return String(value.getString(runtime).utf8(runtime))
+    return String(jsiString: value.getString(runtime), in: runtime)
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
-    return facebook.jsi.Value(runtime, facebook.jsi.String.createFromUtf8(runtime, std.string(self)))
+    // Hand JSI the Swift string's own UTF-8 storage instead of going through `std::string`: the engine
+    // copies the bytes into its heap right away, so the intermediate `std::string` was one extra
+    // allocation, copy and free per string. `withUTF8` is mutating (it makes a bridged string
+    // contiguous first), hence the local copy; native strings are already contiguous and pay nothing.
+    // The value is moved out through a local because `withUTF8` needs a `Copyable` closure result.
+    // The C++ helper moves the engine's `jsi::String` into the value, so this costs one engine handle;
+    // `jsi::Value(runtime, string)` would clone it and then release the original.
+    var string = self
+    var value = facebook.jsi.Value.undefined()
+    string.withUTF8 { utf8 in
+      guard let base = utf8.baseAddress else {
+        value = expo.createStringValueFromAscii(runtime, "", 0)
+        return
+      }
+      value = expo.createStringValueFromUtf8(runtime, base, utf8.count)
+    }
+    return value
   }
 }
 
@@ -137,16 +153,10 @@ extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresenta
     var result: Self = [:]
 
     for index in 0..<size {
-      let jsiKey = propertyNames.getValueAtIndex(runtime, index)
-      let key = String.fromJSIValue(jsiKey, in: runtime)
-      #if os(macOS)
-      // TODO: remove when bumping to react-native-macos 0.85
-      let jsiValue = expo.getProperty(runtime, object, key)
-      #else
+      // Look the value up by the key string the engine handed back, so any name round-trips exactly.
+      let jsiKey = propertyNames.getValueAtIndex(runtime, index).getString(runtime)
       let jsiValue = object.getProperty(runtime, jsiKey)
-      #endif
-
-      result[key] = Value.fromJSIValue(jsiValue, in: runtime)
+      result[String(jsiString: jsiKey, in: runtime)] = Value.fromJSIValue(jsiValue, in: runtime)
     }
     return result
   }
@@ -155,8 +165,7 @@ extension Dictionary: JSIRepresentable where Key == String, Value: JSIRepresenta
     let object = facebook.jsi.Object(runtime)
 
     for (key, value) in self {
-      let keyString = String(describing: key)
-      expo.setProperty(runtime, object, keyString, value.toJSIValue(in: runtime))
+      expo.setProperty(runtime, object, key.toJSIPropNameID(in: runtime), value.toJSIValue(in: runtime))
     }
     return facebook.jsi.Value(runtime, object)
   }

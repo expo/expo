@@ -14,6 +14,11 @@ internal struct TextInputAutocapitalizationModifier: ViewModifier, Record {
   @Field var autocapitalization: TextInputAutocapitalizationType = .sentences
 
   func body(content: Content) -> some View {
+#if os(macOS)
+    // Autocapitalization is a software-keyboard behaviour and `textInputAutocapitalization`
+    // is unavailable on macOS, so the modifier is a no-op there.
+    content
+#else
     switch autocapitalization {
     case .never:
       content.textInputAutocapitalization(.never)
@@ -24,5 +29,6 @@ internal struct TextInputAutocapitalizationModifier: ViewModifier, Record {
     case .characters:
       content.textInputAutocapitalization(.characters)
     }
+#endif
   }
 }

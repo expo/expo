@@ -30,9 +30,9 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -52,13 +52,11 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: pnpm create expo-app ./development-client-android-test --yes
-      - name: Make Yarn resolve expo-dev-client dependencies locally
+      - name: Make pnpm resolve expo-dev-client dependencies locally
         working-directory: ../development-client-android-test
         run: |
           node -e " \
-            const pkg = require('./package.json'); \
-            pkg.resolutions = { \
-              ...pkg.resolutions, \
+            const overrides = { \
               'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
               'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
               'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
@@ -67,7 +65,7 @@ jobs:
               'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
               'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
-            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
+            fs.appendFileSync('./pnpm-workspace.yaml', '\noverrides:\n' + Object.entries(overrides).map(([name, version]) => '  ' + JSON.stringify(name) + ': ' + JSON.stringify(version)).join('\n') + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-android-test
         run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client
@@ -97,9 +95,9 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🔨 Setup Node
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -116,13 +114,11 @@ jobs:
       - name: Init new expo app
         working-directory: ../
         run: pnpm create expo-app ./development-client-ios-test --yes
-      - name: Make Yarn resolve expo-dev-client dependencies locally
+      - name: Make pnpm resolve expo-dev-client dependencies locally
         working-directory: ../development-client-ios-test
         run: |
           node -e " \
-            const pkg = require('./package.json'); \
-            pkg.resolutions = { \
-              ...pkg.resolutions, \
+            const overrides = { \
               'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
               'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
               'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
@@ -131,7 +127,7 @@ jobs:
               'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
               'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
-            fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
+            fs.appendFileSync('./pnpm-workspace.yaml', '\noverrides:\n' + Object.entries(overrides).map(([name, version]) => '  ' + JSON.stringify(name) + ': ' + JSON.stringify(version)).join('\n') + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-ios-test
         run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client

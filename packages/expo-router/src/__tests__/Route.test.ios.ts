@@ -130,7 +130,7 @@ describe(getValidInitialRouteName, () => {
     node.children = [asRouteNode('index'), asRouteNode('settings/index')];
 
     expect(() => getValidInitialRouteName(node)).toThrow(
-      'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+      'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 

@@ -8,7 +8,11 @@
 import type { AssetData } from '@expo/metro/metro';
 import { vol } from 'memfs';
 
-import { filterPlatformAssetScales, persistMetroAssetsAsync } from '../persistMetroAssets';
+import {
+  filterPlatformAssetScales,
+  getCatalogImages,
+  persistMetroAssetsAsync,
+} from '../persistMetroAssets';
 
 describe(filterPlatformAssetScales, () => {
   it('removes everything but 2x and 3x for iOS', () => {
@@ -25,6 +29,48 @@ describe(filterPlatformAssetScales, () => {
 
   it('keeps all scales for unknown platform', () => {
     expect(filterPlatformAssetScales('freebsd', [1, 1.5, 2, 3.7])).toEqual([1, 1.5, 2, 3.7]);
+  });
+});
+
+describe(getCatalogImages, () => {
+  function makeAsset(scales: number[]) {
+    return {
+      name: 'logo',
+      scales,
+      files: scales.map((scale) => `/img/logo${scale === 1 ? '' : `@${scale}x`}.png`),
+    };
+  }
+
+  it('pairs each standard scale with its file', () => {
+    expect(getCatalogImages(makeAsset([1, 2, 3]))).toEqual([
+      { scale: 1, src: '/img/logo.png' },
+      { scale: 2, src: '/img/logo@2x.png' },
+      { scale: 3, src: '/img/logo@3x.png' },
+    ]);
+  });
+
+  it('skips non-standard scales without shifting file pairing', () => {
+    // Regression: filtering scales without filtering files used to associate
+    // the 2x rendition with the 1.5x file.
+    expect(getCatalogImages(makeAsset([1, 1.5, 2, 3]))).toEqual([
+      { scale: 1, src: '/img/logo.png' },
+      { scale: 2, src: '/img/logo@2x.png' },
+      { scale: 3, src: '/img/logo@3x.png' },
+    ]);
+  });
+
+  it('maps a fractional-only asset into the nearest valid slot', () => {
+    expect(getCatalogImages(makeAsset([1.5]))).toEqual([{ scale: 2, src: '/img/logo@1.5x.png' }]);
+  });
+
+  it('clamps scales larger than 3x to the 3x slot', () => {
+    expect(getCatalogImages(makeAsset([4]))).toEqual([{ scale: 3, src: '/img/logo@4x.png' }]);
+  });
+
+  it('uses the largest fractional variant when several exist', () => {
+    expect(getCatalogImages(makeAsset([1.5, 2.5]))).toEqual([
+      { scale: 3, src: '/img/logo@2.5x.png' },
+    ]);
   });
 });
 

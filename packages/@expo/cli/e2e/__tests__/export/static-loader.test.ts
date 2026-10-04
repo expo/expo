@@ -19,7 +19,6 @@ describe.each(
     export: {
       env: {
         EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
@@ -58,6 +57,7 @@ describe.each(
     expect(files).toContain('posts/[postId].html');
     expect(files).toContain('posts/static-post-1.html');
     expect(files).toContain('posts/static-post-2.html');
+    expect(files).toContain('platform/alpha/beta.html');
     expect(files).toContain('static-helper.html');
     expect(files).toContain('server-helper.html');
 
@@ -77,6 +77,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/posts/static-post-1');
     expect(files).toContain('_expo/loaders/posts/static-post-2');
     expect(files).toContain('_expo/loaders/(group)/index');
+    expect(files).toContain('_expo/loaders/(group)/platform/alpha/beta');
     expect(files).toContain('_expo/loaders/static-helper');
   });
 
@@ -115,6 +116,17 @@ describe.each(
 
       const data = await getData(response);
       expect(data).toEqual({ data: 'grouped-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)/platform/alpha/beta'))(
+    'can access platform-specific catch-all data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'platform-catch-all' });
     }
   );
 
@@ -265,6 +277,8 @@ describe.each(
         // Header-less loader routes: the SSG default, applied to each page and loader file.
         { namedRegex: '^/(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/\\(group\\)(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)/platform/alpha/beta(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/error(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/meta(?:/)?$', headers: SSG_DEFAULT },
@@ -272,6 +286,8 @@ describe.each(
         { namedRegex: '^/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/nullish/null(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/platform/\\[\\.\\.\\.slug\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/platform/alpha/beta(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
@@ -279,6 +295,14 @@ describe.each(
         { namedRegex: '^/slow(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/\\(group\\)/index(?:/)?$', headers: SSG_DEFAULT },
+        {
+          namedRegex: '^/_expo/loaders/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        {
+          namedRegex: '^/_expo/loaders/\\(group\\)/platform/alpha/beta(?:/)?$',
+          headers: SSG_DEFAULT,
+        },
         { namedRegex: '^/_expo/loaders/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/error(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/index(?:/)?$', headers: SSG_DEFAULT },

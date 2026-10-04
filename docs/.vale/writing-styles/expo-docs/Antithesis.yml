@@ -1,0 +1,10 @@
+extends: existence
+message: "State the point directly instead of the contrast '%s'."
+level: error
+ignorecase: true
+nonword: true
+tokens:
+  - '\bnot (?:just|only|merely|simply)\b[^.;:!?]{1,60}?,? but\b'
+  - '(?:^|[.!?] )(?:it|this|that)(?:[''’]s| is) not [^.;:!?,]{1,60}, (?:it|this|that)(?:[''’]s| is)\b'
+  - '(?:^|[.!?] )(?:the|this|that|these|those|it|its|your|using|a|an) [^.;:!?,]{0,60}?(?:isn[''’]t|is not|aren[''’]t|are not) [^.;:!?,]{1,60}, (?:it|this|that|they)(?:[''’]s|[''’]re| is| are)\b'
+  - '(?:^|[.!?] )(?:this|that|it) (?:isn[''’]t|is not) [^.;:!?]{1,60}\. (?:it|this|that)(?:[''’]s| is)\b'

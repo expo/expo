@@ -1,8 +1,3 @@
-/**
- * @deprecated `ExpoRoot` mounts the navigation container automatically — there is no need
- * to render `BaseNavigationContainer` directly. Will be removed in a future SDK.
- */
-export { BaseNavigationContainer } from './BaseNavigationContainer';
 export { createNavigationContainerRef } from './createNavigationContainerRef';
 export { createNavigatorFactory } from './createNavigatorFactory';
 /**
@@ -79,7 +74,7 @@ export { useNavigationBuilder } from './useNavigationBuilder';
  */
 export { useNavigationContainerRef } from './useNavigationContainerRef';
 export { useNavigationState } from './useNavigationState';
-export { usePreventRemove } from './usePreventRemove';
+export { type PreventRemoveOptions, usePreventRemove } from './usePreventRemove';
 /**
  * @deprecated Import `useRoute` from `expo-router` instead. Will be removed in a future SDK.
  */
