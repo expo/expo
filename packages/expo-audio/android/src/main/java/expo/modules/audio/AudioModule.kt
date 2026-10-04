@@ -467,9 +467,7 @@ class AudioModule : Module() {
       }
       if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
-          if (recorder.isRecording) {
-            recorder.pauseRecording()
-          }
+          recorder.pauseForSystem()
         }
       }
     }
@@ -492,9 +490,7 @@ class AudioModule : Module() {
       }
       if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
-          if (recorder.isPaused) {
-            recorder.record()
-          }
+          recorder.resumeAfterSystemPause()
         }
       }
       if (shouldRouteThroughEarpiece) {
