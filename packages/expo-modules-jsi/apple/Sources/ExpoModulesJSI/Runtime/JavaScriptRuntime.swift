@@ -67,7 +67,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler()
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -80,7 +80,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler()
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = true
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -94,7 +94,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler()
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -123,7 +123,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler(scheduler, fn)
+    self.scheduler = expo.RuntimeScheduler.create(scheduler, fn)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -197,14 +197,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       propertyName: UnsafePointer<facebook.jsi.PropNameID>,
       resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
     ) -> Bool {
-      nonisolated(unsafe) let resultPtr = resultPtr
+      let resultPtr = UncheckedSendable(resultPtr)
 
       return withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
         let propertyName = String(jsiPropNameID: propertyName.pointee, in: runtime.pointee)
         return JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
             var result = try context.get(propertyName)
-            JavaScriptValue.write(&result, to: resultPtr)
+            JavaScriptValue.write(&result, to: resultPtr.value)
           }
         }
       }
@@ -871,23 +871,23 @@ private func createFunctionClosure(
     // heap-allocated `JavaScriptRef` (Swift 6.2 rejects capturing/consuming a `~Copyable` value in the
     // escaping closure that `withoutActuallyEscaping` synthesizes), the closure constructs the buffer
     // locally from the raw pointer + count. Those are read-only call-scoped inputs that never outlive the
-    // synchronous call, so the `nonisolated(unsafe)` capture is sound. This removes a per-call class
+    // synchronous call, so capturing them through `UncheckedSendable` is sound. This removes a per-call class
     // allocation + retain/release + dealloc that profiling showed dominating the no-op `@JS` host-call
     // floor.
-    nonisolated(unsafe) let thisPtr = thisPtr
-    nonisolated(unsafe) let argumentsPtr = argumentsPtr
-    nonisolated(unsafe) let resultPtr = resultPtr
+    let thisPtr = UncheckedSendable(thisPtr)
+    let argumentsPtr = UncheckedSendable(argumentsPtr)
+    let resultPtr = UncheckedSendable(resultPtr)
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: HostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let this = UnsafeMutablePointer(mutating: thisPtr).move()
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
+          let this = UnsafeMutablePointer(mutating: thisPtr.value).move()
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
           let thisValue = JavaScriptValue(runtime, this)
           var result = try context.call(thisValue, consume arguments)
-          JavaScriptValue.write(&result, to: resultPtr)
+          JavaScriptValue.write(&result, to: resultPtr.value)
         }
       }
     }
@@ -919,19 +919,19 @@ private func createFunctionClosure(
     // handed in as a borrowed `JavaScriptUnownedValue` pointing straight at the C++-owned `this` slot:
     // it is not moved out and no owning `JavaScriptValue` is allocated, so the closure avoids the
     // per-call `weak`-runtime form/destroy and heap object that the owning `this` pays.
-    nonisolated(unsafe) let thisPtr = thisPtr
-    nonisolated(unsafe) let argumentsPtr = argumentsPtr
-    nonisolated(unsafe) let resultPtr = resultPtr
+    let thisPtr = UncheckedSendable(thisPtr)
+    let argumentsPtr = UncheckedSendable(argumentsPtr)
+    let resultPtr = UncheckedSendable(resultPtr)
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: UnownedThisHostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
-          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
+          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
           var result = try context.call(thisValue, consume arguments)
-          JavaScriptValue.write(&result, to: resultPtr)
+          JavaScriptValue.write(&result, to: resultPtr.value)
         }
       }
     }
