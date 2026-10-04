@@ -6,7 +6,7 @@ import Foundation
 /// ``opaquePointer`` and ``dispatch`` to `AppContext.setRuntime(_:scheduler:dispatch:)` on that thread.
 ///
 /// `expo-modules-jsi` has the same setup for its own tests in `apple/Tests/Support/TestRuntimeScheduler.swift`:
-/// it is a SwiftPM package and cannot depend on this module. Keep the two in sync.
+/// it is a SwiftPM package and cannot depend on this pod. Keep the two in sync.
 internal final class TestRuntimeScheduler: @unchecked Sendable {
   let thread = JavaScriptTestThread()
 

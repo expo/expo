@@ -3,7 +3,7 @@ import ExpoModulesJSI
 
 /**
  The app context is an interface to a single Expo app.
- Not `final` so that `TestAppContext` can subclass it within this module.
+ Not `final` so that `TestAppContext` from `ExpoModulesTestCore` can subclass it through `@testable import`.
  */
 @objc(EXAppContext)
 public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {

@@ -2,6 +2,11 @@
 
 import ExpoModulesJSI
 
+// `@testable` lets this module subclass `AppContext`, which is public but not open. `et` keeps
+// testability on in both configurations it builds this pod in: Debug for unit tests, and Release for
+// benchmarks.
+@testable import ExpoModulesCore
+
 /// An app context for tests, whose runtime has a JavaScript thread of its own. Use it in place of
 /// `AppContext.create()` in tests that call async functions.
 ///
@@ -10,13 +15,13 @@ import ExpoModulesJSI
 /// settles its promise from there, concurrently with the test that may still be evaluating JavaScript
 /// on the same runtime, which Hermes does not survive. Here the scheduled work runs on a dedicated
 /// thread instead, and `JavaScriptRuntime.evalAsync` called from the test evaluates there too.
-internal final class TestAppContext: AppContext {
+public final class TestAppContext: AppContext {
   private let scheduler = TestRuntimeScheduler()
 
   /// Owns the Hermes runtime that the app context's runtime wraps.
   private var owningRuntime: JavaScriptRuntime?
 
-  init() {
+  public init() {
     super.init(config: nil)
 
     // The runtime is created on the JavaScript thread: `JavaScriptRuntime` takes the thread it is

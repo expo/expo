@@ -1,4 +1,5 @@
 import AppIntents
+import ExpoModulesTestCore
 import Foundation
 import Testing
 
