@@ -3,6 +3,7 @@ import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
+import path from 'path';
 
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
@@ -21,6 +22,7 @@ import { configureProjectAsync } from './configureProjectAsync';
 import { ensureConfigAsync } from './ensureConfigAsync';
 import { event } from './events';
 import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { getSwiftPMMarkerPath, setupSwiftPMAsync } from './setupSwiftPM';
 import { updateFromTemplateAsync } from './updateFromTemplate';
 
 export type PrebuildResults = {
@@ -43,7 +45,7 @@ export type PrebuildResults = {
  * 1. Create native projects (ios, android).
  * 2. Install node modules.
  * 3. Apply config to native projects.
- * 4. Install CocoaPods.
+ * 4. Install CocoaPods, or set up Swift Package Manager for iOS instead.
  */
 export async function prebuildAsync(
   projectRoot: string,
@@ -65,6 +67,8 @@ export async function prebuildAsync(
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
+    /** Set up iOS with Swift Package Manager instead of CocoaPods (preview). */
+    swiftpm?: boolean;
   }
 ): Promise<PrebuildResults | null> {
   const { platforms } = getConfig(projectRoot).exp;
@@ -80,6 +84,9 @@ export async function prebuildAsync(
       );
     }
   }
+  // Detect the marker before `--clean` deletes it with the ios directory.
+  const useSwiftPM = options.platforms.includes('ios') && shouldUseSwiftPM(projectRoot, options);
+
   if (options.clean) {
     // Only run the destructive-path guards when there are native folders to delete, so a
     // first-ever prebuild doesn't prompt on git status or native module detection.
@@ -181,10 +188,13 @@ export async function prebuildAsync(
     throw error;
   }
 
-  // Install CocoaPods
+  // Install CocoaPods, or set up Swift Package Manager instead
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
-  if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  if (useSwiftPM && options.platforms.includes('ios')) {
+    event('pods:installed', { ms: 0, skipped: true });
+    await setupSwiftPMAsync(projectRoot, { install: !!options.install });
+  } else if (options.platforms.includes('ios') && options.install && needsPodInstall) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     const startedAt = Date.now();
@@ -215,6 +225,19 @@ export async function prebuildAsync(
     hasNewProjectFiles,
     exp,
   };
+}
+
+function shouldUseSwiftPM(projectRoot: string, { swiftpm }: { swiftpm?: boolean }): boolean {
+  if (swiftpm) {
+    return true;
+  }
+  const marker = getSwiftPMMarkerPath(projectRoot);
+  if (marker) {
+    Log.log(
+      chalk`Skipping CocoaPods because this project uses Swift Package Manager for iOS ({bold ${path.relative(projectRoot, marker)}} exists).`
+    );
+  }
+  return !!marker;
 }
 
 function resolvePackageManagerName(packageManager?: {

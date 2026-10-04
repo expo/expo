@@ -1,14 +1,11 @@
 import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
-import path from 'path';
 
 import { installPodsAsync } from '../Template';
 import { logNodeInstallWarning, setupDependenciesAsync } from '../createAsync';
 import { installDependenciesAsync } from '../resolvePackageManager';
-import { resolveSetupAppleSpmScript } from '../utils/swiftpm';
 
 jest.mock('fs');
-jest.mock('../utils/swiftpm', () => ({ resolveSetupAppleSpmScript: jest.fn() }));
 jest.mock('@expo/spawn-async', () => jest.fn());
 
 jest.mock('../configureWorkspaces', () => ({ configureWorkspacesAsync: jest.fn() }));
@@ -82,27 +79,11 @@ describe(setupDependenciesAsync, () => {
 
 describe('setupDependenciesAsync with swiftpm', () => {
   const projectRoot = '/foo/bar';
-  const inProject = expect.objectContaining({ cwd: projectRoot });
-  const prebuildArgs = ['expo', 'prebuild', '--platform', 'ios', '--no-install'];
+  const prebuildArgs = ['expo', 'prebuild', '--platform', 'ios', '--swiftpm'];
   const prebuildNextStep = `npx ${prebuildArgs.join(' ')}`;
-  const setupScript = `${projectRoot}/node_modules/react-native/scripts/setup-apple-spm.js`;
-  const configCommandJson =
-    '["node","--no-warnings","--eval","require(\'expo/bin/autolinking\')","expo-modules-autolinking","react-native-config","--json","--platform","ios"]';
-  const spmAddArgs = [
-    setupScript,
-    'add',
-    '--deintegrate',
-    '--yes',
-    '--config-command',
-    configCommandJson,
-  ];
-  const spmAddNextStep =
-    'node node_modules/react-native/scripts/setup-apple-spm.js add --deintegrate --yes --config-command ' +
-    `'["node","--no-warnings","--eval","require('\\''expo/bin/autolinking'\\'')","expo-modules-autolinking","react-native-config","--json","--platform","ios"]'`;
-  const podInstallWarning = /do not run `pod install`/i;
 
-  const loggedOutput = (log: typeof console.log = console.log) =>
-    asMock(log)
+  const loggedOutput = () =>
+    asMock(console.log)
       .mock.calls.map((args) => args.join(' '))
       .join('\n');
 
@@ -114,18 +95,51 @@ describe('setupDependenciesAsync with swiftpm', () => {
     setPlatform('darwin');
     vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
     asMock(console.log).mockClear();
-    asMock(console.error).mockClear();
     asMock(installDependenciesAsync).mockReset();
     asMock(installPodsAsync).mockReset();
     asMock(spawnAsync).mockReset();
-    asMock(resolveSetupAppleSpmScript).mockReset().mockReturnValue(setupScript);
+    asMock(console.error).mockClear();
   });
   afterEach(() => {
     Object.defineProperty(process, 'platform', originalPlatform);
     vol.reset();
   });
 
-  it(`prints the commands as next steps instead of running them when not on macOS`, async () => {
+  it(`runs prebuild with --swiftpm after installing node modules`, async () => {
+    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
+
+    expect(asMock(spawnAsync).mock.calls).toEqual([
+      ['npx', prebuildArgs, expect.objectContaining({ cwd: projectRoot })],
+    ]);
+    expect(asMock(installDependenciesAsync).mock.invocationCallOrder[0]).toBeLessThan(
+      asMock(spawnAsync).mock.invocationCallOrder[0]!
+    );
+  });
+
+  it(`runs the same prebuild command and never installs CocoaPods when the template ships an ios directory`, async () => {
+    vol.mkdirSync(`${projectRoot}/ios`);
+
+    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
+
+    expect(asMock(spawnAsync).mock.calls).toEqual([
+      ['npx', prebuildArgs, expect.objectContaining({ cwd: projectRoot })],
+    ]);
+    expect(installPodsAsync).not.toHaveBeenCalled();
+  });
+
+  it(`warns not to run pod install and explains when to pass --swiftpm to a later prebuild`, async () => {
+    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
+
+    const output = loggedOutput();
+    expect(output).toMatch(/do not run `pod install`/i);
+    expect(output).toMatch(/preview/i);
+    expect(output).not.toContain(prebuildNextStep);
+    expect(output).toContain('npx expo prebuild');
+    expect(output).toMatch(/keeps? Swift Package Manager while `ios\/?` exists/);
+    expect(output).toMatch(/--swiftpm` only when `ios\/?` is missing/);
+  });
+
+  it(`prints prebuild as a next step instead of running it when not on macOS`, async () => {
     setPlatform('linux');
 
     await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
@@ -133,111 +147,40 @@ describe('setupDependenciesAsync with swiftpm', () => {
     expect(spawnAsync).not.toHaveBeenCalled();
     const output = loggedOutput();
     expect(output).toContain(prebuildNextStep);
-    expect(output).toContain(spmAddNextStep);
-    expect(output).toMatch(podInstallWarning);
+    expect(output).toMatch(/do not run `pod install`/i);
   });
 
-  it(`prebuilds iOS, adds SwiftPM, and warns against pod install when there is no ios directory`, async () => {
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(asMock(spawnAsync).mock.calls).toEqual([
-      ['npx', prebuildArgs, inProject],
-      [process.execPath, spmAddArgs, inProject],
-    ]);
-    expect(asMock(installDependenciesAsync).mock.invocationCallOrder[0]).toBeLessThan(
-      asMock(spawnAsync).mock.invocationCallOrder[0]!
-    );
-    expect(loggedOutput()).toMatch(podInstallWarning);
-  });
-
-  it(`only adds SwiftPM, without CocoaPods, when the project already has an ios directory`, async () => {
-    vol.mkdirSync(`${projectRoot}/ios`);
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(asMock(spawnAsync).mock.calls).toEqual([[process.execPath, spmAddArgs, inProject]]);
-    expect(resolveSetupAppleSpmScript).toHaveBeenCalledWith(projectRoot);
-    expect(installPodsAsync).not.toHaveBeenCalled();
-  });
-
-  it(`explains the React Native requirement when the setup script is missing`, async () => {
-    vol.mkdirSync(`${projectRoot}/ios`);
-    asMock(resolveSetupAppleSpmScript).mockReturnValue(null);
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(spawnAsync).not.toHaveBeenCalled();
-    const errors = loggedOutput(console.error);
-    expect(errors).toContain('React Native 0.88 or later');
-    expect(errors).toContain('--swiftpm');
-    const output = loggedOutput();
-    expect(output).toContain(spmAddNextStep);
-    expect(output).toMatch(podInstallWarning);
-  });
-
-  it(`prints the commands as next steps instead of running them with --no-install`, async () => {
-    await setupDependenciesAsync(projectRoot, { install: false, swiftpm: true });
-
-    expect(spawnAsync).not.toHaveBeenCalled();
-    const output = loggedOutput();
-    expect(output).toContain(prebuildNextStep);
-    expect(output).toContain(spmAddNextStep);
-    expect(output.indexOf(prebuildNextStep)).toBeLessThan(output.indexOf(spmAddNextStep));
-    expect(output).not.toContain('npx pod-install');
-  });
-
-  it(`omits the prebuild next step with --no-install when the ios directory exists`, async () => {
+  it(`prints prebuild as a next step instead of running it with --no-install`, async () => {
     vol.mkdirSync(`${projectRoot}/ios`);
 
     await setupDependenciesAsync(projectRoot, { install: false, swiftpm: true });
 
     expect(spawnAsync).not.toHaveBeenCalled();
     const output = loggedOutput();
-    expect(output).not.toContain('npx expo prebuild');
-    expect(output).toContain(spmAddNextStep);
-    expect(output).not.toContain('npx pod-install');
-  });
-
-  it(`prints the hoisted setup script relative to the project root`, async () => {
-    vol.mkdirSync(`${projectRoot}/ios`);
-    const hoistedScript = path.join(
-      projectRoot,
-      '../../node_modules/react-native/scripts/setup-apple-spm.js'
-    );
-    asMock(resolveSetupAppleSpmScript).mockReturnValue(hoistedScript);
-    asMock(spawnAsync).mockRejectedValueOnce(new Error('node exited with non-zero code: 1'));
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(asMock(spawnAsync).mock.calls).toEqual([
-      [process.execPath, [hoistedScript, ...spmAddArgs.slice(1)], inProject],
-    ]);
-    expect(loggedOutput()).toContain(
-      spmAddNextStep.replace(
-        'node node_modules/react-native/',
-        'node ../../node_modules/react-native/'
-      )
-    );
-  });
-
-  it(`skips adding SwiftPM and prints the remaining steps when prebuild fails`, async () => {
-    asMock(spawnAsync).mockRejectedValueOnce(new Error('npx exited with non-zero code: 1'));
-
-    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
-
-    expect(asMock(spawnAsync).mock.calls).toEqual([['npx', prebuildArgs, inProject]]);
-    const output = loggedOutput();
     expect(output).toContain(prebuildNextStep);
-    expect(output).toContain(spmAddNextStep);
+    expect(output).not.toContain('npx pod-install');
+    expect(output.indexOf(' install')).toBeLessThan(output.indexOf(prebuildNextStep));
   });
 
-  it(`does not run the iOS commands when the node modules failed to install`, async () => {
+  it(`does not run prebuild when the node modules failed to install`, async () => {
     asMock(installDependenciesAsync).mockRejectedValueOnce(new Error('npm install failed'));
 
     await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
 
     expect(spawnAsync).not.toHaveBeenCalled();
-    expect(loggedOutput()).toContain(spmAddNextStep);
+    expect(loggedOutput()).toContain(prebuildNextStep);
+  });
+
+  it(`prints prebuild as the remaining step when it fails`, async () => {
+    asMock(spawnAsync).mockRejectedValueOnce(
+      Object.assign(new Error('npx exited with non-zero code: 1'), { stderr: 'prebuild broke' })
+    );
+
+    await setupDependenciesAsync(projectRoot, { install: true, swiftpm: true });
+
+    expect(asMock(spawnAsync).mock.calls).toHaveLength(1);
+    expect(loggedOutput()).toContain(prebuildNextStep);
+    expect(console.error).toHaveBeenCalledWith('prebuild broke');
   });
 
   it(`still installs CocoaPods without swiftpm when the ios directory exists`, async () => {

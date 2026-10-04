@@ -53,3 +53,12 @@ it('uses the production mode from __EXPO_CONFIG_MODE', async () => {
 
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'production' });
 });
+
+it('passes --swiftpm to prebuild', async () => {
+  const { assertArgs } = require('../../utils/args') as { assertArgs: jest.Mock };
+  assertArgs.mockReturnValueOnce({ '--help': false, '--swiftpm': true });
+
+  await expoPrebuild([]);
+
+  expect(prebuildAsync).toHaveBeenCalledWith('/app', expect.objectContaining({ swiftpm: true }));
+});

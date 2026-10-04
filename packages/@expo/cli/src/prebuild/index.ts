@@ -21,6 +21,7 @@ export const expoPrebuild: Command = async (argv) => {
       '--template': String,
       '--platform': String,
       '--skip-dependency-update': String,
+      '--swiftpm': Boolean,
       // Aliases
       '-h': '--help',
       '-p': '--platform',
@@ -35,7 +36,7 @@ export const expoPrebuild: Command = async (argv) => {
       chalk`npx expo prebuild {dim <dir>}`,
       [
         chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
-        `--no-install                             Skip installing npm packages and CocoaPods`,
+        `--no-install                             Skip installing npm packages, CocoaPods, and Swift Package Manager`,
         `--no-clean                               Apply changes to the existing native folders instead of recreating them`,
         chalk`--npm                                    Use npm to install dependencies. {dim Default when package-lock.json exists}`,
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
@@ -44,6 +45,7 @@ export const expoPrebuild: Command = async (argv) => {
         `--template <template>                    Project template to clone from. File path pointing to a local tar file, npm package or a github repo`,
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
         `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,
+        `--swiftpm                                iOS: use Swift Package Manager instead of CocoaPods (preview)`,
         `-h, --help                               Usage info`,
       ].join('\n')
     );
@@ -67,6 +69,7 @@ export const expoPrebuild: Command = async (argv) => {
       // TODO: Parse
       skipDependencyUpdate: resolveSkipDependencyUpdate(args['--skip-dependency-update']),
       template: args['--template'],
+      swiftpm: !!args['--swiftpm'],
     });
   })().catch(logCmdError);
 };
