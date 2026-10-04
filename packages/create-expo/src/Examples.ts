@@ -120,7 +120,11 @@ export async function promptExamplesAsync() {
  * find-and-replace pass. The config file is read once and deleted from disk
  * immediately so it can never leak into the user's project.
  */
-export async function downloadAndExtractExampleAsync(root: string, name: string): Promise<void> {
+export async function downloadAndExtractExampleAsync(
+  root: string,
+  name: string,
+  { swiftpm }: { swiftpm?: boolean } = {}
+): Promise<void> {
   const projectName = path.basename(root);
   const response = await fetch('https://codeload.github.com/expo/examples/tar.gz/master');
   if (!response.ok) {
@@ -153,7 +157,7 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     files,
     name: projectName,
   });
-  await sanitizeTemplateAsync(root);
+  await sanitizeTemplateAsync(root, { swiftpm });
   await sanitizeScriptsAsync(root);
 }
 
