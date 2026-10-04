@@ -1,10 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import ExpoModulesJSI
-
-// `@testable` lets this module subclass `AppContext`, which is public but not open. `et` keeps
-// testability on in both configurations it builds this pod in: Debug for unit tests, and Release for
-// benchmarks.
 @testable import ExpoModulesCore
 
 /// An app context for tests, whose runtime has a JavaScript thread of its own. Use it in place of
