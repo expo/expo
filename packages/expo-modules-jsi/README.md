@@ -20,6 +20,7 @@ This package is not meant to be installed directly. It ships as a transitive nat
 - `JavaScriptRuntime`: entry point for evaluating scripts, scheduling work on the JS thread, and creating values.
 - `JavaScriptValue`, `JavaScriptObject`, `JavaScriptArray`, `JavaScriptFunction`, `JavaScriptArrayBuffer`, `JavaScriptTypedArray`, `JavaScriptPromise`, `JavaScriptBigInt`, `JavaScriptError`, `JavaScriptWeakObject`: non-copyable (`~Copyable`) wrappers around their JSI counterparts.
 - `JavaScriptRef<T>`: turns any of the above into a reference type for use in escaping closures and containers.
+- `JavaScriptCallback`: a JavaScript function that native code can keep and call later from any thread, waiting for the result, awaiting it, or not waiting at all. It keeps the function alive until it's released, and throws once the runtime is gone.
 - `JavaScriptRepresentable`: protocol for converting Swift types to and from JS values, with default implementations for primitives, `String`, `Array`, `Dictionary` and `Optional`.
 - `JavaScriptDecodable`, `JavaScriptEncodable` and their `JavaScriptCodable` composition: coding layer with conformances for stdlib types, `Data`, `Date` and `Task`.
 - `@JavaScriptActor`: global actor that enforces JS-thread isolation at compile time. Its executor is synchronous (no thread hopping), so code must be placed on the JS thread externally, with `runtime.schedule()` or `runtime.execute()`.
