@@ -14,7 +14,9 @@ internal data class ModelAvailability(
   fun toJSON(): String = JSONObject().apply {
     put("status", status)
     reason?.let { put("reason", it) }
-    if (status != "available" && status != "unavailable") put("progress", JSONObject.NULL)
+    if (status != "available" && status != "unavailable") {
+      put("progress", JSONObject.NULL)
+    }
     put(
       "capabilities",
       JSONObject().apply {
@@ -46,7 +48,9 @@ internal fun generationResult(text: String): String = JSONObject().apply {
 
 /** The SDK has no public chat role field. Keep successful turns as explicit prompt context. */
 internal fun conversationPrompt(history: List<LanguageModelTurn>, prompt: String): String {
-  if (history.isEmpty()) return prompt
+  if (history.isEmpty()) {
+    return prompt
+  }
   val turns = JSONArray()
   history.forEach { turns.put(JSONObject().put("user", it.prompt).put("assistant", it.response)) }
   return "Previous successful exchanges (JSON data):\n$turns\n\nCurrent request:\n$prompt"
@@ -98,7 +102,9 @@ internal suspend fun LanguageModelBackend.prepare(
   onProgress: (Double?) -> Unit
 ): ModelAvailability {
   val current = availability(inputLanguages, outputLanguage)
-  if (!allowDownload || current.status !in setOf("downloadable", "downloading")) return current
+  if (!allowDownload || current.status !in setOf("downloadable", "downloading")) {
+    return current
+  }
   download(onProgress)
   return availability(inputLanguages, outputLanguage)
 }

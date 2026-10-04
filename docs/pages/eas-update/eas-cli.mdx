@@ -4,6 +4,7 @@ sidebar_title: Manage branches and channels
 description: Learn how to link a branch to a channel and publish updates with EAS CLI.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -127,3 +128,47 @@ We can make a previous update immediately available to all users. This command t
 />
 
 > If you don't know the exact update group ID, you can use the `--branch` flag. This shows a list of the recent updates on the branch and allows you to select the update group to republish.
+
+### Pause updates on a channel
+
+Pausing a channel stops EAS Update from serving updates to builds that check for updates on that channel.
+
+Pausing is reversible. Your channel's updates and any [rollout](/eas-update/rollouts/) in progress will resume when you unpause a channel.
+
+<Terminal
+  cmd={['$ eas channel:pause [channel-name]', '', '# Example', '$ eas channel:pause production']}
+  cmdCopy="eas channel:pause [channel-name]"
+/>
+
+Run the command without a channel name to pick one from a list. In CI, pass the channel name with `--non-interactive`, or use `--json` to print the channel as JSON. The `--json` flag implies `--non-interactive`.
+
+<Collapsible summary="What happens while a channel is paused?">
+
+- Each client on the paused channel still checks for updates, but they will not receive new updates. EAS typically responds with a bodyless HTTP 204 response for paused channels, so these checks use very little bandwidth.
+- Each client keeps running the newest update it already has. This may be the code shipped with the build if the client never received a newer update. Your users see no change in what their app is running.
+- Because no client downloads an update, the number of [monthly active users](/eas-update/introduction/#how-are-monthly-active-users-counted-for) does not increase while the channel is paused. This keeps [billed users](/billing/usage-based-pricing/) from growing.
+- `eas channel:view [channel-name]` and `eas channel:list` show the channel's status as **Paused**.
+- You can keep publishing updates to branches. They are stored as usual and become available when you unpause the channel.
+
+Pausing applies to a single channel, so pausing `production` has no effect on a `preview` or `development` channel. You can continue to publish and test updates on your development and preview channels while production is paused.
+
+</Collapsible>
+
+<Collapsible summary="How is pausing a channel different from a rollback?">
+
+Pausing keeps clients on their current update and prevents them from receiving new updates, while rollbacks instruct clients to run an older update.
+
+- `eas update:rollback` and `eas update:republish` publish a previous update again so that it becomes the newest update on the branch. Clients download that update and run it. See [Rollbacks](/eas-update/rollbacks/).
+- `eas update:rollback` with the embedded option, also available as `eas update:roll-back-to-embedded`, publishes a directive that tells clients to stop using downloaded updates and run the update embedded in the build instead.
+- `eas channel:pause` does not publish anything and instructs EAS not to send updates for the specified channel. Clients on that channel keep running the latest update they currently have and will not receive new updates until the channel is unpaused.
+
+</Collapsible>
+
+### Resume updates on a channel
+
+<Terminal
+  cmd={['$ eas channel:resume [channel-name]', '', '# Example', '$ eas channel:resume production']}
+  cmdCopy="eas channel:resume [channel-name]"
+/>
+
+Unpause a channel by resuming it. The channel will start serving updates from the branch associated with the channel. Any rollout on the channel will resume. As users open their apps and check for updates, they will receive the newest compatible update as usual.

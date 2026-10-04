@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.graphics.ImageFormat
 import android.graphics.SurfaceTexture
 import android.hardware.camera2.CameraCharacteristics
@@ -49,7 +48,6 @@ import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 import expo.modules.camera.analyzers.BarcodeAnalyzer
 import expo.modules.camera.analyzers.toByteArray
 import expo.modules.camera.common.BarcodeScannedEvent
@@ -298,13 +296,7 @@ class ExpoCameraView(
           if (!animateShutter) {
             return
           }
-          rootView.postDelayed({
-            rootView.foreground = Color.WHITE.toDrawable()
-            rootView.postDelayed(
-              { rootView.foreground = null },
-              ANIMATION_FAST_MILLIS
-            )
-          }, ANIMATION_SLOW_MILLIS)
+          flashShutter(this@ExpoCameraView)
         }
 
         override fun onCaptureSuccess(image: ImageProxy) {
@@ -537,7 +529,11 @@ class ExpoCameraView(
       .filter(cameraProvider.availableCameraInfos)
       .firstOrNull()
     val videoCapture = createVideoCapture(selectedCameraInfo)
-    imageAnalysisUseCase = createImageAnalyzer()
+    imageAnalysisUseCase = if (shouldScanBarcodes) {
+      createImageAnalyzer()
+    } else {
+      null
+    }
 
     val useCases = UseCaseGroup.Builder().apply {
       addUseCase(preview)

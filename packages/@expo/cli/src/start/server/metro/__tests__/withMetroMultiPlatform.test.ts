@@ -739,6 +739,7 @@ describe(withExtendedResolver, () => {
       for (const moduleName of [
         'react-native/asset-registry',
         '@react-native/assets-registry/registry',
+        'react-native/Libraries/Image/AssetRegistry',
       ]) {
         const result = modified.resolver.resolveRequest!(
           getDefaultRequestContext(),

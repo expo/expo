@@ -12,8 +12,8 @@ it('exports NativeStackView', () => {
   expect(NativeStackView).toBeDefined();
 });
 
-it('404', () => {
-  renderRouter(
+it('404', async () => {
+  await renderRouter(
     {
       index: () => null,
     },
@@ -29,7 +29,7 @@ it('404', () => {
 });
 
 it('can render a route', async () => {
-  renderRouter({
+  await renderRouter({
     index: () => <Text>Hello</Text>,
   });
 
@@ -45,8 +45,8 @@ describe('initialUrl', () => {
    * This is not only useful for testing, but is critical for static rendering
    * which must set the initial URL for every page
    */
-  it('can render with an initial URL', () => {
-    renderRouter(
+  it('can render with an initial URL', async () => {
+    await renderRouter(
       {
         home: () => <Text>Hello</Text>,
       },
@@ -61,8 +61,8 @@ describe('initialUrl', () => {
     expect(screen).toHaveSearchParams({});
   });
 
-  it('can render with an initial URL in a group', () => {
-    renderRouter(
+  it('can render with an initial URL in a group', async () => {
+    await renderRouter(
       {
         '(a)/home': () => <Text>Hello</Text>,
       },
@@ -77,8 +77,8 @@ describe('initialUrl', () => {
     expect(screen).toHaveSearchParams({});
   });
 
-  it('can render with an index initial URL in a group', () => {
-    renderRouter(
+  it('can render with an index initial URL in a group', async () => {
+    await renderRouter(
       {
         '(a)/index': () => <Text>Hello</Text>,
       },
@@ -93,8 +93,8 @@ describe('initialUrl', () => {
     expect(screen).toHaveSearchParams({});
   });
 
-  it('will render the correct group', () => {
-    renderRouter(
+  it('will render the correct group', async () => {
+    await renderRouter(
       {
         '(a)/index': () => <Text>Hello</Text>,
         '(b)/index': () => <Text>World</Text>,
@@ -112,7 +112,7 @@ describe('initialUrl', () => {
 });
 
 it('can handle dynamic routes', async () => {
-  renderRouter(
+  await renderRouter(
     {
       '[slug]': function Path() {
         const { slug } = useGlobalSearchParams();
@@ -136,7 +136,7 @@ it('can handle dynamic routes', async () => {
 it('does not rerender routes', async () => {
   const Index = jest.fn(() => <Text>Screen</Text>);
 
-  renderRouter({
+  await renderRouter({
     index: Index,
   });
 
@@ -148,7 +148,7 @@ it('redirects', async () => {
   const Index = jest.fn(() => <Redirect href="/other" />);
   const Other = jest.fn(() => <Text>Other</Text>);
 
-  renderRouter({
+  await renderRouter({
     '(app)/index': Index,
     '(app)/other': Other,
   });
@@ -163,7 +163,7 @@ it('layouts', async () => {
   const Index = jest.fn(() => <Redirect href="/other" />);
   const Other = jest.fn(() => <Text>Other</Text>);
 
-  renderRouter({
+  await renderRouter({
     '(app)/_layout': Layout,
     '(app)/index': Index,
     '(app)/other': Other,
@@ -189,7 +189,7 @@ it('nested layouts', async () => {
   const Home = jest.fn(() => <Redirect href="/home/nested" />);
   const HomeNested = jest.fn(() => <Text>HomeNested</Text>);
 
-  renderRouter({
+  await renderRouter({
     _layout: RootLayout,
     '(app)/_layout': AppLayout,
     '(app)/index': Index,
@@ -229,7 +229,7 @@ it('deep linking nested groups', async () => {
   ));
   const OtherTabsIndex = jest.fn(() => <Text testID="OtherTabsHome" />);
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: RootLayout,
       '(app)/_layout': AppLayout,
@@ -248,7 +248,7 @@ it('deep linking nested groups', async () => {
   // Start in a deeply nested navigator
   expect(screen.getByTestId('OtherTabsHome')).toBeOnTheScreen();
 
-  act(() => router.replace('/(app)/(tabs)/home'));
+  await act(() => router.replace('/(app)/(tabs)/home'));
 
   expect(screen.getByTestId('Home')).toBeOnTheScreen();
 
@@ -265,8 +265,8 @@ it('deep linking nested groups', async () => {
 // react-native-gesture-handler is failing in Fabric.
 // https://exponent-internal.slack.com/archives/C0447EFTS74/p1709588600921339?thread_ts=1709578927.565339&cid=C0447EFTS74
 // Please enable once `react-native-gesture-handler` is updated
-it.skip('can navigate across the drawer navigator', () => {
-  renderRouter({
+it.skip('can navigate across the drawer navigator', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text testID="index" />,
     '(group)/_layout': () => <Drawer />,
@@ -282,34 +282,34 @@ it.skip('can navigate across the drawer navigator', () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
   // Navigate to a drawer screen
-  act(() => router.push('/one'));
+  await act(() => router.push('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
   // Navigate within the drawer
-  act(() => router.push('/two'));
+  await act(() => router.push('/two'));
   expect(screen).toHavePathname('/two');
   expect(screen.getByTestId('two')).toBeOnTheScreen();
 
   // Navigate to a different drawer
-  act(() => router.push('/three'));
+  await act(() => router.push('/three'));
   expect(screen).toHavePathname('/three');
   expect(screen.getByTestId('three')).toBeOnTheScreen();
 
   // Navigate to a nested folder
-  act(() => router.push('/nested/folder/four'));
+  await act(() => router.push('/nested/folder/four'));
   expect(screen).toHavePathname('/nested/folder/four');
   expect(screen.getByTestId('four')).toBeOnTheScreen();
 
   // Navigate back to one
-  act(() => router.push('/one'));
+  await act(() => router.push('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 });
 
-it('layout is never called with generated +not-found', () => {
+it('layout is never called with generated +not-found', async () => {
   const layoutCalled = jest.fn();
-  renderRouter({
+  await renderRouter({
     _layout: function Layout() {
       layoutCalled();
 
@@ -321,8 +321,8 @@ it('layout is never called with generated +not-found', () => {
   expect(layoutCalled).not.toHaveBeenCalled();
 });
 
-it('can redirect during the initial render', () => {
-  renderRouter({
+it('can redirect during the initial render', async () => {
+  await renderRouter({
     // This needs to be added, for the layout to be rendered
     // Otherwise would fall back to the root 404
     '+not-found': () => <Text>Unmatched Route</Text>,
@@ -345,11 +345,11 @@ it('can redirect during the initial render', () => {
   expect(screen.getByTestId('test')).toBeOnTheScreen();
 });
 
-it('will pick a static route over the dynamic route in the same group', () => {
+it('will pick a static route over the dynamic route in the same group', async () => {
   const A = jest.fn(() => <Text>Index</Text>);
   const B = jest.fn(() => <Text>Dynamic</Text>);
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     'messages/[id]': A,
 
@@ -358,7 +358,7 @@ it('will pick a static route over the dynamic route in the same group', () => {
     '(group)/[type]/[id]': B,
   });
 
-  act(() => router.push('/messages/1'));
+  await act(() => router.push('/messages/1'));
 
   expect(A).toHaveBeenCalled();
   expect(B).not.toHaveBeenCalled();

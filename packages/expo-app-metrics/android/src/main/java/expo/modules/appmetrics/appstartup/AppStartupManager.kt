@@ -78,7 +78,9 @@ object AppStartupManager {
         }
 
         ReactMarkerConstants.RUN_JS_BUNDLE_END -> {
-          if (startupState != StartupState.LAUNCHING) return@addListener
+          if (startupState != StartupState.LAUNCHING) {
+            return@addListener
+          }
           val loadStartTime = bundleLoadStartTime
           if (loadStartTime == null) {
             Log.w(
@@ -181,12 +183,16 @@ object AppStartupManager {
   // This captures the activity creation timestamp as early as possible.
   fun markActivityCreate() {
     val info = startupInfo ?: return
-    if (info.activityCreateTimestamp != null) return
+    if (info.activityCreateTimestamp != null) {
+      return
+    }
     startupInfo = info.copy(activityCreateTimestamp = getCurrentTimeInMillis())
   }
 
   fun markLoadedIfNeeded(activity: Activity) {
-    if (launchTimeInMillis != null) return
+    if (launchTimeInMillis != null) {
+      return
+    }
     val launchTime = getCurrentTimeInMillis()
     launchTimeInMillis = launchTime
 
@@ -219,7 +225,9 @@ object AppStartupManager {
   }
 
   fun markInteractive(context: Context, routeName: String? = null, params: Map<String, Any>? = null) {
-    if (startupState != StartupState.LAUNCHING || hasRecordedInteractive) return
+    if (startupState != StartupState.LAUNCHING || hasRecordedInteractive) {
+      return
+    }
     hasRecordedInteractive = true
 
     val frameMetrics = frameMetricsRecorder.stop()
@@ -228,7 +236,11 @@ object AppStartupManager {
     addMetricSinceLaunch(
       AppStartupMetric.TimeToInteractive,
       routeName,
-      if (merged.isEmpty()) null else merged
+      if (merged.isEmpty()) {
+        null
+      } else {
+        merged
+      }
     )
     startupState = StartupState.LAUNCHED
   }
@@ -254,7 +266,9 @@ object AppStartupManager {
   }
 
   fun markFirstRender() {
-    if (startupState != StartupState.LAUNCHING || hasRecordedFirstRender) return
+    if (startupState != StartupState.LAUNCHING || hasRecordedFirstRender) {
+      return
+    }
     hasRecordedFirstRender = true
     addMetricSinceLaunch(AppStartupMetric.TimeToFirstRender)
   }

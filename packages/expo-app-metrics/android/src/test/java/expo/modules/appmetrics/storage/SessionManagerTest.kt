@@ -108,7 +108,11 @@ class SessionManagerTest {
   fun `startSessionWithIdAt falls back to preferences environment`() =
     runTest {
       val sessionId = "test-session"
-      val expected = if (BuildConfig.DEBUG) "development" else null
+      val expected = if (BuildConfig.DEBUG) {
+        "development"
+      } else {
+        null
+      }
 
       // Act
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")

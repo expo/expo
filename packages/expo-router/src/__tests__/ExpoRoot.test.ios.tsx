@@ -14,7 +14,7 @@ const mockMaybeHideSplashScreen = maybeHideSplashScreen as jest.MockedFunction<
   typeof maybeHideSplashScreen
 >;
 
-it('waits for the root navigator to commit before hiding the splash screen', () => {
+it('waits for the root navigator to commit before hiding the splash screen', async () => {
   let renderChildren = false;
 
   function Wrapper({ children }: PropsWithChildren) {
@@ -25,12 +25,12 @@ it('waits for the root navigator to commit before hiding the splash screen', () 
     _layout: () => <Text>Layout</Text>,
     index: () => <Text>Index</Text>,
   });
-  const result = render(<ExpoRoot context={context} location="/" wrapper={Wrapper} />);
+  const result = await render(<ExpoRoot context={context} location="/" wrapper={Wrapper} />);
 
   expect(mockMaybeHideSplashScreen).not.toHaveBeenCalled();
 
   renderChildren = true;
-  result.rerender(<ExpoRoot context={context} location="/" wrapper={Wrapper} />);
+  await result.rerender(<ExpoRoot context={context} location="/" wrapper={Wrapper} />);
 
   expect(mockMaybeHideSplashScreen).toHaveBeenCalledTimes(1);
 });

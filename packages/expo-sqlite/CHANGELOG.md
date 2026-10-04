@@ -1,14 +1,22 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android][iOS] Fixed database closing failure with FTS ([#38168](https://github.com/expo/expo/issues/38168)). ([#50121](https://github.com/expo/expo/pull/50121) by [@savv](https://github.com/savv))
 
-### 🐛 Bug fixes
+## 58.0.8
 
-### 💡 Others
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.6 — 2026-09-25
 

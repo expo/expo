@@ -74,7 +74,14 @@ class MlKitLanguageModelBackendTest {
         MlKitLanguageModelBackend(model).generate("Task", null, LanguageModelRequestOptions(false, null)) {}
         fail("Unavailable models must reject generation")
       } catch (error: LanguageModelException) {
-        assertEquals(if (status == FeatureStatus.UNAVAILABLE) "ERR_MODEL_UNAVAILABLE" else "ERR_MODEL_NOT_READY", error.code)
+        assertEquals(
+          if (status == FeatureStatus.UNAVAILABLE) {
+            "ERR_MODEL_UNAVAILABLE"
+          } else {
+            "ERR_MODEL_NOT_READY"
+          },
+          error.code
+        )
       }
       coVerify(exactly = 0) { model.generateContent(any<GenerateContentRequest>()) }
       coVerify(exactly = 0) { model.download() }

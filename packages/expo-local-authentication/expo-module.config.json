@@ -4,6 +4,11 @@
     "modules": ["LocalAuthenticationModule"]
   },
   "android": {
-    "modules": ["expo.modules.localauthentication.LocalAuthenticationModule"]
+    "modules": ["expo.modules.localauthentication.LocalAuthenticationModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.localauthentication",
+      "repository": "local-maven-repo"
+    }
   }
 }

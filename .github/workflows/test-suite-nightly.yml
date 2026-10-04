@@ -6,15 +6,12 @@ on:
     - cron: '0 10 * * SAT' # 10:00 AM UTC time every Saturday
   push:
     branches: [main]
-    paths:
+    paths: &trigger_paths
       - .github/workflows/test-suite-nightly.yml
       - .github/actions/setup-maestro/action.yml
       - tools/src/commands/SetupReactNativeNightly.ts
   pull_request:
-    paths:
-      - .github/workflows/test-suite-nightly.yml
-      - .github/actions/setup-maestro/action.yml
-      - tools/src/commands/SetupReactNativeNightly.ts
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

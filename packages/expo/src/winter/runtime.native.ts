@@ -5,12 +5,9 @@
 // Otherwise we're relying on `getModulesRunBeforeMainModule` which is unstable or can be missing
 import './setupReactNativeEnvironment';
 import '../../types';
-import { installAbortSignalPatch } from './AbortSignal';
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 
-// https://encoding.spec.whatwg.org/#textdecoder
-install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 // https://encoding.spec.whatwg.org/#interface-textdecoderstream
 install('TextDecoderStream', () => require('./TextDecoderStream').TextDecoderStream);
 // https://encoding.spec.whatwg.org/#interface-textencoderstream
@@ -30,7 +27,6 @@ install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').Import
 install('structuredClone', () => require('@ungap/structured-clone').default);
 
 installFormDataPatch(FormData);
-installAbortSignalPatch(AbortSignal);
 
 // Polyfill async iterator symbol for Hermes.
 // @ts-expect-error: readonly property only applies when the engine supports it

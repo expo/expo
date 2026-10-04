@@ -73,7 +73,9 @@ class AudioModule : Module() {
     }
 
   private val ringerModeReceiver = RingerModeReceiver {
-    if (playsInSilentMode) return@RingerModeReceiver
+    if (playsInSilentMode) {
+      return@RingerModeReceiver
+    }
     appContext.mainQueue.launch {
       allPlayables.forEach { playable ->
         if (playable.isPlaying) {
@@ -609,7 +611,13 @@ class AudioModule : Module() {
       }.set { player, muted: Boolean? ->
         val newMuted = muted ?: false
         player.isMuted = newMuted
-        player.setVolume(if (newMuted) 0f else player.previousVolume)
+        player.setVolume(
+          if (newMuted) {
+            0f
+          } else {
+            player.previousVolume
+          }
+        )
       }
 
       Property("shouldCorrectPitch") { player ->
@@ -949,7 +957,13 @@ class AudioModule : Module() {
       }.set { playlist, muted: Boolean? ->
         val newMuted = muted ?: false
         playlist.isMuted = newMuted
-        playlist.setVolume(if (newMuted) 0f else playlist.previousVolume)
+        playlist.setVolume(
+          if (newMuted) {
+            0f
+          } else {
+            playlist.previousVolume
+          }
+        )
       }
 
       Property("isLoaded") { playlist ->
@@ -1170,7 +1184,11 @@ class AudioModule : Module() {
 
   @Suppress("DEPRECATION")
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
-    audioManager.mode = if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL
+    audioManager.mode = if (playThroughEarpiece) {
+      AudioManager.MODE_IN_COMMUNICATION
+    } else {
+      AudioManager.MODE_NORMAL
+    }
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
   }
 

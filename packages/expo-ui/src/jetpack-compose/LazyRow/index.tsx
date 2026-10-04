@@ -5,6 +5,8 @@ import { type ContentPadding } from '../LazyColumn';
 import { createLazyItems } from '../LazyItems';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
+export { LazyItems, type LazyItemsProps } from '../LazyItems';
+
 export interface LazyRowProps {
   /**
    * The content to display inside the lazy row.
