@@ -2,13 +2,13 @@
 
 import Foundation
 
-/// A runtime scheduler that runs the scheduled work on a ``JavaScriptTestThread`` of its own. Pass
+/// A runtime scheduler that runs the scheduled work on a ``TestJavaScriptThread`` of its own. Pass
 /// ``opaquePointer`` and ``dispatch`` to `AppContext.setRuntime(_:scheduler:dispatch:)` on that thread.
 ///
 /// `expo-modules-jsi` has the same setup for its own tests in `apple/Tests/Support/TestRuntimeScheduler.swift`:
 /// it is a SwiftPM package and cannot depend on this pod. Keep the two in sync.
 internal final class TestRuntimeScheduler: @unchecked Sendable {
-  let thread = JavaScriptTestThread()
+  let thread = TestJavaScriptThread()
 
   /// The handle the runtime passes back to ``dispatch``. Unretained: keep the scheduler alive for as
   /// long as the runtime can schedule work.

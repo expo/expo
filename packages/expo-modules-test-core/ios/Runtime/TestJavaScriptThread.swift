@@ -5,7 +5,7 @@ import Foundation
 /// A thread that runs the operations scheduled on it one at a time, in order. A serial dispatch queue
 /// is not enough: it may use a different worker thread for each operation, while a
 /// `JavaScriptRuntime` treats the thread it was created on as its JavaScript thread.
-internal final class JavaScriptTestThread: @unchecked Sendable {
+internal final class TestJavaScriptThread: @unchecked Sendable {
   private let condition = NSCondition()
   private var operations: [@convention(block) () -> Void] = []
   private var isStopping = false
