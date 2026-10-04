@@ -31,13 +31,17 @@ export function getWatchHandler(
 
     let shouldRegenerate = false;
     let relativePath = path.relative(process.env.EXPO_ROUTER_APP_ROOT, filePath);
-    const isInsideAppRoot = !relativePath.startsWith('../');
+    // `path.relative` uses native separators, and returns an absolute path when on another drive on Windows
+    const isInsideAppRoot =
+      relativePath !== '..' &&
+      !relativePath.startsWith(`..${path.sep}`) &&
+      !path.isAbsolute(relativePath);
     const basename = path.basename(relativePath);
 
     if (!isInsideAppRoot) return;
 
-    // require.context paths always start with './' when relative to the root
-    relativePath = `./${relativePath}`;
+    // require.context paths always start with './' and use posix separators
+    relativePath = `./${relativePath.split(path.sep).join('/')}`;
 
     if (type === 'delete') {
       ctx.__delete(relativePath);
