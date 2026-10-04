@@ -165,6 +165,8 @@ inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
 // owns nothing; an object or string there would leak its engine handle. Both callers,
 // `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side picks
 // the helper by kind in `JavaScriptValue.writeJSIValue(to:)` and moves everything else.
+// `JavaScriptValue.write(_:to:)` moves a uniquely referenced value's handle into the slot the same
+// way, through `emplaceMovedValue`.
 inline void emplaceUndefined(jsi::Value *_Nonnull slot) noexcept {
   ::new (slot) jsi::Value();
 }
@@ -179,6 +181,31 @@ inline void emplaceBool(jsi::Value *_Nonnull slot, bool value) noexcept {
 
 inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
   ::new (slot) jsi::Value(value);
+}
+
+/**
+ Moves the value at `source` into the engine's result slot. Placement new, like the `emplace*`
+ helpers above: the slot must hold a value that owns nothing. `source` is left holding a null
+ pointer, so destroying it afterwards releases nothing.
+ */
+inline void emplaceMovedValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Creates a string value straight from UTF-8 bytes. The `jsi::String` returned by `createFromUtf8`
+ is moved into the value, so the engine allocates one handle. Going through `jsi::Value(runtime,
+ const jsi::String &)` from Swift instead clones the handle and then releases the original.
+ */
+inline jsi::Value createStringValueFromUtf8(jsi::IRuntime &runtime, const uint8_t *_Nonnull utf8, size_t length) {
+  return jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
+}
+
+/**
+ Same as `createStringValueFromUtf8`, for bytes the caller knows to be ASCII.
+ */
+inline jsi::Value createStringValueFromAscii(jsi::IRuntime &runtime, const char *_Nonnull ascii, size_t length) {
+  return jsi::Value(jsi::String::createFromAscii(runtime, ascii, length));
 }
 
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
@@ -225,6 +252,26 @@ inline void getStringData(
     callback(ctx, ascii, data, num);
   };
   string.getStringData(runtime, forward);
+#endif
+}
+
+/**
+ Same as `getStringData`, but for a `jsi::PropNameID`.
+ */
+inline void getPropNameIdData(
+  jsi::IRuntime &runtime,
+  const jsi::PropNameID &propNameId,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  runtime.getPropNameIdData(propNameId, ctx, callback);
+#else
+  auto forward = [ctx, callback](bool ascii, const void *data, size_t num) {
+    callback(ctx, ascii, data, num);
+  };
+  propNameId.getPropNameIdData(runtime, forward);
 #endif
 }
 

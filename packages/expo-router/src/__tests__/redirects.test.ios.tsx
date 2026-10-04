@@ -49,7 +49,7 @@ jest.mock('expo-linking', () => {
   };
 });
 
-it('exposes redirects and rewrites through the store context', () => {
+it('exposes redirects and rewrites through the store context', async () => {
   const redirect = { source: '/foo', destination: '/bar' } as RedirectConfig;
   const externalRedirect = { source: '/away', destination: '//example.com' } as RedirectConfig;
   const rewrite = { source: '/old', destination: '/new' } as RedirectConfig;
@@ -63,7 +63,7 @@ it('exposes redirects and rewrites through the store context', () => {
     return null;
   }
 
-  renderRouter({
+  await renderRouter({
     index: Index,
     bar: () => null,
     new: () => null,
@@ -76,7 +76,7 @@ it('exposes redirects and rewrites through the store context', () => {
   ]);
 });
 
-it('deep link to a redirect', () => {
+it('deep link to a redirect', async () => {
   mockRedirects.mockReturnValue([
     {
       source: '/foo',
@@ -84,7 +84,7 @@ it('deep link to a redirect', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter(
+  await renderRouter(
     {
       index: () => null,
       bar: () => <Text testID="bar" />,
@@ -125,7 +125,7 @@ it('deep link to a redirect', () => {
   });
 });
 
-it('deep link to a dynamic redirect', () => {
+it('deep link to a dynamic redirect', async () => {
   mockRedirects.mockReturnValue([
     {
       source: '/foo/[slug]',
@@ -133,7 +133,7 @@ it('deep link to a dynamic redirect', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter(
+  await renderRouter(
     {
       index: () => null,
       'deeply/nested/route/[slug]': () => <Text testID="nested" />,
@@ -178,7 +178,7 @@ it('deep link to a dynamic redirect', () => {
   });
 });
 
-it('keeps extra params as query params', () => {
+it('keeps extra params as query params', async () => {
   mockRedirects.mockReturnValue([
     {
       source: '/foo/[slug]',
@@ -186,7 +186,7 @@ it('keeps extra params as query params', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter(
+  await renderRouter(
     {
       index: () => null,
       bar: () => <Text testID="bar" />,
@@ -225,7 +225,7 @@ it('keeps extra params as query params', () => {
   });
 });
 
-it('can redirect from single to catch all', () => {
+it('can redirect from single to catch all', async () => {
   mockRedirects.mockReturnValue([
     {
       source: '/foo/[slug]',
@@ -233,7 +233,7 @@ it('can redirect from single to catch all', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter(
+  await renderRouter(
     {
       index: () => null,
       'bar/[...slug]': () => <Text testID="bar" />,
@@ -278,7 +278,7 @@ it('can redirect from single to catch all', () => {
   });
 });
 
-it('can push to a redirect', () => {
+it('can push to a redirect', async () => {
   mockRedirects.mockReturnValue([
     {
       source: '/foo',
@@ -286,7 +286,7 @@ it('can push to a redirect', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter({
+  await renderRouter({
     index: () => null,
     bar: () => <Text testID="bar" />,
   });
@@ -319,7 +319,7 @@ it('can push to a redirect', () => {
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => router.push('/foo'));
+  await act(() => router.push('/foo'));
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -366,7 +366,7 @@ it('does not render redirects in tabs', async () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -388,7 +388,7 @@ it('redirect to external URL', async () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -399,12 +399,12 @@ it('redirect to external URL', async () => {
     bar: () => <Text testID="bar" />,
   });
 
-  act(() => router.push('/foo'));
+  await act(() => router.push('/foo'));
 
   expect(mockOpenURL).toHaveBeenCalledWith('https://example.com');
 });
 
-it('redirects will override existing routes', () => {
+it('redirects will override existing routes', async () => {
   mockRedirects.mockReturnValue([
     {
       source: '(tabs)/explore',
@@ -412,7 +412,7 @@ it('redirects will override existing routes', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     '(tabs)/_layout': () => (
       <Tabs>
@@ -424,12 +424,12 @@ it('redirects will override existing routes', () => {
     bar: () => <Text testID="bar" />,
   });
 
-  act(() => router.push('/explore'));
+  await act(() => router.push('/explore'));
 
   expect(mockOpenURL).toHaveBeenCalledWith('https://example.com');
 });
 
-it('tabs can still work for redirects', () => {
+it('tabs can still work for redirects', async () => {
   mockRedirects.mockReturnValue([
     {
       source: './(tabs)/explore',
@@ -437,7 +437,7 @@ it('tabs can still work for redirects', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => <Stack />,
       '(tabs)/_layout': () => (
@@ -455,13 +455,13 @@ it('tabs can still work for redirects', () => {
 
   expect(mockOpenURL.mock.calls).toEqual([]);
 
-  fireEvent.press(screen.getByLabelText('explore, tab, 2 of 2'));
+  await fireEvent.press(screen.getByLabelText('explore, tab, 2 of 2'));
 
   expect(screen).toHavePathname('/page');
   expect(mockOpenURL.mock.calls).toEqual([]);
 });
 
-it('tabs can still work for external redirects', () => {
+it('tabs can still work for external redirects', async () => {
   mockRedirects.mockReturnValue([
     {
       source: './(tabs)/explore.tsx',
@@ -469,7 +469,7 @@ it('tabs can still work for external redirects', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => <Stack />,
       '(tabs)/_layout': () => (
@@ -486,12 +486,12 @@ it('tabs can still work for external redirects', () => {
 
   expect(mockOpenURL.mock.calls).toEqual([]);
 
-  fireEvent.press(screen.getByLabelText('explore, tab, 2 of 2'));
+  await fireEvent.press(screen.getByLabelText('explore, tab, 2 of 2'));
 
   expect(mockOpenURL.mock.calls).toEqual([['https://example.com']]);
 });
 
-it('not existing nested route redirects correctly', () => {
+it('not existing nested route redirects correctly', async () => {
   mockRedirects.mockReturnValue([
     {
       source: '/test/1234',
@@ -499,7 +499,7 @@ it('not existing nested route redirects correctly', () => {
     } as RedirectConfig,
   ]);
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => <Stack />,
       '[id]': () => <Text testID="id">ID</Text>,
@@ -509,7 +509,7 @@ it('not existing nested route redirects correctly', () => {
     {}
   );
 
-  act(() => router.push('/test/1234'));
+  await act(() => router.push('/test/1234'));
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,

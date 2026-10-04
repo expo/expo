@@ -169,6 +169,8 @@ export default function App() {
       setAudioModeAsync({
         playsInSilentMode: true,
         allowsRecording: true,
+        // To record in the background, also set allowsBackgroundRecording: true
+        // and enable the enableBackgroundRecording config plugin option.
       });
     })();
   }, []);
@@ -403,6 +405,8 @@ await recorder.record();
 <PlatformTags platforms={['android']} />
 
 On Android, background recording requires a foreground service, which displays a persistent notification with the text "Recording audio" and a stop button. This notification cannot be dismissed while recording is active and automatically disappears when recording stops.
+
+Background recording does not require the notification permission. If the user has not granted it, recording still works and the notification appears only in the Task Manager instead of the notification drawer.
 
 <PlatformTags platforms={['ios']} />
 

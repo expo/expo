@@ -177,6 +177,71 @@ extension Benchmarks {
     }
   }
 
+  /// `SQLiteDatabase.runSync(source, { $name: value })`: named parameters resolve their index through
+  /// `sqlite3_bind_parameter_index` instead of the array position.
+  @Test
+  func `JS: insert with named parameters`() async throws {
+    try await sqliteBenchmarkCase { appContext in
+      let runtime = try prepareRuntime(appContext)
+      _ = try runtime.eval(
+        """
+        var insert = new NativeStatement();
+        db.prepareSync(insert, 'INSERT INTO t (int_value, real_value, text_value, null_value) VALUES ($i, $r, $t, $n)');
+        """
+      )
+      let run = try driver(
+        runtime,
+        "insert.runSync(db, { $i: i, $r: 1.5, $t: 'row', $n: null }, {}, false);"
+      )
+      try benchmark("JS: runSync insert with 4 named parameters", runtime: runtime) { iterations in
+        _ = try run.call(arguments: iterations)
+      }
+    }
+  }
+
+  /// `SQLiteDatabase.runSync(source, [blob])`: the blob goes through the separate blob parameters.
+  @Test
+  func `JS: insert with a blob parameter`() async throws {
+    try await sqliteBenchmarkCase { appContext in
+      let runtime = try prepareRuntime(appContext)
+      _ = try runtime.eval(
+        """
+        var insert = new NativeStatement();
+        db.prepareSync(insert, 'INSERT INTO blobs (data) VALUES (?)');
+        var blob = new Uint8Array(1024);
+        """
+      )
+      let run = try driver(runtime, "insert.runSync(db, {}, { 0: blob }, true);")
+      try benchmark("JS: runSync insert with a 1 KiB blob parameter", runtime: runtime) { iterations in
+        _ = try run.call(arguments: iterations)
+      }
+    }
+  }
+
+  /// `SQLiteStatement.executeSync(...)` iterated row by row: one native call per row.
+  @Test
+  func `JS: step through 100 rows`() async throws {
+    try await sqliteBenchmarkCase { appContext in
+      let runtime = try prepareRuntime(appContext)
+      _ = try runtime.eval(
+        """
+        var cursor = new NativeStatement();
+        db.prepareSync(cursor, 'SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id <= 100');
+        """
+      )
+      let run = try driver(
+        runtime,
+        """
+        cursor.resetSync(db);
+        while (cursor.stepSync(db) != null) {}
+        """
+      )
+      try benchmark("JS: stepSync through 100 rows", runtime: runtime) { iterations in
+        _ = try run.call(arguments: iterations)
+      }
+    }
+  }
+
   @Test
   func `JS: column names of a prepared statement`() async throws {
     try await sqliteBenchmarkCase { appContext in

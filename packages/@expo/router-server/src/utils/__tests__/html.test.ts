@@ -208,20 +208,73 @@ describe(injectAssetsIntoHtml, () => {
     );
   });
 
-  it('preserves the original order of bundled and external CSS entries', () => {
+  it.each([
+    [undefined, '<style>.a{}\n</style>'],
+    ['', '<style data-expo-css-hmr="">.a{}\n</style>'],
+    ['a"&b', '<style data-expo-css-hmr="a&quot;&amp;b">.a{}\n</style>'],
+  ])('serializes the inline HMR identifier %j safely', (hmrId, expected) => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      assets: { css: [{ type: 'inline', source: '.a{}', hmrId }], js: [] },
+    });
+    expect(result).toContain(expectedHead([expected!]));
+  });
+
+  it('preserves interleaved external, bundled, and inline CSS order', () => {
     const result = injectAssetsIntoHtml(TEMPLATE, {
       assets: {
         css: [
-          { type: 'external', source: '<link rel="stylesheet" href="https://x/y.css">' },
+          { type: 'external', href: 'https://x/a.css' },
           { type: 'css', href: '/a.css' },
+          { type: 'inline', source: '.a{}' },
+          { type: 'external', href: 'https://x/b.css' },
+          { type: 'css', href: '/b.css' },
         ],
         js: [],
       },
     });
     expect(result).toContain(
       expectedHead([
-        '<link rel="stylesheet" href="https://x/y.css">',
+        '<link rel="stylesheet" href="https://x/a.css">',
         '<link rel="preload" href="/a.css" as="style">\n<link rel="stylesheet" href="/a.css">',
+        '<style>.a{}\n</style>',
+        '<link rel="stylesheet" href="https://x/b.css">',
+        '<link rel="preload" href="/b.css" as="style">\n<link rel="stylesheet" href="/b.css">',
+      ])
+    );
+  });
+
+  it('preserves and escapes external CSS attributes with serializer-compatible markup', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      assets: {
+        css: [
+          {
+            type: 'external',
+            href: 'https://x/y.css?a=1&b="two"',
+            media: 'screen and (min-width: "900px")',
+          },
+        ],
+        js: [],
+      },
+    });
+    expect(result).toContain(
+      expectedHead([
+        '<link rel="stylesheet" href="https://x/y.css?a=1&amp;b=&quot;two&quot;" media="screen and (min-width: &quot;900px&quot;)">',
+      ])
+    );
+  });
+
+  it('preserves the legacy bundled-before-external render order for split manifests', () => {
+    const result = injectAssetsIntoHtml(TEMPLATE, {
+      assets: {
+        css: ['/a.css'],
+        externalCss: [{ href: 'https://x/y.css', media: 'print' }],
+        js: [],
+      },
+    });
+    expect(result).toContain(
+      expectedHead([
+        '<link rel="preload" href="/a.css" as="style">\n<link rel="stylesheet" href="/a.css">',
+        '<link rel="stylesheet" href="https://x/y.css" media="print">',
       ])
     );
   });

@@ -515,11 +515,11 @@ describe('convertHtmlToMarkdown', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
 
-    expect(md).toContain('[CLI](/more/expo-cli.md#install)');
+    expect(md).toContain('[CLI](https://docs.expo.dev/more/expo-cli.md#install)');
     expect(md).toContain(
       '[Contacts](https://docs.expo.dev/versions/v56.0.0/sdk/contacts.md#contactgetalloptions)'
     );
-    expect(md).toContain('[llms](/llms.txt)');
+    expect(md).toContain('[llms](https://docs.expo.dev/llms.txt)');
     expect(md).toContain('[External](https://expo.dev)');
     expect(md).toContain('[Inside](/more/expo-cli#install)');
   });
@@ -574,7 +574,7 @@ describe('card links', () => {
       </a>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[My Guide](/guide.md)');
+    expect(md).toContain('[My Guide](https://docs.expo.dev/guide.md)');
     expect(md).toContain('Guide description.');
   });
 });
@@ -951,7 +951,9 @@ describe('convertHtmlToMarkdown with real page structure', () => {
     expect(md).toContain('[Node.js (LTS)](https://nodejs.org)');
     expect(md).toContain('```sh\nnpx create-expo-app@latest\n```');
     expect(md).toContain('## Next step');
-    expect(md).toContain('[development environment](/get-started/set-up-your-environment.md)');
+    expect(md).toContain(
+      '[development environment](https://docs.expo.dev/get-started/set-up-your-environment.md)'
+    );
 
     // Non-content is removed
     expect(md).not.toContain('Home');

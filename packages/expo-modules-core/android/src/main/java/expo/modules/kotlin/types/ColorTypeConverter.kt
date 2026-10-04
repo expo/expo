@@ -224,7 +224,9 @@ private fun parseRgbComponent(value: String): Float {
  * Returns a float in 0..1 range.
  */
 private fun parseAlpha(value: String?): Float {
-  if (value == null) return 1f
+  if (value == null) {
+    return 1f
+  }
   return if (value.endsWith("%")) {
     value.dropLast(1).toFloat() / 100f
   } else {
@@ -256,7 +258,11 @@ private fun hslToColor(h: Float, s: Float, l: Float, a: Float): Color {
     g = l
     b = l
   } else {
-    val q = if (l < 0.5f) l * (1f + s) else l + s - l * s
+    val q = if (l < 0.5f) {
+      l * (1f + s)
+    } else {
+      l + s - l * s
+    }
     val p = 2f * l - q
     r = hueToRgb(p, q, hue + 1f / 3f)
     g = hueToRgb(p, q, hue)
@@ -269,8 +275,16 @@ private fun hwbToColor(h: Float, w: Float, b: Float, a: Float): Color {
   val ww = w.coerceIn(0f, 1f)
   val bb = b.coerceIn(0f, 1f)
   val sum = ww + bb
-  val white = if (sum > 1f) ww / sum else ww
-  val black = if (sum > 1f) bb / sum else bb
+  val white = if (sum > 1f) {
+    ww / sum
+  } else {
+    ww
+  }
+  val black = if (sum > 1f) {
+    bb / sum
+  } else {
+    bb
+  }
   val rgb = hslToColor(h, 1f, 0.5f, 1f)
   val r = ColorCompat.red(rgb) * (1f - white - black) + white
   val g = ColorCompat.green(rgb) * (1f - white - black) + white

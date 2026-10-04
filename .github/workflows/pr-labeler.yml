@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main]
-    paths:
+    paths: &trigger_paths
       - .github/workflows/pr-labeler.yml
       - apps/bare-expo/**
       - apps/test-suite/**
@@ -13,12 +13,7 @@ on:
       # When adding new paths, also update the paths of the "Get the base commit" step below
   pull_request:
     types: [opened, synchronize]
-    paths:
-      - .github/workflows/pr-labeler.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - pnpm-lock.yaml
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -27,7 +22,12 @@ concurrency:
 jobs:
   test-suite-fingerprint:
     runs-on: ubuntu-24.04
-    if: ${{ github.repository == 'expo/expo' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push') }}
+    if: >-
+      github.repository == 'expo/expo' &&
+      (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'push') &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name != github.repository ||
+       !startsWith(github.head_ref, 'changeset-release/'))
     # REQUIRED: limit concurrency when pushing main(default) branch to prevent conflict for this action to update its fingerprint database
     concurrency: fingerprint-${{ github.event_name != 'pull_request' && 'main' || github.run_id }}
     permissions:

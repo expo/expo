@@ -248,7 +248,7 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
  * - Alias `react-native` to `react-native-web` on web.
- * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
+ * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to the shared virtual asset registry module on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
  */
 export function withExtendedResolver(
@@ -665,11 +665,13 @@ export function withExtendedResolver(
       // Redirect every asset registry request to the virtual registry module so all consumers
       // share one instance: Metro's generated asset modules (`assetRegistryPath`), imports of
       // `react-native/asset-registry`, and imports of the legacy `@react-native/assets-registry`
-      // package, which no longer ships with react-native 0.87.
+      // package and `react-native/Libraries/Image/AssetRegistry` module, which no longer ship
+      // with react-native 0.87.
       if (
         moduleName === config.transformer.assetRegistryPath ||
         moduleName === 'react-native/asset-registry' ||
-        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)
+        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName) ||
+        /^react-native\/Libraries\/Image\/AssetRegistry(\.js)?$/.test(moduleName)
       ) {
         return getAssetRegistryModule();
       }

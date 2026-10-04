@@ -125,7 +125,9 @@ fun FunctionalComposableScope.HorizontalPagerContent(
   }
 
   val pageCount = pageCountState.intValue
-  if (pageCount == 0) return
+  if (pageCount == 0) {
+    return
+  }
 
   // Mirror Compose's PagerState observable fields to JS callbacks. Each
   // state-backed snapshotFlow drops its first emission so we don't echo the

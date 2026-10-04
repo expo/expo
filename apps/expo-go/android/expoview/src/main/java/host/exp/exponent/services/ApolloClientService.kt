@@ -1,8 +1,10 @@
 package host.exp.exponent.services
 
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Optional
 import com.apollographql.apollo.cache.normalized.FetchPolicy
+import com.apollographql.apollo.cache.normalized.apolloStore
 import com.apollographql.apollo.cache.normalized.api.MemoryCacheFactory
 import com.apollographql.apollo.cache.normalized.fetchPolicy
 import com.apollographql.apollo.cache.normalized.normalizedCache
@@ -18,7 +20,6 @@ import host.exp.exponent.graphql.Home_AccountSnacksQuery
 import host.exp.exponent.graphql.Home_CurrentUserActorQuery
 import host.exp.exponent.graphql.Home_ViewerPrimaryAccountNameQuery
 import host.exp.exponent.graphql.ProjectsQuery
-import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.graphql.type.AppPlatform
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.last
@@ -40,12 +41,13 @@ class ApolloClientService(
     .fetchPolicy(FetchPolicy.CacheAndNetwork)
     .build()
 
-  fun currentUser(): Flow<CurrentUserActorData?> {
-    return apolloClient.query(Home_CurrentUserActorQuery())
+  fun currentUser(): Flow<ApolloResponse<Home_CurrentUserActorQuery.Data>> =
+    apolloClient.query(Home_CurrentUserActorQuery())
+      .fetchPolicy(FetchPolicy.NetworkOnly)
       .toFlow()
-      .map { response ->
-        response.data?.meUserActor?.currentUserActorData
-      }
+
+  fun clearCache() {
+    apolloClient.apolloStore.clearAll()
   }
 
   fun branchDetails(

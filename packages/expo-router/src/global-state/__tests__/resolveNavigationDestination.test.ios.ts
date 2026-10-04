@@ -561,6 +561,7 @@ test('committing a reopened nested preview promotes only its owning stack route'
   expect(destination.state?.routes[0]!.params ?? {}).not.toHaveProperty(
     '__internal_expo_router_no_animation'
   );
-  expect(destination.params).toHaveProperty('__internal_expo_router_no_animation', true);
+  expect(destination.params).toHaveProperty('__internal__expo_router_is_preview_navigation', true);
+  expect(destination.params).not.toHaveProperty('__internal_expo_router_no_animation');
   expect(destination.params).not.toHaveProperty('__internal__PreviewKey');
 });

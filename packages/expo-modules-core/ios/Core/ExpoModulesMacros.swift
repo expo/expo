@@ -1,5 +1,5 @@
 // Declares macro signatures whose implementations are provided by the `ExpoModulesMacros` compiler
-// plugin shipped in the `@expo/expo-modules-macros-plugin` package. Keep the `#externalMacro`
+// plugin shipped in the `expo-modules-macros` package. Keep the `#externalMacro`
 // module/type names below in sync with the macro implementations in that package.
 
 // MARK: - Macro declarations
@@ -216,7 +216,7 @@ public macro Record() =
 ///     }
 @attached(
   member,
-  names: named(decode), named(encode), named(`as`), named(_payloadTypeName),
+  names: named(decode), named(encode), named(decodableKinds), named(`as`), named(_payloadTypeName),
   named(_assertTypesConformance))
 @attached(extension, conformances: JavaScriptDecodable, JavaScriptEncodable)
 public macro Union() =

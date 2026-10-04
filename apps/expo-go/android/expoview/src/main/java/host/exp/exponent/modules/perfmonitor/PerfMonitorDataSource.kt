@@ -121,7 +121,9 @@ internal class PerfMonitorDataSource() : DevToolsReactPerfLogger.DevToolsReactPe
   }
 
   private fun attachFabricListenerIfNeeded(reactContext: ReactContext) {
-    if (fabricListenerAttached) return
+    if (fabricListenerAttached) {
+      return
+    }
     val uiManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
     if (uiManager is FabricUIManager) {
       var logger = uiManager.mDevToolsReactPerfLogger
@@ -138,7 +140,9 @@ internal class PerfMonitorDataSource() : DevToolsReactPerfLogger.DevToolsReactPe
   }
 
   private fun detachFabricListenerIfNeeded() {
-    if (!fabricListenerAttached) return
+    if (!fabricListenerAttached) {
+      return
+    }
     val reactContext = reactContext ?: return
     val uiManager = UIManagerHelper.getUIManager(reactContext, UIManagerType.FABRIC)
     if (uiManager is FabricUIManager) {

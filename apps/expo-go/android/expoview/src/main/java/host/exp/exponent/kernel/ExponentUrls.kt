@@ -28,7 +28,48 @@ object ExponentUrls {
     }
     val uri = Uri.parse(rawUrl)
     val useHttps = isHttpsHost(uri.host) || rawUrl.startsWith("exps")
-    return uri.buildUpon().scheme(if (useHttps) "https" else "http").build().toString()
+    return uri.buildUpon().scheme(
+      if (useHttps) {
+        "https"
+      } else {
+        "http"
+      }
+    ).build().toString()
+  }
+
+  /**
+   * The `exp(s)://` form of a project URL: `http` -> `exp`, `https` -> `exps`, default port dropped. Same
+   * normalization as `EXKernelLinkingManager` on iOS, so a `__expo_url` target shares its task with a scanned
+   * `exp://` URL. Opaque URLs are returned as-is.
+   */
+  @JvmStatic fun toExp(rawUrl: String): String {
+    val uri = try {
+      URI(rawUrl)
+    } catch (e: Exception) {
+      return rawUrl
+    }
+    val authority = uri.rawAuthority ?: return rawUrl
+    val secure = uri.scheme == "https" || uri.scheme == "exps"
+    val scheme = if (secure) {
+      "exps"
+    } else {
+      "exp"
+    }
+    val defaultPort = if (secure) {
+      ":443"
+    } else {
+      ":80"
+    }
+    return "$scheme://${authority.removeSuffix(defaultPort)}" + rawUrl.removePrefix("${uri.scheme}://$authority")
+  }
+
+  @JvmStatic fun isHomeUrl(rawUrl: String): Boolean {
+    val scheme = rawUrl.substringBefore(':', missingDelimiterValue = "").lowercase()
+    if (scheme != "exp" && scheme != "exps") {
+      return false
+    }
+    val host = rawUrl.substringAfter(':').removePrefix("//").takeWhile { it !in "/?#" }
+    return host.isEmpty()
   }
 
   @JvmStatic fun resolveManifestUrl(rawUrl: String, manifestUrl: String): String {

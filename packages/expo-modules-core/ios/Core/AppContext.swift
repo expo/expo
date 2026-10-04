@@ -120,17 +120,30 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
   }
 
-  /**
-   The application identifier that is used to distinguish between different `RCTHost`.
-   It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
-   It shouldn't be used on the old architecture.
-   */
+  /// The number of app contexts created so far in this process.
+  private static let appContextsCount = Mutex<Int>(0)
+
+  /// The position of this app context in creation order, starting at 0.
+  internal let appIndex: Int = AppContext.appContextsCount.withLock { count in
+    defer {
+      count += 1
+    }
+    return count
+  }
+
+  /// The application identifier that distinguishes app contexts that are alive at the same time,
+  /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
+  /// app context, so its view names have no suffix.
   @objc
   public var appIdentifier: String? {
-    guard let moduleRegistry = reactBridge?.moduleRegistry else {
+    return AppContext.appIdentifier(forIndex: appIndex)
+  }
+
+  internal static func appIdentifier(forIndex index: Int) -> String? {
+    if index == 0 {
       return nil
     }
-    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+    return String(index)
   }
 
   /**
