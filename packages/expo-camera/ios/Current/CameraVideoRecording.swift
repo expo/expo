@@ -31,6 +31,7 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
 
   func record(options: CameraRecordingOptions, videoFileOutput: AVCaptureMovieFileOutput, promise: Promise) async {
     guard !videoFileOutput.isRecording && videoRecordedPromise == nil else {
+      promise.reject(CameraAlreadyRecordingException())
       return
     }
 
