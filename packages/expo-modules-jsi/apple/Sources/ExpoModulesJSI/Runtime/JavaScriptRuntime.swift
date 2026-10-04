@@ -693,17 +693,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
-    // `@JavaScriptActor` runs this on the caller's thread. When that is not the JavaScript thread,
-    // evaluate there instead, so it cannot run concurrently with the work the scheduler runs.
-    // Without async scheduling there is no other thread to go to.
-    if supportsAsyncScheduling && !isOnJavaScriptThread() {
-      let result = try await execute {
-        return NonisolatedUnsafeVar(try await self.evalAsync(label: label, source))
-      }
-      return result.value
+    // `@JavaScriptActor` runs this on the caller's thread, so go through `execute` to evaluate on the
+    // JavaScript thread. It runs the closure in place when already there, or when the runtime has no
+    // scheduler and thus no other thread to go to.
+    nonisolated(unsafe) var value: JavaScriptValue?
+    try await execute {
+      let result = try self.eval(label: label, source)
+      value = result.is("Promise") ? try await result.getPromise().await() : result
     }
-    let result = try eval(label: label, source)
-    return result.is("Promise") ? try await result.getPromise().await() : result
+    return value!
   }
 
   // MARK: - Garbage collection
