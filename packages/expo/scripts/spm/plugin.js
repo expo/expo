@@ -80,7 +80,7 @@ const {
   resolveHeadersXCFramework,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
-const { DIRECT_MODULES, emitDirectPackage } = require('./direct');
+const { DIRECT_MODULES, emitDirectPackage, prepareDirectWatchPaths } = require('./direct');
 const {
   emitExpoModulesJSIHeadersPackage,
   emitPureSwiftSourcePackage,
@@ -870,12 +870,13 @@ module.exports = function expoSpmPlugin(context) {
     );
   }
 
+  const directWatchPaths = prepareDirectWatchPaths(summary.manifestPackages, outDir);
   return {
     packageDependencies: summary.packageDependencies,
     productDependencies: summary.productDependencies,
     generatedSources,
     flavoredFrameworks,
-    watchPaths: watchPaths(identities, appTarget),
+    watchPaths: [...watchPaths(identities, appTarget), ...directWatchPaths],
     scriptPhases,
   };
 };
