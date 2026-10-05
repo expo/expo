@@ -139,7 +139,6 @@ export interface StackToolbarProps {
  * }
  * ```
  *
- * @experimental
  * @platform android
  * @platform ios
  */
