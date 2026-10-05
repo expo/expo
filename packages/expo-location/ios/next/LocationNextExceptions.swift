@@ -2,9 +2,11 @@ import ExpoModulesCore
 
 final class PermissionsModuleUnavailable: Exception, @unchecked Sendable {
   override var reason: String {
-    "Cannot check location permissions because the permissions service of 'expo-modules-core' is " +
-    "missing from this app. The Expo module system registers it at startup, so this usually means " +
-    "the app was built without 'expo-modules-core'. Reinstall the dependencies and rebuild the app"
+    "Cannot check location permissions because the app context or its permissions service is no " +
+    "longer available. This happens when the module outlives its app context, for example while " +
+    "the app is reloading, or when the permissions service was not registered on that context. " +
+    "Reload the app and try again; if the error persists, report it at " +
+    "https://github.com/expo/expo/issues"
   }
 }
 
