@@ -10,7 +10,7 @@ export default function SizeScreen() {
     <Host style={{ flex: 1 }}>
       <ScrollView style={{ padding: 16 }}>
         <Column spacing={24} style={{ width: '100%' }}>
-          <Column spacing={8}>
+          <Column spacing={8} style={{ width: '100%' }}>
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Width</Text>
             <Text textStyle={{ fontSize: 12, color: '#666666' }}>
               Each bar is a percentage of this column.
@@ -34,7 +34,7 @@ export default function SizeScreen() {
             <Text textStyle={{ fontSize: 12, color: '#666666' }}>The last bar is 80pt wide.</Text>
           </Column>
 
-          <Column spacing={8}>
+          <Column spacing={8} style={{ width: '100%' }}>
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Row split</Text>
             <Row testID="universal-size-row" spacing={8} style={{ width: '100%', height: 64 }}>
               <Column
@@ -61,7 +61,7 @@ export default function SizeScreen() {
             </Text>
           </Column>
 
-          <Column spacing={8}>
+          <Column spacing={8} style={{ width: '100%' }}>
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Nested</Text>
             <Column
               spacing={8}
@@ -82,7 +82,7 @@ export default function SizeScreen() {
             </Column>
           </Column>
 
-          <Column spacing={8}>
+          <Column spacing={8} style={{ width: '100%' }}>
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Alignment</Text>
             {(['start', 'center', 'end'] as const).map((align) => (
               <Column
