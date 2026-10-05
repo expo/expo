@@ -1,9 +1,8 @@
 import { CodedError, registerWebModule } from 'expo-modules-core';
-import FontObserver from 'fontfaceobserver';
 
 import type { ExpoFontLoaderModule } from './ExpoFontLoader';
 import type { UnloadFontOptions } from './Font';
-import { FontDisplay, type FontResource } from './Font.types';
+import type { FontResource } from './Font.types';
 import {
   addServerFont,
   getLoadedServerFonts,
@@ -55,20 +54,79 @@ function normalizeFontFamilyName(fontFamily: string): string {
   return trimmed;
 }
 
+function canonicalCssWeight(
+  weight: number | string | null | undefined
+): number | string | undefined {
+  if (weight == null || weight === '') {
+    return undefined;
+  }
+  if (typeof weight === 'number') {
+    return Number.isFinite(weight) ? weight : undefined;
+  }
+  const lower = weight.trim().toLowerCase();
+  if (lower === 'normal') {
+    return 400;
+  }
+  if (lower === 'bold') {
+    return 700;
+  }
+  const numeric = Number(lower);
+  return Number.isFinite(numeric) ? numeric : lower;
+}
+
+// jsdom doesn't implement `CSSFontFaceRule`, so tests call this directly with plain `{ style }` objects.
+export function _matchesFontFaceOptions(
+  rule: Pick<CSSFontFaceRule, 'style'>,
+  fontFamilyName: string,
+  options?: UnloadFontOptions
+): boolean {
+  if (normalizeFontFamilyName(rule.style.fontFamily) !== fontFamilyName) {
+    return false;
+  }
+  if (options?.display && options.display !== (rule.style as any).fontDisplay) {
+    return false;
+  }
+  if (
+    options?.weight != null &&
+    canonicalCssWeight(options.weight) !== canonicalCssWeight(rule.style.fontWeight)
+  ) {
+    return false;
+  }
+  if (options?.style != null && options.style !== rule.style.fontStyle) {
+    return false;
+  }
+  return true;
+}
+
 function getFontFaceRulesMatchingResource(
   fontFamilyName: string,
   options?: UnloadFontOptions
 ): RuleItem[] {
-  const rules = getFontFaceRules();
-  return rules.filter(({ rule }) => {
-    return (
-      normalizeFontFamilyName(rule.style.fontFamily) === fontFamilyName &&
-      (options && options.display ? options.display === (rule.style as any).fontDisplay : true)
-    );
-  });
+  return getFontFaceRules().filter(({ rule }) =>
+    _matchesFontFaceOptions(rule, fontFamilyName, options)
+  );
 }
 
-const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
+export function _fontFaceRuleSrcMatches(
+  rule: Pick<CSSFontFaceRule, 'style'>,
+  uri: string | number | undefined
+): boolean {
+  const src = rule.style.getPropertyValue('src');
+  const match = src.match(/url\((['"]?)([^'")]*)\1\)/);
+  if (!match) {
+    // Every rule carries a `url(...)`; an unreadable `src` means the engine doesn't expose it.
+    return true;
+  }
+  let ruleUri = match[2] ?? '';
+  try {
+    ruleUri = decodeURIComponent(ruleUri);
+  } catch {
+    // decodeURIComponent throws on malformed percent-encoding; compare the raw value instead.
+  }
+  return ruleUri === String(uri);
+}
+
+const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>> = {
   async unloadAllAsync(): Promise<void> {
     if (typeof window === 'undefined') return;
 
@@ -82,7 +140,9 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
     const sheet = getFontFaceStyleSheet();
     if (!sheet) return;
     const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
-    for (const item of items.reverse()) {
+    // Descending: `deleteRule` shifts every later index down by one.
+    const descending = [...items].sort((a, b) => b.index - a.index);
+    for (const item of descending) {
       sheet.deleteRule(item.index);
     }
   },
@@ -112,8 +172,16 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
     if (typeof window === 'undefined') {
       return getLoadedServerFonts();
     }
-    const rules = getFontFaceRules();
-    return rules.map(({ rule }) => normalizeFontFamilyName(rule.style.fontFamily));
+    const seen = new Set<string>();
+    const families: string[] = [];
+    for (const { rule } of getFontFaceRules()) {
+      const name = normalizeFontFamilyName(rule.style.fontFamily);
+      if (!seen.has(name)) {
+        seen.add(name);
+        families.push(name);
+      }
+    }
+    return families;
   },
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
@@ -154,21 +222,59 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
     const style = getStyleElement();
     document.head!.appendChild(style);
 
-    const res = getFontFaceRulesMatchingResource(fontFamilyName, resource);
-    if (!res.length) {
+    const alreadyLoaded = getFontFaceRulesMatchingResource(fontFamilyName, resource).some(
+      ({ rule }) => _fontFaceRuleSrcMatches(rule, resource.uri)
+    );
+    if (!alreadyLoaded) {
       _createWebStyle(fontFamilyName, resource);
     }
 
-    if (!isFontLoadingListenerSupported()) {
+    if (typeof document.fonts?.load !== 'function') {
       return Promise.resolve();
     }
 
-    return new FontObserver(fontFamilyName, {
-      // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
-      display: resource.display,
-    }).load(resource.testString ?? null, 12000);
+    // Resolve when the browser has fetched the file, so text renders with it on resolution. The
+    // face is selected with the `font` shorthand syntax; skip a descriptor the CSS sanitization
+    // in `_createWebFontTemplate` drops, and a range weight, which the shorthand can't express.
+    let shorthand = '';
+    if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
+      shorthand += `${resource.style} `;
+    }
+    if (
+      (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) ||
+      (typeof resource.weight === 'string' &&
+        (CSS_IDENT_RE.test(resource.weight) ||
+          (CSS_WEIGHT_NUMERIC_RE.test(resource.weight) && !resource.weight.includes(' '))))
+    ) {
+      shorthand += `${resource.weight} `;
+    }
+    return withLoadTimeout(
+      document.fonts.load(`${shorthand}1em ${JSON.stringify(fontFamilyName)}`),
+      fontFamilyName
+    );
   },
 };
+
+const FONT_LOAD_TIMEOUT_MS = 12000;
+
+function withLoadTimeout(loading: Promise<unknown>, fontFamilyName: string): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timingOut = new Promise<never>((_resolve, reject) => {
+    timer = setTimeout(() => {
+      reject(
+        new CodedError(
+          'ERR_DOWNLOAD',
+          `Fetching the font family "${fontFamilyName}" timed out after ${FONT_LOAD_TIMEOUT_MS}ms. ` +
+            `Check that the font URL is reachable and served with CORS headers.`
+        )
+      );
+    }, FONT_LOAD_TIMEOUT_MS);
+  });
+
+  return Promise.race([loading, timingOut])
+    .finally(() => clearTimeout(timer))
+    .then(() => undefined);
+}
 
 const isServer = process.env.EXPO_OS === 'web' && typeof window === 'undefined';
 
@@ -198,15 +304,34 @@ function getStyleElement(): HTMLStyleElement {
 }
 
 const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
+// CSS font weights run from 1 to 1000, alone or as a variable-font range ('100 900').
+// No leading zero: '0400' is not a weight.
+const CSS_WEIGHT_NUMERIC_RE = /^(1000|[1-9]\d{0,2})( (1000|[1-9]\d{0,2}))?$/;
 
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  const display =
-    typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)
-      ? resource.display
-      : FontDisplay.AUTO;
-  return `@font-face{font-family:${JSON.stringify(fontFamily)};src:url(${JSON.stringify(
-    resource.uri
-  )});font-display:${display}}`;
+  const declarations = [
+    `font-family:${JSON.stringify(fontFamily)}`,
+    `src:url(${JSON.stringify(resource.uri)})`,
+  ];
+
+  if (typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)) {
+    declarations.push(`font-display:${resource.display}`);
+  }
+
+  if (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) {
+    declarations.push(`font-weight:${resource.weight}`);
+  } else if (
+    typeof resource.weight === 'string' &&
+    (CSS_IDENT_RE.test(resource.weight) || CSS_WEIGHT_NUMERIC_RE.test(resource.weight))
+  ) {
+    declarations.push(`font-weight:${resource.weight}`);
+  }
+
+  if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
+    declarations.push(`font-style:${resource.style}`);
+  }
+
+  return `@font-face{${declarations.join(';')}}`;
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {
@@ -225,16 +350,4 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
     styleElement.appendChild(textNode);
   }
   return styleElement;
-}
-
-function isFontLoadingListenerSupported(): boolean {
-  const { userAgent } = window.navigator;
-  // WebKit is broken https://github.com/bramstein/fontfaceobserver/issues/95
-  const isIOS = !!userAgent.match(/iPad|iPhone/i);
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  // Edge is broken https://github.com/bramstein/fontfaceobserver/issues/109#issuecomment-333356795
-  const isEdge = userAgent.includes('Edge');
-  // Internet Explorer
-  const isIE = userAgent.includes('Trident');
-  return !isSafari && !isIOS && !isEdge && !isIE;
 }

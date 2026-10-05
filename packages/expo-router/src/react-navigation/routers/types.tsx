@@ -133,6 +133,11 @@ export type DefaultRouterOptions<RouteName extends string = string> = {
   initialRouteName?: RouteName;
 };
 
+/**
+ * Two instantiations with different `State` types are not assignable to each other, because
+ * `Router` requires `type` conditionally on `State`. Annotate a factory that should accept any
+ * router as a function type instead, as `extendRouter` does.
+ */
 export type RouterFactory<
   State extends NavigationState,
   Action extends NavigationAction,
@@ -185,6 +190,17 @@ export type Router<
   getStateForRouteFocus(state: State, key: string): State;
 
   /**
+   * Adjusts browser history when navigation inside a child also changes its parent.
+   * For example, pushing Details inside an open drawer closes the drawer: return `replace`
+   * to reuse the drawer's browser entry for Details. Return `undefined` to keep the child's choice.
+   */
+  getBrowserHistoryForRouteFocus?(
+    previous: State,
+    next: State,
+    childAction?: RouterBrowserHistoryAction
+  ): RouterBrowserHistoryAction | undefined;
+
+  /**
    * Take the current state and action, and return a new state and the affected route key.
    * If the action cannot be handled, return `null`. Custom routers must explicitly handle
    * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
@@ -207,10 +223,43 @@ export type Router<
   shouldActionChangeFocus(action: NavigationAction): boolean;
 
   /**
+   * Restores router invariants, such as preload markers, on a returned state. `extendRouter`
+   * applies it to every state the router it creates returns; `useNavigationBuilder` does not
+   * call it. It must be idempotent and must not change the state's `type`.
+   *
+   * @param state State object to normalize.
+   */
+  normalizeState?(state: State): State;
+
+  /**
+   * Chooses how an accepted action changes browser history. For example, Stack PUSH returns
+   * `{ type: 'push' }`, so browser Back can return to the previous screen.
+   * `extendRouter` calls this after `normalizeState`. Its return value replaces any instruction
+   * from the base router; `undefined` updates the current browser entry without adding one.
+   */
+  getBrowserHistoryForAction?(
+    previous: State,
+    next: State,
+    action: Action
+  ): RouterBrowserHistoryAction | undefined;
+
+  /**
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;
 };
+
+/** A router's instruction for synchronizing an accepted action with browser history. */
+export type RouterBrowserHistoryAction =
+  | { type: 'push' }
+  | { type: 'replace' }
+  | {
+      type: 'pop';
+      /** Fallback count for destinations without a tracked browser entry (e.g. an initial anchor). */
+      count: number;
+      /** Find the destination among tracked entries, including entries made by nested navigators. */
+      target?: { navigatorKey: string; routeKey: string };
+    };
 
 /**
  * The result of reducing a navigation action.
@@ -224,4 +273,11 @@ export type RouterActionResult<State extends NavigationState> = {
    * The key of the route affected by the action.
    */
   affectedRouteKey: string | undefined;
+  /**
+   * How this action changes browser history: `push` adds an entry, `pop` goes back,
+   * and `replace` (or omission) updates the current entry.
+   * For example, pushing Details returns `{ type: 'push' }`; Back returns `{ type: 'pop', count: 1 }`.
+   * Applied only if navigation succeeds. Restoring a browser entry does not add another entry.
+   */
+  browserHistory?: RouterBrowserHistoryAction;
 };

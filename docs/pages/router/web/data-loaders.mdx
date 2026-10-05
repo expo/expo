@@ -1,7 +1,6 @@
 ---
 title: Data loaders
 description: Learn how to fetch data on the server using data loaders in Expo Router.
-isAlpha: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -10,39 +9,13 @@ import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Data loaders are in [alpha](/more/release-statuses/#alpha) and are available in SDK 55 and later. They require either [static rendering](/router/web/static-rendering) or [server rendering](/router/web/server-rendering).
+> **important** Data loaders are stable in SDK 58 and later. For SDK 55–57, enable `unstable_useServerDataLoaders` in the `expo-router` config plugin. They require either [static rendering](/router/web/static-rendering) or [server rendering](/router/web/server-rendering).
 
 Data loaders enable server-side data fetching for your routes. By exporting a `loader` function from a route file, you can fetch data on the server and access it in your component using the [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) hook. This lets you keep sensitive data and API keys on the server while providing your components with the data they need.
 
 ## Setup
 
 <Step label="1">
-
-Enable data loaders in your project's [app config](/versions/latest/config/app/) by adding the `unstable_useServerDataLoaders` option to the `expo-router` plugin:
-
-```json app.json
-{
-  "expo": {
-    /* @hide ... */
-    /* @end */
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "unstable_useServerDataLoaders": true,
-          /* @info Required for server rendering */
-          "unstable_useServerRendering": true
-          /* @end */
-        }
-      ]
-    ]
-  }
-}
-```
-
-</Step>
-
-<Step label="2">
 
 Configure your web output mode. Data loaders work with both [static rendering](/router/web/static-rendering) (`web.output: 'static'`) and [server rendering](/router/web/server-rendering) (`web.output: 'server'`):
 
@@ -64,7 +37,7 @@ Configure your web output mode. Data loaders work with both [static rendering](/
 
 </Step>
 
-<Step label="3">
+<Step label="2">
 
 Start the development server:
 

@@ -430,7 +430,11 @@ open class NotificationsService : BroadcastReceiver() {
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),
@@ -480,7 +484,11 @@ open class NotificationsService : BroadcastReceiver() {
       }
 
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
       return PendingIntent.getBroadcast(
         context,
         intent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode(),

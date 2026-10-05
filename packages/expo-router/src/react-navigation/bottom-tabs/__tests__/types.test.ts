@@ -1,6 +1,14 @@
 import type { ComponentProps } from 'react';
 
-import type { JSTabsProps, Tabs, TabsScreenOptions } from '../../../layouts/Tabs';
+import type { BottomTabEmitter, BottomTabViewRoute, BottomTabViewState } from '../';
+import type {
+  BottomTabEmitter as PublicBottomTabEmitter,
+  BottomTabViewRoute as PublicBottomTabViewRoute,
+  BottomTabViewState as PublicBottomTabViewState,
+  JSTabsProps,
+  Tabs,
+  TabsScreenOptions,
+} from '../../../layouts/Tabs';
 import type { DescriptorRouteProp, ParamListBase, RouteProp } from '../../native';
 import type { BottomTabNavigatorContentProps } from '../navigators/createBottomTabNavigator';
 import type { BottomTabOptionsArgs } from '../types';
@@ -8,9 +16,17 @@ import type { BottomTabOptionsArgs } from '../types';
 type Expect<T extends true> = T;
 type Equal<A, B> =
   (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : false;
-
 type TabsProps = ComponentProps<typeof Tabs>;
 
+export type _PublicBottomTabEmitterMatchesVendored = Expect<
+  Equal<PublicBottomTabEmitter, BottomTabEmitter>
+>;
+export type _PublicBottomTabViewRouteMatchesVendored = Expect<
+  Equal<PublicBottomTabViewRoute, BottomTabViewRoute>
+>;
+export type _PublicBottomTabViewStateMatchesVendored = Expect<
+  Equal<PublicBottomTabViewState, BottomTabViewState>
+>;
 export type _OptionsRouteIsDescriptorRoute = Expect<
   Equal<BottomTabOptionsArgs<ParamListBase>['route'], DescriptorRouteProp<ParamListBase>>
 >;

@@ -191,7 +191,11 @@ class VideoModule : Module() {
           ref.playbackParameters.speed
         }
         .set { ref: VideoPlayer, playbackRate: Float ->
-          val pitch = if (ref.preservesPitch) 1f else playbackRate
+          val pitch = if (ref.preservesPitch) {
+            1f
+          } else {
+            playbackRate
+          }
           ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
         }
 

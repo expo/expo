@@ -9,11 +9,11 @@ import { renderRouter } from '../../testing-library';
 import { Slot } from '../../views/Navigator';
 import { SplitView } from '../split-view';
 
-jest.mock('react-native-screens/experimental', () => {
+jest.mock('../../optional-libraries/react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actual = jest.requireActual(
-    'react-native-screens/experimental'
-  ) as typeof import('react-native-screens/experimental');
+    '../../optional-libraries/react-native-screens'
+  ) as typeof import('../../optional-libraries/react-native-screens');
 
   return {
     ...actual,
@@ -35,8 +35,8 @@ const SplitLayout = () => (
   </SplitView>
 );
 
-it('renders a SplitView nested under Slot', () => {
-  renderRouter(
+it('renders a SplitView nested under Slot', async () => {
+  await renderRouter(
     {
       _layout: () => <Slot />,
       'nested/_layout': SplitLayout,
@@ -49,8 +49,8 @@ it('renders a SplitView nested under Slot', () => {
   expect(screen.getByTestId('child')).toBeVisible();
 });
 
-it('renders a SplitView nested under the default navigator', () => {
-  renderRouter(
+it('renders a SplitView nested under the default navigator', async () => {
+  await renderRouter(
     {
       'nested/_layout': SplitLayout,
       'nested/index': () => <Text testID="child">Child</Text>,
@@ -62,53 +62,56 @@ it('renders a SplitView nested under the default navigator', () => {
   expect(screen.getByTestId('child')).toBeVisible();
 });
 
-it('rejects a SplitView nested under a native navigator', () => {
-  expect(() =>
-    renderRouter(
-      {
-        _layout: () => <Stack />,
-        'nested/_layout': SplitLayout,
-        'nested/index': () => <Text>Child</Text>,
-      },
-      { initialUrl: '/nested' }
-    )
-  ).toThrow('SplitView cannot be used inside another native navigator.');
+it('rejects a SplitView nested under a native navigator', async () => {
+  await expect(
+    async () =>
+      await renderRouter(
+        {
+          _layout: () => <Stack />,
+          'nested/_layout': SplitLayout,
+          'nested/index': () => <Text>Child</Text>,
+        },
+        { initialUrl: '/nested' }
+      )
+  ).rejects.toThrow('SplitView cannot be used inside another native navigator.');
 });
 
-it('rejects a SplitView nested under a custom native navigator', () => {
-  expect(() =>
-    renderRouter(
-      {
+it('rejects a SplitView nested under a custom native navigator', async () => {
+  await expect(
+    async () =>
+      await renderRouter(
+        {
+          _layout: () => (
+            <IsWithinNativeNavigator value>
+              <Slot />
+            </IsWithinNativeNavigator>
+          ),
+          'nested/_layout': SplitLayout,
+          'nested/index': () => <Text>Child</Text>,
+        },
+        { initialUrl: '/nested' }
+      )
+  ).rejects.toThrow('SplitView cannot be used inside another native navigator.');
+});
+
+it('rejects a SplitView nested inside a SplitView column', async () => {
+  await expect(
+    async () =>
+      await renderRouter({
         _layout: () => (
-          <IsWithinNativeNavigator value>
-            <Slot />
-          </IsWithinNativeNavigator>
+          <SplitView>
+            <SplitView.Column>
+              <SplitLayout />
+            </SplitView.Column>
+          </SplitView>
         ),
-        'nested/_layout': SplitLayout,
-        'nested/index': () => <Text>Child</Text>,
-      },
-      { initialUrl: '/nested' }
-    )
-  ).toThrow('SplitView cannot be used inside another native navigator.');
+        index: () => <Text>Index</Text>,
+      })
+  ).rejects.toThrow('SplitView cannot be used inside another native navigator.');
 });
 
-it('rejects a SplitView nested inside a SplitView column', () => {
-  expect(() =>
-    renderRouter({
-      _layout: () => (
-        <SplitView>
-          <SplitView.Column>
-            <SplitLayout />
-          </SplitView.Column>
-        </SplitView>
-      ),
-      index: () => <Text>Index</Text>,
-    })
-  ).toThrow('SplitView cannot be used inside another native navigator.');
-});
-
-it('renders a SplitView nested under a JavaScript navigator', () => {
-  renderRouter(
+it('renders a SplitView nested under a JavaScript navigator', async () => {
+  await renderRouter(
     {
       _layout: () => <JSStack />,
       'nested/_layout': SplitLayout,

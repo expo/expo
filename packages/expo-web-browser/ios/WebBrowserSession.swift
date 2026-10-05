@@ -30,7 +30,7 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
   }
 
   func open() {
-    var currentViewController = UIApplication.shared.keyWindow?.rootViewController
+    var currentViewController = SceneGeometry.keyWindow()?.rootViewController
     while currentViewController?.presentedViewController != nil {
       currentViewController = currentViewController?.presentedViewController
     }
@@ -40,16 +40,7 @@ internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAd
       return
     }
 
-    if UIDevice.current.userInterfaceIdiom == .pad {
-      let viewFrame = currentViewController.view.frame
-      viewController.popoverPresentationController?.sourceRect = CGRect(
-        x: viewFrame.midX,
-        y: viewFrame.maxY,
-        width: 0,
-        height: 0
-      )
-      viewController.popoverPresentationController?.sourceView = currentViewController.view
-    }
+    SceneGeometry.anchorPopover(of: viewController, to: currentViewController.view)
 
     currentViewController.present(viewController, animated: true) {
       self.didPresent()

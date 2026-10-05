@@ -15,7 +15,7 @@ import {
 import { StackToolbarLabel } from '../toolbar/toolbar-primitives';
 
 jest.mock('@expo/ui/jetpack-compose', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const { Text, View }: typeof import('react-native') = jest.requireActual('react-native');
 
   const DropdownMenu = jest.fn((props) => (
     <View testID="DropdownMenu" {...props} />
@@ -33,7 +33,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     LeadingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
     TrailingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
   };
-  DropdownMenuItem.Text = jest.fn((props) => <View testID="DropdownMenuItem.Text" {...props} />);
+  DropdownMenuItem.Text = jest.fn((props) => <Text testID="DropdownMenuItem.Text" {...props} />);
   DropdownMenuItem.LeadingIcon = jest.fn((props) => (
     <View testID="DropdownMenuItem.LeadingIcon" {...props} />
   ));
@@ -47,7 +47,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     HorizontalDivider: jest.fn(() => <View testID="HorizontalDivider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
-    Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
+    Text: jest.fn((props) => <Text testID="ComposeText" {...props} />),
   };
 });
 
@@ -107,10 +107,10 @@ describe('NativeToolbarMenu', () => {
         consoleSpy.mockRestore();
       });
 
-      it('returns null and warns when source is missing in development', () => {
+      it('returns null and warns when source is missing in development', async () => {
         process.env.NODE_ENV = 'development';
 
-        const { toJSON } = render(<NativeToolbarMenu />);
+        const { toJSON } = await render(<NativeToolbarMenu />);
 
         expect(toJSON()).toBeNull();
         expect(consoleSpy).toHaveBeenCalledWith(
@@ -118,10 +118,10 @@ describe('NativeToolbarMenu', () => {
         );
       });
 
-      it('returns null without warning in production', () => {
+      it('returns null without warning in production', async () => {
         process.env.NODE_ENV = 'production';
 
-        const { toJSON } = render(<NativeToolbarMenu />);
+        const { toJSON } = await render(<NativeToolbarMenu />);
 
         expect(toJSON()).toBeNull();
         expect(consoleSpy).not.toHaveBeenCalled();
@@ -129,15 +129,15 @@ describe('NativeToolbarMenu', () => {
     });
 
     describe('tint color logic', () => {
-      it('sets source tint to null when imageRenderingMode is original', () => {
-        render(<NativeToolbarMenu {...defaultProps} imageRenderingMode="original" />);
+      it('sets source tint to null when imageRenderingMode is original', async () => {
+        await render(<NativeToolbarMenu {...defaultProps} imageRenderingMode="original" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.tint).toBeNull();
       });
 
-      it('sets source tint to null when imageRenderingMode is original even with tintColor prop', () => {
-        render(
+      it('sets source tint to null when imageRenderingMode is original even with tintColor prop', async () => {
+        await render(
           <NativeToolbarMenu {...defaultProps} imageRenderingMode="original" tintColor="red" />
         );
 
@@ -145,8 +145,8 @@ describe('NativeToolbarMenu', () => {
         expect(icon.props.tint).toBeNull();
       });
 
-      it('uses provided tintColor when imageRenderingMode is template', () => {
-        render(
+      it('uses provided tintColor when imageRenderingMode is template', async () => {
+        await render(
           <NativeToolbarMenu {...defaultProps} imageRenderingMode="template" tintColor="red" />
         );
 
@@ -154,22 +154,22 @@ describe('NativeToolbarMenu', () => {
         expect(icon.props.tint).toBe('red');
       });
 
-      it('falls back to dynamic onSurface when imageRenderingMode is template and no tintColor', () => {
-        render(<NativeToolbarMenu {...defaultProps} imageRenderingMode="template" />);
+      it('falls back to dynamic onSurface when imageRenderingMode is template and no tintColor', async () => {
+        await render(<NativeToolbarMenu {...defaultProps} imageRenderingMode="template" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.tint).toBe('dynamic:onSurface');
       });
 
-      it('uses provided tintColor when imageRenderingMode is undefined', () => {
-        render(<NativeToolbarMenu {...defaultProps} tintColor="red" />);
+      it('uses provided tintColor when imageRenderingMode is undefined', async () => {
+        await render(<NativeToolbarMenu {...defaultProps} tintColor="red" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.tint).toBe('red');
       });
 
-      it('falls back to dynamic onSurface when both imageRenderingMode and tintColor are undefined', () => {
-        render(<NativeToolbarMenu {...defaultProps} />);
+      it('falls back to dynamic onSurface when both imageRenderingMode and tintColor are undefined', async () => {
+        await render(<NativeToolbarMenu {...defaultProps} />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.tint).toBe('dynamic:onSurface');
@@ -189,15 +189,15 @@ describe('NativeToolbarMenu', () => {
         );
       }
 
-      it('uses context tintColor for icon when no prop tintColor', () => {
-        renderWithColors(defaultProps, { tintColor: 'context-tint' });
+      it('uses context tintColor for icon when no prop tintColor', async () => {
+        await renderWithColors(defaultProps, { tintColor: 'context-tint' });
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.tint).toBe('context-tint');
       });
 
-      it('prop tintColor takes precedence over context', () => {
-        renderWithColors(
+      it('prop tintColor takes precedence over context', async () => {
+        await renderWithColors(
           { ...defaultProps, tintColor: 'prop-tint' },
           { tintColor: 'context-tint' }
         );
@@ -206,14 +206,14 @@ describe('NativeToolbarMenu', () => {
         expect(icon.props.tint).toBe('prop-tint');
       });
 
-      it('uses context backgroundColor for dropdown background', () => {
-        renderWithColors(defaultProps, { backgroundColor: 'context-bg' });
+      it('uses context backgroundColor for dropdown background', async () => {
+        await renderWithColors(defaultProps, { backgroundColor: 'context-bg' });
 
         expect(MockedBackground).toHaveBeenCalledWith('context-bg');
       });
 
-      it('falls back to default surfaceContainer when no context backgroundColor', () => {
-        renderWithColors(defaultProps, {});
+      it('falls back to default surfaceContainer when no context backgroundColor', async () => {
+        await renderWithColors(defaultProps, {});
 
         expect(MockedBackground).toHaveBeenCalledWith('dynamic:surfaceContainer');
       });
@@ -222,8 +222,8 @@ describe('NativeToolbarMenu', () => {
     describe('prop forwarding', () => {
       it.each([false, true, undefined])(
         'passes hidden %s as visible={!hidden} to AnimatedItemContainer',
-        (hidden) => {
-          render(<NativeToolbarMenu {...defaultProps} hidden={hidden} />);
+        async (hidden) => {
+          await render(<NativeToolbarMenu {...defaultProps} hidden={hidden} />);
 
           expect(screen.getByTestId('AnimatedItemContainer').props.visible).toBe(!hidden);
         }
@@ -231,38 +231,38 @@ describe('NativeToolbarMenu', () => {
 
       it.each([false, true, undefined])(
         'passes disabled %s as enabled={!disabled} to IconButton',
-        (disabled) => {
-          render(<NativeToolbarMenu {...defaultProps} disabled={disabled} />);
+        async (disabled) => {
+          await render(<NativeToolbarMenu {...defaultProps} disabled={disabled} />);
 
           expect(screen.getByTestId('IconButton').props.enabled).toBe(!disabled);
         }
       );
 
-      it('passes source and size=24 to Icon', () => {
+      it('passes source and size=24 to Icon', async () => {
         const source = { uri: 'my-icon' };
-        render(<NativeToolbarMenu {...defaultProps} source={source} />);
+        await render(<NativeToolbarMenu {...defaultProps} source={source} />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.source).toEqual(source);
         expect(icon.props.size).toBe(24);
       });
 
-      it('passes accessibilityLabel to root Icon as contentDescription', () => {
-        render(<NativeToolbarMenu {...defaultProps} accessibilityLabel="More options" />);
+      it('passes accessibilityLabel to root Icon as contentDescription', async () => {
+        await render(<NativeToolbarMenu {...defaultProps} accessibilityLabel="More options" />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.contentDescription).toBe('More options');
       });
 
-      it('omits contentDescription when accessibilityLabel is not provided', () => {
-        render(<NativeToolbarMenu {...defaultProps} />);
+      it('omits contentDescription when accessibilityLabel is not provided', async () => {
+        await render(<NativeToolbarMenu {...defaultProps} />);
 
         const icon = within(screen.getByTestId('IconButton')).getByTestId('Icon');
         expect(icon.props.contentDescription).toBeUndefined();
       });
 
-      it('renders DropdownMenu with IconButton trigger', () => {
-        render(<NativeToolbarMenu {...defaultProps} />);
+      it('renders DropdownMenu with IconButton trigger', async () => {
+        await render(<NativeToolbarMenu {...defaultProps} />);
 
         expect(screen.getByTestId('DropdownMenu')).toBeDefined();
         expect(
@@ -270,8 +270,8 @@ describe('NativeToolbarMenu', () => {
         ).toBeDefined();
       });
 
-      it('renders children inside DropdownMenu.Items', () => {
-        render(
+      it('renders children inside DropdownMenu.Items', async () => {
+        await render(
           <NativeToolbarMenu {...defaultProps}>
             <NativeToolbarMenuAction onPress={() => {}}>Action</NativeToolbarMenuAction>
           </NativeToolbarMenu>
@@ -295,8 +295,8 @@ describe('NativeToolbarMenu', () => {
       );
     }
 
-    it('renders nested DropdownMenu with DropdownMenuItem trigger', () => {
-      renderNested();
+    it('renders nested DropdownMenu with DropdownMenuItem trigger', async () => {
+      await renderNested();
 
       const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedMenu = within(rootItems).getByTestId('DropdownMenu');
@@ -306,8 +306,8 @@ describe('NativeToolbarMenu', () => {
       expect(within(nestedItems).getByTestId('DropdownMenuItem')).toBeDefined();
     });
 
-    it('shows leading icon when source provided', () => {
-      renderNested({ source: { uri: 'nested-icon' } });
+    it('shows leading icon when source provided', async () => {
+      await renderNested({ source: { uri: 'nested-icon' } });
 
       const leadingIcon = within(screen.getByTestId('DropdownMenuItem.LeadingIcon')).getByTestId(
         'Icon'
@@ -315,8 +315,8 @@ describe('NativeToolbarMenu', () => {
       expect(leadingIcon.props.source).toEqual({ uri: 'nested-icon' });
     });
 
-    it('uses null tint on leading icon when imageRenderingMode is original', () => {
-      renderNested({ source: { uri: 'nested-icon' }, imageRenderingMode: 'original' });
+    it('uses null tint on leading icon when imageRenderingMode is original', async () => {
+      await renderNested({ source: { uri: 'nested-icon' }, imageRenderingMode: 'original' });
 
       const leadingIcon = within(screen.getByTestId('DropdownMenuItem.LeadingIcon')).getByTestId(
         'Icon'
@@ -324,8 +324,8 @@ describe('NativeToolbarMenu', () => {
       expect(leadingIcon.props.tint).toBeNull();
     });
 
-    it('shows arrow-right trailing icon', () => {
-      renderNested();
+    it('shows arrow-right trailing icon', async () => {
+      await renderNested();
 
       const trailingIcon = within(screen.getByTestId('DropdownMenuItem.TrailingIcon')).getByTestId(
         'Icon'
@@ -333,8 +333,8 @@ describe('NativeToolbarMenu', () => {
       expect(trailingIcon.props.source).toBe('mocked-arrow-right');
     });
 
-    it('still tints the trailing arrow when imageRenderingMode is original', () => {
-      renderNested({ imageRenderingMode: 'original' });
+    it('still tints the trailing arrow when imageRenderingMode is original', async () => {
+      await renderNested({ imageRenderingMode: 'original' });
 
       const trailingIcon = within(screen.getByTestId('DropdownMenuItem.TrailingIcon')).getByTestId(
         'Icon'
@@ -342,8 +342,8 @@ describe('NativeToolbarMenu', () => {
       expect(trailingIcon.props.tint).toBe('dynamic:onSurface');
     });
 
-    it('forwards disabled prop', () => {
-      renderNested({ disabled: true });
+    it('forwards disabled prop', async () => {
+      await renderNested({ disabled: true });
 
       const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedTrigger = within(rootItems).getByTestId('DropdownMenu.Trigger');
@@ -363,16 +363,16 @@ describe('NativeToolbarMenu', () => {
       );
     }
 
-    it('renders HorizontalDivider and action inside root items', () => {
-      renderInline();
+    it('renders HorizontalDivider and action inside root items', async () => {
+      await renderInline();
 
       const rootItems = screen.getByTestId('DropdownMenu.Items');
       expect(within(rootItems).getByTestId('HorizontalDivider')).toBeDefined();
       expect(within(rootItems).getByTestId('DropdownMenuItem')).toBeDefined();
     });
 
-    it('does NOT render a separate DropdownMenu for inline section', () => {
-      renderInline();
+    it('does NOT render a separate DropdownMenu for inline section', async () => {
+      await renderInline();
 
       // Only 1 DropdownMenu for the root, not for the inline section
       expect(screen.getAllByTestId('DropdownMenu')).toHaveLength(1);
@@ -386,8 +386,8 @@ describe('NativeToolbarMenuAction', () => {
     children: 'Test Action',
   };
 
-  it('renders DropdownMenuItem with text label', () => {
-    render(
+  it('renders DropdownMenuItem with text label', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction {...defaultProps} />
       </NativeToolbarMenu>
@@ -398,8 +398,8 @@ describe('NativeToolbarMenuAction', () => {
     expect(within(menuItems).getByTestId('DropdownMenuItem.Text')).toBeDefined();
   });
 
-  it('extracts label from string children', () => {
-    render(
+  it('extracts label from string children', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction onPress={() => {}}>String Label</NativeToolbarMenuAction>
       </NativeToolbarMenu>
@@ -410,8 +410,8 @@ describe('NativeToolbarMenuAction', () => {
     expect(text.props.children).toBe('String Label');
   });
 
-  it('extracts label from Label child', () => {
-    render(
+  it('extracts label from Label child', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction onPress={() => {}}>
           <StackToolbarLabel>Label Child</StackToolbarLabel>
@@ -424,8 +424,8 @@ describe('NativeToolbarMenuAction', () => {
     expect(text.props.children).toBe('Label Child');
   });
 
-  it('falls back to empty string when no string or Label children', () => {
-    render(
+  it('falls back to empty string when no string or Label children', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction onPress={() => {}}>
           {/* Only non-Label elements */}
@@ -438,15 +438,15 @@ describe('NativeToolbarMenuAction', () => {
     expect(text.props.children).toBe('');
   });
 
-  it('calls onPress and closeMenu on click', () => {
+  it('calls onPress and closeMenu on click', async () => {
     const onPress = jest.fn();
-    render(
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction onPress={onPress}>Action</NativeToolbarMenuAction>
       </NativeToolbarMenu>
     );
 
-    act(() => {
+    await act(() => {
       screen.getByTestId('IconButton').props.onClick();
     });
     expect(screen.getByTestId('DropdownMenu').props.expanded).toBe(true);
@@ -454,16 +454,16 @@ describe('NativeToolbarMenuAction', () => {
     const actionItem = within(screen.getByTestId('DropdownMenu.Items')).getByTestId(
       'DropdownMenuItem'
     );
-    act(() => {
+    await act(() => {
       actionItem.props.onClick();
     });
     expect(onPress).toHaveBeenCalled();
     expect(screen.getByTestId('DropdownMenu').props.expanded).toBe(false);
   });
 
-  it('does NOT call closeMenu when unstable_keepPresented is true', () => {
+  it('does NOT call closeMenu when unstable_keepPresented is true', async () => {
     const onPress = jest.fn();
-    render(
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction onPress={onPress} unstable_keepPresented>
           Action
@@ -471,7 +471,7 @@ describe('NativeToolbarMenuAction', () => {
       </NativeToolbarMenu>
     );
 
-    act(() => {
+    await act(() => {
       screen.getByTestId('IconButton').props.onClick();
     });
     expect(screen.getByTestId('DropdownMenu').props.expanded).toBe(true);
@@ -479,28 +479,31 @@ describe('NativeToolbarMenuAction', () => {
     const actionItem = within(screen.getByTestId('DropdownMenu.Items')).getByTestId(
       'DropdownMenuItem'
     );
-    act(() => {
+    await act(() => {
       actionItem.props.onClick();
     });
     expect(onPress).toHaveBeenCalled();
     expect(screen.getByTestId('DropdownMenu').props.expanded).toBe(true);
   });
 
-  it.each([false, true, undefined])('passes disabled=%s as enabled={!disabled}', (disabled) => {
-    render(
-      <NativeToolbarMenu source={{ uri: 'icon' }}>
-        <NativeToolbarMenuAction {...defaultProps} disabled={disabled} />
-      </NativeToolbarMenu>
-    );
+  it.each([false, true, undefined])(
+    'passes disabled=%s as enabled={!disabled}',
+    async (disabled) => {
+      await render(
+        <NativeToolbarMenu source={{ uri: 'icon' }}>
+          <NativeToolbarMenuAction {...defaultProps} disabled={disabled} />
+        </NativeToolbarMenu>
+      );
 
-    const actionItem = within(screen.getByTestId('DropdownMenu.Items')).getByTestId(
-      'DropdownMenuItem'
-    );
-    expect(actionItem.props.enabled).toBe(!disabled);
-  });
+      const actionItem = within(screen.getByTestId('DropdownMenu.Items')).getByTestId(
+        'DropdownMenuItem'
+      );
+      expect(actionItem.props.enabled).toBe(!disabled);
+    }
+  );
 
-  it('returns null when hidden is true', () => {
-    render(
+  it('returns null when hidden is true', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction {...defaultProps} hidden />
       </NativeToolbarMenu>
@@ -524,8 +527,8 @@ describe('NativeToolbarMenuAction', () => {
       );
     }
 
-    it('uses context tintColor for non-destructive action text', () => {
-      renderActionWithColors(
+    it('uses context tintColor for non-destructive action text', async () => {
+      await renderActionWithColors(
         { onPress: jest.fn(), children: 'Action' },
         { tintColor: 'context-tint' }
       );
@@ -535,8 +538,8 @@ describe('NativeToolbarMenuAction', () => {
       expect(text.props.color).toBe('context-tint');
     });
 
-    it('destructive action ignores context tintColor', () => {
-      renderActionWithColors(
+    it('destructive action ignores context tintColor', async () => {
+      await renderActionWithColors(
         { onPress: jest.fn(), children: 'Action', destructive: true },
         { tintColor: 'context-tint' }
       );
@@ -547,8 +550,8 @@ describe('NativeToolbarMenuAction', () => {
     });
   });
 
-  it('shows destructive text color', () => {
-    render(
+  it('shows destructive text color', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction {...defaultProps} destructive />
       </NativeToolbarMenu>
@@ -559,8 +562,8 @@ describe('NativeToolbarMenuAction', () => {
     expect(text.props.color).toBe('material:error');
   });
 
-  it('uses default tint color when not destructive', () => {
-    render(
+  it('uses default tint color when not destructive', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction {...defaultProps} />
       </NativeToolbarMenu>
@@ -571,8 +574,8 @@ describe('NativeToolbarMenuAction', () => {
     expect(text.props.color).toBe('dynamic:onSurface');
   });
 
-  it('shows checkmark trailing icon when isOn is true', () => {
-    render(
+  it('shows checkmark trailing icon when isOn is true', async () => {
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction {...defaultProps} isOn />
       </NativeToolbarMenu>
@@ -584,9 +587,9 @@ describe('NativeToolbarMenuAction', () => {
     expect(icon.props.source).toBe('mocked-checkmark');
   });
 
-  it('shows leading icon when source provided', () => {
+  it('shows leading icon when source provided', async () => {
     const actionSource = { uri: 'action-icon' };
-    render(
+    await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
         <NativeToolbarMenuAction {...defaultProps} source={actionSource} />
       </NativeToolbarMenu>
@@ -600,9 +603,9 @@ describe('NativeToolbarMenuAction', () => {
 });
 
 describe('StackToolbarMenu', () => {
-  it('renders AnimatedItemContainer even when hidden={true} so animation fires on toggle', () => {
+  it('renders AnimatedItemContainer even when hidden={true} so animation fires on toggle', async () => {
     const icon = { uri: 'test-icon' };
-    render(
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu icon={icon} hidden>
           <NativeToolbarMenuAction onPress={() => {}}>Action</NativeToolbarMenuAction>
@@ -616,9 +619,9 @@ describe('StackToolbarMenu', () => {
     expect(screen.getByTestId('AnimatedItemContainer').props.visible).toBe(false);
   });
 
-  it('renders with visible={true} when hidden={false}', () => {
+  it('renders with visible={true} when hidden={false}', async () => {
     const icon = { uri: 'test-icon' };
-    render(
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu icon={icon} hidden={false}>
           <NativeToolbarMenuAction onPress={() => {}}>Action</NativeToolbarMenuAction>
@@ -630,7 +633,7 @@ describe('StackToolbarMenu', () => {
     expect(screen.getByTestId('AnimatedItemContainer').props.visible).toBe(true);
   });
 
-  it('keeps AnimatedItemContainer mounted when toggling hidden from true to false', () => {
+  it('keeps AnimatedItemContainer mounted when toggling hidden from true to false', async () => {
     const icon = { uri: 'test-icon' };
     const tree = (hidden: boolean) => (
       <ToolbarPlacementContext.Provider value="bottom">
@@ -640,10 +643,10 @@ describe('StackToolbarMenu', () => {
       </ToolbarPlacementContext.Provider>
     );
 
-    const { rerender } = render(tree(true));
+    const { rerender } = await render(tree(true));
     expect(screen.getByTestId('AnimatedItemContainer').props.visible).toBe(false);
 
-    rerender(tree(false));
+    await rerender(tree(false));
     expect(screen.getByTestId('AnimatedItemContainer').props.visible).toBe(true);
   });
 });

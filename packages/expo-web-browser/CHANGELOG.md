@@ -1,14 +1,34 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-22
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Anchored the browser popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50437](https://github.com/expo/expo/pull/50437) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.1 — 2026-09-21
+
+### 🐛 Bug fixes
+
+- [iOS] Resolve the presenting window from the foregrounded scene instead of the deprecated `UIApplication.keyWindow`, so `openBrowserAsync` and `openAuthSessionAsync` keep working in apps that use the UIScene life cycle. ([#50368](https://github.com/expo/expo/pull/50368) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 58.0.0 — 2026-09-10
 

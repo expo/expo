@@ -10,17 +10,21 @@ import { usePathname } from '../usePathname';
 import { renderHook, renderHookOnce } from './renderHook';
 
 describe(useGlobalSearchParams, () => {
-  it(`return params of deeply nested routes`, () => {
-    const { result } = renderHook(() => useGlobalSearchParams(), ['[fruit]/[shape]/[...veg?]'], {
-      initialUrl: '/apple/square',
-    });
+  it(`return params of deeply nested routes`, async () => {
+    const { result } = await renderHook(
+      () => useGlobalSearchParams(),
+      ['[fruit]/[shape]/[...veg?]'],
+      {
+        initialUrl: '/apple/square',
+      }
+    );
 
     expect(result.current).toEqual({
       fruit: 'apple',
       shape: 'square',
     });
 
-    act(() => router.push('/banana/circle/carrot/beetroot'));
+    await act(() => router.push('/banana/circle/carrot/beetroot'));
 
     expect(result.current).toEqual({
       fruit: 'banana',
@@ -29,21 +33,21 @@ describe(useGlobalSearchParams, () => {
     });
   });
 
-  it(`defaults abstract types`, () => {
-    const params = renderHookOnce(() => useGlobalSearchParams());
+  it(`defaults abstract types`, async () => {
+    const params = await renderHookOnce(() => useGlobalSearchParams());
     expectTypeOf(params).toExtend<Record<string, string | string[] | undefined>>();
     expectTypeOf(params.a).toEqualTypeOf<string | string[] | undefined>();
   });
-  it(`allows abstract types`, () => {
-    const params = renderHookOnce(() => useGlobalSearchParams<{ a: string }>());
+  it(`allows abstract types`, async () => {
+    const params = await renderHookOnce(() => useGlobalSearchParams<{ a: string }>());
     expectTypeOf(params).toExtend<{ a?: string }>();
     expectTypeOf(params.a).toExtend<string | undefined>();
   });
 
-  it(`only renders once per navigation`, () => {
+  it(`only renders once per navigation`, async () => {
     const allHookValues: unknown[] = [];
 
-    renderRouter(
+    await renderRouter(
       {
         '[fruit]/[shape]/[...veg?]': function Test() {
           allHookValues.push({
@@ -59,7 +63,7 @@ describe(useGlobalSearchParams, () => {
       }
     );
 
-    act(() => router.push('/banana/circle/carrot/beetroot'));
+    await act(() => router.push('/banana/circle/carrot/beetroot'));
 
     expect(allHookValues).toEqual([
       // The initial render
@@ -91,7 +95,7 @@ describe(useGlobalSearchParams, () => {
     ]);
   });
 
-  it(`causes stacks in a screen to rerender on change `, () => {
+  it(`causes stacks in a screen to rerender on change `, async () => {
     const allHookValues: unknown[] = [];
 
     // When using a navigation that keeps the screens in memory (e.g. Stack)
@@ -101,7 +105,7 @@ describe(useGlobalSearchParams, () => {
     // This is different to the "only renders once per navigation" which only renders
     // the current screen
 
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => <Stack />,
         '[fruit]/[shape]/[...veg?]': function Test() {
@@ -118,7 +122,7 @@ describe(useGlobalSearchParams, () => {
       }
     );
 
-    act(() => router.push('/banana/circle/carrot'));
+    await act(() => router.push('/banana/circle/carrot'));
 
     expect(allHookValues).toEqual([
       // The initial render
@@ -163,11 +167,11 @@ describe(useGlobalSearchParams, () => {
     ]);
   });
 
-  it('preserves the params ', () => {
+  it('preserves the params ', async () => {
     const results1: [] = [];
     const results2: [] = [];
 
-    renderRouter(
+    await renderRouter(
       {
         index: () => null,
         '[id]/_layout': () => <Slot />,
@@ -187,17 +191,17 @@ describe(useGlobalSearchParams, () => {
     );
 
     expect(results1).toEqual([{ id: '1' }]);
-    act(() => router.push('/2'));
+    await act(() => router.push('/2'));
     expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
 
-    act(() => router.push('/3/apple'));
+    await act(() => router.push('/3/apple'));
     // The first screen has not rerendered
     expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
     expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 
-  it(`handles encoded params`, () => {
-    const { result } = renderHook(() => useGlobalSearchParams(), ['index'], {
+  it(`handles encoded params`, async () => {
+    const { result } = await renderHook(() => useGlobalSearchParams(), ['index'], {
       initialUrl: '/?test=%2Fhello%2Fworld%2F',
     });
 
@@ -205,13 +209,13 @@ describe(useGlobalSearchParams, () => {
       test: '/hello/world/',
     });
 
-    act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
+    await act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
 
     expect(result.current).toEqual({
       test: '/hello/world/again',
     });
 
-    act(() =>
+    await act(() =>
       router.push({
         pathname: '/',
         params: {

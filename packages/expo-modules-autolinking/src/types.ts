@@ -31,10 +31,9 @@ export interface ModuleAndroidProjectInfo {
   name: string;
   sourceDir: string;
   modules: ModuleAndroidModuleInfo[];
-  modulesV2: string[];
   services: string[];
   packages: string[];
-  publication?: AndroidPublication;
+  publication?: WithRequired<AndroidPublication, 'version'>;
   aarProjects?: AndroidGradleAarProjectDescriptor[];
   shouldUsePublicationScriptPath?: string;
 }
@@ -165,15 +164,15 @@ export interface AndroidPublication {
   /**
    * The Maven artifact ID.
    */
-  id: string;
+  artifactId: string;
   /**
    * The Maven group ID.
    */
-  group: string;
+  groupId: string;
   /**
-   * The Maven version.
+   * The Maven version. Defaults to the package version when omitted from module config.
    */
-  version: string;
+  version?: string;
   /**
    * The Maven repository.
    */
@@ -261,11 +260,6 @@ export type RawAndroidProjectConfig = {
    * List of modules provided by the package.
    */
   modules?: (string | RawAndroidModuleConfig)[];
-
-  /**
-   * Fully qualified names of Expo Modules API v2 modules.
-   */
-  modulesV2?: string[];
 
   /**
    * Full qualified names of Android services (`expo.modules.kotlin.services.Service`) provided by the package.

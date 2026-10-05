@@ -16,6 +16,8 @@ import type {
 import { DrawerView } from '../views/DrawerView';
 
 export interface DrawerNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   drawerState: DrawerNavigationState<ParamListBase>;
   navigation: DrawerNavigationHelpers;
   preload: (name: string) => void;
@@ -43,12 +45,14 @@ function DrawerNavigatorContent({
   descriptors,
   drawerState,
   navigation,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   preload,
   defaultStatus = 'closed',
   drawerContent,
   detachInactiveScreens,
 }: ContentArgs) {
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
     routeNames: drawerState.routeNames,
     focusedRouteKey: drawerState.routes[drawerState.index]?.key,
@@ -64,6 +68,10 @@ function DrawerNavigatorContent({
     preload,
     lazyByDefault: true,
   });
+
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;

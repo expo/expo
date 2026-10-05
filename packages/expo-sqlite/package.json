@@ -1,6 +1,6 @@
 {
   "name": "expo-sqlite",
-  "version": "58.0.0",
+  "version": "58.0.9",
   "description": "Provides access to a database using SQLite (https://www.sqlite.org/). The database is persisted across restarts of your app.",
   "keywords": [
     "async-storage",
@@ -47,6 +47,7 @@
     "./plugin": "./plugin/build/index.js"
   },
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -55,6 +56,7 @@
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest",
+    "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly && pnpm run build:webui",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
@@ -64,10 +66,10 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.8.0",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/jest": "^29.2.1",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react-error-boundary": "^4.0.11",

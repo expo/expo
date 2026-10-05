@@ -61,13 +61,7 @@ export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] 
   linking?: Partial<ExpoLinkingOptions>;
 };
 
-// TODO: Remove `renderAsync` when we migrate to RNTL v14.
-export type RenderRouterAsyncOptions = Parameters<typeof rnTestingLibrary.renderAsync>[1] & {
-  initialUrl?: any;
-  linking?: Partial<ExpoLinkingOptions>;
-};
-
-type Result = ReturnType<typeof rnTestingLibrary.render> & {
+export type RenderRouterResult = RenderResult & {
   getPathname(): string;
   getPathnameWithParams(): string;
   getSegments(): string[];
@@ -75,10 +69,10 @@ type Result = ReturnType<typeof rnTestingLibrary.render> & {
   getRouterState(): ReactNavigationState | undefined;
 };
 
-export function renderRouter(
+export async function renderRouter(
   context: MockContextConfig = './app',
   { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
-): Result {
+): Promise<RenderRouterResult> {
   // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
   const systemTime = Date.now();
   jest.useFakeTimers();
@@ -93,16 +87,11 @@ export function renderRouter(
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
 
-  const result = rnTestingLibrary.render(
+  const result = await rnTestingLibrary.render(
     <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
     options
   );
 
-  /**
-   * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
-   * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
-   * (that the app will briefly be in the right state, but then update to an invalid state)
-   */
   return Object.assign(result, {
     getPathname(this: RenderResult): string {
       return getRouteInfoFromState(navigationRef.getRootState()).pathname;
@@ -122,47 +111,26 @@ export function renderRouter(
   });
 }
 
-export async function renderRouterAsync(
-  context: MockContextConfig = './app',
-  { initialUrl = '/', linking, ...options }: RenderRouterAsyncOptions = {}
-): Promise<Awaited<ReturnType<typeof rnTestingLibrary.renderAsync>>> {
-  const systemTime = Date.now();
-  jest.useFakeTimers();
-  try {
-    jest.setSystemTime(systemTime);
-  } catch {
-    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
-  }
-
-  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
-
-  // TODO: Remove `renderAsync` when we migrate to RNTL v14.
-  return rnTestingLibrary.renderAsync(
-    <ExpoRoot context={getMockContext(context)} location={initialUrl} linking={linking} />,
-    options
-  );
-}
-
 export const testRouter = {
   /** Navigate to the provided pathname and assert the pathname */
-  navigate(path: string) {
-    rnTestingLibrary.act(() => router.navigate(path));
+  async navigate(path: string) {
+    await rnTestingLibrary.act(() => router.navigate(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
   /** Push the provided pathname and assert the pathname */
-  push(path: string) {
-    rnTestingLibrary.act(() => router.push(path));
+  async push(path: string) {
+    await rnTestingLibrary.act(() => router.push(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
   /** Replace with provided pathname and assert the pathname */
-  replace(path: string) {
-    rnTestingLibrary.act(() => router.replace(path));
+  async replace(path: string) {
+    await rnTestingLibrary.act(() => router.replace(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
   /** Go back in history and assert the new pathname */
-  back(path?: string) {
+  async back(path?: string) {
     expect(router.canGoBack()).toBe(true);
-    rnTestingLibrary.act(() => router.back());
+    await rnTestingLibrary.act(() => router.back());
     if (path) {
       expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
     }
@@ -172,14 +140,14 @@ export const testRouter = {
     return router.canGoBack();
   },
   /** Update the current route query params and assert the new pathname */
-  setParams(params: Record<string, string>, path?: string) {
-    rnTestingLibrary.act(() => router.setParams(params));
+  async setParams(params: Record<string, string>, path?: string) {
+    await rnTestingLibrary.act(() => router.setParams(params));
     if (path) {
       expect(screen).toHavePathnameWithParams(path);
     }
   },
-  /** If there's history that supports invoking the `back` function. */
-  dismissAll() {
-    rnTestingLibrary.act(() => router.dismissAll());
+  /** Dismiss every screen in the current stack. */
+  async dismissAll() {
+    await rnTestingLibrary.act(() => router.dismissAll());
   },
 };

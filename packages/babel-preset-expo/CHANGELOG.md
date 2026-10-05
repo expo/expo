@@ -1,12 +1,47 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Internal] Bump `babel-plugin-react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.8
+
+No changes in this release.
+
+## 58.0.7
+
+No changes in this release.
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.5 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
 
 ### 🐛 Bug fixes
+
+- Record inlined `EXPO_PUBLIC_*` env vars in `cacheVary` metadata so the value is invalidating when it changes ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+- Inline `EXPO_PUBLIC_USE_RN_FETCH` as `undefined` inside `node_modules` when the flag is unset to allow cache invaliation as intended ([#47750](https://github.com/expo/expo/pull/47750) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-15
+
+### 💡 Others
+
+- Bump to `@expo/metro@58.0.0-rc.0` and `metro@0.87.1` ([#50135](https://github.com/expo/expo/pull/50135) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.1 — 2026-09-14
 
 ### 💡 Others
 

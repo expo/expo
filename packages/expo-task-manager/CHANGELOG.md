@@ -1,14 +1,59 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Fix `TaskService` losing its `Context` (it held a `WeakReference` to the creating `ReactContext`), after which registering or unregistering a task threw a `NullPointerException` from `SharedPreferences.getAll()`. ([#49498](https://github.com/expo/expo/pull/49498) by [@retu2libc](https://github.com/retu2libc))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - unimodules-app-loader@58.0.2
+
+## 58.0.10
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - unimodules-app-loader@58.0.1
+
+## 58.0.9 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-23
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Fix a data race on `EXTaskService`'s collections that could crash the app when one app context registered its task manager while another tore down, such as on a dev-client reload or `Updates.reloadAsync()`. ([#49558](https://github.com/expo/expo/pull/49558) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.6 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

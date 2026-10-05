@@ -1,14 +1,34 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Fixed `prepareToRecordAsync` rejecting when `allowsBackgroundRecording` is `true` and the notification permission is not granted ([#50705](https://github.com/expo/expo/issues/50705)). ([#50968](https://github.com/expo/expo/pull/50968) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fixed an uncaught promise rejection, and `playing` staying `true`, when the browser blocks playback before the user interacts with the page. The player now reports the rejection in `error` on its status ([#36264](https://github.com/expo/expo/issues/36264)). ([#50972](https://github.com/expo/expo/pull/50972) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `prepareToRecordAsync()` hanging forever when background recording is enabled and the recording service never connects. The binding timeout is now started, and the promise also rejects when the React context is lost. ([#50883](https://github.com/expo/expo/pull/50883) by [@Cedric921](https://github.com/Cedric921))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-22
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read. ([#50327](https://github.com/expo/expo/pull/50327) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

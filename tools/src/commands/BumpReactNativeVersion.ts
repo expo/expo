@@ -8,7 +8,9 @@ import ora from 'ora';
 import path from 'path';
 
 import { EXPO_DIR } from '../Constants';
+import Git from '../Git';
 import logger from '../Logger';
+import { spawnErrorOutput } from '../Utils';
 
 const APPS_DIR = path.join(EXPO_DIR, 'apps');
 const PACKAGES_DIR = path.join(EXPO_DIR, 'packages');
@@ -24,13 +26,14 @@ export default (program: Command) => {
     .command('bump-react-native-version')
     .alias('bump-rn')
     .option('-v, --version <version>', 'The react-native version to bump to')
+    .option('--no-pods', 'Skip installing pods in the apps that commit a Podfile.lock')
     .description(
       'Bumps the react-native and @react-native/* package versions across all packages, apps, and templates in the repo'
     )
     .asyncAction(main);
 };
 
-async function main(options: { version?: string }) {
+async function main(options: { version?: string; pods: boolean }) {
   const newVersion = options.version;
   if (!newVersion) {
     throw new Error('Please provide a version using --version <version>');
@@ -59,6 +62,20 @@ async function main(options: { version?: string }) {
   logger.info('Running pnpm install...\n');
   await spawnAsync('pnpm', ['install'], { cwd: EXPO_DIR, stdio: 'inherit' });
 
+  if (options.pods && (await shouldInstallPodsAsync())) {
+    await installPodsInApps();
+  }
+
+  logger.success('Done!');
+}
+
+/**
+ * Asks whether to install pods. Without a TTY (agents, CI) the prompt's default applies.
+ */
+async function shouldInstallPodsAsync(): Promise<boolean> {
+  if (!process.stdin.isTTY) {
+    return true;
+  }
   const { shouldInstallPods } = await inquirer.prompt<{ shouldInstallPods: boolean }>([
     {
       type: 'confirm',
@@ -67,12 +84,7 @@ async function main(options: { version?: string }) {
       default: true,
     },
   ]);
-
-  if (shouldInstallPods) {
-    await installPodsInApps();
-  }
-
-  logger.success('Done!');
+  return shouldInstallPods;
 }
 
 /**
@@ -195,10 +207,11 @@ async function updateBundledNativeModules(newVersion: string): Promise<void> {
 /**
  * Runs `pod install` in the given directory. If it fails with a message suggesting
  * `pod update <dep>`, it automatically runs `pod update <deps> --no-repo-update`,
- * accumulating dependencies across retries.
+ * accumulating dependencies across retries. `initialDepsToUpdate` starts with that
+ * `pod update` right away (a full install with only those pods unlocked).
  */
-async function podInstallAsync(cwd: string): Promise<void> {
-  const depsToUpdate = new Set<string>();
+async function podInstallAsync(cwd: string, initialDepsToUpdate: string[] = []): Promise<void> {
+  const depsToUpdate = new Set<string>(initialDepsToUpdate);
 
   while (true) {
     try {
@@ -227,33 +240,58 @@ async function podInstallAsync(cwd: string): Promise<void> {
 }
 
 /**
- * Finds all apps with an ios directory containing a Podfile and runs `pod install` in them.
+ * Maps tracked `ios/Podfile.lock` paths (relative to the repo root) to their unique app directories.
+ * Expo Go goes last: it builds React Native from `react-native-lab` and is the slowest.
+ */
+export function getPodInstallAppDirs(trackedPodfileLocks: string[]): string[] {
+  const appDirs = [...new Set(trackedPodfileLocks.map((lock) => path.dirname(path.dirname(lock))))];
+  return [...appDirs.filter((dir) => !isExpoGo(dir)), ...appDirs.filter(isExpoGo)];
+}
+
+function isExpoGo(appDir: string): boolean {
+  return path.basename(appDir) === 'expo-go';
+}
+
+/**
+ * Runs `pod install` sequentially in every app whose `ios/Podfile.lock` is tracked by git.
+ * Only those locks belong in the upgrade PR, and `git ls-files` skips the `apps/eas-expo-go/ios`
+ * symlink to `apps/expo-go/ios` and the apps that gitignore their lock. One install at a time
+ * avoids concurrent CocoaPods writes to the same Pods directory.
  */
 async function installPodsInApps(): Promise<void> {
-  const podfiles = await glob('**/ios/Podfile', {
-    cwd: APPS_DIR,
-    ignore: ['**/node_modules/**'],
-  });
-
-  const appDirs = [
-    ...new Set(podfiles.map((p) => path.join(APPS_DIR, path.dirname(path.dirname(p))))),
-  ];
+  const { stdout } = await Git.runAsync(['ls-files', '--', 'apps/*/ios/Podfile.lock']);
+  const appDirs = getPodInstallAppDirs(stdout.trim().split('\n').filter(Boolean));
+  const failedAppDirs: string[] = [];
 
   logger.info(`\nInstalling pods in ${appDirs.length} apps...\n`);
 
-  await Promise.all(
-    appDirs.map(async (appDir) => {
-      const relativePath = path.relative(EXPO_DIR, appDir);
-      const spinner = ora({
-        text: `Installing pods in ${chalk.cyan(relativePath)}`,
-        indent: 2,
-      }).start();
-      try {
-        await podInstallAsync(path.join(appDir, 'ios'));
-        spinner.succeed(`Installed pods in ${chalk.cyan(relativePath)}`);
-      } catch (error: any) {
-        spinner.fail(`Failed to install pods in ${relativePath}: ${error.message}`);
+  for (const appDir of appDirs) {
+    const spinner = ora({ text: `Installing pods in ${chalk.cyan(appDir)}`, indent: 2 }).start();
+    try {
+      if (isExpoGo(appDir)) {
+        // Expo Go builds React Native from react-native-lab, whose codegen output is gitignored
+        // and must be rebuilt after the submodule moves, or `pod install` fails in codegen.
+        await spawnAsync('pnpm', ['run', 'install:react-native-lab'], { cwd: EXPO_DIR });
       }
-    })
-  );
+      // In Expo Go, hermes-engine is an external podspec at a fixed react-native-lab path, so a
+      // plain `pod install` reuses the cached podspec and keeps the old Hermes version in the lock.
+      await podInstallAsync(
+        path.join(EXPO_DIR, appDir, 'ios'),
+        isExpoGo(appDir) ? ['hermes-engine'] : []
+      );
+      spinner.succeed(`Installed pods in ${chalk.cyan(appDir)}`);
+    } catch (error: any) {
+      spinner.fail(`Failed to install pods in ${appDir}`);
+      logger.error(spawnErrorOutput(error).split('\n').slice(-40).join('\n'));
+      failedAppDirs.push(appDir);
+    }
+  }
+
+  if (failedAppDirs.length > 0) {
+    throw new Error(
+      `Pod install failed in ${failedAppDirs.join(', ')}. Fix the errors above, then run ` +
+        '`pod install` in the ios directory of each listed app ' +
+        '(for expo-go: `pod update hermes-engine --no-repo-update`).'
+    );
+  }
 }

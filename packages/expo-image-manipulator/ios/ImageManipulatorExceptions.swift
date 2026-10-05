@@ -3,27 +3,9 @@
 import CoreGraphics
 import ExpoModulesCore
 
-internal final class ImageContextLostException: Exception {
-  override var reason: String {
-    "Image context has been lost"
-  }
-}
-
-internal final class ImageDrawingFailedException: Exception {
-  override var reason: String {
-    "Drawing the new image failed"
-  }
-}
-
 internal final class ImageNotFoundException: Exception {
   override var reason: String {
     "Image cannot be found"
-  }
-}
-
-internal final class ImageColorSpaceNotFoundException: Exception {
-  override var reason: String {
-    "The image does not specify any color space"
   }
 }
 

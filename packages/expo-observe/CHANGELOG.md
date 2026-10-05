@@ -1,14 +1,73 @@
 # Changelog
 
-## Unpublished
+## 58.0.13
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-app-metrics@58.0.11
+
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Remove legacy `UserDefaults` keys that are no longer read. ([#50752](https://github.com/expo/expo/pull/50752) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add privacy manifest describing required reason API usage and the collected data types. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
+- Updated dependencies. ([#50752](https://github.com/expo/expo/pull/50752), [#50734](https://github.com/expo/expo/pull/50734))
+  - expo-app-metrics@58.0.10
+  - expo-eas-client@58.0.2
+
+## 58.0.11
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-app-metrics@58.0.9
+  - expo-eas-client@58.0.1
+
+## 58.0.10 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.9 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-15
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Add a `networkTraces` option to `configure` to record network requests as trace spans, with an optional capture filter. Recording is opt-in, so it never adds to your event usage unless you turn it on. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
 
-### 💡 Others
+## 58.0.3 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

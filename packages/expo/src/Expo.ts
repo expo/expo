@@ -38,6 +38,8 @@ export type {
   IntBasedTypedArray,
   UintBasedTypedArray,
   FloatBasedTypedArray,
+  ReleasingSharedObjectLifecycle,
+  ReleasingSharedObjectLifecycleContext,
 } from 'expo-modules-core';
 
 export type {

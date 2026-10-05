@@ -1,16 +1,107 @@
 # Changelog
 
-## Unpublished
+## 58.0.12
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- [iOS] Added the `smooth`, `snappy`, and `bouncy` spring presets to `Animation`. Like their SwiftUI counterparts, they take an optional `duration` and `extraBounce`. ([#50984](https://github.com/expo/expo/pull/50984) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Fixed `delay()` and `repeat()` modifying the animation they are called on. Chaining from a shared animation, such as `Animation.default` or one stored in a constant, no longer changes that animation everywhere else it is used. ([#50927](https://github.com/expo/expo/pull/50927) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Added the `navigationBarTitleDisplayMode` and `toolbarTitleDisplayMode` modifiers for controlling navigation and toolbar title presentation. ([#50687](https://github.com/expo/expo/pull/50687) by [@0x5bfa](https://github.com/0x5bfa))
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Fix an intermittent `performMeasureAndLayout called during measure layout` crash that tore down the ReactHost when a `Host` with `matchContents` was measured while react-native-reanimated was active. The `onLayoutContent` event is now posted after the measure pass instead of emitted inside it. ([#49933](https://github.com/expo/expo/pull/49933) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.10
+
+### Patch Changes
+
+- [android] Fix `community/picker` `Picker` not updating its displayed label after a selection or a `selectedValue` change. ([#50801](https://github.com/expo/expo/pull/50801) by [@RaddishIoW](https://github.com/RaddishIoW))
+- [web] Fix `ListItem` always showing a pointer cursor, even without an `onPress`, because React Native Web's `Pressable` applies one unconditionally. A `ListItem` with no `onPress` now shows the default cursor instead of misleadingly looking clickable. ([#49986](https://github.com/expo/expo/pull/49986) by [@timheilman](https://github.com/timheilman))
+- [iOS][Android] `RNHostView` `matchContents` accepts `{ horizontal, vertical }`, so hosted content can take its width from the parent and its height from the content. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `preferredColorScheme` modifier, which sets the color scheme of a presentation such as `BottomSheet`, including its background. ([#50851](https://github.com/expo/expo/pull/50851) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Added `LazyVStack.ForEach` and `LazyHStack.ForEach`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large stacks only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50579](https://github.com/expo/expo/pull/50579) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [android] Fix `Switch` label rendering one letter per line inside a `Host` with `matchContents`. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+- [android] Added `IntrinsicSize` support to the `width` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+
+## 58.0.8 — 2026-09-28
 
 ### 🎉 New features
 
+- [iOS] Export the `FrameAlignment` type for the `alignment` parameter of `frame()`. ([#50702](https://github.com/expo/expo/pull/50702) by [@amandeepmittal](https://github.com/amandeepmittal))
+- [Android] Add `contentDescription` to the `semantics` modifier, so TalkBack can announce a label other than the visible content. ([#50688](https://github.com/expo/expo/pull/50688) by [@enavermate](https://github.com/enavermate))
+- Added `get()` and `set()` to the universal `ObservableState` type and to the web implementation of `useNativeState`, as React Compiler-compliant alternatives to `.value`. ([#50684](https://github.com/expo/expo/pull/50684) by [@Den1Marshall](https://github.com/Den1Marshall))
+
+## 58.0.7 — 2026-09-25
+
+### 🎉 New features
+
+- [iOS] Added `presentationCornerRadius` modifier. ([#50632](https://github.com/expo/expo/pull/50632) by [@shanelord01](https://github.com/shanelord01))
+
 ### 🐛 Bug fixes
 
-- Narrowed `UniversalStyle` dimension props (`width`, `height`) to `number | undefined`. String values such as `"100%"` are no longer accepted by the TypeScript type and produce a dev-mode `console.warn` at runtime. Use the `modifiers` prop with `fillMaxWidth()` / `fillMaxHeight()` for percentage sizing. ([#50094](https://github.com/expo/expo/pull/50094) by [@benjaminkomen](https://github.com/benjaminkomen))
+- [iOS] Fixed `onPress` on universal components such as `Row` and `Column` not firing when tapping empty space, such as a `Spacer`. ([#50599](https://github.com/expo/expo/pull/50599) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.6 — 2026-09-23
+
+### 🛠 Breaking changes
+
+- [iOS] `frame()` now matches SwiftUI's two `frame` overloads, so one call accepts either `width`/`height` or `min*`/`ideal*`/`max*`, not both. ([#50537](https://github.com/expo/expo/issues/50537) by [@wwisheess](https://github.com/wwisheess), [#50544](https://github.com/expo/expo/pull/50544) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 🎉 New features
+
+- [iOS] `List.ForEach` recycles rows from a small pool around the visible range, so large lists only render the rows near the viewport. Deprecated element children in favor of this form. ([#49975](https://github.com/expo/expo/pull/49975) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Added `LazyColumn.Items` and `LazyRow.Items`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large lists only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50258](https://github.com/expo/expo/pull/50258) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 58.0.5 — 2026-09-22
+
+### 🎉 New features
+
+- [Android] Added the widget-only `cornerRadius` modifier to `jetpack-compose`. ([#50332](https://github.com/expo/expo/pull/50332) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `<Host matchContents>` centering its content, and so shifting it by half the height change for a frame, whenever the hosted view was not yet the size of its SwiftUI content. ([#50496](https://github.com/expo/expo/pull/50496) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Cache Material 3 palettes generated from an explicit `scheme` and `seedColor`, so `getMaterialColors` and `useMaterialColors` stop calling the synchronous native module on every render, and `Host` stops re-solving the same scheme on every recomposition. ([#50494](https://github.com/expo/expo/pull/50494) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.4 — 2026-09-21
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `ToolbarItem` component with `placement` and `visibilityPriority`. ([#50360](https://github.com/expo/expo/pull/50360) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `scrollEdgeEffectStyle` modifier. ([#50367](https://github.com/expo/expo/pull/50367) by [@expo-bot](https://github.com/expo-bot))
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `modifiers` passed to `RNHostView` being ignored. ([#50271](https://github.com/expo/expo/pull/50271) by [@lukmccall](https://github.com/lukmccall))
+
+## 58.0.3 — 2026-09-16
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `NavigationSplitView` component, together with the `navigationSplitViewStyle` and `navigationSplitViewColumnWidth` modifiers. ([#50075](https://github.com/expo/expo/pull/50075) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 58.0.2 — 2026-09-15
+
+### 🎉 New features
+
+- [macOS] Added minimal macOS support. ([#50110](https://github.com/expo/expo/pull/50110) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.1 — 2026-09-14
 
 ### 💡 Others
+
+- Update the native tabs import path in the `TabView` API reference. ([#50119](https://github.com/expo/expo/pull/50119) by [@Ubax](https://github.com/Ubax))
 
 ## 58.0.0 — 2026-09-10
 
@@ -53,6 +144,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix hosted React Native content sliding off the top of a `BottomSheet` when the keyboard opens. ([#49399](https://github.com/expo/expo/issues/49399) by [@starsky-nev](https://github.com/starsky-nev)) ([#49427](https://github.com/expo/expo/pull/49427) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fix `DatePickerDialog` preselecting today when `initialDate` is omitted, and keep its confirm button disabled while no date is selected so `onDateSelected` never receives an invalid date. ([#49898](https://github.com/expo/expo/pull/49898) by [@pataar](https://github.com/pataar))
 - [Android][iOS] Fix `community/bottom-sheet` content shrinking to its own width instead of filling the sheet when the sheet sizes to its content. ([#49742](https://github.com/expo/expo/issues/49742) by [@agung-adhinata](https://github.com/agung-adhinata)) ([#49762](https://github.com/expo/expo/pull/49762) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fixed a `Text` or an `Icon` with no explicit color rendering black inside `Host`, which made it unreadable in the dark color scheme. `Host` now provides `LocalContentColor` from the color scheme. ([#49697](https://github.com/expo/expo/pull/49697) by [@expo-bot](https://github.com/expo-bot))

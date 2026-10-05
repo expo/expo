@@ -1,14 +1,37 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - @expo/image-utils@0.12.3
 
-### 🐛 Bug fixes
+## 58.0.4
 
-### 💡 Others
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- [Android] Fix the splash screen staying visible over the app on Android 12 and 13 when the activity stops before the splash screen exits, for example when the app starts while the device is locked. This removes the workaround added in #44584. ([#50818](https://github.com/expo/expo/pull/50818) by [@zoontek](https://github.com/zoontek))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964))
+  - @expo/config-plugins@58.0.4
+  - @expo/image-utils@0.12.2
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
 

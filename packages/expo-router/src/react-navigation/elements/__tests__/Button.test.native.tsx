@@ -47,26 +47,26 @@ beforeEach(() => {
   mockedPlatformPressable.mockClear();
 });
 
-it('does not navigate when the press is prevented', () => {
-  const { getByTestId } = renderButton({
+it('does not navigate when the press is prevented', async () => {
+  const { getByTestId } = await renderButton({
     children: 'Profile',
     href: '/profile',
     testID: 'button',
   });
 
-  fireEvent.press(getByTestId('button'), { defaultPrevented: true });
+  await fireEvent.press(getByTestId('button'), { defaultPrevented: true });
 
   expect(mockedNavigate).not.toHaveBeenCalled();
 });
 
-it('navigates on press', () => {
-  const { getByTestId } = renderButton({
+it('navigates on press', async () => {
+  const { getByTestId } = await renderButton({
     children: 'Profile',
     href: '/profile',
     testID: 'button',
   });
 
-  fireEvent.press(getByTestId('button'));
+  await fireEvent.press(getByTestId('button'));
 
   expect(mockedNavigate).toHaveBeenCalledWith('/profile');
 });
@@ -77,8 +77,8 @@ it.each([
   ['light filled', '#f0f0f0', '#f0f0f0', 'rgba(70, 70, 70, 1)', 'filled'],
 ] as const)(
   'styles a %s button',
-  (_name, color, expectedBackgroundColor, expectedTextColor, variant) => {
-    const { getByTestId, getByText } = renderButton({
+  async (_name, color, expectedBackgroundColor, expectedTextColor, variant) => {
+    const { getByTestId, getByText } = await renderButton({
       children: 'Action',
       color,
       testID: 'button',
@@ -94,8 +94,8 @@ it.each([
   }
 );
 
-it('multiplies the input alpha for tinted backgrounds and ripples', () => {
-  const { getByTestId, getByText } = renderButton({
+it('multiplies the input alpha for tinted backgrounds and ripples', async () => {
+  const { getByTestId, getByText } = await renderButton({
     children: 'Action',
     color: 'rgba(10, 20, 30, 0.5)',
     testID: 'button',
@@ -115,9 +115,9 @@ it('multiplies the input alpha for tinted backgrounds and ripples', () => {
 
 it.each(['tinted', 'filled'] as const)(
   'keeps dynamic theme colors for %s buttons when they cannot be transformed',
-  (variant) => {
+  async (variant) => {
     const primary = PlatformColor('systemPink');
-    const { getByTestId, getByText } = renderButton(
+    const { getByTestId, getByText } = await renderButton(
       { children: 'Action', testID: 'button', variant },
       primary
     );

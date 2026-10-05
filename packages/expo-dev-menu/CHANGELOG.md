@@ -1,12 +1,54 @@
 # Changelog
 
-## Unpublished
+## 58.0.10
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- [iOS] Disable the vertical bar while the dev menu is open so the sheet fills the full width on iPhone Duo. ([#50900](https://github.com/expo/expo/pull/50900) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-dev-menu-interface@58.0.1
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
 
 ### 🎉 New features
 
+- Add the `ExpoLauncherURL` parser for the reserved `__expo_*` deep linking URL params. ([#50287](https://github.com/expo/expo/pull/50287) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.6 — 2026-09-23
+
 ### 🐛 Bug fixes
+
+- [iOS] Fix a data race on `DevMenuManager`'s registered callbacks and app context that could crash the app when one app context registered its dev menu callbacks while another tore down, such as on a dev-client reload. ([#49559](https://github.com/expo/expo/pull/49559) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.5 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Kept the floating dev menu button clear of system bars, the front camera and the home indicator by clamping the drawn button, rather than its touch frame, to the safe area on every edge. ([#50445](https://github.com/expo/expo/pull/50445) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
 
 ### 💡 Others
 

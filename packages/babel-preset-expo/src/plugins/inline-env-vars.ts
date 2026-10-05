@@ -1,5 +1,6 @@
 import type { ConfigAPI, NodePath, PluginObj, PluginPass, types as t } from '@babel/core';
 
+import { addCacheVary } from '../cache-vary';
 import { createAddNamedImportOnce, getIsProd } from '../common';
 
 const debug = require('debug')('expo:babel:env-vars');
@@ -60,6 +61,7 @@ export function expoInlineEnvVars(api: ConfigAPI & typeof import('@babel/core'))
 
       publicEnvVars.add(key);
       if (isProduction) {
+        addCacheVary(state, { scheme: 'env', name: key });
         path.replaceWith(t.valueToNode(process.env[key]));
       } else {
         path.replaceWith(t.memberExpression(addEnvImport(), t.identifier(key)));

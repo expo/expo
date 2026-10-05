@@ -1,6 +1,6 @@
 {
   "name": "expo-background-fetch",
-  "version": "58.0.0",
+  "version": "58.0.10",
   "description": "Expo universal module for BackgroundFetch API",
   "keywords": [
     "background",
@@ -24,6 +24,7 @@
   "main": "build/BackgroundFetch.js",
   "types": "build/BackgroundFetch.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -34,13 +35,14 @@
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {
     "expo-task-manager": "workspace:~"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

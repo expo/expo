@@ -37,7 +37,9 @@
         "pages/versions/unversioned/sdk/ui/swift-ui/*.mdx",
         "pages/versions/unversioned/sdk/ui/jetpack-compose/*.mdx",
         "pages/versions/v57.0.0/sdk/ui/swift-ui/*.mdx",
-        "pages/versions/v57.0.0/sdk/ui/jetpack-compose/*.mdx"
+        "pages/versions/v57.0.0/sdk/ui/jetpack-compose/*.mdx",
+        "pages/versions/v58.0.0/sdk/ui/swift-ui/*.mdx",
+        "pages/versions/v58.0.0/sdk/ui/jetpack-compose/*.mdx"
       ],
       "options": {
         "printWidth": 68

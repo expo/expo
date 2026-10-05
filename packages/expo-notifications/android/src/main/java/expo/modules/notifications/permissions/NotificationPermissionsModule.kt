@@ -91,7 +91,11 @@ class NotificationPermissionsModule : Module() {
   private fun getPermissionsWithPromiseImplClassic(promise: Promise) {
     val managerCompat = NotificationManagerCompat.from(context)
     val areEnabled = managerCompat.areNotificationsEnabled()
-    val status = if (areEnabled) PermissionsStatus.GRANTED else PermissionsStatus.DENIED
+    val status = if (areEnabled) {
+      PermissionsStatus.GRANTED
+    } else {
+      PermissionsStatus.DENIED
+    }
     val platformBundle = bundleOf(
       IMPORTANCE_KEY to managerCompat.importance
     ).apply {

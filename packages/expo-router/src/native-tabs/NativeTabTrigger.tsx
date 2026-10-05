@@ -27,7 +27,7 @@ import { appendIconOptions } from './utils/optionsIconConverter';
  *
  * @example
  * ```tsx app/_layout.tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default function Layout() {
  *   return (
@@ -41,7 +41,7 @@ import { appendIconOptions } from './utils/optionsIconConverter';
  *
  * @example
  * ```tsx app/home.tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default function HomeScreen() {
  *   return (

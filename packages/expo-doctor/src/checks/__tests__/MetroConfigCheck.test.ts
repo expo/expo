@@ -133,7 +133,7 @@ describe('config-comparison checks', () => {
     expect(result.issues.find((i) => i.includes('watchFolders'))).toBeDefined();
   });
 
-  it('flags deprecated resolver.blacklistRE', async () => {
+  it('flags removed resolver.blacklistRE', async () => {
     const result = await runWithUserConfig({
       resolver: { ...stubDefaultConfig().resolver, blacklistRE: /node_modules/ },
     });

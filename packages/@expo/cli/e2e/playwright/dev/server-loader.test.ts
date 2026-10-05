@@ -22,8 +22,6 @@ for (const outputMode of outputModes) {
       env: {
         EXPO_USE_STATIC: outputMode,
         E2E_ROUTER_SRC: 'server-loader',
-        E2E_ROUTER_SERVER_LOADERS: 'true',
-        E2E_ROUTER_SERVER_RENDERING: outputMode === 'server' ? 'true' : 'false',
 
         // Ensure CI is disabled otherwise the file watcher won't run.
         CI: '0',
@@ -58,6 +56,46 @@ for (const outputMode of outputModes) {
 
       const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
       expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
+    });
+
+    test('loads grouped loader data on client-side navigation', async ({ page }) => {
+      const loaderRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/')) {
+          loaderRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+      await page.getByText('Go to Grouped Index').click();
+      await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+        JSON.stringify({ data: 'grouped-index' }, null, 2)
+      );
+      expect(loaderRequests).toContainEqual(
+        expect.stringContaining('/_expo/loaders/(group)/index')
+      );
+    });
+
+    test('loads a platform-specific catch-all loader on client-side navigation', async ({
+      page,
+    }) => {
+      const loaderRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/')) {
+          loaderRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+      await page.getByText('Go to Platform Catch-all').click();
+      await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
+      await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+        JSON.stringify({ data: 'platform-catch-all' }, null, 2)
+      );
+      expect(loaderRequests).toContainEqual(
+        expect.stringContaining('/_expo/loaders/(group)/platform/alpha/beta')
+      );
+      expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
     });
 
     test('defaults headerless loaders to no-store without replacing declared headers', async ({
