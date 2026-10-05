@@ -35,9 +35,9 @@ When ending an update-based rollout, you have three options:
 
 - **Finish the rollout:** Use `eas update:edit` to increase the rollout percentage to 100.
 - **Revert the rollout:** Use `eas update:revert-update-rollout` to restore the control update.
-- **Replace the rollout:** Publish a new update or roll back to the update embedded in the build. See [Replace an active rollout](#replace-an-active-rollout).
+- **Replace the rollout:** Publish a new update or roll back to the update embedded in the build. See [Publishing while a rollout is in progress](#publishing-while-a-rollout-is-in-progress).
 
-### Replace an active rollout
+### Publishing while a rollout is in progress
 
 You can replace an active rollout if you need to publish a fix or roll back before the rollout finishes. When you publish to the same branch, platform, and runtime version, EAS CLI shows the active rollout and stops without publishing.
 
