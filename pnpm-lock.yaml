@@ -2691,9 +2691,6 @@ importers:
       jest-worker:
         specifier: ^29.7.0
         version: 29.7.0
-      micromatch:
-        specifier: ^4.0.4
-        version: 4.0.8
       walker:
         specifier: ^1.0.8
         version: 1.0.8
@@ -2710,9 +2707,6 @@ importers:
       '@types/invariant':
         specifier: ^2.2.37
         version: 2.2.37
-      '@types/micromatch':
-        specifier: ^4.0.10
-        version: 4.0.10
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15

@@ -35,7 +35,6 @@
     "fb-watchman": "^2.0.2",
     "invariant": "^2.2.4",
     "jest-worker": "^29.7.0",
-    "micromatch": "^4.0.4",
     "walker": "^1.0.8"
   },
   "devDependencies": {
@@ -43,7 +42,6 @@
     "@types/debug": "^4.1.7",
     "@types/fb-watchman": "^2.0.6",
     "@types/invariant": "^2.2.37",
-    "@types/micromatch": "^4.0.10",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
