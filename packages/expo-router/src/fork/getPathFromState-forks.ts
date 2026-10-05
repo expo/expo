@@ -84,8 +84,9 @@ export function getPathWithConventionsCollapsed({
   route: Route<any>;
   params: Record<string, any>;
 }) {
-  return pattern
-    .split('/')
+  const segments = pattern.split('/');
+
+  return segments
     .map((p) => {
       const name = getParamName(p);
 

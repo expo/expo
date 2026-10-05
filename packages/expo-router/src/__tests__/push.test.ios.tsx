@@ -630,7 +630,8 @@ it('push should also add anchor routes', async () => {
                 ],
                 stale: false,
                 routeKeySeq: expect.any(Number),
-                // The stack moves the anchor first in `routeNames` when it mounts.
+                // The mounted stack moves the anchor first in `routeNames`. The router sets `type` while
+                // it handles that `ROUTE_NAMES_CHANGED` action.
                 type: 'stack',
               },
             },

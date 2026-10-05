@@ -76,7 +76,6 @@ export function stripPendingAnchors<State extends NavigationState>(state: State)
     return { ...route, state: childState };
   });
   // `NavigationState` does not declare the internal marker.
-  // `NavigationState` does not declare the internal marker.
   const { __internal__pendingAnchor, ...rest } = state as WithPendingAnchor<State>;
   if (__internal__pendingAnchor === undefined && !routesChanged) {
     return state;
@@ -119,16 +118,20 @@ export function resolvePendingAnchor<State extends NavigationState>(
     ...(pendingAnchor.type === 'target' && pendingAnchor.params
       ? { params: pendingAnchor.params }
       : undefined),
+    // A layout anchor needs its own seeded state, because its navigator renders right away. That
+    // state applies the layout's own anchor when it mounts.
     ...(childNode && childNode.children.length > 0
       ? { state: createSeededNavigationState(undefined, childNode, getChainFromRouteKey(key)) }
       : undefined),
   };
+  if (pendingAnchor.type === 'default') {
+    return { ...unmarked, routeKeySeq: minter.routeKeySeq, index: 0, routes: [anchorRoute] };
+  }
   return {
     ...unmarked,
     routeKeySeq: minter.routeKeySeq,
-    ...(pendingAnchor.type === 'default'
-      ? { index: 0, routes: [anchorRoute] }
-      : { index: state.index + 1, routes: [anchorRoute, ...state.routes] }),
+    index: 1,
+    routes: [anchorRoute, state.routes[0]!],
   };
 }
 
