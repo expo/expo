@@ -28,7 +28,6 @@ import expo.modules.filesystem.legacy.FileSystemLegacyModule
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
-import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderService
 import expo.modules.imagemanipulator.ImageManipulatorModule
@@ -164,7 +163,6 @@ object ExperiencePackagePicker : ModulesProvider {
     FontLoaderModule::class.java to null,
     PrintModule::class.java to null,
     GLModule::class.java to null,
-    HapticsModule::class.java to null,
     ImagePickerModule::class.java to null,
     ImageManipulatorModule::class.java to null,
     ExpoImageModule::class.java to null,
