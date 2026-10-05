@@ -45,9 +45,9 @@ describe('server stack traces in development', () => {
     const response = await expo.fetchAsync('/api/throw');
     expect(response.status).toBe(500);
 
-    const logs = await waitForOutputAsync(/Thrown from an API route/);
-    expect(logs).toMatch(/at fail \(.*app[\\/]api[\\/]throw\+api\.ts:2:9\)/);
-    expect(logs).toMatch(/at GET \(.*app[\\/]api[\\/]throw\+api\.ts:6:3\)/);
+    const logs = await waitForOutputAsync(/Thrown from an API route[\s\S]*Call Stack/);
+    expect(logs).toMatch(/fail \(.*app[\\/]api[\\/]throw\+api\.ts:2:9\)/);
+    expect(logs).toMatch(/GET \(.*app[\\/]api[\\/]throw\+api\.ts:6:3\)/);
     expect(logs).not.toMatch(/throw\+api\.ts\.bundle/);
   });
 
