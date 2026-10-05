@@ -52,4 +52,5 @@ dependencies {
 
   testImplementation "org.robolectric:robolectric:4.16"
   testImplementation 'junit:junit:4.13.2'
+  testImplementation 'io.mockk:mockk:1.14.9'
 }
