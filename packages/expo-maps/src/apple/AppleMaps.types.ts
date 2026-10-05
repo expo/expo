@@ -576,7 +576,7 @@ export type AppleMapsViewType = {
    *
    * @param config New camera position.
    */
-  setCameraPosition: (config?: CameraPosition) => void;
+  setCameraPosition: (config?: CameraPosition) => Promise<void>;
 
   /**
    * Opens the look around view at specified coordinates.

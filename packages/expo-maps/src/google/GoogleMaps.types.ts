@@ -510,7 +510,7 @@ export type GoogleMapsViewType = {
    * Update camera position.
    * @param config New camera position config.
    */
-  setCameraPosition: (config?: SetCameraPositionConfig) => void;
+  setCameraPosition: (config?: SetCameraPositionConfig) => Promise<void>;
 
   /**
    * This is an async operation that animates the camera to the marker. If called
