@@ -91,6 +91,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         Children()
       }
       .environment(\.expoHostingView, props.hostingViewReference)
+      .environment(\.universalPercentageParent, true)
       .modifier(HostViewContentMarginsMitigation(layoutDirection: layoutDirection, hostingView: props.hostingView))
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
@@ -115,6 +116,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
         Children()
       }
       .environment(\.expoHostingView, props.hostingViewReference)
+      .environment(\.universalPercentageParent, true)
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
