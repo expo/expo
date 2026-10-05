@@ -10,7 +10,11 @@
 
 import type { ConfigAPI, PluginObj, PluginPass, types as t } from '@babel/core';
 
-const INITIALIZE_CORE = 'react-native/Libraries/Core/InitializeCore';
+const ALLOWED_REACT_NATIVE_SUBPATHS = new Set([
+  'react-native/Libraries/Core/InitializeCore',
+  'react-native/setup-env',
+  'react-native/unstable-internals-do-not-use',
+]);
 
 function withLocation<TNode extends t.Node>(node: TNode, loc: t.SourceLocation | null | undefined) {
   if (!node.loc) {
@@ -20,7 +24,7 @@ function withLocation<TNode extends t.Node>(node: TNode, loc: t.SourceLocation |
 }
 
 function isDeepReactNativeImport(source: string) {
-  return source.startsWith('react-native/');
+  return source.startsWith('react-native/') && !ALLOWED_REACT_NATIVE_SUBPATHS.has(source);
 }
 
 interface WarnDeepImportsState extends PluginPass {
@@ -39,7 +43,7 @@ export default ({
   visitor: {
     ImportDeclaration(path, state) {
       const source = path.node.source.value;
-      if (isDeepReactNativeImport(source) && source !== INITIALIZE_CORE) {
+      if (isDeepReactNativeImport(source)) {
         state.deepImports.push({ source, loc: path.node.loc });
       }
     },
@@ -51,13 +55,13 @@ export default ({
       if (args.length !== 1 || !t.isStringLiteral(args[0])) return;
 
       const source = args[0].value;
-      if (isDeepReactNativeImport(source) && source !== INITIALIZE_CORE) {
+      if (isDeepReactNativeImport(source)) {
         state.deepImports.push({ source, loc: path.node.loc });
       }
     },
     ExportNamedDeclaration(path, state) {
       const source = path.node.source;
-      if (source && isDeepReactNativeImport(source.value) && source.value !== INITIALIZE_CORE) {
+      if (source && isDeepReactNativeImport(source.value)) {
         state.deepImports.push({ source: source.value, loc: path.node.loc });
       }
     },

@@ -106,6 +106,41 @@ test('stages canary publication versions while config remains versionless', () =
   );
 });
 
+function nativeLibsFixture() {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'android-prebuilds-'));
+  fs.writeFileSync(
+    path.join(root, 'package.json'),
+    JSON.stringify({
+      name: 'expo-modules-core',
+      version: '1.0.0',
+      scripts: { 'precompile-android': 'precompile fixture' },
+    })
+  );
+  const prebuilt = path.join(root, 'android/prebuilt');
+  fs.mkdirSync(prebuilt, { recursive: true });
+  fs.writeFileSync(path.join(prebuilt, 'metadata.json'), JSON.stringify({ sourceHash: 'hash' }));
+  fs.writeFileSync(path.join(prebuilt, 'native-libs.tar.xz'), 'archive');
+  return root;
+}
+
+test('validates prebuilt native libraries in place and stages nothing', () => {
+  const root = nativeLibsFixture();
+  assert.doesNotThrow(() => validateRawAndroidPrebuilds(root));
+  assert.equal(stageAndroidPrebuilds(root), false);
+  assert.equal(
+    fs.readFileSync(path.join(root, 'android/prebuilt/native-libs.tar.xz'), 'utf8'),
+    'archive'
+  );
+  assert.equal(fs.existsSync(path.join(root, 'local-maven-repo')), false);
+});
+
+test('rejects missing prebuilt native libraries', () => {
+  const root = nativeLibsFixture();
+  fs.rmSync(path.join(root, 'android/prebuilt/native-libs.tar.xz'));
+  assert.throws(() => validateRawAndroidPrebuilds(root), /native-libs\.tar\.xz/);
+  assert.throws(() => stageAndroidPrebuilds(root), /native-libs\.tar\.xz/);
+});
+
 test('packages without the Android precompile marker are lifecycle no-ops', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'android-prebuilds-'));
   fs.writeFileSync(

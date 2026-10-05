@@ -3,9 +3,25 @@ import path from 'node:path';
 
 const OUTPUT = '.expo-prebuild-android';
 
+const NATIVE_LIBS_PACKAGE_NAMES = ['expo-modules-core'];
+const NATIVE_LIBS_FILES = ['metadata.json', 'native-libs.tar.xz'];
+
+function validateNativeLibs(packageRoot) {
+  for (const file of NATIVE_LIBS_FILES) {
+    const filePath = path.join(packageRoot, 'android', 'prebuilt', file);
+    if (!fs.statSync(filePath, { throwIfNoEntry: false })?.isFile()) {
+      throw new Error(`Prebuilt Android native library file is missing: ${filePath}`);
+    }
+  }
+}
+
 function readManifest(packageRoot) {
   const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'));
   if (!packageJson.scripts?.['precompile-android']) {
+    return null;
+  }
+  if (NATIVE_LIBS_PACKAGE_NAMES.includes(packageJson.name)) {
+    validateNativeLibs(packageRoot);
     return null;
   }
   const manifestPath = path.join(packageRoot, OUTPUT, 'publication.json');

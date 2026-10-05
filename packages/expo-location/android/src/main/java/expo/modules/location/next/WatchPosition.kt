@@ -1,6 +1,7 @@
 package expo.modules.location.next
 
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
@@ -11,14 +12,22 @@ import expo.modules.location.next.locationProviders.WatchUpdate
 import kotlin.time.Duration
 
 @OptimizedRecord
+class PositionWatchError(
+  @Field val code: String,
+  @Field val message: String
+) : Record
+
+@OptimizedRecord
 class PositionChangedEvent(
   @Field val data: Position? = null,
-  @Field val error: String? = null
+  @Field val error: PositionWatchError? = null
 ) : Record
 
 private fun WatchUpdate.toEvent(): PositionChangedEvent = when (this) {
   is WatchUpdate.Fix -> PositionChangedEvent(data = position)
-  is WatchUpdate.Failure -> PositionChangedEvent(error = cause.message ?: cause.toString())
+  is WatchUpdate.Failure -> cause.toCodedException().let {
+    PositionChangedEvent(error = PositionWatchError(code = it.code, message = it.message ?: it.toString()))
+  }
 }
 
 class PositionWatchStatus(

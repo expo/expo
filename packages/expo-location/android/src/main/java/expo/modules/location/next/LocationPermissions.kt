@@ -59,7 +59,7 @@ internal suspend fun Permissions.requestBackgroundPermissions() {
   requestPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
 }
 
-internal suspend fun Permissions.requestForegroundPermissions(options: RequestForegroundPermissionsOptions?) {
+internal suspend fun Permissions.requestForegroundPermissions(options: RequestPermissionsOptions?) {
   val permissions = when (options?.accuracy ?: LocationAccuracyOption.FULL) {
     LocationAccuracyOption.FULL -> FOREGROUND_PERMISSIONS
     LocationAccuracyOption.REDUCED -> COARSE_PERMISSIONS
