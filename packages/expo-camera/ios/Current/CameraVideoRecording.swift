@@ -18,7 +18,6 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
 
   private var videoRecordedPromise: Promise?
   private var videoCodecType: AVVideoCodecType?
-  private var isValidVideoOptions = true
   private var progressTimer: Timer?
   private var maxDuration: Double?
   private var progressInterval: Double = 0.5
@@ -41,15 +40,16 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
         physicalOrientation: delegate?.physicalOrientation ?? .unknown,
         interfaceOrientation: delegate?.deviceOrientation ?? .unknown
       )
-      await setVideoOptions(options: options, for: connection, videoFileOutput: videoFileOutput, promise: promise)
+      do {
+        try await setVideoOptions(options: options, for: connection, videoFileOutput: videoFileOutput)
+      } catch {
+        promise.reject(error)
+        return
+      }
 
       if connection.isVideoOrientationSupported && delegate?.mirror == true {
         connection.isVideoMirrored = delegate?.mirror ?? false
       }
-    }
-
-    if !isValidVideoOptions {
-      return
     }
 
     guard let appContext = delegate?.appContext else {
@@ -87,11 +87,8 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
   private func setVideoOptions(
     options: CameraRecordingOptions,
     for connection: AVCaptureConnection,
-    videoFileOutput: AVCaptureMovieFileOutput,
-    promise: Promise
-  ) async {
-    isValidVideoOptions = true
-
+    videoFileOutput: AVCaptureMovieFileOutput
+  ) async throws {
     if let maxDuration = options.maxDuration {
       videoFileOutput.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 1000)
     }
@@ -115,9 +112,7 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
         videoFileOutput.setOutputSettings(outputSettings, for: connection)
         self.videoCodecType = codecType
       } else {
-        promise.reject(CameraRecordingException(options.codec?.rawValue))
-        videoRecordedPromise = nil
-        isValidVideoOptions = false
+        throw CameraRecordingException(options.codec?.rawValue)
       }
     }
   }
