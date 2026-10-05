@@ -1,6 +1,8 @@
 import { isEnabled } from './enable';
 import type { RouterPerformanceMarkByName, RouterPerformanceMarkName } from './types';
 
+// TODO: Use React Native's PerformanceObserver once it preserves mark details, then unify the
+// native and web implementations.
 export type * from './types';
 export { isEnabled, unstable_enablePerformanceIntegration } from './enable';
 
@@ -87,9 +89,6 @@ export const unstable_performance: Pick<
  *
  * Check the `name` of an entry and cast it to the matching mark type, for example
  * `RouterPageFocusedMark`, to read its `detail`.
- *
- * > **Note:** On native, the callback runs synchronously for each mark, at the moment Expo Router
- * > records it.
  *
  * @example
  * ```ts app/_layout.tsx
