@@ -40,10 +40,15 @@ const reactNativeAssetRegistry = path.join(
   path.dirname(require.resolve('react-native/package.json')),
   'src/asset-registry.js'
 );
+const reactNativeUnstableInternals = path.join(
+  path.dirname(require.resolve('react-native/package.json')),
+  'src/unstable-internals-do-not-use.js'
+);
 
 // Emulate the alias behavior of Expo's Metro resolver.
 jestPreset.moduleNameMapper = {
   '^react-native/asset-registry$': reactNativeAssetRegistry,
+  '^react-native/unstable-internals-do-not-use$': reactNativeUnstableInternals,
   ...(jestPreset.moduleNameMapper || {}),
   '^react-native-vector-icons$': '@expo/vector-icons',
   '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',

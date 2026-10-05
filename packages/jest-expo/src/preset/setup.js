@@ -209,6 +209,41 @@ jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
   },
 }));
 
+// Map the exports subpath onto `react-native/Libraries/...` module names so Jest mocks still apply.
+jest.doMock('react-native/unstable-internals-do-not-use', () => ({
+  get AppContainer() {
+    return require('react-native/Libraries/ReactNative/AppContainer').default;
+  },
+  get AssetSourceResolver() {
+    return require('react-native/Libraries/Image/AssetSourceResolver').default;
+  },
+  get customDirectEventTypes() {
+    return require('react-native/Libraries/Renderer/shims/ReactNativeViewConfigRegistry')
+      .customDirectEventTypes;
+  },
+  get DevLoadingView() {
+    return require('react-native/Libraries/Utilities/DevLoadingView').default;
+  },
+  get getDevServer() {
+    return require('react-native/Libraries/Core/Devtools/getDevServer').default;
+  },
+  get HMRClient() {
+    return require('react-native/Libraries/Utilities/HMRClient').default;
+  },
+  get NativeExceptionsManager() {
+    return require('react-native/Libraries/Core/NativeExceptionsManager').default;
+  },
+  get NativeRedBox() {
+    return require('react-native/Libraries/NativeModules/specs/NativeRedBox').default;
+  },
+  get NativeSourceCode() {
+    return require('react-native/Libraries/NativeModules/specs/NativeSourceCode').default;
+  },
+  get PressabilityDebugView() {
+    return require('react-native/Libraries/Pressability/PressabilityDebug').PressabilityDebugView;
+  },
+}));
+
 function attemptLookup(moduleName) {
   // hack to get the package name from the module name
   const filePath = stackTrace.getSync().find((line) => {
