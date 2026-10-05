@@ -1,0 +1,32 @@
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
+
+<AgentPrompt
+  title="Set up EAS Update with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Set up EAS Update in my Expo project so I can ship JavaScript and asset changes without a new build. Work through these steps in order.
+
+1. Identify the project type. If the android and ios directories are not committed, the project uses CNG. If they are committed, it is a bare React Native project, and the steps marked "bare only" also apply.
+2. Install or upgrade EAS CLI with `npm install -g eas-cli`.
+3. Check that I am logged in with `eas whoami`. Run `eas login` if I am not.
+4. Bare only: prepare the native project.
+   - Run `npx install-expo-modules@latest` if the project does not have Expo modules, so it uses Expo CLI and Metro config.
+   - Run `npx expo install expo-updates` if the package is missing, then `npx pod-install`.
+   - If index.js calls `AppRegistry.registerComponent(appName, () => App)`, import `registerRootComponent` from `expo` and replace that call with `export default registerRootComponent(App)`. Then set the module name to "main" instead of the app name in `MainActivity` and `AppDelegate`.
+5. Run `eas update:configure`. It writes `runtimeVersion` and `updates.url` to the app config and adds `extra.eas.projectId` if it is missing.
+6. Bare only: check the native files that `eas update:configure` changed. AndroidManifest.xml needs the `expo.modules.updates.EXPO_UPDATE_URL` and `EXPO_RUNTIME_VERSION` meta-data, strings.xml needs the `expo_runtime_version` string, and ios/<project>/Supporting/Expo.plist needs `EXUpdatesURL` and `EXUpdatesRuntimeVersion`. If Xcode builds the project, add Expo.plist to the Xcode project.
+7. Set the update channel:
+   - With EAS Build: set `channel` on the `preview` and `production` profiles in eas.json, or on the profiles this project uses.
+   - Without EAS Build, CNG: set `updates.requestHeaders` to `{"expo-channel-name": "<channel>"}` in the app config. It applies on the next `npx expo prebuild`.
+   - Without EAS Build, bare: add the `expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY` meta-data with the value `{"expo-channel-name":"<channel>"}` to AndroidManifest.xml, and an `EXUpdatesRequestHeaders` dict with `expo-channel-name` set to the channel in Expo.plist.
+8. Stop and ask me: "Everything is configured. Do you have a preview build on a device or simulator?" If I say no, ask before running `eas build --profile preview --platform <platform>` for the platform I name.
+9. Stop and ask me: "Everything is set up. Do you want to publish an update now?" If I say yes, ask me for the channel, a message, and the environment, then run `eas update --channel <channel> --message "<message>" --environment <environment>`.
+10. Tell me how to test the update: load it from the Extensions tab of a development build, or force close and reopen a release build twice.
+
+Match the package manager this project already uses, and report what you ran.
+
+For the EAS Update get started guide, see https://docs.expo.dev/eas-update/getting-started/.
+```
+
+</AgentPrompt>

@@ -166,7 +166,11 @@ abstract class Loader protected constructor(
       database.updateDao().setUpdateScopeKey(existingUpdateEntity, newUpdateEntity.scopeKey)
     }
 
-    if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
+    // A READY update with no launch asset is not actually ready. Fall through to
+    // downloadAllAssets so its assets are re-registered instead of staying broken forever.
+    if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY &&
+      database.updateDao().loadLaunchAssetForUpdate(existingUpdateEntity.id) != null
+    ) {
       // hooray, we already have this update downloaded and ready to go!
       updateEntity = existingUpdateEntity
       return finish()
@@ -234,7 +238,11 @@ abstract class Loader protected constructor(
 
         handleAssetDownloadCompleted(
           result.assetEntity,
-          if (result.isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
+          if (result.isNew) {
+            AssetLoadResult.FINISHED
+          } else {
+            AssetLoadResult.ALREADY_EXISTS
+          }
         )
       }
       assetDownloadJobs.add(job)

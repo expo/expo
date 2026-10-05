@@ -2,7 +2,7 @@ import { use, useMemo } from 'react';
 
 import type { RouteNode } from '../Route';
 import { sortRoutes } from '../Route';
-import { StoreContext } from '../global-state/storeContext';
+import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { matchDynamicName } from '../matchers';
 import type { Href } from '../types';
 
@@ -63,7 +63,7 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
 
 export function useSitemap(): SitemapType | null {
   // TODO(@ubax): Extract `routeNode` into a separate context to avoid unrelated rerenders.
-  const routeNode = use(StoreContext)?.routeNode;
+  const routeNode = use(RouterConfigContext)?.routeNode;
   const sitemap = useMemo(() => (routeNode ? mapForRoute(routeNode, []) : null), [routeNode]);
   return sitemap;
 }

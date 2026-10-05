@@ -161,6 +161,15 @@ class DatabaseLauncher(
       if (!configuration.hasEmbeddedUpdate && embeddedUpdate?.updateEntity?.id == update.id) {
         continue
       }
+
+      // An update with no launch asset can never launch. Excluding it here lets the loader
+      // re-run and repair the row instead of failing every cold start.
+      if (update.status != UpdateStatus.DEVELOPMENT &&
+        database.updateDao().loadLaunchAssetForUpdate(update.id) == null
+      ) {
+        logger.warn("Skipping launchable update with no launch asset. Debug info: ${update.debugInfo()}")
+        continue
+      }
       filteredLaunchableUpdates.add(update)
     }
     val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
@@ -256,7 +265,11 @@ class DatabaseLauncher(
 
         database.assetDao().updateAsset(result.assetEntity)
         val assetFileLocal = File(updatesDirectory, result.assetEntity.relativePath!!)
-        if (assetFileLocal.exists()) assetFileLocal else null
+        if (assetFileLocal.exists()) {
+          assetFileLocal
+        } else {
+          null
+        }
       } catch (e: Exception) {
         logger.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
         if (asset.isLaunchAsset) {

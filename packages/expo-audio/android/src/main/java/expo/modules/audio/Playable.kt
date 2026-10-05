@@ -21,7 +21,11 @@ interface Playable {
   val appContext: AppContext?
 
   val currentTime: Double get() = player.currentPosition / 1000.0
-  val duration: Double get() = if (player.duration != C.TIME_UNSET) player.duration / 1000.0 else 0.0
+  val duration: Double get() = if (player.duration != C.TIME_UNSET) {
+    player.duration / 1000.0
+  } else {
+    0.0
+  }
   val isPlaying: Boolean get() = player.isPlaying
   val volume: Float get() = player.volume
 

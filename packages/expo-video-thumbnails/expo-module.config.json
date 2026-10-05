@@ -4,6 +4,11 @@
     "modules": ["VideoThumbnailsModule"]
   },
   "android": {
-    "modules": ["expo.modules.videothumbnails.VideoThumbnailsModule"]
+    "modules": ["expo.modules.videothumbnails.VideoThumbnailsModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.videothumbnails",
+      "repository": "local-maven-repo"
+    }
   }
 }

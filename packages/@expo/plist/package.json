@@ -1,6 +1,6 @@
 {
   "name": "@expo/plist",
-  "version": "0.8.1",
+  "version": "0.10.1",
   "description": "Mac OS X Plist parser/builder for Node.js and browsers",
   "keywords": [
     "plist"
@@ -50,7 +50,7 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
   }

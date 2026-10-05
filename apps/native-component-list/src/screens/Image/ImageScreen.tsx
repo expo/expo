@@ -142,6 +142,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'SVG variables',
+    route: 'image/svg-variables',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSvgVariablesScreen'));
+    },
+  },
+  {
     name: 'Hash Placeholders',
     route: 'image/hash-placeholders',
     getComponent() {

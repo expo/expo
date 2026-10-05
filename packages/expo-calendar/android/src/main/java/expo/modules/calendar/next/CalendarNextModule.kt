@@ -336,12 +336,12 @@ class CalendarNextModule : Module() {
         expoCalendarEvent.createAttendee(record)
       }
 
-      AsyncFunction("openInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions ->
+      AsyncFunction("openInCalendar") Coroutine { expoCalendarEvent: ExpoCalendarEvent, rawParams: ViewedEventOptions? ->
         val eventId = expoCalendarEvent.eventId.value.toString()
 
         val params = ViewedEventOptions(
           id = eventId,
-          startNewActivityTask = rawParams.startNewActivityTask
+          startNewActivityTask = rawParams?.startNewActivityTask ?: true
         )
         val result = viewEventLauncher.launch(params)
 

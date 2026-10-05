@@ -21,12 +21,18 @@ describe('resolvePreset', () => {
     expect(resolved.sourceSkips & SourceSkips.ExpoConfigRuntimeVersionIfString).toBeTruthy();
     expect(resolved.sourceSkips & SourceSkips.EasJson).toBeTruthy();
     expect(resolved.sourceSkips & SourceSkips.Easignore).toBeTruthy();
+    expect(resolved.sourceSkips & SourceSkips.AutolinkingConfigPaths).toBeTruthy();
   });
 
   it('should keep the EAS Build files hashed in strict', () => {
     const resolved = resolvePreset('strict');
     expect(resolved.sourceSkips & SourceSkips.EasJson).toBeFalsy();
     expect(resolved.sourceSkips & SourceSkips.Easignore).toBeFalsy();
+  });
+
+  it('should keep the autolinking config hashed in strict', () => {
+    const resolved = resolvePreset('strict');
+    expect(resolved.sourceSkips & SourceSkips.AutolinkingConfigPaths).toBeFalsy();
   });
 
   it('should resolve relaxed to additionally skip names, identifiers, schemes, and assets', () => {
@@ -39,6 +45,7 @@ describe('resolvePreset', () => {
       SourceSkips.ExpoConfigAssets,
       SourceSkips.EasJson,
       SourceSkips.Easignore,
+      SourceSkips.AutolinkingConfigPaths,
     ]) {
       expect(resolved.sourceSkips & skip).toBeTruthy();
     }

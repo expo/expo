@@ -1,16 +1,53 @@
 # Changelog
 
-## Unpublished
+## 58.0.7
+
+### Patch Changes
+
+- Upgrade to Jest 30 and declare `jest@^30` as a peer dependency. ([#50427](https://github.com/expo/expo/pull/50427) by [@hassankhan](https://github.com/hassankhan))
+- Preserve the base preset's `moduleNameMapper` entries in web and Node presets. ([#50444](https://github.com/expo/expo/pull/50444) by [@joernroeder](https://github.com/joernroeder))
+- Bump `lodash` to `^4.18.1`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Replace `react-test-renderer` with `test-renderer` for `@testing-library/react-native` v14 compatibility. ([#50686](https://github.com/expo/expo/pull/50686) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
 - Align `jest-expo` Babel options for all platforms with `resolveBabelOptions` output
 
-### 🎉 New features
-
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Support React Native 0.87's `react-native/asset-registry`. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Keep the upstream React Native `moduleNameMapper` entries in the iOS and Android presets, so React Native 0.87's `react-native/setup-env` mock resolves. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 57.0.3 - 2026-07-29
 

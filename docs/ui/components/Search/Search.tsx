@@ -5,7 +5,6 @@ import { lazy, ReactNode, Suspense, useEffect, useRef, useState } from 'react';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 
-import { ExpoDashboardItem } from './ExpoDashboardItem';
 import { entries } from './expoEntries';
 
 const CommandMenu = lazy(() =>
@@ -57,6 +56,7 @@ export const Search = ({ mainSection }: SearchProps) => {
     const filteredEntries = entries.filter(entry =>
       entry.label.toLowerCase().includes(query.toLowerCase())
     );
+    const { ExpoDashboardItem } = await import('./ExpoDashboardItem');
     setExpoDashboardItems(
       filteredEntries.map(item => <ExpoDashboardItem item={item} query={query} key={item.url} />)
     );

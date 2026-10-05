@@ -110,4 +110,26 @@ export interface BottomSheetProps {
    * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
    */
   modifiers?: ModifierConfig[];
+
+  /**
+   * The sheet's own background color, painting its full chrome (including the
+   * drag-indicator zone and, on iOS, the home-indicator safe-area inset).
+   * When omitted, each platform keeps its own default.
+   *
+   * This only paints the background. `children` are React Native views on
+   * every platform, so they don't pick up a contrasting text color
+   * automatically -- set one explicitly if you use a dark `containerColor`.
+   * @platform android
+   * @platform ios 16.4+
+   * @platform web
+   */
+  containerColor?: ColorValue;
+
+  /**
+   * The preferred color for native Compose content that doesn't set its own
+   * color. Doesn't reach a `BottomSheet`'s (React Native) `children` -- see
+   * `containerColor`'s doc.
+   * @platform android
+   */
+  contentColor?: ColorValue;
 }

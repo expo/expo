@@ -27,7 +27,7 @@ add_library(
 
 use_expo_common(expo-modules-core)
 
-target_precompile_headers(expo-modules-core REUSE_FROM expo-modules-pch)
+use_expo_pch(expo-modules-core)
 
 target_include_directories(
   expo-modules-core
@@ -36,6 +36,8 @@ target_include_directories(
   ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react/fabric
   # header only imports from jni, e.g. react/turbomodule/CallInvokerHolder.h
   "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
+  # header only imports from ReactCommon, e.g. jserrorhandler/ErrorUtils.h
+  "${REACT_NATIVE_DIR}/ReactCommon"
   "${ANDROID_SRC_DIR}/fabric"
   "${COMMON_DIR}"
   "${COMMON_DIR}/fabric"
@@ -46,7 +48,6 @@ target_link_libraries(
   PRIVATE
   ${LOG_LIB}
   android
-  ${JSEXECUTOR_LIB}
   ${NEW_ARCHITECTURE_DEPENDENCIES}
   expo-modules-jsi
 )

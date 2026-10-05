@@ -245,6 +245,62 @@ private struct MacroSharedObjectTests {
     #expect(try code.asString() == "E_TEST_CODE")
   }
 
+  // MARK: - Release
+
+  // React Native deep-freezes view props in development, so a shared object passed as a prop is
+  // frozen by the time its owner releases it.
+  @Test
+  func `release() releases the native object of a frozen JS object`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    let jsObject = try runtime.eval("object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)").asObject()
+    let nativeObject = try SharedObject.native(from: jsObject)
+    try runtime.eval("Object.freeze(object); object.release()")
+    #expect(nativeObject.sharedObjectId == 0)
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
+  func `release() can be called again on a frozen JS object`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    try runtime.eval(
+      """
+      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      Object.freeze(object)
+      object.release()
+      object.release()
+      """)
+  }
+
+  @Test
+  func `a released frozen JS object no longer resolves to the native object`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let code = try runtime.eval(
+      """
+      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      Object.freeze(object)
+      object.release()
+      try { object.increment(1); 'no error' } catch (error) { error.code }
+      """)
+    #expect(try code.asString() == "ERR_NATIVE_SHARED_OBJECT_NOT_FOUND")
+  }
+
+  @Test
+  func `a released frozen JS object no longer receives events`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let jsObject = try runtime.eval(
+      """
+      calls = 0
+      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      object.addListener('ping', () => { calls += 1 })
+      Object.freeze(object)
+      """).asObject()
+    let nativeObject = try SharedObject.native(from: jsObject)
+    try runtime.eval("object.release()")
+    nativeObject.emit(event: "ping")
+    #expect(try runtime.eval("calls").asInt() == 0)
+  }
+
   // MARK: - Alternate-runtime prototype
 
   @Test

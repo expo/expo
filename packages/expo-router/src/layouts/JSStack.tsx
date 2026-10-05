@@ -1,24 +1,65 @@
 'use client';
 
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ComponentType } from 'react';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
-import type { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
-import { createStackNavigator } from '../react-navigation/stack';
+import { StackRouter } from '../react-navigation/native';
+import {
+  type StackNavigationConfig,
+  type StackNavigatorCreateProps,
+  type StackNavigationOptions,
+  type StandardStackNavigationEventMap,
+  unstable_createStandardStackNavigator,
+} from '../react-navigation/stack';
+import { makeRestoreRouteAction } from '../react-navigation/stack/utils/makeRestoreRouteAction';
+import { integrateWithRouter } from '../standard-navigation';
+import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-import { withLayoutContext } from './withLayoutContext';
+import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 
-const JSStackNavigator = createStackNavigator().Navigator;
+export * from '../react-navigation/stack';
+
+/**
+ * Creates the props required to integrate Expo Router's JavaScript stack navigator.
+ *
+ * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The JavaScript stack navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { StackRouter, integrateWithRouter } from 'expo-router';
+ * import { createJSStackProps } from 'expo-router/js-stack';
+ * import { navigator } from './navigator';
+ *
+ * export const Stack = integrateWithRouter(navigator, StackRouter, {
+ *   createProps: createJSStackProps,
+ * });
+ * ```
+ */
+export function createJSStackProps(
+  args: StandardNavigatorCreatePropsFactoryDeps<StackNavigationState<ParamListBase>>
+): StackNavigatorCreateProps {
+  return {
+    ...createBaseStackProps(args),
+    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+    restoreRoute: makeRestoreRouteAction(args.dispatchSync, args.state),
+  };
+}
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
-const JSStack = withLayoutContext<
+const JSStack = integrateWithRouter<
   StackNavigationOptions,
-  typeof JSStackNavigator,
   StackNavigationState<ParamListBase>,
-  StackNavigationEventMap
->(JSStackNavigator);
+  StandardStackNavigationEventMap,
+  StackNavigationConfig,
+  object,
+  StackNavigatorCreateProps
+>(unstable_createStandardStackNavigator, StackRouter, {
+  activityDefaultThreshold: 2,
+  createProps: createJSStackProps,
+});
 
 /**
  * Renders a JavaScript-based stack navigator.
@@ -26,10 +67,8 @@ const JSStack = withLayoutContext<
  * @hideType
  */
 const Stack = Object.assign(
-  (props: Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>) => {
-    const routeNode = useRouteNode();
-    return <JSStack {...props} initialRouteName={getValidInitialRouteName(routeNode)} />;
-  },
+  // `initialRouteName` is configured from the route node by the integration, not by layout props.
+  JSStack as ComponentType<Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>>,
   {
     Screen,
     Protected,

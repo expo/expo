@@ -79,7 +79,10 @@ export function SecureField(props: SecureFieldProps) {
 
   const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
   const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
-  const hosted = useHostedTextInput<SecureFieldRef>(ref, onFocusChange);
+  // `blurOnUnmount`: a field left first responder while its row is removed makes UIKit
+  // assert ("refused to resign"); native teardown hooks run too late to clear SwiftUI's
+  // `@FocusState`. https://github.com/expo/expo/issues/49348
+  const hosted = useHostedTextInput<SecureFieldRef>(ref, onFocusChange, { blurOnUnmount: true });
 
   return (
     <SecureFieldNativeView

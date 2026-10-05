@@ -12,6 +12,10 @@ import { PageApiVersionContextType } from '~/providers/page-api-version';
 import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute, NavigationRouteWithSection } from '~/types/common';
 
+if (import.meta.webpackHot) {
+  import.meta.webpackHot.decline('~/public/static/constants/navigation.json');
+}
+
 export const getRoutes = (
   path: string,
   version: PageApiVersionContextType['version']
@@ -93,7 +97,7 @@ export const getPageSection = (path: string) => {
 };
 
 export const getCanonicalUrl = (path: string) => {
-  if (isReferencePath(path)) {
+  if (isVersionedPath(path)) {
     return `https://docs.expo.dev${Utilities.replaceVersionInUrl(path, 'latest')}/`;
   } else if (path !== `/`) {
     return `https://docs.expo.dev${path}/`;

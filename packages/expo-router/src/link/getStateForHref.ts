@@ -3,7 +3,6 @@ import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { LinkToOptions } from '../global-state/types';
 import type { Href } from '../types';
 import { resolveHref, resolveHrefStringWithSegments } from './href';
-import { getStateFromPath } from './linking';
 
 export function getStateForHref(
   href: Href | string,
@@ -13,5 +12,5 @@ export function getStateForHref(
 ) {
   href = resolveHref(href);
   href = resolveHrefStringWithSegments(href, routeInfo, options);
-  return linking ? getStateFromPath(href, linking.config, routeInfo.segments) : undefined;
+  return linking?.getStateFromPath!(href, linking.config, routeInfo.segments);
 }

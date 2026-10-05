@@ -1,16 +1,16 @@
 # Changelog
 
-## Unpublished
+## 1.2.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 1.2.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 1.1.0 - 2026-06-25
 

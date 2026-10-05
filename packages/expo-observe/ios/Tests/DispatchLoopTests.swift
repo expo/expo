@@ -37,7 +37,12 @@ struct DispatchLoopTests {
 
   @Test
   func `partial success advances and continues`() async {
-    let partial = OTPartialSuccess(rejectedDataPoints: 1, rejectedLogRecords: nil, errorMessage: nil)
+    let partial = OTPartialSuccess(
+      rejectedDataPoints: 1,
+      rejectedLogRecords: nil,
+      rejectedSpans: nil,
+      errorMessage: nil
+    )
     let state = State(rows: rows(1...3), results: [.partialSuccess(partial), .success], chunkSize: 2)
 
     await drain(state)

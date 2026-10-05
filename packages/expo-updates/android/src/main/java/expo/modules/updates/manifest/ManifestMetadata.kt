@@ -24,7 +24,11 @@ object ManifestMetadata {
     return try {
       val jsonString = database.jsonDataDao()!!
         .loadJSONStringForKey(key, configuration.scopeKey)
-      if (jsonString != null) JSONObject(jsonString) else null
+      if (jsonString != null) {
+        JSONObject(jsonString)
+      } else {
+        null
+      }
     } catch (e: Exception) {
       Log.e(TAG, "Error retrieving $key from database", e)
       null

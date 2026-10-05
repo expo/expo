@@ -44,21 +44,34 @@ private:
 
   std::atomic<int> refCount{1};
 
+  RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
+      : nativeScheduler(scheduler), scheduleFn(fn) {}
+
+  RuntimeScheduler() noexcept {}
+
 public:
+  // Swift creates instances through the static `create` functions rather than the constructors.
+  // Annotating the constructors with `SWIFT_RETURNS_RETAINED` silences the Swift 6.4 "cannot infer
+  // ownership" warning, but Swift 6.2 rejects that annotation on a constructor as an error. Static
+  // functions returning a shared reference accept the annotation on every Swift version.
+
   /**
-   Constructs a scheduler bound to a host-provided native RuntimeScheduler.
+   Creates a scheduler bound to a host-provided native RuntimeScheduler.
    `scheduleTask` dispatches through `fn`, which the host implements against
    the real react::RuntimeScheduler.
    */
-  SWIFT_RETURNS_RETAINED RuntimeScheduler(void *scheduler, ScheduleFn fn) noexcept
-      : nativeScheduler(scheduler), scheduleFn(fn) {}
+  static RuntimeScheduler *create(void *scheduler, ScheduleFn fn) noexcept SWIFT_RETURNS_RETAINED {
+    return new RuntimeScheduler(scheduler, fn);
+  }
 
   /**
-   Constructs a no-op scheduler. Scheduled tasks run synchronously on the
+   Creates a no-op scheduler. Scheduled tasks run synchronously on the
    caller's thread — intended for standalone runtimes (e.g. tests) that have
    no React scheduler.
    */
-  SWIFT_RETURNS_RETAINED RuntimeScheduler() {}
+  static RuntimeScheduler *create() noexcept SWIFT_RETURNS_RETAINED {
+    return new RuntimeScheduler();
+  }
 
   RuntimeScheduler(const RuntimeScheduler &) = delete;
 

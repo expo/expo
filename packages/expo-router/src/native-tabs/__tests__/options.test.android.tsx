@@ -26,8 +26,8 @@ jest.mock('react-native-screens', () => {
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
 describe('Icons', () => {
-  it('passes iconResourceName when using Icon drawable on Android', () => {
-    renderRouter({
+  it('passes iconResourceName when using Icon drawable on Android', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -46,8 +46,8 @@ describe('Icons', () => {
     expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('stairs');
   });
 
-  it('uses last Icon drawable value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon drawable value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -68,8 +68,8 @@ describe('Icons', () => {
     expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('last');
   });
 
-  it('does not pass icon when Icon is not used', () => {
-    renderRouter({
+  it('does not pass icon when Icon is not used', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -100,8 +100,8 @@ describe('Icons', () => {
   //     ).toThrow('You can only use one type of icon (Icon or Icon.Drawable) for a single tab');
   //   });
 
-  it('uses drawable for both icon and selectedIcon on Android when sf with string is also provided', () => {
-    renderRouter({
+  it('uses drawable for both icon and selectedIcon on Android when sf with string is also provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -126,8 +126,8 @@ describe('Icons', () => {
     });
   });
 
-  it('uses drawable for both icon and selectedIcon on Android when sf with object is also provided', () => {
-    renderRouter({
+  it('uses drawable for both icon and selectedIcon on Android when sf with object is also provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">

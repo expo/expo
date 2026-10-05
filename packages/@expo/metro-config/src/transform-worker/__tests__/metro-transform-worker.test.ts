@@ -22,16 +22,12 @@ import { vol } from 'memfs';
 import * as path from 'path';
 
 import type { ExpoJsOutput } from '../../serializer/jsOutput';
-import { materializeMap } from '../../serializer/packedMap';
 
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
 const toTraceMap = (output: ExpoJsOutput, contents: string) => {
-  // `fromRawMappings` needs plain tuples; the worker emits the packed
-  // wire shape, so materialize at the boundary.
   const map = fromRawMappings([
     {
       ...output.data,
-      map: materializeMap(output.data.map),
       path: '',
       source: contents,
       isIgnored: false,
@@ -81,7 +77,7 @@ const babelTransformerPath = require.resolve('@expo/metro-config/babel-transform
 const transformerContents = jest.requireActual('fs').readFileSync(babelTransformerPath);
 
 const HEADER_DEV =
-  '__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {';
+  '__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {';
 const HEADER_PROD = '__d(function (g, r, i, a, m, e, d) {';
 
 // let fs: typeof import('fs');
@@ -318,7 +314,7 @@ it('uses Noxcturnal instead of the Babel preset for eligible node_modules', asyn
   );
 
   expect(result.output[0]!.data.code).toMatch(
-    /module\.exports = \[\s*"ios",\s*"production",\s*false,\s*_\$\$_REQUIRE\(_dependencyMap\[0\]\)\s*\]/
+    /module\.exports = \[\s*"ios",\s*"production",\s*false,\s*require\(_dependencyMap\[0\]\)\s*\]/
   );
   expect(result.output[0]!.data.hasCjsExports).toBe(true);
   expect(result.output[0]!.data.functionMap).toEqual({
@@ -352,7 +348,7 @@ it.each([
   );
 
   expect(result.output[0]!.data.code).toMatch(
-    /module\.exports\s*=\s*_\$\$_REQUIRE\(_dependencyMap\[0\], "dep"\);/
+    /module\.exports\s*=\s*require\(_dependencyMap\[0\], "dep"\);/
   );
   expect(result.dependencies.map((dependency) => dependency.name)).toEqual(['dep']);
 });
@@ -864,7 +860,7 @@ it('uses Noxcturnal for the complete Metro transform of eligible dependencies', 
   expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
-      `var oddly_spaced= _$$_REQUIRE(_dependencyMap[0], "dep");`,
+      `var oddly_spaced= require(_dependencyMap[0], "dep");`,
       'module.exports=oddly_spaced;',
       '});',
     ].join('\n')
@@ -988,10 +984,10 @@ it('transforms a module with dependencies', async () => {
     [
       HEADER_DEV,
       '"use strict";',
-      '_$$_REQUIRE(_dependencyMap[2], "./c");',
-      '_$$_REQUIRE(_dependencyMap[0], "./a");',
+      'require(_dependencyMap[2], "./c");',
+      'require(_dependencyMap[0], "./a");',
       'arbitrary(code);',
-      'var b = _$$_REQUIRE(_dependencyMap[1], "b");',
+      'var b = require(_dependencyMap[1], "b");',
       '',
       '',
       '});',
@@ -1098,7 +1094,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
       'function _interopDefault(e) {',
       '  return e && e.__esModule ? e : { default: e };',
       '}',
-      'var _c = _$$_REQUIRE(_dependencyMap[0], "./c");',
+      'var _c = require(_dependencyMap[0], "./c");',
       'var c = _interopDefault(_c);',
       '',
       'test(c.default);',
@@ -1295,7 +1291,7 @@ it('allows disabling the normalizePseudoGlobals pass when minifying', async () =
     { ...baseTransformOptions, dev: false, minify: true }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     minified(code);
 
     });"
@@ -1311,7 +1307,7 @@ it('allows emitting compact code when not minifying', async () => {
     { ...baseTransformOptions, dev: false, minify: false }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(
-    `"__d(function(global,_$$_REQUIRE,_$$_IMPORT_DEFAULT,_$$_IMPORT_ALL,module,exports,_dependencyMap){arbitrary(code)});"`
+    `"__d(function(global,require,_$$_IMPORT_DEFAULT,_$$_IMPORT_ALL,module,exports,_dependencyMap){arbitrary(code)});"`
   );
 });
 
@@ -1330,7 +1326,7 @@ it('skips minification in Hermes stable transform profile', async () => {
     }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     arbitrary(code);
 
     });"
@@ -1352,7 +1348,7 @@ it('skips minification in Hermes canary transform profile', async () => {
     }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     arbitrary(code);
 
     });"
@@ -1406,7 +1402,7 @@ it('outputs comments when `minify: false`', async () => {
     { ...baseTransformOptions, dev: false, minify: false }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
-    "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
+    "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
     /*#__PURE__*/arbitrary(code);
     });"
   `);

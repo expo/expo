@@ -1,5 +1,7 @@
 package expo.modules.image
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -69,6 +71,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private var firstTarget = ImageViewWrapperTarget(WeakReference(this))
   private var secondTarget = ImageViewWrapperTarget(WeakReference(this))
+  private var foregroundTarget: ImageViewWrapperTarget? = null
 
   internal val onLoadStart by EventDispatcher<Unit>()
   internal val onProgress by EventDispatcher<ImageProgressEvent>()
@@ -126,6 +129,18 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
     }
 
+  // `null` leaves SVG documents untouched. An empty map still resolves `var()` fallbacks.
+  internal var svgVariables: Map<String, String>? = null
+    set(value) {
+      if (field == value) {
+        return
+      }
+      field = value
+      // The variables are substituted into the source before it's parsed, so the document has to be
+      // decoded again for new values to take effect.
+      shouldRerender = true
+    }
+
   internal var isFocusableProp: Boolean = false
     set(value) {
       field = value
@@ -170,9 +185,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
   fun setIsAnimating(setAnimating: Boolean) {
-    // Animatable animations always start from the beginning when resumed.
-    // So we check first if the resource is a GifDrawable, because it can continue
-    // from where it was paused.
+    // APNG4Android's GifDrawable supports pause and resume, while the generic Animatable API only
+    // exposes start and stop.
     when (val resource = activeView.drawable) {
       is GifDrawable -> setIsAnimating(resource, setAnimating)
       is Animatable -> setIsAnimating(resource, setAnimating)
@@ -290,16 +304,14 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             ?.toLong()
             ?: 0L
 
-          val clearPreviousView = {
-            previousView
-              .recycleView()
-              ?.apply {
-                // When the placeholder is loaded, one target is displayed in both views.
-                // So we just have to move the reference to a new view instead of clearing the target.
-                if (this != target) {
-                  clear(requestManager)
-                }
+          val clearRecycledTarget = { recycledTarget: ImageViewWrapperTarget? ->
+            recycledTarget?.apply {
+              // When the placeholder is loaded, one target is displayed in both views.
+              // So we just have to move the reference to a new view instead of clearing the target.
+              if (this != target) {
+                clear(requestManager)
               }
+            }
           }
 
           configureView(newView, target, resource, isPlaceholder)
@@ -310,25 +322,45 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
 
           if (transitionDuration <= 0) {
-            clearPreviousView()
+            clearRecycledTarget(previousView.recycleView())
             newView.alpha = 1f
             newView.bringToFront()
           } else {
             newView.bringToFront()
             previousView.alpha = 1f
             newView.alpha = 0f
-            // A newer source can reuse this view as its `newView` before the fade-out ends. That
-            // cancels this animation, and the end action runs on cancel too, so without this guard
-            // it would recycle the view now holding the new image. See issue #46703.
+            // A newer source can reuse this view as its `newView` before the fade-out ends, so the
+            // cleanup is guarded on the view still holding the exact binding it was scheduled for.
+            // The same target object can be recycled for a newer source, so target identity alone
+            // is not sufficient.
+            // See issue #46703.
             val previousTarget = previousView.currentTarget
+            val previousTargetBindingId = previousView.targetBindingId
             previousView.animate().apply {
               duration = transitionDuration
               alpha(0f)
-              withEndAction {
-                if (previousView.currentTarget === previousTarget) {
-                  clearPreviousView()
+              // Deliberately not `withEndAction`: `ViewPropertyAnimator` drops the end action when
+              // the animation is cancelled, and starting a new animation on the same view cancels
+              // this one. In a recycling list that happens constantly, so the target would never be
+              // returned to the pool and the view would stay blank.
+              setListener(object : AnimatorListenerAdapter() {
+                private var handled = false
+
+                override fun onAnimationCancel(animation: Animator) = onAnimationEnd(animation)
+
+                override fun onAnimationEnd(animation: Animator) {
+                  if (handled) {
+                    return
+                  }
+                  handled = true
+                  clearRecycledTarget(
+                    previousView.recycleViewIfBindingMatches(
+                      previousTarget,
+                      previousTargetBindingId
+                    )
+                  )
                 }
-              }
+              })
             }
             newView.animate().apply {
               duration = transitionDuration
@@ -397,6 +429,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.applyTransformationMatrix()
     }
     target.isUsed = true
+    foregroundTarget = target
 
     if (resource is Animatable) {
       resource.start()
@@ -462,6 +495,20 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     requestManager.clear(secondTarget)
   }
 
+  fun onTargetCleared(target: ImageViewWrapperTarget) {
+    if (foregroundTarget === target) {
+      foregroundTarget = null
+    }
+
+    // Detach a cleared Glide drawable before its pooled resource is released.
+    if (firstView.currentTarget === target) {
+      firstView.recycleView()
+    }
+    if (secondView.currentTarget === target) {
+      secondView.recycleView()
+    }
+  }
+
   private fun cleanIfNeeded(
     newBestSource: Source?,
     newBestSourceModel: GlideModelProvider?,
@@ -493,7 +540,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       contentFit != ContentFit.Fill &&
       contentFit != ContentFit.None
     ) {
-      ContentFitDownsampleStrategy(target, contentFit)
+      ContentFitDownsampleStrategy(target, contentFit, decodeFormat)
     } else {
       // it won't downscale the image if the image is smaller than hardware bitmap size limit
       SafeDownsampleStrategy(decodeFormat)
@@ -563,10 +610,14 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
 
       onLoadStart.invoke(Unit)
-      val newTarget = if (secondTarget.isUsed) {
-        firstTarget
-      } else {
-        secondTarget
+      val newTarget = when (foregroundTarget) {
+        firstTarget -> secondTarget
+        secondTarget -> firstTarget
+        else -> if (secondTarget.isUsed) {
+          firstTarget
+        } else {
+          secondTarget
+        }
       }
       newTarget.hasSource = sourceToLoad != null
       newTarget.cacheType = ImageCacheType.NONE
@@ -598,6 +649,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .apply(options)
         .customize(tintColor) {
           apply(RequestOptions().set(CustomOptions.tintColor, it))
+        }
+        .customize(svgVariables) {
+          apply(RequestOptions().set(CustomOptions.svgVariables, it))
         }
 
       val cookie = Trace.getNextCookieValue()

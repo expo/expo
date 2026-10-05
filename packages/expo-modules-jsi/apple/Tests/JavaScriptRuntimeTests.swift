@@ -35,6 +35,40 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `host function returns a fresh string`() throws {
+    let fn = runtime.createFunction("greet") { [runtime] _, _ in
+      return JavaScriptValue(runtime, "hello")
+    }
+    runtime.global().setProperty("greet", value: fn)
+    #expect(try runtime.eval("greet() + ' ' + greet()").getString() == "hello hello")
+  }
+
+  @Test
+  func `host function returns a shared value repeatedly`() throws {
+    // The same instance is returned on every call, so the host call must copy the engine handle
+    // instead of moving it out: the captured value has to stay valid for the next call.
+    let shared = JavaScriptValue(runtime, "shared")
+    let fn = runtime.createFunction("shared") { _, _ in
+      return shared
+    }
+    runtime.global().setProperty("shared", value: fn)
+    #expect(try runtime.eval("shared() + ' ' + shared()").getString() == "shared shared")
+    #expect(shared.getString() == "shared")
+  }
+
+  @Test
+  func `host function returns an object it keeps`() throws {
+    let kept = runtime.createObject()
+    kept.setProperty("answer", value: 42)
+    let fn = runtime.createFunction("kept") { _, _ in
+      return kept.asValue()
+    }
+    runtime.global().setProperty("kept", value: fn)
+    #expect(try runtime.eval("kept().answer + kept().answer").getInt() == 84)
+    #expect(kept.getProperty("answer").getInt() == 42)
+  }
+
+  @Test
   func `evaluate script`() throws {
     #expect(try runtime.eval("'hello' + ' ' + 'world'").getString() == "hello world")
     #expect(try runtime.eval("(function() {})").isFunction() == true)
@@ -136,11 +170,11 @@ struct JavaScriptRuntimeTests {
     }
 
     await scheduler.run {
-      nonisolated(unsafe) var didRunInline = false
+      let didRunInline = InlineRunFlag()
       runtime.runOrSchedule {
-        didRunInline = true
+        didRunInline.value = true
       }
-      #expect(didRunInline)
+      #expect(didRunInline.value)
     }
 
     await withCheckedContinuation { continuation in
@@ -218,6 +252,31 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `host object getter returns strings`() throws {
+    // `fresh` is created per access and gets moved into the result; `shared` is the same instance on
+    // every access and has to be copied so it stays valid.
+    let shared = JavaScriptValue(runtime, "shared")
+    let hostObject = runtime.createHostObject(
+      get: { [runtime] name in
+        switch name {
+        case "fresh":
+          return JavaScriptValue(runtime, "fresh")
+        case "shared":
+          return shared
+        default:
+          return .undefined
+        }
+      },
+      getPropertyNames: { ["fresh", "shared"] }
+    )
+    runtime.global().setProperty("host", value: hostObject)
+
+    #expect(try runtime.eval("host.fresh + host.fresh").getString() == "freshfresh")
+    #expect(try runtime.eval("host.shared + host.shared").getString() == "sharedshared")
+    #expect(shared.getString() == "shared")
+  }
+
+  @Test
   func `host object set property`() {
     var storedValue: Int?
 
@@ -278,6 +337,46 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval("globalThis.hostObj.greeting")
 
     #expect(result.getString() == "hello")
+  }
+
+  @Test
+  func `host object receives non-ASCII property names`() throws {
+    var receivedNames: [String] = []
+    var setNames: [String] = []
+
+    let hostObject = runtime.createHostObject(
+      get: { name in
+        receivedNames.append(name)
+        return .undefined
+      },
+      set: { name, _ in
+        setNames.append(name)
+      }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+    _ = try runtime.eval("globalThis.hostObj['właściwość']; globalThis.hostObj['🚀'] = 1")
+
+    #expect(receivedNames == ["właściwość"])
+    #expect(setNames == ["🚀"])
+  }
+
+  @Test
+  func `host object receives long property names`() throws {
+    var receivedName: String?
+    let longName = String(repeating: "a", count: 300)
+
+    let hostObject = runtime.createHostObject(
+      get: { name in
+        receivedName = name
+        return .undefined
+      }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+    _ = try runtime.eval("globalThis.hostObj['\(longName)']")
+
+    #expect(receivedName == longName)
   }
 
   @Test
@@ -630,6 +729,19 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval("try { ok() } catch (e) { -1 }")
 
     #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `host function results of primitive kinds reach JavaScript unchanged`() throws {
+    runtime.global().setProperty("yes", value: runtime.createFunction("yes") { _, _ in .true() }.asValue())
+    runtime.global().setProperty("no", value: runtime.createFunction("no") { _, _ in .false() }.asValue())
+    runtime.global().setProperty("nothing", value: runtime.createFunction("nothing") { _, _ in .null }.asValue())
+    runtime.global().setProperty("half", value: runtime.createFunction("half") { _, _ in .number(0.5) }.asValue())
+    let result = try runtime.eval("[yes() === true, no() === false, nothing() === null, half() === 0.5]").getArray()
+    #expect(result[0].getBool() == true)
+    #expect(result[1].getBool() == true)
+    #expect(result[2].getBool() == true)
+    #expect(result[3].getBool() == true)
   }
 
   // MARK: - Async functions
@@ -1018,7 +1130,7 @@ struct JavaScriptRuntimeTests {
       #expect((weakObject?.lock() != nil) == true)
     }
 
-    runtime.collectGarbage()
+    runtime.collectGarbage { weakObject?.lock() == nil }
 
     #expect((weakObject?.lock() == nil) == true)
   }
@@ -1036,98 +1148,12 @@ struct JavaScriptRuntimeTests {
   }
 }
 
-private final class TestRuntimeScheduler: @unchecked Sendable {
-  // A serial dispatch queue may use different worker threads between callbacks, but
-  // JavaScriptRuntime tracks affinity to the specific thread on which it was created.
-  private let state: State
-  private let thread: Thread
-
-  init() {
-    let state = State()
-    self.state = state
-    self.thread = Thread {
-      state.run()
-    }
-    thread.name = "expo.modules.jsi.tests.runtime"
-    thread.start()
-    state.waitUntilReady()
-  }
-
-  deinit {
-    state.stop()
-  }
-
-  var opaquePointer: UnsafeMutableRawPointer {
-    return Unmanaged.passUnretained(self).toOpaque()
-  }
-
-  func schedule(_ operation: @escaping @convention(block) () -> Void) {
-    state.schedule(operation)
-  }
-
-  func run<R: Sendable>(_ operation: @escaping @Sendable () -> R) async -> R {
-    return await withCheckedContinuation { continuation in
-      schedule {
-        continuation.resume(returning: operation())
-      }
-    }
-  }
-
-  private final class State: @unchecked Sendable {
-    private let condition = NSCondition()
-    private let ready = DispatchSemaphore(value: 0)
-    private var operations: [@convention(block) () -> Void] = []
-    private var isStopped = false
-
-    func schedule(_ operation: @escaping @convention(block) () -> Void) {
-      condition.lock()
-      operations.append(operation)
-      condition.signal()
-      condition.unlock()
-    }
-
-    func waitUntilReady() {
-      ready.wait()
-    }
-
-    func stop() {
-      condition.lock()
-      isStopped = true
-      condition.signal()
-      condition.unlock()
-    }
-
-    func run() {
-      ready.signal()
-
-      while true {
-        condition.lock()
-        while operations.isEmpty && !isStopped {
-          condition.wait()
-        }
-        if isStopped {
-          condition.unlock()
-          return
-        }
-        let operation = operations.removeFirst()
-        condition.unlock()
-
-        operation()
-      }
-    }
-  }
+/// Records whether a `runOrSchedule` block ran. A class instead of a `nonisolated(unsafe) var` captured
+/// by the block, which Swift 6.2 rejects as a data race. Safe without synchronization: the test only
+/// reads it after the block ran inline on the same thread.
+private final class InlineRunFlag: @unchecked Sendable {
+  var value = false
 }
-
-private let scheduleOnTestRuntime:
-  @convention(c) (
-    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
-  ) -> Void = { schedulerPointer, _, callback in
-    guard let schedulerPointer else {
-      return
-    }
-    let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
-    scheduler.schedule(callback)
-  }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
 /// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).

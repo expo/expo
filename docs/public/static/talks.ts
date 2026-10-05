@@ -339,6 +339,12 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'How is your app actually doing in production? | Introducing Observe',
+    event: 'Expo Live Stream',
+    videoId: 'INfXyyspMWA',
+    uploadDate: '2026-08-28',
+  },
+  {
     title: 'Closing the loop: How to turn your website into a mobile app with AI',
     event: 'Expo Live Stream',
     videoId: '9Sl6VXrj224',

@@ -8,21 +8,14 @@ namespace jni = facebook::jni;
 
 namespace expo {
 
-namespace {
-
-constexpr char TAG[] = "expo-sqlite";
-
-} // namespace
-
 // static
 void NativeDatabaseBinding::registerNatives() {
   registerHybrid({
       makeNativeMethod("initHybrid", NativeDatabaseBinding::initHybrid),
       makeNativeMethod("sqlite3_changes",
                        NativeDatabaseBinding::sqlite3_changes),
-      makeNativeMethod("sqlite3_finalize_all_statement",
-                       NativeDatabaseBinding::sqlite3_finalize_all_statement),
       makeNativeMethod("sqlite3_close", NativeDatabaseBinding::sqlite3_close),
+      makeNativeMethod("sqlite3_interrupt", NativeDatabaseBinding::sqlite3_interrupt),
       makeNativeMethod("sqlite3_db_filename",
                        NativeDatabaseBinding::sqlite3_db_filename),
       makeNativeMethod("sqlite3_enable_load_extension",
@@ -51,19 +44,7 @@ void NativeDatabaseBinding::registerNatives() {
 
 int NativeDatabaseBinding::sqlite3_changes() { return ::exsqlite3_changes(db); }
 
-void NativeDatabaseBinding::sqlite3_finalize_all_statement() {
-  ::exsqlite3_stmt *stmt = ::exsqlite3_next_stmt(db, nullptr);
-  while (stmt) {
-    ::exsqlite3_stmt *nextStmt = ::exsqlite3_next_stmt(db, stmt);
-    int ret = ::exsqlite3_finalize(stmt);
-    if (ret != SQLITE_OK) {
-      std::string error = convertSqlLiteErrorToSTLString();
-      __android_log_print(ANDROID_LOG_WARN, TAG,
-                          "exsqlite3_finalize failed: %s", error.c_str());
-    }
-    stmt = nextStmt;
-  }
-}
+void NativeDatabaseBinding::sqlite3_interrupt() { ::exsqlite3_interrupt(db); }
 
 int NativeDatabaseBinding::sqlite3_close() {
   // Not setting `db = nullptr` here because we may need the db pointer to get

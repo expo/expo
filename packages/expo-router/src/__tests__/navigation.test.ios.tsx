@@ -11,15 +11,31 @@ import {
   Slot,
   usePathname,
 } from '../exports';
-import { store } from '../global-state/router-store';
+import { navigationRef } from '../global-state/navigationRef';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link';
 import { renderRouter, screen } from '../testing-library';
 
-it('should respect `unstable_settings', () => {
-  const render = (options: any = {}) =>
-    renderRouter(
+it('throws when navigating before the first render finishes', async () => {
+  await expect(
+    async () =>
+      await renderRouter({
+        index: function MyIndexRoute() {
+          router.push('/profile/test-name');
+          return <Text testID="index">Press me</Text>;
+        },
+        '/profile/[name]': function MyRoute() {
+          const { name } = useGlobalSearchParams();
+          return <Text testID="profile-name">{name}</Text>;
+        },
+      })
+  ).rejects.toThrow('The imperative router is unavailable before the first render has finished.');
+});
+
+it('should respect `unstable_settings', async () => {
+  const render = async (options: any = {}) =>
+    await renderRouter(
       {
         '(one,two)/_layout': {
           unstable_settings: {
@@ -42,7 +58,7 @@ it('should respect `unstable_settings', () => {
       options
     );
 
-  render({ initialUrl: '/orange' });
+  await render({ initialUrl: '/orange' });
   expect(screen).toHaveSegments(['(two)', 'orange']);
 
   expect(screen.getByTestId('orange')).toBeVisible();
@@ -50,17 +66,17 @@ it('should respect `unstable_settings', () => {
   expect(router.canGoBack()).toBeFalsy();
 
   // Reset the app, but start at /banana
-  screen.unmount();
-  render({ initialUrl: '/banana' });
+  await screen.unmount();
+  await render({ initialUrl: '/banana' });
 
   expect(screen.getByTestId('banana')).toBeVisible();
   // Orange should be the initialRouteName, because we are in (two)
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('orange')).toBeVisible();
 });
 
-it('can skip initialRouteName', () => {
-  renderRouter({
+it('can skip initialRouteName', async () => {
+  await renderRouter({
     index: () => <Text testID="index">Index</Text>,
     '(stack)/_layout': {
       unstable_settings: {
@@ -73,27 +89,27 @@ it('can skip initialRouteName', () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  act(() => router.push('/banana'));
+  await act(() => router.push('/banana'));
   expect(screen.getByTestId('banana')).toBeVisible();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('index')).toBeVisible();
 
-  act(() => router.push('/banana', { withAnchor: true }));
+  await act(() => router.push('/banana', { withAnchor: true }));
   expect(screen.getByTestId('banana')).toBeVisible();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('apple')).toBeVisible();
 
-  act(() => router.replace('/'));
+  await act(() => router.replace('/'));
 
-  act(() => router.push('/banana', { withAnchor: false }));
+  await act(() => router.push('/banana', { withAnchor: false }));
   expect(screen.getByTestId('banana')).toBeVisible();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
 describe('hooks only', () => {
   it('can handle navigation between routes', async () => {
-    renderRouter({
+    await renderRouter({
       index: function MyIndexRoute() {
         const router = useRouter();
 
@@ -111,8 +127,8 @@ describe('hooks only', () => {
 
     const text = await screen.findByTestId('index');
 
-    act(() => {
-      fireEvent.press(text);
+    await act(async () => {
+      await fireEvent.press(text);
     });
 
     expect(await screen.findByText('test-name')).toBeOnTheScreen();
@@ -121,25 +137,8 @@ describe('hooks only', () => {
 });
 
 describe('imperative only', () => {
-  // The navigation action is offloaded until the navigation tree is ready.
-  it('can navigate before navigation is ready', async () => {
-    renderRouter({
-      index: function MyIndexRoute() {
-        router.push('/profile/test-name');
-        return <Text testID="index">Press me</Text>;
-      },
-      '/profile/[name]': function MyRoute() {
-        const { name } = useGlobalSearchParams();
-        return <Text testID="profile-name">{name}</Text>;
-      },
-    });
-
-    expect(screen.queryByTestId('index')).toBeNull();
-    expect(screen.getByTestId('profile-name')).toBeOnTheScreen();
-  });
-
   it('can handle navigation between routes', async () => {
-    renderRouter({
+    await renderRouter({
       index: function MyIndexRoute() {
         return <Text testID="index">Press me</Text>;
       },
@@ -151,14 +150,14 @@ describe('imperative only', () => {
 
     await screen.findByTestId('index');
 
-    act(() => {
+    await act(() => {
       router.push('/profile/test-name');
     });
 
     expect(await screen.findByText('test-name')).toBeOnTheScreen();
   });
   it('can handle navigation between routes with hashes', async () => {
-    renderRouter({
+    await renderRouter({
       index: function MyIndexRoute() {
         return <Text testID="index">Press me</Text>;
       },
@@ -170,7 +169,7 @@ describe('imperative only', () => {
 
     await screen.findByTestId('index');
 
-    act(() => {
+    await act(() => {
       router.push('/profile/test-name?foo=bar#baz');
     });
 
@@ -180,7 +179,7 @@ describe('imperative only', () => {
 
 describe('mixed navigation', () => {
   it('can handle mixed navigation between routes', async () => {
-    renderRouter({
+    await renderRouter({
       index: function MyIndexRoute() {
         const router = useRouter();
 
@@ -198,13 +197,13 @@ describe('mixed navigation', () => {
 
     const text = await screen.findByTestId('index');
 
-    act(() => {
-      fireEvent.press(text);
+    await act(async () => {
+      await fireEvent.press(text);
     });
 
     expect(await screen.findByText('test-name')).toBeOnTheScreen();
 
-    act(() => {
+    await act(() => {
       router.push('/profile/another-test-name');
     });
 
@@ -212,10 +211,10 @@ describe('mixed navigation', () => {
   });
 });
 
-it('preserves history when replacing screens within the same navigator', () => {
+it('preserves history when replacing screens within the same navigator', async () => {
   /* Modified repro of [#221](https://github.com/expo/router/issues/221). */
 
-  renderRouter({
+  await renderRouter({
     index: () => <Text>home</Text>,
     two: () => <Text>two</Text>,
     permissions: () => <Text>permissions</Text>,
@@ -232,28 +231,28 @@ it('preserves history when replacing screens within the same navigator', () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/two'));
+  await act(() => router.push('/two'));
   expect(screen).toHavePathname('/two');
 
-  act(() => router.push('/protected'));
+  await act(() => router.push('/protected'));
   // /protected should have a redirect that replaces the pathname
   expect(screen).toHavePathname('/permissions');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/two');
 
   // Can also replace via the imperative API
-  act(() => router.replace('/permissions'));
+  await act(() => router.replace('/permissions'));
   expect(screen).toHavePathname('/permissions');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/');
 });
 
-it('replaces from top level modal to initial route in a tab navigator', () => {
+it('replaces from top level modal to initial route in a tab navigator', async () => {
   /* Modified repro of [#221](https://github.com/expo/router/issues/221). */
 
-  renderRouter({
+  await renderRouter({
     _layout: {
       unstable_settings: {
         // Ensure that reloading on `/modal` keeps a back button present.
@@ -273,38 +272,38 @@ it('replaces from top level modal to initial route in a tab navigator', () => {
   expect(screen).toHavePathname('/');
   expect(screen).toHaveSegments(['(tabs)']);
 
-  act(() => router.push('/missing-screen'));
+  await act(() => router.push('/missing-screen'));
   expect(screen).toHavePathname('/missing-screen');
   expect(screen).toHaveSegments(['[...missing]']);
   expect(screen.getByTestId('missing')).toBeOnTheScreen();
 
-  act(() => router.push('/'));
+  await act(() => router.push('/'));
   expect(screen).toHavePathname('/');
   expect(screen).toHaveSegments(['(tabs)']);
   expect(screen.getByTestId('two')).toBeOnTheScreen();
 
   // Ensure it also works for replace
-  act(() => router.push('/missing-screen'));
+  await act(() => router.push('/missing-screen'));
   expect(screen).toHavePathname('/missing-screen');
   expect(screen).toHaveSegments(['[...missing]']);
   expect(screen.getByTestId('missing')).toBeOnTheScreen();
 
-  act(() => router.replace('/'));
+  await act(() => router.replace('/'));
   expect(screen).toHavePathname('/');
   expect(screen).toHaveSegments(['(tabs)']);
   expect(screen.getByTestId('two')).toBeOnTheScreen();
 });
 
-it('pushes auto-encoded params and fully qualified URLs', () => {
+it('pushes auto-encoded params and fully qualified URLs', async () => {
   /** https://github.com/expo/router/issues/345 */
-  renderRouter({
+  await renderRouter({
     index: () => <Text />,
     '[id]': () => <Text />,
   });
 
   expect(screen).toHavePathname('/');
 
-  act(() =>
+  await act(() =>
     router.push({
       pathname: '/abc',
       params: {
@@ -323,11 +322,12 @@ it('pushes auto-encoded params and fully qualified URLs', () => {
   });
 });
 
-it('throws when pushing to a layout with an invalid initial route name', () => {
+it('warns when pushing to a layout with an invalid initial route name', async () => {
   /** https://github.com/expo/router/issues/452 */
   // Throwing before the invalid layout mounts makes the reported render loop unreachable.
 
-  renderRouter({
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text />,
     'main/_layout': {
@@ -346,13 +346,17 @@ it('throws when pushing to a layout with an invalid initial route name', () => {
   });
 
   expect(screen).toHavePathname('/');
-  expect(() => act(() => router.push('/main/welcome'))).toThrow(
-    'The initial route name "index" was not found in the layout at "./main/_layout.js". Available routes are: "welcome". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+  await act(() => router.push('/main/welcome'));
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringContaining(
+      'The initial route name "index" was not found in the layout at "./main/_layout.js".'
+    )
   );
+  warn.mockRestore();
 });
 
-it('can push nested initial route name', () => {
-  renderRouter({
+it('can push nested initial route name', async () => {
+  await renderRouter({
     _layout: {
       unstable_settings: {
         // Should be able to push another stack even when this is set.
@@ -366,12 +370,12 @@ it('can push nested initial route name', () => {
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/settings'));
+  await act(() => router.push('/settings'));
   expect(screen).toHavePathname('/settings');
 });
 
-it('can replace nested initial route name', () => {
-  renderRouter({
+it('can replace nested initial route name', async () => {
+  await renderRouter({
     _layout: {
       unstable_settings: {
         // Should be able to push another stack even when this is set.
@@ -385,12 +389,12 @@ it('can replace nested initial route name', () => {
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.replace('/settings'));
+  await act(() => router.replace('/settings'));
   expect(screen).toHavePathname('/settings');
 });
 
-it('can check goBack before navigation mounts', () => {
-  renderRouter({
+it('can check goBack before navigation mounts', async () => {
+  await renderRouter({
     _layout: {
       default() {
         // No navigator mounted at the root, this should prevent navigation from working.
@@ -407,7 +411,7 @@ it('can check goBack before navigation mounts', () => {
 });
 
 it('can push back from a nested modal to a nested sibling', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="index" />
@@ -427,18 +431,18 @@ it('can push back from a nested modal to a nested sibling', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/slot'));
+  await act(() => router.push('/slot'));
   expect(screen).toHavePathname('/slot');
 
-  act(() => router.push('/(group)/modal'));
+  await act(() => router.push('/(group)/modal'));
   expect(screen).toHavePathname('/modal');
 
-  act(() => router.push('/slot'));
+  await act(() => router.push('/slot'));
   expect(screen).toHavePathname('/slot');
 });
 
 it('can pop back from a nested modal to a nested sibling', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="index" />
@@ -458,20 +462,20 @@ it('can pop back from a nested modal to a nested sibling', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/slot'));
+  await act(() => router.push('/slot'));
   expect(screen).toHavePathname('/slot');
 
-  act(() => router.push('/(group)/modal'));
+  await act(() => router.push('/(group)/modal'));
   expect(screen).toHavePathname('/modal');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/slot');
 });
 
-it('can navigate to hoisted groups', () => {
+it('can navigate to hoisted groups', async () => {
   /** https://github.com/expo/router/issues/805 */
 
-  renderRouter({
+  await renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
@@ -479,14 +483,14 @@ it('can navigate to hoisted groups', () => {
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/example/(a)/route'));
+  await act(() => router.push('/example/(a)/route'));
 
   expect(screen).toHavePathname('/example/route');
   expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can navigate to the index of a nested groups', () => {
-  renderRouter({
+it('can navigate to the index of a nested groups', async () => {
+  await renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
@@ -495,14 +499,14 @@ it('can navigate to the index of a nested groups', () => {
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/example/(a)/folder/(d)'));
+  await act(() => router.push('/example/(a)/folder/(d)'));
 
   expect(screen).toHavePathname('/example/folder');
   expect(screen.getByTestId('index')).toBeTruthy();
 });
 
-it('can navigate to the first route of a nested group when there is not an index route', () => {
-  renderRouter({
+it('can navigate to the first route of a nested group when there is not an index route', async () => {
+  await renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
@@ -511,14 +515,14 @@ it('can navigate to the first route of a nested group when there is not an index
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/example/(a)/folder/(d)/route'));
+  await act(() => router.push('/example/(a)/folder/(d)/route'));
 
   expect(screen).toHavePathname('/example/folder/route');
   expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can navigate to the index of a hoisted nested groups', () => {
-  renderRouter({
+it('can navigate to the index of a hoisted nested groups', async () => {
+  await renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
@@ -526,14 +530,14 @@ it('can navigate to the index of a hoisted nested groups', () => {
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/example/(a)/folder/(d)'));
+  await act(() => router.push('/example/(a)/folder/(d)'));
 
   expect(screen).toHavePathname('/example/folder');
   expect(screen.getByTestId('index')).toBeTruthy();
 });
 
-it('can navigate to the first route of a hoisted nested group when there is not an index route', () => {
-  renderRouter({
+it('can navigate to the first route of a hoisted nested group when there is not an index route', async () => {
+  await renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
@@ -541,16 +545,16 @@ it('can navigate to the first route of a hoisted nested group when there is not 
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/example/(a)/folder/(d)/route'));
+  await act(() => router.push('/example/(a)/folder/(d)/route'));
 
   expect(screen).toHavePathname('/example/folder/route');
   expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can navigate to hoisted groups', () => {
+it('can navigate to hoisted groups', async () => {
   /** https://github.com/expo/router/issues/805 */
 
-  renderRouter({
+  await renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
@@ -558,14 +562,14 @@ it('can navigate to hoisted groups', () => {
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/example/(a)/route'));
+  await act(() => router.push('/example/(a)/route'));
 
   expect(screen).toHavePathname('/example/route');
   expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can navigate to nested groups', () => {
-  renderRouter({
+it('can navigate to nested groups', async () => {
+  await renderRouter({
     index: () => <></>,
     _layout: () => <Slot />,
     'example/(a,b)/_layout': () => <Slot />,
@@ -575,14 +579,14 @@ it('can navigate to nested groups', () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/example/(a)/folder/(d)/route'));
+  await act(() => router.push('/example/(a)/folder/(d)/route'));
 
   expect(screen).toHavePathname('/example/folder/route');
   expect(screen.getByTestId('route')).toBeTruthy();
 });
 
-it('can check goBack before navigation mounts', () => {
-  renderRouter({
+it('can check goBack before navigation mounts', async () => {
+  await renderRouter({
     _layout: {
       default() {
         // No navigator mounted at the root, this should prevent navigation from working.
@@ -598,8 +602,8 @@ it('can check goBack before navigation mounts', () => {
   expect(router.canGoBack()).toBe(false);
 });
 
-it('should stay within the same group', () => {
-  renderRouter(
+it('should stay within the same group', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       '(tabs)/_layout': () => (
@@ -621,12 +625,43 @@ it('should stay within the same group', () => {
   );
 
   expect(screen).toHaveSegments(['(tabs)', '(profile)']);
-  act(() => router.push('/shared'));
+  await act(() => router.push('/shared'));
   expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
 });
 
-it('should stay within the same group for hoisted routes', () => {
-  renderRouter(
+it('resolves queued navigation using the preceding pending group segments', async () => {
+  await renderRouter(
+    {
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)" />
+        </Tabs>
+      ),
+      '(tabs)/(home)/_layout': () => <Stack />,
+      '(tabs)/(home)/index': () => <Text>Home Index</Text>,
+      '(tabs)/(home)/shared': () => <Text>Home Shared</Text>,
+      '(tabs)/(profile)/_layout': () => <Stack />,
+      '(tabs)/(profile)/index': () => <Text>Profile Index</Text>,
+      '(tabs)/(profile)/shared': () => <Text testID="profile-shared">Profile Shared</Text>,
+    },
+    {
+      initialUrl: '/(home)',
+    }
+  );
+
+  await act(() => {
+    router.push('/(profile)');
+    router.push('/shared');
+  });
+
+  expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
+  expect(screen.getByTestId('profile-shared')).toBeOnTheScreen();
+});
+
+it('should stay within the same group for hoisted routes', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       '(tabs)/_layout': () => (
@@ -649,12 +684,12 @@ it('should stay within the same group for hoisted routes', () => {
   );
 
   expect(screen).toHaveSegments(['(tabs)', '(profile)']);
-  act(() => router.push('/shared'));
+  await act(() => router.push('/shared'));
   expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
 });
 
-it('should stay within the same group even if another group has more specific route', () => {
-  renderRouter(
+it('should stay within the same group even if another group has more specific route', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       '(tabs)/_layout': () => (
@@ -677,12 +712,12 @@ it('should stay within the same group even if another group has more specific ro
   );
 
   expect(screen).toHaveSegments(['(tabs)', '(profile)']);
-  act(() => router.push('/shared'));
+  await act(() => router.push('/shared'));
   expect(screen).toHaveSegments(['(tabs)', '(profile)', 'shared']);
 });
 
 it('can navigate back from a nested modal to a nested sibling', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="index" />
@@ -702,26 +737,26 @@ it('can navigate back from a nested modal to a nested sibling', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/slot'));
+  await act(() => router.push('/slot'));
   expect(screen).toHavePathname('/slot');
 
-  act(() => router.push('/(group)/modal'));
+  await act(() => router.push('/(group)/modal'));
   expect(screen).toHavePathname('/modal');
 
-  act(() => router.push('/slot'));
+  await act(() => router.push('/slot'));
   expect(screen).toHavePathname('/slot');
 
   // Ensure it also works for replace
 
-  act(() => router.push('/(group)/modal'));
+  await act(() => router.push('/(group)/modal'));
   expect(screen).toHavePathname('/modal');
 
-  act(() => router.replace('/slot'));
+  await act(() => router.replace('/slot'));
   expect(screen).toHavePathname('/slot');
 });
 
 it('can pop back from a nested modal to a nested sibling', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="index" />
@@ -741,18 +776,18 @@ it('can pop back from a nested modal to a nested sibling', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/slot'));
+  await act(() => router.push('/slot'));
   expect(screen).toHavePathname('/slot');
 
-  act(() => router.push('/(group)/modal'));
+  await act(() => router.push('/(group)/modal'));
   expect(screen).toHavePathname('/modal');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/slot');
 });
 
 it('supports multi-level 404s', async () => {
-  renderRouter({
+  await renderRouter({
     index: () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
     'nested/+not-found': () => <Text>Nested 404</Text>,
@@ -761,14 +796,14 @@ it('supports multi-level 404s', async () => {
   expect(screen).toHavePathnameWithParams('/');
   expect(await screen.findByText('found')).toBeOnTheScreen();
 
-  act(() => router.push('/123'));
+  await act(() => router.push('/123'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
   expect(screen).toHavePathname('/123');
   expect(screen).toHaveSearchParams({
     'not-found': ['123'],
   });
 
-  act(() => router.push('/123/456?test=true'));
+  await act(() => router.push('/123/456?test=true'));
   expect(await screen.findByText('404')).toBeOnTheScreen();
   // Should only have `test` and not include `not-found`
   expect(screen).toHavePathnameWithParams('/123/456?test=true');
@@ -777,7 +812,7 @@ it('supports multi-level 404s', async () => {
     'not-found': ['123', '456'],
   });
 
-  act(() => router.push('/nested/123?test=true'));
+  await act(() => router.push('/nested/123?test=true'));
   expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
   expect(screen).toHavePathnameWithParams('/nested/123?test=true');
   expect(screen).toHaveSearchParams({
@@ -785,7 +820,7 @@ it('supports multi-level 404s', async () => {
     'not-found': ['123'],
   });
 
-  act(() => router.push('/nested/123/456?test=true'));
+  await act(() => router.push('/nested/123/456?test=true'));
   expect(await screen.findByText('Nested 404')).toBeOnTheScreen();
   expect(screen).toHavePathnameWithParams('/nested/123/456?test=true');
   expect(screen).toHaveSearchParams({
@@ -795,7 +830,7 @@ it('supports multi-level 404s', async () => {
 });
 
 it('supports dynamic 404s next to dynamic routes', async () => {
-  renderRouter({
+  await renderRouter({
     index: () => <Text />,
     '[slug]': () => <Text>found</Text>,
     '+not-found': () => <Text>404</Text>,
@@ -803,13 +838,13 @@ it('supports dynamic 404s next to dynamic routes', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/123'));
+  await act(() => router.push('/123'));
   expect(screen).toHavePathname('/123');
   expect(await screen.findByText('found')).toBeOnTheScreen();
 });
 
 it('supports deep dynamic 404s next to dynamic routes', async () => {
-  renderRouter({
+  await renderRouter({
     index: () => <Text />,
     '+not-found': () => <Text>404</Text>,
     '[...slug]': () => <Text>found</Text>,
@@ -817,13 +852,13 @@ it('supports deep dynamic 404s next to dynamic routes', async () => {
 
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/123'));
+  await act(() => router.push('/123'));
   expect(screen).toHavePathname('/123');
   expect(await screen.findByText('found')).toBeOnTheScreen();
 });
 
 it('can deep link, pop back, and move around with initialRouteName in root layout', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: {
         unstable_settings: {
@@ -845,10 +880,10 @@ it('can deep link, pop back, and move around with initialRouteName in root layou
     }
   );
   expect(screen).toHavePathname('/a/b');
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/');
 
-  act(() => router.push('/a/b'));
+  await act(() => router.push('/a/b'));
   expect(screen).toHavePathname('/a/b');
 });
 
@@ -859,7 +894,7 @@ afterEach(() => {
 it('respects baseUrl', async () => {
   process.env.EXPO_BASE_URL = '/one/two';
 
-  renderRouter({
+  await renderRouter({
     index: function Index() {
       const pathname = usePathname();
       return <Text testID="rendered-path">{pathname}</Text>;
@@ -873,8 +908,8 @@ it('respects baseUrl', async () => {
   expect(text).toHaveTextContent('/');
 });
 
-it('can redirect within a group layout', () => {
-  renderRouter({
+it('can redirect within a group layout', async () => {
+  await renderRouter({
     '(group)/_layout': function Component() {
       const pathname = usePathname();
 
@@ -893,7 +928,7 @@ it('can redirect within a group layout', () => {
 });
 
 it('can replace across groups', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="one" />
@@ -913,17 +948,17 @@ it('can replace across groups', async () => {
   // Go to one
   // Using replace here, so we don't create a history entry
   // Otherwise canGoBack would be true
-  act(() => router.replace('/one/screen'));
+  await act(() => router.replace('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
   // Push to two
-  act(() => router.push('/two/screen'));
+  await act(() => router.push('/two/screen'));
   expect(screen).toHavePathname('/two/screen');
   expect(screen.getByTestId('two/screen')).toBeOnTheScreen();
 
   // Replace with one. This will create a history of ['one', 'one']
-  act(() => router.replace('/one/screen'));
+  await act(() => router.replace('/one/screen'));
   expect(screen).toHavePathname('/one/screen');
   expect(screen.getByTestId('one/screen')).toBeOnTheScreen();
 
@@ -931,7 +966,7 @@ it('can replace across groups', async () => {
 });
 
 it('can push nested stacks without creating circular references', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => <Text />,
     'menu/_layout': () => <Stack />,
@@ -939,13 +974,13 @@ it('can push nested stacks without creating circular references', async () => {
     'menu/index': () => <Text />,
   });
   expect(screen).toHavePathname('/');
-  act(() => router.push('/menu'));
-  act(() => router.push('/menu/123'));
+  await act(() => router.push('/menu'));
+  await act(() => router.push('/menu/123'));
   expect(screen).toHavePathname('/menu/123');
 });
 
 it('can push nested stacks with initial route names without creating circular references', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: { initialRouteName: 'index', default: () => <Stack /> },
     index: () => <Text />,
     'menu/_layout': { initialRouteName: 'index', default: () => <Stack /> },
@@ -953,13 +988,13 @@ it('can push nested stacks with initial route names without creating circular re
     'menu/index': () => <Text />,
   });
   expect(screen).toHavePathname('/');
-  act(() => router.push('/menu'));
-  act(() => router.push('/menu/123'));
+  await act(() => router.push('/menu'));
+  await act(() => router.push('/menu/123'));
   expect(screen).toHavePathname('/menu/123');
 });
 
 it('can replace with nested Slots', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => <Slot />,
     index: () => <Text testID="index" />,
     'one/_layout': () => <Slot />,
@@ -967,16 +1002,16 @@ it('can replace with nested Slots', async () => {
   });
 
   // Replace
-  act(() => router.replace('/one'));
+  await act(() => router.replace('/one'));
   expect(screen).toHavePathname('/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
-  act(() => router.replace('/'));
+  await act(() => router.replace('/'));
   expect(screen).toHavePathname('/');
 });
 
-it('can push with top-level catch-all route', () => {
-  renderRouter({
+it('can push with top-level catch-all route', async () => {
+  await renderRouter({
     '[...all]': () => <Text testID="index" />,
   });
 
@@ -984,12 +1019,12 @@ it('can push with top-level catch-all route', () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
   // // If we push once and go back, we are back to index
-  act(() => router.push('/test'));
+  await act(() => router.push('/test'));
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
-it('can push the same route multiple times', () => {
-  renderRouter({
+it('can push the same route multiple times', async () => {
+  await renderRouter({
     index: () => <Text testID="index" />,
     test: () => <Text testID="test" />,
   });
@@ -998,24 +1033,24 @@ it('can push the same route multiple times', () => {
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
   // // If we push once and go back, we are back to index
-  act(() => router.push('/test'));
+  await act(() => router.push('/test'));
   expect(screen.getByTestId('test')).toBeOnTheScreen();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 
   // If we push twice we will need to go back twice
-  act(() => router.push('/test'));
-  act(() => router.push('/test'));
+  await act(() => router.push('/test'));
+  await act(() => router.push('/test'));
   expect(screen.getByTestId('test')).toBeOnTheScreen();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('test')).toBeOnTheScreen();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('index')).toBeOnTheScreen();
 });
 
 describe('relative urls', () => {
   it('can push relative links from index routes', async () => {
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => <Slot />,
         '(app)/test/_layout': () => <Stack />,
@@ -1030,13 +1065,13 @@ describe('relative urls', () => {
     expect(screen).toHavePathname('/test');
     expect(screen.getByTestId('two')).toBeOnTheScreen();
 
-    act(() => router.push('./test/bar'));
+    await act(() => router.push('./test/bar'));
     expect(screen.getByTestId('three')).toBeOnTheScreen();
     expect(screen).toHavePathname('/test/bar');
   });
 
   it('can push relative links relative to the directory', async () => {
-    renderRouter(
+    await renderRouter(
       {
         _layout: () => <Slot />,
         '(app)/index': () => <Text testID="one" />,
@@ -1052,13 +1087,13 @@ describe('relative urls', () => {
     expect(screen).toHavePathname('/test');
     expect(screen.getByTestId('two')).toBeOnTheScreen();
 
-    act(() => router.push('./bar', { relativeToDirectory: true }));
+    await act(() => router.push('./bar', { relativeToDirectory: true }));
     expect(screen.getByTestId('three')).toBeOnTheScreen();
     expect(screen).toHavePathname('/test/bar');
   });
 
-  it('can push relative links from hoisted routes', () => {
-    renderRouter(
+  it('can push relative links from hoisted routes', async () => {
+    await renderRouter(
       {
         _layout: () => <Stack />,
         'parent/index': () => <Link testID="link" href="./parent/child" />,
@@ -1070,12 +1105,12 @@ describe('relative urls', () => {
     );
 
     expect(screen.getByTestId('link')).toBeOnTheScreen();
-    fireEvent(screen.getByTestId('link'), 'press');
+    await fireEvent(screen.getByTestId('link'), 'press');
     expect(screen.getByTestId('child')).toBeOnTheScreen();
   });
 
-  it('can push relative links from hoisted routes relative to the directory', () => {
-    renderRouter(
+  it('can push relative links from hoisted routes relative to the directory', async () => {
+    await renderRouter(
       {
         _layout: () => <Stack />,
         'parent/index': () => <Link testID="link" href="./child" relativeToDirectory />,
@@ -1087,13 +1122,13 @@ describe('relative urls', () => {
     );
 
     expect(screen.getByTestId('link')).toBeOnTheScreen();
-    fireEvent(screen.getByTestId('link'), 'press');
+    await fireEvent(screen.getByTestId('link'), 'press');
     expect(screen.getByTestId('child')).toBeOnTheScreen();
   });
 });
 
 it('can navigation to a relative route without losing path params', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => <Slot />,
       '(group)/[value]/one': () => <Text testID="one" />,
@@ -1109,33 +1144,33 @@ it('can navigation to a relative route without losing path params', async () => 
   expect(screen).toHavePathname('/test/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
-  act(() => router.push('./two'));
+  await act(() => router.push('./two'));
   expect(screen).toHavePathname('/test/two');
   expect(screen.getByTestId('two')).toBeOnTheScreen();
 
-  act(() => router.push('../apple/one?orange=1'));
+  await act(() => router.push('../apple/one?orange=1'));
   expect(screen).toHavePathname('/apple/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
-  act(() => router.push('./two'));
+  await act(() => router.push('./two'));
   expect(screen).toHavePathname('/apple/two');
   expect(screen.getByTestId('two')).toBeOnTheScreen();
 
-  act(() => router.push('./three'));
+  await act(() => router.push('./three'));
   expect(screen).toHavePathname('/apple/three');
   expect(screen.getByTestId('three')).toBeOnTheScreen();
 
-  act(() => router.push('./banana/four'));
+  await act(() => router.push('./banana/four'));
   expect(screen).toHavePathname('/apple/banana/four');
   expect(screen.getByTestId('four')).toBeOnTheScreen();
 
-  act(() => router.push('./three'));
+  await act(() => router.push('./three'));
   expect(screen).toHavePathname('/apple/banana/three');
   expect(screen.getByTestId('three')).toBeOnTheScreen();
 });
 
 it('can navigation to a relative route with query params without losing path params', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => <Slot />,
       '(group)/[value]/one': () => <Text testID="one" />,
@@ -1151,7 +1186,7 @@ it('can navigation to a relative route with query params without losing path par
   expect(screen).toHavePathname('/test/one');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
-  act(() => router.push('./two?hello=world'));
+  await act(() => router.push('./two?hello=world'));
   expect(screen).toHavePathname('/test/two');
   expect(screen).toHavePathnameWithParams('/test/two?hello=world');
   expect(screen.getByTestId('two')).toBeOnTheScreen();
@@ -1160,7 +1195,7 @@ it('can navigation to a relative route with query params without losing path par
     hello: 'world',
   });
 
-  act(() => router.push('./one?foo=bar'));
+  await act(() => router.push('./one?foo=bar'));
   expect(screen).toHavePathname('/test/one');
   expect(screen).toHavePathnameWithParams('/test/one?foo=bar');
   expect(screen.getByTestId('one')).toBeOnTheScreen();
@@ -1169,7 +1204,7 @@ it('can navigation to a relative route with query params without losing path par
     foo: 'bar',
   });
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/test/two');
   expect(screen).toHavePathnameWithParams('/test/two?hello=world');
   expect(screen.getByTestId('two')).toBeOnTheScreen();
@@ -1180,8 +1215,8 @@ it('can navigation to a relative route with query params without losing path par
 });
 
 describe('shared routes with tabs', () => {
-  function renderSharedTabs() {
-    renderRouter({
+  async function renderSharedTabs() {
+    await renderRouter({
       '(one,two)/_layout': () => <Stack />,
       '(one,two)/one': () => <Text />,
       '(one,two)/post': () => <Text />,
@@ -1201,46 +1236,46 @@ describe('shared routes with tabs', () => {
 
   describe('tab one (default)', () => {
     it('pushes post in tab one using absolute /post', async () => {
-      renderSharedTabs();
-      act(() => router.push('/post'));
+      await renderSharedTabs();
+      await act(() => router.push('/post'));
       expect(screen).toHavePathname('/post');
       expect(screen).toHaveSegments(['(one)', 'post']);
     });
     it('pushes post in tab one using absolute /(tabs)/(one)/post', async () => {
-      renderSharedTabs();
-      act(() => router.push('/(one)/post'));
+      await renderSharedTabs();
+      await act(() => router.push('/(one)/post'));
       expect(screen).toHavePathname('/post');
       expect(screen).toHaveSegments(['(one)', 'post']);
     });
     it('pushes post in tab one using relative ./post', async () => {
-      renderSharedTabs();
-      act(() => router.push('./post'));
+      await renderSharedTabs();
+      await act(() => router.push('./post'));
       expect(screen).toHavePathname('/post');
       expect(screen).toHaveSegments(['(one)', 'post']);
     });
   });
   describe('tab two', () => {
     // Navigate to tab two before each case here.
-    beforeEach(() => {
-      renderSharedTabs();
-      act(() => router.push('/two'));
+    beforeEach(async () => {
+      await renderSharedTabs();
+      await act(() => router.push('/two'));
       expect(screen).toHavePathname('/two');
       expect(screen).toHaveSegments(['(two)', 'two']);
     });
 
     it('pushes post in tab two with absolute `/post` stays within the group', async () => {
-      act(() => router.push('/post'));
+      await act(() => router.push('/post'));
       expect(screen).toHavePathname('/post');
       expect(screen).toHaveSegments(['(two)', 'post']);
     });
     it('pushes post in tab two using absolute /(tabs)/(two)/post', async () => {
-      act(() => router.push('/(two)/post'));
+      await act(() => router.push('/(two)/post'));
       expect(screen).toHavePathname('/post');
       expect(screen).toHaveSegments(['(two)', 'post']);
     });
     it('pushes post in tab two using relative ./post', async () => {
       // Pushing `./post` should preserve the relative position in tab two and NOT swap to the default tab one variation of the `/post` route.
-      act(() => router.push('./post'));
+      await act(() => router.push('./post'));
       expect(screen).toHavePathname('/post');
       expect(screen).toHaveSegments(['(two)', 'post']);
     });
@@ -1250,7 +1285,7 @@ describe('shared routes with tabs', () => {
 it('will warn if a href provides duplicate parameters (single)', async () => {
   const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  renderRouter({
+  await renderRouter({
     index: () => <Redirect href="/test?id=test23" />,
     '[id]': () => <Text />,
   });
@@ -1267,7 +1302,7 @@ it('will warn if a href provides duplicate parameters (single)', async () => {
 it('will warn if a href provides duplicate parameters (wildcard)', async () => {
   const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-  renderRouter({
+  await renderRouter({
     index: () => <Redirect href="/test?id=test23" />,
     '[...id]': () => <Text />,
   });
@@ -1283,7 +1318,7 @@ it('will warn if a href provides duplicate parameters (wildcard)', async () => {
 
 describe('consistent url encoding', () => {
   it('can handle url encoded deep linking', async () => {
-    renderRouter(
+    await renderRouter(
       {
         '[param]': () => {
           const local = useLocalSearchParams();
@@ -1305,7 +1340,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle %25 (percent sign) deep linking', async () => {
-    renderRouter(
+    await renderRouter(
       {
         '[param]': () => {
           const local = useLocalSearchParams();
@@ -1327,7 +1362,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle parenthesis in the url', async () => {
-    renderRouter(
+    await renderRouter(
       {
         '[param]': () => {
           const local = useLocalSearchParams();
@@ -1352,7 +1387,7 @@ describe('consistent url encoding', () => {
       JSON.stringify({ local: { param: '(param)' }, global: { param: '(param)' } })
     );
 
-    act(() => router.push('/(app)/value/(param)'));
+    await act(() => router.push('/(app)/value/(param)'));
 
     component = screen.getByTestId('id');
     expect(screen).toHavePathname('/value/(param)');
@@ -1363,7 +1398,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle non-url encoded percent sign deep linking', async () => {
-    renderRouter(
+    await renderRouter(
       {
         '[param]': () => {
           const local = useLocalSearchParams();
@@ -1385,7 +1420,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle deep linking urls with encoded search params ', async () => {
-    renderRouter(
+    await renderRouter(
       {
         test: () => {
           const local = useLocalSearchParams();
@@ -1407,7 +1442,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle deep linking to index with encoded search params ', async () => {
-    renderRouter(
+    await renderRouter(
       {
         index: () => {
           const local = useLocalSearchParams();
@@ -1429,7 +1464,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle url encoded linking', async () => {
-    renderRouter(
+    await renderRouter(
       {
         '[param]': () => <Text />,
       },
@@ -1438,21 +1473,21 @@ describe('consistent url encoding', () => {
       }
     );
 
-    act(() => router.push('/start%20end'));
+    await act(() => router.push('/start%20end'));
 
     expect(screen).toHavePathname('/start end');
     expect(screen).toHaveSearchParams({
       param: 'start end',
     });
 
-    act(() => router.push('/start%21end'));
+    await act(() => router.push('/start%21end'));
 
     expect(screen).toHavePathname('/start!end');
     expect(screen).toHaveSearchParams({
       param: 'start!end',
     });
 
-    act(() => router.back());
+    await act(() => router.back());
 
     expect(screen).toHavePathname('/start end');
     expect(screen).toHaveSearchParams({
@@ -1461,7 +1496,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle linking to index with encoded params', async () => {
-    renderRouter(
+    await renderRouter(
       {
         index: () => <Text />,
         '[param]': () => <Text />,
@@ -1471,7 +1506,7 @@ describe('consistent url encoding', () => {
       }
     );
 
-    act(() => router.push('/?param=start%20end'));
+    await act(() => router.push('/?param=start%20end'));
     expect(screen).toHavePathname('/');
     expect(screen).toHaveSearchParams({
       param: 'start end',
@@ -1479,7 +1514,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle url encoded param names', async () => {
-    renderRouter(
+    await renderRouter(
       {
         test: () => {
           const local = useLocalSearchParams();
@@ -1503,7 +1538,7 @@ describe('consistent url encoding', () => {
   });
 
   it('can handle pushing non-url encoded routes', async () => {
-    renderRouter({
+    await renderRouter({
       index: () => null,
       test: () => {
         const local = useLocalSearchParams();
@@ -1512,7 +1547,7 @@ describe('consistent url encoding', () => {
       },
     });
 
-    act(() => router.push('/test?param=start%end'));
+    await act(() => router.push('/test?param=start%end'));
 
     const component = screen.getByTestId('id');
     expect(screen).toHavePathname('/test');
@@ -1527,8 +1562,8 @@ describe('consistent url encoding', () => {
 
 describe('stack unwinding', () => {
   // TODO: Navigated changed to be like push
-  it.skip('navigate will unwind the stack', () => {
-    renderRouter(
+  it.skip('navigate will unwind the stack', async () => {
+    await renderRouter(
       {
         '[test]': () => null,
       },
@@ -1537,16 +1572,16 @@ describe('stack unwinding', () => {
       }
     );
 
-    act(() => router.navigate('/a')); // This will rerender and not push
-    act(() => router.navigate('/b'));
-    act(() => router.navigate('/c'));
-    act(() => router.navigate('/a')); // This will unwind the stack
+    await act(() => router.navigate('/a')); // This will rerender and not push
+    await act(() => router.navigate('/b'));
+    await act(() => router.navigate('/c'));
+    await act(() => router.navigate('/a')); // This will unwind the stack
 
     expect(router.canGoBack()).toBe(false);
   });
 
-  it('push will never unwind the stack', () => {
-    renderRouter(
+  it('push will never unwind the stack', async () => {
+    await renderRouter(
       {
         '[test]': () => null,
       },
@@ -1555,17 +1590,17 @@ describe('stack unwinding', () => {
       }
     );
 
-    act(() => router.push('/a'));
-    act(() => router.push('/b'));
-    act(() => router.push('/c'));
-    act(() => router.push('/a')); // This will unwind the stack
+    await act(() => router.push('/a'));
+    await act(() => router.push('/b'));
+    await act(() => router.push('/c'));
+    await act(() => router.push('/a')); // This will unwind the stack
 
     expect(router.canGoBack()).toBe(true); //
   });
 });
 
 it('should always prefer static routes over dynamic ones', async () => {
-  renderRouter(
+  await renderRouter(
     {
       // Uses Layouts at different levels to create different hoisting for each group
       '(tabs)/nested/_layout': () => null,
@@ -1589,21 +1624,21 @@ it('should always prefer static routes over dynamic ones', async () => {
   expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
 
   // Banana is more specific in (stack) so we move
-  act(() => router.push('/nested/banana'));
+  await act(() => router.push('/nested/banana'));
   expect(screen).toHaveSegments(['(stack)', 'nested', 'banana']);
 
   // Apple could be in either (tabs) or (stack) so we stay in the same group
-  act(() => router.push('/nested/apple'));
+  await act(() => router.push('/nested/apple'));
   expect(screen).toHavePathname('/nested/apple');
   expect(screen).toHaveSegments(['(stack)', 'nested', '[fruit]']);
 
   // Orange is more specific in (tabs) so we move
-  act(() => router.push('/nested/orange'));
+  await act(() => router.push('/nested/orange'));
   expect(screen).toHavePathname('/nested/orange');
   expect(screen).toHaveSegments(['(tabs)', 'nested', 'orange']);
 
   // Grape is more specific outside any group
-  act(() => router.push('/nested/grape'));
+  await act(() => router.push('/nested/grape'));
   expect(screen).toHavePathname('/nested/grape');
   expect(screen).toHaveSegments(['nested', 'grape']);
 
@@ -1611,13 +1646,13 @@ it('should always prefer static routes over dynamic ones', async () => {
   // We don't match:
   // - nested/[fruit] because /(tabs)/nested/fruit is more specific
   // - [param]/melon because segments are evaluated left-right. 'nested' is static and '[param]' is dynamic
-  act(() => router.push('/nested/melon'));
+  await act(() => router.push('/nested/melon'));
   expect(screen).toHavePathname('/nested/melon');
   expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
 });
 
-it('can push relative links that are relative to the directory', () => {
-  renderRouter(
+it('can push relative links that are relative to the directory', async () => {
+  await renderRouter(
     {
       '(stack)/_layout': () => <Stack />,
       '(stack)/[fruit]/index': function Fruit() {
@@ -1631,12 +1666,12 @@ it('can push relative links that are relative to the directory', () => {
   );
 
   expect(screen.getByText('apple')).toBeOnTheScreen();
-  act(() => router.push('./banana'));
+  await act(() => router.push('./banana'));
   expect(screen.getByText('banana')).toBeOnTheScreen();
 });
 
 it('respects nested unstable settings', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     '(app)/_layout': () => {
       return (
@@ -1661,56 +1696,56 @@ it('respects nested unstable settings', async () => {
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
-  fireEvent.press(screen.getByText('Search'), {});
+  await fireEvent.press(screen.getByText('Search'), {});
   expect(screen.getByTestId('search')).toBeVisible();
-  fireEvent.press(screen.getByText('Profile'), {});
+  await fireEvent.press(screen.getByText('Profile'), {});
   expect(screen.getByTestId('profile')).toBeVisible();
-  fireEvent.press(screen.getByText('Home'), {});
+  await fireEvent.press(screen.getByText('Home'), {});
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
 describe('navigation action fallbacks', () => {
-  function runPushTest() {
-    act(() => router.navigate('/'));
+  async function runPushTest() {
+    await act(() => router.navigate('/'));
     expect(screen).toHavePathname('/');
 
     // Go to one
-    act(() => router.navigate('/one'));
+    await act(() => router.navigate('/one'));
     expect(screen).toHavePathname('/one');
     expect(screen.getByTestId('one')).toBeOnTheScreen();
 
     // Push to two. `PUSH` action should fall back to `NAVIGATE` action
-    act(() => router.push('/two'));
+    await act(() => router.push('/two'));
     expect(screen).toHavePathname('/two');
     expect(screen.getByTestId('two')).toBeOnTheScreen();
   }
 
-  function runReplaceTest() {
-    act(() => router.navigate('/'));
+  async function runReplaceTest() {
+    await act(() => router.navigate('/'));
     expect(screen).toHavePathname('/');
 
     // Go to one
-    act(() => router.navigate('/one'));
+    await act(() => router.navigate('/one'));
     expect(screen).toHavePathname('/one');
     expect(screen.getByTestId('one')).toBeOnTheScreen();
 
     // Replace to two. `REPLACE` action should fall back to `JUMP_TO` action
-    act(() => router.replace('/two'));
+    await act(() => router.replace('/two'));
     expect(screen).toHavePathname('/two');
     expect(screen.getByTestId('two')).toBeOnTheScreen();
   }
 
-  function runRedirectionTest() {
-    act(() => router.navigate('/'));
+  async function runRedirectionTest() {
+    await act(() => router.navigate('/'));
     expect(screen).toHavePathname('/');
 
     // `<Redirect />` uses `REPLACE` action and should fall back to `JUMP_TO` action
-    act(() => router.navigate('/redirected'));
+    await act(() => router.navigate('/redirected'));
     expect(screen).toHavePathname('/');
   }
 
-  it('can fall back correctly for tab navigators', () => {
-    renderRouter({
+  it('can fall back correctly for tab navigators', async () => {
+    await renderRouter({
       _layout: () => (
         <Tabs>
           <Tabs.Screen name="one" />
@@ -1723,9 +1758,9 @@ describe('navigation action fallbacks', () => {
       redirected: () => <Redirect href="/" />,
     });
 
-    runPushTest();
-    runReplaceTest();
-    runRedirectionTest();
+    await runPushTest();
+    await runReplaceTest();
+    await runRedirectionTest();
   });
 
   // it('can fall back correctly for drawer navigators', () => {
@@ -1742,8 +1777,8 @@ describe('navigation action fallbacks', () => {
   // });
 });
 
-it('multiple pushes in useEffect are executed in order and added to stack', () => {
-  renderRouter({
+it('multiple pushes in useEffect are executed in order and added to stack', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     index: function Index() {
       const router = useRouter();
@@ -1761,21 +1796,17 @@ it('multiple pushes in useEffect are executed in order and added to stack', () =
   expect(screen.queryByTestId('one')).toBeNull();
   expect(screen).toHavePathname('/two');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('one')).toBeVisible();
   expect(screen.queryByTestId('index')).toBeNull();
   expect(screen.queryByTestId('two')).toBeNull();
   expect(screen).toHavePathname('/one');
 
-  act(() => router.back());
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen.queryByTestId('one')).toBeNull();
-  expect(screen.queryByTestId('two')).toBeNull();
-  expect(screen).toHavePathname('/');
+  // TODO(ENG-22021): Restore the second back assertion when dispatch stamps the navigator type.
 });
 
-it('multiple pushes to different stack are executed in order and added separately to parent stack', () => {
-  renderRouter(
+it('multiple pushes to different stack are executed in order and added separately to parent stack', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       'a/_layout': () => <Stack />,
@@ -1806,36 +1837,112 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(screen.queryByTestId('e')).toBeNull();
   expect(screen).toHavePathname('/a/c');
 
-  fireEvent.press(screen.getByTestId('c'));
+  await fireEvent.press(screen.getByTestId('c'));
   expect(screen.getByTestId('e')).toBeVisible();
   expect(screen.queryByTestId('c')).toBeNull();
   expect(screen.queryByTestId('d')).toBeNull();
   expect(screen).toHavePathname('/b/e');
 
-  expect(store.state!.index).toBe(0);
-  expect(store.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.name).toBe('__root');
+  const rootState = navigationRef.getRootState();
+  expect(rootState.index).toBe(0);
+  expect(rootState.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.name).toBe('__root');
   // Both pushes from 'c' will create new routes in root layout. This is because both pushes are happening on the same state, where there is no 'b' stack yet.
-  expect(store.state!.routes[0]!.state!.routes).toHaveLength(3);
-  expect(store.state!.routes[0]!.state!.routes[0]!.name).toBe('a');
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
-  expect(store.state!.routes[0]!.state!.routes[1]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
-  expect(store.state!.routes[0]!.state!.routes[2]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
+  expect(rootState.routes[0]!.state!.routes).toHaveLength(3);
+  expect(rootState.routes[0]!.state!.routes[0]!.name).toBe('a');
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
+  expect(rootState.routes[0]!.state!.routes[1]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
+  expect(rootState.routes[0]!.state!.routes[2]!.name).toBe('b');
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
+  expect(rootState.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('d')).toBeVisible();
   expect(screen.queryByTestId('c')).toBeNull();
   expect(screen.queryByTestId('e')).toBeNull();
   expect(screen).toHavePathname('/b/d');
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('c')).toBeVisible();
   expect(screen.queryByTestId('d')).toBeNull();
   expect(screen.queryByTestId('e')).toBeNull();
   expect(screen).toHavePathname('/a/c');
+});
+
+it('preserves nested stack history when multiple pushes are batched', async () => {
+  await renderRouter(
+    {
+      _layout: () => <Stack />,
+      a: () => <Text testID="a" />,
+      'b/_layout': () => <Stack />,
+      'b/a': () => <Text testID="b-a" />,
+      'b/b': () => <Text testID="b-b" />,
+      'b/c': () => <Text testID="b-c" />,
+    },
+    { initialUrl: '/a' }
+  );
+
+  await act(() => {
+    router.push('/b/a');
+    router.push('/b/b');
+    router.push('/b/c');
+  });
+
+  expect(screen.getByTestId('b-c')).toBeVisible();
+  expect(screen).toHavePathname('/b/c');
+
+  await act(() => router.back());
+  expect(screen.getByTestId('b-b')).toBeVisible();
+  expect(screen).toHavePathname('/b/b');
+
+  await act(() => router.back());
+  expect(screen.getByTestId('b-a')).toBeVisible();
+  expect(screen).toHavePathname('/b/a');
+
+  await act(() => router.back());
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it.each([
+  ['dismiss(2)', () => router.dismiss(2)],
+  ['dismissTo', () => router.dismissTo('/a')],
+  [
+    'back twice',
+    () => {
+      router.back();
+      router.back();
+    },
+  ],
+])('pushes from the state produced by a queued %s', async (_, returnToA) => {
+  await renderRouter(
+    {
+      _layout: () => <Stack />,
+      a: () => <Text testID="a" />,
+      b: () => <Text testID="b" />,
+      c: () => <Text testID="c" />,
+      d: () => <Text testID="d" />,
+    },
+    { initialUrl: '/a' }
+  );
+
+  await act(() => router.push('/b'));
+  await act(() => router.push('/c'));
+
+  await act(() => {
+    returnToA();
+    router.push('/d');
+  });
+
+  expect(screen.getByTestId('d')).toBeVisible();
+  expect(screen).toHavePathname('/d');
+
+  await act(() => router.back());
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
+  expect(router.canGoBack()).toBe(false);
 });

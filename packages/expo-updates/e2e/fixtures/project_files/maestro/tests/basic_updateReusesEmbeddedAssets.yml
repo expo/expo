@@ -1,0 +1,47 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# An update whose assets already ship in the app binary must not re-download them. The served
+# manifest lists every embedded asset plus one asset that is not embedded, so only the JS bundle
+# and that one asset should be fetched.
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-for-asset-deletion', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve an update reusing every embedded asset
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.api.delay(5000)}
+    label: Delay for 5 seconds
+- assertTrue:
+    condition:  ${output.api.staticFileCount() == 2}
+    label: Assert only the bundle and the one non-embedded asset were requested
+- stopApp
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-assets-1"}
+    label: Assert update string is from downloaded update
+- tapOn:
+    label: Read asset files
+    id: readAssetFiles
+- evalScript:
+    scripts: ${output.api.delay(500)}
+    label: Wait for 0.5 seconds
+- copyTextFrom:
+    label: Copy text from asset files counter
+    id: numAssetFiles
+- assertTrue:
+    condition: ${parseInt(maestro.copiedText, 10) > 0}
+    label: Assert the update resolved its assets
+- stopApp

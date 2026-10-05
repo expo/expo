@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Date Range Picker component',
+    route: 'ui/date-range-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DateRangePickerScreen'));
+    },
+  },
+  {
     name: 'ExposedDropdownMenuBox component',
     route: 'ui/exposed-dropdown-menu-box',
     options: {},
@@ -328,6 +336,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./LazyColumnRowScreen'));
+    },
+  },
+  {
+    name: 'LazyColumn.Items and LazyRow.Items data (experimental)',
+    route: 'ui/lazy-items',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyItemsScreen'));
     },
   },
   {

@@ -1,4 +1,5 @@
 import CoreGraphics
+import SwiftUI
 import Testing
 
 @testable import ExpoMaps
@@ -56,12 +57,39 @@ struct FeatureHitTestingTests {
   }
 
   @Test
-  func `verticalAnchor places the coordinate along the rect`() {
+  func `an anchored annotation's hit rect follows where it is drawn`() {
+    // An annotation anchored at the bottom of its content is drawn entirely above the coordinate,
+    // the way a teardrop pin points at the place it marks.
+    let rect = annotationHitRect(at: CGPoint(x: 100, y: 200), anchor: .bottom)
+
+    #expect(rect.maxY == 200)
+    #expect(rect.midX == 100)
+  }
+
+  @Test
+  func `a tap on an anchored annotation is on the annotation`() {
+    let rect = annotationHitRect(at: CGPoint(x: 100, y: 200), anchor: .bottom)
+
+    #expect(rect.contains(CGPoint(x: 100, y: 190)))
+  }
+
+  @Test
+  func `a tap below an anchored annotation is not on the annotation`() {
+    // Where a centred rect would still reach, an anchored one has already ended.
+    let rect = annotationHitRect(at: CGPoint(x: 100, y: 200), anchor: .bottom)
+
+    #expect(rect.contains(CGPoint(x: 100, y: 210)) == false)
+  }
+
+  @Test
+  func `anchor places the coordinate within the rect`() {
     let size = CGSize(width: 10, height: 20)
     let origin = CGPoint(x: 0, y: 0)
 
-    #expect(featureHitRect(at: origin, size: size, verticalAnchor: 0).minY == 0)
-    #expect(featureHitRect(at: origin, size: size, verticalAnchor: 0.5).midY == 0)
-    #expect(featureHitRect(at: origin, size: size, verticalAnchor: 1).maxY == 0)
+    #expect(featureHitRect(at: origin, size: size, anchor: .top).minY == 0)
+    #expect(featureHitRect(at: origin, size: size, anchor: .center).midY == 0)
+    #expect(featureHitRect(at: origin, size: size, anchor: .bottom).maxY == 0)
+    #expect(featureHitRect(at: origin, size: size, anchor: .leading).minX == 0)
+    #expect(featureHitRect(at: origin, size: size, anchor: .trailing).maxX == 0)
   }
 }

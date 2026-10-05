@@ -8,6 +8,7 @@
 import { traverse, template, types as t } from '@babel/core';
 import type { NodePath } from '@babel/core';
 import generate from '@babel/generator';
+import type { AsyncDependencyType as MetroAsyncDependencyType } from '@expo/metro/metro/DeltaBundler/types';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
@@ -25,7 +26,7 @@ function nullthrows<T extends object>(x: T | null, message?: string): NonNullabl
   return x;
 }
 
-export type AsyncDependencyType = 'weak' | 'maybeSync' | 'async' | 'prefetch' | 'worker';
+export type AsyncDependencyType = MetroAsyncDependencyType | 'worker';
 
 type AllowOptionalDependenciesWithOptions = {
   exclude: string[];

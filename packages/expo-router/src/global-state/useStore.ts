@@ -5,34 +5,28 @@ import type { ComponentType } from 'react';
 import { Fragment, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
 import { getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
-import { getStateFromPath } from '../link/linking';
-import { useNavigationContainerRef } from '../react-navigation/native';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
+import { cancelSplashScreenAnimationFrame } from '../utils/splash';
 import { shouldLinkExternally } from '../utils/url';
-import { getRouteInfoFromState } from './getRouteInfoFromState';
-import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
-import { storeRef, getSplashScreenAnimationFrame, setSplashScreenAnimationFrame } from './store';
-import type { StoreContextValue } from './storeContext';
-import type { ReactNavigationState, StoreRedirects } from './types';
+import type { RouterConfig } from './routerConfigContext';
+import type { StoreRedirects } from './types';
 
-export function useStore(
+// TODO(@ubax): rename this file to useRouterConfig.ts
+export function useRouterConfig(
   context: RequireContext,
   linkingConfigOptions: LinkingConfigOptions,
   serverUrl?: string
-): StoreContextValue {
-  const navigationRef = useNavigationContainerRef();
+): { routerConfig: RouterConfig; rootComponent: ComponentType<any> } {
   const config = Constants.expoConfig?.extra?.router;
-  const storeValue = useMemo(() => {
+  const configValue = useMemo(() => {
     let linking: ExpoLinkingOptions | undefined;
     let rootComponent: ComponentType<any> = Fragment;
-    let initialState: ReactNavigationState | undefined;
     const routeNode = getRoutes(context, {
       ...config,
       skipGenerated: true,
@@ -63,21 +57,6 @@ export function useStore(
         notFound: config?.notFound ?? true,
       });
       rootComponent = getQualifiedRouteComponent(routeNode);
-
-      // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
-      // This will cause static rendering to fail, which once performs a single pass.
-      // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
-      const initialURL = linking?.getInitialURL?.();
-      if (typeof initialURL === 'string') {
-        let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
-
-        // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
-        if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
-
-        initialState = getStateFromPath(initialPath, linking.config);
-        const initialRouteInfo = getRouteInfoFromState(initialState);
-        setCachedRouteInfo(initialState as any, initialRouteInfo);
-      }
     } else {
       // Only error in production, in development we will show the onboarding screen
       if (process.env.NODE_ENV === 'production') {
@@ -88,40 +67,12 @@ export function useStore(
       rootComponent = Fragment;
     }
 
-    return {
-      navigationRef,
-      linking,
-      initialState,
-      rootComponent,
-      redirects,
-      routeNode,
-    };
-  }, [config, context, linkingConfigOptions, navigationRef, serverUrl]);
-
-  // TODO(@ubax): Check whether updating the store ref during every render is safe and needed.
-  storeRef.current = {
-    navigationRef,
-    routeNode: storeValue.routeNode,
-    config,
-    linking: storeValue.linking,
-    state: storeValue.initialState,
-  };
-
-  if (storeValue.initialState) {
-    storeRef.current.routeInfo = getCachedRouteInfo(storeValue.initialState);
-  }
+    return { routerConfig: { linking, redirects, routeNode }, rootComponent };
+  }, [config, context, linkingConfigOptions, serverUrl]);
 
   useEffect(() => {
-    return () => {
-      // listener();
+    return cancelSplashScreenAnimationFrame;
+  }, []);
 
-      const animationFrame = getSplashScreenAnimationFrame();
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        setSplashScreenAnimationFrame(undefined);
-      }
-    };
-  });
-
-  return storeValue;
+  return configValue;
 }

@@ -13,6 +13,7 @@ const REDIRECTS_FILE = `# Old redirects
 /hash-target /build/setup/#usage 301
 /query-target /build/setup/?tab=eas 301
 /llms-full.txt /llms.txt 301
+/old-intro.md /build/setup.md 301
 `;
 
 const PAGES = new Set(['/', '/build/setup', '/guides/overview', '/sdk/notifications']);
@@ -69,6 +70,10 @@ describe(validateRedirectTargets, () => {
 
   it('accepts destinations that are static files', () => {
     expect(dangling.map(rule => rule.source)).not.toContain('/llms-full.txt');
+  });
+
+  it('accepts .md destinations of live pages', () => {
+    expect(dangling.map(rule => rule.source)).not.toContain('/old-intro.md');
   });
 
   it('skips external and splat destinations', () => {

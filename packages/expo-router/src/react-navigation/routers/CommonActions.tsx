@@ -1,3 +1,4 @@
+import type { RouteState } from './attachRouteState';
 import type { NavigationState, PartialState, Route } from './types';
 
 type ResetState =
@@ -21,6 +22,7 @@ export type NavigateAction = {
     path?: string;
     merge?: boolean;
     pop?: boolean;
+    state?: RouteState;
   };
   source?: string;
   target?: string;
@@ -52,6 +54,7 @@ type PreloadAction = {
   payload: {
     name: string;
     params?: object;
+    state?: RouteState;
   };
   source?: string;
   target?: string;
@@ -119,7 +122,7 @@ export function navigate(...args: any): Action {
 
     if (!('name' in payload)) {
       throw new Error(
-        'You need to specify a name when calling navigate with an object as the argument. See https://reactnavigation.org/docs/navigation-actions#navigate for usage.'
+        "You need to specify a name when calling navigate with an object as the argument. Pass a route name, for example navigate({ name: 'home' })."
       );
     }
 

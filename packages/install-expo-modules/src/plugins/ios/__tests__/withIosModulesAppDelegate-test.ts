@@ -12,6 +12,20 @@ import {
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
 describe(updateModulesAppDelegateObjcHeader, () => {
+  it('should migrate from react-native@>=0.88.0 AppDelegate.swift to the scene life cycle', async () => {
+    const [rawContents, expectContents] = await Promise.all([
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088.swift'), 'utf8'),
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088-updated.swift'), 'utf8'),
+    ]);
+
+    const sdkVersion = getSdkVersion('0.88.0');
+    const contents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
+    expect(contents).toEqual(expectContents);
+
+    const nextContents = updateModulesAppDelegateSwift(contents, sdkVersion);
+    expect(nextContents).toEqual(expectContents);
+  });
+
   it('should migrate from react-native@>=0.83.0 AppDelegate.swift', async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn083.swift'), 'utf8'),

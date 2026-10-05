@@ -2,7 +2,7 @@ name: Smoke Test Precompiled iOS XCFrameworks
 
 defaults:
   tools:
-    pnpm: '10.34.5'
+    pnpm: '12.2.1'
 
 on:
   workflow_dispatch:
@@ -12,6 +12,7 @@ on:
         required: false
         default: ""
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/ios-prebuild-xcframeworks-smoke.yml
       - apps/expo-workflow-testing/scripts/detect-prebuild-packages.sh

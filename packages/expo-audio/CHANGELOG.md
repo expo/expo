@@ -1,9 +1,40 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
+
+### Patch Changes
+
+- [Android] Fixed `prepareToRecordAsync` rejecting when `allowsBackgroundRecording` is `true` and the notification permission is not granted ([#50705](https://github.com/expo/expo/issues/50705)). ([#50968](https://github.com/expo/expo/pull/50968) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fixed an uncaught promise rejection, and `playing` staying `true`, when the browser blocks playback before the user interacts with the page. The player now reports the rejection in `error` on its status ([#36264](https://github.com/expo/expo/issues/36264)). ([#50972](https://github.com/expo/expo/pull/50972) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `prepareToRecordAsync()` hanging forever when background recording is enabled and the recording service never connects. The binding timeout is now started, and the promise also rejects when the React context is lost. ([#50883](https://github.com/expo/expo/pull/50883) by [@Cedric921](https://github.com/Cedric921))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `AudioStream` buffer events including unrecorded trailing bytes after a short read. ([#50327](https://github.com/expo/expo/pull/50327) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
+- Paused time is now excluded from the `AudioRecorder` duration limit. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
 - [Android] Aligned the default audio focus request on Android 7.0–7.1 with newer versions by using transient exclusive focus when no interruption mode has been configured. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
 
 ### 🎉 New features
@@ -18,6 +49,7 @@
 
 ### 🐛 Bug fixes
 
+- Preserve recorder duration limits across pauses, consistently exclude paused time on Android, iOS, and Web. ([#49239](https://github.com/expo/expo/pull/49239) by [@stvrmrz](https://github.com/stvrmrz) and [@behenate](https://github.com/behenate))
 - [Android] Pause audio players and playlists when headphones or Bluetooth audio devices disconnect. ([#48151](https://github.com/expo/expo/pull/48151) by [@vivekjm](https://github.com/vivekjm))
 - [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
@@ -27,6 +59,7 @@
 - [iOS] Activate the audio session once and keep it active instead of toggling. ([#48588](https://github.com/expo/expo/pull/48588) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
 - [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
+- [iOS] Resolve permission requests with `denied` and reject recording calls instead of letting the OS terminate the app when `NSMicrophoneUsageDescription` is missing. ([#49162](https://github.com/expo/expo/pull/49162) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

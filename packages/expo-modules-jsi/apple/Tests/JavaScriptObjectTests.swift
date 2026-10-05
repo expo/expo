@@ -32,6 +32,71 @@ struct JavaScriptObjectTests {
     #expect(object.getProperty("score").getInt() == 100)
   }
 
+  @Test
+  func `get property names preserves non-ASCII and empty keys`() throws {
+    let object = try runtime.eval("({ 'café': 1, '日本語': 2, '🎉': 3, '': 4 })").getObject()
+    #expect(object.getPropertyNames() == ["café", "日本語", "🎉", ""])
+  }
+
+  // MARK: - Non-ASCII property names
+
+  @Test
+  func `getProperty finds non-ASCII and empty names`() throws {
+    let object = try runtime.eval("({ 'café': 42, '日本語': 'ok', '🎉': true, '': 'empty' })").getObject()
+    #expect(object.getProperty("café").isNumber() == true)
+    #expect(object.getProperty("日本語").isString() == true)
+    #expect(object.getProperty("🎉").isBool() == true)
+    #expect(object.getProperty("").isString() == true)
+    #expect(object.getProperty("cafe").isUndefined() == true)
+  }
+
+  @Test
+  func `hasProperty finds non-ASCII and empty names`() throws {
+    let object = try runtime.eval("({ 'café': 42, '': 'empty' })").getObject()
+    #expect(object.hasProperty("café") == true)
+    #expect(object.hasProperty("") == true)
+    #expect(object.hasProperty("cafe") == false)
+    #expect(object.hasProperty("naïve") == false)
+  }
+
+  @Test
+  func `setProperty with a non-ASCII name is visible to JavaScript`() throws {
+    let object = JavaScriptObject(runtime)
+    object.setProperty("café", value: 42.0)
+    object.setProperty("日本語", value: JavaScriptValue(runtime, "ok"))
+    object.setProperty("🎉", JavaScriptObject(runtime))
+    object.setProperty("", value: true)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj['café'] === 42 && obj['日本語'] === 'ok' && obj[''] === true").getBool() == true)
+    #expect(try runtime.eval("typeof obj['🎉']").getString() == "object")
+    #expect(try runtime.eval("Object.keys(obj).join(',')").getString() == "café,日本語,🎉,")
+  }
+
+  @Test
+  func `deleteProperty removes a non-ASCII name`() throws {
+    let object = try runtime.eval("({ 'café': 42, 'cafe': 1 })").getObject()
+    object.deleteProperty("café")
+    #expect(object.hasProperty("café") == false)
+    #expect(object.hasProperty("cafe") == true)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("'café' in obj").getBool() == false)
+  }
+
+  @Test
+  func `defineProperty with a non-ASCII name is visible to JavaScript`() throws {
+    let object = JavaScriptObject(runtime)
+    object.defineProperty("café", value: 42.0, options: [.enumerable])
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj['café']").getInt() == 42)
+  }
+
+  @Test
+  func `getPropertyAsFunction finds a non-ASCII name`() throws {
+    let object = try runtime.eval("({ 'zażółć': () => 'gęślą jaźń' })").getObject()
+    let function = try object.getPropertyAsFunction("zażółć")
+    #expect(try function.call().getString() == "gęślą jaźń")
+  }
+
   // MARK: - Property Access Tests
 
   @Suite("Property Access")
@@ -197,6 +262,20 @@ struct JavaScriptObjectTests {
       let object = JavaScriptObject(runtime)
       object.setProperty("pi", value: 3.14159)
       #expect(object.getProperty("pi").getDouble() == 3.14159)
+    }
+
+    @Test
+    func `set property with non-ASCII string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("greeting", value: "żółć 世界 🎉")
+      #expect(object.getProperty("greeting").getString() == "żółć 世界 🎉")
+    }
+
+    @Test
+    func `set property with empty string`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("empty", value: "")
+      #expect(object.getProperty("empty").getString() == "")
     }
 
     @Test

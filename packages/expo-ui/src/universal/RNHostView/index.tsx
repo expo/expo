@@ -1,11 +1,14 @@
 import { StyleSheet, View } from 'react-native';
 
+import { resolveMatchContents } from '../../utils/matchContents';
 import { useUniversalLifecycle } from '../hooks';
 import type { RNHostViewProps } from './types';
 
 const styles = StyleSheet.create({
-  fillParent: { width: '100%', height: '100%' },
-  matchContents: { width: 'fit-content', height: 'fit-content' },
+  fillWidth: { width: '100%' },
+  fillHeight: { height: '100%' },
+  fitWidth: { width: 'fit-content' },
+  fitHeight: { height: 'fit-content' },
   hidden: { display: 'none' },
 });
 
@@ -20,14 +23,18 @@ export function RNHostView({
   hidden = false,
   testID,
   matchContents = false,
+  onLayout,
 }: RNHostViewProps) {
   useUniversalLifecycle(onAppear, onDisappear);
+  const { horizontal, vertical } = resolveMatchContents(matchContents);
 
   return (
     <View
       testID={testID}
+      onLayout={onLayout}
       style={[
-        matchContents ? styles.matchContents : styles.fillParent,
+        horizontal ? styles.fitWidth : styles.fillWidth,
+        vertical ? styles.fitHeight : styles.fillHeight,
         style,
         hidden && styles.hidden,
       ]}>

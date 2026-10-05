@@ -1,30 +1,25 @@
 package expo.modules.devlauncher.helpers
 
 import android.net.Uri
+import expo.modules.devmenu.launch.ExpoLauncherUrl
 
-fun replaceEXPScheme(uri: Uri, scheme: String): Uri = if (uri.scheme == "exp") uri.buildUpon().scheme(scheme).build() else uri
-
-fun isDevLauncherUrl(uri: Uri) = uri.host == "expo-development-client"
-
-fun hasUrlQueryParam(uri: Uri): Boolean {
-  return uri.getQueryParameter("url") != null
+fun replaceEXPScheme(uri: Uri, scheme: String): Uri = if (uri.scheme == "exp") {
+  uri.buildUpon().scheme(scheme).build()
+} else {
+  uri
 }
 
-class DevLauncherUrl(var url: Uri) {
-  val queryParams = mutableMapOf<String, String>()
+/** Strict `name=1` flag on this URL. Used for the `disableFab` and `disableAutoLaunch` params, which update the saved preferences. */
+fun hasEnabledFlag(uri: Uri, name: String): Boolean {
+  return uri.isHierarchical && uri.getQueryParameter(name) == "1"
+}
 
-  init {
-    url.queryParameterNames.forEach { name ->
-      queryParams[name] = url.getQueryParameter(name) ?: ""
-    }
+class DevLauncherUrl(url: Uri) {
+  val launch = ExpoLauncherUrl(url)
 
-    if (isDevLauncherUrl(url)) {
-      if (queryParams["url"] != null) {
-        val queryUrl = Uri.parse(queryParams["url"])
-        url = replaceEXPScheme(queryUrl, "http")
-      }
-    } else {
-      url = replaceEXPScheme(url, "http")
-    }
-  }
+  /** The project URL to load, with `exp` rewritten to `http`. */
+  val url: Uri = replaceEXPScheme(launch.targetUrl ?: launch.strippedUrl, "http")
+
+  /** Query params the launcher passes on, for example `updateMessage`. Never contains reserved params. */
+  val queryParams: Map<String, String> = launch.passthroughParams
 }

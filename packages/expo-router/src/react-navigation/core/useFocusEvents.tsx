@@ -18,6 +18,9 @@ type Options<State extends NavigationState> = {
 export function useFocusEvents<State extends NavigationState>({ state, emitter }: Options<State>) {
   const navigation = use(NavigationContext);
   const lastFocusedKeyRef = React.useRef<string | undefined>(undefined);
+  // TODO(@ubax): investigate if we can remove this ref, by for example moving this to global scope
+  // Or reacting to state changes
+  const isFocusedRef = React.useRef(false);
 
   const currentFocusedKey = state.routes[state.index]?.key;
 
@@ -29,7 +32,11 @@ export function useFocusEvents<State extends NavigationState>({ state, emitter }
     }
 
     return navigation?.addListener('focus', () => {
+      if (isFocusedRef.current && lastFocusedKeyRef.current === currentFocusedKey) {
+        return;
+      }
       lastFocusedKeyRef.current = currentFocusedKey;
+      isFocusedRef.current = true;
       emitter.emit({ type: 'focus', target: currentFocusedKey });
     });
   }, [currentFocusedKey, emitter, navigation]);
@@ -41,6 +48,7 @@ export function useFocusEvents<State extends NavigationState>({ state, emitter }
 
     return navigation?.addListener('blur', () => {
       lastFocusedKeyRef.current = undefined;
+      isFocusedRef.current = false;
       emitter.emit({ type: 'blur', target: currentFocusedKey });
     });
   }, [currentFocusedKey, emitter, navigation]);
@@ -54,9 +62,10 @@ export function useFocusEvents<State extends NavigationState>({ state, emitter }
 
     lastFocusedKeyRef.current = currentFocusedKey;
 
-    // We wouldn't have `lastFocusedKey` on initial mount
-    // Fire focus event for the current route on mount if there's no parent navigator
-    if (lastFocusedKey === undefined && !navigation) {
+    // A nested navigator can mount while its parent is already focused, such as after HMR.
+    // Screen effects run first and ignore this event if they already observed focus.
+    if (lastFocusedKey === undefined && (!navigation || navigation.isFocused())) {
+      isFocusedRef.current = true;
       emitter.emit({ type: 'focus', target: currentFocusedKey });
     }
 
@@ -72,6 +81,7 @@ export function useFocusEvents<State extends NavigationState>({ state, emitter }
     }
 
     emitter.emit({ type: 'blur', target: lastFocusedKey });
+    isFocusedRef.current = true;
     emitter.emit({ type: 'focus', target: currentFocusedKey });
   }, [currentFocusedKey, emitter, navigation]);
 }

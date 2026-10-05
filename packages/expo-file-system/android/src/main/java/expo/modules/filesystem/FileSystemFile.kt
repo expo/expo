@@ -141,7 +141,11 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   fun asString(): String {
     val uriString = file.uri.toString()
-    return if (uriString.endsWith("/")) uriString.dropLast(1) else uriString
+    return if (uriString.endsWith("/")) {
+      uriString.dropLast(1)
+    } else {
+      uriString
+    }
   }
 
   fun text(): String {

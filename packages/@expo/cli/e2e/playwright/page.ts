@@ -1,4 +1,10 @@
-import type { ConsoleMessage, Page, Request } from '@playwright/test';
+import { expect, type ConsoleMessage, type Page, type Request } from '@playwright/test';
+
+export async function waitForLoaderData(page: Page, data: unknown) {
+  await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+    JSON.stringify(data, null, 2)
+  );
+}
 
 /** Collect all console and thrown errors of the page */
 export function pageCollectErrors(page: Page) {

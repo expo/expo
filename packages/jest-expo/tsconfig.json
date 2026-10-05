@@ -8,6 +8,7 @@
     "declaration": false,
     // The preset's setup files reach into web-targeting dependency source (e.g. expo-modules-core),
     // so the DOM lib is required alongside the node defaults.
-    "lib": ["es2023", "dom"]
+    "lib": ["es2023", "dom"],
+    "types": ["jest", "node"]
   }
 }

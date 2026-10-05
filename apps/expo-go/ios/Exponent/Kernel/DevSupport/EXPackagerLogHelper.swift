@@ -51,6 +51,15 @@ import React
     }
   }
 
+  static func payload(message: String, level: EXPackagerLogLevel) -> [String: Any] {
+    [
+      "type": "log",
+      "level": level.stringValue,
+      "data": [message],
+      "mode": "ios"
+    ]
+  }
+
   @objc static func logInfo(_ message: String, withBundleUrl url: URL) {
     log(message, withBundleUrl: url, level: .info)
   }
@@ -93,11 +102,7 @@ import React
       return
     }
 
-    let payload: [String: Any] = [
-      "type": "log",
-      "level": logLevel.stringValue,
-      "data": [message]
-    ]
+    let payload = Self.payload(message: message, level: logLevel)
 
     pendingMessage = nil
 

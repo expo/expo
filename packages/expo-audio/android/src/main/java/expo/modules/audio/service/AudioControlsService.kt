@@ -223,8 +223,18 @@ class AudioControlsService : MediaSessionService() {
           } else {
             androidx.media3.session.R.drawable.media3_icon_play
           },
-          if (session.player.isPlaying) "Pause" else "Play",
-          buildActionPendingIntent(if (session.player.isPlaying) ACTION_PAUSE else ACTION_PLAY)
+          if (session.player.isPlaying) {
+            "Pause"
+          } else {
+            "Play"
+          },
+          buildActionPendingIntent(
+            if (session.player.isPlaying) {
+              ACTION_PAUSE
+            } else {
+              ACTION_PLAY
+            }
+          )
         )
       )
       compactViewIndices.add(currentIndex)
@@ -284,8 +294,20 @@ class AudioControlsService : MediaSessionService() {
     }
 
     mediaButtons.add(
-      CommandButton.Builder(if (isPlaying) CommandButton.ICON_PAUSE else CommandButton.ICON_PLAY)
-        .setDisplayName(if (isPlaying) "Pause" else "Play")
+      CommandButton.Builder(
+        if (isPlaying) {
+          CommandButton.ICON_PAUSE
+        } else {
+          CommandButton.ICON_PLAY
+        }
+      )
+        .setDisplayName(
+          if (isPlaying) {
+            "Pause"
+          } else {
+            "Play"
+          }
+        )
         .setEnabled(true)
         .setPlayerCommand(Player.COMMAND_PLAY_PAUSE)
         .setSlots(CommandButton.SLOT_CENTRAL)

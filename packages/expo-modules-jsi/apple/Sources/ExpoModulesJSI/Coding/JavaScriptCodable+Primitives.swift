@@ -15,6 +15,11 @@ import CoreGraphics
 // MARK: - Bool
 
 extension Bool: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .bool
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Bool
@@ -40,6 +45,11 @@ extension Bool: JavaScriptCodable {
 // MARK: - String
 
 extension String: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .string
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -61,9 +71,7 @@ extension String: JavaScriptCodable {
   public static func encode(_ value: String, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    // The `JavaScriptValue(_:_:)` initializer takes the runtime by owned convention (it stores it),
-    // so an owned copy is needed from the borrowed parameter.
-    return JavaScriptValue(copy runtime, value)
+    return JavaScriptValue(runtime, value)
   }
 }
 
@@ -76,6 +84,11 @@ extension String: JavaScriptCodable {
 // undefined behavior — a native crash, not a catchable error.
 
 extension Double: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -102,6 +115,11 @@ extension Double: JavaScriptCodable {
 }
 
 extension Float: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Float
@@ -125,6 +143,11 @@ extension Float: JavaScriptCodable {
 }
 
 extension CGFloat: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -172,6 +195,11 @@ extension CGFloat: JavaScriptCodable {
 // back, and a JS caller may pass either form.
 
 extension Int: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int {
@@ -194,6 +222,11 @@ extension Int: JavaScriptCodable {
 }
 
 extension Int8: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int8
@@ -217,6 +250,11 @@ extension Int8: JavaScriptCodable {
 }
 
 extension Int16: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int16
@@ -240,6 +278,11 @@ extension Int16: JavaScriptCodable {
 }
 
 extension Int32: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int32
@@ -263,6 +306,11 @@ extension Int32: JavaScriptCodable {
 }
 
 extension Int64: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int64
@@ -281,11 +329,16 @@ extension Int64: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
   public static func encode(_ value: Int64, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    return JavaScriptValue(copy runtime, bigInt: value)
+    return JavaScriptValue(runtime, bigInt: value)
   }
 }
 
 extension UInt: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt
@@ -309,6 +362,11 @@ extension UInt: JavaScriptCodable {
 }
 
 extension UInt8: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt8
@@ -332,6 +390,11 @@ extension UInt8: JavaScriptCodable {
 }
 
 extension UInt16: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -358,6 +421,11 @@ extension UInt16: JavaScriptCodable {
 }
 
 extension UInt32: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -384,6 +452,11 @@ extension UInt32: JavaScriptCodable {
 }
 
 extension UInt64: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -405,7 +478,7 @@ extension UInt64: JavaScriptCodable {
   public static func encode(_ value: UInt64, in runtime: borrowing JavaScriptRuntime) throws
     -> JavaScriptValue
   {
-    return JavaScriptValue(copy runtime, bigInt: value)
+    return JavaScriptValue(runtime, bigInt: value)
   }
 }
 
@@ -457,7 +530,7 @@ func decodeWideInteger<T: FixedWidthInteger>(
       // constructing `TypeError` here, which this inlinable helper can't reference.
       return try decodeInteger(value.asDouble(), as: T.self)
     }
-    return try decodeBigInt(value.copied(in: copy runtime).getBigInt(), as: T.self)
+    return try decodeBigInt(value.copied(in: runtime).getBigInt(), as: T.self)
   }
   return try decodeInteger(value.getDouble(), as: T.self)
 }

@@ -1,68 +1,38 @@
-import type { NavigationAction } from '../react-navigation/native';
-import { getNavigateAction } from './getNavigationAction';
-import type { NavigationActionContext } from './getNavigationAction';
-import type { UrlObject } from './getRouteInfoFromState';
+import type { NavigationAction, NavigationState } from '../react-navigation/native';
+import type { RouterRegistry } from './routerRegistry';
 import type { LinkToOptions } from './types';
 
-export interface LinkAction {
-  type: 'ROUTER_LINK';
+interface NavigateToHrefIntent {
+  type: 'NAVIGATE_TO_HREF';
   payload: {
     options: LinkToOptions;
     href: string;
+    originalHref?: string;
   };
 }
 
-export const routingQueue = {
-  queue: [] as (NavigationAction | LinkAction)[],
-  subscribers: new Set<() => void>(),
-  subscribe(callback: () => void) {
-    routingQueue.subscribers.add(callback);
-    return () => {
-      routingQueue.subscribers.delete(callback);
-    };
-  },
-  snapshot() {
-    return routingQueue.queue;
-  },
-  add(action: NavigationAction | LinkAction) {
-    routingQueue.queue = [...routingQueue.queue, action];
-    for (const callback of routingQueue.subscribers) {
-      callback();
-    }
-  },
-  run(routeInfo: Pick<UrlObject, 'segments' | 'params'>, context: NavigationActionContext) {
-    if (!context.navigationRef.isReady() || !context.navigationRef.current) {
-      return;
-    }
-    const ref = context.navigationRef.current;
-
-    // Reset the identity of the queue.
-    const events = routingQueue.queue;
-    routingQueue.queue = [];
-    let action: NavigationAction | LinkAction | undefined;
-    while ((action = events.shift())) {
-      if (action.type === 'ROUTER_LINK') {
-        const {
-          payload: { href, options },
-        } = action as LinkAction;
-
-        action = getNavigateAction(
-          href,
-          options,
-          routeInfo,
-          context,
-          options.event,
-          options.withAnchor,
-          options.dangerouslySingular,
-          !!options.__internal__PreviewKey
-        );
-        // TODO: Consider warning when getNavigateAction returns undefined
-        if (action) {
-          ref.dispatch(action);
-        }
-      } else {
-        ref.dispatch(action);
-      }
-    }
-  },
+type RoutingIntentOptions = {
+  inTransition?: boolean;
 };
+
+export type RoutingIntent = (
+  | NavigateToHrefIntent
+  | {
+      type: 'COMPUTED_ACTION';
+      payload: {
+        compute: (state: NavigationState, registry: RouterRegistry) => NavigationAction | undefined;
+        originKey?: string;
+      };
+    }
+  | {
+      type: 'ACTION';
+      payload: { action: NavigationAction; originKey?: string };
+    }
+  | {
+      // The browser moved on its own (back, forward, hash link); `id` is the entry id stored in
+      // `history.state`, `null` when the browser created the entry without the router.
+      type: 'BROWSER_HISTORY_CHANGED';
+      payload: { id: string | null; path: string };
+    }
+) &
+  RoutingIntentOptions;

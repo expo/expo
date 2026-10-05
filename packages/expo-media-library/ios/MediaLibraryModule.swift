@@ -383,18 +383,20 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
   private func handleLivePhoto(asset: PHAsset, shouldDownloadFromNetwork: Bool, result: [String: Any?], promise: Promise) {
     let livePhotoOptions = PHLivePhotoRequestOptions()
     livePhotoOptions.isNetworkAccessAllowed = shouldDownloadFromNetwork
+    livePhotoOptions.deliveryMode = .highQualityFormat
+
     var updatedResult = result
-      updatedResult["pairedVideoAsset"] = nil
+    updatedResult["pairedVideoAsset"] = nil
 
     PHImageManager.default()
       .requestLivePhoto(for: asset, targetSize: PHImageManagerMaximumSize, contentMode: .aspectFit, options: livePhotoOptions) { livePhoto, _ in
-      guard let livePhoto = livePhoto,
-        let videoResource = PHAssetResource.assetResources(for: livePhoto)
-        .first(where: { $0.type == .pairedVideo }) else {
-        promise.resolve(updatedResult)
-        return
-      }
-      self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
+        guard let livePhoto = livePhoto,
+          let videoResource = PHAssetResource.assetResources(for: livePhoto)
+          .first(where: { $0.type == .pairedVideo }) else {
+          promise.resolve(updatedResult)
+          return
+        }
+        self.writePairedVideoAsset(videoResource: videoResource, asset: asset, result: updatedResult, promise: promise)
       }
   }
 

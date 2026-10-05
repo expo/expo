@@ -17,7 +17,6 @@ import { useSortedScreens } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
 import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
-import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
 export function useFilterScreenChildren<
   TOptions extends object = Record<string, any>,
@@ -114,6 +113,8 @@ export function useFilterScreenChildren<
  * 
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
+ * @deprecated Use `integrateWithRouter` instead.
+ *
  * @param Nav - The navigator component to wrap.
  * @param processScreens - A function that processes the screens before passing them to the navigator.
  * It must preserve every screen name exactly once because guards are associated with the original
@@ -194,11 +195,9 @@ export function withLayoutContext<
       }
 
       return (
-        <IsWithinLayoutContext value>
-          <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
-          </GuardContextProvider>
-        </IsWithinLayoutContext>
+        <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+        </GuardContextProvider>
       );
     }),
     {

@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   type Ref,
@@ -144,13 +145,22 @@ function setFieldFocused(instance: ReactNativeElement, field: HostedField, focus
  */
 export function useHostedTextInput<T extends TextInputHandle>(
   ref: Ref<T> | undefined,
-  onFocusChange: ((focused: boolean) => void) | undefined
+  onFocusChange: ((focused: boolean) => void) | undefined,
+  options?: {
+    /**
+     * Blur the field when it unmounts. SwiftUI only: `blur` there affects just this field, while
+     * the Compose handler clears focus for whichever component currently holds it in the host.
+     */
+    blurOnUnmount?: boolean;
+  }
 ) {
   const hostRef = useContext(HostInstanceContext);
   const nativeRef = useRef<T | null>(null);
   const hostInstance = useRef<ReactNativeElement | null>(null);
   // An `autoFocus` field can report focus before its registration effect runs.
   const focusBeforeRegistered = useRef<boolean | null>(null);
+  // Last focus state this field reported, so unmount only blurs a field that holds focus.
+  const isFocused = useRef(false);
 
   // Identifies this field to its host, and lets the host act on it.
   const field = useMemo<HostedField>(
@@ -160,6 +170,21 @@ export function useHostedTextInput<T extends TextInputHandle>(
     }),
     []
   );
+
+  // Blur before React removes the field's native views: a field left first responder while its
+  // row is deleted makes UIKit assert ("refused to resign"), and every native teardown hook runs
+  // too late to clear SwiftUI's `@FocusState`. https://github.com/expo/expo/issues/49348
+  const blurOnUnmount = options?.blurOnUnmount ?? false;
+  useLayoutEffect(() => {
+    if (!blurOnUnmount) {
+      return;
+    }
+    return () => {
+      if (isFocused.current) {
+        callHandle(nativeRef.current, 'blur');
+      }
+    };
+  }, [blurOnUnmount]);
 
   useEffect(() => {
     // Resolved here rather than during render: the host's ref is attached by the
@@ -184,6 +209,7 @@ export function useHostedTextInput<T extends TextInputHandle>(
     ref: useMergeRefs(ref, nativeRef),
     onFocusChange: useCallback(
       (focused: boolean) => {
+        isFocused.current = focused;
         if (hostInstance.current) {
           setFieldFocused(hostInstance.current, field, focused);
         } else {

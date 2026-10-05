@@ -310,6 +310,28 @@ const styles = StyleSheet.create({
 
 </Collapsible>
 
+### Changing Expo Router direction at runtime
+
+If your app lets users change languages without restarting, wrap the navigator in `LocaleProvider` in the root **app/\_layout.tsx**. Pass the direction for the selected locale to update navigation headers, transitions, and gestures.
+
+```tsx app/_layout.tsx
+import { LocaleProvider, Stack } from 'expo-router';
+
+import { useAppLocale } from '../providers/AppLocaleProvider';
+
+export default function RootLayout() {
+  const { direction } = useAppLocale();
+
+  return (
+    <LocaleProvider direction={direction}>
+      <Stack />
+    </LocaleProvider>
+  );
+}
+```
+
+`LocaleProvider` configures Expo Router's navigation components. Continue to set the layout direction for your app content separately.
+
 ## Making an app behave correctly on RTL locales
 
 ### Layouts and views
