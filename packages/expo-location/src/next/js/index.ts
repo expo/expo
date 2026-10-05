@@ -23,4 +23,4 @@ export {
   useForegroundLocationPermissions,
   useBackgroundLocationPermissions,
 } from './Permissions';
-export { LocationUpdatesHandle, defineLocationTask } from './LocationUpdates';
+export { LocationUpdatesHandle, defineLocationTask } from './LocationUpdatesHandle';
