@@ -268,6 +268,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/HingeScreen'));
+    },
+    name: 'Hinge',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/CalendarsScreen'));
     },
     name: 'Calendars',
