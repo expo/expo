@@ -35,7 +35,6 @@ class HapticsModule : Module() {
   @JS
   suspend fun impactAsync(style: ImpactStyle): Unit = vibrate(style.vibration)
 
-
   @JS
   suspend fun selectionAsync(): Unit = vibrate(SelectionType)
 

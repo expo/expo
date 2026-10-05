@@ -142,9 +142,9 @@ data class VibrationType(
 
     other as VibrationType
 
-    return timings.contentEquals(other.timings)
-      && amplitudes.contentEquals(other.amplitudes)
-      && oldSDKPattern.contentEquals(other.oldSDKPattern)
+    return timings.contentEquals(other.timings) &&
+      amplitudes.contentEquals(other.amplitudes) &&
+      oldSDKPattern.contentEquals(other.oldSDKPattern)
   }
 
   override fun hashCode(): Int {
