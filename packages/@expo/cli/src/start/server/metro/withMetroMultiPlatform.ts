@@ -782,12 +782,16 @@ export function withExtendedResolver(
 
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          const emptyModule = doReplace(
+          const emptyInitializeCore = doReplace(
             `${hostPackage}/Libraries/Core/InitializeCore.js`,
             undefined
           );
-          if (emptyModule) {
-            return emptyModule;
+          if (emptyInitializeCore) {
+            return emptyInitializeCore;
+          }
+          const emptySetupEnv = doReplace(`${hostPackage}/src/setup-env.js`, undefined);
+          if (emptySetupEnv) {
+            return emptySetupEnv;
           }
         }
 
