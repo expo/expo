@@ -84,8 +84,10 @@ const GRANTED_EXACT_ALARM_RESPONSE: PermissionResponse = {
  * and `delivery: 'alarmClock'` falls back to `'bestEffort'`.
  *
  * Android 14 (API level 34) and later deny the permission by default for newly installed apps.
- * It is always granted below Android 12 (API level 31) and for apps that declare `android.permission.USE_EXACT_ALARM`.
- * @return The permission response. `canAskAgain` is `false` if the app does not declare `android.permission.SCHEDULE_EXACT_ALARM`.
+ * It is always granted below Android 12 (API level 31), and on Android 13 (API level 33) and later for apps that declare
+ * `android.permission.USE_EXACT_ALARM`.
+ * @return The permission response. If the permission is denied and the app does not declare
+ * `android.permission.SCHEDULE_EXACT_ALARM`, `canAskAgain` is `false`.
  * On iOS and web, the response is always granted.
  * @platform android
  * @header permissions
