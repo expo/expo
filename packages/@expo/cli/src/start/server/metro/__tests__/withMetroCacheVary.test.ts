@@ -1,6 +1,8 @@
 import { VaryingCacheStore } from '@expo/metro-config/build/cache-vary/VaryingCacheStore';
 import DeltaCalculator from '@expo/metro/metro/DeltaBundler/DeltaCalculator';
+import { vol } from 'memfs';
 import { EventEmitter } from 'node:events';
+import fs from 'node:fs';
 
 import {
   patchGetDeltaForCacheVary,
@@ -9,9 +11,14 @@ import {
   withMetroCacheVary,
 } from '../withMetroCacheVary';
 
+let mockExpoConfig: Record<string, unknown> = { name: 'app', extra: { API_BASE_URL: 'x' } };
 jest.mock('@expo/config', () => ({
   ...jest.requireActual('@expo/config'),
-  getConfig: jest.fn(() => ({ exp: { name: 'app', extra: { API_BASE_URL: 'x' } }, pkg: {} })),
+  getConfig: jest.fn(() => ({ exp: mockExpoConfig, pkg: {} })),
+  getConfigFilePaths: jest.fn(() => ({
+    staticConfigPath: '/app/app.json',
+    dynamicConfigPath: null,
+  })),
 }));
 
 const originalEnv = process.env;
@@ -44,9 +51,9 @@ function makeTransformResult(
   };
 }
 
-async function observeResult(result: any) {
+async function observeResult(result: any, context?: { projectRoot: string }) {
   const bundler = { transformFile: jest.fn(async () => result) } as any;
-  patchTransformFileForCacheVary(bundler);
+  patchTransformFileForCacheVary(bundler, context);
   return bundler.transformFile('/file.js', {} as any);
 }
 
@@ -307,6 +314,39 @@ describe(patchGetDeltaForCacheVary, () => {
       new Set(),
       new Set()
     );
+  });
+
+  it('marks graphed modules whose Expo config changed on disk', async () => {
+    const projectRoot = '/app';
+    vol.fromJSON({ 'app.json': '{}' }, projectRoot);
+    try {
+      const { currentFingerprint } = require('@expo/metro-config/build/cache-vary/ambient');
+      const configDim = {
+        scheme: 'expo-config',
+        name: 'exp',
+        fp: await currentFingerprint('expo-config', 'exp', { projectRoot }),
+      };
+      await observeResult(makeTransformResult('k', [configDim]), { projectRoot });
+
+      const { calculator, getChangedDependencies } = makeDeltaCalculator();
+      calculator._graph.dependencies.set('/constants.js', graphModule([configDim]));
+      calculator._graph.dependencies.set('/plain.js', graphModule());
+
+      await calculator.getDelta({ reset: false, shallow: false });
+      expect(getChangedDependencies).toHaveBeenLastCalledWith(new Set(), new Set(), new Set());
+
+      mockExpoConfig = { name: 'app', extra: { API_BASE_URL: 'y' } };
+      fs.writeFileSync('/app/app.json', '{"expo":{}}');
+      await calculator.getDelta({ reset: false, shallow: false });
+
+      expect(getChangedDependencies).toHaveBeenLastCalledWith(
+        new Set(['/constants.js']),
+        new Set(),
+        new Set()
+      );
+    } finally {
+      vol.reset();
+    }
   });
 
   it('ignores dims of schemes other than env', async () => {

@@ -71,6 +71,10 @@ let mockExpoConfig: Record<string, unknown> = {};
 jest.mock('@expo/config', () => ({
   ...jest.requireActual('@expo/config'),
   getConfig: jest.fn(() => ({ exp: mockExpoConfig, pkg: {} })),
+  getConfigFilePaths: jest.fn(() => ({
+    staticConfigPath: '/root/app.json',
+    dynamicConfigPath: null,
+  })),
 }));
 
 const originalEnv = process.env;
@@ -271,5 +275,39 @@ describe.each([
     } = require('../../cache-vary/VaryingCacheStore');
     const restoredStore = new RestoredVaryingCacheStore(inner, { projectRoot: '/root' });
     expect(await restoredStore.get(key)).toEqual(first);
+  });
+
+  it('inlines the current config after it changes during a dev session', async () => {
+    const devWebOptions: JsTransformOptions = { ...webOptions, dev: true };
+    // Use the `fs` mock of the module registry the transformer was loaded from.
+    const workerFs: typeof fs = require('fs');
+    workerFs.mkdirSync('/root', { recursive: true });
+    workerFs.writeFileSync('/root/app.json', '{}');
+    const first = await Transformer.transform(
+      config as JsTransformerConfig,
+      '/root',
+      'local/constants.js',
+      manifestSource,
+      devWebOptions
+    );
+
+    // The same worker transforms the file again after the config file is edited.
+    mockExpoConfig = {
+      ...mockExpoConfig,
+      extra: { API_BASE_URL: 'https://api.development.example.com' },
+    };
+    workerFs.writeFileSync('/root/app.json', '{"expo":{}}');
+    const second = await Transformer.transform(
+      config as JsTransformerConfig,
+      '/root',
+      'local/constants.js',
+      manifestSource,
+      devWebOptions
+    );
+
+    const firstOutput = first.output[0] as ExpoJsOutput;
+    const secondOutput = second.output[0] as ExpoJsOutput;
+    expect(secondOutput.data.code).toContain('https://api.development.example.com');
+    expect(secondOutput.data.expoCacheVary).not.toEqual(firstOutput.data.expoCacheVary);
   });
 });

@@ -1,3 +1,6 @@
+import { vol } from 'memfs';
+import fs from 'node:fs';
+
 import {
   canonicalDimNames,
   canonicalDims,
@@ -8,7 +11,12 @@ import {
 } from '../ambient';
 
 let mockExpoConfig: Record<string, unknown> | Error = {};
+let mockStaticConfigPath: string | null = null;
 jest.mock('@expo/config', () => ({
+  getConfigFilePaths: jest.fn(() => ({
+    staticConfigPath: mockStaticConfigPath,
+    dynamicConfigPath: null,
+  })),
   getConfig: jest.fn(() => {
     if (mockExpoConfig instanceof Error) throw mockExpoConfig;
     return { exp: mockExpoConfig, pkg: {} };
@@ -166,5 +174,34 @@ describe('expo-config scheme', () => {
 
     mockExpoConfig = new Error('Invalid app.config.ts');
     expect(await loadAmbient().currentFingerprint('expo-config', 'exp', context)).toBeNull();
+  });
+
+  describe('after the config changes on disk', () => {
+    const projectRoot = '/app';
+
+    beforeEach(() => {
+      mockStaticConfigPath = '/app/app.json';
+      vol.fromJSON({ 'app.json': '{}' }, projectRoot);
+    });
+
+    afterEach(() => {
+      mockStaticConfigPath = null;
+      vol.reset();
+    });
+
+    it('re-evaluates the config in the same process', async () => {
+      const ambient = loadAmbient();
+      const one = await ambient.currentFingerprint('expo-config', 'exp', { projectRoot });
+
+      mockExpoConfig = { name: 'app', extra: { API_BASE_URL: 'https://api.example.com' } };
+      // Unchanged files keep the memoized config.
+      expect(await ambient.currentFingerprint('expo-config', 'exp', { projectRoot })).toEqual(one);
+
+      fs.writeFileSync(mockStaticConfigPath!, '{"expo":{}}');
+      const two = await ambient.currentFingerprint('expo-config', 'exp', { projectRoot });
+
+      expect(two).not.toEqual(one);
+      expect(require('@expo/config').getConfig).toHaveBeenCalledTimes(2);
+    });
   });
 });
