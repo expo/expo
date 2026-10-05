@@ -1,17 +1,66 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - @expo/config@58.0.2
+
+## 58.0.10
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964))
+  - @expo/config@58.0.1
+  - @expo/config-plugins@58.0.4
+  - @expo/env@2.5.1
+
+## 58.0.9 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.8 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 🐛 Bug fixes
 
 - Use development mode when loading Expo config and `.env` files. ([#48882](https://github.com/expo/expo/pull/48882) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Skip applying a CNG patch that is already applied to the native project, e.g. when running `npx expo prebuild --no-clean` more than once. ([#47605](https://github.com/expo/expo/issues/47605) by [@MUSE-CODE-SPACE](https://github.com/MUSE-CODE-SPACE))
-
-### 💡 Others
+- Apply CNG patches relative to the project directory, so that patches are no longer silently skipped when the project lives in a monorepo subdirectory. A patch that was hand-edited to add the project directory to its paths must be regenerated. ([#49138](https://github.com/expo/expo/pull/49138) by [@MUSE-CODE-SPACE](https://github.com/MUSE-CODE-SPACE))
 
 ## 57.0.9 - 2026-07-29
 

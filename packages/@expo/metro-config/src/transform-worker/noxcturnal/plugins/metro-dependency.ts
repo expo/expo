@@ -307,10 +307,7 @@ export function createMetroDependencyPlugin(
                 ? program.scope.generateUid('a')
                 : 'a';
             } else if (input.config.unstable_disableModuleWrapping !== true) {
-              state.requireName =
-                input.config.unstable_renameRequire === false
-                  ? 'require'
-                  : program.scope.generateUid('$$_REQUIRE');
+              state.requireName = 'require';
               state.importDefaultName = program.scope.hasGlobal('_$$_IMPORT_DEFAULT')
                 ? '_$$_IMPORT_DEFAULT'
                 : program.scope.generateUid('$$_IMPORT_DEFAULT');

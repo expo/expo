@@ -129,6 +129,86 @@ function requireCachedNativeComponent<Props>(
 }
 
 /**
+ * Maps `aria-*`, `id` and `tabIndex` props to native props.
+ * Mirrors `Libraries/Components/View/View.js` in React Native 0.88.
+ */
+function mapAriaProps(props: Record<string, any>): Record<string, any> {
+  const {
+    accessibilityState,
+    accessibilityValue,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-hidden': ariaHidden,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-live': ariaLive,
+    'aria-selected': ariaSelected,
+    'aria-valuemax': ariaValueMax,
+    'aria-valuemin': ariaValueMin,
+    'aria-valuenow': ariaValueNow,
+    'aria-valuetext': ariaValueText,
+    id,
+    tabIndex,
+    ...resolvedProps
+  } = props;
+
+  if (ariaLabelledBy !== undefined) {
+    resolvedProps.accessibilityLabelledBy = ariaLabelledBy.split(/\s*,\s*/g);
+  }
+  if (ariaLabel !== undefined) {
+    resolvedProps.accessibilityLabel = ariaLabel;
+  }
+  if (ariaLive !== undefined) {
+    resolvedProps.accessibilityLiveRegion = ariaLive === 'off' ? 'none' : ariaLive;
+  }
+  if (ariaHidden !== undefined) {
+    resolvedProps.accessibilityElementsHidden = ariaHidden;
+    if (ariaHidden === true) {
+      resolvedProps.importantForAccessibility = 'no-hide-descendants';
+    }
+  }
+  if (id !== undefined) {
+    resolvedProps.nativeID = id;
+  }
+  if (tabIndex !== undefined) {
+    resolvedProps.focusable = !tabIndex;
+  }
+  if (
+    accessibilityState != null ||
+    ariaBusy != null ||
+    ariaChecked != null ||
+    ariaDisabled != null ||
+    ariaExpanded != null ||
+    ariaSelected != null
+  ) {
+    resolvedProps.accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+  }
+  if (
+    accessibilityValue != null ||
+    ariaValueMax != null ||
+    ariaValueMin != null ||
+    ariaValueNow != null ||
+    ariaValueText != null
+  ) {
+    resolvedProps.accessibilityValue = {
+      max: ariaValueMax ?? accessibilityValue?.max,
+      min: ariaValueMin ?? accessibilityValue?.min,
+      now: ariaValueNow ?? accessibilityValue?.now,
+      text: ariaValueText ?? accessibilityValue?.text,
+    };
+  }
+  return resolvedProps;
+}
+
+/**
  * A drop-in replacement for `requireNativeComponent`.
  */
 export function requireNativeViewManager<P>(
@@ -150,8 +230,15 @@ export function requireNativeViewManager<P>(
       this.nativeTag = findNodeHandle(this.nativeRef.current);
     }
 
+    /**
+     * The underlying host component
+     */
+    getNativeRef(): (Component & ReactNativeElement) | null {
+      return this.nativeRef.current;
+    }
+
     render() {
-      return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
+      return <ReactNativeComponent {...mapAriaProps(this.props)} ref={this.nativeRef} />;
     }
   }
 

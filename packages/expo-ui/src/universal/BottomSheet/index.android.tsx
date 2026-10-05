@@ -40,7 +40,11 @@ export function BottomSheet({
   testID,
   modifiers,
   shouldDismissOnBackPress = true,
+  shouldDismissOnClickOutside = true,
+  scrimColor,
   contentPadding,
+  containerColor,
+  contentColor,
 }: BottomSheetProps) {
   const sheetRef = useRef<ModalBottomSheetRef>(null);
   const [mount, setMount] = useState(isPresented);
@@ -82,7 +86,10 @@ export function BottomSheet({
         onDismissRequest={onDismiss}
         showDragHandle={showDragIndicator}
         skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
-        properties={{ shouldDismissOnBackPress }}
+        properties={{ shouldDismissOnBackPress, shouldDismissOnClickOutside }}
+        scrimColor={scrimColor}
+        containerColor={containerColor}
+        contentColor={contentColor}
         modifiers={modifiers}>
         <Column modifiers={contentModifiers}>{children}</Column>
       </ModalBottomSheet>

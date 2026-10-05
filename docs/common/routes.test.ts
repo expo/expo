@@ -1,6 +1,11 @@
 import type { NavigationRoute } from '~/types/common';
 
-import { getBreadcrumbTrail, getLatestVersionPath, isReferencePath } from './routes';
+import {
+  getBreadcrumbTrail,
+  getCanonicalUrl,
+  getLatestVersionPath,
+  isReferencePath,
+} from './routes';
 
 describe(isReferencePath, () => {
   it('returns true for unversioned pathname', () => {
@@ -17,6 +22,34 @@ describe(isReferencePath, () => {
 
   it('returns false for non-versioned pathname', () => {
     expect(isReferencePath('/build-reference/how-tos/')).toBe(false);
+  });
+});
+
+describe(getCanonicalUrl, () => {
+  it('points a versioned page at its counterpart in latest', () => {
+    expect(getCanonicalUrl('/versions/v55.0.0/sdk/media-library-next')).toBe(
+      'https://docs.expo.dev/versions/latest/sdk/media-library-next/'
+    );
+  });
+
+  it('points a page under more at itself', () => {
+    expect(getCanonicalUrl('/more/expo-cli')).toBe('https://docs.expo.dev/more/expo-cli/');
+  });
+
+  it('points a technical spec at itself', () => {
+    expect(getCanonicalUrl('/technical-specs/expo-sfv-0')).toBe(
+      'https://docs.expo.dev/technical-specs/expo-sfv-0/'
+    );
+  });
+
+  it('points a general page at itself', () => {
+    expect(getCanonicalUrl('/build-reference/how-tos')).toBe(
+      'https://docs.expo.dev/build-reference/how-tos/'
+    );
+  });
+
+  it('points the home page at the site root', () => {
+    expect(getCanonicalUrl('/')).toBe('https://docs.expo.dev');
   });
 });
 

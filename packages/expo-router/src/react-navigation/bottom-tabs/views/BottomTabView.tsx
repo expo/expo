@@ -77,15 +77,6 @@ export function BottomTabView(props: Props) {
 
   const focusedRouteKey = state.routes[state.index]!.key;
 
-  // Keys of tabs that have been focused during this mount. Only blurred tabs from this list are
-  // frozen, so a tab is never frozen before it has rendered once.
-  const [loaded, setLoaded] = React.useState([focusedRouteKey]);
-
-  if (!loaded.includes(focusedRouteKey)) {
-    // Set the current tab to be loaded if it was not loaded before
-    setLoaded([...loaded, focusedRouteKey]);
-  }
-
   const previousRouteKeyRef = React.useRef(focusedRouteKey);
   const tabAnims = useAnimatedHashMap(state);
 
@@ -232,7 +223,6 @@ export function BottomTabView(props: Props) {
           }
 
           const {
-            freezeOnBlur,
             header = ({ layout, options }: BottomTabHeaderProps) => (
               <Header {...options} layout={layout} title={getHeaderTitle(options, route.name)} />
             ),
@@ -269,10 +259,7 @@ export function BottomTabView(props: Props) {
               key={route.key}
               style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}
               active={activityState}
-              enabled={detachInactiveScreens}
-              freezeOnBlur={freezeOnBlur}
-              // TODO: A visited blurred tab re-preloaded with new params stays frozen until focused.
-              shouldFreeze={activityState === STATE_INACTIVE && loaded.includes(route.key)}>
+              enabled={detachInactiveScreens}>
               <BottomTabBarHeightContext.Provider
                 value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
                 <Screen

@@ -124,7 +124,26 @@ struct SharedObjectTests {
   func `releases the native object when JS reference is garbage-collected`() throws {
     let registrySizeBefore = appContext.sharedObjectRegistry.size
     try runtime.eval("(() => { new expo.modules.SharedObjectModule.SharedObjectExample() })()")
-    try runtime.eval("gc() && gc() && gc()")
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
+  func `releases the native object after removing a listener through its subscription`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    // Same shape as a React effect returning `() => subscription.remove()`: the listener's closure
+    // can reach the subscription, which must not keep the listener nor the shared object alive.
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        const subscription = sharedObject.addListener('test event', () => sharedObject);
+        const cleanup = () => subscription.remove();
+        cleanup();
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
     #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
   }
 

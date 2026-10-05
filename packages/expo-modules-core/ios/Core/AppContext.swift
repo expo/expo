@@ -3,9 +3,10 @@ import ExpoModulesJSI
 
 /**
  The app context is an interface to a single Expo app.
+ Not `final` so that `TestAppContext` from `ExpoModulesTestCore` can subclass it.
  */
 @objc(EXAppContext)
-public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
+public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
@@ -120,17 +121,30 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
     }
   }
 
-  /**
-   The application identifier that is used to distinguish between different `RCTHost`.
-   It might be equal to `nil`, meaning we couldn't obtain the Id for the current app.
-   It shouldn't be used on the old architecture.
-   */
+  /// The number of app contexts created so far in this process.
+  private static let appContextsCount = Mutex<Int>(0)
+
+  /// The position of this app context in creation order, starting at 0.
+  internal let appIndex: Int = AppContext.appContextsCount.withLock { count in
+    defer {
+      count += 1
+    }
+    return count
+  }
+
+  /// The application identifier that distinguishes app contexts that are alive at the same time,
+  /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
+  /// app context, so its view names have no suffix.
   @objc
   public var appIdentifier: String? {
-    guard let moduleRegistry = reactBridge?.moduleRegistry else {
+    return AppContext.appIdentifier(forIndex: appIndex)
+  }
+
+  internal static func appIdentifier(forIndex index: Int) -> String? {
+    if index == 0 {
       return nil
     }
-    return "\(abs(ObjectIdentifier(moduleRegistry).hashValue))"
+    return String(index)
   }
 
   /**
@@ -724,12 +738,14 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   @objc
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
-    // [0] When ExpoModulesCore is built as separated framework/module,
-    // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    // CFBundleExecutable is tried first: it is the product name, from which the Swift module
-    // name is derived. CFBundleName is kept as a fallback for the uncommon case where both
-    // values are identical valid identifiers.
+    // [0] When ExpoModulesCore is built as a separate framework/module,
+    // explicitly load the main bundle's `ExpoModulesProvider` class.
+    // `ExpoModulesProviderModuleName` is an internal key that allows repack-app to
+    // preserve the original Swift module name. Try `CFBundleExecutable` next because
+    // it usually matches the Swift module name. Keep `CFBundleName` as a final fallback
+    // for cases where it is also a valid module identifier.
     let mainBundleNames = [
+      Bundle.main.infoDictionary?["ExpoModulesProviderModuleName"],
       Bundle.main.infoDictionary?["CFBundleExecutable"],
       Bundle.main.infoDictionary?["CFBundleName"]
     ].compactMap { $0 as? String }

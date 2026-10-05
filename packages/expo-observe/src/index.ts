@@ -41,5 +41,6 @@ export type {
   ObserveModule,
   ObserveModuleEvents,
   ObserveNavigationIntegrationConfig,
+  ObserveNetworkTracesConfig,
 } from './types';
 export { useObserve } from './useObserve';

@@ -1,8 +1,12 @@
 # Changelog
 
-## Unpublished
+## 2.5.1
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 2.5.0 — 2026-09-10
 
 ### 🎉 New features
 
@@ -10,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- Block dotenv files from setting `__EXPO_CONFIG_MODE` through `EXPO_UNSAFE_DOTENV_KEYS`. ([#49417](https://github.com/expo/expo/pull/49417) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Set `NODE_ENV` when `loadProjectEnv` receives a development or production mode. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others

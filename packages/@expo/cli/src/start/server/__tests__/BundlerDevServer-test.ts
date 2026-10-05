@@ -50,6 +50,7 @@ beforeEach(() => {
   vol.reset();
   jest.mocked(envIsWebcontainer).mockReset();
   delete process.env.EXPO_NO_REDIRECT_PAGE;
+  delete process.env.EXPO_NO_DEV_MENU;
   delete process.env.EXPO_UNSTABLE_TUNNEL_V2;
   delete process.env.EXPO_PACKAGER_PROXY_URL;
   delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
@@ -210,6 +211,7 @@ describe('openPlatformAsync', () => {
       getPlatformBundlers('/', { web: { bundler: 'metro' } })
     );
     await devServer.startAsync({
+      tunnelProvider: 'ngrok',
       location: {
         hostType: 'tunnel',
       },
@@ -445,13 +447,34 @@ describe('getNativeRuntimeUrl', () => {
       },
     });
     expect(server.getNativeRuntimeUrl()).toBe(
-      'my-app://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A3000'
+      'my-app://?__expo_url=http%3A%2F%2F100.100.1.100%3A3000'
     );
     expect(server.getNativeRuntimeUrl({ hostname: 'localhost' })).toBe(
-      'my-app://expo-development-client/?url=http%3A%2F%2F127.0.0.1%3A3000'
+      'my-app://?__expo_url=http%3A%2F%2F127.0.0.1%3A3000'
     );
     expect(server.getNativeRuntimeUrl({ scheme: 'foobar' })).toBe(
-      'foobar://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A3000'
+      'foobar://?__expo_url=http%3A%2F%2F100.100.1.100%3A3000'
+    );
+  });
+  it(`appends the dev menu launch params when EXPO_NO_DEV_MENU is set`, async () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    const query = '__expo_disable_fab=1&__expo_disable_auto_launch=1&__expo_disable_onboarding=1';
+
+    const expoGo = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    await expoGo.startAsync({ location: {} });
+    expect(expoGo.getNativeRuntimeUrl()).toBe(`exp://100.100.1.100:3000?${query}`);
+
+    const devClient = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } }),
+      { isDevClient: true }
+    );
+    await devClient.startAsync({ location: { scheme: 'my-app' } });
+    expect(devClient.getNativeRuntimeUrl()).toBe(
+      `my-app://?__expo_url=http%3A%2F%2F100.100.1.100%3A3000&${query}`
     );
   });
 });
@@ -477,9 +500,9 @@ describe('_startTunnelAsync', () => {
     expect(await server._startTunnelAsync()).toEqual(null);
   });
 
-  it('uses an ngrok tunnel by default', async () => {
+  it('uses an ngrok tunnel when explicitly requested', async () => {
     const devServer = await getRunningServer();
-    const tunnel = await devServer._startTunnelAsync();
+    const tunnel = await devServer._startTunnelAsync('ngrok');
     expect(tunnel).toBeInstanceOf(AsyncNgrok);
   });
 
@@ -493,14 +516,17 @@ describe('_startTunnelAsync', () => {
     expect((tunnel as any).options).toEqual({ useExpoAccount: false });
   });
 
-  it('routes --tunnel through a signed ws tunnel when opted in', async () => {
-    process.env.EXPO_UNSTABLE_TUNNEL_V2 = '1';
+  it.each([undefined, '0', '1'])(
+    'uses a signed ws tunnel regardless of the deprecated flag (%s)',
+    async (value) => {
+      if (value !== undefined) process.env.EXPO_UNSTABLE_TUNNEL_V2 = value;
 
-    const devServer = await getRunningServer();
-    const tunnel = (await devServer._startTunnelAsync()) as AsyncWsTunnel;
-    expect(tunnel).toBeInstanceOf(AsyncWsTunnel);
-    expect((tunnel as any).options).toEqual({ useExpoAccount: true });
-  });
+      const devServer = await getRunningServer();
+      const tunnel = (await devServer._startTunnelAsync()) as AsyncWsTunnel;
+      expect(tunnel).toBeInstanceOf(AsyncWsTunnel);
+      expect((tunnel as any).options).toEqual({ useExpoAccount: true });
+    }
+  );
 });
 
 describe('getJsInspectorBaseUrl', () => {
@@ -518,7 +544,10 @@ describe('getJsInspectorBaseUrl', () => {
       '/',
       getPlatformBundlers('/', { web: { bundler: 'metro' } })
     );
-    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    await devServer.startAsync({
+      tunnelProvider: 'ngrok',
+      location: { hostType: 'tunnel' },
+    });
     expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.ngrok-tunnel.dev');
   });
 
@@ -552,7 +581,10 @@ describe('getDevServerUrl', () => {
       '/',
       getPlatformBundlers('/', { web: { bundler: 'metro' } })
     );
-    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    await devServer.startAsync({
+      tunnelProvider: 'ngrok',
+      location: { hostType: 'tunnel' },
+    });
     expect(devServer.getDevServerUrl()).toBe('http://localhost:3000');
   });
 

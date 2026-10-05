@@ -36,7 +36,6 @@ for (const outputMode of staticModes) {
           EXPO_USE_STATIC: outputMode,
           E2E_ROUTER_SRC: testName,
           E2E_SERVER_FUNCTIONS: '1',
-          E2E_ROUTER_JS_ENGINE: 'hermes',
           //   E2E_RSC_ENABLED: '1',
           TEST_SECRET_VALUE: 'test-secret',
           CI: '1',

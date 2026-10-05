@@ -3,7 +3,7 @@
 import ExpoModulesCore
 
 /// An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
-/// an `exception` log event following OpenTelemetry's exception conventions.
+/// a `js.exception` log event following OpenTelemetry's exception conventions.
 @Record
 struct ErrorReport {
   var source: Source = .global
@@ -20,7 +20,7 @@ struct ErrorReport {
     case reportedByUser
   }
 
-  /// Builds the `exception` log event for the live path.
+  /// Builds the `js.exception` log event for the live path.
   func toLogRecord() -> LogRecord {
     return makeExceptionLogRecord(
       source: source.rawValue,
@@ -50,7 +50,7 @@ struct ErrorReport {
 }
 
 extension PendingErrorStore.PendingError {
-  /// Builds the `exception` log event for a fatal error ingested from disk on the next launch, using
+  /// Builds the `js.exception` log event for a fatal error ingested from disk on the next launch, using
   /// the session and timestamp captured at fatal time.
   func toLogRecord() -> LogRecord {
     return makeExceptionLogRecord(
@@ -65,14 +65,13 @@ extension PendingErrorStore.PendingError {
   }
 }
 
-/// Builds an `exception` log event following OpenTelemetry's exception-in-logs convention: the error
-/// rides as `exception.*` attributes (the event name is `exception` because this captures errors from
-/// a handler, not a specific operation), and `expo.error.*` carries the bits OTel has no field for (the
+/// Builds a `js.exception` log event following OpenTelemetry's exception-in-logs convention. The error
+/// rides as `exception.*` attributes, while `expo.error.*` carries the bits OTel has no field for (the
 /// capture source and whether the error was fatal). Fatal errors log at `fatal` severity, the rest at
 /// `error`. Shared by the live and ingested-fatal paths so both events keep the same shape.
 ///
 /// Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted (the boxed optionals
-/// encode as JSON `null`), so every `exception` event carries the same attribute keys. The React
+/// encode as JSON `null`), so every `js.exception` event carries the same attribute keys. The React
 /// component stack only exists for error-boundary captures, so `expo.error.component_stack` is
 /// omitted entirely when absent rather than logged as `null` on every event.
 private func makeExceptionLogRecord(
@@ -95,7 +94,7 @@ private func makeExceptionLogRecord(
     attributes["expo.error.component_stack"] = componentStack
   }
   return LogRecord(
-    name: "exception",
+    name: "js.exception",
     attributes: attributes,
     severity: isFatal ? .fatal : .error,
     timestamp: timestamp

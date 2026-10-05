@@ -1,6 +1,6 @@
 {
   "name": "expo-splash-screen",
-  "version": "57.0.5",
+  "version": "58.0.5",
   "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
   "keywords": [
     "expo",
@@ -34,6 +34,7 @@
     "./app.plugin.js": "./app.plugin.js"
   },
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -45,20 +46,21 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {
-    "@expo/config-plugins": "workspace:~56.0.8",
-    "@expo/image-utils": "workspace:^0.10.1",
+    "@expo/config-plugins": "workspace:~",
+    "@expo/image-utils": "workspace:^",
     "xml2js": "0.6.0"
   },
   "devDependencies": {
     "@expo/plist": "workspace:*",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "^3.6.0"
   },
   "peerDependencies": {
     "expo": "*"

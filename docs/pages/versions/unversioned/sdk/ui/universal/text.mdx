@@ -8,8 +8,25 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A component for displaying text. Adapts to the platform color scheme (light/dark) by default and exposes a focused subset of typography knobs through [`textStyle`](#textstyle).
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/text/android-light.webp',
+    darkSrc: '/static/images/expo-ui/text/android-dark.webp',
+    alt: 'Material 3 typography hierarchy: headline, title, body, and label',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/text/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/text/ios-dark.webp',
+    alt: 'Text rendered with different font sizes, weights, and a hierarchical secondary style',
+  }}
+/>
 
 ## Installation
 
@@ -19,51 +36,115 @@ A component for displaying text. Adapts to the platform color scheme (light/dark
 
 ### Basic text
 
-```tsx TextExample.tsx
+<ComponentExample
+  title="TextExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-text-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-text-basic-android-dark.webp',
+    alt: 'The text Hello, world!',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-text-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-text-basic-ios-dark.webp',
+    alt: 'The text Hello, world!',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Text } from '@expo/ui';
 
 export default function TextExample() {
+  const colorScheme = useColorScheme();
+
   return (
     <Host matchContents>
-      <Text>Hello, world!</Text>
+      <Text textStyle={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
+        Hello, world!
+      </Text>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Styled text
 
 Use [`textStyle`](#textstyle) for typography-specific properties (font size, weight, alignment).
 
-```tsx StyledTextExample.tsx
+<ComponentExample
+  title="StyledTextExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-text-styled-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-text-styled-android-dark.webp',
+    alt: 'The word Headline in large bold type',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-text-styled-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-text-styled-ios-dark.webp',
+    alt: 'The word Headline in large bold type',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Text } from '@expo/ui';
 
 export default function StyledTextExample() {
+  const colorScheme = useColorScheme();
+
   return (
     <Host matchContents>
-      <Text textStyle={{ fontSize: 24, fontWeight: '700', textAlign: 'center' }}>Headline</Text>
+      <Text
+        textStyle={{
+          color: colorScheme === 'dark' ? '#FFFFFF' : '#000000',
+          fontSize: 24,
+          fontWeight: '700',
+          textAlign: 'center',
+        }}>
+        Headline
+      </Text>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Truncating long text
 
 Use [`numberOfLines`](#numberoflines) to clamp long text with a trailing ellipsis.
 
-```tsx TruncatedTextExample.tsx
+<ComponentExample
+  title="TruncatedTextExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-text-truncated-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-text-truncated-android-dark.webp',
+    alt: 'A long line of text cut off at the screen edge',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-text-truncated-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-text-truncated-ios-dark.webp',
+    alt: 'A long line of text truncated with an ellipsis',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Text } from '@expo/ui';
 
 export default function TruncatedTextExample() {
+  const colorScheme = useColorScheme();
+
   return (
-    <Host style={{ flex: 1 }}>
-      <Text numberOfLines={1}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+      <Text numberOfLines={1} textStyle={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
         A very long line of text that will be truncated when it does not fit on a single line.
       </Text>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -72,3 +153,5 @@ import { Text } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/text" apiName="Text" />
+
+</PlatformTabsGroup>

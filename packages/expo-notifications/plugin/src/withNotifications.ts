@@ -14,6 +14,13 @@ export type NotificationsPluginProps = {
    */
   icon?: string;
   /**
+   * Local path to an image to use as the large icon for notifications. The image is resized to
+   * 64x64 dp and shown next to the notification text. A notification that carries its own image
+   * uses that image instead.
+   * @platform android
+   */
+  largeIcon?: string;
+  /**
    * Tint color for the push notification image when it appears in the notification tray.
    * @default '#ffffff'
    * @platform android
@@ -34,6 +41,16 @@ export type NotificationsPluginProps = {
    * @platform ios
    */
   mode?: 'development' | 'production';
+
+  /**
+   * Whether to enable remote notifications.
+   *
+   * If set to `false`, the plugin does not add the `aps-environment` entitlement to the native project,
+   * and only local notifications work. `mode` has no effect.
+   * @default true
+   * @platform ios
+   */
+  enableRemoteNotifications?: boolean;
 
   /**
    * Whether to enable background remote notifications, as described in [Apple documentation](https://developer.apple.com/documentation/usernotifications/pushing-background-updates-to-your-app).

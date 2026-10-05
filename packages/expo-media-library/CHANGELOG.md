@@ -1,6 +1,43 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Fix assets moved with `Album.create` (with `moveAssets` set to `true`) or `album.add` sometimes disappearing from the media library. The file was moved, but its MediaStore entry was deleted, so it only showed up again after a rescan, with a new ID. ([#50817](https://github.com/expo/expo/pull/50817) by [@devonik](https://github.com/devonik))
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Fix `Album.getAll()` not returning albums nested inside folders. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- Add `Album.getAlbumsMetadata()` for cheap bulk album listing and `album.getAssetCount()`. ([#47903](https://github.com/expo/expo/pull/47903) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.3 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fix `Album.create` naming copied assets (with `moveAssets` set to `false`) after the full `file://` path of the original, e.g. `file____storage_emulated_0_DCIM_Camera_IMG_1234.jpg`, instead of its file name. ([#50621](https://github.com/expo/expo/pull/50621) by [@devonik](https://github.com/devonik))
+
+## 58.0.1 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Request a single high-quality delivery for Live Photos. Under the default `.opportunistic` delivery mode `requestLivePhoto` invokes its result handler more than once, and the first, degraded pass could resolve `getAssetInfoAsync` without `pairedVideoAsset`. ([#50295](https://github.com/expo/expo/pull/50295) by [@henriquegpb](https://github.com/henriquegpb))
+
+## 58.0.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
@@ -13,6 +50,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Parallelize per-file EXIF and location reads in `getAssetsAsync` when `resolveWithFullInfo` is true, speeding up large library scans. ([#48637](https://github.com/expo/expo/pull/48637) by [@hsource](https://github.com/hsource) and [@robin-pham](https://github.com/robin-pham))
+- [iOS] Include GPS `location` in `getAssetsAsync` batch results and return numeric latitude/longitude instead of strings for `Asset.location` and `Album.approximateLocation` (matching the documented `Location` type). ([#49188](https://github.com/expo/expo/pull/49188) by [@hsource](https://github.com/hsource) and [@fractalbeauty](https://github.com/fractalbeauty))
 - [Android] Fix transposed `width`/`height` for rotated assets (portrait photos and videos): `Asset.getInfo()`, `getWidth()`/`getHeight()`/`getShape()` and `Query.exeForMetadata()` now honor MediaStore `ORIENTATION`, matching the legacy API. ([#48150](https://github.com/expo/expo/pull/48150) by [@oeddyo](https://github.com/oeddyo))
 
 ### 💡 Others

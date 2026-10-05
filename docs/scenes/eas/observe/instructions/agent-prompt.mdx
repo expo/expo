@@ -1,0 +1,42 @@
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
+
+<AgentPrompt
+  title="Set up EAS Observe with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Set up EAS Observe in my Expo project so I can see startup performance from my production app. Work through these steps in order.
+
+1. Identify the SDK version from the `expo` version in package.json, because it decides which steps apply. SDK 56 and later use the `Observe` API. SDK 55 uses the legacy `AppMetrics` names, so the steps marked "SDK 55 only" apply instead of the ones marked "SDK 56 and later" or "SDK 57 and later". Stop and tell me to upgrade if the project is on SDK 54 or earlier, because EAS Observe needs SDK 55 or later.
+2. Install or upgrade EAS CLI with `npm install -g eas-cli`, then check that I am logged in with `eas whoami`. Run `eas login` if I am not.
+3. Check that the app config has `extra.eas.projectId`. If it is missing, stop and ask me before running `eas init`, because that creates a new project on my account.
+4. Run `npx expo install expo-observe`, which installs the version that matches this SDK.
+5. Wrap the root layout component and export the wrapped component as the default. The root layout is app/_layout.tsx in an Expo Router project, or the root component the app registers otherwise. This measures time to first render on its own.
+   - Import `ObserveRoot` from `expo-observe` and end the file with `export default ObserveRoot.wrap(RootLayout)`.
+   - SDK 55 only: import `AppMetricsRoot` instead and use `AppMetricsRoot.wrap(RootLayout)`.
+6. Call `markInteractive()` once the startup work behind the splash screen has finished. That work includes update checks, authentication, the first data fetch, and the splash screen animation. Call it in an effect that runs after the app sets its ready state and hides the splash screen.
+   - Read `markInteractive` from the `useObserve()` hook inside the component.
+   - SDK 55 only: call `AppMetrics.markInteractive()` instead. There is no hook.
+   - Calling it more than once in a session is safe, because only the first call records the measurement. If the app has more than one entry screen, such as an onboarding flow, a login flow, or a deep link target, call it on every one of them. Otherwise time to interactive is not recorded when the app opens on one of those screens.
+7. SDK 56 and later: record per-route navigation metrics, so the dashboard reports render and interactive times per screen instead of app-wide numbers only.
+   - Add `Observe.configure({ integrations: { 'expo-router': true } })` at module scope in the root layout file, above the component, for an Expo Router project. Use `'react-navigation': true` for a project that navigates with React Navigation directly, which needs `@react-navigation/native` 7 or later.
+   - Keep one `Observe.configure()` call and put every option in it, because each call replaces the whole configuration and a later call resets what an earlier one set. The call has to run before any screen mounts, and turning an integration on or off after that throws.
+   - React Navigation only: import from `expo-observe/integrations/react-navigation`. With dynamic configuration, replace the top-level `<NavigationContainer>` with `<ObserveNavigationContainer>`, which takes the same props and forwards the same ref. With static configuration, create the ref with `useNavigationContainerRef()`, pass it to the element `createStaticNavigation()` returns, and wrap that element in `<ObserveNavigationProvider navigationRef={navigationRef}>`.
+   - Move the `markInteractive()` call from step 6 into the screen components, in an effect, because the hook scopes the call to the screen it runs in and a call from outside a screen records nothing. The app-wide time to interactive still comes from that call. Instrument the entry screens, then ask me which other screens should report interactive time.
+   - SDK 57 and later: if route or query parameters in this project carry sensitive values, name those keys in `filteredParams`, as in `{ 'expo-router': { filteredParams: ['userId'] } }`. The integration then leaves them out of the metrics it exports.
+8. SDK 57 and later: set up error reporting, which is in preview. Unhandled JavaScript errors are recorded from the moment the package is imported, so the work left is the errors that never reach that handler.
+   - Render errors: replace the `ObserveRoot.wrap()` export from step 5 with the component form and pass a fallback, as in `<ObserveRoot errorBoundaryFallback={<FallbackScreen />}>`, because `wrap()` passes no props. The fallback then renders in place of the app and the error is recorded with its React component stack. To cover one subtree instead of the whole app, wrap that subtree in `<ObserveErrorBoundary>` and pass `fallback` an element or a function that receives `error` and `resetError`.
+   - Handled errors: call `Observe.reportError(error)` in the catch blocks that recover from a failure, such as a failed sync or a failed upload, because those errors reach neither the global handler nor a boundary. Show me the list first if there are more than a few, and keep personal data out of the message, because everything reported is dispatched off-device and shown in the dashboard.
+   - Set `"uploadSourceMaps": true` on the production build profile in eas.json, so the dashboard maps stack traces back to my source files instead of positions in the minified bundle. It needs EAS CLI 22.0.0 or later and a build that runs on EAS Build servers.
+9. Stop and ask me: "Instrumentation is in place. Do you want to test it in a development build first?" EAS Observe does not run in Expo Go, so either answer needs a new build.
+   - If I say yes, add `dispatchInDebug: true` to the `Observe.configure()` call, or add that call at module scope if the project has none, because debug builds do not dispatch metrics by default. On SDK 55, call `AppMetrics.configure({ dispatchInDebug: true })` instead. Tell me to remove it before I ship, because debug performance distorts the dashboard.
+   - If I say no, change no configuration. Release builds dispatch by default.
+10. Stop and ask me which platform and profile to build, then run `eas build --platform <platform> --profile <profile>`.
+11. Tell me to open the Observe tab of the project in the EAS dashboard to see the first metrics, where the Navigation page lists the per-route timings and the Errors page lists the recorded errors. As an alternative, `eas observe:versions` lists the app versions to filter by, `eas observe:metrics-summary` shows median, p90, and p99 startup times per version, `eas observe:metrics` shows individual slow sessions, and `eas observe:routes` shows those per-route timings.
+
+Match the package manager this project already uses, and report what you ran.
+
+For the EAS Observe get started guide, see https://docs.expo.dev/eas/observe/get-started/.
+```
+
+</AgentPrompt>

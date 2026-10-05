@@ -18,7 +18,6 @@ struct LiveActivityAttributes: ActivityAttributes {
   }
 }
 
-@available(iOS 16.1, *)
 public struct WidgetLiveActivity: Widget {
   @Environment(\.self) var env
   
@@ -77,7 +76,6 @@ public struct WidgetLiveActivity: Widget {
   }
 }
 
-@available(iOS 16.1, *)
 private struct LiveActivitySectionView: View {
   let context: ActivityViewContext<LiveActivityAttributes>
   let nodes: [String: Any]
@@ -92,7 +90,6 @@ private struct LiveActivitySectionView: View {
   }
 }
 
-@available(iOS 16.1, *)
 private struct LiveActivityBannerView: View {
   var context: ActivityViewContext<LiveActivityAttributes>
   let nodes: [String: Any]

@@ -118,7 +118,11 @@ class DeviceModule : Module() {
 
     AsyncFunction<Double>("getMaxMemoryAsync") {
       val maxMemory = Runtime.getRuntime().maxMemory()
-      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1.0
+      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) {
+        maxMemory.toDouble()
+      } else {
+        -1.0
+      }
     }
 
     AsyncFunction<Boolean>("isRootedExperimentalAsync") {
@@ -148,7 +152,12 @@ class DeviceModule : Module() {
           0
         ) == 1
       } else {
-        context.applicationContext.packageManager.canRequestPackageInstalls()
+        try {
+          context.applicationContext.packageManager.canRequestPackageInstalls()
+        } catch (e: SecurityException) {
+          // throws when REQUEST_INSTALL_PACKAGES is not declared
+          throw MissingRequestInstallPackagesPermissionException(e)
+        }
       }
     }
 

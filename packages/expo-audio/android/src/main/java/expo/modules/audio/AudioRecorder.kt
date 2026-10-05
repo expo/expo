@@ -46,7 +46,9 @@ class AudioRecorder(
   var startTime = 0L
   var isRecording = false
   var isPaused = false
+  private var isPausedBySystem = false
   private var recordingTimerJob: Job? = null
+  private var durationLimitMillis: Long? = null
   var useForegroundService = false
 
   val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
@@ -88,10 +90,6 @@ class AudioRecorder(
       throw AudioRecorderAlreadyPreparedException()
     }
 
-    if (useForegroundService && !hasNotificationPermissions()) {
-      throw NotificationPermissionsException()
-    }
-
     val recordingOptions = options ?: this.options
     val mediaRecorder = createRecorder(recordingOptions)
     recorder = mediaRecorder
@@ -112,10 +110,16 @@ class AudioRecorder(
   }
 
   fun record() {
+    isPausedBySystem = false
     if (useForegroundService) {
       serviceConnection.recordingServiceBinder?.service?.registerRecorder(this) ?: run {
         throw AudioRecordingServiceException("The service connection is not bound, but `allowsBackgroundRecording` is set to `true`")
       }
+    }
+
+    if (isPaused && durationLimitMillis?.let { durationAlreadyRecorded >= it } == true) {
+      stopRecording()
+      return
     }
 
     if (isPaused) {
@@ -126,26 +130,23 @@ class AudioRecorder(
     startTime = System.currentTimeMillis()
     isRecording = true
     isPaused = false
+    scheduleRecordingStop()
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
     recordingTimerJob?.cancel()
+    recordingTimerJob = null
 
     // Note: atTime is not supported on Android (no native equivalent), so we ignore it entirely
     // Only forDuration is implemented using coroutines
+    if (forDurationSeconds != null) {
+      durationLimitMillis = (forDurationSeconds * 1000).toLong()
+    } else if (!isPaused || atTimeSeconds != null) {
+      // A bare record() resumes the current capture and keeps its limit.
+      durationLimitMillis = null
+    }
 
-    forDurationSeconds?.let {
-      record()
-      recordingTimerJob = appContext?.mainQueue?.launch {
-        delay((it * 1000).toLong())
-        // Stop recording regardless of current state
-        // This matches the iOS behaviour where the timer continues regardless of if
-        // the recording was paused.
-        if (isRecording || isPaused) {
-          stopRecording()
-        }
-      }
-    } ?: record()
+    record()
   }
 
   // Keep backward compatibility methods
@@ -158,10 +159,38 @@ class AudioRecorder(
   }
 
   fun pauseRecording() {
+    isPausedBySystem = false
+    recordingTimerJob?.cancel()
+    recordingTimerJob = null
     recorder?.pause()
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
     isRecording = false
     isPaused = true
+  }
+
+  fun pauseForSystem() {
+    if (isRecording) {
+      pauseRecording()
+      isPausedBySystem = true
+    }
+  }
+
+  fun resumeAfterSystemPause() {
+    if (isPausedBySystem && isPaused) {
+      record()
+    }
+  }
+
+  private fun scheduleRecordingStop() {
+    recordingTimerJob?.cancel()
+    recordingTimerJob = durationLimitMillis?.let { limit ->
+      appContext?.mainQueue?.launch {
+        delay((limit - getAudioRecorderDurationMillis()).coerceAtLeast(0))
+        if (isRecording) {
+          stopRecording()
+        }
+      }
+    }
   }
 
   fun stopRecording(): Bundle {
@@ -203,7 +232,11 @@ class AudioRecorder(
           "isFinished" to true,
           "hasError" to stopFailed,
           "error" to stopError,
-          "url" to if (stopFailed) null else url
+          "url" to if (stopFailed) {
+            null
+          } else {
+            url
+          }
         )
       )
     }
@@ -220,6 +253,7 @@ class AudioRecorder(
     isRecording = false
     isPaused = false
     durationAlreadyRecorded = 0
+    durationLimitMillis = null
     startTime = 0L
     isPrepared = false
   }
@@ -439,14 +473,6 @@ class AudioRecorder(
 
   private fun hasRecordingPermissions() =
     ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-
-  private fun hasNotificationPermissions(): Boolean {
-    // POST_NOTIFICATIONS permission is only required on Android 13+ (API 33+)
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-      return true
-    }
-    return ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-  }
 
   fun getAvailableInputs(audioManager: AudioManager) =
     audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->

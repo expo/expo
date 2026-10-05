@@ -16,6 +16,8 @@ First, you need to have created an Expo module or integrated the Expo modules AP
 
 Inside your module, create a concrete class that implements the [`Package`](https://github.com/expo/expo/tree/main/packages/expo-modules-core/android/src/main/java/expo/modules/core/interfaces/Package.java) interface. For most cases, you only need to implement the `createReactActivityLifecycleListeners` or `createApplicationLifecycleListeners` methods.
 
+You do not need to register this class in **MainApplication.java** or **MainApplication.kt**. [Expo Autolinking](/modules/autolinking/) scans each linked module's Android sources for classes in files ending in **Package.java** or **Package.kt** that implement the `Package` interface. During the Android build, it adds those classes to the generated `ExpoModulesPackageList`, which Expo uses to create the lifecycle listeners. If the module already supports Android, you also do not need to add the `Package` class to **expo-module.config.json**.
+
 ## `Activity` lifecycle listeners
 
 You can hook into the `Activity` lifecycle using `ReactActivityLifecycleListener`. `ReactActivityLifecycleListener` hooks into React Native's `ReactActivity` lifecycle using its `ReactActivityDelegate` and provides a similar experience to the Android `Activity` lifecycle.

@@ -8,8 +8,25 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A controlled checkbox. Pair [`value`](#value) with [`onValueChange`](#onvaluechange) to manage state from React.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/checkbox/android-light.webp',
+    darkSrc: '/static/images/expo-ui/checkbox/android-dark.webp',
+    alt: 'Checked and unchecked Material 3 checkboxes',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/checkbox/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/checkbox/ios-dark.webp',
+    alt: 'A checked and an unchecked checkbox side by side',
+  }}
+/>
 
 ## Installation
 
@@ -19,7 +36,20 @@ A controlled checkbox. Pair [`value`](#value) with [`onValueChange`](#onvaluecha
 
 ### Basic checkbox
 
-```tsx CheckboxExample.tsx
+<ComponentExample
+  title="CheckboxExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-checkbox-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-checkbox-basic-android-dark.webp',
+    alt: 'An unchecked checkbox with a consent label',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-checkbox-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-checkbox-basic-ios-dark.webp',
+    alt: 'A switch-style checkbox with a consent label',
+  }}>
+
+```tsx
 import { useState } from 'react';
 import { Host, Checkbox } from '@expo/ui';
 
@@ -34,9 +64,24 @@ export default function CheckboxExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Disabled
 
-```tsx DisabledCheckboxExample.tsx
+<ComponentExample
+  title="DisabledCheckboxExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-checkbox-disabled-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-checkbox-disabled-android-dark.webp',
+    alt: 'A checked, disabled checkbox with the label Locked option',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-checkbox-disabled-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-checkbox-disabled-ios-dark.webp',
+    alt: 'A checked, disabled switch-style checkbox with the label Locked option',
+  }}>
+
+```tsx
 import { Host, Checkbox } from '@expo/ui';
 
 export default function DisabledCheckboxExample() {
@@ -48,6 +93,8 @@ export default function DisabledCheckboxExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -55,3 +102,5 @@ import { Checkbox } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/checkbox" apiName="Checkbox" />
+
+</PlatformTabsGroup>

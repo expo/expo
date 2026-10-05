@@ -1,5 +1,5 @@
 declare module 'react-native/Libraries/Image/AssetSourceResolver' {
-  import { PackagerAsset } from '@react-native/assets/registry';
+  import type { PackagerAsset } from 'react-native/asset-registry';
 
   export type ResolvedAssetSource = {
     __packager_asset: boolean;

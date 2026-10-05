@@ -232,7 +232,7 @@ async function updateRNVersion({
   projectDir: string;
   rnVersion?: string;
 }) {
-  const reactNativeVersion = rnVersion || getLocalReactNativeVersion();
+  const reactNativeVersion = rnVersion || (await getLocalReactNativeVersion());
 
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
@@ -242,9 +242,11 @@ async function updateRNVersion({
   await spawnAsync('pnpm', ['install'], { cwd: projectDir });
 }
 
-function getLocalReactNativeVersion() {
-  const mainPkg = require(path.resolve(EXPO_DIR, 'package.json'));
-  return mainPkg.resolutions?.['react-native'];
+async function getLocalReactNativeVersion() {
+  const { stdout } = await spawnAsync('pnpm', ['config', 'get', 'overrides', '--json'], {
+    cwd: EXPO_DIR,
+  });
+  return JSON.parse(stdout)['react-native'];
 }
 
 async function runExpoPrebuild({

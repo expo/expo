@@ -377,11 +377,10 @@ apps/router-e2e/__e2e__/
 
 Configure which project to run via environment variables:
 
-| Variable               | Description                                            |
-| ---------------------- | ------------------------------------------------------ |
-| `E2E_ROUTER_SRC`       | Subdirectory name in `__e2e__/` (e.g., `fast-refresh`) |
-| `E2E_ROUTER_JS_ENGINE` | JavaScript engine (`hermes`, `jsc`)                    |
-| `E2E_ROUTER_ASYNC`     | Async chunk loading mode                               |
+| Variable           | Description                                            |
+| ------------------ | ------------------------------------------------------ |
+| `E2E_ROUTER_SRC`   | Subdirectory name in `__e2e__/` (e.g., `fast-refresh`) |
+| `E2E_ROUTER_ASYNC` | Async chunk loading mode                               |
 
 ### Running Router E2E Tests
 

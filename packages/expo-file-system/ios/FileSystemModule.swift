@@ -336,7 +336,7 @@ public final class FileSystemModule: Module {
       }
 
       Property("size") { file in
-        try? file.size
+        (try? file.size) ?? 0
       }
 
       Property("md5") { file in

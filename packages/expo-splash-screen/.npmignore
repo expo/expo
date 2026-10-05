@@ -1,3 +1,25 @@
+# Exclude all top-level hidden files and directories by convention
+/.*
+
+# Exclude nested package ignore files
+**/.gitignore
+**/.npmignore
+
+# Exclude TypeScript project configuration and incremental build caches
+**/tsconfig.json
+**/tsconfig.all.json
+**/*.tsbuildinfo
+
+# Exclude monorepo build configuration
+/turbo.json
+
+# Exclude test configuration
+**/jest.config.*
+**/jest.setup.*
+**/jest-setup.*
+
+/DEVELOPMENT.md
+
 babel.config.js
 assets/**/*
 /oxlint.config.mjs

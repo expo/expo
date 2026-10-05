@@ -4,7 +4,7 @@ description: Learn how to use the Stack navigator in Expo Router.
 hasVideoLink: true
 ---
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { RouterLogo } from '@expo/styleguide';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -58,7 +58,6 @@ import { Stack } from 'expo-router';
 export default function Layout() {
   return (
     <Stack
-      // See React Navigation documentation for more information on available screenOptions: https://reactnavigation.org/docs/headers/#sharing-common-options-across-screens
       screenOptions={{
         headerStyle: {
           backgroundColor: '#f4511e',
@@ -98,6 +97,27 @@ export default function Layout() {
   );
 }
 ```
+
+### Set the native header's interface style
+
+> **info** This option is available only on iOS in **SDK 58 and later**.
+
+Use `headerUserInterfaceStyle` to set a screen's native header to `'light'` or `'dark'` without changing the navigation theme. For example, a detail screen can use a dark header while the rest of the stack keeps its theme-based style:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ headerLargeTitleEnabled: true }} />
+      <Stack.Screen name="details" options={{ headerUserInterfaceStyle: 'dark' }} />
+    </Stack>
+  );
+}
+```
+
+You can also set this option in `screenOptions` for the whole stack. A `Stack.Screen` option overrides it for that screen. When the option is omitted, the native header follows the navigation theme. The native header does not support changes to this option while the screen is visible. This option affects the native header only. Set header colors separately if needed.
 
 ### Set screen options dynamically
 
@@ -187,8 +207,6 @@ The `Stack` navigator supports comprehensive header configuration options. Below
 
 <ReactNavigationOptions category="header" />
 
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
-
 ### Header buttons
 
 You can add buttons to the header by using the `headerLeft` and `headerRight` options or `<Stack.Toolbar>` component. These options accept a React component that renders in the header.
@@ -197,7 +215,7 @@ You can add buttons to the header by using the `headerLeft` and `headerRight` op
   title="Stack Toolbar"
   description="Configure iOS header toolbar with support for Liquid Glass."
   href="/router/advanced/stack-toolbar/"
-  Icon={BookOpen02Icon}
+  Icon={RouterLogo}
 />
 
 <Tabs>
@@ -288,8 +306,6 @@ For a complete list of all available other screen options including animations, 
 
 <ReactNavigationOptions excludeCategories={['header']} />
 
-For additional details and navigator-specific examples, see [React Navigation's Native Stack Navigator documentation](https://reactnavigation.org/docs/native-stack-navigator).
-
 ## Custom push behavior
 
 By default, the `Stack` navigator removes duplicate screens when pushing a route that is already in the stack. For example, if you push the same screen twice, the second push will be ignored. You can change this push behavior by providing a custom `getId()` function to the `<Stack.Screen>`.
@@ -371,9 +387,9 @@ export default function Settings() {
 
 > `dismissTo` was added in Expo Router `4.0.8`. It operates similarly to the `navigation` function in Expo Router v3.
 
-Dismisses screens in the current `<Stack />` until the specified `Href` is reached. If the `Href` is absent in the history, a `push` action will be performed instead.
+Dismisses screens in the current `<Stack />` until the specified `Href` is reached. If the `Href` is absent in the history, the current screen is replaced with the specified `Href` instead.
 
-For example, consider the history of `/one`, `/two`, `/three` routes, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will `push` the history forward to the `/four` route.
+For example, consider the history of `/one`, `/two`, `/three` routes, where `/three` is the current route. The action `router.dismissTo('/one')` will cause the history to go back twice, while `router.dismissTo('/four')` will replace the current `/three` route with the `/four` route.
 
 {/* prettier-ignore */}
 ```tsx src/app/settings.tsx
@@ -405,7 +421,7 @@ export default function Settings() {
 
 ### `dismissAll` action
 
-To return to the first screen in the closest stack. This is similar to [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop) stack action.
+The `dismissAll` action dismisses every screen above the first screen in the closest stack, returning to that first screen.
 
 For example, the `home` route is the first screen, and the `settings` is the last. To go from `settings` to `home` route you'll have to go back to `details`. However, using the `dismissAll` action, you can go from `settings` to `home` and dismiss any screen in between.
 

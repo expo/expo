@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { createStandardNavigator } from 'standard-navigation';
 
 import { TabRouter } from '../../react-navigation/routers';
-import { unstable_createStandardRouterNavigator } from '../index';
+import { createStandardRouterNavigator } from '../index';
 import type { NavigatorContentProps } from '../types';
 
 function typecheck(_value: unknown) {}
@@ -36,7 +36,7 @@ function typecheck(_value: unknown) {}
   };
 
   // eslint-disable-next-line no-unused-expressions
-  unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+  createStandardRouterNavigator(TabsContent, TabRouter);
 }
 
 // "Typed events" — the event map is inferred from the component and `emitter.emit` is typed
@@ -55,7 +55,7 @@ function typecheck(_value: unknown) {}
   };
 
   // eslint-disable-next-line no-unused-expressions
-  unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+  createStandardRouterNavigator(TabsContent, TabRouter);
 }
 
 // "Options" — the optional third argument type-checks, and `createProps` may dispatch a `PRELOAD`
@@ -79,7 +79,7 @@ function typecheck(_value: unknown) {}
     );
   };
 
-  const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
+  const Tabs = createStandardRouterNavigator(TabsContent, TabRouter, {
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
@@ -115,6 +115,6 @@ function typecheck(_value: unknown) {}
 
 describe('custom navigator documentation examples', () => {
   it('is type-checked by tsc via pnpm typecheck or et check-packages', () => {
-    expect(typeof unstable_createStandardRouterNavigator).toBe('function');
+    expect(typeof createStandardRouterNavigator).toBe('function');
   });
 });

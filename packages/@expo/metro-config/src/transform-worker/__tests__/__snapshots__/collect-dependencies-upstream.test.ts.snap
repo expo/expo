@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Evaluating static arguments throws on tagged template literals 1`] = `"Invalid call at line 1: require(tag\`left-pad\`)"`;
 

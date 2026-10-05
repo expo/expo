@@ -10,17 +10,31 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
 
 class ReactNativeFragment : Fragment() {
+  private var surface: ReactNativeSurfaceHandle? = null
+
   override fun onCreateView(
       inflater: LayoutInflater,
       container: ViewGroup?,
       savedInstanceState: Bundle?,
   ): FrameLayout {
     val rootComponent = arguments?.getString("rootComponentName") ?: "main"
-    return ReactNativeViewFactory.createFrameLayout(
-        requireContext(),
-        requireActivity(),
-        rootComponent,
-    )
+    val surface =
+        ReactNativeViewFactory.createSurface(
+            requireContext(),
+            requireActivity(),
+            rootComponent,
+        )
+    this.surface = surface
+    return surface.view
+  }
+
+  // The fragment's view is destroyed while the Activity stays up, so the surface
+  // has to end here — otherwise it keeps running and the next onCreateView starts
+  // a second one.
+  override fun onDestroyView() {
+    super.onDestroyView()
+    surface?.dispose()
+    surface = null
   }
 
   companion object {

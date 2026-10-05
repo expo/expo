@@ -184,8 +184,8 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   replace(source: AudioSource): void;
 
   /**
-   * Seeks the playback by the given number of seconds.
-   * @param seconds The number of seconds to seek by.
+   * Seeks the playback to a specific position in seconds.
+   * @param seconds The position to seek to.
    * @param toleranceMillisBefore The tolerance allowed before the requested seek time, in milliseconds. iOS only.
    * @param toleranceMillisAfter The tolerance allowed after the requested seek time, in milliseconds. iOS only.
    */
@@ -213,7 +213,7 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
    * Sets or removes this audio player as the active player for lock screen controls.
    * Only one player can control the lock screen at a time.
    *
-   * > **Note:** For lock screen controls to work correctly, [`interruptionMode`](#interruptionmode) must be set to `doNotMix` using [`setAudioModeAsync`](#audiosetaudiomodeasyncmode).
+   * > **Note:** For lock screen controls to work correctly, [`interruptionMode`](#interruptionmode) must be set to `doNotMix` or `doNotMixPersistent` using [`setAudioModeAsync`](#audiosetaudiomodeasyncmode).
    * > Without this, the OS might not associate lock screen controls with your player.
    *
    * @param active Whether this player should be active for lock screen controls.
@@ -536,7 +536,7 @@ export declare class AudioPlaylist extends SharedObject<AudioPlaylistEvents> {
    * Sets or removes this audio playlist as the active playlist for lock screen controls.
    * Only one audio player or playlist can control the lock screen at a time.
    *
-   * > **Note:** For lock screen controls to work correctly, [`interruptionMode`](#interruptionmode) must be set to `doNotMix` using [`setAudioModeAsync`](#audiosetaudiomodeasyncmode).
+   * > **Note:** For lock screen controls to work correctly, [`interruptionMode`](#interruptionmode) must be set to `doNotMix` or `doNotMixPersistent` using [`setAudioModeAsync`](#audiosetaudiomodeasyncmode).
    * > Without this, the OS might not associate lock screen controls with your playlist.
    *
    * @param active Whether this playlist should be active for lock screen controls.

@@ -85,6 +85,7 @@ extension ExpoSwiftUI {
       }
 
       props.shadowNodeProxy = shadowNodeProxy
+      (props as? HostingViewAware)?.hostingView = self
 
       shadowNodeProxy.objectWillChange.send()
 
@@ -222,26 +223,35 @@ extension ExpoSwiftUI {
       }
       #endif
 
-      if window != nil, let parentController = reactViewController() {
-        #if !os(macOS)
-        if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
-          // Swift automatically adds the hostingController in the correct place when the parentController
-          // is UINavigationController, since its children are supposed to be only screens.
-          // Similarly, for UITabBarController we expect its children to be only tabs.
-          parentController.addChild(hostingController)
-        }
-        #else
-        parentController.addChild(hostingController)
-        #endif
-        addSubview(hostingController.view)
-        #if os(iOS) || os(tvOS)
-        hostingController.didMove(toParent: parentController)
-        #endif
-        setupHostingViewConstraints()
-      } else {
+      guard window != nil else {
         hostingController.view.removeFromSuperview()
         hostingController.removeFromParent()
+        return
       }
+
+      let parentController = reactViewController()
+      #if os(macOS)
+      // An `NSHostingController` view renders without a parent controller, and a React root view used
+      // directly as `NSWindow.contentView` has none in its responder chain, so don't require one.
+      parentController?.addChild(hostingController)
+      #else
+      guard let parentController else {
+        hostingController.view.removeFromSuperview()
+        hostingController.removeFromParent()
+        return
+      }
+      if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
+        // Swift automatically adds the hostingController in the correct place when the parentController
+        // is UINavigationController, since its children are supposed to be only screens.
+        // Similarly, for UITabBarController we expect its children to be only tabs.
+        parentController.addChild(hostingController)
+      }
+      #endif
+      addSubview(hostingController.view)
+      #if os(iOS) || os(tvOS)
+      hostingController.didMove(toParent: parentController)
+      #endif
+      setupHostingViewConstraints()
     }
 
 #if os(macOS)

@@ -60,6 +60,7 @@ class AudioPlayer(
 ),
   LockScreenPlayable {
   var preservesPitch = true
+  var keepAudioSessionActive = false
 
   // Lock screen controls
   override var isActiveForLockScreen = false
@@ -74,7 +75,11 @@ class AudioPlayer(
   val currentOffsetFromLive: Double?
     get() {
       val offset = ref.currentLiveOffset
-      return if (offset == C.TIME_UNSET) null else offset / 1000.0
+      return if (offset == C.TIME_UNSET) {
+        null
+      } else {
+        offset / 1000.0
+      }
     }
 
   private var samplingEnabled = false
@@ -142,7 +147,11 @@ class AudioPlayer(
 
   override fun setPlaybackRate(rate: Float) {
     val playbackRate = rate.coerceIn(0.1f, 2.0f)
-    val pitch = if (preservesPitch) 1f else playbackRate
+    val pitch = if (preservesPitch) {
+      1f
+    } else {
+      playbackRate
+    }
     ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
   }
 
@@ -156,20 +165,32 @@ class AudioPlayer(
     val isLooping = ref.repeatMode == Player.REPEAT_MODE_ONE
     val isLoaded = ref.playbackState == Player.STATE_READY
     val isBuffering = ref.playbackState == Player.STATE_BUFFERING
-    val playingStatus = if (isBuffering) intendedPlayingState else ref.isPlaying
+    val playingStatus = if (isBuffering) {
+      intendedPlayingState
+    } else {
+      ref.isPlaying
+    }
 
     return mapOf(
       "id" to id,
       "currentTime" to currentTime,
       "playbackState" to playbackStateToString(ref.playbackState),
-      "timeControlStatus" to if (playingStatus) "playing" else "paused",
+      "timeControlStatus" to if (playingStatus) {
+        "playing"
+      } else {
+        "paused"
+      },
       "reasonForWaitingToPlay" to null,
       "mute" to isMuted,
       "duration" to duration,
       "playing" to playingStatus,
       "loop" to isLooping,
       "didJustFinish" to false,
-      "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) true else isLoaded,
+      "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) {
+        true
+      } else {
+        isLoaded
+      },
       "playbackRate" to ref.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,
       "isBuffering" to isBuffering,

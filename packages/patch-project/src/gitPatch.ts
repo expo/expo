@@ -53,7 +53,35 @@ export async function diffAsync(
 }
 
 export async function applyPatchAsync(projectRoot: string, patchFilePath: string) {
-  return await runGitAsync(['apply', '--ignore-whitespace', patchFilePath], { cwd: projectRoot });
+  const pathArgs = await getPatchPathArgsAsync(projectRoot);
+  return await runGitAsync(['apply', '--ignore-whitespace', ...pathArgs, patchFilePath], {
+    cwd: projectRoot,
+  });
+}
+
+/**
+ * Returns the extra `git apply` arguments that make patch paths resolve relative to
+ * `projectRoot`.
+ *
+ * Patches are generated in a standalone repository whose root is the native project, so their
+ * paths are project relative. `git apply` however resolves paths from the root of the enclosing
+ * repository, and ignores paths that fall outside the current directory. In a monorepo where the
+ * project lives in a subdirectory, that combination makes every hunk target the wrong location and
+ * the patch is skipped without an error. `--directory` restores the missing prefix.
+ */
+async function getPatchPathArgsAsync(projectRoot: string): Promise<string[]> {
+  try {
+    // Empty when `projectRoot` is the repository root, `apps/mobile/` when it is nested.
+    const prefix = await runGitAsync(['rev-parse', '--show-prefix'], { cwd: projectRoot });
+    return prefix ? [`--directory=${prefix}`] : [];
+  } catch (e: any) {
+    if (e.code === 'ENOENT') {
+      throw e;
+    }
+    // Not inside a repository at all — `git apply` then resolves paths from the current
+    // directory, which is already `projectRoot`.
+    return [];
+  }
 }
 
 export async function isPatchAppliedAsync(
@@ -61,9 +89,11 @@ export async function isPatchAppliedAsync(
   patchFilePath: string
 ): Promise<boolean> {
   try {
-    await runGitAsync(['apply', '--reverse', '--check', '--ignore-whitespace', patchFilePath], {
-      cwd: projectRoot,
-    });
+    const pathArgs = await getPatchPathArgsAsync(projectRoot);
+    await runGitAsync(
+      ['apply', '--reverse', '--check', '--ignore-whitespace', ...pathArgs, patchFilePath],
+      { cwd: projectRoot }
+    );
     return true;
   } catch (e: any) {
     if (e.code === 'ENOENT') {
@@ -73,8 +103,14 @@ export async function isPatchAppliedAsync(
   }
 }
 
-export async function getPatchChangedLinesAsync(patchFilePath: string): Promise<number> {
-  const stdout = await runGitAsync(['apply', '--numstat', patchFilePath]);
+export async function getPatchChangedLinesAsync(
+  projectRoot: string,
+  patchFilePath: string
+): Promise<number> {
+  const pathArgs = await getPatchPathArgsAsync(projectRoot);
+  const stdout = await runGitAsync(['apply', '--numstat', ...pathArgs, patchFilePath], {
+    cwd: projectRoot,
+  });
   const lines = stdout.split(/\r?\n/);
   let changedLines = 0;
   for (const line of lines) {

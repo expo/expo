@@ -298,7 +298,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Suspense fallback={<Fallback />}>
+      <Suspense fallback={<Text>Loading...</Text>}>
         <SQLiteProvider databaseName="test.db" onInit={migrateDbIfNeeded} useSuspense>
           <Header />
           <Content />

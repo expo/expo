@@ -243,10 +243,10 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
     val reactHost = ReactHostFactory.getDefaultReactHost(
       context = context,
-      packageList = host.packages,
-      jsMainModulePath = host.jsMainModuleName,
-      jsBundleFilePath = host.jsBundleFile,
-      useDevSupport = host.useDeveloperSupport,
+      packageList = host.getPackages(),
+      jsMainModulePath = host.getJSMainModuleName(),
+      jsBundleFilePath = host.getJSBundleFile(),
+      useDevSupport = host.getUseDeveloperSupport(),
       devServerBundleUrl = ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!)
     )
 

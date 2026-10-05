@@ -30,22 +30,78 @@ public:
     return std::static_pointer_cast<std::string const>(this->flavor_)->c_str();
   }
 
+  static bool isRNHostView(const react::Props::Shared &props) {
+    // Currently, only RNHostView can have `sizesToContent` set to true.
+    return ShadowNodeType::sizesToContent(props);
+  }
+
+  std::shared_ptr<facebook::react::ShadowNode> createShadowNode(
+    const facebook::react::ShadowNodeFragment &fragment,
+    const facebook::react::ShadowNodeFamily::Shared &family
+  ) const override {
+    if (!isRNHostView(fragment.props)) {
+      return facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::createShadowNode(
+        fragment, family);
+    }
+
+    // Treat RNHostView as a leaf node and measurable node in Yoga, so that it can be measured by its children.
+    auto traits = this->getTraits();
+    traits.set(facebook::react::ShadowNodeTraits::Trait::LeafYogaNode);
+    traits.set(facebook::react::ShadowNodeTraits::Trait::MeasurableYogaNode);
+
+    auto shadowNode = std::make_shared<ShadowNodeType>(fragment, family, traits);
+
+    this->adopt(*shadowNode);
+
+    return shadowNode;
+  }
+
   void adopt(facebook::react::ShadowNode &shadowNode) const override {
     react_native_assert(dynamic_cast<ShadowNodeType *>(&shadowNode));
 
     const auto snode = dynamic_cast<ShadowNodeType *>(&shadowNode);
     const auto state = snode->getStateData();
+    auto const &sharedProps = snode->getProps();
+    auto &style = const_cast<facebook::yoga::Style &>(
+      static_cast<const facebook::react::ViewProps &>(*sharedProps).yogaStyle);
+    bool propsStyleChanged = false;
 
+    if (isRNHostView(sharedProps)) {
+      // If RNHostView has align self set to auto or stretch, we should override it to flex-start so that the node can size itself to its content
+      auto const alignSelf = style.alignSelf();
+
+      if (alignSelf == facebook::yoga::Align::Auto || alignSelf == facebook::yoga::Align::Stretch) {
+        style.setAlignSelf(facebook::yoga::Align::FlexStart);
+        propsStyleChanged = true;
+      }
+    }
+
+    // handle layout style prop update
+    if (!isnan(state._styleWidth)) {
+      style.setDimension(facebook::yoga::Dimension::Width,
+                         facebook::yoga::StyleSizeLength::points(state._styleWidth));
+      propsStyleChanged = true;
+    }
+
+    if (!isnan(state._styleHeight)) {
+      style.setDimension(facebook::yoga::Dimension::Height,
+                         facebook::yoga::StyleSizeLength::points(state._styleHeight));
+      propsStyleChanged = true;
+    }
+
+    if (propsStyleChanged) {
+      // Updates yoga style from props and sets the node dirty
+      snode->updateYogaProps();
+    }
+
+    // Writes the node style directly, so it runs last.
     auto width = state._width;
     auto height = state._height;
 
     if (!isnan(width) || !isnan(height)) {
-      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
-        snode->getProps());
-
       // The node has width and/or height set as style props, so we should not override it
-      auto widthProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Width);
-      auto heightProp = props.yogaStyle.dimension(facebook::yoga::Dimension::Height);
+      auto widthProp = style.dimension(facebook::yoga::Dimension::Width);
+      auto heightProp = style.dimension(facebook::yoga::Dimension::Height);
 
       if (widthProp.value().isDefined()) {
         // view has fixed dimension size set in props, so we should not autosize it in that axis
@@ -58,35 +114,6 @@ public:
       snode->setSize({width, height});
     }
 
-    // handle layout style prop update
-    auto styleWidth = state._styleWidth;
-    auto styleHeight = state._styleHeight;
-
-    if (!isnan(styleWidth) || !isnan(styleHeight)) {
-      auto const &props = *std::static_pointer_cast<const facebook::react::ViewProps>(
-        snode->getProps());
-
-      auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
-      bool changedStyle = false;
-
-      if (!isnan(styleWidth)) {
-        style.setDimension(facebook::yoga::Dimension::Width,
-                           facebook::yoga::StyleSizeLength::points(styleWidth));
-        changedStyle = true;
-      }
-
-      if (!isnan(styleHeight)) {
-        style.setDimension(facebook::yoga::Dimension::Height,
-                           facebook::yoga::StyleSizeLength::points(styleHeight));
-        changedStyle = true;
-      }
-
-      // Update yoga props and dirty layout if we changed the style
-      if (changedStyle) {
-        snode->updateYogaProps();
-        snode->dirtyLayout();
-      }
-    }
     facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::adopt(shadowNode);
   }
 };

@@ -2,7 +2,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md', 'CLAUDE.md'] as const;
+const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md'] as const;
 
 // Agent templates are synced from `expo/llm-configs` at publish time (see
 // `scripts/sync-agent-templates.js`) and bundled under `template/agent-files`, so project
@@ -54,7 +54,6 @@ export async function generateAgentFiles(root: string): Promise<void> {
 
   if (isClaudeCodeInstalled()) {
     tasks.push(
-      copyFileIfMissing(resolveAgentTemplatePath('CLAUDE.md'), path.join(root, 'CLAUDE.md')),
       writeFileIfMissing(path.join(root, '.claude', 'settings.json'), CLAUDE_SETTINGS_CONTENT)
     );
   }

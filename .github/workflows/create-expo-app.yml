@@ -3,15 +3,12 @@ name: Create Expo App
 on:
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/create-expo-app.yml
       - packages/create-expo/**
       - pnpm-lock.yaml
   pull_request:
-    paths:
-      - .github/workflows/create-expo-app.yml
-      - packages/create-expo/**
-      - pnpm-lock.yaml
+    paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
 
@@ -21,7 +18,11 @@ concurrency:
 
 jobs:
   test:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name != 'schedule' || github.repository == 'expo/expo') &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name != github.repository ||
+       !startsWith(github.head_ref, 'changeset-release/'))
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -36,9 +37,9 @@ jobs:
         run: git fetch origin ${{ github.event.before || github.base_ref || 'main' }}:${{ github.event.before || github.base_ref || 'main' }} --depth 100
         if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
-          version: 10
+          install: false
       - name: 🏗️ Setup Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:

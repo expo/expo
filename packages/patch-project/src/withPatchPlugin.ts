@@ -54,7 +54,7 @@ const withPatchMod: ConfigPlugin<{ platform: ModPlatform; props: PatchPluginProp
           return config;
         }
 
-        const changedLines = await getPatchChangedLinesAsync(patchFilePath);
+        const changedLines = await getPatchChangedLinesAsync(projectRoot, patchFilePath);
         const changedLinesLimit = props?.changedLinesLimit ?? DEFAULT_CHANGED_LINES_LIMIT;
         if (changedLines > changedLinesLimit) {
           WarningAggregator.addWarningForPlatform(
