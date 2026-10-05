@@ -26,7 +26,9 @@ export function Button({
 
   if (hidden) return null;
 
-  const modifiers = transformToModifiers(style, { disabled, hidden, testID }, extraModifiers);
+  const modifiers = transformToModifiers(style, { disabled, hidden, testID }, extraModifiers, {
+    componentName: 'Button',
+  });
 
   const content = children ?? <Text>{label ?? ''}</Text>;
   const commonProps = {
