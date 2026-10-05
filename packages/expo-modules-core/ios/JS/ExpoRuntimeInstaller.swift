@@ -83,8 +83,7 @@ internal final class ReadOnlyExpoModulesPropertyException: GenericException<Stri
       + "Define or override behavior inside the native module instead."
   }
 
-  // The default `JavaScriptThrowable.message` is `String(reflecting: self)`, which on
-  // `Exception` resolves to `debugDescription` (name + reason + Swift file:line). For a
-  // JS-facing error we want just `reason`, without leaking native source coordinates.
-  var message: String { reason }
+  // `Exception.message` is the `description`, which is just `reason` here (no cause chain).
+  // Override it explicitly so the JS-facing error stays the bare `reason`.
+  override var message: String { reason }
 }
