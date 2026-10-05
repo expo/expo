@@ -1,12 +1,10 @@
 package expo.modules.notifications.permissions
 
 import android.Manifest
-import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.os.bundleOf
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
@@ -17,9 +15,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.ModuleNotFoundException
 
-private const val ANDROID_RESPONSE_KEY = "android"
-private const val IMPORTANCE_KEY = "importance"
-private const val INTERRUPTION_FILTER_KEY = "interruptionFilter"
 private val PERMISSIONS: Array<String> = arrayOf(Manifest.permission.POST_NOTIFICATIONS)
 
 class NotificationPermissionsModule : Module() {
@@ -55,15 +50,6 @@ class NotificationPermissionsModule : Module() {
       { permissionsMap: Map<String, PermissionsResponse> ->
         val managerCompat = NotificationManagerCompat.from(context)
         val areEnabled = managerCompat.areNotificationsEnabled()
-        val platformBundle = bundleOf(
-          IMPORTANCE_KEY to managerCompat.importance
-        ).apply {
-          val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-          if (notificationManager != null) {
-            putInt(INTERRUPTION_FILTER_KEY, notificationManager.currentInterruptionFilter)
-          }
-        }
-
         val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
         val areAllDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
         val canAskAgain = permissionsMap.all { (_, response) -> response.canAskAgain }
@@ -75,12 +61,11 @@ class NotificationPermissionsModule : Module() {
         }
 
         promise.resolve(
-          bundleOf(
-            PermissionsResponse.EXPIRES_KEY to PermissionsResponse.PERMISSION_EXPIRES_NEVER,
-            PermissionsResponse.STATUS_KEY to status,
-            PermissionsResponse.CAN_ASK_AGAIN_KEY to canAskAgain,
-            PermissionsResponse.GRANTED_KEY to areAllGranted,
-            ANDROID_RESPONSE_KEY to platformBundle
+          NotificationPermissionResponse(
+            status = status,
+            canAskAgain = canAskAgain,
+            granted = areAllGranted,
+            android = getAndroidDetails(managerCompat)
           )
         )
       },
@@ -96,25 +81,22 @@ class NotificationPermissionsModule : Module() {
     } else {
       PermissionsStatus.DENIED
     }
-    val platformBundle = bundleOf(
-      IMPORTANCE_KEY to managerCompat.importance
-    ).apply {
-      val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
-      if (notificationManager != null) {
-        putInt(INTERRUPTION_FILTER_KEY, notificationManager.currentInterruptionFilter)
-      }
-    }
 
     promise.resolve(
-      bundleOf(
-        PermissionsResponse.EXPIRES_KEY to PermissionsResponse.PERMISSION_EXPIRES_NEVER,
-        PermissionsResponse.STATUS_KEY to status.status,
-        PermissionsResponse.CAN_ASK_AGAIN_KEY to areEnabled,
-        PermissionsResponse.GRANTED_KEY to (status == PermissionsStatus.GRANTED),
-        ANDROID_RESPONSE_KEY to platformBundle
+      NotificationPermissionResponse(
+        status = status.status,
+        canAskAgain = areEnabled,
+        granted = status == PermissionsStatus.GRANTED,
+        android = getAndroidDetails(managerCompat)
       )
     )
   }
+
+  private fun getAndroidDetails(managerCompat: NotificationManagerCompat) =
+    AndroidNotificationPermissionDetails(
+      importance = managerCompat.importance,
+      interruptionFilter = managerCompat.currentInterruptionFilter
+    )
 
   @RequiresApi(33)
   private fun requestPermissionsWithPromiseImplApi33(promise: Promise) {
