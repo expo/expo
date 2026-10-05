@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent
 
-import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
@@ -116,7 +115,6 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
     AudioModule::class.java to null,
-    ApplicationModule::class.java to null,
     // Sensors
     AccelerometerModule::class.java to null,
     AssetModule::class.java to null,
