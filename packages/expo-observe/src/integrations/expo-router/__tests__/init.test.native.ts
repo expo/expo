@@ -2,7 +2,7 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { initListeners, initRouterIntegration } from '../init';
-import type { RouterPerformanceObserver } from '../router';
+import type { RouterPerformanceMark, RouterPerformanceObserver } from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 
 jest.mock('expo-app-metrics', () => {
@@ -27,7 +27,6 @@ const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 
 type ObserverCallback = ConstructorParameters<RouterPerformanceObserver>[0];
-type RouterPerformanceMark = ReturnType<Parameters<ObserverCallback>[0]['getEntries']>[number];
 
 interface FakeRouterPerformance {
   PerformanceObserver: RouterPerformanceObserver;

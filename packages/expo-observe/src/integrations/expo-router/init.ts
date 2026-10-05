@@ -7,6 +7,7 @@ import { buildRoutePattern } from './routeName';
 import {
   optionalRouter,
   type RouterPageMarkDetail,
+  type RouterPerformanceMark,
   type RouterPerformanceObserver,
 } from './router';
 import { type RouterIntegrationStorage } from './storage';
@@ -25,7 +26,7 @@ export const getRouterIntegrationConfig = () => routerIntegrationConfig;
 export function initRouterIntegration(config?: ObserveIntegrationsConfig['expo-router']) {
   initialized = true;
   routerIntegrationConfig = config;
-  optionalRouter?.unstable_performance.enable();
+  optionalRouter?.unstable_enablePerformanceIntegration();
 }
 
 export function initListeners(
@@ -35,7 +36,9 @@ export function initListeners(
   const appLaunchTime = performance.now();
 
   const observer = new PerformanceObserver((list) => {
-    for (const entry of list.getEntries()) {
+    for (const performanceEntry of list.getEntries()) {
+      // Marks with the names handled below always have the matching `detail`.
+      const entry = performanceEntry as RouterPerformanceMark;
       switch (entry.name) {
         case 'expo-router:action-dispatched':
           // PRELOAD comes from router.prefetch() — a route warm-up, not a user

@@ -7,7 +7,7 @@ export interface RouterPageMarkDetail {
   segments: string[];
 }
 
-type RouterPerformanceMark =
+export type RouterPerformanceMark =
   | { name: 'expo-router:action-dispatched'; startTime: number; detail: { actionType: string } }
   | {
       name:
@@ -20,14 +20,14 @@ type RouterPerformanceMark =
     };
 
 export type RouterPerformanceObserver = new (
-  callback: (list: { getEntries(): RouterPerformanceMark[] }) => void
+  callback: (list: { getEntries(): Pick<PerformanceEntry, 'name' | 'startTime'>[] }) => void
 ) => {
   observe(options: { type: 'mark' }): void;
   disconnect(): void;
 };
 
 interface OptionalRouter {
-  unstable_performance: { enable(): void };
+  unstable_enablePerformanceIntegration(): void;
   unstable_PerformanceObserver: RouterPerformanceObserver;
   useCurrentRouteInfo(): {
     pathname: string;
@@ -39,18 +39,11 @@ interface OptionalRouter {
 }
 
 let optionalRouter: OptionalRouter | undefined;
-// expo-router is installed, but its version has no performance API to report metrics from.
-let isRouterOutdated = false;
 try {
-  const router = require('expo-router') as OptionalRouter;
-  if (router.unstable_PerformanceObserver) {
-    optionalRouter = router;
-  } else {
-    isRouterOutdated = true;
-  }
+  optionalRouter = require('expo-router') as OptionalRouter;
 } catch {
   // expo-router not installed — integration disabled.
 }
 const isRouterInstalled = !!optionalRouter;
 
-export { optionalRouter, isRouterInstalled, isRouterOutdated };
+export { optionalRouter, isRouterInstalled };
