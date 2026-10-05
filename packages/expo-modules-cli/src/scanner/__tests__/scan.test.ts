@@ -1,3 +1,4 @@
+import { SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION } from 'expo-modules-macros';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -27,7 +28,7 @@ function writeFakeScanner(stdout: string, stderr: string, exitCode: number): str
 }
 
 const report = JSON.stringify({
-  schemaVersion: 5,
+  schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: { modules: [], sharedObjects: [], records: [], enums: [], unions: [] },
   stats: { durationMs: 1, filesParsed: 0, filesScanned: 0 },
 });
@@ -72,12 +73,15 @@ describe(scanPackage, () => {
 
   it('explains a schema version this CLI does not understand', async () => {
     const binaryPath = writeFakeScanner(
-      report.replace('"schemaVersion":5', '"schemaVersion":99'),
+      report.replace(
+        `"schemaVersion":${SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION}`,
+        '"schemaVersion":99'
+      ),
       '',
       0
     );
     await expect(scanPackage('/pkg', { binaryPath })).rejects.toThrow(
-      /schema version 99, but this CLI understands version 5/
+      `schema version 99, but this CLI understands version ${SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION}.`
     );
   });
 

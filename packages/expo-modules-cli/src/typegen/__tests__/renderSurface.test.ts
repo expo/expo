@@ -106,6 +106,7 @@ const sampleSurface: ExportedSurface = {
       name: 'MyModule',
       jsName: 'MyModule',
       file: FILE,
+      classes: [],
       events: [],
       functions: [
         {
@@ -181,6 +182,7 @@ export declare class MyModule extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [
@@ -210,6 +212,7 @@ export declare class MyModule extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [
@@ -246,6 +249,7 @@ export declare class MyModule extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [
@@ -298,6 +302,7 @@ export declare class M extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [
             {
@@ -353,6 +358,7 @@ export declare class M extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [
             { name: 'someName', jsName: 'some-name', type: Int, readonly: true, static: false },
@@ -462,6 +468,7 @@ export declare class M extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [fn('loadString', Str), fn('loadInt', Int)],
@@ -695,6 +702,7 @@ export declare class M extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [
             { name: '`class`', jsName: '`class`', type: Int, readonly: true, static: false },
@@ -768,6 +776,7 @@ export declare class M extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [
@@ -912,6 +921,7 @@ export declare class M extends NativeModule {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [
             {
               name: 'onChange',
@@ -966,6 +976,7 @@ export declare class M extends NativeModule<MEvents> {
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [
             { name: 'onSomeEvent', jsName: 'some-event', payload: Int, sync: false },
             { name: 'onFirst', jsName: 'shared', sync: false },
@@ -1015,6 +1026,7 @@ export declare class M extends NativeModule<MEvents> {}
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [{ name: 'onChange', jsName: 'change', payload: Int, sync: false }],
           properties: [],
           functions: [],
@@ -1057,6 +1069,7 @@ export declare class M extends NativeModule<MEvents> {}
           name: 'CryptoModule',
           jsName: 'ExpoCrypto',
           file: '/pkg/ios/CryptoModule.swift',
+          classes: [],
           events: [],
           properties: [],
           functions: [],
@@ -1088,7 +1101,17 @@ export declare class M extends NativeModule<MEvents> {}
         { name: 'Kind', file: FILE, rawType: Str, cases: [] },
       ],
       records: [{ name: 'not-a-name', file: FILE, properties: [] }],
-      modules: [{ name: 'M', jsName: 'M', file: FILE, events: [], properties: [], functions: [] }],
+      modules: [
+        {
+          name: 'M',
+          jsName: 'M',
+          file: FILE,
+          classes: [],
+          events: [],
+          properties: [],
+          functions: [],
+        },
+      ],
     });
     expect(result.counts).toEqual({
       modules: 1,
@@ -1118,6 +1141,7 @@ export declare class M extends NativeModule<MEvents> {}
           name: 'C',
           jsName: 'NativeModule',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [],
@@ -1153,6 +1177,7 @@ export declare class M extends NativeModule<MEvents> {}
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [
@@ -1221,6 +1246,7 @@ export declare class M extends NativeModule<MEvents> {}
           name: 'M',
           jsName: 'M',
           file: FILE,
+          classes: [],
           events: [],
           properties: [],
           functions: [

@@ -1,3 +1,4 @@
+import { SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION } from 'expo-modules-macros';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -5,7 +6,7 @@ import path from 'path';
 import { generateTypes } from '../generateTypes';
 
 const sampleScan = {
-  schemaVersion: 5,
+  schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: {
     records: [
       {
@@ -64,7 +65,7 @@ const sampleScan = {
 };
 
 const emptyScan = {
-  schemaVersion: 5,
+  schemaVersion: SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION,
   exports: { records: [], sharedObjects: [], modules: [], enums: [], unions: [] },
   stats: { durationMs: 0.5, filesParsed: 0, filesScanned: 0 },
 };
