@@ -109,10 +109,10 @@ export function useLinking(
   const getInitialState = useCallback(() => {
     const url = getInitialURL();
     const createInitialState = (url: string | null | undefined) => {
-      const parsedState =
-        url && (!filter || filter(url))
-          ? getStateFromPath(getInitialPath(prefixes, url), config)
-          : undefined;
+      const shouldParseURL = url && (!filter || filter(url));
+      const parsedState = shouldParseURL
+        ? getStateFromPath(getInitialPath(prefixes, url), config)
+        : undefined;
 
       const routeNode = routerConfig?.routeNode;
       return routeNode

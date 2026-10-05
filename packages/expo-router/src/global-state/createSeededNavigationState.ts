@@ -1,7 +1,7 @@
 import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
-import { getGroupAnchor } from '../layoutAnchor';
+import { getRouteNamedLikeGroup } from '../layoutAnchor';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
 import {
@@ -90,7 +90,11 @@ export function createSeededNavigationState(
     .map((child) => child.route);
 
   return createSeededState({
-    targetState: withoutParsedGroupAnchor(targetState, getGroupAnchor(routeNode), initialRouteName),
+    targetState: withoutParsedGroupAnchor(
+      targetState,
+      getRouteNamedLikeGroup(routeNode),
+      initialRouteName
+    ),
     routeNames,
     initialRouteName,
     anchorParams,
@@ -99,20 +103,32 @@ export function createSeededNavigationState(
   });
 }
 
-// The URL parser inserts the group-named anchor in front of the target. Drop it when settings
-// pick another anchor, which `createSeededState` inserts instead.
+/**
+ * Removes the anchor that the URL parser added when `unstable_settings.anchor` picks another one.
+ *
+ * ```
+ * (home)/
+ *   _layout.tsx    // unstable_settings = { anchor: 'dashboard' }
+ *   home.tsx       // Anchor added by the URL parser, because it is named like the group
+ *   dashboard.tsx  // Anchor from settings
+ *   details.tsx
+ * ```
+ *
+ * The parser turns `/details` into `[home, details]`. This function returns `[details]`, and
+ * `createSeededState` then adds `dashboard` to make `[dashboard, details]`.
+ */
 function withoutParsedGroupAnchor(
   state: SeedState | undefined,
-  groupAnchor: string | undefined,
+  parsedAnchor: string | undefined,
   anchor: string | undefined
 ): SeedState | undefined {
   if (
     // Complete states do not come from the parser.
     !state ||
     state.stale === false ||
-    groupAnchor === anchor ||
+    parsedAnchor === anchor ||
     state.routes.length < 2 ||
-    state.routes[0]!.name !== groupAnchor ||
+    state.routes[0]!.name !== parsedAnchor ||
     state.index === 0
   ) {
     return state;
@@ -223,16 +239,16 @@ function createSeededState({
     targetRoutes = [];
   }
 
-  const anchorRoutes =
+  const anchorRoute =
     initialRouteName &&
     targetRoutes.length > 0 &&
     !targetRoutes.some((route) => route.name === initialRouteName)
-      ? [{ name: initialRouteName, params: anchorParams }]
-      : [];
+      ? { name: initialRouteName, params: anchorParams }
+      : undefined;
   const defaultRouteName = initialRouteName ?? routeNames[0];
   const routesToCreate =
     targetRoutes.length > 0
-      ? [...anchorRoutes, ...targetRoutes]
+      ? [...(anchorRoute ? [anchorRoute] : []), ...targetRoutes]
       : defaultRouteName === undefined
         ? []
         : [{ name: defaultRouteName }];
@@ -261,7 +277,7 @@ function createSeededState({
 
   const targetIndex =
     targetRoutes.length > 0
-      ? anchorRoutes.length + (targetState?.index ?? targetRoutes.length - 1)
+      ? (anchorRoute ? 1 : 0) + (targetState?.index ?? targetRoutes.length - 1)
       : 0;
   return {
     ...initialState,

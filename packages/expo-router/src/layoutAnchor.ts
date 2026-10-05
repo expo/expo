@@ -1,11 +1,13 @@
 import type { LoadedRoute, RouteNode } from './Route';
 
+// Both caches are keyed by `RouteNode`, so they reset when Fast Refresh builds a new route tree.
 // Only read anchors are cached, so a layout that is still loading can be read again later.
 const anchors = new WeakMap<RouteNode, string | undefined>();
 // On native, `loadRoute` returns a promise on every call, so keep the module once it loads.
 const loadedLayouts = new WeakMap<RouteNode, LoadedRoute | undefined>();
-// Anchors are read deep inside seeding and `reduceTree`, so the collector is module-scoped
-// instead of a parameter threaded through every layer. It is set only during a synchronous call.
+// The layouts that `getLayoutAnchor` could not read during the current `collectMissingLayouts` call.
+// `getLayoutAnchor` is called from deep inside seeding and the reducer, so this is a module variable
+// instead of a parameter passed through every function.
 let missingLayouts: Set<RouteNode> | undefined;
 let skippedLayouts: ReadonlySet<RouteNode> = new Set();
 
@@ -22,7 +24,7 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
   }
   // A layout that failed to load keeps the anchor known without loading it.
   if (skippedLayouts.has(node)) {
-    return getGroupAnchor(node);
+    return getRouteNamedLikeGroup(node);
   }
   const loaded = loadedLayouts.has(node) ? loadedLayouts.get(node) : node.loadRoute();
   if (isThenable(loaded)) {
@@ -41,7 +43,7 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
 }
 
 /** Returns the child named like the layout's group, which is the anchor unless settings override it. */
-export function getGroupAnchor(node: RouteNode): string | undefined {
+export function getRouteNamedLikeGroup(node: RouteNode): string | undefined {
   return node.children.find((child) => child.route.replace(/\/index$/, '') === node.groupName)
     ?.route;
 }
@@ -67,23 +69,24 @@ export function collectMissingLayouts<T>(
 
 /** Loads the layouts and returns the ones that failed to load. */
 export async function loadLayouts(nodes: RouteNode[]): Promise<RouteNode[]> {
-  const failed: RouteNode[] = [];
-  await Promise.all(
-    nodes.map(async (node) => {
-      try {
-        loadedLayouts.set(node, await node.loadRoute());
-      } catch (error) {
-        failed.push(node);
-        if (process.env.NODE_ENV !== 'production') {
-          console.warn(
-            `Expo Router could not load the layout "${node.contextKey}" to read its \`unstable_settings.anchor\`, so the anchor is skipped. Check the network connection and that the bundler is running.`,
-            error
-          );
-        }
-      }
-    })
-  );
-  return failed;
+  const loaded = await Promise.all(nodes.map(loadSingleLayout));
+  return nodes.filter((_, index) => !loaded[index]);
+}
+
+/** Loads the layout and returns whether it loaded. */
+async function loadSingleLayout(node: RouteNode): Promise<boolean> {
+  try {
+    loadedLayouts.set(node, await node.loadRoute());
+    return true;
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `Expo Router could not load the layout "${node.contextKey}" to read its \`unstable_settings.anchor\`, so the anchor is skipped. Check the network connection and that the bundler is running.`,
+        error
+      );
+    }
+    return false;
+  }
 }
 
 /** Runs `fn` again after each load until no layout it needs is missing. */
@@ -101,19 +104,11 @@ export function withLoadedLayouts<T>(
 
 function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) {
   const groupName = node.groupName;
-  let anchor = getGroupAnchor(node);
+  let anchor = getRouteNamedLikeGroup(node);
   let anchorGroupName: string | undefined;
   if (settings) {
     try {
-      if (
-        process.env.NODE_ENV !== 'production' &&
-        (settings.initialRouteName !== undefined ||
-          settings[groupName ?? '']?.initialRouteName !== undefined)
-      ) {
-        console.warn(
-          '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
-        );
-      }
+      warnIfInitialRouteNameIsUsed(settings, groupName);
       anchor = settings.anchor ?? settings.initialRouteName ?? anchor;
     } catch (error) {
       if (error instanceof Error && !error.message.match(/You cannot dot into a client module/)) {
@@ -141,6 +136,21 @@ function readAnchor(node: RouteNode, settings: Record<string, any> | undefined) 
     );
   }
   return route.route;
+}
+
+function warnIfInitialRouteNameIsUsed(
+  settings: Record<string, any>,
+  groupName: string | undefined
+) {
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    (settings.initialRouteName !== undefined ||
+      settings[groupName ?? '']?.initialRouteName !== undefined)
+  ) {
+    console.warn(
+      '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
+    );
+  }
 }
 
 function isThenable(value: unknown): value is PromiseLike<unknown> {
