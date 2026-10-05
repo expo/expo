@@ -144,9 +144,7 @@ export async function getStreamingContent(
         </Head.Provider>
       </ServerDocument>,
       {
-        // TODO(@hassankhan): Experiment and see if we can calculate a better default
-        // We're doubling the default here so non-JavaScript renders show some content
-        progressiveChunkSize: 12800 * 2,
+        progressiveChunkSize: Number.MAX_SAFE_INTEGER,
         bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
         signal: options?.request?.signal,
         onError(error) {

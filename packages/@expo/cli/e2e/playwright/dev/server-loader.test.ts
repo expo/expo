@@ -37,6 +37,56 @@ for (const outputMode of outputModes) {
       await expoStart.stopAsync();
     });
 
+    // TODO(@hassankhan): Remove server-specific guard after #46526 is merged
+    (outputMode === 'server' ? test : test.skip)(
+      'writes large completed Suspense content before the bootstrap script',
+      async ({ request }) => {
+        const response = await request.get(new URL('/large-suspense', expoStart.url).href);
+        expect(response.status()).toBe(200);
+        const html = await response.text();
+        const contentStart = html.indexOf('data-testid="suspense-content"');
+        const contentEnd = html.indexOf('data-testid="suspense-content-end"');
+        const bootstrap = html.indexOf('globalThis.__EXPO_ROUTER_HYDRATE__');
+
+        expect(contentStart).toBeGreaterThan(-1);
+        expect(contentEnd).toBeGreaterThan(contentStart);
+        expect(bootstrap).toBeGreaterThan(contentEnd);
+        expect(html).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
+        expect(html).not.toContain('<div hidden id="S:');
+      }
+    );
+
+    test('shows large completed Suspense content without JavaScript', async ({ browser }) => {
+      const page = await browser.newPage({ javaScriptEnabled: false });
+      try {
+        const response = await page.goto(new URL('/large-suspense', expoStart.url).href);
+
+        expect(response?.status()).toBe(200);
+        await expect(page.getByTestId('suspense-row')).toHaveText(
+          Array.from(
+            { length: 400 },
+            (_, id) => `Row ${id} of 400, carrying enough text that a few hundred of them add up`
+          )
+        );
+        await expect(page.getByTestId('suspense-content')).toBeVisible();
+        await expect(page.getByTestId('suspense-content-end')).toBeVisible();
+      } finally {
+        await page.close();
+      }
+    });
+
+    test('hydrates large completed Suspense content', async ({ page }) => {
+      const pageErrors = pageCollectErrors(page);
+
+      await page.goto(new URL('/large-suspense', expoStart.url).href);
+      await expect(page.getByTestId('suspense-row')).toHaveCount(400);
+      await expect(page.getByTestId('suspense-content')).toBeVisible();
+      await expect(page.getByTestId('suspense-count')).toHaveText('0');
+      await page.getByTestId('suspense-increment').click();
+      await expect(page.getByTestId('suspense-count')).toHaveText('1');
+      expect(pageErrors.all).toEqual([]);
+    });
+
     test('loads loader data modules on client-side navigation', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {
