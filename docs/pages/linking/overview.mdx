@@ -72,6 +72,25 @@ This link type allows your app to open when a user clicks an HTTP(S) link pointi
   Icon={AppleIcon}
 />
 
+## Deferred deep linking
+
+Android App Links and iOS Universal Links require your app to be installed. If it isn't, the link takes the user to your associated website, and after they install your app from the store, it opens on its default screen.
+
+In some situations, you might want to persist the information from the original link across that install. This process is called deferred deep linking. It also identifies the campaign an install came from, which is why mobile measurement partners (MMPs) build campaign tracking and attribution on top of it.
+
+Persisting a link across an install requires a service that stores it while the user is in the store. The following services provide this for React Native apps:
+
+- [Detour](https://detour.swmansion.com/): A deferred deep linking and link analytics SDK built by [Software Mansion](https://swmansion.com/). It hosts your domain verification files, and `eas integrations:detour:connect` configures it from the EAS CLI.
+- [Branch](https://branch.io/): A platform for cross-platform deep linking and attribution.
+- [AppsFlyer](https://www.appsflyer.com/): A platform focused on marketing analytics and mobile attribution.
+
+<BoxLink
+  title="Using Detour"
+  description="Set up deferred deep linking, so a link survives an App Store or Play Store install."
+  href="/guides/using-detour/"
+  Icon={BookOpen02Icon}
+/>
+
 ## Linking to your app from other apps or websites
 
 [Deep Links](https://en.wikipedia.org/wiki/Deep_linking) are links to a specific URL-based content inside an app or a website.
