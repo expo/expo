@@ -24,7 +24,7 @@ export function readAmbientVaryValue(
     case 'env':
       return process.env[name];
     case 'expo-config':
-      return name === 'public' && context?.projectRoot
+      return name === 'exp' && context?.projectRoot
         ? readPublicExpoConfig(context.projectRoot)
         : undefined;
   }

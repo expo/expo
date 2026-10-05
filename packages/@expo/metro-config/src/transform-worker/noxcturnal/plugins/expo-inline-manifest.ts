@@ -110,7 +110,7 @@ export function createExpoInlineManifestPlugin(
             expoPluginInput(member.context).projectRoot
           ));
           // The inlined manifest depends on the evaluated Expo config, or on the override.
-          addCacheVary(member.context, { scheme: 'expo-config', name: 'public' });
+          addCacheVary(member.context, { scheme: 'expo-config', name: 'exp' });
           addCacheVary(member.context, { scheme: 'env', name: 'APP_MANIFEST' });
           member.replaceWith(JSON.stringify(manifest));
         }

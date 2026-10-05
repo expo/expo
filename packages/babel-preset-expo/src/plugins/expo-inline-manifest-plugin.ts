@@ -210,7 +210,7 @@ export function expoInlineManifestPlugin(
         const manifest = getExpoAppManifest(state.projectRoot);
         if (manifest !== null) {
           // The inlined manifest depends on the evaluated Expo config, or on the override.
-          addCacheVary(state, { scheme: 'expo-config', name: 'public' });
+          addCacheVary(state, { scheme: 'expo-config', name: 'exp' });
           addCacheVary(state, { scheme: 'env', name: 'APP_MANIFEST' });
           parent.replaceWith(t.stringLiteral(manifest));
         }
