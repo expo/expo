@@ -1,22 +1,13 @@
+export * as Location from './Location';
+
 export {
-  getPosition,
-  hasLocationServicesEnabled,
-  enableLocationServices,
   useLocationServices,
-  getForegroundPermissionsAsync,
-  requestForegroundPermissionsAsync,
-  getBackgroundPermissionsAsync,
-  requestBackgroundPermissionsAsync,
   useForegroundPermissions,
   useBackgroundPermissions,
-  PositionWatchHandle,
-  watchPosition,
   useWatchPosition,
+  PositionWatchHandle,
   LocationProvider,
-  setLocationProvider,
-  getSelectedLocationProviderName,
   LocationUpdatesHandle,
-  defineLocationTask,
   type UseWatchPositionOptions,
   type UseWatchPositionResult,
 } from './js';

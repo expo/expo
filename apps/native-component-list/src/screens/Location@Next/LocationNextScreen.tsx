@@ -1,4 +1,11 @@
-import * as LocationNext from 'expo-location/next';
+import {
+  Location,
+  LocationProfile,
+  LocationProvider,
+  LocationUpdatesHandle,
+  PositionWatchHandle,
+  type PositionWatchStatus,
+} from 'expo-location/next';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
@@ -72,7 +79,7 @@ function GridButton({ label, onPress }: { label: string; onPress: () => void }) 
 // flags say which one it is; grey means released, the one state you cannot come back from.
 // isSubscribed is checked first on purpose: it is the one flag we observe rather than derive,
 // so if the provider is feeding us the handle is alive no matter what the others claim.
-function describeWatch(status: LocationNext.PositionWatchStatus | null) {
+function describeWatch(status: PositionWatchStatus | null) {
   if (!status) {
     return { color: '#bdbdbd', label: 'no watcher' };
   }
@@ -94,7 +101,7 @@ function describeWatch(status: LocationNext.PositionWatchStatus | null) {
   return { color: '#ed6c02', label: 'not subscribed' };
 }
 
-function WatchIndicator({ status }: { status: LocationNext.PositionWatchStatus | null }) {
+function WatchIndicator({ status }: { status: PositionWatchStatus | null }) {
   const { color, label } = describeWatch(status);
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -118,11 +125,11 @@ export default function LocationNextScreen() {
     actual: 'No output yet',
     expected: '',
   });
-  const [watchStatus, setWatchStatus] = useState<LocationNext.PositionWatchStatus | null>(null);
-  const watcher = useRef<LocationNext.PositionWatchHandle | null>(null);
+  const [watchStatus, setWatchStatus] = useState<PositionWatchStatus | null>(null);
+  const watcher = useRef<PositionWatchHandle | null>(null);
   // Constructed lazily: LocationUpdatesHandle is not implemented natively yet, so building it
   // during render would crash the screen before any of the other buttons can be used.
-  const updates = useRef<LocationNext.LocationUpdatesHandle | null>(null);
+  const updates = useRef<LocationUpdatesHandle | null>(null);
 
   useEffect(() => {
     setLocationTaskListener((message) =>
@@ -148,7 +155,7 @@ export default function LocationNextScreen() {
   // Without this the optional chain on a missing watcher yields undefined, which the output
   // pane renders as "done" — indistinguishable from a call that actually succeeded.
   const withWatcher =
-    <T,>(action: (handle: LocationNext.PositionWatchHandle) => T) =>
+    <T,>(action: (handle: PositionWatchHandle) => T) =>
     async () => {
       if (!watcher.current) {
         return 'no watcher yet — press start first';
@@ -181,7 +188,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'provider',
               'done. This is the default, so it is a no-op on a fresh screen.\n"selected name" then returns "GMS".\nNeeds Google Play Services on the device.',
-              async () => LocationNext.setLocationProvider(LocationNext.LocationProvider.Gms())
+              async () => Location.setLocationProvider(LocationProvider.Gms())
             )}
           />
           <GridButton
@@ -189,7 +196,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'provider',
               'done. "selected name" then returns "Android".\nTalks to LocationManager directly, so it also works with no Play Services.',
-              async () => LocationNext.setLocationProvider(LocationNext.LocationProvider.Android())
+              async () => Location.setLocationProvider(LocationProvider.Android())
             )}
           />
           <GridButton
@@ -198,10 +205,10 @@ export default function LocationNextScreen() {
               'provider',
               'done. "selected name" then returns\n"Fallback: GMS -> Android".\nEach call tries GMS first and drops to Android only when GMS reports itself unavailable.',
               async () =>
-                LocationNext.setLocationProvider(
-                  LocationNext.LocationProvider.Fallback([
-                    LocationNext.LocationProvider.Gms(),
-                    LocationNext.LocationProvider.Android(),
+                Location.setLocationProvider(
+                  LocationProvider.Fallback([
+                    LocationProvider.Gms(),
+                    LocationProvider.Android(),
                   ])
                 )
             )}
@@ -211,7 +218,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'provider',
               'Synchronous, returns immediately.\n"GMS" by default. "Android", or\n"Fallback: GMS -> Android" after setLocationProvider.',
-              async () => LocationNext.getSelectedLocationProviderName()
+              async () => Location.getSelectedLocationProviderName()
             )}
           />
         </Section>
@@ -224,7 +231,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nReturns immediately; no dialog.\nBefore any request: status "undetermined", granted false, scope "notGranted".`,
-              LocationNext.getForegroundPermissionsAsync
+              Location.getForegroundPermissionsAsync
             )}
           />
           <GridButton
@@ -232,7 +239,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nResolves once you answer the system dialog.\nAfter Allow: status "granted", granted true, scope "whenInUse", accuracy "full".`,
-              () => LocationNext.requestForegroundPermissionsAsync()
+              () => Location.requestForegroundPermissionsAsync()
             )}
           />
           <GridButton
@@ -240,7 +247,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nReturns immediately; no dialog.\nscope "always" only once background access is granted.`,
-              LocationNext.getBackgroundPermissionsAsync
+              Location.getBackgroundPermissionsAsync
             )}
           />
           <GridButton
@@ -248,7 +255,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nAndroid 11+ cannot prompt directly. Expect "denied" until\n"Allow all the time" is set in Settings.`,
-              LocationNext.requestBackgroundPermissionsAsync
+              Location.requestBackgroundPermissionsAsync
             )}
           />
         </Section>
@@ -260,8 +267,8 @@ export default function LocationNextScreen() {
               'position',
               `${POSITION_SHAPE}\nAsks for AUTOMOTIVE_NAVIGATION (high accuracy) and no cached fix.\nUp to the 90s native timeout. null if no fix is available.`,
               () =>
-                LocationNext.getPosition({
-                  profile: LocationNext.LocationProfile.AUTOMOTIVE_NAVIGATION,
+                Location.getPosition({
+                  profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
                   maxCachedAge: 0,
                 })
             )}
@@ -281,8 +288,8 @@ export default function LocationNextScreen() {
               async () => {
                 watcher.current?.dispose();
                 watcher.current = null;
-                const handle = LocationNext.watchPosition({
-                  profile: LocationNext.LocationProfile.AUTOMOTIVE_NAVIGATION,
+                const handle = Location.watchPosition({
+                  profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
                   onPosition: (position) =>
                     setOutput({
                       actual: `[watcher] ${JSON.stringify(position, null, 2)}`,
@@ -354,7 +361,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'services',
               'true or false. Synchronous, so it returns immediately.\nReports the device toggle, independent of app permissions.',
-              async () => LocationNext.hasLocationServicesEnabled()
+              async () => Location.hasLocationServicesEnabled()
             )}
           />
           <GridButton
@@ -365,7 +372,7 @@ export default function LocationNextScreen() {
                 'GMS provider: an in-app "Turn on location?" dialog — true on OK, false on No thanks.\n' +
                 'Android provider: leaves the app for the system Settings screen; the result arrives when you navigate back.\n' +
                 'Throws if a prompt is already pending.',
-              async () => LocationNext.enableLocationServices()
+              async () => Location.enableLocationServices()
             )}
           />
         </Section>
@@ -376,14 +383,14 @@ export default function LocationNextScreen() {
           <GridButton
             label="updates start"
             onPress={run('updates', NOT_IMPLEMENTED, () => {
-              updates.current ??= new LocationNext.LocationUpdatesHandle();
+              updates.current ??= new LocationUpdatesHandle();
               return updates.current.start();
             })}
           />
           <GridButton
             label="updates stop"
             onPress={run('updates', NOT_IMPLEMENTED, () => {
-              updates.current ??= new LocationNext.LocationUpdatesHandle();
+              updates.current ??= new LocationUpdatesHandle();
               return updates.current.stop();
             })}
           />
