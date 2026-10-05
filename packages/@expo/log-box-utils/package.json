@@ -30,7 +30,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "expo-build src",
+    "build": "expo-build cjs:src",
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
