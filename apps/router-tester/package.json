@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
+    "@react-native-masked-view/masked-view": "0.3.2",
     "expo": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-dev-client": "workspace:*",
@@ -31,8 +32,10 @@
     "react-native-pager-view": "^8.0.2",
     "react-native-reanimated": "4.7.0",
     "react-native-safe-area-context": "~5.9.1",
+    "react-native-screen-transitions": "4.0.0",
     "react-native-screens": "4.28.0",
     "react-native-tab-view": "^4.3.0",
+    "react-native-teleport": "^1.2.2",
     "react-native-worklets": "0.13.0",
     "sf-symbols-typescript": "^2.0.0"
   },
