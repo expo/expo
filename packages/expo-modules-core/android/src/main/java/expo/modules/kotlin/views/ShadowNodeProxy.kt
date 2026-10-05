@@ -1,5 +1,8 @@
 package expo.modules.kotlin.views
 
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.ViewTreeObserver
 import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
 import java.lang.ref.WeakReference
@@ -10,7 +13,12 @@ class ShadowNodeProxy(expoView: ExpoView) {
 
   private var pendingFlush: ((stateWrapper: Any) -> Unit)? = null
   private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
-  private val flushRunnable = Runnable { drainPendingFlush() }
+  private val mainHandler = Handler(Looper.getMainLooper())
+  private var flushPosted = false
+  private val flushRunnable = Runnable {
+    flushPosted = false
+    drainPendingFlush()
+  }
 
   // Schedule in predraw listener to avoid early return in re-entrancy
   // We have a proper fix [here](https://github.com/facebook/react-native/pull/56311)
@@ -68,8 +76,17 @@ class ShadowNodeProxy(expoView: ExpoView) {
 
     // Predraw listener do not get called for each keyboard transition event so we add a fallback flush to be called here
     // https://github.com/expo/expo/issues/47778
-    view.removeCallbacks(flushRunnable)
-    view.post(flushRunnable)
+    // Async and posted once, so it still runs during animations.
+    // https://github.com/expo/expo/issues/51034
+    if (!flushPosted) {
+      flushPosted = true
+      if (view.isAttachedToWindow) {
+        mainHandler.sendMessage(Message.obtain(mainHandler, flushRunnable).apply { isAsynchronous = true })
+      } else {
+        // `view.post` keeps the runnable until the view attaches.
+        view.post(flushRunnable)
+      }
+    }
   }
 
   private fun drainPendingFlush() {
