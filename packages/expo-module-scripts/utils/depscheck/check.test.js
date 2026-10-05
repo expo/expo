@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { validateWorkspaceDependencyProtocols } from './check.js';
+import { validatePluginExports, validateWorkspaceDependencyProtocols } from './check.js';
 
 const workspacePackageNames = new Set(['expo', 'expo-constants', 'external-name-collision']);
 const logger = { warn() {}, verbose() {} };
@@ -69,5 +69,80 @@ test('does not apply workspace rules to external dependencies', () => {
       },
       logger
     )
+  );
+});
+
+const pluginPackage = (exports) => ({
+  packageName: 'expo-example',
+  packageJson: { name: 'expo-example', ...(exports !== undefined ? { exports } : {}) },
+});
+
+test('should accept a plugin listed in exports', () => {
+  assert.doesNotThrow(() =>
+    validatePluginExports(
+      pluginPackage({ '.': './build/index.js', './app.plugin.js': './app.plugin.js' }),
+      ['app.plugin.js'],
+      logger
+    )
+  );
+});
+
+test('should accept a plugin covered by an exports pattern', () => {
+  assert.doesNotThrow(() =>
+    validatePluginExports(
+      pluginPackage({ '.': './build/index.js', './*': './*' }),
+      ['app.plugin.js'],
+      logger
+    )
+  );
+  assert.doesNotThrow(() =>
+    validatePluginExports(
+      pluginPackage({ '.': './build/index.js', './*.js': './*.js' }),
+      ['app.plugin.js'],
+      logger
+    )
+  );
+});
+
+test('should accept a package without exports', () => {
+  assert.doesNotThrow(() =>
+    validatePluginExports(pluginPackage(undefined), ['app.plugin.js'], logger)
+  );
+});
+
+test('should accept a package without a plugin file', () => {
+  assert.doesNotThrow(() =>
+    validatePluginExports(pluginPackage({ '.': './build/index.js' }), [], logger)
+  );
+});
+
+test('should reject a plugin missing from exports', () => {
+  assert.throws(
+    () =>
+      validatePluginExports(
+        pluginPackage({ '.': './build/index.js', './plugin': './plugin/build/index.js' }),
+        ['app.plugin.js'],
+        logger
+      ),
+    /does not export its config plugin/
+  );
+});
+
+test('should reject a plugin that exports explicitly hide', () => {
+  assert.throws(
+    () =>
+      validatePluginExports(
+        pluginPackage({ '.': './build/index.js', './*': './*', './app.plugin.js': null }),
+        ['app.plugin.js'],
+        logger
+      ),
+    /does not export its config plugin/
+  );
+});
+
+test('should reject a package whose exports has no subpaths', () => {
+  assert.throws(
+    () => validatePluginExports(pluginPackage('./build/index.js'), ['app.plugin.js'], logger),
+    /does not export its config plugin/
   );
 });

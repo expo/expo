@@ -28,6 +28,7 @@
     "depscheck": {
       "inputs": [
         "package.json",
+        "app.plugin.*",
         "src/**",
         "plugin/src/**",
         "cli/src/**",
