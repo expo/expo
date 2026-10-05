@@ -2,6 +2,7 @@ import type { ExpoConfig, ProjectConfig } from '@expo/config';
 import type { DefinedNativePlugin } from 'noxcturnal';
 
 import { expoPluginInput, type Noxcturnal } from '../noxcturnal-transformer';
+import { addCacheVary } from './cache-vary';
 
 interface ExpoManifestConfig {
   config: ProjectConfig;
@@ -108,6 +109,9 @@ export function createExpoInlineManifestPlugin(
           const manifest = (state.manifest ??= getExpoAppManifest(
             expoPluginInput(member.context).projectRoot
           ));
+          // The inlined manifest depends on the evaluated Expo config, or on the override.
+          addCacheVary(member.context, { scheme: 'expo-config', name: 'public' });
+          addCacheVary(member.context, { scheme: 'env', name: 'APP_MANIFEST' });
           member.replaceWith(JSON.stringify(manifest));
         }
       ),

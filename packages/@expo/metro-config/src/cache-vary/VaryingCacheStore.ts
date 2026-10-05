@@ -6,11 +6,12 @@ import {
   canonicalDims,
   canonicalDimNames,
   currentFingerprint,
+  type AmbientVaryContext,
   type CacheVaryDim,
   type EmbeddedVaryDim,
 } from './ambient';
 
-export type { AmbientVaryScheme } from './ambient';
+export type { AmbientVaryContext, AmbientVaryScheme } from './ambient';
 
 const VARY_REGISTRY_VERSION = 1;
 const OBSERVATION_LIMIT = 1_000;
@@ -60,10 +61,17 @@ interface VaryRegistry<T> {
  */
 export class VaryingCacheStore<T> implements CacheStore<T> {
   #inner: CacheStore<T>;
+  #context: AmbientVaryContext;
   #observedBasesByKey = new LruCache<string, ObservedBase>(OBSERVATION_LIMIT);
 
-  constructor(inner: CacheStore<T>) {
+  /**
+   * @param inner - The Metro cache store to wrap.
+   * @param context - Values used to recompute fingerprints, such as the project root for the
+   * `expo-config` scheme.
+   */
+  constructor(inner: CacheStore<T>, context: AmbientVaryContext = {}) {
     this.#inner = inner;
+    this.#context = context;
   }
 
   async get(key: Buffer): Promise<T | null> {
@@ -193,7 +201,7 @@ export class VaryingCacheStore<T> implements CacheStore<T> {
     if (!baseDims.length && !nameSets.length) return value;
 
     // The value in the base slot is the cheapest hit: it needs no second store read.
-    const currentBaseDims = baseDims.length ? await currentDims(baseDims) : null;
+    const currentBaseDims = baseDims.length ? await currentDims(baseDims, this.#context) : null;
     if (currentBaseDims && sameDims(baseDims, currentBaseDims)) {
       return value;
     } else if (currentBaseDims) {
@@ -208,7 +216,7 @@ export class VaryingCacheStore<T> implements CacheStore<T> {
     // transforms for one Metro key unexpectedly reported different dimension names.
     for (const names of nameSets) {
       if (!names.length) continue;
-      const dims = await currentDims(names);
+      const dims = await currentDims(names, this.#context);
       if (!dims) continue;
       const variant = await this.#readVariant(key, dims);
       if (variant != null) return variant;
@@ -285,10 +293,13 @@ function isEmbeddedVaryDim(value: unknown): value is EmbeddedVaryDim {
   }
 }
 
-async function currentDims(names: CacheVaryDim[]): Promise<EmbeddedVaryDim[] | null> {
+async function currentDims(
+  names: CacheVaryDim[],
+  context: AmbientVaryContext
+): Promise<EmbeddedVaryDim[] | null> {
   const dims: EmbeddedVaryDim[] = [];
   for (const { scheme, name } of names) {
-    const fp = await currentFingerprint(scheme, name);
+    const fp = await currentFingerprint(scheme, name, context);
     if (fp == null) return null;
     dims.push({ scheme, name, fp });
   }

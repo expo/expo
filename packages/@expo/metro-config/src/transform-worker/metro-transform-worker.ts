@@ -387,7 +387,7 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
 
 async function transformJS(
   file: JSFile,
-  { config, options }: TransformationContext
+  { config, options, projectRoot }: TransformationContext
 ): Promise<TransformResponse> {
   const targetEnv = options.customTransformOptions?.environment;
   const isServerEnv = targetEnv === 'node' || targetEnv === 'react-server';
@@ -651,7 +651,7 @@ async function transformJS(
         reactClientReference: file.reactClientReference,
         expoDomComponentReference: file.expoDomComponentReference,
         loaderReference: file.loaderReference,
-        expoCacheVary: await embedCurrentFingerprints(file.cacheVary),
+        expoCacheVary: await embedCurrentFingerprints(file.cacheVary, { projectRoot }),
         ...(possibleReconcile
           ? {
               ast: wrappedAst,
@@ -883,7 +883,9 @@ async function completeFullNoxcturnalTransform(
             typeof fullNoxcturnal.result.metadata.loaderReference === 'string'
               ? fullNoxcturnal.result.metadata.loaderReference
               : file.loaderReference,
-          expoCacheVary: await embedCurrentFingerprints(cacheVary),
+          expoCacheVary: await embedCurrentFingerprints(cacheVary, {
+            projectRoot: context.projectRoot,
+          }),
         },
       },
     ],

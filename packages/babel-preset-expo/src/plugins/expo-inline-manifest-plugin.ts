@@ -2,6 +2,7 @@ import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
 
+import { addCacheVary } from '../cache-vary';
 import { getIsReactServer, getPlatform, getPossibleProjectRoot } from '../common';
 
 const debug = require('debug')('expo:babel:inline-manifest');
@@ -208,6 +209,9 @@ export function expoInlineManifestPlugin(
         // `expo-constants` https://docs.expo.dev/versions/latest/sdk/constants/
         const manifest = getExpoAppManifest(state.projectRoot);
         if (manifest !== null) {
+          // The inlined manifest depends on the evaluated Expo config, or on the override.
+          addCacheVary(state, { scheme: 'expo-config', name: 'public' });
+          addCacheVary(state, { scheme: 'env', name: 'APP_MANIFEST' });
           parent.replaceWith(t.stringLiteral(manifest));
         }
       },

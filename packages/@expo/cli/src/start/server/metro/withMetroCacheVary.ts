@@ -10,8 +10,12 @@ import crypto from 'node:crypto';
 import { env } from '../../../utils/env';
 import { debugEvent } from './metroDebugEvents';
 
+// NOTE: Only `env` dims are re-read between dev server deltas. `expo-config` dims are still
+// resolved on cache reads by `VaryingCacheStore`.
+type TrackedAmbientVaryScheme = Extract<AmbientVaryScheme, 'env'>;
+
 interface ObservedAmbientValue {
-  scheme: AmbientVaryScheme;
+  scheme: TrackedAmbientVaryScheme;
   name: string;
   value: string | undefined;
 }
@@ -27,14 +31,15 @@ type CacheVaryPatchedBundler = Bundler & {
 };
 
 // Duplicated from `@expo/metro-config/src/cache-vary/ambient.ts`.
-function readAmbientVaryValue(scheme: AmbientVaryScheme, name: string): string | undefined {
+function readAmbientVaryValue(scheme: TrackedAmbientVaryScheme, name: string): string | undefined {
   switch (scheme) {
     case 'env':
       return process.env[name];
   }
 }
 
-const isAmbientVaryScheme = (scheme: string): scheme is AmbientVaryScheme => scheme === 'env';
+const isAmbientVaryScheme = (scheme: string): scheme is TrackedAmbientVaryScheme =>
+  scheme === 'env';
 
 const dimId = (dim: { scheme: string; name: string }): string => `${dim.scheme}:${dim.name}`;
 
@@ -52,7 +57,9 @@ export function withMetroCacheVary(config: MetroConfig): MetroConfig {
     return {
       ...config,
       cacheStores: (config.cacheStores ?? []).map((store) =>
-        store instanceof VaryingCacheStore ? store : new VaryingCacheStore(store)
+        store instanceof VaryingCacheStore
+          ? store
+          : new VaryingCacheStore(store, { projectRoot: config.projectRoot })
       ),
     };
   }
