@@ -18,6 +18,8 @@ import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
 import androidx.media3.exoplayer.hls.HlsManifest
@@ -61,7 +63,20 @@ import kotlin.time.DurationUnit
 @UnstableApi
 class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?, playerBuilderOptions: expo.modules.video.records.PlayerBuilderOptions? = null) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
   // This improves the performance of playing DRM-protected content
-  private var renderersFactory = DefaultRenderersFactory(context)
+  private var renderersFactory = object : DefaultRenderersFactory(context) {
+    override fun buildAudioSink(
+      context: Context,
+      enableFloatOutput: Boolean,
+      enableAudioTrackPlaybackParameters: Boolean
+    ): AudioSink? {
+      return DefaultAudioSink.Builder(context)
+        .setEnableFloatOutput(false)
+        .build()
+        .apply {
+          setOffloadMode(AudioSink.OFFLOAD_MODE_DISABLED)
+        }
+    }
+  }
     .forceEnableMediaCodecAsynchronousQueueing()
     .setEnableDecoderFallback(true)
   private val listeners: MutableList<WeakReference<VideoPlayerListener>> = mutableListOf()
