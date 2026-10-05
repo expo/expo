@@ -64,19 +64,25 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^",
-    "expo-task-manager": "workspace:~"
+    "@expo/image-utils": "workspace:^"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "workspace:*",
+    "expo-task-manager": "workspace:~"
   },
   "peerDependencies": {
     "expo": "*",
+    "expo-task-manager": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-task-manager": {
+      "optional": true
+    }
   }
 }

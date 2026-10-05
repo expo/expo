@@ -1,4 +1,3 @@
-import * as TaskManager from 'expo-task-manager';
 import type { TaskManagerError } from 'expo-task-manager';
 
 import { NativeLocationUpdatesHandle } from '../native';
@@ -6,6 +5,12 @@ import type { NativeLocationUpdatesHandleClass } from '../native';
 import type { LocationProfile, Position } from '../types';
 
 const DEFAULT_LOCATION_TASK_NAME = 'expo-location-background-location';
+
+let TaskManager: typeof import('expo-task-manager') | undefined;
+
+try {
+  TaskManager = require('expo-task-manager');
+} catch {}
 
 export class LocationUpdatesHandle {
   private readonly nativeHandle: NativeLocationUpdatesHandleClass;
@@ -41,6 +46,11 @@ export function defineLocationTask({
   onPosition: (position: Position) => void;
   onError?: (error: TaskManagerError) => void;
 }): void {
+  if (!TaskManager) {
+    throw new Error(
+      "Location.defineLocationTask couldn't define the background location task because the 'expo-task-manager' package isn't installed. Background location updates are delivered through it. Install it with `npx expo install expo-task-manager` and rebuild the app."
+    );
+  }
   TaskManager.defineTask<Position>(taskName, async ({ data, error }) => {
     if (error) {
       onError?.(error);
