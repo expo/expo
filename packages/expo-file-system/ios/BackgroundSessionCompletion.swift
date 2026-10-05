@@ -6,7 +6,7 @@ import Foundation
 final class BackgroundSessionCompletion {
   private struct Session {
     let token: UUID
-    let completion: () -> Void
+    var completions: [() -> Void]
     var finishedEvents = false
     var deadlineReached = false
     var awaitingAcknowledgment: Set<ObjectIdentifier> = []
@@ -41,8 +41,14 @@ final class BackgroundSessionCompletion {
 
   @discardableResult
   func receiveHandler(_ identifier: String, completion: @escaping () -> Void) -> UUID {
+    if let token = sessions[identifier]?.token {
+      // Keep pending processing and the original deadline, but wait for the new handler's final event.
+      sessions[identifier]?.completions.append(completion)
+      sessions[identifier]?.finishedEvents = false
+      return token
+    }
     let token = UUID()
-    sessions[identifier] = Session(token: token, completion: completion)
+    sessions[identifier] = Session(token: token, completions: [completion])
     return token
   }
 
@@ -64,6 +70,8 @@ final class BackgroundSessionCompletion {
     for key in session.awaitingAcknowledgment {
       downloads.removeValue(forKey: key)
     }
-    session.completion()
+    for completion in session.completions {
+      completion()
+    }
   }
 }

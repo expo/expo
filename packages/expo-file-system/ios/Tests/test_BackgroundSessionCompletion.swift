@@ -111,4 +111,67 @@ struct BackgroundSessionCompletionTests {
     state.discard(task)
     #expect(completed == ["default", "deferred"])
   }
+
+  @Test
+  func testDuplicateHandlerPreservesAcknowledgmentsAndBothCompletions() {
+    let state = BackgroundSessionCompletion(), task = NSObject()
+    var completed: [String] = []
+    let original = state.receiveHandler("session") { completed.append("original") }
+    state.register(task, session: "session")
+    state.finish(task, succeeded: true)
+    let duplicate = state.receiveHandler("session") { completed.append("duplicate") }
+    #expect(completed.isEmpty)
+    state.finishEvents("session")
+    #expect(completed.isEmpty)
+    state.discard(task)
+    #expect(completed == ["original", "duplicate"])
+    state.finishEvents("session")
+    state.expire("session", token: original)
+    state.expire("session", token: duplicate)
+    #expect(completed == ["original", "duplicate"])
+  }
+
+  @Test
+  func testDuplicateHandlerWaitsForItsFinalEvent() {
+    let state = BackgroundSessionCompletion(), task = NSObject()
+    var completed: [String] = []
+    state.receiveHandler("session") { completed.append("original") }
+    state.register(task, session: "session")
+    state.finish(task, succeeded: true)
+    state.finishEvents("session")
+    state.receiveHandler("session") { completed.append("duplicate") }
+    #expect(completed.isEmpty)
+    state.discard(task)
+    #expect(completed.isEmpty)
+    state.finishEvents("session")
+    #expect(completed == ["original", "duplicate"])
+  }
+
+  @Test
+  func testDuplicateHandlerDoesNotExtendDeadline() {
+    let state = BackgroundSessionCompletion(), task = NSObject()
+    var completed: [String] = []
+    let token = state.receiveHandler("session") { completed.append("original") }
+    state.register(task, session: "session")
+    state.finish(task, succeeded: true)
+    state.receiveHandler("session") { completed.append("duplicate") }
+    state.finishEvents("session")
+    #expect(completed.isEmpty)
+    state.expire("session", token: token)
+    #expect(completed == ["original", "duplicate"])
+  }
+
+  @Test
+  func testDuplicateHandlerPreservesExpiredDeadlineAndWaitsForFinalEvent() {
+    let state = BackgroundSessionCompletion(), task = NSObject()
+    var completed: [String] = []
+    let token = state.receiveHandler("session") { completed.append("original") }
+    state.register(task, session: "session")
+    state.finish(task, succeeded: true)
+    state.expire("session", token: token)
+    state.receiveHandler("session") { completed.append("duplicate") }
+    #expect(completed.isEmpty)
+    state.finishEvents("session")
+    #expect(completed == ["original", "duplicate"])
+  }
 }
