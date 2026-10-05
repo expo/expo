@@ -1,5 +1,7 @@
 import { loadModuleSync, resolveFrom } from '@expo/require-utils';
 import assert from 'assert';
+import Module from 'module';
+import path from 'path';
 
 import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 import { PluginError } from './errors';
@@ -37,6 +39,7 @@ export function resolvePluginForModule(
       extensions: pluginExtensions,
     });
     if (pluginPackageFile) {
+      warnIfPluginNotExported(projectRoot, pluginReference, pluginPackageFile);
       return { isPluginFile: true, filePath: pluginPackageFile };
     }
     // Skip the extension/index probes — Node's resolver (step 4) handles `main`.
@@ -50,6 +53,45 @@ export function resolvePluginForModule(
     `Failed to resolve plugin for module "${pluginReference}" relative to "${projectRoot}". Do you have node modules installed?`,
     'PLUGIN_NOT_FOUND'
   );
+}
+
+const checkedPluginExports = new Set<string>();
+
+// Node's resolver, which reports `ERR_PACKAGE_PATH_NOT_EXPORTED`. Under Jest, `require.resolve` and
+// `createRequire` report `MODULE_NOT_FOUND` instead.
+const nodeModule = Module as unknown as {
+  _resolveFilename(
+    request: string,
+    parent: null,
+    isMain: boolean,
+    options: { paths: string[] }
+  ): string;
+};
+
+// `resolveFrom` finds `app.plugin.*` on disk regardless of `package.json:exports`, but tools that
+// resolve through Node, such as EAS CLI, are refused the path when `exports` omits it.
+function warnIfPluginNotExported(
+  projectRoot: string,
+  pluginReference: string,
+  pluginPackageFile: string
+): void {
+  if (checkedPluginExports.has(pluginReference)) {
+    return;
+  }
+  checkedPluginExports.add(pluginReference);
+  const pluginFile = path.basename(pluginPackageFile);
+  try {
+    nodeModule._resolveFilename(`${pluginReference}/${pluginFile}`, null, false, {
+      paths: [projectRoot],
+    });
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException)?.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
+      return;
+    }
+    console.warn(
+      `The config plugin for "${pluginReference}" was loaded from "${pluginFile}", but the "exports" field in its package.json doesn't include "./${pluginFile}". Tools that resolve packages through Node's "exports", such as EAS CLI, can't find this config plugin. If you maintain "${pluginReference}", add "./${pluginFile}": "./${pluginFile}" to its "exports"; otherwise, report this to its maintainers.`
+    );
+  }
 }
 
 // TODO: Test windows

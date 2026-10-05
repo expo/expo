@@ -123,6 +123,38 @@ describe('plugin resolver', () => {
         });
       });
     });
+
+    describe('warns when package.json:exports hides the plugin', () => {
+      let warn: jest.SpyInstance;
+
+      beforeEach(() => {
+        warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      });
+
+      afterEach(() => {
+        warn.mockRestore();
+      });
+
+      it('warns once for a package that does not export its app.plugin.js', () => {
+        expect(resolvePluginForModule(projectRoot, 'test-lib-unexported')).toStrictEqual({
+          filePath: `${projectRoot}/node_modules/test-lib-unexported/app.plugin.js`,
+          isPluginFile: true,
+        });
+        resolvePluginForModule(projectRoot, 'test-lib-unexported');
+        expect(warn).toHaveBeenCalledTimes(1);
+        expect(warn.mock.calls[0][0]).toMatch(/"test-lib-unexported"[\s\S]*"\.\/app\.plugin\.js"/);
+      });
+
+      it('does not warn for a package that exports its app.plugin.js', () => {
+        resolvePluginForModule(projectRoot, 'test-lib-exported');
+        expect(warn).not.toHaveBeenCalled();
+      });
+
+      it('does not warn for a package without exports', () => {
+        resolvePluginForModule(projectRoot, 'test-lib');
+        expect(warn).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe(resolveConfigPluginFunction, () => {
