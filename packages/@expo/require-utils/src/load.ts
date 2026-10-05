@@ -297,7 +297,8 @@ function evalModule(
       // This may throw its own error, but this contains a code-frame already
       inputCode = stripTypeScriptTypes(code);
       if (format.mode === 'commonjs-typescript') {
-        inputCode = toCommonJS(filename, inputCode);
+        // NOTE(@kitten): Match TypeScript's CommonJS emit with esModuleInterop enabled.
+        inputCode = toCommonJS(filename, inputCode, 'babel');
       }
     }
 
