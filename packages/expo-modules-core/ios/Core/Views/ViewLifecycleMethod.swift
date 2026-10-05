@@ -27,6 +27,10 @@ internal protocol AnyViewLifecycleMethod: AnyDefinition {
  Element of the view definition that represents a lifecycle method, such as `OnViewDidUpdateProps`.
  */
 public final class ViewLifecycleMethod<ViewType>: AnyViewLifecycleMethod {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.viewLifecycle(self))
+  }
+
   public typealias Closure = @MainActor (ViewType) -> Void
 
   /**

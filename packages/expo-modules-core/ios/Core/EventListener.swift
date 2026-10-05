@@ -2,6 +2,10 @@
  Represents a listener for the specific event.
  */
 internal struct EventListener: AnyDefinition {
+  var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.eventListener(self))
+  }
+
   let name: EventName
   let call: (Any?, Any?) throws -> Void
 

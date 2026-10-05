@@ -17,6 +17,10 @@ internal protocol AnyConcurrentFunctionDefinition: AnyFunctionDefinition {
  As opposed to `AsyncFunctionDefinition`, it can leverage the new Swift's concurrency model and take the async/await closure.
  */
 public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyConcurrentFunctionDefinition, @unchecked Sendable {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.function(self))
+  }
+
   typealias ClosureType = @Sendable (Args) async throws -> sending ReturnType
 
   let body: ClosureType

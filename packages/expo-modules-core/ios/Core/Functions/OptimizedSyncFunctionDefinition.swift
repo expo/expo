@@ -7,6 +7,10 @@ import ExpoModulesJSI
  This is used by the `@OptimizedFunction` macro with specific type signatures.
  */
 public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unchecked Sendable {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.function(self))
+  }
+
   public let name: String
   public let typeEncoding: String
   public let argsCount: Int

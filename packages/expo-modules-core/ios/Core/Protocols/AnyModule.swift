@@ -53,7 +53,7 @@ public protocol AnyModule: AnyObject, AnyArgument {
 
 extension AnyModule {
   public static var _jsName: String {
-    return String(describing: self)
+    return _typeName(self, qualified: false)
   }
 
   /// An empty definition by default, so `@ExpoModule`-macro modules that describe their whole surface

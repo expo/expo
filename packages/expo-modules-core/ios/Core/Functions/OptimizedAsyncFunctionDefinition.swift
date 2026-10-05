@@ -9,6 +9,10 @@ import ExpoModulesJSI
  The async variant creates a JS Promise and dispatches the block invocation to a background queue.
  */
 public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unchecked Sendable {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.function(self))
+  }
+
   public let name: String
   public let typeEncoding: String
   public let argsCount: Int

@@ -6,6 +6,10 @@ import ExpoModulesJSI
  Base class for other definitions representing an object, such as `ModuleDefinition`.
  */
 public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
+  public var definitionClassification: DefinitionClassification {
+    return .unknown
+  }
+
   /**
    A dictionary of functions defined by the object.
    */
@@ -40,39 +44,57 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
    Default initializer receiving children definitions from the result builder.
    */
   init(definitions: [AnyDefinition]) {
-    self.functions = definitions
-      .compactMap { $0 as? AnyFunctionDefinition }
-      .filter { !($0 is AnyStaticFunctionDefinition) }
-      .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
-        dict[function.name] = function
-      }
+    var functions = [String: AnyFunctionDefinition]()
+    var staticFunctions = [String: AnyFunctionDefinition]()
+    var legacyConstants = [ConstantsDefinition]()
+    var constants = [String: AnyConstantDefinition]()
+    var properties = [String: AnyPropertyDefinition]()
+    var classes = [String: ClassDefinition]()
 
-    self.staticFunctions = definitions
-      .compactMap { $0 as? AnyStaticFunctionDefinition }
-      .reduce(into: [String: AnyFunctionDefinition]()) { dict, function in
-        dict[function.name] = function
+    for definition in definitions {
+      switch definition.definitionClassification.kind {
+      case .function(let function):
+        functions[function.name] = function
+      case .staticFunction(let function):
+        staticFunctions[function.name] = function
+      case .legacyConstants(let constantsDefinition):
+        legacyConstants.append(constantsDefinition)
+      case .constant(let constant):
+        constants[constant.name] = constant
+      case .property(let property):
+        properties[property.name] = property
+      case .klass(let klass):
+        classes[klass.name] = klass
+      case .unknown:
+        if let function = definition as? AnyFunctionDefinition, !(function is AnyStaticFunctionDefinition) {
+          functions[function.name] = function
+        }
+        if let function = definition as? AnyStaticFunctionDefinition {
+          staticFunctions[function.name] = function
+        }
+        if let constantsDefinition = definition as? ConstantsDefinition {
+          legacyConstants.append(constantsDefinition)
+        }
+        if let constant = definition as? AnyConstantDefinition {
+          constants[constant.name] = constant
+        }
+        if let property = definition as? AnyPropertyDefinition {
+          properties[property.name] = property
+        }
+        if let klass = definition as? ClassDefinition {
+          classes[klass.name] = klass
+        }
+      default:
+        break
       }
+    }
 
-    self.legacyConstants = definitions
-      .compactMap { $0 as? ConstantsDefinition }
-
-    self.constants = definitions
-      .compactMap { $0 as? AnyConstantDefinition }
-      .reduce(into: [String: AnyConstantDefinition]()) { dict, constant in
-        dict[constant.name] = constant
-      }
-
-    self.properties = definitions
-      .compactMap { $0 as? AnyPropertyDefinition }
-      .reduce(into: [String: AnyPropertyDefinition]()) { dict, property in
-        dict[property.name] = property
-      }
-
-    self.classes = definitions
-      .compactMap { $0 as? ClassDefinition }
-      .reduce(into: [String: ClassDefinition]()) { dict, klass in
-        dict[klass.name] = klass
-      }
+    self.functions = functions
+    self.staticFunctions = staticFunctions
+    self.legacyConstants = legacyConstants
+    self.constants = constants
+    self.properties = properties
+    self.classes = classes
   }
 
   /**

@@ -6,6 +6,10 @@ import ExpoModulesJSI
  A definition representing the native view to export to React.
  */
 public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unchecked Sendable {
+  public override var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.view(self))
+  }
+
   /**
    An array of view props definitions.
    */
@@ -30,22 +34,43 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
    Default initializer receiving children definitions from the result builder.
    */
   init(_ viewType: ViewType.Type, elements: [AnyViewDefinitionElement]) {
-    self.props = elements
-      .compactMap { $0 as? AnyViewProp }
+    var props = [any AnyViewProp]()
+    var name: String?
+    var eventNames = [String]()
+    var lifecycleMethods = [AnyViewLifecycleMethod]()
 
-    self.name = elements
-      .compactMap { $0 as? ViewNameDefinition }
-      .last?
-      .name ?? String(describing: viewType)
+    for element in elements {
+      switch element.definitionClassification.kind {
+      case .viewProp(let prop):
+        props.append(prop)
+      case .viewName(let nameDefinition):
+        name = nameDefinition.name
+      case .events(let events):
+        eventNames.append(contentsOf: events.names)
+      case .viewLifecycle(let method):
+        lifecycleMethods.append(method)
+      case .unknown:
+        if let prop = element as? AnyViewProp {
+          props.append(prop)
+        }
+        if let nameDefinition = element as? ViewNameDefinition {
+          name = nameDefinition.name
+        }
+        if let events = element as? EventsDefinition {
+          eventNames.append(contentsOf: events.names)
+        }
+        if let method = element as? AnyViewLifecycleMethod {
+          lifecycleMethods.append(method)
+        }
+      default:
+        break
+      }
+    }
 
-    self.eventNames = Array(
-      elements
-        .compactMap { ($0 as? EventsDefinition)?.names }
-        .joined()
-    )
-
-    self.lifecycleMethods = elements
-      .compactMap { $0 as? AnyViewLifecycleMethod }
+    self.props = props
+    self.name = name ?? _typeName(viewType, qualified: false)
+    self.eventNames = eventNames
+    self.lifecycleMethods = lifecycleMethods
 
     super.init(definitions: elements)
   }
@@ -127,5 +152,9 @@ extension UIView: @MainActor AnyArgument {
 }
 
 public struct ViewNameDefinition: AnyViewDefinitionElement {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.viewName(self))
+  }
+
   let name: String
 }
