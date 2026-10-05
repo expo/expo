@@ -237,7 +237,18 @@ internal class HostView(context: Context, appContext: AppContext) :
           constraints.maxHeight
         }
       )
-      val placeables = measurables.map { it.measure(boundedConstraints) }
+      // `measure` does not read a child percentage, so apply it here when this host
+      // has a size on that axis. A child with no percentage keeps these constraints.
+      // Compose Row and Column do not read that percentage.
+      val definiteWidth = boundedConstraints.maxWidth.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minWidth == it || useViewportSizeMeasurement)
+      }
+      val definiteHeight = boundedConstraints.maxHeight.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minHeight == it || useViewportSizeMeasurement)
+      }
+      val placeables = measurables.map {
+        measureUniversalChild(it, boundedConstraints, definiteWidth, definiteHeight)
+      }
 
       val contentWidthPx = placeables.maxOfOrNull { it.width } ?: 0
       val contentHeightPx = placeables.maxOfOrNull { it.height } ?: 0

@@ -37,10 +37,12 @@ export function FieldSection({
 
   const { header, footer, rows } = extractFieldSectionSlots(children);
 
-  const outerModifiers = transformToModifiers(style, { disabled, hidden, testID }, [
-    fillMaxWidth(),
-    ...(extraModifiers ?? []),
-  ]);
+  const outerModifiers = transformToModifiers(
+    style,
+    { disabled, hidden, testID },
+    [fillMaxWidth(), ...(extraModifiers ?? [])],
+    { componentName: 'FieldSection' }
+  );
 
   const headerNode =
     header ??
