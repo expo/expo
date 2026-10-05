@@ -54,7 +54,7 @@ export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types'
  * @platform android
  * @platform ios
  */
-export const StackToolbarSpacer: React.FC<StackToolbarSpacerProps> = (props) => {
+export const StackToolbarSpacer = (props: StackToolbarSpacerProps) => {
   const placement = useToolbarPlacement();
 
   if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {

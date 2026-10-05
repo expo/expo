@@ -80,81 +80,96 @@ export interface StackToolbarProps {
   backgroundColor?: ColorValue;
 }
 
-/**
- * The component used to configure the stack toolbar.
- *
- * - Use `placement="left"` to customize the left side of the header.
- * - Use `placement="right"` to customize the right side of the header.
- * - Use `placement="bottom"` (default) to show a bottom toolbar.
- *
- * If multiple instances of this component are rendered for the same screen,
- * the last one rendered in the component tree takes precedence.
- *
- * > **Note:** Using `Stack.Toolbar` with `placement="left"` or `placement="right"` will
- * automatically make the header visible (`headerShown: true`), as the toolbar is rendered
- * as part of the native header.
- *
- * > **Note:** `Stack.Toolbar` with `placement="bottom"` can only be used inside **page**
- * components, not in layout components.
- *
- *
- * @example
- * ```tsx
- * import { Stack } from 'expo-router';
- *
- * export default function Layout() {
- *   return (
- *     <Stack>
- *       <Stack.Screen name="index">
- *         <Stack.Toolbar placement="left">
- *           <Stack.Toolbar.Button icon="sidebar.left" onPress={() => alert('Left button pressed!')} />
- *         </Stack.Toolbar>
- *         <Stack.Toolbar placement="right">
- *           <Stack.Toolbar.Button icon="ellipsis.circle" onPress={() => alert('Right button pressed!')} />
- *         </Stack.Toolbar>
- *       </Stack.Screen>
- *     </Stack>
- *   );
- * }
- * ```
- *
- * @example
- * ```tsx
- * import { Stack } from 'expo-router';
- *
- * export default function Page() {
- *   return (
- *     <>
- *       <Stack.Toolbar placement="left">
- *         <Stack.Toolbar.Button icon="sidebar.left" onPress={() => alert('Left button pressed!')} />
- *       </Stack.Toolbar>
- *       <Stack.Toolbar>
- *         <Stack.Toolbar.Spacer />
- *         <Stack.Toolbar.Button icon="magnifyingglass" onPress={() => {}} />
- *         <Stack.Toolbar.Spacer />
- *       </Stack.Toolbar>
- *       <ScreenContent />
- *     </>
- *   );
- * }
- * ```
- *
- * @experimental
- * @platform android
- * @platform ios
- */
-export const StackToolbar = (props: StackToolbarProps) => {
-  const parentPlacement = useToolbarPlacement();
-  if (parentPlacement) {
-    throw new Error(`Stack.Toolbar cannot be nested inside another Stack.Toolbar.`);
-  }
+// Sub-components are attached with `Object.assign` (like `Stack.Screen`) instead of property
+// assignments, so the API docs generator can resolve them and keep their JSDoc, including `@platform`.
+export const StackToolbar = Object.assign(
+  /**
+   * The component used to configure the stack toolbar.
+   *
+   * - Use `placement="left"` to customize the left side of the header.
+   * - Use `placement="right"` to customize the right side of the header.
+   * - Use `placement="bottom"` (default) to show a bottom toolbar.
+   *
+   * If multiple instances of this component are rendered for the same screen,
+   * the last one rendered in the component tree takes precedence.
+   *
+   * > **Note:** Using `Stack.Toolbar` with `placement="left"` or `placement="right"` will
+   * automatically make the header visible (`headerShown: true`), as the toolbar is rendered
+   * as part of the native header.
+   *
+   * > **Note:** `Stack.Toolbar` with `placement="bottom"` can only be used inside **page**
+   * components, not in layout components.
+   *
+   *
+   * @example
+   * ```tsx
+   * import { Stack } from 'expo-router';
+   *
+   * export default function Layout() {
+   *   return (
+   *     <Stack>
+   *       <Stack.Screen name="index">
+   *         <Stack.Toolbar placement="left">
+   *           <Stack.Toolbar.Button icon="sidebar.left" onPress={() => alert('Left button pressed!')} />
+   *         </Stack.Toolbar>
+   *         <Stack.Toolbar placement="right">
+   *           <Stack.Toolbar.Button icon="ellipsis.circle" onPress={() => alert('Right button pressed!')} />
+   *         </Stack.Toolbar>
+   *       </Stack.Screen>
+   *     </Stack>
+   *   );
+   * }
+   * ```
+   *
+   * @example
+   * ```tsx
+   * import { Stack } from 'expo-router';
+   *
+   * export default function Page() {
+   *   return (
+   *     <>
+   *       <Stack.Toolbar placement="left">
+   *         <Stack.Toolbar.Button icon="sidebar.left" onPress={() => alert('Left button pressed!')} />
+   *       </Stack.Toolbar>
+   *       <Stack.Toolbar>
+   *         <Stack.Toolbar.Spacer />
+   *         <Stack.Toolbar.Button icon="magnifyingglass" onPress={() => {}} />
+   *         <Stack.Toolbar.Spacer />
+   *       </Stack.Toolbar>
+   *       <ScreenContent />
+   *     </>
+   *   );
+   * }
+   * ```
+   *
+   * @experimental
+   * @platform android
+   * @platform ios
+   */
+  function StackToolbar(props: StackToolbarProps) {
+    const parentPlacement = useToolbarPlacement();
+    if (parentPlacement) {
+      throw new Error(`Stack.Toolbar cannot be nested inside another Stack.Toolbar.`);
+    }
 
-  if (props.placement === 'bottom' || !props.placement) {
-    return <StackToolbarBottom {...props} />;
-  }
+    if (props.placement === 'bottom' || !props.placement) {
+      return <StackToolbarBottom {...props} />;
+    }
 
-  return <StackToolbarHeader {...props} key={props.placement} />;
-};
+    return <StackToolbarHeader {...props} key={props.placement} />;
+  },
+  {
+    Button: StackToolbarButton,
+    Menu: StackToolbarMenu,
+    MenuAction: StackToolbarMenuAction,
+    SearchBarSlot: StackToolbarSearchBarSlot,
+    Spacer: StackToolbarSpacer,
+    View: StackToolbarView,
+    Label: StackToolbarLabel,
+    Icon: StackToolbarIcon,
+    Badge: StackToolbarBadge,
+  }
+);
 
 const StackToolbarBottom = ({
   children,
@@ -251,15 +266,5 @@ export function appendStackToolbarPropsToOptions(
 
   return { ...options, ...(processHeaderItemsForPlatform(children, placement, colors) ?? {}) };
 }
-
-StackToolbar.Button = StackToolbarButton;
-StackToolbar.Menu = StackToolbarMenu;
-StackToolbar.MenuAction = StackToolbarMenuAction;
-StackToolbar.SearchBarSlot = StackToolbarSearchBarSlot;
-StackToolbar.Spacer = StackToolbarSpacer;
-StackToolbar.View = StackToolbarView;
-StackToolbar.Label = StackToolbarLabel;
-StackToolbar.Icon = StackToolbarIcon;
-StackToolbar.Badge = StackToolbarBadge;
 
 export default StackToolbar;
