@@ -101,7 +101,7 @@ class FallbackWatcher extends AbstractWatcher_1.AbstractWatcher {
         }
         const relativePath = path_1.default.relative(this.root, filepath);
         if (this.doIgnore(relativePath) ||
-            (type === 'f' && !common.includedByGlob('f', this.globs, this.dot, relativePath))) {
+            (type === 'f' && !common.isIncluded('f', this.included, relativePath))) {
             return false;
         }
         if (!this.#dirRegistry[dir]) {
@@ -260,8 +260,7 @@ class FallbackWatcher extends AbstractWatcher_1.AbstractWatcher {
                 if (event === 'change') {
                     return;
                 }
-                if (this.doIgnore(relativePath) ||
-                    !common.includedByGlob('d', this.globs, this.dot, relativePath)) {
+                if (this.doIgnore(relativePath) || !common.isIncluded('d', this.included, relativePath)) {
                     return;
                 }
                 recReaddir(path_1.default.resolve(this.root, relativePath), (dir, stats) => {

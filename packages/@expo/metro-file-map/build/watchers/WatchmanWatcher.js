@@ -128,17 +128,6 @@ class WatchmanWatcher extends AbstractWatcher_1.AbstractWatcher {
                 defer: self.#watchmanDeferStates,
                 relative_root: watchProjectInfo.relativePath,
             };
-            // Make sure we honor the dot option if even we're not using globs.
-            if (self.globs.length === 0 && !self.dot) {
-                options.expression = [
-                    'match',
-                    '**',
-                    'wholename',
-                    {
-                        includedotfiles: false,
-                    },
-                ];
-            }
             self.#client.command(['subscribe', getWatchRoot(), self.subscriptionName, options], onSubscribe);
         }
         const onSubscribe = (error, resp) => {
@@ -190,8 +179,7 @@ class WatchmanWatcher extends AbstractWatcher_1.AbstractWatcher {
         if (type != null && !(type === 'f' || type === 'd' || type === 'l')) {
             return;
         }
-        if (this.doIgnore(relativePath) ||
-            !common.includedByGlob(type, this.globs, this.dot, relativePath)) {
+        if (this.doIgnore(relativePath) || !common.isIncluded(type, this.included, relativePath)) {
             return;
         }
         const clock = typeof rawClock === 'string' && this.#watchProjectInfo != null

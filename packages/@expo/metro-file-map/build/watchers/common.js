@@ -13,24 +13,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.posixPathMatchesPattern = exports.ALL_EVENT = exports.RECRAWL_EVENT = exports.TOUCH_EVENT = exports.DELETE_EVENT = void 0;
-exports.includedByGlob = includedByGlob;
+exports.isIncluded = isIncluded;
 exports.typeFromStat = typeFromStat;
-const micromatch_1 = __importDefault(require("micromatch"));
 const path_1 = __importDefault(require("path"));
 exports.DELETE_EVENT = 'delete';
 exports.TOUCH_EVENT = 'touch';
 exports.RECRAWL_EVENT = 'recrawl';
 exports.ALL_EVENT = 'all';
 /**
- * Checks a file relative path against the globs array.
+ * Whether a watcher should report a change at the given relative path. Only
+ * regular files are checked against `included`, and every file is included
+ * when it is null.
+ *
+ * A file matches an extension when its basename ends with `.` followed by
+ * that extension, so `.env` matches `env` and `foo.d.ts` matches `d.ts`.
  */
-function includedByGlob(type, globs, dot, relativePath) {
-    // For non-regular files or if there are no glob matchers, just respect the
-    // `dot` option to filter dotfiles if dot === false.
-    if (globs.length === 0 || type !== 'f') {
-        return dot || micromatch_1.default.some(relativePath, '**/*');
+function isIncluded(type, included, relativePath) {
+    if (included == null || type !== 'f') {
+        return true;
     }
-    return micromatch_1.default.some(relativePath, globs, { dot });
+    const basename = path_1.default.basename(relativePath);
+    return (hasIncludedExtension(included.extensions, basename) ||
+        included.basenames.has(basename) ||
+        included.basenamePrefixes.some((prefix) => basename.startsWith(prefix)));
+}
+function hasIncludedExtension(extensions, basename) {
+    for (let i = basename.indexOf('.'); i !== -1; i = basename.indexOf('.', i + 1)) {
+        if (extensions.has(basename.slice(i + 1))) {
+            return true;
+        }
+    }
+    return false;
 }
 /**
  * Whether the given filePath matches the given RegExp, after converting
