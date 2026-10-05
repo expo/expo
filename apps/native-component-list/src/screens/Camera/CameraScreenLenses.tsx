@@ -11,6 +11,7 @@ import {
 } from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('screen');
 
@@ -38,6 +39,7 @@ export default function CameraScreenLenses() {
 
 function CameraScreenLensesIOS() {
   const camera = useRef<CameraView>(null);
+  const insets = useSafeAreaInsets();
   const [availableLenses, setAvailableLenses] = useState<LensInfo[]>([]);
 
   const [state, setState] = useState<State>({
@@ -114,7 +116,7 @@ function CameraScreenLensesIOS() {
   );
 
   const renderBottomBar = () => (
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: 'center', paddingBottom: insets.bottom }}>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomButton} onPress={changeMode}>
           <MaterialCommunityIcons
