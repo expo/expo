@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo start` exiting on Node before v22.14.0 when an API route calls `console.log`. Stack frames whose source map fails to load are printed without source mapping instead of throwing. ([#51089](https://github.com/expo/expo/pull/51089) by [@robhogan](https://github.com/robhogan))
+
 ### 💡 Others
 
 ## 58.0.1 — 2026-09-16
