@@ -5,6 +5,7 @@ Object.defineProperty(globalThis, '__DEV__', {
 
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => ({})),
+  useReleasingSharedObjectWithLifecycle: jest.fn(() => null),
 }));
 
 const { onHingeChange } = require('../swift-ui/modifiers');
@@ -22,5 +23,12 @@ describe(onHingeChange, () => {
     const newContext = { hinge: { angle: 90, status: 'partiallyOpen' } };
     onHingeChange(handler).eventListener?.({ oldContext, newContext });
     expect(handler).toHaveBeenCalledWith(oldContext, newContext);
+  });
+
+  test('passes a worklet callback to native by its shared object id', () => {
+    const workletCallback = { __expo_shared_object_id__: 7 };
+    const modifier = onHingeChange(workletCallback);
+    expect(modifier).toEqual({ $type: 'onHingeChange', workletCallback: 7 });
+    expect(modifier.eventListener).toBeUndefined();
   });
 });
