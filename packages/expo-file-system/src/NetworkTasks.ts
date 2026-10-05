@@ -492,10 +492,7 @@ export class DownloadTask {
     // the event can race with promise resolution (listener removed before delivery).
     if (this._options?.onProgress) {
       if (fileSize > 0) {
-        this._options.onProgress({
-          bytesWritten: fileSize,
-          totalBytes: fileSize,
-        });
+        this._options.onProgress({ bytesWritten: fileSize, totalBytes: fileSize });
       }
     }
   }

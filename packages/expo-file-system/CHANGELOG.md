@@ -20,8 +20,6 @@
 
 ## 58.0.3 — 2026-09-28
 
-- [iOS] Adds opt-in control over background completion to modern download tasks.
-
 ### 🐛 Bug fixes
 
 - [Android] Added missing permission checks to upload tasks and to file watchers. ([#50582](https://github.com/expo/expo/pull/50582) by [@barthap](https://github.com/barthap))

@@ -245,19 +245,19 @@ class FileSystemDownloadTask: SharedObject {
   private var delegateKey: String?
   private var sessionType: NetworkTaskSessionType = .background
   private(set) var isPausing = false
-  private var completionHandler: FileSystemBackgroundSessionHandler?
+  private var backgroundSessionHandler: FileSystemBackgroundSessionHandler?
 
   private func registerBackgroundCompletion(in session: URLSession, options: DownloadTaskOptions?) {
     guard options?.deferBackgroundSessionCompletion == true,
       let identifier = session.configuration.identifier else { return }
-    completionHandler = ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
-    completionHandler?.registerDownload(self, forSessionIdentifier: identifier)
+    backgroundSessionHandler = ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
+    backgroundSessionHandler?.registerDownload(self, forSessionIdentifier: identifier)
   }
 
   func acknowledgeBackgroundCompletion() throws {
     guard downloadTask == nil else { throw BackgroundDownloadNotFinishedException() }
-    completionHandler?.acknowledgeDownload(self)
-    completionHandler = nil
+    backgroundSessionHandler?.acknowledgeDownload(self)
+    backgroundSessionHandler = nil
   }
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
@@ -323,7 +323,7 @@ class FileSystemDownloadTask: SharedObject {
   }
 
   func finishTask(succeeded: Bool) {
-    completionHandler?.finishDownload(self, succeeded: succeeded)
+    backgroundSessionHandler?.finishDownload(self, succeeded: succeeded)
     // Delegate is unregistered by NetworkTaskSessionDispatcher after didCompleteWithError returns.
     cleanup(unregisterDelegate: false)
   }
@@ -331,8 +331,8 @@ class FileSystemDownloadTask: SharedObject {
   override func sharedObjectWillRelease() {
     // SharedObject release may arrive on the JS thread; subscriber state is main-queue confined.
     DispatchQueue.main.async {
-      self.completionHandler?.discardDownload(self)
-      self.completionHandler = nil
+      self.backgroundSessionHandler?.discardDownload(self)
+      self.backgroundSessionHandler = nil
       self.downloadTask?.cancel()
       self.cleanup(unregisterDelegate: false)
     }
@@ -427,7 +427,8 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    // Register successful processing before resolving JS, which may acknowledge immediately.
+    // JS can acknowledge as soon as the promise settles. Register the outcome first
+    // so that acknowledgment cannot race finishDownload.
     sharedObject?.finishTask(succeeded: error == nil && downloadedFileUri != nil)
     if let saveError {
       promise.reject(saveError)
