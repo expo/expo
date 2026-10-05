@@ -26,3 +26,15 @@ class NotificationPermissionResponse(
   @Field
   val android: AndroidNotificationPermissionDetails
 ) : Record
+
+@OptimizedRecord
+class ExactAlarmPermissionResponse(
+  @Field
+  val status: String,
+  @Field
+  val expires: String = PermissionsResponse.PERMISSION_EXPIRES_NEVER,
+  @Field
+  val canAskAgain: Boolean,
+  @Field
+  val granted: Boolean
+) : Record

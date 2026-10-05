@@ -7,11 +7,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.os.bundleOf
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
@@ -55,12 +53,12 @@ class NotificationPermissionsModule : Module() {
     }
 
     AsyncFunction("getExactAlarmPermissionsAsync") {
-      getExactAlarmPermissionsBundle()
+      getExactAlarmPermissionsResponse()
     }
 
     AsyncFunction("requestExactAlarmPermissionsAsync") { promise: Promise ->
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || canScheduleExactAlarms()) {
-        promise.resolve(getExactAlarmPermissionsBundle())
+        promise.resolve(getExactAlarmPermissionsResponse())
         return@AsyncFunction
       }
       if (!isScheduleExactAlarmDeclared()) {
@@ -81,7 +79,7 @@ class NotificationPermissionsModule : Module() {
       if (pendingExactAlarmPromises.isNotEmpty()) {
         val promises = pendingExactAlarmPromises.toList()
         pendingExactAlarmPromises.clear()
-        val response = getExactAlarmPermissionsBundle()
+        val response = getExactAlarmPermissionsResponse()
         promises.forEach { it.resolve(response) }
       }
     }
@@ -107,18 +105,17 @@ class NotificationPermissionsModule : Module() {
     return requested?.contains(Manifest.permission.SCHEDULE_EXACT_ALARM) == true
   }
 
-  private fun getExactAlarmPermissionsBundle(): Bundle {
+  private fun getExactAlarmPermissionsResponse(): ExactAlarmPermissionResponse {
     val granted = canScheduleExactAlarms()
     val status = if (granted) {
       PermissionsStatus.GRANTED
     } else {
       PermissionsStatus.DENIED
     }
-    return bundleOf(
-      PermissionsResponse.EXPIRES_KEY to PermissionsResponse.PERMISSION_EXPIRES_NEVER,
-      PermissionsResponse.STATUS_KEY to status.status,
-      PermissionsResponse.CAN_ASK_AGAIN_KEY to (granted || isScheduleExactAlarmDeclared()),
-      PermissionsResponse.GRANTED_KEY to granted
+    return ExactAlarmPermissionResponse(
+      status = status.status,
+      canAskAgain = granted || isScheduleExactAlarmDeclared(),
+      granted = granted
     )
   }
 
