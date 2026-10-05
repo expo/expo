@@ -112,7 +112,7 @@ export function resolveFrom(
   return !skipNodePath ? nativeResolveFrom(fromDirectory, moduleId) : null;
 }
 
-function nativeResolveFrom(fromDirectory: string, moduleId: string): string | null {
+export function nativeResolveFrom(fromDirectory: string, moduleId: string): string | null {
   try {
     const resolvedDir = maybeResolve(fromDirectory);
     const fromFile = path.join(resolvedDir, 'index.js');
