@@ -61,7 +61,7 @@ The active rollout continues until the new update is ready. If you use code sign
 
 When the rollout ends, the new update becomes available to all users on the matching branch, platform, and runtime version. Each user's app downloads and launches it according to the app's update behavior. If you publish a rollback to embedded, each user's app returns to the update embedded in its build instead.
 
-Replacing a rollout keeps the rollout update group and its dashboard links. The `eas update:revert-update-rollout` command works differently: it deletes the rollout update group and restores the control update. If the rollout has no control update, the command publishes a rollback to embedded.
+Replacing a rollout keeps the rollout update group and its dashboard links. Reverting a rollout with `eas update:revert-update-rollout` deletes the rollout update group.
 
 You cannot replace an active rollout with another rollout. To publish a new update with `--rollout-percentage`, first finish the active rollout with `eas update:edit` or revert it with `eas update:revert-update-rollout`.
 
