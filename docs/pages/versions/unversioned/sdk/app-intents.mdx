@@ -235,6 +235,10 @@ Pass `--visual-intelligence` with the mail example to scaffold its Spotlight int
 
 <Terminal cmd={['$ npx expo-app-intents init --examples mail --visual-intelligence']} />
 
+Pass `--donations` to scaffold the native code that lets JavaScript [donate](#donate-an-intent) the intents of the selected examples. This adds a `DonatableAppIntent` extension for each example intent and registers the intents in **AppIntentsSetup.swift** under the names they dispatch, such as `orderFood`. The interactive prompt asks about this after you pick the examples. Like `--visual-intelligence`, the generated code extends the base types, so each example works the same way with or without this flag.
+
+<Terminal cmd={['$ npx expo-app-intents init --examples restaurant --donations']} />
+
 Then rebuild the native project:
 
 <Terminal cmd={['$ npx expo prebuild -p ios', '$ npx expo run:ios']} />
