@@ -32,6 +32,8 @@
       "expo-source": "./src/WebBrowser.ts",
       "default": "./build/WebBrowser.js"
     },
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
     "./plugin": "./plugin/build/index.js",
     "./package.json": "./package.json"
   },
