@@ -103,6 +103,7 @@ _This version does not introduce any user-facing changes._
 - [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws on some OEM ROMs. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))
 - [web] Fixed crash when browser storage is blocked (e.g. Safari's "Block All Cookies"), where reading `localStorage` throws a `SecurityError` instead of returning `null`. ([#48033](https://github.com/expo/expo/pull/48033) by [@Ignigena](https://github.com/Ignigena))
 - [Android] Fixed importing `expo-notifications` crashing the app in Expo Go. ([#49062](https://github.com/expo/expo/pull/49062) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fixed notifications not being shown when the title and message are inside the data key ([#50685](https://github.com/expo/expo/pull/50685) by [@RodolfoGS](https://github.com/RodolfoGS))
 
 ### 💡 Others
 
