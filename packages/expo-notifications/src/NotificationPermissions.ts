@@ -91,15 +91,6 @@ const GRANTED_EXACT_ALARM_RESPONSE: PermissionResponse = {
  * If the app does not declare it and the permission is denied, the response has `canAskAgain: false`.
  * @return A `Promise` that resolves to the permission response. On iOS and web, it always resolves with a granted response.
  * @platform android
- * @example
- * ```ts
- * import * as Notifications from 'expo-notifications';
- *
- * export async function canScheduleExactAlarmsAsync() {
- *   const { granted } = await Notifications.getExactAlarmPermissionsAsync();
- *   return granted;
- * }
- * ```
  * @header permissions
  */
 export async function getExactAlarmPermissionsAsync(): Promise<PermissionResponse> {
@@ -127,19 +118,6 @@ export async function getExactAlarmPermissionsAsync(): Promise<PermissionRespons
  * @return A `Promise` that resolves to the permission response after the user returns to the app.
  * On iOS and web, it always resolves with a granted response.
  * @platform android
- * @example
- * ```ts
- * import * as Notifications from 'expo-notifications';
- *
- * export async function ensureExactAlarmPermissionAsync() {
- *   const current = await Notifications.getExactAlarmPermissionsAsync();
- *   if (current.granted || !current.canAskAgain) {
- *     return current.granted;
- *   }
- *   const { granted } = await Notifications.requestExactAlarmPermissionsAsync();
- *   return granted;
- * }
- * ```
  * @header permissions
  */
 export async function requestExactAlarmPermissionsAsync(): Promise<PermissionResponse> {
