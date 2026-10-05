@@ -79,17 +79,14 @@ const GRANTED_EXACT_ALARM_RESPONSE: PermissionResponse = {
 };
 
 /**
- * Checks whether the app can schedule exact alarms. Without this permission, scheduled notifications are delivered
- * at an approximate time, and the `delivery: 'alarmClock'` trigger option falls back to `'bestEffort'`.
+ * Checks whether the app can schedule exact alarms. Has no user-facing effect.
+ * Without this permission, scheduled notifications arrive at an approximate time,
+ * and `delivery: 'alarmClock'` falls back to `'bestEffort'`.
  *
- * The permission applies to Android 12 (API level 31) and later. Android 14 (API level 34) and later deny it by default
- * for newly installed apps. On earlier Android versions, and for apps that declare
- * `android.permission.USE_EXACT_ALARM`, the permission is always granted. There is no user-facing effect of calling this function.
- *
- * To request the permission, the app must declare `android.permission.SCHEDULE_EXACT_ALARM`, for example with the
- * [`android.permissions`](/versions/latest/config/app/#permissions) property in the app config.
- * If the app does not declare it and the permission is denied, the response has `canAskAgain: false`.
- * @return A `Promise` that resolves to the permission response. On iOS and web, it always resolves with a granted response.
+ * Android 14 (API level 34) and later deny the permission by default for newly installed apps.
+ * It is always granted below Android 12 (API level 31) and for apps that declare `android.permission.USE_EXACT_ALARM`.
+ * @return The permission response. `canAskAgain` is `false` if the app does not declare `android.permission.SCHEDULE_EXACT_ALARM`.
+ * On iOS and web, the response is always granted.
  * @platform android
  * @header permissions
  */
@@ -105,18 +102,14 @@ export async function getExactAlarmPermissionsAsync(): Promise<PermissionRespons
 }
 
 /**
- * Asks the user to allow the app to schedule exact alarms. The function opens the system settings screen
- * for the permission and resolves when the user returns to the app.
+ * Opens the system settings screen where the user can allow exact alarms, and resolves when the user returns to the app.
+ * Resolves immediately if the permission is already granted, including below Android 12 (API level 31).
+ * Rejects if the app does not declare `android.permission.SCHEDULE_EXACT_ALARM`.
+ * Declare it with the [`android.permissions`](/versions/latest/config/app/#permissions) property in the app config.
  *
- * The app must declare `android.permission.SCHEDULE_EXACT_ALARM`, for example with the
- * [`android.permissions`](/versions/latest/config/app/#permissions) property in the app config.
- * Otherwise, the returned `Promise` rejects.
- * The function resolves immediately if the permission is already granted, including on Android versions earlier than 12.
- *
- * > **Note:** If the user revokes the permission on the settings screen, Android restarts the app.
- * > In this case, the `Promise` may never resolve. Call [`getExactAlarmPermissionsAsync`](#getexactalarmpermissionsasync) on the next launch.
- * @return A `Promise` that resolves to the permission response after the user returns to the app.
- * On iOS and web, it always resolves with a granted response.
+ * > **Note:** If the user revokes the permission on the settings screen, Android restarts the app and the `Promise` never resolves.
+ * > Call [`getExactAlarmPermissionsAsync`](#getexactalarmpermissionsasync) on the next launch.
+ * @return The permission response. On iOS and web, the response is always granted.
  * @platform android
  * @header permissions
  */
