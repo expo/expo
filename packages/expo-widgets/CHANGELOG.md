@@ -125,6 +125,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - [iOS] Remove availability check for iOS 16. ([#48651](https://github.com/expo/expo/pull/48651) by [@jakex7](https://github.com/jakex7))
+- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.7 - 2026-07-29
 
@@ -175,7 +176,6 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Temporarily make the Android config plugin opt-in with `enableAndroid`. ([#46463](https://github.com/expo/expo/pull/46463) by [@jakex7](https://github.com/jakex7))
-- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.16 - 2026-05-29
 
