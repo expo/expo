@@ -32,7 +32,6 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 fun LocationPriority.toGmsPriority(): Int {
   return when (this) {
@@ -132,6 +131,9 @@ class GmsLocationProvider(
   }
 
   override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    if (!isServiceAvailable()) {
+      return ProviderResult.Unsupported
+    }
     return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
   }
 }
@@ -207,28 +209,40 @@ class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUti
   private val fusedLocationProvider: FusedLocationProviderClient by lazy {
     LocationServices.getFusedLocationProviderClient(context)
   }
-  override fun requestLocationUpdates(pendingIntent: PendingIntent): Boolean {
-    // TODO(@HubertBer): add error handling everywhere in this function
-    // TODO(@HubertBer): add proper options in here
-    val request = LocationRequest.Builder(
-      Priority.PRIORITY_HIGH_ACCURACY,
-      1.seconds.inWholeMilliseconds
-    ).setMaxUpdateDelayMillis(5.seconds.inWholeMilliseconds)
-      .build()
 
-    try {
-      fusedLocationProvider.requestLocationUpdates(request, pendingIntent)
+  @SuppressLint("MissingPermission")
+  override fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean): Boolean {
+    runCatching {
+      val request = LocationRequest.Builder(
+        options.priority.toGmsPriority(),
+        options.interval.inWholeMilliseconds
+      ).setMaxUpdateDelayMillis(options.maxUpdateDelay.inWholeMilliseconds)
+        .setMinUpdateDistanceMeters(options.minUpdateDistance)
+        .build()
+
+      fusedLocationProvider
+        .requestLocationUpdates(request, pendingIntent)
+        .addOnFailureListener {
+          reportRequestFailed(it)
+          Log.w("EXPO_LOCATION", "Background location request failed: $it")
+        }
       return true
-    } catch (e: SecurityException) {}
+    }
     return false
   }
 
   override fun stopLocationUpdates(pendingIntent: PendingIntent) {
-    fusedLocationProvider.removeLocationUpdates(pendingIntent)
+    runCatching {
+      fusedLocationProvider
+        .removeLocationUpdates(pendingIntent)
+        .addOnCompleteListener { pendingIntent.cancel() }
+    }
   }
 
   override fun decodeBatchedPositions(intent: Intent?): BatchedPositions {
-    intent ?: return BatchedPositions(null, "Received a location broadcast without an intent.")
+    if (intent == null) {
+      return BatchedPositions(null, "Received a location broadcast without an intent.")
+    }
 
     val positions = LocationResult.extractResult(intent)?.locations?.takeIf { it.isNotEmpty() }
     if (positions != null) {
