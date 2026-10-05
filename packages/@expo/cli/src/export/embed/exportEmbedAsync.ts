@@ -388,7 +388,9 @@ export async function createMetroServerAndBundleRequestAsync(
   }));
 
   // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
-  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchTransformFileForCacheVary(metro.getBundler().getBundler(), {
+    projectRoot: config.projectRoot,
+  });
   patchGetDeltaForCacheVary();
 
   return { server: metro, bundleRequest };

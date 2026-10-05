@@ -34,7 +34,7 @@ const RESTRICTED_MANIFEST_FIELDS: (keyof ExpoConfig)[] = [
 ];
 
 function getExpoConstantsManifest(projectRoot: string) {
-  const config = getConfigMemo(projectRoot);
+  const config = getProjectConfig(projectRoot);
   if (!config) return null;
   const manifest = applyWebDefaults(config);
   for (const field of RESTRICTED_MANIFEST_FIELDS) {
@@ -42,7 +42,7 @@ function getExpoConstantsManifest(projectRoot: string) {
   }
   return manifest;
 }
-function applyWebDefaults({ config, appName, webName }: ConfigMemo) {
+function applyWebDefaults({ config, appName, webName }: ProjectConfigInfo) {
   const appJSON: ExpoConfig = config.exp;
   // For RN CLI support
   const { web: webManifest = {}, ios = {}, android = {} } = appJSON;
@@ -114,42 +114,44 @@ function getExpoAppManifest(projectRoot: string) {
   }
 }
 
-interface ConfigMemo {
+interface ProjectConfigInfo {
   config: ProjectConfig;
   appName: string | undefined;
   webName: string | undefined;
 }
 
-let configMemo: undefined | null | ConfigMemo;
+let expoConfigModule: undefined | null | typeof import('expo/config');
 
-function getConfigMemo(projectRoot: string): ConfigMemo | null {
-  if (configMemo === undefined) {
-    let expoConfig: typeof import('expo/config');
+function getExpoConfigModule(): typeof import('expo/config') | null {
+  if (expoConfigModule === undefined) {
     try {
       // This is an optional dependency. In practice, it will resolve in all Expo projects/apps
       // since `expo` is a direct dependency in those. If `babel-preset-expo` is used independently
       // this will fail and we won't return a config
-      expoConfig = require('expo/config');
+      expoConfigModule = require('expo/config');
     } catch (error: any) {
       if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
-        return (configMemo = null);
+        return (expoConfigModule = null);
       }
       throw error;
     }
-    const { getConfig, getNameFromConfig } = expoConfig;
-    const config = getConfig(projectRoot, {
-      isPublicConfig: true,
-      skipSDKVersionRequirement: true,
-    });
-    // rn-cli apps use a displayName value as well.
-    const { appName, webName } = getNameFromConfig(config.exp);
-    configMemo = {
-      config,
-      appName,
-      webName,
-    };
   }
-  return configMemo;
+  return expoConfigModule!;
+}
+
+// NOTE: The config is evaluated for every inlined manifest rather than memoized, since workers
+// outlive config edits during `expo start`. In practice only `expo-constants` inlines it.
+function getProjectConfig(projectRoot: string): ProjectConfigInfo | null {
+  const expoConfig = getExpoConfigModule();
+  if (!expoConfig) return null;
+  const { getConfig, getNameFromConfig } = expoConfig;
+  const config = getConfig(projectRoot, {
+    isPublicConfig: true,
+    skipSDKVersionRequirement: true,
+  });
+  // rn-cli apps use a displayName value as well.
+  const { appName, webName } = getNameFromConfig(config.exp);
+  return { config, appName, webName };
 }
 
 interface InlineManifestState extends PluginPass {

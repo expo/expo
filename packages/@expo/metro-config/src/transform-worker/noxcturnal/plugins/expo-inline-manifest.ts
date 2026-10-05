@@ -10,8 +10,6 @@ interface ExpoManifestConfig {
   webName: string | undefined;
 }
 
-const expoManifestConfigByRoot = new Map<string, ExpoManifestConfig>();
-
 function getExpoConfigPluginProps(
   config: ExpoConfig,
   pluginName: string
@@ -22,9 +20,9 @@ function getExpoConfigPluginProps(
   return Array.isArray(plugin) ? ((plugin[1] ?? null) as Record<string, unknown> | null) : null;
 }
 
+// NOTE: The config is evaluated for every inlined manifest rather than memoized, since workers
+// outlive config edits during `expo start`. In practice only `expo-constants` inlines it.
 function getExpoManifestConfig(projectRoot: string): ExpoManifestConfig {
-  const cached = expoManifestConfigByRoot.get(projectRoot);
-  if (cached) return cached;
   // Loading Expo config is comparatively expensive and most transforms never
   // reference APP_MANIFEST. Keep it off module initialization and mobile paths.
   const { getConfig, getNameFromConfig } = require('@expo/config') as typeof import('@expo/config');
@@ -33,9 +31,7 @@ function getExpoManifestConfig(projectRoot: string): ExpoManifestConfig {
     skipSDKVersionRequirement: true,
   });
   const { appName, webName } = getNameFromConfig(config.exp);
-  const result = { config, appName, webName };
-  expoManifestConfigByRoot.set(projectRoot, result);
-  return result;
+  return { config, appName, webName };
 }
 
 function getExpoAppManifest(projectRoot: string): string {

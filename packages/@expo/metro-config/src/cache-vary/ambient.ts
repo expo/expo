@@ -1,4 +1,6 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { event } from '../events';
 
@@ -14,7 +16,6 @@ export function isAmbientVaryScheme(scheme: string): scheme is AmbientVaryScheme
   return scheme === 'env' || scheme === 'expo-config';
 }
 
-// Duplicated in `@expo/cli`; keep this function, `dimId`, and `canonicalDimNames` in sync.
 export function readAmbientVaryValue(
   scheme: AmbientVaryScheme,
   name: string,
@@ -30,31 +31,51 @@ export function readAmbientVaryValue(
   }
 }
 
-const publicExpoConfigByRoot = new Map<string, string>();
+interface PublicExpoConfigMemo {
+  /** Identifies the config files on disk at the time `value` was evaluated. */
+  files: string;
+  value: string;
+}
+
+const publicExpoConfigByRoot = new Map<string, PublicExpoConfigMemo>();
 
 // NOTE: Keep the `getConfig` options aligned with the `APP_MANIFEST` inlining plugins, which
 // derive the inlined manifest from the same public config.
 function readPublicExpoConfig(projectRoot: string): string | undefined {
-  let value = publicExpoConfigByRoot.get(projectRoot);
-  if (value === undefined) {
-    try {
-      const { getConfig } = require('@expo/config') as typeof import('@expo/config');
-      const { exp } = getConfig(projectRoot, {
-        isPublicConfig: true,
-        skipSDKVersionRequirement: true,
-      });
-      value = JSON.stringify(exp);
-    } catch (error) {
-      // An unreadable config can't be fingerprinted; callers treat this as a cache miss.
-      event('cache:vary_fingerprint_failed', {
-        scheme: 'expo-config',
-        error: event.error(error as Error),
-      });
-      return undefined;
+  try {
+    const { getConfig, getConfigFilePaths } =
+      require('@expo/config') as typeof import('@expo/config');
+    // Re-evaluate when a config file is edited, e.g. during `expo start`. Values that the config
+    // reads from elsewhere (other files, the environment) only apply once a file changes.
+    const { staticConfigPath, dynamicConfigPath } = getConfigFilePaths(projectRoot);
+    const files = [staticConfigPath, dynamicConfigPath, path.join(projectRoot, 'package.json')]
+      .map(fileStamp)
+      .join('\n');
+    const memo = publicExpoConfigByRoot.get(projectRoot);
+    if (memo?.files === files) {
+      return memo.value;
     }
-    publicExpoConfigByRoot.set(projectRoot, value);
+    const { exp } = getConfig(projectRoot, {
+      isPublicConfig: true,
+      skipSDKVersionRequirement: true,
+    });
+    const value = JSON.stringify(exp);
+    publicExpoConfigByRoot.set(projectRoot, { files, value });
+    return value;
+  } catch (error) {
+    // An unreadable config can't be fingerprinted; callers treat this as a cache miss.
+    event('cache:vary_fingerprint_failed', {
+      scheme: 'expo-config',
+      error: event.error(error as Error),
+    });
+    return undefined;
   }
-  return value;
+}
+
+function fileStamp(filePath: string | null): string {
+  if (!filePath) return '';
+  const stat = fs.statSync(filePath, { throwIfNoEntry: false });
+  return stat ? `${filePath}:${stat.mtimeMs}:${stat.size}` : `${filePath}:missing`;
 }
 
 export type CacheVaryDim = { scheme: string; name: string };

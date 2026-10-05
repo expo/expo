@@ -538,7 +538,9 @@ export async function instantiateMetroAsync(
   };
 
   // Make ambient-value (cache-vary) staleness visible to the graph and delta layers.
-  patchTransformFileForCacheVary(metro.getBundler().getBundler());
+  patchTransformFileForCacheVary(metro.getBundler().getBundler(), {
+    projectRoot: metroConfig.projectRoot,
+  });
   patchGetDeltaForCacheVary();
 
   // Warm the transform worker pool during the idle window before the first bundle request

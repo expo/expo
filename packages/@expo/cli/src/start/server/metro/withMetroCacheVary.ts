@@ -1,7 +1,11 @@
 import {
-  VaryingCacheStore,
+  dimId,
+  isAmbientVaryScheme,
+  readAmbientVaryValue,
+  type AmbientVaryContext,
   type AmbientVaryScheme,
-} from '@expo/metro-config/build/cache-vary/VaryingCacheStore';
+} from '@expo/metro-config/build/cache-vary/ambient';
+import { VaryingCacheStore } from '@expo/metro-config/build/cache-vary/VaryingCacheStore';
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import type Bundler from '@expo/metro/metro/Bundler';
 import DeltaCalculator from '@expo/metro/metro/DeltaBundler/DeltaCalculator';
@@ -10,13 +14,10 @@ import crypto from 'node:crypto';
 import { env } from '../../../utils/env';
 import { debugEvent } from './metroDebugEvents';
 
-// NOTE: Only `env` dims are re-read between dev server deltas. `expo-config` dims are still
-// resolved on cache reads by `VaryingCacheStore`.
-type TrackedAmbientVaryScheme = Extract<AmbientVaryScheme, 'env'>;
-
 interface ObservedAmbientValue {
-  scheme: TrackedAmbientVaryScheme;
+  scheme: AmbientVaryScheme;
   name: string;
+  context: AmbientVaryContext;
   value: string | undefined;
 }
 
@@ -29,19 +30,6 @@ interface EmbeddedVaryDim {
 type CacheVaryPatchedBundler = Bundler & {
   __expoCacheVaryTransformFilePatched?: boolean;
 };
-
-// Duplicated from `@expo/metro-config/src/cache-vary/ambient.ts`.
-function readAmbientVaryValue(scheme: TrackedAmbientVaryScheme, name: string): string | undefined {
-  switch (scheme) {
-    case 'env':
-      return process.env[name];
-  }
-}
-
-const isAmbientVaryScheme = (scheme: string): scheme is TrackedAmbientVaryScheme =>
-  scheme === 'env';
-
-const dimId = (dim: { scheme: string; name: string }): string => `${dim.scheme}:${dim.name}`;
 
 const embeddedVaryDims = (value: unknown): EmbeddedVaryDim[] | undefined => {
   const dims = (value as any)?.output?.[0]?.data?.expoCacheVary;
@@ -69,7 +57,14 @@ export function resetAmbientValueTracking(): void {
   _observedAmbientValues.clear();
 }
 
-export function patchTransformFileForCacheVary(bundler: Bundler): void {
+/**
+ * @param context - Values needed to re-read ambient values, such as the project root for
+ * `expo-config` dims. Should match the context passed to `VaryingCacheStore`.
+ */
+export function patchTransformFileForCacheVary(
+  bundler: Bundler,
+  context: AmbientVaryContext = {}
+): void {
   if (env.EXPO_NO_CACHE_VARY) return;
 
   const patchedBundler = bundler as CacheVaryPatchedBundler;
@@ -90,7 +85,8 @@ export function patchTransformFileForCacheVary(bundler: Bundler): void {
         _observedAmbientValues.set(dimId(dim), {
           scheme: dim.scheme,
           name: dim.name,
-          value: readAmbientVaryValue(dim.scheme, dim.name),
+          context,
+          value: readAmbientVaryValue(dim.scheme, dim.name, context),
         });
       }
     }
@@ -145,7 +141,7 @@ export function patchGetDeltaForCacheVary(): void {
         if (!seen.has(id)) {
           seen.set(id, observed.value);
         }
-        const current = readAmbientVaryValue(observed.scheme, observed.name);
+        const current = readAmbientVaryValue(observed.scheme, observed.name, observed.context);
         if (seen.get(id) !== current) {
           modifiedAmbientDims.add(id);
           seen.set(id, current);
