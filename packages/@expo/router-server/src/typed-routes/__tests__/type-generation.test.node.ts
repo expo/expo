@@ -1,7 +1,8 @@
 import { inMemoryContext, requireContext } from 'expo-router/internal/testing';
+import path from 'node:path';
 
 import { getTypedRoutesDeclarationFile } from '../generate';
-import { getWatchHandler } from '../index';
+import { getRouteContextKey, getWatchHandler } from '../index';
 
 function getGeneratedRoutes(
   context: ReturnType<typeof inMemoryContext>,
@@ -203,6 +204,56 @@ describe(getWatchHandler, () => {
     handler(`/other-directory/apple.ts`, 'add');
 
     expect(fn).not.toHaveBeenCalled();
+  });
+});
+
+describe(getRouteContextKey, () => {
+  // `path.relative` answers with the host separator, so a POSIX-only check
+  // admits every file in the workspace once the host is Windows.
+  const windows = path.win32;
+  const posix = path.posix;
+
+  it('keys a file inside the app root', () => {
+    expect(
+      getRouteContextKey('/User/expo/project/app', '/User/expo/project/app/fruit/banana.ts', posix)
+    ).toBe('./fruit/banana.ts');
+    expect(
+      getRouteContextKey(
+        String.raw`C:\repo\apps\expo\src\app`,
+        String.raw`C:\repo\apps\expo\src\app\fruit\banana.ts`,
+        windows
+      )
+    ).toBe('./fruit/banana.ts');
+  });
+
+  it('rejects a file outside the app root', () => {
+    expect(
+      getRouteContextKey('/User/expo/project/app', '/User/expo/project/packages/api/seed.ts', posix)
+    ).toBeNull();
+    expect(
+      getRouteContextKey(
+        String.raw`C:\repo\apps\expo\src\app`,
+        String.raw`C:\repo\packages\api\src\seed.ts`,
+        windows
+      )
+    ).toBeNull();
+  });
+
+  it('rejects the app root itself and a sibling that shares its prefix', () => {
+    expect(getRouteContextKey('/User/expo/project/app', '/User/expo/project', posix)).toBeNull();
+    expect(
+      getRouteContextKey('/User/expo/project/app', '/User/expo/project/apple/index.ts', posix)
+    ).toBeNull();
+  });
+
+  it('rejects a path on another Windows drive, which has no relative form', () => {
+    expect(
+      getRouteContextKey(
+        String.raw`C:\repo\apps\expo\src\app`,
+        String.raw`D:\elsewhere\seed.ts`,
+        windows
+      )
+    ).toBeNull();
   });
 });
 
