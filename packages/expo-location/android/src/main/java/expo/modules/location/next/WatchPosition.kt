@@ -23,17 +23,11 @@ class PositionChangedEvent(
   @Field val error: PositionWatchError? = null
 ) : Record
 
-private fun Throwable.toPositionWatchError(): PositionWatchError {
-  val codedException = toCodedException()
-  return PositionWatchError(
-    code = codedException.code,
-    message = codedException.message ?: codedException.toString()
-  )
-}
-
 private fun WatchUpdate.toEvent(): PositionChangedEvent = when (this) {
   is WatchUpdate.Fix -> PositionChangedEvent(data = position)
-  is WatchUpdate.Failure -> PositionChangedEvent(error = cause.toPositionWatchError())
+  is WatchUpdate.Failure -> cause.toCodedException().let {
+    PositionChangedEvent(error = PositionWatchError(code = it.code, message = it.message ?: it.toString()))
+  }
 }
 
 class PositionWatchStatus(
