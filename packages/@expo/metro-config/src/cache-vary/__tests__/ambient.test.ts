@@ -7,6 +7,14 @@ import {
   readAmbientVaryValue,
 } from '../ambient';
 
+let mockExpoConfig: Record<string, unknown> | Error = {};
+jest.mock('@expo/config', () => ({
+  getConfig: jest.fn(() => {
+    if (mockExpoConfig instanceof Error) throw mockExpoConfig;
+    return { exp: mockExpoConfig, pkg: {} };
+  }),
+}));
+
 const originalEnv = process.env;
 
 beforeEach(() => {
@@ -33,6 +41,7 @@ describe(readAmbientVaryValue, () => {
 describe(isAmbientVaryScheme, () => {
   it('accepts known schemes and rejects foreign scheme strings', () => {
     expect(isAmbientVaryScheme('env')).toBe(true);
+    expect(isAmbientVaryScheme('expo-config')).toBe(true);
     expect(isAmbientVaryScheme('does-not-exist')).toBe(false);
     expect(isAmbientVaryScheme('constructor')).toBe(false);
   });
@@ -100,5 +109,62 @@ describe(canonicalDimNames, () => {
 describe(dimId, () => {
   it('joins a dim scheme and name', () => {
     expect(dimId({ scheme: 'env', name: 'EXPO_PUBLIC_A' })).toBe('env:EXPO_PUBLIC_A');
+  });
+});
+
+describe('expo-config scheme', () => {
+  const context = { projectRoot: '/app' };
+
+  // The public config is memoized per process, so each "process" loads a fresh module.
+  function loadAmbient(): typeof import('../ambient') {
+    let ambient!: typeof import('../ambient');
+    jest.isolateModules(() => {
+      ambient = require('../ambient');
+    });
+    return ambient;
+  }
+
+  beforeEach(() => {
+    mockExpoConfig = { name: 'app', extra: { API_BASE_URL: 'http://localhost:3000' } };
+    jest.mocked(require('@expo/config').getConfig).mockClear();
+  });
+
+  it('fingerprints the public Expo config of the project', async () => {
+    const ambient = loadAmbient();
+    const fp = await ambient.currentFingerprint('expo-config', 'public', context);
+
+    expect(fp).toEqual(expect.any(String));
+    expect(require('@expo/config').getConfig).toHaveBeenCalledWith('/app', {
+      isPublicConfig: true,
+      skipSDKVersionRequirement: true,
+    });
+  });
+
+  it('changes with the config and is stable for an equal config', async () => {
+    const one = await loadAmbient().currentFingerprint('expo-config', 'public', context);
+    const oneAgain = await loadAmbient().currentFingerprint('expo-config', 'public', context);
+
+    mockExpoConfig = { name: 'app', extra: { API_BASE_URL: 'https://api.example.com' } };
+    const two = await loadAmbient().currentFingerprint('expo-config', 'public', context);
+
+    expect(one).toEqual(oneAgain);
+    expect(one).not.toEqual(two);
+  });
+
+  it('evaluates the config once per project root', async () => {
+    const ambient = loadAmbient();
+    await ambient.currentFingerprint('expo-config', 'public', context);
+    await ambient.currentFingerprint('expo-config', 'public', context);
+
+    expect(require('@expo/config').getConfig).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns null without a project root, for unknown names, or when the config fails to load', async () => {
+    const ambient = loadAmbient();
+    expect(await ambient.currentFingerprint('expo-config', 'public')).toBeNull();
+    expect(await ambient.currentFingerprint('expo-config', 'private', context)).toBeNull();
+
+    mockExpoConfig = new Error('Invalid app.config.ts');
+    expect(await loadAmbient().currentFingerprint('expo-config', 'public', context)).toBeNull();
   });
 });

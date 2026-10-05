@@ -67,6 +67,12 @@ const baseTransformOptions: JsTransformOptions = {
 
 jest.mock('fs');
 
+let mockExpoConfig: Record<string, unknown> = {};
+jest.mock('@expo/config', () => ({
+  ...jest.requireActual('@expo/config'),
+  getConfig: jest.fn(() => ({ exp: mockExpoConfig, pkg: {} })),
+}));
+
 const originalEnv = process.env;
 
 beforeEach(() => {
@@ -75,6 +81,8 @@ beforeEach(() => {
   Transformer = require('../metro-transform-worker');
 
   process.env = { ...originalEnv };
+  delete process.env.APP_MANIFEST;
+  mockExpoConfig = { name: 'app', slug: 'app', extra: { API_BASE_URL: 'http://localhost:3000' } };
 
   vol.reset();
   fs.mkdirSync('/root/local', { recursive: true });
@@ -184,4 +192,84 @@ it('embeds no expoCacheVary for files without env usage', async () => {
 
   const output = result.output[0] as ExpoJsOutput;
   expect(output.data.expoCacheVary).toBeUndefined();
+});
+
+describe.each([
+  ['babel', baseConfig],
+  ['noxcturnal', { ...baseConfig, unstable_noxcturnalTransformWorker: true }],
+] as const)('inlined Expo manifest with the %s transform worker', (_name, config) => {
+  const manifestSource = Buffer.from('export default process.env.APP_MANIFEST;', 'utf8');
+  const webOptions: JsTransformOptions = { ...baseTransformOptions, dev: false, platform: 'web' };
+
+  function createMemoryStore() {
+    const entries = new Map<string, unknown>();
+    return {
+      get: async (key: Buffer) => entries.get(key.toString('hex')) ?? null,
+      set: async (key: Buffer, value: unknown) => {
+        entries.set(key.toString('hex'), value);
+      },
+      clear: () => entries.clear(),
+    };
+  }
+
+  it('records the Expo config and APP_MANIFEST as cache-vary dimensions', async () => {
+    const result = await Transformer.transform(
+      config as JsTransformerConfig,
+      '/root',
+      'local/constants.js',
+      manifestSource,
+      webOptions
+    );
+
+    const output = result.output[0] as ExpoJsOutput;
+    expect(output.data.code).toContain('http://localhost:3000');
+    expect(output.data.expoCacheVary).toEqual(
+      expect.arrayContaining([
+        { scheme: 'expo-config', name: 'public', fp: expect.any(String) },
+        { scheme: 'env', name: 'APP_MANIFEST', fp: sha1('') },
+      ])
+    );
+  });
+
+  it('does not serve a cached manifest after the Expo config changes', async () => {
+    const inner = createMemoryStore();
+    const key = Buffer.from('constants-cache-key');
+
+    // First export: cache the transform for the initial config.
+    const { VaryingCacheStore } = require('../../cache-vary/VaryingCacheStore');
+    const firstStore = new VaryingCacheStore(inner, { projectRoot: '/root' });
+    const first = await Transformer.transform(
+      config as JsTransformerConfig,
+      '/root',
+      'local/constants.js',
+      manifestSource,
+      webOptions
+    );
+    expect(await firstStore.get(key)).toBeNull();
+    await firstStore.set(key, first);
+
+    // Second export in a new process: the dynamic config now resolves to a different value.
+    jest.resetModules();
+    mockExpoConfig = {
+      ...mockExpoConfig,
+      extra: { API_BASE_URL: 'https://api.development.example.com' },
+    };
+    const {
+      VaryingCacheStore: NextVaryingCacheStore,
+    } = require('../../cache-vary/VaryingCacheStore');
+    const secondStore = new NextVaryingCacheStore(inner, { projectRoot: '/root' });
+    expect(await secondStore.get(key)).toBeNull();
+
+    // Restoring the initial config hits the original entry again.
+    jest.resetModules();
+    mockExpoConfig = {
+      ...mockExpoConfig,
+      extra: { API_BASE_URL: 'http://localhost:3000' },
+    };
+    const {
+      VaryingCacheStore: RestoredVaryingCacheStore,
+    } = require('../../cache-vary/VaryingCacheStore');
+    const restoredStore = new RestoredVaryingCacheStore(inner, { projectRoot: '/root' });
+    expect(await restoredStore.get(key)).toEqual(first);
+  });
 });

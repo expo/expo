@@ -9,6 +9,11 @@ import {
   withMetroCacheVary,
 } from '../withMetroCacheVary';
 
+jest.mock('@expo/config', () => ({
+  ...jest.requireActual('@expo/config'),
+  getConfig: jest.fn(() => ({ exp: { name: 'app', extra: { API_BASE_URL: 'x' } }, pkg: {} })),
+}));
+
 const originalEnv = process.env;
 
 beforeEach(() => {
@@ -74,6 +79,18 @@ describe(withMetroCacheVary, () => {
 
     await config.cacheStores[0]!.get(key);
     expect(inner.get).toHaveBeenCalledWith(key);
+  });
+
+  it('resolves Expo config dims against the Metro project root', async () => {
+    const { currentFingerprint } = require('@expo/metro-config/build/cache-vary/ambient');
+    const fp = await currentFingerprint('expo-config', 'public', { projectRoot: '/app' });
+    expect(fp).toEqual(expect.any(String));
+
+    const value = makeTransformResult('key', [{ scheme: 'expo-config', name: 'public', fp }]);
+    const inner = { ...makeStore(), get: jest.fn(async () => value) };
+    const config = withMetroCacheVary({ projectRoot: '/app', cacheStores: [inner] } as any);
+
+    await expect(config.cacheStores[0]!.get(Buffer.alloc(20, 1))).resolves.toBe(value);
   });
 
   it('returns the config unchanged when EXPO_NO_CACHE_VARY is set', () => {

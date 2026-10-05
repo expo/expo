@@ -67,3 +67,40 @@ it(`inlines app manifest on web`, () => {
     skipSDKVersionRequirement: true,
   });
 });
+
+it(`records cache-vary dimensions when the manifest is inlined`, () => {
+  const options = {
+    babelrc: false,
+    presets: [],
+    plugins: [expoInlineManifestPlugin],
+    filename: '/unknown',
+    configFile: false,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      projectRoot: '/foo/bar',
+      platform: 'web',
+    }),
+  };
+
+  const inlined = babel.transform(`process.env.APP_MANIFEST;`, options)!;
+  expect((inlined.metadata as any).cacheVary).toEqual([
+    { scheme: 'expo-config', name: 'public' },
+    { scheme: 'env', name: 'APP_MANIFEST' },
+  ]);
+
+  // Nothing is recorded when the manifest is not inlined.
+  const native = babel.transform(`process.env.APP_MANIFEST;`, {
+    ...options,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      projectRoot: '/foo/bar',
+      platform: 'ios',
+    }),
+  })!;
+  expect((native.metadata as any).cacheVary).toBeUndefined();
+
+  const unrelated = babel.transform(`process.env.OTHER;`, options)!;
+  expect((unrelated.metadata as any).cacheVary).toBeUndefined();
+});
