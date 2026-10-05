@@ -1,5 +1,6 @@
 import type { Session } from 'expo-app-metrics';
 
+import { recordNavigationMetric } from '../recordNavigationMetric';
 export function emitTTI(args: {
   session: Pick<Session, 'addMetric'>;
   timestamp: string;
@@ -8,7 +9,7 @@ export function emitTTI(args: {
   routeParams: object;
   urlHidden?: true;
 }): Promise<void> {
-  return args.session.addMetric({
+  return recordNavigationMetric(args.session, {
     timestamp: args.timestamp,
     category: 'navigation',
     name: 'tti',

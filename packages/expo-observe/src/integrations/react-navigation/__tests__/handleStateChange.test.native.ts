@@ -333,4 +333,21 @@ describe('createStateChangeHandler', () => {
     const ttiCalls = mockAddMetric.mock.calls.filter((c) => c[0].name === 'tti');
     expect(ttiCalls).toHaveLength(0);
   });
+
+  it('warns instead of rejecting when the session cannot store navigation metrics', async () => {
+    const error = new Error('database is locked');
+    mockAddMetric.mockRejectedValueOnce(error).mockRejectedValueOnce(error);
+    storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
+
+    handle(stackState([{ key: 'a' }], 0));
+    await flushAsync();
+    await flushAsync();
+
+    expect(mockAddMetric.mock.calls.map((c) => c[0].name)).toEqual(['cold_ttr', 'tti']);
+    expect(warnSpy.mock.calls).toEqual([
+      ['[expo-observe] Failed to record the "cold_ttr" navigation metric:', error],
+      ['[expo-observe] Failed to record the "tti" navigation metric:', error],
+    ]);
+    warnSpy.mockClear();
+  });
 });
