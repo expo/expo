@@ -79,7 +79,7 @@
   },
   "dependencies": {
     "expo-modules-jsi": "workspace:~",
-    "expo-modules-macros": "0.15.0",
+    "expo-modules-macros": "0.16.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
