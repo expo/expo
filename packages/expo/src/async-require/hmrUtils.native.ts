@@ -1,19 +1,18 @@
 // Based on https://github.com/facebook/react-native/blob/9ab95dd2b5746e8323ad1d65591d5a4ec7718790/packages/react-native/Libraries/Utilities/HMRClient.js
 
 import { DevSettings, LogBox } from 'react-native';
-// @ts-expect-error missing types
-import NativeRedBox from 'react-native/Libraries/NativeModules/specs/NativeRedBox';
+import { NativeRedBox } from 'react-native/unstable-internals-do-not-use';
 
 import getDevServer from '../utils/getDevServer';
 import { HMRMetroBuildError } from './buildErrors';
 
 export function showLoading(message: string, type: 'load' | 'refresh') {
-  const DevLoadingView = require('react-native/Libraries/Utilities/DevLoadingView').default;
+  const { DevLoadingView } = require('react-native/unstable-internals-do-not-use');
   DevLoadingView.showMessage(message, type);
 }
 
 export function hideLoading() {
-  const DevLoadingView = require('react-native/Libraries/Utilities/DevLoadingView').default;
+  const { DevLoadingView } = require('react-native/unstable-internals-do-not-use');
   DevLoadingView.hide();
 }
 
@@ -67,8 +66,7 @@ function dismissRedbox() {
   if (process.env.EXPO_OS === 'ios' && NativeRedBox != null && NativeRedBox.dismiss != null) {
     NativeRedBox.dismiss();
   } else {
-    const NativeExceptionsManager =
-      require('react-native/Libraries/Core/NativeExceptionsManager').default;
+    const { NativeExceptionsManager } = require('react-native/unstable-internals-do-not-use');
     NativeExceptionsManager &&
       NativeExceptionsManager.dismissRedbox &&
       NativeExceptionsManager.dismissRedbox();

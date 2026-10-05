@@ -13,6 +13,7 @@ import type { ConfigAPI, PluginObj, PluginPass, types as t } from '@babel/core';
 const ALLOWED_REACT_NATIVE_SUBPATHS = new Set([
   'react-native/Libraries/Core/InitializeCore',
   'react-native/setup-env',
+  'react-native/unstable-internals-do-not-use',
 ]);
 
 function withLocation<TNode extends t.Node>(node: TNode, loc: t.SourceLocation | null | undefined) {
