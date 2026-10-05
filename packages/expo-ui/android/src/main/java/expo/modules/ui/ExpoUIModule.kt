@@ -167,7 +167,11 @@ class ExpoUIModule : Module() {
         ?: appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
       val resolvedScheme = options?.scheme
-        ?: if (context.isSystemInDarkTheme()) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+        ?: if (context.isSystemInDarkTheme()) {
+          ExpoColorScheme.DARK
+        } else {
+          ExpoColorScheme.LIGHT
+        }
       val isDark = resolvedScheme == ExpoColorScheme.DARK
       val seedArgb = options?.seedColor?.composeOrNull?.toArgb()
       val colorScheme = if (seedArgb != null) {

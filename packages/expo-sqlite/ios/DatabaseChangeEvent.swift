@@ -8,8 +8,9 @@ struct DatabaseChangeEvent {
   var databaseName: String
   var databaseFilePath: String
   var tableName: String
-  // `Int` rather than SQLite's `Int64`: a 64-bit integer encodes as a JavaScript BigInt, and JavaScript
-  // reads the row id as a number.
-  var rowId: Int
+  // A `Double` rather than SQLite's `Int64` or an `Int`: JavaScript reads the row id as a number, an
+  // `Int64` would encode as a BigInt, and an `Int` throws above 2^53, which would drop the event. Above
+  // 2^53 it loses precision, like integer columns do.
+  var rowId: Double
   var typeId: SQLAction
 }

@@ -98,7 +98,7 @@ describe(actionAsync, () => {
 
     await actionAsync('/app', false);
 
-    expect(Log.exception).toHaveBeenCalledWith(
+    expect(Log.exit).toHaveBeenCalledWith(
       expect.objectContaining({
         message: 'Invalid __EXPO_CONFIG_MODE value: "staging". Use "development" or "production".',
       })
@@ -106,6 +106,17 @@ describe(actionAsync, () => {
     expect(loadProjectEnv).not.toHaveBeenCalled();
     expect(getProjectConfigSpy).not.toHaveBeenCalled();
     expect(process.env.__EXPO_CONFIG_MODE).toBeUndefined();
+  });
+
+  it('exits with an error when the project config cannot be loaded', async () => {
+    const error = new Error('Failed to read the app config');
+    jest.spyOn(ProjectConfig, 'getProjectConfigAsync').mockRejectedValue(error);
+    const resolveChecksSpy = jest.spyOn(CheckResolver, 'resolveChecksInScope');
+
+    await actionAsync('/app', false);
+
+    expect(Log.exit).toHaveBeenCalledWith(error);
+    expect(resolveChecksSpy).not.toHaveBeenCalled();
   });
 });
 

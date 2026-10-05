@@ -19,7 +19,7 @@ import com.reactnativekeyboardcontroller.KeyboardControllerPackage
 import com.reactnativepagerview.PagerViewPackage
 import com.reactnativestripesdk.StripeSdkPackage
 import com.rnmaps.maps.MapsPackage
-import com.shopify.reactnative.skia.RNSkiaPackage
+import com.reactnative.skia.RNSkiaPackage
 import com.swmansion.gesturehandler.RNGestureHandlerPackage
 import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import com.swmansion.rnscreens.RNScreensPackage
@@ -105,7 +105,13 @@ class ExponentPackage : ReactPackage {
       URLHandlerModule(reactContext),
       KeyboardModule(reactContext)
     )
-    nativeModules.add(if (isVerified) ExponentAsyncStorageModule(reactContext, manifest) else ExponentUnsignedAsyncStorageModule(reactContext))
+    nativeModules.add(
+      if (isVerified) {
+        ExponentAsyncStorageModule(reactContext, manifest)
+      } else {
+        ExponentUnsignedAsyncStorageModule(reactContext)
+      }
+    )
 
     if (isKernel) {
       nativeModules.add((ExponentKernelModuleProvider.newInstance(reactContext) as NativeModule?)!!)
@@ -129,7 +135,7 @@ class ExponentPackage : ReactPackage {
         nativeModules.addAll(mapsPackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { mapsPackage.getModule(it.name, reactContext) })
         nativeModules.addAll(dateTimePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { dateTimePackage.getModule(it.name, reactContext) })
         nativeModules.addAll(stripePackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { stripePackage.getModule(it.name, reactContext) })
-        nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
+        nativeModules.addAll(skiaPackage.getReactModuleInfoProvider().getReactModuleInfos().values.mapNotNull { skiaPackage.getModule(it.name, reactContext) })
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules

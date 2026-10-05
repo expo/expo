@@ -28,8 +28,10 @@ final class MetricsDatabase: Sendable {
   /// Opens the database, falling back to a wipe-and-retry on the first failure. The retry exists for
   /// the rare case where the on-disk file is corrupted in a way the schema-mismatch path can't detect
   /// (e.g. truncated WAL after a power loss). Throws the second error if the retry also fails — the
-  /// caller (`AppMetrics.database`) decides what to do with that.
+  /// caller (`AppMetrics.database`) decides what to do with that. Also removes the legacy JSON storage
+  /// file, if it's still on the device.
   static func openWipingOnFailure(fileName: String = "metrics") throws -> MetricsDatabase {
+    cleanUpLegacyStorage()
     let directoryUrl = try defaultDirectoryUrl()
     do {
       return try MetricsDatabase(directoryUrl: directoryUrl, fileName: fileName)
@@ -823,4 +825,33 @@ final class MetricsDatabase: Sendable {
     id, sessionId, traceId, spanId, parentSpanId, name, kind,
     startTimestampMs, endTimestampMs, statusCode, statusMessage, attributes, events
     """
+
+  // MARK: - Legacy storage
+
+  /// Deletes `metrics.json` left behind by the JSON storage that this database replaced. Nothing reads
+  /// that file anymore, so it only takes up space on the device.
+  private static func cleanUpLegacyStorage() {
+    // The JSON storage always lived in the documents directory, also on tvOS.
+    guard
+      let directoryUrl = try? FileManager.default
+        .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        .appendingPathComponent("ExpoAppMetrics")
+    else {
+      return
+    }
+    cleanUpLegacyStorage(in: directoryUrl)
+  }
+
+  /// Deletes `metrics.json` from the given directory. Tests use this overload to point at a temporary directory.
+  static func cleanUpLegacyStorage(in directoryUrl: URL) {
+    let fileUrl = directoryUrl.appendingPathComponent("metrics.json")
+    guard FileManager.default.fileExists(atPath: fileUrl.path) else {
+      return
+    }
+    do {
+      try FileManager.default.removeItem(at: fileUrl)
+    } catch {
+      logger.warn("[AppMetrics] Failed to remove the legacy metrics file: \(error.localizedDescription)")
+    }
+  }
 }

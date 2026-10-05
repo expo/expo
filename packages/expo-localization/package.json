@@ -1,6 +1,6 @@
 {
   "name": "expo-localization",
-  "version": "58.0.1",
+  "version": "58.0.3",
   "description": "Provides an interface for native user localization information.",
   "keywords": [
     "expo",
@@ -27,6 +27,7 @@
   "main": "build/Localization.js",
   "types": "build/Localization.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -36,14 +37,15 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
     "@types/i18n-js": "^3.8.2",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "@types/rtl-detect": "^1.0.3",

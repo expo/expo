@@ -1,5 +1,6 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -151,7 +152,7 @@ struct ExceptionsTests {
 
   @Test
   func `concurrent async function throw exposes the code to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 

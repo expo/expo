@@ -37,6 +37,56 @@ for (const outputMode of outputModes) {
       await expoStart.stopAsync();
     });
 
+    // TODO(@hassankhan): Remove server-specific guard after #46526 is merged
+    (outputMode === 'server' ? test : test.skip)(
+      'writes large completed Suspense content before the bootstrap script',
+      async ({ request }) => {
+        const response = await request.get(new URL('/large-suspense', expoStart.url).href);
+        expect(response.status()).toBe(200);
+        const html = await response.text();
+        const contentStart = html.indexOf('data-testid="suspense-content"');
+        const contentEnd = html.indexOf('data-testid="suspense-content-end"');
+        const bootstrap = html.indexOf('globalThis.__EXPO_ROUTER_HYDRATE__');
+
+        expect(contentStart).toBeGreaterThan(-1);
+        expect(contentEnd).toBeGreaterThan(contentStart);
+        expect(bootstrap).toBeGreaterThan(contentEnd);
+        expect(html).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
+        expect(html).not.toContain('<div hidden id="S:');
+      }
+    );
+
+    test('shows large completed Suspense content without JavaScript', async ({ browser }) => {
+      const page = await browser.newPage({ javaScriptEnabled: false });
+      try {
+        const response = await page.goto(new URL('/large-suspense', expoStart.url).href);
+
+        expect(response?.status()).toBe(200);
+        await expect(page.getByTestId('suspense-row')).toHaveText(
+          Array.from(
+            { length: 400 },
+            (_, id) => `Row ${id} of 400, carrying enough text that a few hundred of them add up`
+          )
+        );
+        await expect(page.getByTestId('suspense-content')).toBeVisible();
+        await expect(page.getByTestId('suspense-content-end')).toBeVisible();
+      } finally {
+        await page.close();
+      }
+    });
+
+    test('hydrates large completed Suspense content', async ({ page }) => {
+      const pageErrors = pageCollectErrors(page);
+
+      await page.goto(new URL('/large-suspense', expoStart.url).href);
+      await expect(page.getByTestId('suspense-row')).toHaveCount(400);
+      await expect(page.getByTestId('suspense-content')).toBeVisible();
+      await expect(page.getByTestId('suspense-count')).toHaveText('0');
+      await page.getByTestId('suspense-increment').click();
+      await expect(page.getByTestId('suspense-count')).toHaveText('1');
+      expect(pageErrors.all).toEqual([]);
+    });
+
     test('loads loader data modules on client-side navigation', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {
@@ -56,6 +106,46 @@ for (const outputMode of outputModes) {
 
       const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
       expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
+    });
+
+    test('loads grouped loader data on client-side navigation', async ({ page }) => {
+      const loaderRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/')) {
+          loaderRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+      await page.getByText('Go to Grouped Index').click();
+      await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+        JSON.stringify({ data: 'grouped-index' }, null, 2)
+      );
+      expect(loaderRequests).toContainEqual(
+        expect.stringContaining('/_expo/loaders/(group)/index')
+      );
+    });
+
+    test('loads a platform-specific catch-all loader on client-side navigation', async ({
+      page,
+    }) => {
+      const loaderRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/')) {
+          loaderRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+      await page.getByText('Go to Platform Catch-all').click();
+      await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
+      await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
+        JSON.stringify({ data: 'platform-catch-all' }, null, 2)
+      );
+      expect(loaderRequests).toContainEqual(
+        expect.stringContaining('/_expo/loaders/(group)/platform/alpha/beta')
+      );
+      expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
     });
 
     test('defaults headerless loaders to no-store without replacing declared headers', async ({

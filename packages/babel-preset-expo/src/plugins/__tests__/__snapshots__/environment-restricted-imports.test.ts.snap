@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`forbidden server imports client mode (default) asserts importing server-side modules in client components 1`] = `
 "/unknown: Importing 'server-only' module is not allowed in a client component.

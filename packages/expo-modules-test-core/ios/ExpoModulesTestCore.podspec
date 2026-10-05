@@ -18,8 +18,10 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.header_dir     = 'ExpoModulesTestCore'
 
-  # This pod ships no sources. It exists so that test specs can depend on a single pod to pull in the
-  # JS runtime that ExpoModulesCore requires when running tests.
+  # Test specs depend on this pod to pull in the JS runtime that ExpoModulesCore requires when running
+  # tests, to share the benchmark runner (see `Benchmarks`), and to give tests a runtime with a
+  # JavaScript thread (see `Runtime`).
+  s.source_files   = '{Benchmarks,Runtime}/**/*.swift'
   s.dependency 'ExpoModulesCore'
 
   # react_native_pods.rb will add the ENV['USE_HERMES'],

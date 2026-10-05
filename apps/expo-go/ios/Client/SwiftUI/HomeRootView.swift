@@ -101,7 +101,7 @@ struct HomeRootView: View {
       }
       .alert(item: $viewModel.errorToShow) { error in
         Alert(
-          title: Text("Error"),
+          title: Text(error.title),
           message: Text(error.message),
           dismissButton: .default(Text("OK"))
         )

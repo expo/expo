@@ -33,7 +33,7 @@ dependencies {
   implementation("com.facebook.react:react-native-gradle-plugin")
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
   implementation("io.github.expo.pika:pika-gradle:1.1.0")
-  implementation("io.github.expo:expo-modules-v2-gradle-plugin:0.2.0")
+  implementation("io.github.expo:expo-modules-v2-gradle-plugin:0.2.4")
 
   if (isExpoAutolinkingSettingsPluginAvailable) {
     implementation("expo.modules:expo-autolinking-plugin-shared")

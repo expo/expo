@@ -4,7 +4,7 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/actions/detect-platform-change/action.yml
       - .github/workflows/test-suite.yml
       - .github/actions/use-android-emulator/action.yml
@@ -21,22 +21,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
-    paths:
-      - .github/actions/detect-platform-change/action.yml
-      - .github/workflows/test-suite.yml
-      - .github/actions/use-android-emulator/action.yml
-      - .github/actions/setup-maestro/action.yml
-      - apps/bare-expo/**
-      - apps/test-suite/**
-      - packages/**
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
-      - '!packages/create-expo/**'
-      - '!packages/create-expo-nightly/**'
-      - '!packages/create-expo-module/**'
-      - '!**.md'
-      - '!**/__tests__/**'
-      - '!**/__mocks__/**'
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -44,6 +29,10 @@ concurrency:
 
 jobs:
   detect-platform-changes:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name != github.repository ||
+      !startsWith(github.head_ref, 'changeset-release/')
     runs-on: ubuntu-24.04
     outputs:
       should_build_ios: ${{ steps.build.outputs.should_run_ios }}

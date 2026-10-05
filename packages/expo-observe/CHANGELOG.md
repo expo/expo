@@ -1,14 +1,39 @@
 # Changelog
 
-## Unpublished
+## 58.0.13
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-app-metrics@58.0.11
 
-### 🐛 Bug fixes
+## 58.0.12
 
-### 💡 Others
+### Patch Changes
+
+- [iOS] Remove legacy `UserDefaults` keys that are no longer read. ([#50752](https://github.com/expo/expo/pull/50752) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add privacy manifest describing required reason API usage and the collected data types. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
+- Updated dependencies. ([#50752](https://github.com/expo/expo/pull/50752), [#50734](https://github.com/expo/expo/pull/50734))
+  - expo-app-metrics@58.0.10
+  - expo-eas-client@58.0.2
+
+## 58.0.11
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-app-metrics@58.0.9
+  - expo-eas-client@58.0.1
+
+## 58.0.10 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.9 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.8 — 2026-09-23
 

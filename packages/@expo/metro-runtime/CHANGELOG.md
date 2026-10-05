@@ -1,14 +1,34 @@
 # Changelog
 
-## Unpublished
+## 58.0.11
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#50458](https://github.com/expo/expo/pull/50458))
+  - @expo/log-box@58.0.9
 
-### 🐛 Bug fixes
+## 58.0.10
 
-### 💡 Others
+### Patch Changes
+
+- Updated dependencies. ([#49529](https://github.com/expo/expo/pull/49529))
+  - @expo/log-box@58.0.8
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/log-box@58.0.7
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.6 — 2026-09-23
 

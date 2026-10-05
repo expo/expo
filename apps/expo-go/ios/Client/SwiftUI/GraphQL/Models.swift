@@ -20,6 +20,11 @@ struct GraphQLErrorLocation: Codable {
 
 struct MeActorResponse: Codable {
   let data: MeActorData
+  let errors: [GraphQLError]?
+
+  var isRevokedSession: Bool {
+    data.meActor == nil && (errors ?? []).isEmpty
+  }
 }
 
 struct MeActorData: Codable {
@@ -94,7 +99,7 @@ struct UserActor: Codable {
   }
 }
 
-struct Account: Codable {
+struct Account: Codable, Equatable {
   let id: String
   let name: String
   let profileImageUrl: String?
@@ -108,7 +113,7 @@ struct Account: Codable {
   }
 }
 
-struct UserActorSimple: Codable {
+struct UserActorSimple: Codable, Equatable {
   let id: String
   let username: String
   let primaryAccountProfileImageUrl: String?

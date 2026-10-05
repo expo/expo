@@ -420,6 +420,19 @@ describe('EXPO_ROUTER_IMPORT_MODE', () => {
     expect(await transformImportMode({ platform: 'web', dev: false })).toMatch(/["']sync["']/);
   });
 
+  it.each(['node', 'react-server'])(
+    'stays synchronous for %s server bundles with async routes enabled',
+    async (environment) => {
+      expect(
+        await transformImportMode({
+          platform: 'web',
+          dev: false,
+          customTransformOptions: { ...asyncRoutes, environment },
+        })
+      ).toMatch(/["']sync["']/);
+    }
+  );
+
   it('is lazy for web production bundles with async routes', async () => {
     expect(
       await transformImportMode({

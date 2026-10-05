@@ -208,6 +208,18 @@ build_slice() {
   # `___profc_*` symbols and `__llvm_prf_*` sections) plus ~40% extra binary size. Setting
   # CLANG_COVERAGE_MAPPING=NO is what removes the flags; CLANG_ENABLE_CODE_COVERAGE=NO alone
   # does not, and `-enableCodeCoverage NO` is rejected outside of `test`.
+  #
+  # With a dSYM, Xcode's default STRIP_SWIFT_SYMBOLS=YES runs `strip -T`, which removes or renames to
+  # `<redacted>` every Swift symbol that isn't exported. Crash reports symbolicated on the device then
+  # show no function name for any frame in this framework. Keeping the symbols adds about 250 KB of
+  # symbol table to the device slice; the code itself doesn't change.
+  #
+  # The binary .swiftmodule must not embed this checkout's absolute paths: consumers key
+  # the Xcode compilation cache on its content, so any PACKAGE_DIR or PODS_ROOT path inside
+  # it makes every module that imports ExpoModulesJSI a cache miss in another checkout or
+  # worktree. SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO drops the serialized search paths and
+  # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
+  # .DerivedData. The .swiftinterface and the dSYM are unaffected.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     xcodebuild \
     build \
@@ -226,10 +238,13 @@ build_slice() {
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO \
     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
+    STRIP_SWIFT_SYMBOLS=NO \
     COMPILER_INDEX_STORE_ENABLE=NO \
     SWIFT_COMPILATION_MODE=wholemodule \
     CLANG_ENABLE_CODE_COVERAGE=NO \
     CLANG_COVERAGE_MAPPING=NO \
+    SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
+    SWIFT_ENABLE_EXPLICIT_MODULES=NO \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"

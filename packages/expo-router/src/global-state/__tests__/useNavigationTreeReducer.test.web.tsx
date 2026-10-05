@@ -34,7 +34,7 @@ function renderReducer() {
   return renderHook(() => useNavigationTreeReducer({ initialState, registry }));
 }
 
-function browserEvents(result: ReturnType<typeof renderReducer>) {
+function browserEvents(result: Awaited<ReturnType<typeof renderReducer>>) {
   return result.result.current.report?.events.filter((event) => event.type === 'browser-history');
 }
 
@@ -51,14 +51,14 @@ describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBeh
     return renderHook(() => useNavigationTreeReducer({ initialState: state, registry }));
   }
 
-  test('adds browser visits for tab switches and traverses back for GO_BACK', () => {
-    const result = renderTabs();
+  test('adds browser visits for tab switches and traverses back for GO_BACK', async () => {
+    const result = await renderTabs();
     expect(result.result.current.state.index).toBe(0);
     expect(browserEvents(result)).toEqual([
       expect.objectContaining({ op: 'replace', path: '/first' }),
     ]);
 
-    act(() => {
+    await act(() => {
       result.result.current.handleAction({ type: 'NAVIGATE', payload: { name: 'second' } });
       result.result.current.handleAction({ type: 'NAVIGATE', payload: { name: 'first' } });
     });
@@ -68,7 +68,7 @@ describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBeh
       expect.objectContaining({ op: 'push', path: '/first' }),
     ]);
 
-    act(() => result.result.current.handleAction({ type: 'GO_BACK' }));
+    await act(() => result.result.current.handleAction({ type: 'GO_BACK' }));
     expect(result.result.current.state.index).toBe(1);
     expect(browserEvents(result)?.slice(-2)).toEqual([
       expect.objectContaining({ op: 'go', delta: -1 }),
@@ -76,12 +76,14 @@ describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBeh
     ]);
   });
 
-  test('restores tabs on browser Back and Forward without creating more visits', () => {
-    const result = renderTabs();
+  test('restores tabs on browser Back and Forward without creating more visits', async () => {
+    const result = await renderTabs();
     const first = browserEvents(result)![0]!;
     expect(first).toMatchObject({ op: 'replace', path: '/first' });
 
-    act(() => result.result.current.handleAction({ type: 'JUMP_TO', payload: { name: 'second' } }));
+    await act(() =>
+      result.result.current.handleAction({ type: 'JUMP_TO', payload: { name: 'second' } })
+    );
     const second = browserEvents(result)!.at(-1)!;
     expect(second).toMatchObject({ op: 'push', path: '/second' });
     const count = browserEvents(result)!.length;
@@ -91,7 +93,7 @@ describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBeh
       [second, 1],
     ] as const) {
       if (event.op === 'go') throw new Error('Expected an entry ID and path.');
-      act(() =>
+      await act(() =>
         result.result.current.processIntent({
           type: 'BROWSER_HISTORY_CHANGED',
           payload: { id: event.entryId, path: event.path },
@@ -102,11 +104,11 @@ describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBeh
     }
   });
 
-  test('updates the current entry when changing tab params', () => {
-    const result = renderTabs();
+  test('updates the current entry when changing tab params', async () => {
+    const result = await renderTabs();
     expect(browserEvents(result)).toHaveLength(1);
 
-    act(() =>
+    await act(() =>
       result.result.current.handleAction({
         type: 'SET_PARAMS',
         payload: { params: { sort: 'recent' } },
@@ -119,8 +121,8 @@ describe.each(['history', 'fullHistory'] as const)('TabRouter with %s', (backBeh
   });
 });
 
-test('seeds the report with a replace for the initial entry', () => {
-  const result = renderReducer();
+test('seeds the report with a replace for the initial entry', async () => {
+  const result = await renderReducer();
 
   expect(browserEvents(result)).toEqual([
     {
@@ -133,10 +135,10 @@ test('seeds the report with a replace for the initial entry', () => {
   ]);
 });
 
-test('emits a push after an action that grows the stack', () => {
-  const result = renderReducer();
+test('emits a push after an action that grows the stack', async () => {
+  const result = await renderReducer();
 
-  act(() =>
+  await act(() =>
     result.result.current.handleAction({
       type: 'PUSH',
       payload: { name: 'second' },
@@ -153,10 +155,10 @@ test('emits a push after an action that grows the stack', () => {
   });
 });
 
-test('emits one push per action in a batch', () => {
-  const result = renderReducer();
+test('emits one push per action in a batch', async () => {
+  const result = await renderReducer();
 
-  act(() => {
+  await act(() => {
     result.result.current.handleAction({
       type: 'PUSH',
       payload: { name: 'second' },
@@ -173,10 +175,10 @@ test('emits one push per action in a batch', () => {
   ]);
 });
 
-test('restores a tracked entry on a browser change without browser commands', () => {
-  const result = renderReducer();
+test('restores a tracked entry on a browser change without browser commands', async () => {
+  const result = await renderReducer();
   const initialEntryId = browserEvents(result)![0]!;
-  act(() =>
+  await act(() =>
     result.result.current.handleAction({
       type: 'PUSH',
       payload: { name: 'second' },
@@ -184,7 +186,7 @@ test('restores a tracked entry on a browser change without browser commands', ()
   );
   const eventsBefore = result.result.current.report!.events.length;
 
-  act(() =>
+  await act(() =>
     result.result.current.processIntent({
       type: 'BROWSER_HISTORY_CHANGED',
       payload: {
@@ -198,7 +200,7 @@ test('restores a tracked entry on a browser change without browser commands', ()
   const newEvents = result.result.current.report!.events.slice(eventsBefore);
   expect(newEvents.map((event) => event.type)).toEqual(['removed-routes', 'action-dispatched']);
 
-  act(() =>
+  await act(() =>
     result.result.current.processIntent({
       type: 'ACTION',
       payload: { action: { type: 'PUSH', payload: { name: 'third' } } },
@@ -208,15 +210,15 @@ test('restores a tracked entry on a browser change without browser commands', ()
   expect(browserEvents(result)?.at(-1)).toMatchObject({ op: 'push', path: '/third' });
 });
 
-test('prunes consumed browser history events', () => {
-  const result = renderReducer();
+test('prunes consumed browser history events', async () => {
+  const result = await renderReducer();
 
-  act(() => result.result.current.consumeReportEvents([0]));
+  await act(() => result.result.current.consumeReportEvents([0]));
 
   expect(result.result.current.report).toBeUndefined();
 });
 
-test('lets the handling router push even when its history length is unchanged', () => {
+test('lets the handling router push even when its history length is unchanged', async () => {
   const customRegistry: RouterRegistry = new Map([
     [
       'root',
@@ -227,16 +229,16 @@ test('lets the handling router push even when its history length is unchanged', 
       })),
     ],
   ]);
-  const result = renderHook(() =>
+  const result = await renderHook(() =>
     useNavigationTreeReducer({ initialState, registry: customRegistry })
   );
-  act(() => result.result.current.handleAction({ type: 'CUSTOM' }));
+  await act(() => result.result.current.handleAction({ type: 'CUSTOM' }));
   expect(browserEvents(result)?.at(-1)).toEqual(
     expect.objectContaining({ op: 'push', path: '/second' })
   );
 });
 
-test('defaults to replacing when a custom router grows its state without requesting a push', () => {
+test('defaults to replacing when a custom router grows its state without requesting a push', async () => {
   const customRegistry: RouterRegistry = new Map([
     [
       'root',
@@ -246,18 +248,18 @@ test('defaults to replacing when a custom router grows its state without request
       })),
     ],
   ]);
-  const result = renderHook(() =>
+  const result = await renderHook(() =>
     useNavigationTreeReducer({ initialState, registry: customRegistry })
   );
-  act(() => result.result.current.handleAction({ type: 'CUSTOM' }));
+  await act(() => result.result.current.handleAction({ type: 'CUSTOM' }));
   expect(browserEvents(result)?.at(-1)).toEqual(
     expect.objectContaining({ op: 'replace', path: '/second' })
   );
 });
 
-test('pushes a browser entry for RESET when the stack index increases', () => {
-  const result = renderReducer();
-  act(() =>
+test('pushes a browser entry for RESET when the stack index increases', async () => {
+  const result = await renderReducer();
+  await act(() =>
     result.result.current.handleAction({
       type: 'RESET',
       payload: {
@@ -272,26 +274,26 @@ test('pushes a browser entry for RESET when the stack index increases', () => {
   );
 });
 
-test('does not move browser history when a pop is prevented', () => {
+test('does not move browser history when a pop is prevented', async () => {
   const state = {
     ...initialState,
     index: 1,
     routes: [...initialState.routes, { key: 'second', name: 'second' }],
   };
-  const result = renderHook(() =>
+  const result = await renderHook(() =>
     useNavigationTreeReducer({
       initialState: state,
       registry,
       routesWithRemovalPrevented: new Set(['second']),
     })
   );
-  act(() => result.result.current.handleAction({ type: 'GO_BACK' }));
+  await act(() => result.result.current.handleAction({ type: 'GO_BACK' }));
   expect(result.result.current.state).toBe(state);
   expect(browserEvents(result)).toHaveLength(1);
   expect(result.result.current.report?.events.at(-1)?.type).toBe('prevented-routes');
 });
 
-test('uses the parent stack decision when focusing a hidden child removes the visible route', () => {
+test('uses the parent stack decision when focusing a hidden child removes the visible route', async () => {
   const child = { ...initialState, key: 'child' };
   const state = {
     ...initialState,
@@ -317,17 +319,17 @@ test('uses the parent stack decision when focusing a hidden child removes the vi
     ],
     ['child', { ...childEntry, shouldActionChangeFocus: childRouter.shouldActionChangeFocus }],
   ]);
-  const result = renderHook(() =>
+  const result = await renderHook(() =>
     useNavigationTreeReducer({ initialState: seed, registry: nestedRegistry })
   );
-  act(() =>
+  await act(() =>
     result.result.current.handleAction({
       type: 'PUSH',
       target: 'root',
       payload: { name: 'second' },
     })
   );
-  act(() =>
+  await act(() =>
     result.result.current.handleAction({
       type: 'NAVIGATE',
       target: 'child',
@@ -341,7 +343,7 @@ test('uses the parent stack decision when focusing a hidden child removes the vi
   ]);
 });
 
-test('browser restoration discards history commands from an uncommitted destination', () => {
+test('browser restoration discards history commands from an uncommitted destination', async () => {
   const commands: { id: number; op: string; entryId?: string; path?: string }[] = [];
   const seen = new Set<number>();
   const suspended = new Promise<void>(() => {});
@@ -360,13 +362,13 @@ test('browser restoration discards history commands from an uncommitted destinat
     if (result.state.routes[result.state.index]!.name === 'second') throw suspended;
     return null;
   }
-  render(
+  await render(
     <React.Suspense fallback={null}>
       <Consumer />
     </React.Suspense>
   );
   const firstEntryId = commands[0]!.entryId!;
-  act(() =>
+  await act(() =>
     React.startTransition(() =>
       processIntent({
         type: 'ACTION',
@@ -375,7 +377,7 @@ test('browser restoration discards history commands from an uncommitted destinat
     )
   );
   expect(commands).toHaveLength(1);
-  act(() =>
+  await act(() =>
     React.startTransition(() =>
       processIntent({
         type: 'BROWSER_HISTORY_CHANGED',

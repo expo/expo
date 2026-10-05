@@ -1,14 +1,45 @@
 # Changelog
 
-## Unpublished
+## 0.5.1
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#50984](https://github.com/expo/expo/pull/50984), [#50927](https://github.com/expo/expo/pull/50927), [#50687](https://github.com/expo/expo/pull/50687))
+  - @expo/ui@58.0.12
 
-### 🐛 Bug fixes
+## 0.5.0
 
-### 💡 Others
+### Minor Changes
+
+- Add `donateIntentAsync()` and `deleteDonationsAsync()` to donate App Intents to the system. ([#50760](https://github.com/expo/expo/pull/50760) by [@chrfalch](https://github.com/chrfalch))
+
+### Patch Changes
+
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#49933](https://github.com/expo/expo/pull/49933))
+  - @expo/ui@58.0.11
+
+## 0.4.8
+
+### Patch Changes
+
+- Updated dependencies. ([#50801](https://github.com/expo/expo/pull/50801), [#49986](https://github.com/expo/expo/pull/49986), [#50674](https://github.com/expo/expo/pull/50674), [#50786](https://github.com/expo/expo/pull/50786), [#50851](https://github.com/expo/expo/pull/50851))
+  - @expo/ui@58.0.10
+
+## 0.4.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#50579](https://github.com/expo/expo/pull/50579), [#50693](https://github.com/expo/expo/pull/50693))
+  - @expo/ui@58.0.9
+
+## 0.4.6 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.5 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
 
 ## 0.4.4 — 2026-09-23
 

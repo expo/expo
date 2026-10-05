@@ -105,7 +105,7 @@ import androidx.glance.unit.ColorProvider
 import androidx.glance.appwidget.lazy.EmittableLazyColumn
 import androidx.glance.appwidget.lazy.EmittableLazyListItem
 import androidx.glance.appwidget.lazy.ReservedItemIdRangeEnd
-import io.github.jakex7.peek.glance.determinateCircularProgressIndicatorEmittable
+import io.github.expo.peek.glance.determinateCircularProgressIndicatorEmittable
 import kotlin.math.roundToInt
 
 private val DefaultCheckedColor = ColorProvider(Color(0xff6750a4))

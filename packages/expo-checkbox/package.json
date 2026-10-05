@@ -1,6 +1,6 @@
 {
   "name": "expo-checkbox",
-  "version": "58.0.1",
+  "version": "58.0.2",
   "description": "Basic boolean input for Android, iOS and web.",
   "keywords": [
     "expo",
@@ -32,9 +32,9 @@
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
     "expo-module-scripts": "workspace:*"
   },
