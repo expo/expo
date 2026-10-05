@@ -1,5 +1,11 @@
 # Changelog
 
+## 56.0.7
+
+### Patch Changes
+
+- `depscheck` fails when a package ships an `app.plugin.js` that its `package.json:exports` doesn't list. ([#51094](https://github.com/expo/expo/pull/51094) by [@huntie](https://github.com/huntie))
+
 ## 56.0.6
 
 ### Patch Changes
