@@ -134,7 +134,15 @@ open class ExpoPresentationDelegate(
       // group, the old group is about to lose a member.
       val replaced = notificationManager.activeNotifications.firstOrNull { it.tag == tag && it.id == id }
       val leavesOldGroup = replaced != null && replaced.notification.group != request.content.group
-      runCatching { cleanUpOrphanedGroupSummaries(cancelled = if (leavesOldGroup) setOf(tag to id) else emptySet()) }
+      runCatching {
+        cleanUpOrphanedGroupSummaries(
+          cancelled = if (leavesOldGroup) {
+            setOf(tag to id)
+          } else {
+            emptySet()
+          }
+        )
+      }
         .onFailure { Log.e("expo-notifications", "Failed to clean up group summary notifications.", it) }
 
       notificationManager.notify(tag, id, androidNotification)
