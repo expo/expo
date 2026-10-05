@@ -63,11 +63,14 @@ class PromiseImpl @DoNotStrip internal constructor(
       return
     }
 
+    var didSettle = false
     try {
       body()
-    } catch (e: Throwable) {
-      settled.set(false)
-      throw e
+      didSettle = true
+    } finally {
+      if (!didSettle) {
+        settled.set(false)
+      }
     }
   }
 
