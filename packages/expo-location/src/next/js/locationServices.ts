@@ -1,5 +1,6 @@
 import { Platform, UnavailabilityError } from 'expo';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { NativeLocationModuleNext } from '../native';
 
@@ -17,6 +18,15 @@ export async function enableLocationServices(): Promise<boolean> {
 
 export function useLocationServices(): [enabled: boolean, enable: () => Promise<boolean>] {
   const [enabled, setEnabled] = useState(hasLocationServicesEnabled);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') {
+        setEnabled(hasLocationServicesEnabled());
+      }
+    });
+    return () => subscription.remove();
+  }, []);
 
   const enable = useCallback(async () => {
     const result = await enableLocationServices();
