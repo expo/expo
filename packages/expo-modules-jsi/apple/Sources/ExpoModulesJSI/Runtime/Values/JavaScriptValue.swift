@@ -209,6 +209,20 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
     return pointee.isObject() && pointee.getObject(jsiRuntime).isFunction(jsiRuntime)
   }
 
+  /// Whether the value is a thenable: an object with a callable `then`, such as a promise.
+  @JavaScriptActor
+  public func isThenable() -> Bool {
+    // A value without a runtime is a primitive, so it can't be a thenable.
+    guard pointee.isObject() else {
+      return false
+    }
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let then = getObject().getProperty(.cached(runtime, "then"))
+    return then.isObject() && then.isFunction()
+  }
+
   public func isTypedArray() -> Bool {
     guard let jsiRuntime else {
       FatalError.runtimeLost()
