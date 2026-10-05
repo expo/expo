@@ -28,7 +28,7 @@ const subscribers: {
 };
 
 // Navigation events used by Expo Router itself. They fire whether or not
-// `unstable_performance` is enabled.
+// the performance integration is enabled.
 export const internalNavigationEvents = {
   addListener<Name extends EventName>(
     name: Name,

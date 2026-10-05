@@ -131,7 +131,11 @@ export type {
   TabRouterOptions,
 } from './react-navigation/routers';
 
-export { unstable_performance, unstable_PerformanceObserver } from './performance';
+export {
+  unstable_enablePerformanceIntegration,
+  unstable_performance,
+  unstable_PerformanceObserver,
+} from './performance';
 export type {
   RouterPageMarkDetail,
   RouterActionMarkDetail,
@@ -143,9 +147,6 @@ export type {
   RouterPerformanceMark,
   RouterPerformanceMarkByName,
   RouterPerformanceEntry,
-  RouterPerformanceObserverCallback,
-  RouterPerformanceObserverEntryList,
-  RouterPerformanceObserverInit,
 } from './performance';
 
 /**

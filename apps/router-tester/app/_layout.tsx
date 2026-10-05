@@ -1,10 +1,17 @@
-import { Stack, unstable_performance, unstable_PerformanceObserver } from 'expo-router';
+import {
+  Stack,
+  unstable_enablePerformanceIntegration,
+  unstable_PerformanceObserver,
+  type RouterPerformanceMark,
+} from 'expo-router';
 import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 
-unstable_performance.enable();
+unstable_enablePerformanceIntegration();
 new unstable_PerformanceObserver((list) => {
   for (const entry of list.getEntries()) {
-    console.log(`[${entry.startTime.toFixed(1)}ms] ${entry.name}:`, entry.detail);
+    // Expo Router records only its own marks on native.
+    const { detail } = entry as RouterPerformanceMark;
+    console.log(`[${entry.startTime.toFixed(1)}ms] ${entry.name}:`, detail);
   }
 }).observe({ type: 'mark' });
 

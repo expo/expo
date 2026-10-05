@@ -5,15 +5,23 @@ import { Text } from 'react-native';
 import { router } from '../exports';
 import { internalNavigationEvents } from '../global-state/internalNavigationEvents';
 import { Stack } from '../layouts/Stack';
-import { unstable_performance, unstable_PerformanceObserver } from '../performance';
-import type { RouterPageFocusedMark, RouterPerformanceMark } from '../performance';
+import {
+  unstable_enablePerformanceIntegration,
+  unstable_performance,
+  unstable_PerformanceObserver,
+} from '../performance';
+import type {
+  RouterActionDispatchedMark,
+  RouterPageFocusedMark,
+  RouterPerformanceMark,
+} from '../performance';
 import { renderRouter } from '../testing-library';
 
 describe('router performance marks', () => {
   const cleanups: (() => void)[] = [];
 
   beforeAll(() => {
-    unstable_performance.enable();
+    unstable_enablePerformanceIntegration();
   });
 
   afterEach(() => {
@@ -24,7 +32,10 @@ describe('router performance marks', () => {
   });
 
   function observe(onEntry: (entry: RouterPerformanceMark) => void) {
-    const observer = new unstable_PerformanceObserver((list) => list.getEntries().forEach(onEntry));
+    const observer = new unstable_PerformanceObserver((list) =>
+      // Expo Router records only its own marks on native.
+      list.getEntries().forEach((entry) => onEntry(entry as RouterPerformanceMark))
+    );
     observer.observe({ type: 'mark' });
     cleanups.push(() => observer.disconnect());
   }
@@ -141,8 +152,13 @@ describe('router performance marks', () => {
 
     await act(() => router.push('/details'));
 
-    const [action] = unstable_performance.getEntriesByName('expo-router:action-dispatched');
-    const [focus] = unstable_performance.getEntriesByName('expo-router:page-focused');
+    // Entries with these names are always the matching mark types.
+    const [action] = unstable_performance.getEntriesByName(
+      'expo-router:action-dispatched'
+    ) as RouterActionDispatchedMark[];
+    const [focus] = unstable_performance.getEntriesByName(
+      'expo-router:page-focused'
+    ) as RouterPageFocusedMark[];
     expect(action?.detail).toEqual({ actionType: 'PUSH' });
     expect(focus?.detail.pathname).toBe('/details');
     expect(focus!.startTime).toBeGreaterThanOrEqual(action!.startTime);
@@ -167,7 +183,8 @@ describe('router performance marks', () => {
     expect(
       unstable_performance
         .getEntriesByName('expo-router:action-dispatched')
-        .map((entry) => entry.detail.actionType)
+        // Entries with this name are always action-dispatched marks.
+        .map((entry) => (entry as RouterActionDispatchedMark).detail.actionType)
     ).toEqual(['PUSH']);
     warn.mockRestore();
   });
