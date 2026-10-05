@@ -2,6 +2,8 @@ import { ArrangementView, Host, Image, Picker, ScrollView, Text, VStack } from '
 import {
   arrangementViewStyle,
   background,
+  clipShape,
+  disabled,
   font,
   foregroundStyle,
   frame,
@@ -41,6 +43,23 @@ export default function ArrangementViewScreen() {
       ? arrangementViewStyle('automatic')
       : arrangementViewStyle(style, { axes });
 
+  // In overlay style the primary is drawn on top of the secondary, so keep it a small card
+  // instead of a full-bleed pane.
+  const primaryModifiers =
+    style === 'overlay'
+      ? [
+          overlayArrangementEdge('trailing'),
+          padding({ all: 16 }),
+          background('#5B4BDB'),
+          clipShape('roundedRectangle', 16),
+          padding({ all: 16 }),
+        ]
+      : [
+          ...(ratio > 0 ? [splitArrangementLayoutRatio(ratio)] : []),
+          frame({ maxWidth: Infinity, maxHeight: Infinity }),
+          background('#5B4BDB'),
+        ];
+
   return (
     <Host style={{ flex: 1 }}>
       <VStack spacing={8}>
@@ -56,7 +75,7 @@ export default function ArrangementViewScreen() {
             ))}
           </Picker>
           <Picker
-            modifiers={[pickerStyle('segmented')]}
+            modifiers={[pickerStyle('segmented'), disabled(style === 'automatic')]}
             selection={axes}
             onSelectionChange={setAxes}>
             {AXES.map((value) => (
@@ -66,7 +85,7 @@ export default function ArrangementViewScreen() {
             ))}
           </Picker>
           <Picker
-            modifiers={[pickerStyle('segmented')]}
+            modifiers={[pickerStyle('segmented'), disabled(style === 'overlay')]}
             selection={ratio}
             onSelectionChange={setRatio}>
             {RATIOS.map((value) => (
@@ -80,14 +99,7 @@ export default function ArrangementViewScreen() {
         <ArrangementView
           modifiers={[styleModifier, frame({ maxWidth: Infinity, maxHeight: Infinity })]}>
           <ArrangementView.Primary>
-            <VStack
-              spacing={12}
-              modifiers={[
-                ...(ratio > 0 ? [splitArrangementLayoutRatio(ratio)] : []),
-                overlayArrangementEdge('trailing'),
-                frame({ maxWidth: Infinity, maxHeight: Infinity }),
-                background('#5B4BDB'),
-              ]}>
+            <VStack spacing={12} modifiers={primaryModifiers}>
               <Image systemName="music.note" size={64} color="white" />
               <Text modifiers={[font({ size: 22, weight: 'bold' }), foregroundStyle('white')]}>
                 Primary: Now Playing
