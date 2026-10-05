@@ -1,5 +1,14 @@
 # expo-template-default
 
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51138](https://github.com/expo/expo/pull/51138))
+  - expo-font@58.0.7
+  - expo@58.0.5
+  - expo-router@58.0.15
+
 ## 58.0.13
 
 ### Patch Changes

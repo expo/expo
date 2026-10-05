@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51138](https://github.com/expo/expo/pull/51138), [#50976](https://github.com/expo/expo/pull/50976))
+  - expo-file-system@58.0.6
+  - expo-font@58.0.7
+  - @expo/log-box@58.0.10
+  - @expo/cli@58.1.4
+
 ## 58.0.4
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50976](https://github.com/expo/expo/pull/50976))
+  - @expo/log-box@58.0.10
+  - @expo/metro-runtime@58.0.12
+
 ## 58.0.14
 
 ### Patch Changes

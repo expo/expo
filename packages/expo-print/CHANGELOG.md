@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.4
 
 ### Patch Changes
