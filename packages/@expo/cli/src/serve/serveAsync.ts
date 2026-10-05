@@ -24,15 +24,15 @@ export async function serveAsync(inputDir: string, options: Options) {
 
   loadEnvFiles(projectRoot, { mode: 'production' });
 
-  const port = await resolveMetroPortAsync(projectRoot, {
+  const choice = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
     fallbackPort: 8081,
   });
 
-  if (port == null) {
+  if (choice.kind !== 'port') {
     throw new CommandError('Could not start server. Port is not available.');
   }
-  options.port = port;
+  options.port = choice.port;
 
   const serverDist = options.isDefaultDirectory ? path.join(inputDir, 'dist') : inputDir;
   //  TODO: `.expo/server/ios`, `.expo/server/android`, etc.

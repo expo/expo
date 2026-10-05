@@ -1,6 +1,6 @@
 import { Log } from '../log';
 import { CommandError } from '../utils/errors';
-import { isValidPort, resolveMetroPortAsync } from '../utils/port';
+import { createPortInUseError, isValidPort, resolveMetroPortAsync } from '../utils/port';
 
 export interface BundlerProps {
   /** Port to start the dev server on. */
@@ -26,24 +26,25 @@ export async function resolveBundlerPropsAsync(
     throw new CommandError('BAD_ARGS', '--port and --no-bundler are mutually exclusive arguments');
   }
 
-  // Resolve the port if the bundler is used.
-  let port = options.bundler
-    ? await resolveMetroPortAsync(projectRoot, {
-        reuseExistingPort: true,
-        defaultPort: options.port,
-      })
-    : null;
-
-  // Skip bundling if the port is null -- meaning skip the bundler if the port is already running the app.
-  options.bundler = !!port;
-  if (!port) {
-    // Use a valid user-provided port, or the default port
-    port = isValidPort(options.port) ? options.port : 8081;
+  if (!options.bundler) {
+    return {
+      shouldStartBundler: false,
+      port: isValidPort(options.port) ? options.port : 8081,
+    };
   }
-  Log.debug(`Resolved port: ${port}, start dev server: ${options.bundler}`);
 
-  return {
-    shouldStartBundler: !!options.bundler,
-    port,
-  };
+  const choice = await resolveMetroPortAsync(projectRoot, {
+    reuseExistingPort: true,
+    defaultPort: options.port,
+  });
+  if (choice.kind === 'declined') {
+    throw createPortInUseError(choice.busyPort, 'you chose not to use another port');
+  }
+  // Skip the bundler when this app already serves the port.
+  const shouldStartBundler = choice.kind === 'port';
+  const port =
+    choice.kind === 'port' ? choice.port : isValidPort(options.port) ? options.port : 8081;
+  Log.debug(`Resolved port: ${port}, start dev server: ${shouldStartBundler}`);
+
+  return { shouldStartBundler, port };
 }

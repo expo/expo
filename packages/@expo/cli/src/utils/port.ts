@@ -69,6 +69,20 @@ async function isBusyPortRunningSameProcessAsync(projectRoot: string, { port }: 
   return null;
 }
 
+export type PortChoice =
+  | { kind: 'port'; port: number }
+  /** A dev server for this project already serves the port. */
+  | { kind: 'reuse' }
+  /** The port is busy and the user declined to use another one. */
+  | { kind: 'declined'; busyPort: number };
+
+export function createPortInUseError(port: number, reason: string): CommandError {
+  return new CommandError(
+    'PORT_IN_USE',
+    `Port ${port} is unavailable and ${reason}. Free port ${port} by stopping the process using it, or re-run with an available '--port'.`
+  );
+}
+
 // TODO(Bacon): Revisit after all start and run code is merged.
 export async function choosePortAsync(
   projectRoot: string,
@@ -84,68 +98,67 @@ export async function choosePortAsync(
     /** Whether the port was explicitly requested (e.g. via `--port`) rather than a default. */
     explicitPort?: boolean;
   }
-): Promise<number | null> {
-  try {
-    const port = await freePortAsync(defaultPort, [host ?? null]);
-    if (port === defaultPort || defaultPort === 0) {
-      return port;
-    }
-
-    const isRestricted = port && isRestrictedPort(port);
-
-    let message = isRestricted
-      ? `Admin permissions are required to run a server on a port below 1024`
-      : `Port ${chalk.bold(defaultPort)} is`;
-
-    const { getRunningProcess } =
-      require('./getRunningProcess') as typeof import('./getRunningProcess');
-    const runningProcess = isRestricted ? null : await getRunningProcess(defaultPort);
-
-    if (runningProcess) {
-      const pidTag = chalk.gray(`(pid ${runningProcess.pid})`);
-      if (runningProcess.directory === projectRoot) {
-        message += ` running this app in another window`;
-        if (reuseExistingPort) {
-          return null;
-        }
-      } else {
-        message += ` running ${chalk.cyan(runningProcess.command)} in another window`;
-      }
-      message += '\n' + chalk.gray(`  ${runningProcess.directory} ${pidTag}`);
-    } else {
-      message += ' being used by another process';
-    }
-
-    Log.log(`\u203A ${message}`);
-
-    if (!isInteractive()) {
-      // An explicitly requested port is a hard requirement
-      if (explicitPort) {
-        throw new CommandError(
-          'PORT_IN_USE',
-          `Port ${defaultPort} is unavailable and 'npx expo' is running in non-interactive mode, so it can't prompt to use another port. Free port ${defaultPort} by stopping the process using it, or re-run with an available '--port'.`
-        );
-      } else {
-        Log.log(`\u203A Using port ${port} instead`);
-        return port;
-      }
-    }
-
-    const { confirmAsync } = require('./prompts') as typeof import('./prompts');
-    const change = await confirmAsync({
-      message: `Use port ${port} instead?`,
-      initial: true,
-    });
-    return change ? port : null;
-  } catch (error: any) {
-    if (error.code === 'ABORTED') {
-      throw error;
-    } else if (error.code === 'NON_INTERACTIVE') {
-      Log.warn(chalk.yellow(error.message));
-      return null;
-    }
-    throw error;
+): Promise<PortChoice> {
+  const port = await freePortAsync(defaultPort, [host ?? null]);
+  if (port == null) {
+    throw new CommandError('NO_PORT_FOUND', 'No available port found');
   }
+  if (port === defaultPort || defaultPort === 0) {
+    return { kind: 'port', port };
+  }
+
+  const isRestricted = isRestrictedPort(port);
+
+  let message = isRestricted
+    ? `Admin permissions are required to run a server on a port below 1024`
+    : `Port ${chalk.bold(defaultPort)} is`;
+
+  const { getRunningProcess } =
+    require('./getRunningProcess') as typeof import('./getRunningProcess');
+  const runningProcess = isRestricted ? null : await getRunningProcess(defaultPort);
+
+  if (runningProcess) {
+    const pidTag = chalk.gray(`(pid ${runningProcess.pid})`);
+    if (runningProcess.directory === projectRoot) {
+      message += ` running this app in another window`;
+      if (reuseExistingPort) {
+        return { kind: 'reuse' };
+      }
+    } else {
+      message += ` running ${chalk.cyan(runningProcess.command)} in another window`;
+    }
+    message += '\n' + chalk.gray(`  ${runningProcess.directory} ${pidTag}`);
+  } else {
+    message += ' being used by another process';
+  }
+
+  Log.log(`\u203A ${message}`);
+
+  if (isInteractive()) {
+    const { confirmAsync } = require('./prompts') as typeof import('./prompts');
+    try {
+      const change = await confirmAsync({
+        message: `Use port ${port} instead?`,
+        initial: true,
+      });
+      return change ? { kind: 'port', port } : { kind: 'declined', busyPort: defaultPort };
+    } catch (error: any) {
+      // The prompt can't be shown, so continue as a non-interactive run does.
+      if (error.code !== 'NON_INTERACTIVE') {
+        throw error;
+      }
+    }
+  }
+
+  // An explicitly requested port is a hard requirement
+  if (explicitPort) {
+    throw createPortInUseError(
+      defaultPort,
+      `'npx expo' is running in non-interactive mode, so it can't prompt to use another port`
+    );
+  }
+  Log.log(`\u203A Using port ${port} instead`);
+  return { kind: 'port', port };
 }
 
 // TODO(Bacon): Revisit after all start and run code is merged.
@@ -167,26 +180,26 @@ export async function _resolvePortAsync(
     preferredPort: number;
     isPreferredPortExplicit?: boolean;
   }
-): Promise<number | null> {
+): Promise<PortChoice> {
   const isRequestedPortValid = isValidPort(defaultPort);
   const port = isRequestedPortValid ? defaultPort : preferredPort;
 
   // Port 0 means "pick any available port"
   if (port === 0) {
-    return getFreePortAsync(preferredPort);
+    return { kind: 'port', port: await getFreePortAsync(preferredPort) };
   }
 
   // Only check the port when the bundler is running.
-  const resolvedPort = await choosePortAsync(projectRoot, {
+  const choice = await choosePortAsync(projectRoot, {
     defaultPort: port,
     reuseExistingPort,
     explicitPort: isRequestedPortValid || !!isPreferredPortExplicit,
   });
-  if (resolvedPort == null) {
+  if (choice.kind === 'reuse') {
     Log.log('\u203A Skipping dev server');
   }
 
-  return resolvedPort;
+  return choice;
 }
 
 /**
@@ -206,21 +219,21 @@ export async function resolveMetroPortAsync(
     defaultPort?: number;
     fallbackPort?: number;
   } = {}
-): Promise<number | null> {
+): Promise<PortChoice> {
   // NOTE(@kitten): We treat `--port` and `RCT_METRO_PORT` as the fixed preferred ports
   const metroPort = env.RCT_METRO_PORT;
   // `env.RCT_METRO_PORT` returns 0 when unset, so invalid values use the same fallback path.
   const requestedMetroPort = isValidPort(metroPort) ? metroPort : 0;
-  const resolvedPort = await _resolvePortAsync(projectRoot, {
+  const choice = await _resolvePortAsync(projectRoot, {
     reuseExistingPort,
     defaultPort,
     preferredPort: requestedMetroPort || fallbackPort || 8081,
     isPreferredPortExplicit: !!requestedMetroPort,
   });
 
-  if (resolvedPort != null) {
-    process.env.RCT_METRO_PORT = String(resolvedPort);
+  if (choice.kind === 'port') {
+    process.env.RCT_METRO_PORT = String(choice.port);
   }
 
-  return resolvedPort;
+  return choice;
 }

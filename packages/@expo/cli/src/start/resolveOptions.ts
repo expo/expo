@@ -167,24 +167,25 @@ export async function resolvePortsAsync(
   options: Partial<Pick<Options, 'port' | 'devClient'>>,
   bundlers: ('metro' | 'webpack')[]
 ): Promise<{ metroPort: number; webpackPort?: number }> {
-  const metroPort = await resolveMetroPortAsync(projectRoot, {
+  const metroChoice = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
     fallbackPort: 8081,
   });
-  if (metroPort == null) {
+  if (metroChoice.kind !== 'port') {
     throw new AbortCommandError();
   }
+  const metroPort = metroChoice.port;
 
   if (bundlers.includes('webpack')) {
-    const webpackPort = await choosePortAsync(projectRoot, {
+    const webpackChoice = await choosePortAsync(projectRoot, {
       // Webpack runs on its own default port and ignores `--port`
       defaultPort: 19006,
       host: env.WEB_HOST,
     });
-    if (webpackPort == null) {
+    if (webpackChoice.kind !== 'port') {
       throw new AbortCommandError();
     }
-    return { metroPort, webpackPort };
+    return { metroPort, webpackPort: webpackChoice.port };
   }
 
   return { metroPort };
