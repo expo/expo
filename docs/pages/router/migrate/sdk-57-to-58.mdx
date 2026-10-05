@@ -12,6 +12,7 @@ Use the following checklist to find the sections that apply to your app:
 
 - For common app migrations, prefer [`useRouter`](#prefer-userouter-in-components), replace nested navigation with [hrefs](#navigate-with-complete-hrefs), and move [`initialRouteName` to `unstable_settings`](#move-initialroutename-to-unstable_settings).
 - For web apps, review the [async route defaults](#review-async-route-defaults), move [navigation hooks out of the root HTML](#move-navigation-hooks-out-of-the-root-html), review the [static metadata migration](#migrate-static-page-metadata) for `web.output: "static"`, and review the [server rendering changes](#review-server-rendering-behavior) for `web.output: "server"`.
+- For apps with Router tests, [update testing dependencies and await test helpers](#update-router-tests).
 - For advanced integrations, update code that [dispatches actions](#update-navigationdispatch), [reads or persists navigation state](#read-navigation-state), or implements [custom routers](#update-custom-routers) and [custom navigators](#update-custom-navigators).
 - Check [removed `expo-router/react-navigation` APIs](#review-removed-expo-routerreact-navigation-exports) if your app imports from that entry point.
 
@@ -109,6 +110,28 @@ After upgrading or changing `asyncRoutes`, clear the Metro cache with `expo star
 ### Move navigation hooks out of the root HTML
 
 In SDK 58, navigation hooks, such as `usePathname`, `useSegments`, `useLocalSearchParams`, and `useRouter`, no longer work in the [root HTML](/router/web/static-rendering/#root-html) component in **app/+html.tsx**. Use them in the [root layout](/router/basics/navigation-layouts/#root-layout) in **app/\_layout.tsx** instead.
+
+### Update Router tests
+
+In SDK 58, `expo-router/testing-library` requires `@testing-library/react-native` version 14 or newer, and `jest-expo` requires Jest 30. Update these testing dependencies when upgrading your app.
+
+`renderRouter` now returns a promise. Add `await` before rendering or calling the `testRouter` methods `navigate`, `push`, `replace`, `back`, `setParams`, and `dismissAll` so that updates finish before assertions run:
+
+```tsx app.test.tsx
+import { renderRouter, screen, testRouter } from 'expo-router/testing-library';
+
+it('navigates to the profile', async () => {
+  await renderRouter(['index', 'profile']);
+
+  await testRouter.push('/profile');
+
+  expect(screen).toHavePathname('/profile');
+});
+```
+
+Replace imports and calls to `renderRouterAsync` with `renderRouter`, keeping `await`. Replace the removed `RenderRouterAsyncOptions` type with `RenderRouterOptions`. The `testRouter.canGoBack()` method remains synchronous.
+
+See [Testing with Expo Router](/router/reference/testing/) for test helpers and [Unit testing with Jest](/develop/unit-testing/) for setup instructions.
 
 ### Prefer `useRouter` in components
 
