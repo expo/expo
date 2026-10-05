@@ -1,7 +1,8 @@
+import { CodedError } from 'expo';
 import { useEffect, useState } from 'react';
 
 import type { LocationProfile, Position, PositionWatchError } from '../types';
-import { watchPosition } from './PositionWatchHandle';
+import { watchPosition, type PositionWatchHandle } from './PositionWatchHandle';
 
 export type UseUserLocationOptions = {
   profile?: LocationProfile;
@@ -26,11 +27,20 @@ export function useUserLocation({ profile }: UseUserLocationOptions = {}): UseUs
 
   useEffect(() => {
     setResult({ position: null, error: null });
-    const handle = watchPosition({
-      profile,
-      onPosition: (position) => setResult({ position, error: null }),
-      onError: (error) => setResult({ position: null, error }),
-    });
+    let handle: PositionWatchHandle;
+    try {
+      handle = watchPosition({
+        profile,
+        onPosition: (position) => setResult({ position, error: null }),
+        onError: (error) => setResult({ position: null, error }),
+      });
+    } catch (error) {
+      if (!(error instanceof CodedError)) {
+        throw error;
+      }
+      setResult({ position: null, error: { code: error.code, message: error.message } });
+      return;
+    }
     return () => handle.dispose();
   }, [profile]);
 
