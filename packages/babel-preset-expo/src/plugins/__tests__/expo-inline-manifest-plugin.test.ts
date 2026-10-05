@@ -85,7 +85,7 @@ it(`records cache-vary dimensions when the manifest is inlined`, () => {
 
   const inlined = babel.transform(`process.env.APP_MANIFEST;`, options)!;
   expect((inlined.metadata as any).cacheVary).toEqual([
-    { scheme: 'expo-config', name: 'public' },
+    { scheme: 'expo-config', name: 'exp' },
     { scheme: 'env', name: 'APP_MANIFEST' },
   ]);
 

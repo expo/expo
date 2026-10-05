@@ -131,7 +131,7 @@ describe('expo-config scheme', () => {
 
   it('fingerprints the public Expo config of the project', async () => {
     const ambient = loadAmbient();
-    const fp = await ambient.currentFingerprint('expo-config', 'public', context);
+    const fp = await ambient.currentFingerprint('expo-config', 'exp', context);
 
     expect(fp).toEqual(expect.any(String));
     expect(require('@expo/config').getConfig).toHaveBeenCalledWith('/app', {
@@ -141,11 +141,11 @@ describe('expo-config scheme', () => {
   });
 
   it('changes with the config and is stable for an equal config', async () => {
-    const one = await loadAmbient().currentFingerprint('expo-config', 'public', context);
-    const oneAgain = await loadAmbient().currentFingerprint('expo-config', 'public', context);
+    const one = await loadAmbient().currentFingerprint('expo-config', 'exp', context);
+    const oneAgain = await loadAmbient().currentFingerprint('expo-config', 'exp', context);
 
     mockExpoConfig = { name: 'app', extra: { API_BASE_URL: 'https://api.example.com' } };
-    const two = await loadAmbient().currentFingerprint('expo-config', 'public', context);
+    const two = await loadAmbient().currentFingerprint('expo-config', 'exp', context);
 
     expect(one).toEqual(oneAgain);
     expect(one).not.toEqual(two);
@@ -153,18 +153,18 @@ describe('expo-config scheme', () => {
 
   it('evaluates the config once per project root', async () => {
     const ambient = loadAmbient();
-    await ambient.currentFingerprint('expo-config', 'public', context);
-    await ambient.currentFingerprint('expo-config', 'public', context);
+    await ambient.currentFingerprint('expo-config', 'exp', context);
+    await ambient.currentFingerprint('expo-config', 'exp', context);
 
     expect(require('@expo/config').getConfig).toHaveBeenCalledTimes(1);
   });
 
   it('returns null without a project root, for unknown names, or when the config fails to load', async () => {
     const ambient = loadAmbient();
-    expect(await ambient.currentFingerprint('expo-config', 'public')).toBeNull();
+    expect(await ambient.currentFingerprint('expo-config', 'exp')).toBeNull();
     expect(await ambient.currentFingerprint('expo-config', 'private', context)).toBeNull();
 
     mockExpoConfig = new Error('Invalid app.config.ts');
-    expect(await loadAmbient().currentFingerprint('expo-config', 'public', context)).toBeNull();
+    expect(await loadAmbient().currentFingerprint('expo-config', 'exp', context)).toBeNull();
   });
 });

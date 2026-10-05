@@ -83,10 +83,10 @@ describe(withMetroCacheVary, () => {
 
   it('resolves Expo config dims against the Metro project root', async () => {
     const { currentFingerprint } = require('@expo/metro-config/build/cache-vary/ambient');
-    const fp = await currentFingerprint('expo-config', 'public', { projectRoot: '/app' });
+    const fp = await currentFingerprint('expo-config', 'exp', { projectRoot: '/app' });
     expect(fp).toEqual(expect.any(String));
 
-    const value = makeTransformResult('key', [{ scheme: 'expo-config', name: 'public', fp }]);
+    const value = makeTransformResult('key', [{ scheme: 'expo-config', name: 'exp', fp }]);
     const inner = { ...makeStore(), get: jest.fn(async () => value) };
     const config = withMetroCacheVary({ projectRoot: '/app', cacheStores: [inner] } as any);
 

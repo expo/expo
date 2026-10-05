@@ -225,7 +225,7 @@ describe.each([
     expect(output.data.code).toContain('http://localhost:3000');
     expect(output.data.expoCacheVary).toEqual(
       expect.arrayContaining([
-        { scheme: 'expo-config', name: 'public', fp: expect.any(String) },
+        { scheme: 'expo-config', name: 'exp', fp: expect.any(String) },
         { scheme: 'env', name: 'APP_MANIFEST', fp: sha1('') },
       ])
     );
