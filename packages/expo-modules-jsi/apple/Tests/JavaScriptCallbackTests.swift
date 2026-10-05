@@ -4,7 +4,7 @@ import ExpoModulesJSI
 import Foundation
 import Testing
 
-/// Records whether the JavaScript function a callback wraps ran on the runtime's JavaScript thread.
+/// Records whether the wrapped function ran on the JavaScript thread.
 private final class ThreadFlag: @unchecked Sendable {
   var value: Bool?
 }
@@ -20,8 +20,7 @@ private struct NativeError: Error, CustomStringConvertible {
 struct JavaScriptCallbackTests {
   let runtime = JavaScriptRuntime()
 
-  /// Evaluates `source` and wraps the resulting value in a callback, the way generated bindings do
-  /// with a `@JS` function's closure argument.
+  /// Evaluates `source` and decodes the result the way generated bindings decode a closure argument.
   private func callback(_ source: String) throws -> JavaScriptCallback {
     let value = try runtime.eval(source)
     return try value.withUnownedValue(in: runtime) { unownedValue in
@@ -29,12 +28,12 @@ struct JavaScriptCallbackTests {
     }
   }
 
-  /// Installs a stand-in for React Native's `ErrorUtils` that stores the reported error's message.
+  /// A stand-in for React Native's `ErrorUtils` that stores the reported message.
   private func installErrorUtils() throws {
     try runtime.eval("globalThis.ErrorUtils = { reportError(error) { globalThis.reported = error.message } }")
   }
 
-  // MARK: - Creating
+  // MARK: - Decoding
 
   @Test
   func `throws when the value isn't a function`() {
@@ -66,22 +65,15 @@ struct JavaScriptCallbackTests {
   // MARK: - invokeBlocking
 
   @Test
-  func `invokeBlocking passes the encoded arguments and decodes the result`() throws {
+  func `invokeBlocking encodes the arguments and decodes the result`() throws {
     let callback = try callback("(a, b) => a + b")
-    let sum = try callback.invokeBlocking { runtime in
-      try [Int.encode(2, in: runtime), Int.encode(3, in: runtime)]
-    } decodeResult: { result, runtime in
-      try Int.decode(result, in: runtime)
-    }
-    #expect(sum == 5)
+    #expect(try callback.invokeBlocking(2, 3, returning: Int.self) == 5)
   }
 
   @Test
   func `invokeBlocking without a result calls the function`() throws {
     let callback = try callback("(value) => { globalThis.received = value }")
-    try callback.invokeBlocking { runtime in
-      try [String.encode("hello", in: runtime)]
-    }
+    try callback.invokeBlocking("hello")
     #expect(try runtime.eval("globalThis.received").asString() == "hello")
   }
 
@@ -89,7 +81,7 @@ struct JavaScriptCallbackTests {
   func `invokeBlocking rethrows a JavaScript exception`() throws {
     let callback = try callback("() => { throw new Error('boom') }")
     #expect(throws: (any Error).self) {
-      try callback.invokeBlocking { _ in [] }
+      try callback.invokeBlocking()
     }
   }
 
@@ -98,9 +90,7 @@ struct JavaScriptCallbackTests {
   @Test
   func `invokeDetached calls the function`() throws {
     let callback = try callback("(value) => { globalThis.received = value }")
-    callback.invokeDetached { runtime in
-      try [Int.encode(7, in: runtime)]
-    }
+    callback.invokeDetached(7)
     #expect(try runtime.eval("globalThis.received").asInt() == 7)
   }
 
@@ -108,7 +98,7 @@ struct JavaScriptCallbackTests {
   func `invokeDetached reports a JavaScript exception through ErrorUtils`() throws {
     try installErrorUtils()
     let callback = try callback("() => { throw new Error('boom') }")
-    callback.invokeDetached { _ in [] }
+    callback.invokeDetached()
     #expect(try runtime.eval("globalThis.reported").asString() == "boom")
   }
 
@@ -152,30 +142,20 @@ struct JavaScriptCallbackTests {
   @Test
   func `invokeAsync awaits a returned promise and decodes the resolved value`() async throws {
     let callback = try callback("async (value) => value * 2")
-    let doubled = try await callback.invokeAsync { runtime in
-      try [Int.encode(4, in: runtime)]
-    } decodeResult: { result, runtime in
-      try Int.decode(result, in: runtime)
-    }
-    #expect(doubled == 8)
+    #expect(try await callback.invokeAsync(4, returning: Int.self) == 8)
   }
 
   @Test
   func `invokeAsync decodes a value returned without a promise`() async throws {
     let callback = try callback("(value) => value + '!'")
-    let result = try await callback.invokeAsync { runtime in
-      try [String.encode("hi", in: runtime)]
-    } decodeResult: { result, runtime in
-      try String.decode(result, in: runtime)
-    }
-    #expect(result == "hi!")
+    #expect(try await callback.invokeAsync("hi", returning: String.self) == "hi!")
   }
 
   @Test
-  func `invokeAsync throws when the returned promise rejects`() async throws {
+  func `invokeAsync rethrows a promise rejection`() async throws {
     let callback = try callback("async () => { throw new Error('rejected') }")
     await #expect(throws: (any Error).self) {
-      try await callback.invokeAsync { _ in [] }
+      try await callback.invokeAsync()
     }
   }
 
@@ -195,10 +175,10 @@ struct JavaScriptCallbackTests {
   @Test
   func `throws RuntimeLostError after the runtime released the function`() throws {
     let callback = try callback("() => 1")
-    // The teardown sweep, which the runtime runs before it is destroyed.
+    // The teardown sweep, which the runtime runs before it's destroyed.
     runtime.longLivedObjects.clear()
     #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
-      try callback.invokeBlocking { _ in [] }
+      try callback.invokeBlocking()
     }
   }
 }
@@ -238,15 +218,7 @@ struct JavaScriptCallbackThreadingTests {
       // A blocking call from a plain dispatch thread, the way native code calls a stored closure.
       let result: Int = try await withCheckedThrowingContinuation { continuation in
         DispatchQueue.global().async {
-          continuation.resume(
-            with: Result {
-              try callback.invokeBlocking { _ in
-                []
-              } decodeResult: { result, runtime in
-                try Int.decode(result, in: runtime)
-              }
-            }
-          )
+          continuation.resume(with: Result { try callback.invokeBlocking(returning: Int.self) })
         }
       }
       #expect(result == 42)
@@ -261,22 +233,47 @@ struct JavaScriptCallbackThreadingTests {
     let flag = ThreadFlag()
     do {
       let callback = try await makeRecordingCallback(testRuntime, flag: flag)
-
-      let result = try await callback.invokeAsync { _ in
-        []
-      } decodeResult: { result, runtime in
-        try Int.decode(result, in: runtime)
-      }
-      #expect(result == 42)
+      #expect(try await callback.invokeAsync(returning: Int.self) == 42)
       #expect(flag.value == true)
+    }
+    await drain(testRuntime)
+  }
+
+  @Test
+  func `invokeAsync decodes a resolved promise on the JavaScript thread`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let flag = ThreadFlag()
+    do {
+      let callback = try await testRuntime.scheduler.runIsolated {
+        let runtime = testRuntime.runtime
+        return try runtime.eval("async () => 5").withUnownedValue(in: runtime) { unownedValue in
+          try JavaScriptCallback.decode(unownedValue, in: runtime)
+        }
+      }
+      // A promise settles through an actor off the JavaScript thread, but the decode must not.
+      #expect(try await callback.invokeAsync(returning: ThreadRecordingInt.self).value == 5)
+      #expect(ThreadRecordingInt.decodedOnJavaScriptThread == true)
     }
     await drain(testRuntime)
   }
 }
 
+/// An `Int` that records whether it was decoded on the JavaScript thread.
+private struct ThreadRecordingInt: JavaScriptDecodable {
+  nonisolated(unsafe) static var decodedOnJavaScriptThread: Bool?
+  let value: Int
+
+  static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> ThreadRecordingInt
+  {
+    decodedOnJavaScriptThread = runtime.isOnJavaScriptThread()
+    return ThreadRecordingInt(value: try Int.decode(value, in: runtime))
+  }
+}
+
 // MARK: - Generated code
 
-/// Non-`Sendable` types, which need the `Argument` box.
+/// Non-`Sendable` types, the case that needs care when arguments cross to the JavaScript thread.
 private final class Point: JavaScriptEncodable {
   let x: Int
 
@@ -317,26 +314,18 @@ struct JavaScriptCallbackGeneratedCodeTests {
 
   @Test
   func `throwing closure with a result`() throws {
-    let arg0Callback = try callback("(point) => point * 2")
-    let arg0: (Point) throws -> Size = { @Sendable p0 in
-      let a0 = JavaScriptCallback.Argument(p0)
-      return try arg0Callback.invokeBlocking { runtime in
-        try [Point.encode(a0.value, in: runtime)]
-      } decodeResult: { result, runtime in
-        try Size.decode(result, in: runtime)
-      }
+    let arg0Callback = try callback("(point, factor) => point * factor")
+    let arg0: (Point, Int) throws -> Size = { @Sendable p0, p1 in
+      try arg0Callback.invokeBlocking(p0, p1, returning: Size.self)
     }
-    #expect(try arg0(Point(x: 21)).width == 42)
+    #expect(try arg0(Point(x: 21), 2).width == 42)
   }
 
   @Test
   func `non-throwing Void closure`() throws {
     let arg0Callback = try callback("(point) => { globalThis.received = point }")
     let arg0: (Point) -> Void = { @Sendable p0 in
-      let a0 = JavaScriptCallback.Argument(p0)
-      arg0Callback.invokeDetached { runtime in
-        try [Point.encode(a0.value, in: runtime)]
-      }
+      arg0Callback.invokeDetached(p0)
     }
     arg0(Point(x: 3))
     #expect(try runtime.eval("globalThis.received").asInt() == 3)
@@ -346,12 +335,7 @@ struct JavaScriptCallbackGeneratedCodeTests {
   func `async throwing closure with a result`() async throws {
     let arg0Callback = try callback("async (point) => point + 1")
     let arg0: (Point) async throws -> Size = { @Sendable p0 in
-      let a0 = JavaScriptCallback.Argument(p0)
-      return try await arg0Callback.invokeAsync { runtime in
-        try [Point.encode(a0.value, in: runtime)]
-      } decodeResult: { result, runtime in
-        try Size.decode(result, in: runtime)
-      }
+      try await arg0Callback.invokeAsync(p0, returning: Size.self)
     }
     #expect(try await arg0(Point(x: 1)).width == 2)
   }
@@ -362,9 +346,7 @@ struct JavaScriptCallbackGeneratedCodeTests {
     let arg0Callback = try callback("async () => { throw new Error('async boom') }")
     let arg0: () async -> Void = { @Sendable in
       do {
-        try await arg0Callback.invokeAsync { runtime in
-          []
-        }
+        try await arg0Callback.invokeAsync()
       } catch {
         arg0Callback.reportError(error)
       }
@@ -377,13 +359,7 @@ struct JavaScriptCallbackGeneratedCodeTests {
   func `borrowing and consuming parameters`() throws {
     let arg0Callback = try callback("(a, b) => a + b")
     let arg0: (borrowing Point, consuming Point) throws -> Size = { @Sendable p0, p1 in
-      let a0 = JavaScriptCallback.Argument(copy p0)
-      let a1 = JavaScriptCallback.Argument(copy p1)
-      return try arg0Callback.invokeBlocking { runtime in
-        try [Point.encode(a0.value, in: runtime), Point.encode(a1.value, in: runtime)]
-      } decodeResult: { result, runtime in
-        try Size.decode(result, in: runtime)
-      }
+      try arg0Callback.invokeBlocking(p0, p1, returning: Size.self)
     }
     #expect(try arg0(Point(x: 2), Point(x: 5)).width == 7)
   }

@@ -4,25 +4,15 @@ internal import ExpoModulesJSI_Cxx
 
 /// A JavaScript function that native code can keep and call later, from any thread.
 ///
-/// Bindings generated for a `@JS` function create one for each closure argument. Each call runs on
-/// the JavaScript thread, inline when already there:
-/// - ``invokeDetached(arguments:)`` doesn't wait, and reports a JavaScript error with
-///   ``reportError(_:)``;
+/// Bindings generated for a `@JS` function create one for each closure argument. Each `invoke`
+/// method encodes the arguments, calls the function and decodes the result on the JavaScript thread,
+/// inline when already there:
+/// - `invokeDetached` doesn't wait, and reports a JavaScript error with ``reportError(_:)``;
 /// - `invokeBlocking` blocks the calling thread until JavaScript returns;
 /// - `invokeAsync` suspends instead, and also awaits a returned promise.
 ///
 /// Once the runtime is gone, the calls throw ``RuntimeLostError``.
 public final class JavaScriptCallback: Sendable {
-  /// Carries a closure argument to the JavaScript thread, where it is encoded. The argument may not
-  /// be `Sendable`, hence `@unchecked Sendable`.
-  public struct Argument<Value>: @unchecked Sendable {
-    public let value: Value
-
-    public init(_ value: consuming Value) {
-      self.value = value
-    }
-  }
-
   /// Thrown by a call made after the runtime is gone, for example after a reload.
   public struct RuntimeLostError: Error, CustomStringConvertible {
     public init() {}
@@ -94,88 +84,88 @@ public final class JavaScriptCallback: Sendable {
 
   // MARK: - Calling
 
-  /// Calls the function without waiting for it. A JavaScript error is reported with
+  // The generic methods are inlinable so the encodes and decodes specialize in the caller's module.
+  // They carry the arguments to the JavaScript thread in an unchecked box, because the argument types
+  // may not be `Sendable`. A blocking or async call waits until the arguments are encoded; a detached
+  // call doesn't.
+
+  /// Calls the function with `arguments` without waiting for it. A JavaScript error is reported with
   /// ``reportError(_:)``.
-  public func invokeDetached(
-    arguments: sending @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue]
-  ) {
-    guard let runtime else {
-      print("Error in a JavaScript callback: \(RuntimeLostError())")
-      return
-    }
-    nonisolated(unsafe) let arguments = arguments
-    runtime.runOrSchedule {
-      do {
-        _ = try self.call(arguments, in: runtime)
-      } catch {
-        self.report(error, in: runtime)
-      }
+  @inlinable
+  public func invokeDetached<each A: JavaScriptEncodable>(_ arguments: repeat each A) {
+    let box = UncheckedSendableBox((repeat each arguments))
+    runDetached { runtime in
+      let arguments = box.value
+      var values: [JavaScriptValue] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      return values
     }
   }
 
-  /// Calls the function and blocks the calling thread until it returns.
-  public func invokeBlocking(arguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue])
-    throws
-  {
-    let runtime = try liveRuntime()
-    nonisolated(unsafe) let arguments = arguments
-    try runtime.execute {
-      _ = try self.call(arguments, in: runtime)
+  /// Calls the function with `arguments` and blocks the calling thread until it returns.
+  @inlinable
+  public func invokeBlocking<each A: JavaScriptEncodable>(_ arguments: repeat each A) throws {
+    let box = UncheckedSendableBox((repeat each arguments))
+    let _: UncheckedSendableBox<Void> = try runBlocking { runtime in
+      let arguments = box.value
+      var values: [JavaScriptValue] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      return values
+    } decodeResult: { _, _ in
+      UncheckedSendableBox(())
     }
   }
 
-  /// Calls the function, blocks the calling thread until it returns, and decodes its result.
-  public func invokeBlocking<R>(
-    arguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
-    decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+  /// Calls the function with `arguments`, blocks the calling thread until it returns, and decodes
+  /// its result.
+  @inlinable
+  public func invokeBlocking<each A: JavaScriptEncodable, R: JavaScriptDecodable>(
+    _ arguments: repeat each A,
+    returning _: R.Type
   ) throws -> sending R {
-    let runtime = try liveRuntime()
-    nonisolated(unsafe) let arguments = arguments
-    nonisolated(unsafe) let decodeResult = decodeResult
-    // `execute` requires a `Sendable` result, so the decoded value travels in an `Argument` box.
-    let result = try runtime.execute {
-      Argument(try decodeResult(try self.call(arguments, in: runtime), runtime))
+    let box = UncheckedSendableBox((repeat each arguments))
+    let result = try runBlocking { runtime in
+      let arguments = box.value
+      var values: [JavaScriptValue] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      return values
+    } decodeResult: { result, runtime in
+      UncheckedSendableBox(try R.decode(result, in: runtime))
     }
     return result.value
   }
 
-  /// Calls the function and suspends until it returns, awaiting a returned promise.
-  public func invokeAsync(arguments: sending @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue])
-    async throws
-  {
-    _ = try await invokeAsync(arguments: arguments) { _, _ in () }
+  /// Calls the function with `arguments` and suspends until it returns, awaiting a returned promise.
+  @inlinable
+  public func invokeAsync<each A: JavaScriptEncodable>(_ arguments: repeat each A) async throws {
+    let box = UncheckedSendableBox((repeat each arguments))
+    let _: UncheckedSendableBox<Void> = try await runAsync { runtime in
+      let arguments = box.value
+      var values: [JavaScriptValue] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      return values
+    } decodeResult: { _, _ in
+      UncheckedSendableBox(())
+    }
   }
 
-  /// Calls the function, suspends until it returns, and decodes its result. When the function returns
-  /// a promise, decodes the value the promise resolves with.
-  public func invokeAsync<R>(
-    arguments: sending @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
-    decodeResult: sending @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+  /// Calls the function with `arguments`, suspends until it returns, and decodes its result. When
+  /// the function returns a promise, decodes the value the promise resolves with.
+  @inlinable
+  public func invokeAsync<each A: JavaScriptEncodable, R: JavaScriptDecodable>(
+    _ arguments: repeat each A,
+    returning _: R.Type
   ) async throws -> sending R {
-    let runtime = try liveRuntime()
-    nonisolated(unsafe) let arguments = arguments
-    nonisolated(unsafe) let decodeResult = decodeResult
-
-    let outcome = try await runtime.execute { () throws -> Argument<AsyncOutcome<R>> in
-      let result = try self.call(arguments, in: runtime)
-      guard Self.isThenable(result) else {
-        return Argument(.value(try decodeResult(result, runtime)))
-      }
-      return Argument(.promise(JavaScriptPromise.Ref(try JavaScriptPromise(runtime, result.getObject()))))
+    let box = UncheckedSendableBox((repeat each arguments))
+    let result = try await runAsync { runtime in
+      let arguments = box.value
+      var values: [JavaScriptValue] = []
+      repeat values.append(try (each A).encode(each arguments, in: runtime))
+      return values
+    } decodeResult: { result, runtime in
+      UncheckedSendableBox(try R.decode(result, in: runtime))
     }
-
-    switch outcome.value {
-    case .value(let value):
-      return value
-    case .promise(let promiseRef):
-      let promise: JavaScriptPromise = try promiseRef.take()
-      nonisolated(unsafe) let settled = try await promise.await()
-      // The await may resume on another thread, so decode back on the JavaScript thread.
-      let decoded = try await runtime.execute {
-        Argument(try decodeResult(settled, runtime))
-      }
-      return decoded.value
-    }
+    return result.value
   }
 
   /// Reports an error from a closure that can't throw it: to React Native's `ErrorUtils.reportError`,
@@ -190,7 +180,63 @@ public final class JavaScriptCallback: Sendable {
     }
   }
 
-  // MARK: - Private
+  // MARK: - Running on the JavaScript thread
+
+  // The non-generic part of the calls, compiled in the framework. `encodeArguments` and
+  // `decodeResult` run on the JavaScript thread.
+
+  @usableFromInline
+  internal func runDetached(encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue])
+  {
+    guard let runtime else {
+      print("Error in a JavaScript callback: \(RuntimeLostError())")
+      return
+    }
+    runtime.runOrSchedule {
+      do {
+        _ = try self.call(encodeArguments, in: runtime)
+      } catch {
+        self.report(error, in: runtime)
+      }
+    }
+  }
+
+  @usableFromInline
+  internal func runBlocking<R: Sendable>(
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
+    decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+  ) throws -> R {
+    let runtime = try liveRuntime()
+    return try runtime.execute {
+      try decodeResult(try self.call(encodeArguments, in: runtime), runtime)
+    }
+  }
+
+  @usableFromInline
+  internal func runAsync<R: Sendable>(
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
+    decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+  ) async throws -> R {
+    let runtime = try liveRuntime()
+    let outcome = try await runtime.execute { () throws -> UncheckedSendableBox<AsyncOutcome<R>> in
+      let result = try self.call(encodeArguments, in: runtime)
+      guard result.isThenable() else {
+        return UncheckedSendableBox(.value(try decodeResult(result, runtime)))
+      }
+      return UncheckedSendableBox(.promise(JavaScriptPromise.Ref(try JavaScriptPromise(runtime, result.getObject()))))
+    }
+    switch outcome.value {
+    case .value(let value):
+      return value
+    case .promise(let promiseRef):
+      let promise: JavaScriptPromise = try promiseRef.take()
+      let settled = UncheckedSendableBox(try await promise.await())
+      // The await may resume on another thread, so decode back on the JavaScript thread.
+      return try await runtime.execute {
+        try decodeResult(settled.value, runtime)
+      }
+    }
+  }
 
   private enum AsyncOutcome<R> {
     case value(R)
@@ -208,26 +254,17 @@ public final class JavaScriptCallback: Sendable {
   /// sweep released it.
   @JavaScriptActor
   private func call(
-    _ arguments: @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
+    _ encodeArguments: @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
     in runtime: JavaScriptRuntime
   ) throws -> JavaScriptValue {
     guard let function = longLivedState.function.withValue({ $0 }) else {
       throw RuntimeLostError()
     }
-    let values = try arguments(runtime)
+    let values = try encodeArguments(runtime)
     if values.isEmpty {
       return try function.getFunction().call()
     }
     return try function.getFunction().call(arguments: JavaScriptValuesBuffer.copying(in: runtime, values: values))
-  }
-
-  @JavaScriptActor
-  private static func isThenable(_ value: JavaScriptValue) -> Bool {
-    guard value.isObject() else {
-      return false
-    }
-    let then = value.getObject().getProperty("then")
-    return then.isObject() && then.isFunction()
   }
 
   @JavaScriptActor
@@ -273,5 +310,19 @@ public final class JavaScriptCallback: Sendable {
     } catch {
       return false
     }
+  }
+}
+
+/// Carries a value that may not be `Sendable` across threads. Used where the code that owns the
+/// value waits for the other side, or doesn't use the value again.
+@frozen
+@usableFromInline
+internal struct UncheckedSendableBox<Value>: @unchecked Sendable {
+  @usableFromInline
+  internal let value: Value
+
+  @inlinable
+  internal init(_ value: Value) {
+    self.value = value
   }
 }
