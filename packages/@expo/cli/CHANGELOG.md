@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.1.4
+
+### Patch Changes
+
+- Updated dependencies. ([#50976](https://github.com/expo/expo/pull/50976))
+  - @expo/log-box@58.0.10
+  - @expo/router-server@58.0.9
+
 ## 58.1.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Expand the call stack and show its code frame when every frame is collapsed, like React Native's LogBox. ([#50976](https://github.com/expo/expo/pull/50976) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 58.0.9
 
 ### Patch Changes
