@@ -170,11 +170,11 @@ struct JavaScriptRuntimeTests {
     }
 
     await scheduler.run {
-      nonisolated(unsafe) var didRunInline = false
+      let didRunInline = InlineRunFlag()
       runtime.runOrSchedule {
-        didRunInline = true
+        didRunInline.value = true
       }
-      #expect(didRunInline)
+      #expect(didRunInline.value)
     }
 
     await withCheckedContinuation { continuation in
@@ -1146,6 +1146,13 @@ struct JavaScriptRuntimeTests {
     let survives = weakObject.lock()?.getProperty("survives").getBool()
     #expect(survives == true)
   }
+}
+
+/// Records whether a `runOrSchedule` block ran. A class instead of a `nonisolated(unsafe) var` captured
+/// by the block, which Swift 6.2 rejects as a data race. Safe without synchronization: the test only
+/// reads it after the block ran inline on the same thread.
+private final class InlineRunFlag: @unchecked Sendable {
+  var value = false
 }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
