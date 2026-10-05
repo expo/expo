@@ -191,10 +191,26 @@ internal fun MeasureScope.measureUniversalChild(
   val resolved = fixedOrBoundedConstraints(width, height, constraints.maxWidth, constraints.maxHeight)
   return measurable.measure(
     Constraints(
-      minWidth = if (width != null) resolved.minWidth else constraints.minWidth,
-      maxWidth = if (width != null) resolved.maxWidth else constraints.maxWidth,
-      minHeight = if (height != null) resolved.minHeight else constraints.minHeight,
-      maxHeight = if (height != null) resolved.maxHeight else constraints.maxHeight
+      minWidth = if (width != null) {
+        resolved.minWidth
+      } else {
+        constraints.minWidth
+      },
+      maxWidth = if (width != null) {
+        resolved.maxWidth
+      } else {
+        constraints.maxWidth
+      },
+      minHeight = if (height != null) {
+        resolved.minHeight
+      } else {
+        constraints.minHeight
+      },
+      maxHeight = if (height != null) {
+        resolved.maxHeight
+      } else {
+        constraints.maxHeight
+      }
     )
   )
 }
@@ -261,8 +277,16 @@ private fun MeasureScope.measureUniversalStack(
   val definiteHeight = constraints.maxHeight.takeIf {
     it != Constraints.Infinity && constraints.minHeight == it
   }
-  val maxMain = if (horizontal) constraints.maxWidth else constraints.maxHeight
-  val maxCross = if (horizontal) constraints.maxHeight else constraints.maxWidth
+  val maxMain = if (horizontal) {
+    constraints.maxWidth
+  } else {
+    constraints.maxHeight
+  }
+  val maxCross = if (horizontal) {
+    constraints.maxHeight
+  } else {
+    constraints.maxWidth
+  }
   val spacing = (
     if (horizontal) {
       horizontalArrangement.spacing.roundToPx()
@@ -276,11 +300,17 @@ private fun MeasureScope.measureUniversalStack(
 
   measurables.forEachIndexed { index, measurable ->
     val parentData = measurable.parentData.asUniversalLayoutParentData()
-    if (parentData.weight > 0f) return@forEachIndexed
+    if (parentData.weight > 0f) {
+      return@forEachIndexed
+    }
 
     val width = parentData.dimensions.resolveWidth(definiteWidth, density)
     val height = parentData.dimensions.resolveHeight(definiteHeight, density)
-    val resolvedMain = if (horizontal) width else height
+    val resolvedMain = if (horizontal) {
+      width
+    } else {
+      height
+    }
     val remainingMain = if (maxMain == Constraints.Infinity) {
       Constraints.Infinity
     } else {
@@ -293,13 +323,19 @@ private fun MeasureScope.measureUniversalStack(
     }
     val placeable = measurable.measure(childConstraints)
     placeables[index] = placeable
-    occupiedMain += if (horizontal) placeable.width else placeable.height
+    occupiedMain += if (horizontal) {
+      placeable.width
+    } else {
+      placeable.height
+    }
   }
 
   var totalWeight = 0f
   measurables.forEach { measurable ->
     val weight = measurable.parentData.asUniversalLayoutParentData().weight
-    if (weight > 0f) totalWeight += weight
+    if (weight > 0f) {
+      totalWeight += weight
+    }
   }
   if (totalWeight > 0f) {
     val targetMain = when {
@@ -311,7 +347,9 @@ private fun MeasureScope.measureUniversalStack(
     var remainingWeight = totalWeight
     measurables.forEachIndexed { index, measurable ->
       val parentData = measurable.parentData.asUniversalLayoutParentData()
-      if (parentData.weight <= 0f) return@forEachIndexed
+      if (parentData.weight <= 0f) {
+        return@forEachIndexed
+      }
 
       val laterWeight = measurables.drop(index + 1).any {
         it.parentData.asUniversalLayoutParentData().weight > 0f
@@ -340,14 +378,38 @@ private fun MeasureScope.measureUniversalStack(
   }
 
   val childMainSizes = IntArray(placeables.size) { index ->
-    placeables[index]?.let { if (horizontal) it.width else it.height } ?: 0
+    placeables[index]?.let {
+      if (horizontal) {
+        it.width
+      } else {
+        it.height
+      }
+    } ?: 0
   }
   val contentMain = childMainSizes.sum() + totalSpacing
   val contentCross = placeables.maxOfOrNull {
-    it?.let { placeable -> if (horizontal) placeable.height else placeable.width } ?: 0
+    it?.let { placeable ->
+      if (horizontal) {
+        placeable.height
+      } else {
+        placeable.width
+      }
+    } ?: 0
   } ?: 0
-  val width = constraints.constrainWidth(if (horizontal) contentMain else contentCross)
-  val height = constraints.constrainHeight(if (horizontal) contentCross else contentMain)
+  val width = constraints.constrainWidth(
+    if (horizontal) {
+      contentMain
+    } else {
+      contentCross
+    }
+  )
+  val height = constraints.constrainHeight(
+    if (horizontal) {
+      contentCross
+    } else {
+      contentMain
+    }
+  )
   val positions = IntArray(placeables.size)
   if (horizontal) {
     with(horizontalArrangement) {
