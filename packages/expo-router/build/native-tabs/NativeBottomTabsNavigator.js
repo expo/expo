@@ -71,8 +71,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
         children,
         backBehavior,
         screenListeners,
-        // Honor layout `unstable_settings.initialRouteName` the same way headless Tabs does.
-        initialRouteName: routeNode?.initialRouteName,
+        initialRouteName: getInitialTriggerName(children, routeNode?.initialRouteName),
         screenOptions: {
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
             labelStyle: processedLabelStyle.default,
@@ -152,6 +151,14 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
                 // on JS side are only triggered by rerender, so passing ref
                 // here is ok.
                 provenance: provenanceRef.current, tabs: visibleTabs, onTabChange: onTabChange }) }) }));
+}
+// Resolve the layout anchor to a Trigger screen name. A directory route `events/index` is
+// registered as `events/index`. An anchor without a matching Trigger is ignored.
+function getInitialTriggerName(children, anchor) {
+    if (!anchor)
+        return undefined;
+    const names = react_2.default.Children.toArray(children).map((child) => react_2.default.isValidElement(child) ? child.props.name : undefined);
+    return names.find((name) => name === anchor || name === `${anchor}/index`);
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
 const NativeTabsNavigatorWithContext = (0, withLayoutContext_1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);

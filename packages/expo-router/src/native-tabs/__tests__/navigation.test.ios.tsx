@@ -197,4 +197,56 @@ describe('NativeTabs initialRouteName', () => {
       /^events-[-\w]+/
     );
   });
+
+  it('resolves directory-route anchors to the matching Trigger screen name', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'events' },
+          default: () => (
+            <NativeTabs>
+              <NativeTabs.Trigger name="chats" />
+              <NativeTabs.Trigger name="events" />
+            </NativeTabs>
+          ),
+        },
+        chats: () => <View testID="chats" />,
+        'events/index': () => <View testID="events" />,
+      },
+      { initialUrl: '/chats' }
+    );
+
+    expect(screen).toHavePathname('/chats');
+
+    act(() => router.back());
+
+    expect(screen).toHavePathname('/events');
+    expect(TabsHost.mock.calls.at(-1)![0].navStateRequest.selectedScreenKey).toMatch(
+      /^events\/index-[-\w]+/
+    );
+  });
+
+  it('ignores anchors that do not match any Trigger', () => {
+    expect(() =>
+      renderRouter(
+        {
+          _layout: {
+            unstable_settings: { anchor: 'other' },
+            default: () => (
+              <NativeTabs>
+                <NativeTabs.Trigger name="chats" />
+                <NativeTabs.Trigger name="events" />
+              </NativeTabs>
+            ),
+          },
+          chats: () => <View testID="chats" />,
+          events: () => <View testID="events" />,
+          other: () => <View testID="other" />,
+        },
+        { initialUrl: '/chats' }
+      )
+    ).not.toThrow();
+
+    expect(screen).toHavePathname('/chats');
+  });
 });
