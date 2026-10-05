@@ -35,7 +35,7 @@ jest.mock('../init', () => {
 
 jest.mock('../router', () => ({
   optionalRouter: {
-    unstable_performance: { enable: jest.fn() },
+    unstable_enablePerformanceIntegration: jest.fn(),
     unstable_PerformanceObserver: 'PerformanceObserver',
   },
   isRouterInstalled: true,

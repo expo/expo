@@ -2,7 +2,7 @@ import { requireNativeModule } from 'expo';
 import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
-import { isRouterInstalled, isRouterOutdated } from './integrations/expo-router/router';
+import { isRouterInstalled } from './integrations/expo-router/router';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
@@ -53,11 +53,7 @@ const Observe: ObserveModule = new Proxy(native, {
         const routerEnabled = !!config.integrations?.['expo-router'];
         const reactNavigationEnabled = !!config.integrations?.['react-navigation'];
 
-        if (routerEnabled && isRouterOutdated) {
-          console.warn(
-            "[expo-observe] `integrations: { 'expo-router': true }` was set, but the installed `expo-router` does not support `unstable_PerformanceObserver`. Upgrade `expo-router` to enable the integration."
-          );
-        } else if (routerEnabled && !isRouterInstalled) {
+        if (routerEnabled && !isRouterInstalled) {
           console.warn(
             "[expo-observe] `integrations: { 'expo-router': true }` was set, but `expo-router` is not installed. The integration will not initialize."
           );

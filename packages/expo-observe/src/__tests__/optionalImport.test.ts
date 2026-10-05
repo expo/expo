@@ -12,7 +12,7 @@ jest.mock('../integrations/expo-router/router', () => ({
     useRoute: jest.fn(),
     useNavigation: jest.fn(),
     useCurrentRouteInfo: jest.fn(),
-    unstable_performance: { enable: jest.fn() },
+    unstable_enablePerformanceIntegration: jest.fn(),
     unstable_PerformanceObserver: jest.fn(),
   },
 }));

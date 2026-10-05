@@ -45,7 +45,7 @@ jest.mock('../router', () => {
       useRoute,
       useNavigation,
       useCurrentRouteInfo,
-      unstable_performance: { enable: jest.fn() },
+      unstable_enablePerformanceIntegration: jest.fn(),
       unstable_PerformanceObserver: jest.fn(),
     },
     isRouterInstalled: true,
