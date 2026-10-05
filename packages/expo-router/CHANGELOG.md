@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Export the `RouterBrowserHistoryAction` type. The public `Router` and `RouterActionResult` types reference it, so custom routers can now type the browser history instruction they return. ([#51053](https://github.com/expo/expo/pull/51053) by [@amandeepmittal](https://github.com/amandeepmittal))
+
 ## 58.0.13
 
 ### Patch Changes
