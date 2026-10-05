@@ -220,11 +220,13 @@ describe(resolvePortsAsync, () => {
       .mocked(resolveMetroPortAsync)
       .mockImplementation(async (root, { defaultPort, fallbackPort } = {}) => {
         if (typeof defaultPort === 'string' && defaultPort) {
-          return parseInt(defaultPort, 10);
+          return { kind: 'port', port: parseInt(defaultPort, 10) };
         } else if (typeof defaultPort === 'number' && defaultPort) {
-          return defaultPort;
+          return { kind: 'port', port: defaultPort };
         }
-        return fallbackPort ?? null;
+        return fallbackPort
+          ? { kind: 'port', port: fallbackPort }
+          : { kind: 'declined', busyPort: 8081 };
       });
   });
   it(`resolves default port for metro`, async () => {
@@ -250,13 +252,13 @@ describe(resolvePortsAsync, () => {
     );
   });
   it(`does not abort when port resolves to 0`, async () => {
-    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(0);
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce({ kind: 'port', port: 0 });
     await expect(resolvePortsAsync('/noop', { port: 0 }, ['metro'])).resolves.toStrictEqual({
       metroPort: 0,
     });
   });
   it(`resolves the webpack port from its own default, ignoring --port`, async () => {
-    jest.mocked(choosePortAsync).mockResolvedValueOnce(19006);
+    jest.mocked(choosePortAsync).mockResolvedValueOnce({ kind: 'port', port: 19006 });
     await expect(
       resolvePortsAsync('/noop', { port: 1234 }, ['metro', 'webpack'])
     ).resolves.toStrictEqual({

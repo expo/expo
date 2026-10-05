@@ -25,12 +25,19 @@ describe(resolveBundlerPropsAsync, () => {
       shouldStartBundler: true,
     });
   });
-  it(`skips bundling if the port is busy`, async () => {
-    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(null);
+  it(`skips bundling if this app already serves the port`, async () => {
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce({ kind: 'reuse' });
 
     expect(await resolveBundlerPropsAsync('/', {})).toEqual({
       port: 8081,
       shouldStartBundler: false,
+    });
+  });
+  it(`asserts when moving off a busy port is declined`, async () => {
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce({ kind: 'declined', busyPort: 8081 });
+
+    await expect(resolveBundlerPropsAsync('/', {})).rejects.toMatchObject({
+      code: 'PORT_IN_USE',
     });
   });
   it(`resolves headless port`, async () => {
@@ -44,7 +51,7 @@ describe(resolveBundlerPropsAsync, () => {
     });
   });
   it(`resolves default port`, async () => {
-    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(19006);
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce({ kind: 'port', port: 19006 });
 
     expect(
       await resolveBundlerPropsAsync('/', {
