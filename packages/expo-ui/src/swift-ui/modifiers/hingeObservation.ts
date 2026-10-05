@@ -1,4 +1,5 @@
-import { createModifierWithEventListener } from './createModifier';
+import { getStateId, type WorkletCallback } from '../../State';
+import { createModifier, createModifierWithEventListener } from './createModifier';
 
 /**
  * Status of the device hinge, as reported by SwiftUI's `DeviceHinge.Status`.
@@ -38,31 +39,53 @@ export type HingeContext = {
 };
 
 /**
+ * A function called with the old and the new hinge context when the hinge context changes.
+ */
+export type HingeChangeHandler = (oldContext: HingeContext, newContext: HingeContext) => void;
+
+/**
  * Calls the handler when the hinge context of the view hierarchy changes, such as when the user
  * folds or unfolds the device. The handler receives the old and the new context. Use hinge
  * state for interactions and effects, not for layout.
+ *
+ * Pass a plain function to run it on the JS thread, or a callback from
+ * [`useWorkletCallback`](../usenativestate/#useworkletcallback) to run it synchronously on the UI
+ * thread, which suits driving a native state value from the continuous `angle`.
  *
  * The first call happens when the view appears, and its old context has a `null` hinge. On devices
  * without a hinge, both contexts have a `null` hinge. The modifier is a no-op on iOS versions earlier
  * than 27.1 and in builds made with Xcode earlier than 27.1.
  *
- * @param handler - Function called with the old and the new hinge context.
+ * @param handler - Function or worklet callback called with the old and the new hinge context.
  * @platform ios 27.1+
  *
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/onhingechange(isenabled:_:)).
  *
  * @example
  * ```tsx
+ * // JS thread
  * const [hinge, setHinge] = useState<Hinge | null>(null);
- *
  * <VStack modifiers={[onHingeChange((_, newContext) => setHinge(newContext.hinge))]} />
+ *
+ * // UI thread
+ * const angle = useNativeState(180);
+ * const onHinge = useWorkletCallback((_, newContext) => {
+ *   'worklet';
+ *   angle.value = newContext.hinge?.angle ?? 180;
+ * });
+ * <VStack modifiers={[onHingeChange(onHinge)]} />
  * ```
  */
 export const onHingeChange = (
-  handler: (oldContext: HingeContext, newContext: HingeContext) => void
-) =>
-  createModifierWithEventListener(
+  handler: HingeChangeHandler | WorkletCallback<HingeChangeHandler>
+) => {
+  if (typeof handler !== 'function') {
+    return createModifier('onHingeChange', { workletCallback: getStateId(handler) });
+  }
+  const callback = handler as HingeChangeHandler;
+  return createModifierWithEventListener(
     'onHingeChange',
     (event: { oldContext: HingeContext; newContext: HingeContext }) =>
-      handler(event.oldContext, event.newContext)
+      callback(event.oldContext, event.newContext)
   );
+};
