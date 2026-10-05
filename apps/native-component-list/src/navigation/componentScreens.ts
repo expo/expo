@@ -97,12 +97,6 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/TouchableBounceScreen'));
-    },
-    name: 'TouchableBounce',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/SwitchScreen'));
     },
     name: 'Switch',
