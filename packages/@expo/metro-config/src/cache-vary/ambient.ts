@@ -1,5 +1,7 @@
 import crypto from 'node:crypto';
 
+import { event } from '../events';
+
 export type AmbientVaryScheme = 'env' | 'expo-config';
 
 /** Values that ambient schemes need but that are not part of a dimension's name. */
@@ -42,8 +44,12 @@ function readPublicExpoConfig(projectRoot: string): string | undefined {
         skipSDKVersionRequirement: true,
       });
       value = JSON.stringify(exp);
-    } catch {
+    } catch (error) {
       // An unreadable config can't be fingerprinted; callers treat this as a cache miss.
+      event('cache:vary_fingerprint_failed', {
+        scheme: 'expo-config',
+        error: event.error(error as Error),
+      });
       return undefined;
     }
     publicExpoConfigByRoot.set(projectRoot, value);

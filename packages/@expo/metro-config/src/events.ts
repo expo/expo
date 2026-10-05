@@ -17,6 +17,7 @@ declare module '2g' {
     'config:cache:skipped': Record<string, never>;
     'config:cache:rename_failed': { error: SerializedError };
     'config:cache:tombstone_remove_failed': { tombstone: string; error: SerializedError };
+    'config:cache:vary_fingerprint_failed': { scheme: string; error: SerializedError };
   }
 }
 
