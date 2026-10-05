@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove the `micromatch` dependency, and with it the transitive dependency on `braces` ([GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)). Watchers now filter changes by extension, file name and file name prefix instead of globs. ([#51093](https://github.com/expo/expo/pull/51093) by [@robhogan](https://github.com/robhogan))
+
 ### 💡 Others
 
 ## 57.0.3 — 2026-09-08

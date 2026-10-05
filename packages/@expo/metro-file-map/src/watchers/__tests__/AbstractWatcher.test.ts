@@ -7,8 +7,7 @@ import { AbstractWatcher } from '../AbstractWatcher';
 describe('AbstractWatcher.doIgnore', () => {
   test('rejects .git and .hg path segments without a user pattern', () => {
     const watcher = new AbstractWatcher('/project', {
-      dot: true,
-      globs: [],
+      included: null,
       ignored: null,
       watchmanDeferStates: [],
     });
@@ -21,8 +20,7 @@ describe('AbstractWatcher.doIgnore', () => {
 
   test('passes non-VCS paths through when no user pattern is set', () => {
     const watcher = new AbstractWatcher('/project', {
-      dot: true,
-      globs: [],
+      included: null,
       ignored: null,
       watchmanDeferStates: [],
     });
@@ -33,8 +31,7 @@ describe('AbstractWatcher.doIgnore', () => {
 
   test('rejects VCS paths even when user pattern would not match', () => {
     const watcher = new AbstractWatcher('/project', {
-      dot: true,
-      globs: [],
+      included: null,
       ignored: /never-matches-anything-xyz/,
       watchmanDeferStates: [],
     });
@@ -44,8 +41,7 @@ describe('AbstractWatcher.doIgnore', () => {
 
   test('still applies the user pattern alongside the VCS check', () => {
     const watcher = new AbstractWatcher('/project', {
-      dot: true,
-      globs: [],
+      included: null,
       ignored: /__tests__\//,
       watchmanDeferStates: [],
     });

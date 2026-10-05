@@ -270,7 +270,6 @@ export interface FileSystem {
         rootDir?: Path | null | undefined;
     }): Iterable<Path>;
 }
-export type Glob = string;
 export type JsonData = string | number | boolean | null | JsonData[] | {
     [key: string]: JsonData;
 };
@@ -379,8 +378,16 @@ export type WatcherBackendChangeEvent = {
 };
 export interface WatcherBackendOptions {
     readonly ignored: RegExp | undefined | null;
-    readonly globs: readonly string[];
-    readonly dot: boolean;
+    readonly included: WatcherIncludedFiles | null | undefined;
+}
+/**
+ * Regular files a watcher reports changes to: those matching any of the
+ * extensions (without a leading dot), basenames, or basename prefixes.
+ */
+export interface WatcherIncludedFiles {
+    readonly extensions: ReadonlySet<string>;
+    readonly basenames: ReadonlySet<string>;
+    readonly basenamePrefixes: readonly string[];
 }
 export type WatchmanClockSpec = string | {
     readonly scm: {

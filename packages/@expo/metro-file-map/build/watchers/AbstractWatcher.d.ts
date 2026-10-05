@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { WatcherBackend, WatcherBackendChangeEvent, WatcherBackendOptions } from '../types';
+import type { WatcherBackend, WatcherBackendChangeEvent, WatcherBackendOptions, WatcherIncludedFiles } from '../types';
 type EachOmit<T, K extends keyof any> = T extends any ? Omit<T, K> : never;
 export type WatcherBackendChangeEventWithoutRoot = EachOmit<WatcherBackendChangeEvent, 'root'>;
 export interface Listeners {
@@ -15,8 +15,7 @@ export declare class AbstractWatcher implements WatcherBackend {
     #private;
     readonly root: string;
     readonly ignored: RegExp | undefined | null;
-    readonly globs: readonly string[];
-    readonly dot: boolean;
+    readonly included: WatcherIncludedFiles | null | undefined;
     readonly doIgnore: (path: string) => boolean;
     constructor(dir: string, opts: WatcherBackendOptions);
     onFileEvent(listener: (event: WatcherBackendChangeEvent) => void): () => void;
