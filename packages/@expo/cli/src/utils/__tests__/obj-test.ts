@@ -10,6 +10,11 @@ describe(set, () => {
   it(`shallow writes`, () => {
     expect(set({}, 'a', 'd')).toEqual({ a: 'd' });
   });
+  it(`does not pollute the object prototype`, () => {
+    set({}, '__proto__.polluted', 'yes');
+    set({}, 'constructor.prototype.polluted', 'yes');
+    expect(({} as any).polluted).toBeUndefined();
+  });
 });
 describe(get, () => {
   it(`gets deeply`, () => {
