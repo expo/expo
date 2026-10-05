@@ -20,7 +20,7 @@ export {
   requestForegroundPermissions,
   getBackgroundPermissions,
   requestBackgroundPermissions,
-  useForegroundLocationPermissions,
-  useBackgroundLocationPermissions,
+  useForegroundPermissions,
+  useBackgroundPermissions,
 } from './Permissions';
 export { LocationUpdatesHandle, defineLocationTask } from './LocationUpdates';
