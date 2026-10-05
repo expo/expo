@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -31,8 +32,10 @@ export interface SwipeActionsGroupProps {
 
 type SwipeActionsNativeProps = SwipeActionsProps;
 
-const SwipeActionsNativeView: React.ComponentType<SwipeActionsNativeProps> =
-  requireNativeLayoutView('ExpoUI', 'SwipeActionsView');
+const SwipeActionsNativeView: React.ComponentType<SwipeActionsNativeProps> = requireNativeView(
+  'ExpoUI',
+  'SwipeActionsView'
+);
 
 /**
  * The buttons revealed when the user swipes the regular content from an edge.

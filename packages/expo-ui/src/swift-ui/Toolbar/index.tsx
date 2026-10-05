@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -66,7 +67,7 @@ export interface ToolbarItemProps {
   children: React.ReactNode;
 }
 
-const ToolbarNativeView: React.ComponentType<ToolbarProps> = requireNativeLayoutView(
+const ToolbarNativeView: React.ComponentType<ToolbarProps> = requireNativeView(
   'ExpoUI',
   'ToolbarView'
 );

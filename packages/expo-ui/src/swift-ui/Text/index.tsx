@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import * as React from 'react';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 
@@ -65,7 +65,7 @@ type NativeTextProps = CommonViewModifierProps & {
   pauseTime?: number;
 };
 
-const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeLayoutView(
+const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
   'ExpoUI',
   'TextView'
 );

@@ -22,7 +22,8 @@
  * 5. **Component** — `<AnimatedVisibility>` extracts the record arrays from the chainable
  *    types via their Symbols and passes them as plain JSON arrays to the native view.
  */
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { type PrimitiveBaseProps, transformProps } from '../layout-types';
 import { ENTER_TRANSITION_SYMBOL, EXIT_TRANSITION_SYMBOL } from './symbols';
 
@@ -191,7 +192,7 @@ type AnimatedVisibilityNativeProps = Omit<
 };
 
 const AnimatedVisibilityNativeView: React.ComponentType<AnimatedVisibilityNativeProps> =
-  requireNativeLayoutView('ExpoUI', 'AnimatedVisibilityView');
+  requireNativeView('ExpoUI', 'AnimatedVisibilityView');
 
 export function AnimatedVisibility(props: AnimatedVisibilityProps) {
   const { enterTransition, exitTransition, ...rest } = props;

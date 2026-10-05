@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import {
   type ContentAlignment,
   type FloatingToolbarExitAlwaysScrollBehavior,
@@ -18,7 +19,7 @@ export interface BoxProps extends PrimitiveBaseProps {
   floatingToolbarExitAlwaysScrollBehavior?: FloatingToolbarExitAlwaysScrollBehavior;
 }
 
-const BoxNativeView: React.ComponentType<BoxProps> = requireNativeLayoutView('ExpoUI', 'BoxView');
+const BoxNativeView: React.ComponentType<BoxProps> = requireNativeView('ExpoUI', 'BoxView');
 
 export function Box(props: BoxProps) {
   return <BoxNativeView {...transformProps(props)} />;

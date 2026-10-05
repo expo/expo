@@ -80,8 +80,6 @@ class CoreModule : Module() {
         .props
         .keys
         .associateWith { true }
-        // Used by `ExpoViewShadowNode` to disable flattening of display content views when set to true
-        .plus("disableForceFlatten" to true)
 
       val directEventTypes = viewManagerDefinition
         .callbacksDefinition

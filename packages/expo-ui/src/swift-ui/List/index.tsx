@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -6,8 +7,10 @@ import { ListForEach } from './ListForEach';
 
 export { ListForEach, type ListForEachProps, type ListForEachElementsProps } from './ListForEach';
 
-const ListNativeView: React.ComponentType<NativeListProps> =
-  requireNativeLayoutView<NativeListProps>('ExpoUI', 'ListView');
+const ListNativeView: React.ComponentType<NativeListProps> = requireNativeView<NativeListProps>(
+  'ExpoUI',
+  'ListView'
+);
 
 function transformListProps(props: Omit<ListProps, 'children'>): Omit<NativeListProps, 'children'> {
   const { modifiers, ...restProps } = props;

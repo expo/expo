@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import { type ReactNode, type ComponentType } from 'react';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -35,7 +35,7 @@ type NativeControlGroupProps = Omit<ControlGroupProps, 'label'> & {
   label?: string;
 };
 
-const ControlGroupNativeView: ComponentType<NativeControlGroupProps> = requireNativeLayoutView(
+const ControlGroupNativeView: ComponentType<NativeControlGroupProps> = requireNativeView(
   'ExpoUI',
   'ControlGroupView'
 );

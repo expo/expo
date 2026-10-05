@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ReactElement } from 'react';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createLazyStackForEach } from '../LazyStackForEach';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -48,7 +48,7 @@ export interface LazyVStackProps extends CommonViewModifierProps {
   spacing?: number;
 }
 
-const LazyVStackNativeView: React.ComponentType<LazyVStackProps> = requireNativeLayoutView(
+const LazyVStackNativeView: React.ComponentType<LazyVStackProps> = requireNativeView(
   'ExpoUI',
   'LazyVStackView'
 );

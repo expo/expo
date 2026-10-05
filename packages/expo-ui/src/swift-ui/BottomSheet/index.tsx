@@ -1,8 +1,8 @@
+import { requireNativeView } from 'expo';
 import { useState, type ComponentType, type ReactNode } from 'react';
 import { type NativeSyntheticEvent } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -46,7 +46,7 @@ type NativeBottomSheetProps = Omit<
   onDismiss: (event: NativeSyntheticEvent<object>) => void;
 };
 
-const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNativeLayoutView(
+const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNativeView(
   'ExpoUI',
   'BottomSheetView'
 );

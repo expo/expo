@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { transformButtonProps } from '../Button';
 import { type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
@@ -50,10 +50,7 @@ type NativeIconButtonProps = Omit<IconButtonProps, 'onClick' | 'shape' | 'childr
 } & ViewEvent<'onButtonPressed', void>;
 
 function createIconButtonComponent(name: string) {
-  const NativeView: React.ComponentType<NativeIconButtonProps> = requireNativeLayoutView(
-    'ExpoUI',
-    name
-  );
+  const NativeView: React.ComponentType<NativeIconButtonProps> = requireNativeView('ExpoUI', name);
 
   function Component(props: IconButtonProps) {
     const { children, ...restProps } = props;

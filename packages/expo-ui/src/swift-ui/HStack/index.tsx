@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -14,7 +15,7 @@ export interface HStackProps extends CommonViewModifierProps {
   alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
 }
 
-const HStackNativeView: React.ComponentType<HStackProps> = requireNativeLayoutView(
+const HStackNativeView: React.ComponentType<HStackProps> = requireNativeView(
   'ExpoUI',
   'HStackView'
 );

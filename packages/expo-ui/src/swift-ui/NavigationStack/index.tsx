@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import { type ComponentType, type ReactNode } from 'react';
 import { type NativeSyntheticEvent } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -30,8 +30,10 @@ type NativeNavigationStackProps = Omit<NavigationStackProps, 'onPathChange'> & {
   onPathChange?: (event: NativeSyntheticEvent<{ path: string[] }>) => void;
 };
 
-const NavigationStackNativeView: ComponentType<NativeNavigationStackProps> =
-  requireNativeLayoutView('ExpoUI', 'NavigationStackView');
+const NavigationStackNativeView: ComponentType<NativeNavigationStackProps> = requireNativeView(
+  'ExpoUI',
+  'NavigationStackView'
+);
 
 /**
  * A view that displays a root view and enables you to present additional views over the root view.

@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -34,7 +34,7 @@ type NativeToggleProps = Omit<ToggleProps, 'onIsOnChange'> & {
   onIsOnChange: (event: NativeSyntheticEvent<{ isOn: boolean }>) => void;
 };
 
-const ToggleNativeView: React.ComponentType<NativeToggleProps> = requireNativeLayoutView(
+const ToggleNativeView: React.ComponentType<NativeToggleProps> = requireNativeView(
   'ExpoUI',
   'ToggleView'
 );

@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
 import { getStateId, type ObservableState } from '../../State';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -47,8 +47,10 @@ function transformProps<T extends LoadingIndicatorCommonConfig>(
 function createLoadingIndicatorComponent<P extends LoadingIndicatorCommonConfig>(
   viewName: string
 ): React.ComponentType<P> {
-  const NativeView: React.ComponentType<NativeLoadingIndicatorCommonConfig> =
-    requireNativeLayoutView('ExpoUI', viewName);
+  const NativeView: React.ComponentType<NativeLoadingIndicatorCommonConfig> = requireNativeView(
+    'ExpoUI',
+    viewName
+  );
   function Component(props: P) {
     return <NativeView {...transformProps(props)} />;
   }

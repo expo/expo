@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type Alignment, type CommonViewModifierProps } from '../types';
 
@@ -10,7 +11,7 @@ export interface ZStackProps extends CommonViewModifierProps {
   alignment?: Alignment;
 }
 
-const ZStackNativeView: React.ComponentType<ZStackProps> = requireNativeLayoutView(
+const ZStackNativeView: React.ComponentType<ZStackProps> = requireNativeView(
   'ExpoUI',
   'ZStackView'
 );

@@ -1,8 +1,8 @@
+import { requireNativeView } from 'expo';
 import { type Ref } from 'react';
 import { type ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -53,13 +53,13 @@ export interface TooltipBoxProps {
   children: React.ReactNode;
 }
 
-const TooltipBoxNativeView: React.ComponentType<TooltipBoxProps> = requireNativeLayoutView(
+const TooltipBoxNativeView: React.ComponentType<TooltipBoxProps> = requireNativeView(
   'ExpoUI',
   'TooltipBoxView'
 );
 
 const SlotNativeView: React.ComponentType<{ slotName: string; children: React.ReactNode }> =
-  requireNativeLayoutView('ExpoUI', 'SlotView');
+  requireNativeView('ExpoUI', 'SlotView');
 
 function transformProps(
   props: Omit<TooltipBoxProps, 'children'>
@@ -84,7 +84,7 @@ export interface PlainTooltipProps {
   children: React.ReactNode;
 }
 
-const PlainTooltipNativeView: React.ComponentType<PlainTooltipProps> = requireNativeLayoutView(
+const PlainTooltipNativeView: React.ComponentType<PlainTooltipProps> = requireNativeView(
   'ExpoUI',
   'PlainTooltipView'
 );
@@ -118,7 +118,7 @@ export interface RichTooltipProps {
   children: React.ReactNode;
 }
 
-const RichTooltipNativeView: React.ComponentType<RichTooltipProps> = requireNativeLayoutView(
+const RichTooltipNativeView: React.ComponentType<RichTooltipProps> = requireNativeView(
   'ExpoUI',
   'RichTooltipView'
 );

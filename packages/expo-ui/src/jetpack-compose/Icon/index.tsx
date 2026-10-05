@@ -1,3 +1,4 @@
+import { requireNativeView } from 'expo';
 import {
   type ColorValue,
   type ImageSourcePropType,
@@ -5,7 +6,6 @@ import {
   Image,
 } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -92,7 +92,7 @@ export type NativeIconProps = Omit<IconProps, 'source' | 'tint'> & {
   inheritTint: boolean;
 };
 
-const IconNativeView: React.ComponentType<NativeIconProps> = requireNativeLayoutView(
+const IconNativeView: React.ComponentType<NativeIconProps> = requireNativeView(
   'ExpoUI',
   'IconView'
 );

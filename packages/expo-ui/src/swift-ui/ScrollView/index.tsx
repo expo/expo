@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -43,7 +44,7 @@ export interface ScrollViewProps extends CommonViewModifierProps {
   showsIndicators?: boolean;
 }
 
-const ScrollViewNativeView: React.ComponentType<ScrollViewProps> = requireNativeLayoutView(
+const ScrollViewNativeView: React.ComponentType<ScrollViewProps> = requireNativeView(
   'ExpoUI',
   'ScrollViewComponent'
 );

@@ -1,4 +1,4 @@
-import { requireNativeLayoutView } from '../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
 
 type SlotProps<ExtraProps extends Record<string, unknown> = Record<string, unknown>> = {
   name: string;
@@ -6,10 +6,7 @@ type SlotProps<ExtraProps extends Record<string, unknown> = Record<string, unkno
   children?: React.ReactNode;
 };
 
-const SlotNativeView: React.ComponentType<SlotProps> = requireNativeLayoutView(
-  'ExpoUI',
-  'SlotView'
-);
+const SlotNativeView: React.ComponentType<SlotProps> = requireNativeView('ExpoUI', 'SlotView');
 
 export function Slot<ExtraProps extends Record<string, unknown> = Record<string, unknown>>({
   name,

@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -14,7 +15,7 @@ export interface VStackProps extends CommonViewModifierProps {
   spacing?: number;
 }
 
-const VStackNativeView: React.ComponentType<VStackProps> = requireNativeLayoutView(
+const VStackNativeView: React.ComponentType<VStackProps> = requireNativeView(
   'ExpoUI',
   'VStackView'
 );

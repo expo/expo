@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import type { ComponentType } from 'react';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import type { MenuProps } from './types';
 
@@ -12,10 +12,7 @@ type NativeMenuProps = Omit<MenuProps, 'label' | 'onPrimaryAction'> & {
   onPrimaryAction?: () => void;
 };
 
-const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeLayoutView(
-  'ExpoUI',
-  'MenuView'
-);
+const MenuNativeView: ComponentType<NativeMenuProps> = requireNativeView('ExpoUI', 'MenuView');
 
 /**
  * Displays a dropdown menu when tapped.

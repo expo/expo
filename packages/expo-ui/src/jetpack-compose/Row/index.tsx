@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import {
   type HorizontalAlignment,
   type HorizontalArrangement,
@@ -28,7 +29,7 @@ export interface RowProps extends PrimitiveBaseProps {
   verticalAlignment?: VerticalAlignment;
 }
 
-const RowNativeView: React.ComponentType<RowProps> = requireNativeLayoutView('ExpoUI', 'RowView');
+const RowNativeView: React.ComponentType<RowProps> = requireNativeView('ExpoUI', 'RowView');
 
 export function Row(props: RowProps) {
   return <RowNativeView {...transformProps(props)} />;

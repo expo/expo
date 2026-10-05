@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import * as React from 'react';
 import type { ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { getTextFromChildren } from '../../utils';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -251,7 +251,7 @@ type NativeTextProps = Omit<TextProps, 'children' | 'style'> &
     lineBreak?: TextLineBreak;
   };
 
-const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeLayoutView(
+const TextNativeView: React.ComponentType<NativeTextProps> = requireNativeView(
   'ExpoUI',
   'TextView'
 );

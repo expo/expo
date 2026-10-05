@@ -1,11 +1,11 @@
-import { requireNativeLayoutView } from '../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
 
 type SlotNativeViewProps = {
   slotName: string;
   children: React.ReactNode;
 };
 
-const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeLayoutView(
+const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
   'ExpoUI',
   'SlotView'
 );

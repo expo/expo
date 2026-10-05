@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { ExpoUIModule } from '../ExpoUIModule';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -68,7 +68,7 @@ export function transformToggleButtonProps(
 }
 
 function createToggleButtonComponent(name: string) {
-  const NativeView: React.ComponentType<NativeToggleButtonProps> = requireNativeLayoutView(
+  const NativeView: React.ComponentType<NativeToggleButtonProps> = requireNativeView(
     'ExpoUI',
     name
   );

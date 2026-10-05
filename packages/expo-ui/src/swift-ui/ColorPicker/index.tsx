@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import { useCallback } from 'react';
 import { type NativeSyntheticEvent, processColor } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -31,7 +31,7 @@ const ColorPickerNativeView: React.ComponentType<
     selection: ReturnType<typeof processColor>;
     onSelectionChange: (event: onSelectionChangeEvent) => void;
   }
-> = requireNativeLayoutView('ExpoUI', 'ColorPickerView');
+> = requireNativeView('ExpoUI', 'ColorPickerView');
 
 /**
  * Renders a `ColorPicker` component using SwiftUI.

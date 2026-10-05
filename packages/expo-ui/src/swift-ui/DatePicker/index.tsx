@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type NativeSyntheticEvent } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -66,7 +66,7 @@ function transformDatePickerProps(props: DatePickerProps): NativeDatePickerProps
   };
 }
 
-const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = requireNativeLayoutView(
+const DatePickerNativeView: React.ComponentType<NativeDatePickerProps> = requireNativeView(
   'ExpoUI',
   'DatePickerView'
 );

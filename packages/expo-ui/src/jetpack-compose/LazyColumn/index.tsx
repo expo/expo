@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import type { ExpoModifier } from '../../types';
 import { LazyItems } from '../LazyItems';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -59,7 +60,7 @@ export interface LazyColumnProps {
 }
 
 type NativeLazyColumnProps = LazyColumnProps;
-const LazyColumnNativeView: React.ComponentType<NativeLazyColumnProps> = requireNativeLayoutView(
+const LazyColumnNativeView: React.ComponentType<NativeLazyColumnProps> = requireNativeView(
   'ExpoUI',
   'LazyColumnView'
 );

@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -39,7 +39,7 @@ function transformProps<T extends { modifiers?: ModifierConfig[] }>(props: T): T
 function createCardComponent<P extends { modifiers?: ModifierConfig[] }>(
   viewName: string
 ): React.ComponentType<P> {
-  const NativeView: React.ComponentType<P> = requireNativeLayoutView('ExpoUI', viewName);
+  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
   function Component(props: P) {
     return <NativeView {...transformProps(props)} />;
   }

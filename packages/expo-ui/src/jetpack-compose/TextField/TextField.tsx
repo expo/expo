@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
 import { type ObservableState } from '../../State';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 import { Slot } from '../SlotView';
 import {
@@ -107,7 +107,7 @@ type NativeTextFieldProps = Omit<
     shape?: ShapeRecordProps;
   };
 
-const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeLayoutView(
+const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
   'ExpoUI',
   'TextFieldView'
 );

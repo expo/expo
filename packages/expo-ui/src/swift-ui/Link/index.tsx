@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -18,10 +19,7 @@ export interface LinkProps extends CommonViewModifierProps {
   children?: React.ReactElement | React.ReactElement[];
 }
 
-const LinkNativeView: React.ComponentType<LinkProps> = requireNativeLayoutView(
-  'ExpoUI',
-  'LinkView'
-);
+const LinkNativeView: React.ComponentType<LinkProps> = requireNativeView('ExpoUI', 'LinkView');
 
 /**
  * Displays a native link component.

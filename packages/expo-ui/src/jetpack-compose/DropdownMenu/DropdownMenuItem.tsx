@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -9,7 +9,7 @@ type SlotNativeViewProps = {
   children: React.ReactNode;
 };
 
-const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeLayoutView(
+const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
   'ExpoUI',
   'SlotView'
 );
@@ -59,7 +59,7 @@ type NativeDropdownMenuItemProps = Omit<DropdownMenuItemProps, 'onClick' | 'chil
   ViewEvent<'onItemPressed', void> & { children?: React.ReactNode };
 
 const DropdownMenuItemNativeView: React.ComponentType<NativeDropdownMenuItemProps> =
-  requireNativeLayoutView('ExpoUI', 'DropdownMenuItemView');
+  requireNativeView('ExpoUI', 'DropdownMenuItemView');
 
 /**
  * A leading icon slot for `DropdownMenuItem`.

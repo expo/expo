@@ -1,8 +1,8 @@
+import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
 import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
 import { useHostedTextInput } from '../../keyboard';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -95,7 +95,7 @@ export type NativeTextFieldProps = Omit<
     onTextChangeSync?: number | null;
   };
 
-const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeLayoutView(
+const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
   'ExpoUI',
   'TextFieldView'
 );

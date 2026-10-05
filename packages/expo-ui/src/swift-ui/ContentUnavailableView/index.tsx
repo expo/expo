@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -22,7 +22,7 @@ export interface ContentUnavailableViewProps extends CommonViewModifierProps {
 }
 
 const ContentUnavailableViewNativeView: React.ComponentType<ContentUnavailableViewProps> =
-  requireNativeLayoutView('ExpoUI', 'ContentUnavailableView');
+  requireNativeView('ExpoUI', 'ContentUnavailableView');
 
 function transformContentUnavailableViewProps(
   props: ContentUnavailableViewProps

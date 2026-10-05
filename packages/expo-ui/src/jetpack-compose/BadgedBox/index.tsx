@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -18,15 +19,12 @@ type SlotProps = {
   children: React.ReactNode;
 };
 
-const BadgedBoxNativeView: React.ComponentType<BadgedBoxProps> = requireNativeLayoutView(
+const BadgedBoxNativeView: React.ComponentType<BadgedBoxProps> = requireNativeView(
   'ExpoUI',
   'BadgedBoxView'
 );
 
-const SlotNativeView: React.ComponentType<SlotProps> = requireNativeLayoutView(
-  'ExpoUI',
-  'SlotView'
-);
+const SlotNativeView: React.ComponentType<SlotProps> = requireNativeView('ExpoUI', 'SlotView');
 
 function transformProps(props: BadgedBoxProps): BadgedBoxProps {
   const { modifiers, ...restProps } = props;

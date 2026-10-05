@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import type { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -10,7 +11,7 @@ export interface SpacerProps {
 }
 
 type NativeSpacerProps = SpacerProps;
-const SpacerNativeView: React.ComponentType<SpacerProps> = requireNativeLayoutView(
+const SpacerNativeView: React.ComponentType<SpacerProps> = requireNativeView(
   'ExpoUI',
   'SpacerView'
 );

@@ -1,5 +1,4 @@
 ---
-"expo-modules-core": patch
 "@expo/ui": patch
 ---
 

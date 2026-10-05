@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import { useRef } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { Slot } from '../SlotView';
 import { type CommonViewModifierProps } from '../types';
 
@@ -64,7 +64,7 @@ type NativeSliderProps = Omit<
   children?: React.ReactNode;
 };
 
-const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeLayoutView(
+const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeView(
   'ExpoUI',
   'SliderView'
 );

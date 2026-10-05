@@ -1,3 +1,4 @@
+import { requireNativeView } from 'expo';
 import { type ReactElement } from 'react';
 
 import {
@@ -5,7 +6,6 @@ import {
   type RecycledSlotProps,
   type WindowChangeEvent,
 } from '../../recycling/useRecycledRows';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -61,12 +61,9 @@ type NativeProps = CommonViewModifierProps &
     children: ReactElement;
   };
 
-const NativeList = requireNativeLayoutView<NativeProps>('ExpoUI', 'DataListForEachView');
-export const NativeSlot = requireNativeLayoutView<RecycledSlotProps>(
-  'ExpoUI',
-  'DataListForEachItemView'
-);
-const NativePool = requireNativeLayoutView<{ children: ReactElement[] }>(
+const NativeList = requireNativeView<NativeProps>('ExpoUI', 'DataListForEachView');
+export const NativeSlot = requireNativeView<RecycledSlotProps>('ExpoUI', 'DataListForEachItemView');
+const NativePool = requireNativeView<{ children: ReactElement[] }>(
   'ExpoUI',
   'DataListForEachPoolView'
 );

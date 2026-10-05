@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent, ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig } from '../../types';
 import { ExpoUIModule } from '../ExpoUIModule';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -70,12 +70,12 @@ type ThumbContentProps = {
   children: React.ReactNode;
 };
 
-const SwitchNativeView: React.ComponentType<NativeSwitchProps> = requireNativeLayoutView(
+const SwitchNativeView: React.ComponentType<NativeSwitchProps> = requireNativeView(
   'ExpoUI',
   'SwitchView'
 );
 
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
   'ExpoUI',
   'SlotView'
 );

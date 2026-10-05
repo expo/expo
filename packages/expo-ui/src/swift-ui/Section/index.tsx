@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -40,7 +41,7 @@ type SectionNativeProps = Omit<SectionProps, 'onIsExpandedChange'> & {
   onIsExpandedChange?: (e: { nativeEvent: { isExpanded: boolean } }) => void;
 };
 
-const SectionNativeView: React.ComponentType<SectionNativeProps> = requireNativeLayoutView(
+const SectionNativeView: React.ComponentType<SectionNativeProps> = requireNativeView(
   'ExpoUI',
   'SectionView'
 );

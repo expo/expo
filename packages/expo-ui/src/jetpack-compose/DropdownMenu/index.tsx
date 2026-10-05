@@ -1,12 +1,12 @@
+import { requireNativeView } from 'expo';
 import type { ReactNode } from 'react';
 import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeLayoutView(
+const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeView(
   'ExpoUI',
   'DropdownMenuView'
 );
@@ -15,7 +15,7 @@ const MenuNativeView: React.ComponentType<NativeMenuProps> = requireNativeLayout
 const SlotNativeView: React.ComponentType<{
   slotName: string;
   children: React.ReactNode;
-}> = requireNativeLayoutView('ExpoUI', 'SlotView');
+}> = requireNativeView('ExpoUI', 'SlotView');
 
 /**
  * Props of the `DropdownMenu` component.

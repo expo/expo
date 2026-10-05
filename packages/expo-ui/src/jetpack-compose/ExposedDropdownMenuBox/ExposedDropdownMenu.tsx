@@ -1,12 +1,12 @@
+import { requireNativeView } from 'expo';
 import type { ReactNode } from 'react';
 import { type ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-const NativeView: React.ComponentType<ExposedDropdownMenuProps> = requireNativeLayoutView(
+const NativeView: React.ComponentType<ExposedDropdownMenuProps> = requireNativeView(
   'ExpoUI',
   'ExposedDropdownMenuView'
 );

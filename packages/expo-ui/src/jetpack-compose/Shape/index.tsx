@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -89,7 +89,7 @@ export type ShapeRecordProps = Pick<
   | 'type'
 >;
 
-const ShapeNativeView: React.ComponentType<NativeShapeProps> = requireNativeLayoutView(
+const ShapeNativeView: React.ComponentType<NativeShapeProps> = requireNativeView(
   'ExpoUI',
   'ShapeView'
 );

@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import React from 'react';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -35,13 +35,12 @@ export interface GridProps extends CommonViewModifierProps {
   children: React.ReactNode;
 }
 
-const GridNativeView: React.ComponentType<GridProps> = requireNativeLayoutView(
-  'ExpoUI',
-  'GridView'
-);
+const GridNativeView: React.ComponentType<GridProps> = requireNativeView('ExpoUI', 'GridView');
 
-const GridRowNativeView: React.ComponentType<{ children: React.ReactNode }> =
-  requireNativeLayoutView('ExpoUI', 'GridRowView');
+const GridRowNativeView: React.ComponentType<{ children: React.ReactNode }> = requireNativeView(
+  'ExpoUI',
+  'GridRowView'
+);
 
 const GridRow: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <GridRowNativeView>{children}</GridRowNativeView>;

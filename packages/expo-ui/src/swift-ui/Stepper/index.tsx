@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -33,7 +34,7 @@ export interface StepperProps extends CommonViewModifierProps {
 type NativeStepperProps = Omit<StepperProps, 'onValueChange'> &
   ViewEvent<'onValueChange', { value: number }>;
 
-const StepperNativeView: React.ComponentType<NativeStepperProps> = requireNativeLayoutView(
+const StepperNativeView: React.ComponentType<NativeStepperProps> = requireNativeView(
   'ExpoUI',
   'StepperView'
 );

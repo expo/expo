@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
@@ -28,7 +29,7 @@ export interface TabViewProps extends CommonViewModifierProps {
 type NativeTabViewProps = Omit<TabViewProps, 'onSelectionChange'> &
   ViewEvent<'onSelectionChange', { selection: string }>;
 
-const TabViewNativeView: React.ComponentType<NativeTabViewProps> = requireNativeLayoutView(
+const TabViewNativeView: React.ComponentType<NativeTabViewProps> = requireNativeView(
   'ExpoUI',
   'TabView'
 );

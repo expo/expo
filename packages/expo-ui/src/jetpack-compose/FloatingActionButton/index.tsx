@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -77,9 +77,9 @@ type NativeFloatingActionButtonProps = Omit<FloatingActionButtonProps, 'onClick'
   };
 
 const FloatingActionButtonNativeView: React.ComponentType<NativeFloatingActionButtonProps> =
-  requireNativeLayoutView('ExpoUI', 'FloatingActionButtonView');
+  requireNativeView('ExpoUI', 'FloatingActionButtonView');
 
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
   'ExpoUI',
   'SlotView'
 );

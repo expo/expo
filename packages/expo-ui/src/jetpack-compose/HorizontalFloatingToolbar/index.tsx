@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -71,10 +71,10 @@ type NativeSlotViewProps = {
 };
 
 const HorizontalFloatingToolbarNativeView: React.ComponentType<NativeHorizontalFloatingToolbarProps> =
-  requireNativeLayoutView('ExpoUI', 'HorizontalFloatingToolbarView');
+  requireNativeView('ExpoUI', 'HorizontalFloatingToolbarView');
 
 // Internal slot marker component - not exported
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
   'ExpoUI',
   'SlotView'
 );

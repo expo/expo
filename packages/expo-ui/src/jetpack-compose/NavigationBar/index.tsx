@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers';
 
@@ -88,15 +88,15 @@ export interface NavigationBarItemProps {
 type NativeNavigationBarItemProps = Omit<NavigationBarItemProps, 'onClick'> &
   ViewEvent<'onButtonPressed', void>;
 
-const NavigationBarNativeView: React.ComponentType<NavigationBarProps> = requireNativeLayoutView(
+const NavigationBarNativeView: React.ComponentType<NavigationBarProps> = requireNativeView(
   'ExpoUI',
   'NavigationBarView'
 );
 
 const NavigationBarItemNativeView: React.ComponentType<NativeNavigationBarItemProps> =
-  requireNativeLayoutView('ExpoUI', 'NavigationBarItemView');
+  requireNativeView('ExpoUI', 'NavigationBarItemView');
 
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeLayoutView(
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
   'ExpoUI',
   'SlotView'
 );

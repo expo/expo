@@ -1,3 +1,4 @@
+import { requireNativeView } from 'expo';
 import { Fragment, type ReactElement } from 'react';
 
 import {
@@ -6,7 +7,6 @@ import {
   type RecycledSlotProps,
   type WindowChangeEvent,
 } from '../../recycling/useRecycledRows';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent } from '../../types';
 
 export interface LazyItemsProps<T> {
@@ -48,11 +48,11 @@ type NativeLazyItemsProps = ViewEvent<'onWindowChange', WindowChangeEvent> & {
 };
 
 const LazyItemsNativeView: React.ComponentType<NativeLazyItemsProps> =
-  requireNativeLayoutView<NativeLazyItemsProps>('ExpoUI', 'LazyItemsView');
+  requireNativeView<NativeLazyItemsProps>('ExpoUI', 'LazyItemsView');
 const LazyItemsSlotNativeView: React.ComponentType<RecycledSlotProps> =
-  requireNativeLayoutView<RecycledSlotProps>('ExpoUI', 'LazyItemsSlotView');
+  requireNativeView<RecycledSlotProps>('ExpoUI', 'LazyItemsSlotView');
 const LazyItemsPoolNativeView: React.ComponentType<{ children: ReactElement[] }> =
-  requireNativeLayoutView('ExpoUI', 'LazyItemsPoolView');
+  requireNativeView('ExpoUI', 'LazyItemsPoolView');
 
 /**
  * A block of recycled rows inside `LazyColumn` or `LazyRow`, mirroring the Compose

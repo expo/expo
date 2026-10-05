@@ -1,8 +1,8 @@
+import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
 import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
 import { useHostedTextInput } from '../../keyboard';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ViewEvent } from '../../types';
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -62,7 +62,7 @@ export type NativeSecureFieldProps = Omit<
     onTextChangeSync?: number | null;
   };
 
-const SecureFieldNativeView: React.ComponentType<NativeSecureFieldProps> = requireNativeLayoutView(
+const SecureFieldNativeView: React.ComponentType<NativeSecureFieldProps> = requireNativeView(
   'ExpoUI',
   'SecureFieldView'
 );

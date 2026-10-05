@@ -1,7 +1,7 @@
+import { requireNativeView } from 'expo';
 import React from 'react';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { ViewEvent, ModifierConfig } from '../../types';
 import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -103,7 +103,7 @@ type NativeSurfaceProps = Omit<SurfaceProps, 'onClick' | 'onCheckedChange' | 'sh
     shape?: ShapeRecordProps;
   };
 
-const SurfaceNativeView: React.ComponentType<NativeSurfaceProps> = requireNativeLayoutView(
+const SurfaceNativeView: React.ComponentType<NativeSurfaceProps> = requireNativeView(
   'ExpoUI',
   'SurfaceView'
 );

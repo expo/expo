@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent, type ModifierConfig } from '../../types';
 import { type ContentAlignment } from '../layout-types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -58,7 +58,7 @@ type NativePullToRefreshBoxProps = Omit<PullToRefreshBoxProps, 'onRefresh'> &
   ViewEvent<'onRefresh', void>;
 
 const NativePullToRefreshBoxView: React.ComponentType<NativePullToRefreshBoxProps> =
-  requireNativeLayoutView('ExpoUI', 'PullToRefreshBoxView');
+  requireNativeView('ExpoUI', 'PullToRefreshBoxView');
 
 function transformProps(props: PullToRefreshBoxProps): NativePullToRefreshBoxProps {
   const { isRefreshing, modifiers, onRefresh, ...restProps } = props;

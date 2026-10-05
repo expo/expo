@@ -1,4 +1,5 @@
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
+import { requireNativeView } from 'expo';
+
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 
@@ -31,7 +32,7 @@ type NativeProgressViewProps = Omit<ProgressViewProps, 'timerInterval'> & {
   timerInterval?: { lower: number; upper: number };
 };
 
-const NativeProgressView: React.ComponentType<NativeProgressViewProps> = requireNativeLayoutView(
+const NativeProgressView: React.ComponentType<NativeProgressViewProps> = requireNativeView(
   'ExpoUI',
   'ProgressView'
 );

@@ -1,17 +1,17 @@
+import { requireNativeView } from 'expo';
 import { StyleSheet, View } from 'react-native';
 
 import { Host } from '../../jetpack-compose/Host';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { Slot } from '../../jetpack-compose/SlotView';
 import { fillMaxSize } from '../../jetpack-compose/modifiers';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import type { MaskedViewProps } from './types';
 
 const MaskNativeView: React.ComponentType<{
   alignment?: 'topStart';
   modifiers?: ReturnType<typeof fillMaxSize>[];
   children?: React.ReactNode;
-}> = requireNativeLayoutView('ExpoUI', 'MaskView');
+}> = requireNativeView('ExpoUI', 'MaskView');
 
 /**
  * Android implementation of `MaskedView`. Bridges arbitrary React Native children

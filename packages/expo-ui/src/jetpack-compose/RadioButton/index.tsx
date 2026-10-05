@@ -1,6 +1,6 @@
+import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -43,7 +43,7 @@ type NativeRadioButtonProps = Omit<RadioButtonProps, 'onClick'> &
     clickable: boolean;
   };
 
-const RadioButtonNativeView: React.ComponentType<NativeRadioButtonProps> = requireNativeLayoutView(
+const RadioButtonNativeView: React.ComponentType<NativeRadioButtonProps> = requireNativeView(
   'ExpoUI',
   'RadioButtonView'
 );

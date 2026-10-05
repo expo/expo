@@ -1,3 +1,4 @@
+import { requireNativeView } from 'expo';
 import { Fragment, type ReactElement } from 'react';
 
 import {
@@ -5,7 +6,6 @@ import {
   useRecycledRows,
   type WindowChangeEvent,
 } from '../../recycling/useRecycledRows';
-import { requireNativeLayoutView } from '../../requireNativeLayoutView';
 import { type ViewEvent } from '../../types';
 import { NativeSlot } from '../List/DataListForEach';
 
@@ -50,8 +50,8 @@ type NativeProps = ViewEvent<'onWindowChange', WindowChangeEvent> & {
   children: ReactElement;
 };
 
-const NativeForEach = requireNativeLayoutView<NativeProps>('ExpoUI', 'DataListForEachView');
-const NativePool = requireNativeLayoutView<{ children: ReactElement[] }>(
+const NativeForEach = requireNativeView<NativeProps>('ExpoUI', 'DataListForEachView');
+const NativePool = requireNativeView<{ children: ReactElement[] }>(
   'ExpoUI',
   'DataListForEachPoolView'
 );
