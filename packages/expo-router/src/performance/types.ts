@@ -1,5 +1,4 @@
 import type { NavigationAction } from '../react-navigation';
-import type { unstable_PerformanceObserver } from './index';
 
 /**
  * The page that a page mark describes.
@@ -34,22 +33,15 @@ export interface RouterActionMarkDetail {
 }
 
 /**
- * A performance entry recorded by Expo Router. It has the shape of a `PerformanceMark`.
+ * A performance mark recorded by Expo Router. Observers receive it as a standard `PerformanceEntry`.
+ * Check its `name` and cast it to this type to read `detail`.
  */
-export interface RouterPerformanceEntry<Name extends string, Detail> {
+export interface RouterPerformanceEntry<Name extends string, Detail> extends PerformanceMark {
   readonly entryType: 'mark';
   /**
    * The name of the mark, which also determines the shape of `detail`.
    */
   readonly name: Name;
-  /**
-   * The `performance.now()` time when Expo Router created the mark, in milliseconds.
-   */
-  readonly startTime: number;
-  /**
-   * Always `0`, because a mark is a single point in time.
-   */
-  readonly duration: 0;
   /**
    * The page or action data of the mark.
    */
@@ -98,7 +90,7 @@ export type RouterActionDispatchedMark = RouterPerformanceEntry<
 >;
 
 /**
- * A performance mark recorded by Expo Router. Check `name` to narrow the type of `detail`.
+ * Any performance mark recorded by Expo Router. Check `name` to narrow the type of `detail`.
  */
 export type RouterPerformanceMark =
   | RouterPagePreloadedMark
@@ -117,32 +109,3 @@ export type RouterPerformanceMarkByName<Name extends RouterPerformanceMarkName> 
   RouterPerformanceMark,
   { name: Name }
 >;
-
-/**
- * The list of entries passed to an `unstable_PerformanceObserver` callback.
- */
-export interface RouterPerformanceObserverEntryList {
-  getEntries(): RouterPerformanceMark[];
-  getEntriesByName<Name extends RouterPerformanceMarkName>(
-    name: Name,
-    type?: string
-  ): RouterPerformanceMarkByName<Name>[];
-  getEntriesByType(type: string): RouterPerformanceMark[];
-}
-
-export type RouterPerformanceObserverCallback = (
-  list: RouterPerformanceObserverEntryList,
-  observer: unstable_PerformanceObserver
-) => void;
-
-export interface RouterPerformanceObserverInit {
-  /**
-   * The entry type to observe. Expo Router records only `mark` entries.
-   */
-  type: 'mark';
-  /**
-   * When `true`, the observer also receives the entries recorded before it started to observe.
-   * @default false
-   */
-  buffered?: boolean;
-}
