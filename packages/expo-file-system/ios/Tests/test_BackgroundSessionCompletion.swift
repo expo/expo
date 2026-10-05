@@ -1,10 +1,13 @@
+// Copyright 2026-present 650 Industries. All rights reserved.
+
 import Foundation
+import Testing
 
-func assertEqual<T: Equatable>(_ actual: T, _ expected: T, file: StaticString = #file, line: UInt = #line) {
-  precondition(actual == expected, "Expected \(expected), got \(actual)", file: file, line: line)
-}
+@testable import ExpoFileSystem
 
-final class BackgroundSessionCompletionTests {
+@Suite("Background session completion")
+struct BackgroundSessionCompletionTests {
+  @Test
   func testWaitsForEverySuccessfulDownloadAndFinalEvent() {
     let state = BackgroundSessionCompletion()
     let first = NSObject(), second = NSObject(), active = NSObject()
@@ -14,16 +17,17 @@ final class BackgroundSessionCompletionTests {
     state.finish(first, succeeded: true)
     state.finish(second, succeeded: true)
     state.discard(first)
-    assertEqual(calls, 0)
+    #expect(calls == 0)
     state.finishEvents("session")
-    assertEqual(calls, 0)
+    #expect(calls == 0)
     state.discard(second)
-    assertEqual(calls, 1)
+    #expect(calls == 1)
     state.discard(second)
     state.finishEvents("session")
-    assertEqual(calls, 1)
+    #expect(calls == 1)
   }
 
+  @Test
   func testDeadlineNeverPrecedesFinalEvent() {
     let state = BackgroundSessionCompletion(), task = NSObject()
     var calls = 0
@@ -31,14 +35,15 @@ final class BackgroundSessionCompletionTests {
     state.register(task, session: "session")
     state.finish(task, succeeded: true)
     state.expire("session", token: token)
-    assertEqual(calls, 0)
+    #expect(calls == 0)
     state.finishEvents("session")
-    assertEqual(calls, 1)
+    #expect(calls == 1)
     state.discard(task)
     state.expire("session", token: token)
-    assertEqual(calls, 1)
+    #expect(calls == 1)
   }
 
+  @Test
   func testDeadlineReleasesUnacknowledgedDownloadAfterFinalEvent() {
     let state = BackgroundSessionCompletion(), task = NSObject()
     var calls = 0
@@ -46,11 +51,12 @@ final class BackgroundSessionCompletionTests {
     state.register(task, session: "session")
     state.finish(task, succeeded: true)
     state.finishEvents("session")
-    assertEqual(calls, 0)
+    #expect(calls == 0)
     state.expire("session", token: token)
-    assertEqual(calls, 1)
+    #expect(calls == 1)
   }
 
+  @Test
   func testForegroundAndFailedSaveDoNotDelayLaterWake() {
     let state = BackgroundSessionCompletion(), foreground = NSObject(), failed = NSObject()
     state.register(foreground, session: "session")
@@ -60,9 +66,10 @@ final class BackgroundSessionCompletionTests {
     state.register(failed, session: "session")
     state.finish(failed, succeeded: false)
     state.finishEvents("session")
-    assertEqual(calls, 1)
+    #expect(calls == 1)
   }
 
+  @Test
   func testReleaseAndCancellationDropRegistration() {
     let state = BackgroundSessionCompletion(), task = NSObject()
     var calls = 0
@@ -71,9 +78,10 @@ final class BackgroundSessionCompletionTests {
     state.finish(task, succeeded: true)
     state.finishEvents("session")
     state.discard(task)
-    assertEqual(calls, 1)
+    #expect(calls == 1)
   }
 
+  @Test
   func testOldTimerCannotCompleteNewWake() {
     let state = BackgroundSessionCompletion(), task = NSObject()
     var calls = 0
@@ -84,11 +92,12 @@ final class BackgroundSessionCompletionTests {
     state.finish(task, succeeded: true)
     state.finishEvents("session")
     state.expire("session", token: old)
-    assertEqual(calls, 1)
+    #expect(calls == 1)
     state.expire("session", token: current)
-    assertEqual(calls, 2)
+    #expect(calls == 2)
   }
 
+  @Test
   func testDefaultAndOtherSessionsRemainIndependent() {
     let state = BackgroundSessionCompletion(), task = NSObject()
     var completed: [String] = []
@@ -98,19 +107,8 @@ final class BackgroundSessionCompletionTests {
     state.receiveHandler("default") { completed.append("default") }
     state.finishEvents("default")
     state.finishEvents("deferred")
-    assertEqual(completed, ["default"])
+    #expect(completed == ["default"])
     state.discard(task)
-    assertEqual(completed, ["default", "deferred"])
+    #expect(completed == ["default", "deferred"])
   }
 }
-
-
-let tests = BackgroundSessionCompletionTests()
-tests.testWaitsForEverySuccessfulDownloadAndFinalEvent()
-tests.testDeadlineNeverPrecedesFinalEvent()
-tests.testDeadlineReleasesUnacknowledgedDownloadAfterFinalEvent()
-tests.testForegroundAndFailedSaveDoNotDelayLaterWake()
-tests.testReleaseAndCancellationDropRegistration()
-tests.testOldTimerCannotCompleteNewWake()
-tests.testDefaultAndOtherSessionsRemainIndependent()
-print("7 background-session lifecycle tests passed")
