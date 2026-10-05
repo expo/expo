@@ -12,72 +12,114 @@ import expo.modules.interfaces.taskManager.TaskInterface
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.location.next.locationProviders.BackgroundUpdatesParameters
+import expo.modules.location.next.locationProviders.toBackgroundUpdatesParameters
+import java.util.concurrent.ConcurrentHashMap
+
 abstract class LocationTaskConsumer(
   context: Context,
   taskManagerUtils: TaskManagerUtilsInterface?
 ) : TaskConsumer(context, taskManagerUtils) {
-  var mTask: TaskInterface? = null
-  var mPendingIntent: PendingIntent? = null
+  @Volatile
+  var task: TaskInterface? = null
+  @Volatile
+  var pendingIntent: PendingIntent? = null
+
+  private val currentOptions: BackgroundUpdatesParameters
+    get() = (task?.options ?: emptyMap()).toBackgroundUpdatesParameters()
 
   override fun taskType(): String = "location"
 
-  final override fun didRegister(task: TaskInterface?) {
-    mTask = task
-    val task = mTask ?: run { return }
-    val pendingIntent = taskManagerUtils.createTaskIntent(context, task)
-    if (requestLocationUpdates(pendingIntent)) {
-      mPendingIntent = pendingIntent
+  final override fun didRegister(registeredTask: TaskInterface?) {
+    val registered = registeredTask ?: return
+    task = registered
+    val newPendingIntent = taskManagerUtils.createTaskIntent(context, registered)
+    val started = requestLocationUpdates(newPendingIntent, currentOptions)
+    if (started) {
+      pendingIntent = newPendingIntent
     }
+    statuses[registered.name] = statuses.getOrDefault(registered.name, BackgroundTaskStatus()).copy(isRunning = started)
   }
 
-  abstract fun requestLocationUpdates(pendingIntent: PendingIntent): Boolean
+  protected fun reportRequestFailed(cause: Throwable) {
+    val name = task?.name ?: return
+    statuses[name] = statuses.getOrDefault(name, BackgroundTaskStatus())
+      .copy(isRunning = false, lastError = cause.message ?: cause.toString())
+  }
+
+  abstract fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean = false): Boolean
 
   final override fun didUnregister() {
-    mTask = null
-    mPendingIntent?.let {
-      stopLocationUpdates(it)
-      it.cancel()
-    }
-    mPendingIntent = null
+    task?.let { statuses.remove(it.name) }
+    task = null
+    pendingIntent?.let { stopLocationUpdates(it) }
+    pendingIntent = null
   }
 
   abstract fun stopLocationUpdates(pendingIntent: PendingIntent)
 
   final override fun setOptions(options: MutableMap<String, Any>?) {
-    val task = mTask ?: return
-    mPendingIntent?.let { stopLocationUpdates(it) }
-    mPendingIntent = null
-
-    val pendingIntent = taskManagerUtils.createTaskIntent(context, task)
-    if (requestLocationUpdates(pendingIntent)) {
-      mPendingIntent = pendingIntent
+    val currentTask = task ?: return
+    pendingIntent?.let {
+      val started = requestLocationUpdates(it, currentOptions, updateExisting = true)
+      statuses[currentTask.name] = statuses.getOrDefault(currentTask.name, BackgroundTaskStatus()).copy(isRunning = started)
     }
   }
 
   final override fun didReceiveBroadcast(intent: Intent?) {
-    val task = mTask ?: return
+    val currentTask = task ?: return
     val locationData = decodeBatchedPositions(intent)
     if (locationData.data == null && locationData.error == null) {
       return
     }
 
+    locationData.data?.lastOrNull()?.let {
+      statuses[currentTask.name] = statuses.getOrDefault(currentTask.name, BackgroundTaskStatus())
+        .copy(isRunning = true, lastFixAt = it.timestamp)
+    }
+
     if (LocationModuleNext.modulesStarted.get() > 0) {
-      task.execute(locationData.toBundle(), null)
+      currentTask.execute(locationData.toBundle(), null)
     } else {
-      taskManagerUtils.scheduleJob(context, task, locationData.toPersistableBundleList())
+      runCatching {
+        taskManagerUtils.scheduleJob(context, currentTask, locationData.toPersistableBundleList())
+      }
     }
   }
   abstract fun decodeBatchedPositions(intent: Intent?): BatchedPositions
 
   final override fun didExecuteJob(jobService: JobService?, params: JobParameters?): Boolean {
-    val task = mTask ?: return false
+    val currentTask = task ?: return false
     val locationData = taskManagerUtils.extractDataFromJobParams(params).toBatchedPositions()
-    task.execute(locationData.toBundle(), null) {
+    currentTask.execute(locationData.toBundle(), null) {
       jobService?.jobFinished(params, false)
     }
     return true
   }
+
+  companion object {
+    private val statuses = ConcurrentHashMap<String, BackgroundTaskStatus>()
+
+    fun statusOf(taskName: String, isRegistered: Boolean) =
+      statuses.getOrDefault(taskName, BackgroundTaskStatus()).copy(isRegistered = isRegistered)
+  }
 }
+
+class BackgroundLocationHandle(
+  val taskName: String,
+  @Volatile
+  var profile: LocationProfile,
+) : SharedObject()
+
+@OptimizedRecord
+data class BackgroundTaskStatus(
+  @Field val isRegistered: Boolean = false,
+  @Field val isRunning: Boolean = false,
+  @Field val lastError: String? = null,
+  @Field val lastFixAt: Double? = null
+) : Record
 
 class BatchedPositions(
   @Field val data: List<Position>? = null,

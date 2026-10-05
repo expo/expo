@@ -8,11 +8,14 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.location.next.locationProviders.BackgroundUpdatesParameters
 import expo.modules.location.next.locationProviders.GetCurrentPositionOptions
 import expo.modules.location.next.locationProviders.LocationPriority
 import expo.modules.location.next.locationProviders.WatchPositionParameters
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 enum class LocationPermissionStatus(val value: String) : Enumerable {
   GRANTED("granted"),
@@ -96,6 +99,15 @@ enum class LocationProfile(val value: String) : Enumerable {
       AIRBORNE -> WatchPositionParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO)
       LOW_POWER -> WatchPositionParameters(LocationPriority.LOW_POWER, 60.seconds, 300.seconds)
     }
+  }
+
+  fun toBackgroundUpdatesParameters() = when (this) {
+    DEFAULT -> BackgroundUpdatesParameters(LocationPriority.BALANCED_POWER_ACCURACY, 1.minutes, 5.minutes, 100f)
+    AUTOMOTIVE_NAVIGATION -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO, 0f)
+    OTHER_NAVIGATION -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 5.seconds, 30.seconds, 10f)
+    FITNESS -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 10.seconds, 2.minutes, 25f)
+    AIRBORNE -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO, 0f)
+    LOW_POWER -> BackgroundUpdatesParameters(LocationPriority.LOW_POWER, 15.minutes, 1.hours, 500f)
   }
 }
 

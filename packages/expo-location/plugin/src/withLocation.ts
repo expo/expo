@@ -259,6 +259,7 @@ const withLocation: ConfigPlugin<Props | void> = (
       'android.permission.ACCESS_FINE_LOCATION',
       // These permissions are optional, and not listed in the library AndroidManifest.xml
       isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
+      isAndroidBackgroundLocationEnabled && 'android.permission.RECEIVE_BOOT_COMPLETED',
       enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE',
       enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE_LOCATION',
       enableAndroidForegroundService && 'android.permission.POST_NOTIFICATIONS',

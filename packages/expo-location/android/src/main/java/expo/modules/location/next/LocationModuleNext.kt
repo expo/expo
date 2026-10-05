@@ -165,23 +165,41 @@ class LocationModuleNext : Module() {
       hasLocationServicesEnabled()
     }
 
-    Class("BackgroundLocation") {
-      StaticFunction("ensureStarted") { taskName: String ->
-        val locationTaskConsumer = currentLocationProvider.getLocationTaskConsumerClass().getOrNull("getLocationTaskConsumerClass")
-          ?: return@StaticFunction false
-        // TODO(@HubertBer): Add error and permission handling in here.
-        // TODO(@HubertBer): Add options in here.
-        taskManager.registerTask(taskName, locationTaskConsumer, emptyMap())
+    Class(BackgroundLocationHandle::class) {
+      Constructor { taskName: String, profile: LocationProfile? ->
+        BackgroundLocationHandle(taskName, profile ?: LocationProfile.DEFAULT)
       }
-      StaticFunction("stop") { taskName: String ->
-        val locationTaskConsumer = currentLocationProvider.getLocationTaskConsumerClass().getOrNull("getLocationTaskConsumerClass")
-          ?: return@StaticFunction false
-        // TODO(@HubertBer): Add error and permission handling in here.
-        // TODO(@HubertBer): Add options in here.
-        taskManager.unregisterTask(taskName, locationTaskConsumer)
+
+      Function("withProfile") { handle: BackgroundLocationHandle, profile: LocationProfile ->
+        handle.profile = profile
+        handle
       }
-      StaticFunction("status") { taskName: String ->
-        true // TODO(@HubertBer): Figure out what status can we report
+
+      Function("start") { handle: BackgroundLocationHandle ->
+        permissionsManager.ensureBackgroundPermissions()
+
+        val locationTaskConsumer = currentLocationProvider.getLocationTaskConsumerClass()
+          .getOrThrow("getLocationTaskConsumerClass")
+
+        val optionsMap = handle.profile.toBackgroundUpdatesParameters().toMap()
+        taskManager.registerTask(handle.taskName, locationTaskConsumer, optionsMap)
+
+        return@Function LocationTaskConsumer.statusOf(handle.taskName, true).isRunning
+      }
+
+      Function("stop") { handle: BackgroundLocationHandle ->
+        val locationTaskConsumer = currentLocationProvider.getLocationTaskConsumerClass()
+          .getOrThrow("getLocationTaskConsumerClass")
+        taskManager.unregisterTask(handle.taskName, locationTaskConsumer)
+      }
+
+      Function("status") { handle: BackgroundLocationHandle ->
+        val locationTaskConsumer = currentLocationProvider
+          .getLocationTaskConsumerClass()
+          .getOrNull("getLocationTaskConsumerClass")
+          ?: return@Function BackgroundTaskStatus()
+
+        LocationTaskConsumer.statusOf(handle.taskName, taskManager.taskHasConsumerOfClass(handle.taskName, locationTaskConsumer))
       }
     }
 
