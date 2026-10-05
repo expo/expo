@@ -220,17 +220,14 @@ struct EnterURLSheet: View {
           .disableAutocorrection(true)
           .keyboardType(.URL)
           .focused($isURLFieldFocused)
+          .onSubmit(connect)
+          .submitLabel(.go)
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
           .background(Color.expoSecondarySystemBackground)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
 
-        Button {
-          if let url = sanitizeUrlString(urlText) {
-            onConnect(url)
-            dismiss()
-          }
-        } label: {
+        Button(action: connect) {
           HStack {
             if isLoading {
               ProgressView()
@@ -266,6 +263,14 @@ struct EnterURLSheet: View {
     .onAppear {
       isURLFieldFocused = true
     }
+  }
+
+  private func connect() {
+    guard !urlText.isEmpty, !isLoading, let url = sanitizeUrlString(urlText) else {
+      return
+    }
+    onConnect(url)
+    dismiss()
   }
 }
 
