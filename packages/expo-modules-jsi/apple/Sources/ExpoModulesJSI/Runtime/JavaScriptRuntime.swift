@@ -693,8 +693,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
-    let result = try eval(label: label, source)
-    return result.is("Promise") ? try await result.getPromise().await() : result
+    // `@JavaScriptActor` runs this on the caller's thread, so go through `execute` to evaluate on the
+    // JavaScript thread. It runs the closure in place when already there, or when the runtime has no
+    // scheduler and thus no other thread to go to.
+    // The result is boxed because `execute` needs a `Sendable` result and `JavaScriptValue` is not one.
+    let result = try await execute { () async throws -> NonisolatedUnsafeVar<JavaScriptValue> in
+      let value = try self.eval(label: label, source)
+      return NonisolatedUnsafeVar(value.is("Promise") ? try await value.getPromise().await() : value)
+    }
+    return result.value
   }
 
   // MARK: - Garbage collection
