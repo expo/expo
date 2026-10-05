@@ -118,6 +118,7 @@ export type {
   RouterActionContext,
   RouterActionReducer,
   RouterActionResult,
+  RouterBrowserHistoryAction,
   RouterConfigOptions,
   RouterExtension,
   RouterExtensionContext,
