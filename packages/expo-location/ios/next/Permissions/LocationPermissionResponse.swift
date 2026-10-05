@@ -3,19 +3,19 @@ import ExpoModulesCore
 
 struct LocationPermissionResponse {
   let status: EXPermissionStatus
-  let scope: String
-  let accuracy: String
+  let scope: LocationAuthorizationScope
+  let accuracy: LocationAccuracyAuthorization
 
   static let denied = LocationPermissionResponse(
     status: EXPermissionStatusDenied,
-    scope: LocationAuthorizationScope.notGranted,
-    accuracy: LocationAccuracyAuthorization.notGranted
+    scope: .notGranted,
+    accuracy: .notGranted
   )
 
   static let undetermined = LocationPermissionResponse(
     status: EXPermissionStatusUndetermined,
-    scope: LocationAuthorizationScope.notGranted,
-    accuracy: LocationAccuracyAuthorization.notGranted
+    scope: .notGranted,
+    accuracy: .notGranted
   )
 
   static func whenInUse(
@@ -24,16 +24,16 @@ struct LocationPermissionResponse {
   ) -> LocationPermissionResponse {
     return LocationPermissionResponse(
       status: status,
-      scope: LocationAuthorizationScope.whenInUse,
-      accuracy: LocationAccuracyAuthorization.from(accuracy)
+      scope: .whenInUse,
+      accuracy: .from(accuracy)
     )
   }
 
   static func always(accuracy: CLAccuracyAuthorization) -> LocationPermissionResponse {
     return LocationPermissionResponse(
       status: EXPermissionStatusGranted,
-      scope: LocationAuthorizationScope.always,
-      accuracy: LocationAccuracyAuthorization.from(accuracy)
+      scope: .always,
+      accuracy: .from(accuracy)
     )
   }
 
@@ -44,8 +44,8 @@ struct LocationPermissionResponse {
   func toDictionary() -> [AnyHashable: Any] {
     return [
       "status": status.rawValue,
-      "scope": scope,
-      "accuracy": accuracy
+      "scope": scope.rawValue,
+      "accuracy": accuracy.rawValue
     ]
   }
 }

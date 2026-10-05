@@ -1,11 +1,9 @@
 import CoreLocation
 
-enum LocationAccuracyAuthorization {
-  static let full = "full"
-  static let reduced = "reduced"
-  static let notGranted = "notGranted"
+enum LocationAccuracyAuthorization: String {
+  case full, reduced, notGranted
 
-  static func from(_ accuracyAuthorization: CLAccuracyAuthorization) -> String {
-    return accuracyAuthorization == .reducedAccuracy ? reduced : full
+  static func from(_ accuracyAuthorization: CLAccuracyAuthorization) -> LocationAccuracyAuthorization {
+    return accuracyAuthorization == .reducedAccuracy ? .reduced : .full
   }
 }

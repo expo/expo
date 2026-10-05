@@ -1,18 +1,16 @@
 import CoreLocation
 
-enum LocationAuthorizationScope {
-  static let whenInUse = "whenInUse"
-  static let always = "always"
-  static let notGranted = "notGranted"
+enum LocationAuthorizationScope: String {
+  case whenInUse, always, notGranted
 
-  static func from(_ systemStatus: CLAuthorizationStatus) -> String {
+  static func from(_ systemStatus: CLAuthorizationStatus) -> LocationAuthorizationScope {
     switch systemStatus {
     case .authorizedWhenInUse:
-      return whenInUse
+      return .whenInUse
     case .authorizedAlways:
-      return always
+      return .always
     default:
-      return notGranted
+      return .notGranted
     }
   }
 }
