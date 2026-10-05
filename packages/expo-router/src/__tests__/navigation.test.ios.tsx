@@ -1670,7 +1670,10 @@ it('can push relative links that are relative to the directory', async () => {
   expect(screen.getByText('banana')).toBeOnTheScreen();
 });
 
-it('respects nested unstable settings', async () => {
+// TODO(@ubax): Restore when tabs can set their destination with `href`. A tab press now opens the
+// tab's first route in file order instead of its anchor.
+// https://linear.app/expo/issue/ENG-27843/add-href-prop-to-nativetabs
+it.skip('respects nested unstable settings', async () => {
   await renderRouter({
     _layout: () => <Stack />,
     '(app)/_layout': () => {

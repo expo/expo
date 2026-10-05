@@ -64,8 +64,11 @@ it('can render a custom navigator', async () => {
   });
 });
 
+// TODO(@ubax): Restore when tabs can set their destination with `href`. A tab press now opens the
+// tab's first route in file order instead of its anchor.
+// https://linear.app/expo/issue/ENG-27843/add-href-prop-to-nativetabs
 // The casts simulate stale props supplied by untyped JavaScript.
-it.each([
+it.skip.each([
   ['Slot', () => <Slot {...({ initialRouteName: 'index' } as ComponentProps<typeof Slot>)} />],
   [
     'JS Stack',
@@ -93,7 +96,10 @@ it.each([
   expect(screen.getByTestId('two')).toBeVisible();
 });
 
-it('honors the configured anchor when screens are explicitly declared', async () => {
+// TODO(@ubax): Restore when tabs can set their destination with `href`. A tab press now opens the
+// tab's first route in file order instead of its anchor.
+// https://linear.app/expo/issue/ENG-27843/add-href-prop-to-nativetabs
+it.skip('honors the configured anchor when screens are explicitly declared', async () => {
   await renderRouter({
     _layout: () => (
       <Tabs>

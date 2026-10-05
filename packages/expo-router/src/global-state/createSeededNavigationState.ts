@@ -273,7 +273,14 @@ function completeExistingState(
           getChainFromRouteKey(routeKey),
           (routeName) => findRouteNodeByName(childNode, routeName)
         )
-      : createSeededNavigationState(undefined, childNode, getChainFromRouteKey(routeKey));
+      : // A route opened without a nested destination, like a tab press, shows the same screen as
+        // its URL. The anchor is not applied, because it only adds a back destination for URLs.
+        createSeededState({
+          targetState: undefined,
+          routeNames: getRouteNames(childNode),
+          parentChain: getChainFromRouteKey(routeKey),
+          findChildNode: (routeName) => findRouteNodeByName(childNode, routeName),
+        });
 
     if (childState === route.state && routeKey === route.key) {
       return completeRoute;

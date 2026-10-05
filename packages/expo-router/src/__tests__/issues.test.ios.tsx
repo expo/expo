@@ -54,16 +54,17 @@ it('should return correct pathname for nested stack with initialRouteName', asyn
 
   indexRenderCount.mockClear();
 
+  // TODO(@ubax): https://linear.app/expo/issue/ENG-27843/add-href-prop-to-nativetabs
   await act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
 
+  // Like `router.push('/inner')`, the tab opens `inner/index`. The anchor does not replace it.
   expect(screen.queryByTestId('index-pathname')).toBeNull();
-  expect(screen.queryByTestId('inner-index-pathname')).toBeNull();
-  expect(screen.getByTestId('inner-a-pathname')).toBeVisible();
-  expect(screen.getByTestId('inner-a-pathname')).toHaveTextContent('/inner/a');
-  // The inner stack commits its anchor after it mounts, which renders both tabs once more.
-  expect(indexRenderCount).toHaveBeenCalledTimes(2);
-  expect(innerIndexRenderCount).toHaveBeenCalledTimes(0);
-  expect(innerARenderCount).toHaveBeenCalledTimes(2);
+  expect(screen.getByTestId('inner-index-pathname')).toBeVisible();
+  expect(screen.queryByTestId('inner-a-pathname')).toBeNull();
+  expect(screen.getByTestId('inner-index-pathname')).toHaveTextContent('/inner');
+  expect(indexRenderCount).toHaveBeenCalledTimes(1);
+  expect(innerIndexRenderCount).toHaveBeenCalledTimes(1);
+  expect(innerARenderCount).toHaveBeenCalledTimes(0);
 });
 
 it('should return correct pathname for nested stack with initialRouteName, after push', async () => {
