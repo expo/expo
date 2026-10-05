@@ -8,6 +8,7 @@ export {
   PositionWatchHandle,
   LocationProvider,
   LocationUpdatesHandle,
+  defineLocationTask,
   type UseUserLocationOptions,
   type UseUserLocationResult,
 } from './js';

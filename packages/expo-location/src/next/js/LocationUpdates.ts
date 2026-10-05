@@ -48,7 +48,7 @@ export function defineLocationTask({
 }): void {
   if (!TaskManager) {
     throw new Error(
-      "Location.defineLocationTask couldn't define the background location task because the 'expo-task-manager' package isn't installed. Background location updates are delivered through it. Install it with `npx expo install expo-task-manager` and rebuild the app."
+      "defineLocationTask couldn't define the background location task because the 'expo-task-manager' package isn't installed. Background location updates are delivered through it. Install it with `npx expo install expo-task-manager` and rebuild the app."
     );
   }
   TaskManager.defineTask<Position>(taskName, async ({ data, error }) => {

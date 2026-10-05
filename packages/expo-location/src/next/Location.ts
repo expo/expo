@@ -9,5 +9,4 @@ export {
   requestBackgroundPermissions,
   setLocationProvider,
   getSelectedLocationProviderName,
-  defineLocationTask,
 } from './js';
