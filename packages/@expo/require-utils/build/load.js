@@ -67,29 +67,15 @@ function _transform() {
   };
   return data;
 }
+function _typescript() {
+  const data = require("./typescript");
+  _typescript = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-let _ts;
-function loadTypescript() {
-  if (_ts === undefined) {
-    try {
-      _ts = require('typescript');
-      // NOTE(@kitten): typescript v7 ships without the necessary compiler/public APIs to use it
-      // for transpilation or other purposes
-      if (typeof _ts?.transpileModule !== 'function') {
-        _ts = null;
-        return null;
-      }
-    } catch (error) {
-      if (error.code !== 'MODULE_NOT_FOUND') {
-        throw error;
-      } else {
-        _ts = null;
-      }
-    }
-  }
-  return _ts;
-}
 const parent = module;
 const tsExtensionMapping = {
   '.ts': '.js',
@@ -299,44 +285,17 @@ function evalModule(code, filename, opts = {}, format = toFormat(filename, true)
   let inputFilename = filename;
   let diagnostic;
   if (format.mode === 'typescript' || format.mode === 'module-typescript' || format.mode === 'commonjs-typescript') {
-    const ts = loadTypescript();
-    if (ts) {
-      let module;
-      if (format.mode === 'commonjs-typescript') {
-        module = ts.ModuleKind.CommonJS;
-      } else if (format.mode === 'module-typescript') {
-        module = ts.ModuleKind.ESNext;
-      } else {
-        // NOTE(@kitten): We can "preserve" the output, meaning, it can either be ESM or CJS
-        // and stop TypeScript from either transpiling it to CommonJS or adding an `export {}`
-        // if no exports are used. This allows the user to choose if this file is CJS or ESM
-        // (but not to mix both)
-        module = ts.ModuleKind.Preserve;
-      }
-      const output = ts.transpileModule(code, {
-        fileName: filename,
-        reportDiagnostics: true,
-        compilerOptions: {
-          module,
-          moduleResolution: ts.ModuleResolutionKind.Bundler,
-          // `verbatimModuleSyntax` needs to be off, to erase as many imports as possible
-          verbatimModuleSyntax: false,
-          target: ts.ScriptTarget.ESNext,
-          newLine: ts.NewLineKind.LineFeed,
-          inlineSourceMap: true,
-          esModuleInterop: true
-        }
-      });
-      inputCode = output?.outputText || inputCode;
-      if (output?.diagnostics?.length) {
-        diagnostic = output.diagnostics[0];
-      }
+    const output = (0, _typescript().transpile)(code, filename, format.mode);
+    if (output) {
+      inputCode = output.outputText;
+      diagnostic = output.diagnostic;
     }
     if (hasStripTypeScriptTypes && inputCode === code) {
       // This may throw its own error, but this contains a code-frame already
       inputCode = stripTypeScriptTypes(code);
       if (format.mode === 'commonjs-typescript') {
-        inputCode = (0, _transform().toCommonJS)(filename, inputCode);
+        // NOTE(@kitten): Match TypeScript's CommonJS emit with esModuleInterop enabled.
+        inputCode = (0, _transform().toCommonJS)(filename, inputCode, 'babel');
       }
     }
     if (inputCode !== code) {
@@ -366,7 +325,7 @@ function evalModule(code, filename, opts = {}, format = toFormat(filename, true)
   } catch (error) {
     // If we have a diagnostic from TypeScript, we issue its error with a codeframe first,
     // since it's likely more useful than the eval error
-    const diagnosticError = (0, _codeframe().formatDiagnostic)(diagnostic);
+    const diagnosticError = (0, _codeframe().formatDiagnostic)(code, diagnostic);
     if (diagnosticError) {
       throw diagnosticError;
     }

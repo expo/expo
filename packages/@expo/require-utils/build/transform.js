@@ -9,19 +9,15 @@ function _core() {
   };
   return data;
 }
-function toCommonJS(filename, code) {
+function toCommonJS(filename, code, importInterop = 'node') {
   const result = (0, _core().transformSync)(code, {
     filename,
     babelrc: false,
     configFile: false,
     plugins: [[require('@babel/plugin-transform-modules-commonjs'), {
-      // NOTE(@kitten): We used to use sucrase to transform, which is why
-      // we're doing this CJS-to-ESM transform in the first place. Our
-      // previous transformation isn't 100% compatible with the standard
-      // Node ESM loading. In Babel, this is the "node" flag (although
-      // node behaviour is explicitly different from this). This skips
-      // the `__esModule -> default` wrapper
-      importInterop: 'node',
+      // Preserve legacy JavaScript imports of the whole CommonJS exports object.
+      // TypeScript's stripping fallback opts into Babel's __esModule interop.
+      importInterop,
       loose: true
     }]]
   });

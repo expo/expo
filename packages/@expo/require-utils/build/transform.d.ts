@@ -1,1 +1,1 @@
-export declare function toCommonJS(filename: string, code: string): string;
+export declare function toCommonJS(filename: string, code: string, importInterop?: 'node' | 'babel'): string;
