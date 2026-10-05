@@ -83,6 +83,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
 
   private lateinit var cameraState: CameraPositionState
   private var manualCameraControl = false
+  private var pendingCameraPosition: CameraPosition? = null
 
   private var lastTouchPoint: Point? = null
 
@@ -227,11 +228,14 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private fun updateCameraState(): CameraPositionState {
     val cameraPosition = props.cameraPosition.value
     cameraState = remember(cameraPosition) {
+      pendingCameraPosition = null
       CameraPositionState(
-        position = CameraPosition.fromLatLngZoom(
-          cameraPosition.coordinates.toLatLng(),
-          cameraPosition.zoom
-        )
+        position = CameraPosition.Builder()
+          .target(cameraPosition.coordinates.toLatLng())
+          .zoom(cameraPosition.zoom)
+          .tilt(cameraPosition.tilt.takeIf { it.isFinite() }?.coerceIn(0f, 90f) ?: 0f)
+          .bearing(cameraPosition.bearing.takeIf { it.isFinite() } ?: 0f)
+          .build()
       )
     }
 
@@ -239,6 +243,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       // We should stop following the user's location when camera is moved manually.
       if (cameraState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE || cameraState.cameraMoveStartedReason == CameraMoveStartedReason.API_ANIMATION) {
         manualCameraControl = true
+        pendingCameraPosition = null
       }
     }
 
@@ -366,22 +371,39 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   }
 
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
-    // Stop updating the camera position based on user location.
+    require(config?.tilt?.isFinite() != false && config?.bearing?.isFinite() != false) {
+      "tilt and bearing must be finite"
+    }
+    // Stop following location, preserving the existing no-location call behavior.
     manualCameraControl = true
-    // If no coordinates are provided, the camera will be centered on the user's location.
-    val coordinates: LatLng = config?.coordinates?.toLatLng()
-      ?: props.userLocation.value.coordinates?.toLatLng()
+    // Merge partial orientation requests with the latest target, not an intermediate frame.
+    val changesOrientation = config?.tilt != null || config?.bearing != null
+    val currentCamera = if (changesOrientation) pendingCameraPosition ?: cameraState.position else cameraState.position
+    val centerOnUser = config?.coordinates == null && !changesOrientation
+    val coordinates = config?.coordinates?.toLatLng()
+      ?: (if (centerOnUser) props.userLocation.value.coordinates?.toLatLng() else currentCamera.target)
       ?: return
 
-    val cameraUpdate = config?.zoom?.let { CameraUpdateFactory.newLatLngZoom(coordinates, it) }
-      ?: CameraUpdateFactory.newLatLng(coordinates)
-
-    // When Int.MAX_VALUE is provided as durationMs, the default animation duration will be used.
-    cameraState.animate(cameraUpdate, config?.duration ?: Int.MAX_VALUE)
-
-    // If centering on the user's location, stop manual camera control.
-    if (config?.coordinates == null) {
-      manualCameraControl = false
+    val targetCamera = CameraPosition.Builder(currentCamera)
+      .target(coordinates)
+      .apply {
+        config?.zoom?.let { zoom(it) }
+        config?.tilt?.let { tilt(it.coerceIn(0f, 90f)) }
+        config?.bearing?.let { bearing(it) }
+      }
+      .build()
+    pendingCameraPosition = targetCamera
+    try {
+      // When Int.MAX_VALUE is provided as durationMs, the default animation duration will be used.
+      cameraState.animate(CameraUpdateFactory.newCameraPosition(targetCamera), config?.duration ?: Int.MAX_VALUE)
+      if (centerOnUser && pendingCameraPosition === targetCamera) {
+        manualCameraControl = false
+      }
+    } finally {
+      // A superseded animation must not clear the newer request's target.
+      if (pendingCameraPosition === targetCamera) {
+        pendingCameraPosition = null
+      }
     }
   }
 
