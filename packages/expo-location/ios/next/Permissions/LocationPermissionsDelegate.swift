@@ -63,7 +63,7 @@ final class LocationPermissionsDelegate {
           return
         }
         Task { @MainActor in
-          await self.fullAccuracyRequester.raiseIfReduced(purposeKey: purposeKey)
+          await self.fullAccuracyRequester.raiseIfReduced(purposeKey: purposeKey, for: kind)
           permissions.getPermissionUsingRequesterClass(
             kind.requesterClass,
             resolve: promise.legacyResolver,

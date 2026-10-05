@@ -5,12 +5,12 @@ final class TemporaryFullAccuracyRequester {
   private var pendingRaise: Task<Void, Never>?
 
   @MainActor
-  func raiseIfReduced(purposeKey: String) async {
+  func raiseIfReduced(purposeKey: String, for kind: LocationPermissionKind) async {
     if let pendingRaise {
       await pendingRaise.value
       return
     }
-    let isGranted = manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways
+    let isGranted = kind.grantingStatuses.contains(manager.authorizationStatus)
     guard isGranted, manager.accuracyAuthorization == .reducedAccuracy else {
       return
     }
