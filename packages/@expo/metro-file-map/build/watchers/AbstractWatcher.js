@@ -50,15 +50,13 @@ const common_1 = require("./common");
 class AbstractWatcher {
     root;
     ignored;
-    globs;
-    dot;
+    included;
     doIgnore;
     #emitter = new events_1.default();
     constructor(dir, opts) {
-        const { ignored, globs, dot } = opts;
-        this.dot = dot || false;
+        const { ignored, included } = opts;
         this.ignored = ignored;
-        this.globs = globs;
+        this.included = included;
         this.doIgnore = ignored
             ? (filePath) => (0, isWatcherExcluded_1.default)(filePath) || (0, common_1.posixPathMatchesPattern)(ignored, filePath)
             : isWatcherExcluded_1.default;

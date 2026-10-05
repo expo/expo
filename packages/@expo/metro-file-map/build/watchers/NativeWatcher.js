@@ -118,7 +118,7 @@ class NativeWatcher extends AbstractWatcher_1.AbstractWatcher {
             if (!type) {
                 return;
             }
-            if (!(0, common_1.includedByGlob)(type, this.globs, this.dot, relativePath)) {
+            if (!(0, common_1.isIncluded)(type, this.included, relativePath)) {
                 return;
             }
             // For directory "rename" events, notify that we need a recrawl since we
