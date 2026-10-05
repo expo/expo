@@ -115,6 +115,17 @@ it('does not implicitly select a child for non-group routes without nested state
   expect(getPathFromState(state, config)).toBe('/root');
 });
 
+it('collapses a trailing group segment to an empty string even when initialRouteName is set', () => {
+  const state = { routes: [{ name: '(tabs)' }] };
+  const config = {
+    screens: {
+      '(tabs)': { path: '(tabs)', initialRouteName: 'home' },
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/');
+});
+
 describe('hash support', () => {
   it('appends hash to the path', () => {
     const state = {

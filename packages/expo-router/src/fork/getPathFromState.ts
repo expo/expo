@@ -3,7 +3,7 @@ import type { PathConfig, PathConfigMap } from '../react-navigation/native';
 import type { NavigationState, PartialState, Route } from '../react-navigation/routers';
 import { stringifySearchParams } from '../utils/queryParams';
 import * as expo from './getPathFromState-forks';
-import type { ExpoConfigItem, ExpoOptions } from './getPathFromState-forks';
+import type { ExpoOptions } from './getPathFromState-forks';
 import { validatePathConfig } from './validatePathConfig';
 
 export type Options<ParamList extends object> = ExpoOptions & {
@@ -16,7 +16,7 @@ export type State = NavigationState | Omit<PartialState<NavigationState>, 'stale
 
 export type StringifyConfig = Record<string, (value: any) => string>;
 
-type ConfigItem = ExpoConfigItem & {
+type ConfigItem = {
   pattern?: string;
   stringify?: StringifyConfig;
   screens?: Record<string, ConfigItem>;
@@ -179,7 +179,6 @@ export function getPathDataFromState<ParamList extends object>(
         pattern,
         route,
         params: allParams,
-        initialRouteName: configs[route.name]?.initialRouteName,
       });
     } else if (!route.name.startsWith('+')) {
       path += encodeURIComponent(route.name);
