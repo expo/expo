@@ -855,7 +855,7 @@ function getLayoutNode(node: RouteNode) {
      * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
      * Each of these layouts will have a different anchor based upon the last group name.
      */
-    anchorGroupName: matchLastGroupName(node.route),
+    groupName: matchLastGroupName(node.route),
   };
 }
 

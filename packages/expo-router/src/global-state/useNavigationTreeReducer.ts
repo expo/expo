@@ -24,7 +24,7 @@ import {
 } from './browserHistory';
 import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types';
 import {
-  applyPendingAnchor,
+  resolvePendingAnchor,
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
@@ -359,7 +359,11 @@ function reduceTree(
         return result;
       }
       // Same inputs as the navigator's render, so the store commits the state it rendered.
-      const replacement = applyPendingAnchor(navigatorState, routeNode, getLayoutAnchor(routeNode));
+      const replacement = resolvePendingAnchor(
+        navigatorState,
+        routeNode,
+        getLayoutAnchor(routeNode)
+      );
       if (replacement === navigatorState) {
         return result;
       }
@@ -479,7 +483,7 @@ export function useNavigationTreeReducer({
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
     reactDispatch({ type: 'NAVIGATOR_CHANGED', stateKey, routerType });
   });
-  const commitPendingAnchor = useLatestCallback((stateKey: string) => {
+  const applyPendingAnchor = useLatestCallback((stateKey: string) => {
     reactDispatch({ type: 'PENDING_ANCHOR_APPLIED', stateKey });
   });
   const consumeReportEvents = useLatestCallback((eventIds: readonly number[]) => {
@@ -506,7 +510,7 @@ export function useNavigationTreeReducer({
     report: result.report,
     consumeReportEvents,
     resetNavigator,
-    commitPendingAnchor,
+    applyPendingAnchor,
     handleAction,
     processIntent,
   };

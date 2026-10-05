@@ -6,7 +6,6 @@ import { ExpoRoot } from '../ExpoRoot';
 import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
-import { unstable_navigationEvents } from '../navigationEvents';
 import type { NavigationState } from '../react-navigation/routers';
 import { renderRouter } from '../testing-library';
 import { inMemoryContext, type MemoryContext } from '../testing-library/context-stubs';
@@ -379,48 +378,32 @@ describe('headless tabs', () => {
     await fireEvent.press(screen.getByTestId('goto-orange'));
     expect(screen).toHavePathname('/orange/shape');
   });
-});
 
-describe('public state reads', () => {
-  // A deep link to an anchor keeps a marker in the store that adds no route.
-  const hasMarker = (value: unknown) => JSON.stringify(value).includes('__internal__pendingAnchor');
-  const app = {
-    ...nestedStackApp,
-    settings: () => <Text testID="settings">settings</Text>,
-  };
-
-  it('hides the marker from the container state event and the parent navigation state', async () => {
-    const parentStates: unknown[] = [];
-    function Profile() {
-      parentStates.push(useNavigation().getParent()?.getState());
-      return <Text testID="profile">profile</Text>;
-    }
-    await renderRouter({ ...app, 'profile/index': Profile }, { initialUrl: '/profile' });
-    const stateEvents: unknown[] = [];
-    const unsubscribe = navigationRef.addListener('state', (event) =>
-      stateEvents.push(event.data.state)
+  it('keeps the nested stack when pressing the focused tab with an anchor href', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <Tabs>
+            <TabList>
+              <TabTrigger name="orange" href="/orange/color" testID="goto-orange" />
+            </TabList>
+            <TabSlot />
+          </Tabs>
+        ),
+        'orange/_layout': {
+          unstable_settings: { anchor: 'color' },
+          default: () => <Stack />,
+        },
+        'orange/index': () => <Text testID="orange">orange</Text>,
+        'orange/color': () => <Text testID="orange-color">orange color</Text>,
+        'orange/shape': () => <Text testID="orange-shape">orange shape</Text>,
+      },
+      { initialUrl: '/orange/color' }
     );
 
-    await act(() => router.push('/settings'));
-    unsubscribe();
+    await act(() => router.push('/orange/shape'));
+    await fireEvent.press(screen.getByTestId('goto-orange'));
 
-    expect(parentStates.length).toBeGreaterThan(0);
-    expect(parentStates.some(hasMarker)).toBe(false);
-    expect(stateEvents.length).toBeGreaterThan(0);
-    expect(stateEvents.some(hasMarker)).toBe(false);
-  });
-
-  it('hides the marker from navigation events', async () => {
-    await renderRouter(app, { initialUrl: '/profile' });
-    const states: unknown[] = [];
-    const unsubscribe = unstable_navigationEvents.addListener('actionDispatched', (event) =>
-      states.push(event.state)
-    );
-
-    await act(() => router.push('/settings'));
-    unsubscribe();
-
-    expect(states.length).toBeGreaterThan(0);
-    expect(states.some(hasMarker)).toBe(false);
+    expect(screen).toHavePathname('/orange/shape');
   });
 });

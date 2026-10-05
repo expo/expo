@@ -2,7 +2,6 @@
 
 import { use } from 'react';
 
-import { stripPendingAnchors } from '../global-state/createSeededNavigationState';
 import { RootNavigationStateContext } from '../react-navigation/core/RootNavigationStateContext';
 import type { NavigationState } from '../react-navigation/native';
 
@@ -31,5 +30,5 @@ export function useRootNavigationState(): NavigationState {
       'useRootNavigationState was called from a generated route. This is likely a bug in Expo Router.'
     );
   }
-  return stripPendingAnchors(state);
+  return state;
 }

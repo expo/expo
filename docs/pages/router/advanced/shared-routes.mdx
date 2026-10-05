@@ -68,4 +68,3 @@ In the above example, the `home` route is the default route for the `home` group
 - You can only provide groups for the current navigator.
 - When using the array syntax, if there are two groups (for example, `(one)/(two)`), only the last group's segment is used for matching the route.
 - If there are at least two group anchors, but a default `anchor` is not provided, the first group's anchor is used.
-- A group-specific `anchor` does not select the group for a URL that matches the same route in several groups. To open such a URL in a specific group on native, rewrite it to include the group with [`redirectSystemPath`](/router/advanced/native-intent/) in **+native-intent**.

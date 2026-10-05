@@ -7,7 +7,6 @@ import { findFocusedRoute } from '../../fork/findFocusedRoute';
 import { BrowserHistorySync } from '../../global-state/BrowserHistorySync';
 import { RoutingQueueDrainer } from '../../global-state/RoutingQueueDrainer';
 import { createBrowserHistoryAdapter } from '../../global-state/browserHistoryAdapter';
-import { stripPendingAnchors } from '../../global-state/createSeededNavigationState';
 import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
@@ -100,7 +99,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     report,
     consumeReportEvents,
     resetNavigator,
-    commitPendingAnchor,
+    applyPendingAnchor,
     handleAction,
     processIntent,
   } = useNavigationTreeReducer({
@@ -168,8 +167,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     }
   });
 
-  // Navigators that have not applied their anchor yet carry an internal marker.
-  const getRootState = useLatestCallback(() => stripPendingAnchors(state));
+  const getRootState = useLatestCallback(() => state);
 
   const getCurrentRoute = useLatestCallback(() => {
     const state = getRootState();
@@ -219,9 +217,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       addListener,
       handleAction,
       resetNavigator,
-      commitPendingAnchor,
+      applyPendingAnchor,
     }),
-    [addListener, handleAction, resetNavigator, commitPendingAnchor]
+    [addListener, handleAction, resetNavigator, applyPendingAnchor]
   );
 
   const context = React.useMemo(
@@ -309,7 +307,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   }, [getRootState, state]);
 
   useClientLayoutEffect(() => {
-    emitter.emit({ type: 'state', data: { state: stripPendingAnchors(state) } });
+    emitter.emit({ type: 'state', data: { state } });
   }, [emitter, state]);
 
   return (

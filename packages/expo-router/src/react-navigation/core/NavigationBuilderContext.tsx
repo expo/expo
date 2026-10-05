@@ -23,10 +23,10 @@ export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<
 export const NavigationBuilderContext = React.createContext<{
   handleAction: (action: NavigationAction, originKey?: string) => void;
   resetNavigator: (stateKey: string, routerType: string | undefined) => void;
-  commitPendingAnchor: (stateKey: string) => void;
+  applyPendingAnchor: (stateKey: string) => void;
   addListener?: AddListener;
 }>({
   handleAction: () => undefined,
   resetNavigator: () => undefined,
-  commitPendingAnchor: () => undefined,
+  applyPendingAnchor: () => undefined,
 });

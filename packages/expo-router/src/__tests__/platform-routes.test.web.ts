@@ -239,7 +239,7 @@ it(`should work with layout routes`, () => {
         ],
         contextKey: './(app)/_layout.web.tsx',
         dynamic: null,
-        anchorGroupName: 'app',
+        groupName: 'app',
         route: '(app)',
         type: 'layout',
       },

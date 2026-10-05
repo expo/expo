@@ -1,6 +1,6 @@
 import { getValidInitialRoute, type LoadedRoute, type RouteNode } from './Route';
 
-const anchors = new WeakMap<RouteNode, string | undefined>();
+const warnedDeprecatedLayouts = new WeakSet<RouteNode>();
 
 /**
  * Reads the anchor from a layout's `unstable_settings`, preferring the group-specific one.
@@ -8,8 +8,9 @@ const anchors = new WeakMap<RouteNode, string | undefined>();
  */
 function resolveAnchorFromSettings(
   settings: LoadedRoute['unstable_settings'],
-  groupName: string | undefined
+  node: RouteNode
 ): { anchor?: string; groupName?: string } {
+  const { groupName } = node;
   if (!settings) {
     return {};
   }
@@ -17,9 +18,12 @@ function resolveAnchorFromSettings(
   try {
     if (
       process.env.NODE_ENV !== 'production' &&
+      !warnedDeprecatedLayouts.has(node) &&
       (settings.initialRouteName !== undefined ||
         settings[groupName ?? '']?.initialRouteName !== undefined)
     ) {
+      // Navigators read the anchor on every render, so warn once per layout.
+      warnedDeprecatedLayouts.add(node);
       console.warn(
         '`unstable_settings.initialRouteName` is deprecated. Use `unstable_settings.anchor` instead.'
       );
@@ -48,9 +52,6 @@ export function getLayoutAnchor(node: RouteNode | null): string | undefined {
   if (node?.type !== 'layout') {
     return undefined;
   }
-  if (anchors.has(node)) {
-    return anchors.get(node);
-  }
   const loaded = node.loadRoute();
   if (loaded && 'then' in loaded) {
     if (process.env.NODE_ENV !== 'production') {
@@ -60,16 +61,6 @@ export function getLayoutAnchor(node: RouteNode | null): string | undefined {
     }
     return undefined;
   }
-  const settings = resolveAnchorFromSettings(loaded?.unstable_settings, node.anchorGroupName);
-  const anchor = getValidInitialRoute(node, settings.anchor, settings.groupName)?.route;
-  anchors.set(node, anchor);
-  return anchor;
-}
-
-/**
- * Returns the anchor of a layout without loading it. Returns `undefined` when the layout has no
- * anchor or has not rendered yet.
- */
-export function peekLayoutAnchor(node: RouteNode): string | undefined {
-  return anchors.get(node);
+  const settings = resolveAnchorFromSettings(loaded?.unstable_settings, node);
+  return getValidInitialRoute(node, settings.anchor, settings.groupName)?.route;
 }

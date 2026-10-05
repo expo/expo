@@ -45,6 +45,7 @@ it('prefetch a sibling route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'test'],
@@ -147,6 +148,7 @@ it('will prefetch the correct route within a group', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['(a)/test', '(b)/test', '(a)/index', '(b)/index'],
@@ -223,6 +225,7 @@ it('will prefetch the correct route within nested groups', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['(b)/test', '(a)/index', '(b)/index', '(a)/(c)/test'],
@@ -297,6 +300,7 @@ it('works with relative Href', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'test'],
@@ -371,6 +375,7 @@ it('works with params', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'test'],
@@ -454,6 +459,7 @@ it('ignores the current route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'directory'],
@@ -462,6 +468,7 @@ it('ignores the current route', async () => {
               key: expect.any(String),
               name: 'directory',
               state: {
+                __internal__pendingAnchor: { type: 'target' },
                 index: 0,
                 key: expect.any(String),
                 routeNames: ['index'],
@@ -499,6 +506,7 @@ it('ignores the current route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'directory'],
@@ -575,6 +583,7 @@ it('can prefetch a deeply nested route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'directory'],
@@ -583,6 +592,7 @@ it('can prefetch a deeply nested route', async () => {
               key: expect.any(String),
               name: 'directory',
               state: {
+                __internal__pendingAnchor: { type: 'target' },
                 index: 0,
                 key: expect.any(String),
                 routeNames: ['index', 'apple'],
@@ -623,6 +633,7 @@ it('can prefetch a deeply nested route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'directory'],
@@ -723,6 +734,7 @@ it('can prefetch a parent route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'directory'],
@@ -731,6 +743,7 @@ it('can prefetch a parent route', async () => {
               key: expect.any(String),
               name: 'directory',
               state: {
+                __internal__pendingAnchor: { type: 'target' },
                 index: 0,
                 key: expect.any(String),
                 routeNames: ['test', 'apple'],
@@ -739,6 +752,7 @@ it('can prefetch a parent route', async () => {
                     key: expect.any(String),
                     name: 'apple',
                     state: {
+                      __internal__pendingAnchor: { type: 'target' },
                       index: 0,
                       key: expect.any(String),
                       routeNames: ['banana'],
@@ -747,6 +761,7 @@ it('can prefetch a parent route', async () => {
                           key: expect.any(String),
                           name: 'banana',
                           state: {
+                            __internal__pendingAnchor: { type: 'target' },
                             index: 0,
                             key: expect.any(String),
                             routeNames: ['index'],
@@ -796,6 +811,7 @@ it('can prefetch a parent route', async () => {
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', 'directory'],
@@ -812,6 +828,7 @@ it('can prefetch a parent route', async () => {
                     key: expect.any(String),
                     name: 'apple',
                     state: {
+                      __internal__pendingAnchor: { type: 'target' },
                       index: 0,
                       key: expect.any(String),
                       routeNames: ['banana'],
@@ -820,6 +837,7 @@ it('can prefetch a parent route', async () => {
                           key: expect.any(String),
                           name: 'banana',
                           state: {
+                            __internal__pendingAnchor: { type: 'target' },
                             index: 0,
                             key: expect.any(String),
                             routeNames: ['index'],

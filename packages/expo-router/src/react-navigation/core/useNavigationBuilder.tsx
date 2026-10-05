@@ -6,7 +6,7 @@ import { isValidElementType } from 'react-is';
 
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
-import { applyPendingAnchor } from '../../global-state/createSeededNavigationState';
+import { resolvePendingAnchor } from '../../global-state/createSeededNavigationState';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
@@ -331,7 +331,7 @@ export function useNavigationBuilder<
   const { state: currentState } = use(NavigationStateContext);
   const rootState = use(RootNavigationStateContext);
 
-  const { resetNavigator, commitPendingAnchor, handleAction } = use(NavigationBuilderContext);
+  const { resetNavigator, applyPendingAnchor, handleAction } = use(NavigationBuilderContext);
   if (
     currentState === undefined ||
     currentState.stale !== false ||
@@ -354,7 +354,7 @@ export function useNavigationBuilder<
   // The layout module is loaded once its navigator renders, so the anchor can be read now.
   const anchor = getLayoutAnchor(routeNode);
   const anchoredState = React.useMemo(
-    () => applyPendingAnchor(committedState, routeNode, anchor),
+    () => resolvePendingAnchor(committedState, routeNode, anchor),
     [anchor, committedState, routeNode]
   );
   const state = React.useMemo(() => {
@@ -367,7 +367,7 @@ export function useNavigationBuilder<
   const reduce = useLatestCallback<RouterRegistryEntry['reduce']>((registryState, action) =>
     // The registry stores states from different router types; this entry only receives its own state key.
     router.getStateForAction(
-      applyPendingAnchor(registryState as State, routeNode, anchor),
+      resolvePendingAnchor(registryState as State, routeNode, anchor),
       action,
       {
         routeNames,
@@ -470,7 +470,7 @@ export function useNavigationBuilder<
     } else if (anchoredState.routes !== committedState.routes) {
       // Commits the anchor route added during render. A marker that adds no route stays in the
       // store until this navigator's next action, which avoids a render.
-      commitPendingAnchor(committedState.key);
+      applyPendingAnchor(committedState.key);
     }
   });
 

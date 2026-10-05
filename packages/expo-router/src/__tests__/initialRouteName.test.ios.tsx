@@ -110,6 +110,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', '(group)'],
@@ -207,6 +208,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index', '(group)'],

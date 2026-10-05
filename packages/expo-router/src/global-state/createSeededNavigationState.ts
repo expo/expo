@@ -18,32 +18,50 @@ type SeedState = NavigationState | PartialState<NavigationState>;
 /**
  * Tells a navigator how to apply its anchor when it mounts. State built before mount cannot read
  * the anchor, because the layout module may not be loaded yet.
- * - `initial`: the routes were picked without the anchor; the anchor route replaces them.
- * - `prepend`: the anchor route goes below the target route, with `params` when given.
+ * - `default`: no explicit destination was supplied. The anchor becomes the navigator's default
+ *   route and replaces the temporary fallback route.
+ * - `target`: an explicit destination was supplied. It stays active and the anchor is inserted
+ *   underneath it, with `params` when given.
+ *
+ * For example:
+ *
+ * ```
+ * app/
+ *   _layout.tsx            anchor: '(shop)'
+ *   product/[id].tsx       presented as a modal
+ *   (shop)/
+ *     _layout.tsx          anchor: 'catalog'
+ *     index.tsx
+ *     catalog.tsx
+ * ```
+ *
+ * Opening `/product/1` seeds the root navigator with `product/[id]` and marks it `target`. When the
+ * root layout mounts, `(shop)` is inserted under the modal, so dismissing it shows the shop. The
+ * inserted `(shop)` route has no destination, so its navigator starts at the first route in file
+ * order, marked `default`. When `(shop)/_layout.tsx` mounts, `catalog` replaces that route.
+ *
+ * Opening `/` targets `(shop)/index`. The root navigator already contains its anchor `(shop)`, so
+ * it is unchanged. The `(shop)` navigator is marked `target`, so `catalog` is inserted under
+ * `index`.
  */
-export type PendingAnchor = { type: 'initial' } | { type: 'prepend'; params?: object };
+export type PendingAnchor = { type: 'default' } | { type: 'target'; params?: object };
 
-type StateWithPendingAnchor = NavigationState & { __internal__pendingAnchor?: PendingAnchor };
+type WithPendingAnchor<State extends NavigationState> = State & {
+  __internal__pendingAnchor?: PendingAnchor;
+};
 
 export function withPendingAnchor<State extends NavigationState>(
   state: State,
   pendingAnchor: PendingAnchor
-): State {
+): WithPendingAnchor<State> {
   return { ...state, __internal__pendingAnchor: pendingAnchor };
 }
 
-const strippedStates = new WeakMap<NavigationState, NavigationState>();
-
 /**
- * Removes pending anchor markers from a complete state tree for public reads, such as
- * `getRootState()`. Unchanged branches keep their identity, and the result is cached per state.
+ * Removes pending anchor markers from a complete state tree. Unchanged branches keep their
+ * identity.
  */
 export function stripPendingAnchors<State extends NavigationState>(state: State): State {
-  const cached = strippedStates.get(state);
-  if (cached) {
-    // The cache only stores the result computed for this same state.
-    return cached as State;
-  }
   let routesChanged = false;
   const routes = state.routes.map((route) => {
     if (route.state?.stale !== false) {
@@ -58,28 +76,26 @@ export function stripPendingAnchors<State extends NavigationState>(state: State)
     return { ...route, state: childState };
   });
   // `NavigationState` does not declare the internal marker.
-  const { __internal__pendingAnchor, ...rest } = state as State & StateWithPendingAnchor;
-  const result =
-    __internal__pendingAnchor === undefined && !routesChanged
-      ? state
-      : // Removing the marker keeps every field of `State`.
-        deepFreeze({ ...rest, routes } as unknown as State);
-  strippedStates.set(state, result);
-  return result;
+  // `NavigationState` does not declare the internal marker.
+  const { __internal__pendingAnchor, ...rest } = state as WithPendingAnchor<State>;
+  if (__internal__pendingAnchor === undefined && !routesChanged) {
+    return state;
+  }
+  // Removing the marker keeps every field of `State`.
+  return deepFreeze({ ...rest, routes } as unknown as State);
 }
 
 /**
  * Applies the pending anchor of a mounted navigator and removes the marker. The result depends
  * only on its arguments, so render and the store produce the same route keys.
  */
-export function applyPendingAnchor<State extends NavigationState>(
+export function resolvePendingAnchor<State extends NavigationState>(
   state: State,
   routeNode: RouteNode | null,
   anchor: string | undefined
 ): State {
   // `NavigationState` does not declare the internal marker.
-  const { __internal__pendingAnchor: pendingAnchor, ...rest } = state as State &
-    StateWithPendingAnchor;
+  const { __internal__pendingAnchor: pendingAnchor, ...rest } = state as WithPendingAnchor<State>;
   if (!pendingAnchor) {
     return state;
   }
@@ -87,6 +103,7 @@ export function applyPendingAnchor<State extends NavigationState>(
   const unmarked = rest as unknown as State;
   if (
     !anchor ||
+    state.routes.length > 1 ||
     !state.routeNames.includes(anchor) ||
     state.routes.some((route) => route.name === anchor)
   ) {
@@ -99,7 +116,7 @@ export function applyPendingAnchor<State extends NavigationState>(
   const anchorRoute = {
     key,
     name: anchor,
-    ...(pendingAnchor.type === 'prepend' && pendingAnchor.params
+    ...(pendingAnchor.type === 'target' && pendingAnchor.params
       ? { params: pendingAnchor.params }
       : undefined),
     ...(childNode && childNode.children.length > 0
@@ -109,7 +126,7 @@ export function applyPendingAnchor<State extends NavigationState>(
   return {
     ...unmarked,
     routeKeySeq: minter.routeKeySeq,
-    ...(pendingAnchor.type === 'initial'
+    ...(pendingAnchor.type === 'default'
       ? { index: 0, routes: [anchorRoute] }
       : { index: state.index + 1, routes: [anchorRoute, ...state.routes] }),
   };
@@ -189,13 +206,13 @@ export function createSeededNavigationState(
   });
   const targetRoute = targetState?.routes[targetState.index ?? targetState.routes.length - 1];
   if (!targetRoute || !state.routes.some((route) => route.name === targetRoute.name)) {
-    return withPendingAnchor(state, { type: 'initial' });
+    return withPendingAnchor(state, { type: 'default' });
   }
   const params = getPathParams(
     findRouteNodeByName(routeNode, targetRoute.name),
     targetRoute.params
   );
-  return withPendingAnchor(state, { type: 'prepend', ...(params ? { params } : undefined) });
+  return withPendingAnchor(state, { type: 'target', ...(params ? { params } : undefined) });
 }
 
 /**

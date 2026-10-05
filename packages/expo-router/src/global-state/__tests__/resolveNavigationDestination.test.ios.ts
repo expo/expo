@@ -97,7 +97,7 @@ test('keeps a mounted state when reducing it only drops its pending anchor marke
       routeNames: ['index'],
       routes: [{ key: 'index-key', name: 'index' }],
     },
-    { type: 'prepend' }
+    { type: 'target' }
   );
   const tabsWithStack: NavigationState = {
     ...tabs,
@@ -128,7 +128,7 @@ test('keeps a mounted state when reducing it only drops its pending anchor marke
 
 test.each([
   [false, {}],
-  [true, { __internal__pendingAnchor: { type: 'prepend' } }],
+  [true, { __internal__pendingAnchor: { type: 'target' } }],
 ])('builds an unmounted destination with anchor=%s', (withAnchor, pendingAnchor) => {
   const routeNode = node('tabs', [
     node('home'),
@@ -180,7 +180,7 @@ test('warns and falls back to the first route for an unknown destination', () =>
   expect(warn).toHaveBeenCalledWith(expect.stringContaining('unknown route "missing"'));
   expect(action.payload.state).toMatchObject({
     routes: [{ name: 'index' }],
-    __internal__pendingAnchor: { type: 'initial' },
+    __internal__pendingAnchor: { type: 'default' },
   });
   warn.mockRestore();
 });

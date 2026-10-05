@@ -3,7 +3,7 @@ import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
 import type { RouterRegistry } from '../global-state/routerRegistry';
-import { peekLayoutAnchor } from '../layoutAnchor';
+import { getLayoutAnchor } from '../layoutAnchor';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type {
   LinkingOptions,
@@ -43,7 +43,6 @@ type TriggerConfig =
       contextKey: string;
       action: JumpToNavigationAction;
       targetState?: PartialState<NavigationState>;
-      deep: boolean;
       activityEnabled?: boolean;
     }
   | { type: 'external'; name: string; href: string };
@@ -59,11 +58,15 @@ export function buildTabAction(
   config: Extract<TriggerConfig, { type: 'internal' }>,
   state: NavigationState,
   registry: RouterRegistry,
-  resetOnFocus?: boolean
-): NavigationAction {
+  resetOnFocus?: boolean,
+  skipShallowRefocus?: boolean
+): NavigationAction | undefined {
   const { route, isSwitching } = getTabRoute(state, config.routeNode.route);
-  const shouldResolve =
-    config.deep || route?.state === undefined || Boolean(resetOnFocus && isSwitching);
+  const deep = hasDeepDestination(config, route, registry);
+  if (skipShallowRefocus && !isSwitching && !deep) {
+    return undefined;
+  }
+  const shouldResolve = deep || route?.state === undefined || Boolean(resetOnFocus && isSwitching);
   const navigationState =
     resetOnFocus && isSwitching && route?.state
       ? {
@@ -222,7 +225,6 @@ export function useTriggersToScreens(
       contextKey,
       action,
       targetState: state.state,
-      deep: hasDeepDestination(routeState, routeNode),
     });
   }
 
@@ -251,18 +253,26 @@ export function useTriggersToScreens(
   };
 }
 
+/**
+ * Returns whether the trigger `href` points below the default screens of the tab. The anchor of a
+ * layout is known only after its navigator mounts, so an unmounted level counts as deep.
+ */
 function hasDeepDestination(
-  route: { state?: PartialState<NavigationState> },
-  routeNode: RouteNode
+  config: Extract<TriggerConfig, { type: 'internal' }>,
+  tabRoute: { state?: NavigationState | PartialState<NavigationState> } | undefined,
+  registry: RouterRegistry
 ) {
-  let state = route.state;
-  let node = routeNode;
+  const targetState = config.targetState;
+  let state = targetState?.routes[targetState.index ?? targetState.routes.length - 1]?.state;
+  let currentState = tabRoute?.state;
+  let node = config.routeNode;
 
   while (state) {
+    if (currentState?.key === undefined || !registry.has(currentState.key)) {
+      return true;
+    }
     const childRoute = state.routes[state.index ?? state.routes.length - 1];
-    // A layout that has not rendered yet also starts at its first route, see `createSeededNavigationState`.
-    const initialRouteName =
-      peekLayoutAnchor(node) ?? [...node.children].sort(sortRoutes)[0]?.route;
+    const initialRouteName = getLayoutAnchor(node) ?? [...node.children].sort(sortRoutes)[0]?.route;
     if (
       !childRoute ||
       childRoute.name !== initialRouteName ||
@@ -277,6 +287,7 @@ function hasDeepDestination(
     }
     node = childNode;
     state = childRoute.state;
+    currentState = currentState.routes.find((route) => route.name === childRoute.name)?.state;
   }
 
   return false;

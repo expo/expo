@@ -1,7 +1,7 @@
 import type { RouteNode } from '../Route';
 import { findRouteNodeAndParamsForState, sortRoutes, sortRoutesWithInitial } from '../Route';
 import { generateDynamic } from '../getRoutes';
-import { getLayoutAnchor, peekLayoutAnchor } from '../layoutAnchor';
+import { getLayoutAnchor } from '../layoutAnchor';
 
 const asRouteNode = (route: string): RouteNode => {
   return {
@@ -133,16 +133,6 @@ describe(getLayoutAnchor, () => {
     node.loadRoute = () => Promise.resolve({}) as never;
 
     expect(() => getLayoutAnchor(node)).toThrow('was read before its module finished loading');
-  });
-});
-
-describe(peekLayoutAnchor, () => {
-  it('returns the anchor only after the layout was read', () => {
-    const node = asLayoutNode('a', ['a', 'b']);
-
-    expect(peekLayoutAnchor(node)).toBeUndefined();
-    getLayoutAnchor(node);
-    expect(peekLayoutAnchor(node)).toBe('a');
   });
 });
 

@@ -584,7 +584,7 @@ it('reseeds a state slice with a pending anchor when its router unregisters', as
     index: 0,
     routeNames: ['first', 'third', 'second'],
     routes: [{ name: 'first' }],
-    __internal__pendingAnchor: { type: 'initial' },
+    __internal__pendingAnchor: { type: 'default' },
   });
   expect(result.committedStates).toEqual([result.result.current.state]);
 });
@@ -598,12 +598,12 @@ it('commits the pending anchor when its navigator mounts', async () => {
   const result = await renderReducer({
     state: withPendingAnchor(
       { ...initialState, key: 'navigator:0', routes: [initialState.routes[0]!] },
-      { type: 'initial' }
+      { type: 'default' }
     ),
     registry: new Map([['navigator:0', { ...entry(() => null), routeNode }]]),
   });
 
-  await act(() => result.result.current.commitPendingAnchor('navigator:0'));
+  await act(() => result.result.current.applyPendingAnchor('navigator:0'));
 
   expect(result.result.current.state).toStrictEqual({
     stale: false,

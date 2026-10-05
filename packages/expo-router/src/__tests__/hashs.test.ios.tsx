@@ -217,6 +217,7 @@ it('navigating to the same route with a hash will only rerender the screen', asy
         key: expect.any(String),
         name: '__root',
         state: {
+          __internal__pendingAnchor: { type: 'target' },
           index: 0,
           key: expect.any(String),
           routeNames: ['index'],

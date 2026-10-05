@@ -106,7 +106,6 @@ function getSortedChildren<
   routeSource: RouteSource;
 }[] {
   if (!order?.length) {
-    // Copy, because state seeding reads the route tree in file order.
     return [...children]
       .sort(sortRoutesWithInitial(initialRouteName))
       .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));

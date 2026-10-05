@@ -198,8 +198,8 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
   const trigger = name !== undefined ? getTrigger(name) : undefined;
 
-  const switchTab = useCallback(
-    (name: string, options?: SwitchToOptions) => {
+  const dispatchSwitchTab = useCallback(
+    (name: string, options?: SwitchToOptions, skipShallowRefocus?: boolean) => {
       const config = triggerMap[name];
 
       if (config) {
@@ -223,8 +223,12 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
                   config,
                   currentOwningState,
                   registry,
-                  options?.resetOnFocus
+                  options?.resetOnFocus,
+                  skipShallowRefocus
                 );
+                if (!action) {
+                  return;
+                }
                 return config.contextKey !== contextKey
                   ? { ...action, target: action.target ?? currentOwningState.key }
                   : action;
@@ -241,6 +245,10 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
     },
     [contextKey, enqueue, navigation, navigatorStates, state.key, triggerMap]
   );
+  const switchTab = useCallback(
+    (name: string, options?: SwitchToOptions) => dispatchSwitchTab(name, options),
+    [dispatchSwitchTab]
+  );
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
     (event) => {
@@ -256,8 +264,11 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      if (!trigger.isFocused || (trigger.type === 'internal' && trigger.deep)) {
+      if (!trigger.isFocused) {
         switchTab(name, { resetOnFocus });
+      } else if (trigger.type === 'internal') {
+        // Pressing the focused tab navigates only to a destination below its default screens.
+        dispatchSwitchTab(name, { resetOnFocus }, true);
       }
     },
     [onPress, name, resetOnFocus, trigger]

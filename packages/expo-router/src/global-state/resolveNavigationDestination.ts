@@ -248,7 +248,7 @@ function createDestinationState(
   const routeNames = getRouteNames(routeNode);
   if (!targetRoute) {
     return markState(
-      withPendingAnchor(createInitialState({ routeNames, parentChain }), { type: 'initial' })
+      withPendingAnchor(createInitialState({ routeNames, parentChain }), { type: 'default' })
     );
   }
   if (!routeNames.includes(targetRoute.name)) {
@@ -256,7 +256,7 @@ function createDestinationState(
       `The navigation destination contains the unknown route "${targetRoute.name}". The route is not registered by its navigator, so Expo Router will use the navigator's initial route instead. Check that your linking configuration only returns registered routes.`
     );
     return markState(
-      withPendingAnchor(createInitialState({ routeNames, parentChain }), { type: 'initial' })
+      withPendingAnchor(createInitialState({ routeNames, parentChain }), { type: 'default' })
     );
   }
 
@@ -285,7 +285,7 @@ function createDestinationState(
     ...(childState !== undefined ? { state: childState } : undefined),
   };
   const state = { ...destination, routes: [destinationRoute] };
-  return markState(withAnchor ? withPendingAnchor(state, { type: 'prepend' }) : state);
+  return markState(withAnchor ? withPendingAnchor(state, { type: 'target' }) : state);
 }
 
 function getFocusedRoute(

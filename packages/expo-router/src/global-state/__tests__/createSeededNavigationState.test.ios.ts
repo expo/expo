@@ -1,7 +1,7 @@
 import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState';
 import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import {
-  applyPendingAnchor,
+  resolvePendingAnchor,
   completeNavigationState,
   completeParsedState,
   createSeededNavigationState,
@@ -69,7 +69,7 @@ test('completes nested parsed routes and marks each navigator with a pending anc
           routeKeySeq: 1,
           index: 0,
           routeNames: ['index', '(group)'],
-          __internal__pendingAnchor: { type: 'prepend' },
+          __internal__pendingAnchor: { type: 'target' },
           routes: [
             {
               key: '(group):0-0',
@@ -81,7 +81,7 @@ test('completes nested parsed routes and marks each navigator with a pending anc
                 routeKeySeq: 2,
                 index: 1,
                 routeNames: ['[id]', 'anchor'],
-                __internal__pendingAnchor: { type: 'prepend', params: { id: '42' } },
+                __internal__pendingAnchor: { type: 'target', params: { id: '42' } },
                 routes: [
                   { key: 'anchor:0-0-0', name: 'anchor', params: { from: 'link' } },
                   {
@@ -94,7 +94,7 @@ test('completes nested parsed routes and marks each navigator with a pending anc
                       routeKeySeq: 1,
                       index: 0,
                       routeNames: ['details'],
-                      __internal__pendingAnchor: { type: 'prepend' },
+                      __internal__pendingAnchor: { type: 'target' },
                       routes: [
                         {
                           key: 'details:0-0-1-0',
@@ -216,7 +216,7 @@ test('falls back to the first route when a nested state contains an unknown rout
   expect(state.routes[0]!.state).toMatchObject({
     index: 0,
     routes: [{ name: 'beta' }],
-    __internal__pendingAnchor: { type: 'initial' },
+    __internal__pendingAnchor: { type: 'default' },
   });
   expect(warn).toHaveBeenCalledWith(expect.stringContaining('unknown route "unknown"'));
   warn.mockRestore();
@@ -323,7 +323,7 @@ test.each(['+not-found', '_sitemap'])('keeps the root %s route as a leaf', (name
   ]);
 });
 
-describe(applyPendingAnchor, () => {
+describe(resolvePendingAnchor, () => {
   const routeNode = node('root', [node('anchor', [node('index')]), node('[id]')]);
 
   it('puts the anchor with the path params below the target without changing the target key', () => {
@@ -333,7 +333,7 @@ describe(applyPendingAnchor, () => {
       '0'
     );
 
-    expect(applyPendingAnchor(seeded, routeNode, 'anchor')).toStrictEqual({
+    expect(resolvePendingAnchor(seeded, routeNode, 'anchor')).toStrictEqual({
       stale: false,
       key: 'navigator:0',
       routeKeySeq: 2,
@@ -351,7 +351,7 @@ describe(applyPendingAnchor, () => {
             index: 0,
             routeNames: ['index'],
             routes: [{ key: 'index:0-1-0', name: 'index' }],
-            __internal__pendingAnchor: { type: 'initial' },
+            __internal__pendingAnchor: { type: 'default' },
           },
         },
         { key: '[id]:0-0', name: '[id]', params: { id: '1', query: 'x' } },
@@ -362,12 +362,12 @@ describe(applyPendingAnchor, () => {
   it('replaces routes picked without the anchor', () => {
     const seeded = createSeededNavigationState(undefined, routeNode, '0');
 
-    expect(applyPendingAnchor(seeded, routeNode, 'anchor')).toMatchObject({
+    expect(resolvePendingAnchor(seeded, routeNode, 'anchor')).toMatchObject({
       routeKeySeq: 2,
       index: 0,
       routes: [{ key: 'anchor:0-1', name: 'anchor', state: { key: 'navigator:0-1' } }],
     });
-    expect(applyPendingAnchor(seeded, routeNode, 'anchor')).not.toHaveProperty(
+    expect(resolvePendingAnchor(seeded, routeNode, 'anchor')).not.toHaveProperty(
       '__internal__pendingAnchor'
     );
   });
@@ -379,7 +379,7 @@ describe(applyPendingAnchor, () => {
       __internal__pendingAnchor: unknown;
     };
 
-    expect(applyPendingAnchor(seeded, routeNode, '[id]')).toStrictEqual(unmarked);
-    expect(applyPendingAnchor(seeded, routeNode, undefined)).toStrictEqual(unmarked);
+    expect(resolvePendingAnchor(seeded, routeNode, '[id]')).toStrictEqual(unmarked);
+    expect(resolvePendingAnchor(seeded, routeNode, undefined)).toStrictEqual(unmarked);
   });
 });

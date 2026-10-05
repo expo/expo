@@ -38,8 +38,8 @@ export type RouteNode = {
   type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => LoadedRoute;
-  /** Group that selects a group-specific anchor in `unstable_settings`, for `(a,b)` layouts. */
-  anchorGroupName?: string;
+  /** Innermost group name from the expanded layout path, before making it relative. */
+  groupName?: string;
   /** Nested routes */
   children: RouteNode[];
   /** Is the route a dynamic path */

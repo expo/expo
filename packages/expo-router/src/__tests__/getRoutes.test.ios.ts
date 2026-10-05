@@ -199,7 +199,7 @@ describe('getRoutes', () => {
           type: 'layout',
           dynamic: null,
           route: '(b)',
-          anchorGroupName: 'b',
+          groupName: 'b',
           children: [
             {
               type: 'route',
@@ -507,7 +507,7 @@ describe('entry points', () => {
                   type: 'layout',
                   dynamic: null,
                   route: '(c)',
-                  anchorGroupName: 'c',
+                  groupName: 'c',
                   children: [
                     {
                       children: [],
@@ -530,7 +530,7 @@ describe('entry points', () => {
                   type: 'layout',
                   dynamic: null,
                   route: '(d)',
-                  anchorGroupName: 'd',
+                  groupName: 'd',
                   children: [
                     {
                       children: [],
