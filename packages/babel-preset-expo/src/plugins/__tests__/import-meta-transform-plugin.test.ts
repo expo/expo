@@ -61,3 +61,40 @@ it(`should transform import.meta by default for server bundles`, () => {
     `var url = globalThis.__ExpoImportMetaRegistry.url;`
   );
 });
+
+it(`transforms import.meta.url to the module file URL under Jest`, () => {
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'ios',
+      isDev: true,
+      isJest: true,
+    }),
+  };
+
+  const sourceCode = `var url = import.meta.url;`;
+  expect(babel.transform(sourceCode, options)!.code).toEqual(
+    `var url = { url: require('url').pathToFileURL(__filename).href }.url;`
+  );
+});
+
+it(`transforms import.meta.url to the module file URL for server bundles under Jest`, () => {
+  const options = {
+    ...DEF_OPTIONS,
+    caller: getCaller({
+      name: 'metro',
+      engine: 'hermes',
+      platform: 'web',
+      isDev: true,
+      isServer: true,
+      isJest: true,
+    }),
+  };
+
+  const sourceCode = `var url = import.meta.url;`;
+  expect(babel.transform(sourceCode, options)!.code).toEqual(
+    `var url = { url: require('url').pathToFileURL(__filename).href }.url;`
+  );
+});

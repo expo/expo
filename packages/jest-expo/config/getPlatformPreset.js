@@ -68,6 +68,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
             isServer,
             // Bundle in React Server Component mode.
             isReactServer,
+            isJest: true,
           },
         },
       ],
