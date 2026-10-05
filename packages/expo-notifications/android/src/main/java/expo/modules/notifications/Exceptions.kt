@@ -11,5 +11,5 @@ class NotificationWasAlreadyHandledException(val id: String) : CodedException("F
 class ExactAlarmPermissionNotDeclaredException :
   CodedException(
     "Cannot request the exact alarm permission because the app does not declare android.permission.SCHEDULE_EXACT_ALARM. " +
-      "Add it to `android.permissions` in your app config (or to AndroidManifest.xml) and rebuild the app."
+      "Add it to `android.permissions` in your app config and rebuild the app."
   )
