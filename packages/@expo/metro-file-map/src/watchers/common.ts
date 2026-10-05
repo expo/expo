@@ -30,6 +30,9 @@ export interface WatcherOptions {
  * Whether a watcher should report a change at the given relative path. Only
  * regular files are checked against `included`, and every file is included
  * when it is null.
+ *
+ * A file matches an extension when its basename ends with `.` followed by
+ * that extension, so `.env` matches `env` and `foo.d.ts` matches `d.ts`.
  */
 export function isIncluded(
   type: 'f' | 'l' | 'd' | null | undefined,
@@ -41,10 +44,19 @@ export function isIncluded(
   }
   const basename = path.basename(relativePath);
   return (
-    included.extensions.has(path.extname(basename).slice(1)) ||
+    hasIncludedExtension(included.extensions, basename) ||
     included.basenames.has(basename) ||
     included.basenamePrefixes.some((prefix) => basename.startsWith(prefix))
   );
+}
+
+function hasIncludedExtension(extensions: ReadonlySet<string>, basename: string): boolean {
+  for (let i = basename.indexOf('.'); i !== -1; i = basename.indexOf('.', i + 1)) {
+    if (extensions.has(basename.slice(i + 1))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**

@@ -12,7 +12,7 @@ import { isIncluded } from '../common';
 
 describe('isIncluded', () => {
   const included: WatcherIncludedFiles = {
-    extensions: new Set(['js', 'json']),
+    extensions: new Set(['js', 'json', 'env', 'local', 'd.ts']),
     basenames: new Set(['package.json', 'BUCK']),
     basenamePrefixes: ['.metro-health-check'],
   };
@@ -29,6 +29,12 @@ describe('isIncluded', () => {
     [join('src', 'BUCK.v2'), false],
     [join('src', 'x-.metro-health-check'), false],
     [join('.hidden', 'index.js'), true],
+    ['.env', true],
+    ['.env.local', true],
+    [join('src', '.js'), true],
+    [join('src', 'types.d.ts'), true],
+    ['.envrc', false],
+    [join('src', 'index.js.map'), false],
   ])('regular file %s -> %s', (relativePath, expected) => {
     expect(isIncluded('f', included, relativePath)).toBe(expected);
   });
