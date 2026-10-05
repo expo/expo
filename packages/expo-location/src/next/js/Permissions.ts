@@ -23,12 +23,12 @@ export async function requestBackgroundPermissions(
   return NativeLocationModuleNext.requestBackgroundPermissions(options);
 }
 
-export const useForegroundPermissions = createPermissionHook({
+export const useForegroundLocationPermissions = createPermissionHook({
   getMethod: getForegroundPermissions,
   requestMethod: requestForegroundPermissions,
 });
 
-export const useBackgroundPermissions = createPermissionHook({
+export const useBackgroundLocationPermissions = createPermissionHook({
   getMethod: getBackgroundPermissions,
   requestMethod: requestBackgroundPermissions,
 });

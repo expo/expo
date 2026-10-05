@@ -1,6 +1,10 @@
 export * as Location from './Location';
 
 export {
+  useForegroundLocationPermissions,
+  useBackgroundLocationPermissions,
+  useLocationServices,
+  useUserLocation,
   PositionWatchHandle,
   LocationProvider,
   LocationUpdatesHandle,

@@ -10,8 +10,4 @@ export {
   setLocationProvider,
   getSelectedLocationProviderName,
   defineLocationTask,
-  useForegroundPermissions,
-  useBackgroundPermissions,
-  useLocationServices,
-  useUserLocation,
 } from './js';
