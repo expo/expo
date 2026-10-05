@@ -109,6 +109,8 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
     '^(\\.{1,2}/.*)\\.js$': '$1',
     // See the note in `../jest-preset.js`: mapped targets must be absolute paths on Jest 30.
     '^react-native/asset-registry$': expoPreset.moduleNameMapper['^react-native/asset-registry$'],
+    '^react-native/unstable-internals-do-not-use$':
+      expoPreset.moduleNameMapper['^react-native/unstable-internals-do-not-use$'],
     ...preset.moduleNameMapper,
   };
 

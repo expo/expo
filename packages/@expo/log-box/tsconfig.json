@@ -3,7 +3,10 @@
   "compilerOptions": {
     "noEmit": true,
     "rootDir": ".",
-    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS", "expo-source"]
+    "customConditions": [
+      "expo-source",
+      "react-native-unstable-internals"
+    ]
   },
   "include": ["src", "app"]
 }
