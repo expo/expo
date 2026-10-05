@@ -337,6 +337,51 @@ class Foo: NSObject {
       code: ['{', '    print("Hello \\(name) - value[\\(value)]!")', '  }'].join('\n'),
     });
   });
+
+  it('should skip functions with the same name and arity but other argument labels', () => {
+    const contents = `
+class AppDelegate: ExpoAppDelegate {
+  override func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    return .portrait
+  }
+
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+  ) -> Bool {
+    return true
+  }
+}
+`;
+    expect(
+      findSwiftFunctionCodeBlock(contents, 'application(_:didFinishLaunchingWithOptions:)')?.code
+    ).toBe(['{', '    return true', '  }'].join('\n'));
+    expect(
+      findSwiftFunctionCodeBlock(contents, 'application(_:supportedInterfaceOrientationsFor:)')
+        ?.code
+    ).toBe(['{', '    return .portrait', '  }'].join('\n'));
+    expect(findSwiftFunctionCodeBlock(contents, 'application(_:open:)')).toBeNull();
+  });
+
+  it('should find functions without parameters', () => {
+    const contents = `
+class Foo: NSObject {
+  func doSomething(forName name: String) -> Bool {
+    return true
+  }
+
+  func doSomething() {
+    print("Hello!")
+  }
+}
+`;
+    expect(findSwiftFunctionCodeBlock(contents, 'doSomething()')?.code).toBe(
+      ['{', '    print("Hello!")', '  }'].join('\n')
+    );
+    expect(findSwiftFunctionCodeBlock(contents, 'doSomething(forName:)')?.code).toBe(
+      ['{', '    return true', '  }'].join('\n')
+    );
+  });
 });
 
 describe(insertContentsInsideSwiftClassBlock, () => {
@@ -438,6 +483,44 @@ func doSomething(_ value: String!) -> Bool {
         {
           position: 'tailBeforeLastReturn',
         }
+      )
+    ).toEqual(expectContents);
+  });
+});
+
+describe('insertContentsInsideSwiftFunctionBlock with overloads', () => {
+  it('should insert into the function whose argument labels match the selector', () => {
+    const rawContents = `
+class AppDelegate: ExpoAppDelegate {
+  override func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    return .portrait
+  }
+
+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    return true
+  }
+}
+`;
+
+    const expectContents = `
+class AppDelegate: ExpoAppDelegate {
+  override func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+    return .portrait
+  }
+
+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    return true
+  }
+}
+`;
+
+    expect(
+      insertContentsInsideSwiftFunctionBlock(
+        rawContents,
+        'application(_:didFinishLaunchingWithOptions:)',
+        'super.application(application, didFinishLaunchingWithOptions: launchOptions)',
+        { position: 'tailBeforeLastReturn', indent: 4 }
       )
     ).toEqual(expectContents);
   });
