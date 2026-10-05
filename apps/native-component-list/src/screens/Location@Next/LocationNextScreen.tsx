@@ -206,10 +206,7 @@ export default function LocationNextScreen() {
               'done. "selected name" then returns\n"Fallback: GMS -> Android".\nEach call tries GMS first and drops to Android only when GMS reports itself unavailable.',
               async () =>
                 Location.setLocationProvider(
-                  LocationProvider.Fallback([
-                    LocationProvider.Gms(),
-                    LocationProvider.Android(),
-                  ])
+                  LocationProvider.Fallback([LocationProvider.Gms(), LocationProvider.Android()])
                 )
             )}
           />
@@ -231,7 +228,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nReturns immediately; no dialog.\nBefore any request: status "undetermined", granted false, scope "notGranted".`,
-              Location.getForegroundPermissionsAsync
+              Location.getForegroundPermissions
             )}
           />
           <GridButton
@@ -239,7 +236,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nResolves once you answer the system dialog.\nAfter Allow: status "granted", granted true, scope "whenInUse", accuracy "full".`,
-              () => Location.requestForegroundPermissionsAsync()
+              () => Location.requestForegroundPermissions()
             )}
           />
           <GridButton
@@ -247,7 +244,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nReturns immediately; no dialog.\nscope "always" only once background access is granted.`,
-              Location.getBackgroundPermissionsAsync
+              Location.getBackgroundPermissions
             )}
           />
           <GridButton
@@ -255,7 +252,7 @@ export default function LocationNextScreen() {
             onPress={run(
               'permissions',
               `${PERMISSION_SHAPE}\nAndroid 11+ cannot prompt directly. Expect "denied" until\n"Allow all the time" is set in Settings.`,
-              Location.requestBackgroundPermissionsAsync
+              Location.requestBackgroundPermissions
             )}
           />
         </Section>

@@ -6,21 +6,21 @@ export {
 } from './locationServices';
 export { PositionWatchHandle, watchPosition } from './PositionWatchHandle';
 export {
-  useWatchPosition,
-  type UseWatchPositionOptions,
-  type UseWatchPositionResult,
-} from './useWatchPosition';
+  useUserLocation,
+  type UseUserLocationOptions,
+  type UseUserLocationResult,
+} from './useUserLocation';
 export {
   LocationProvider,
   setLocationProvider,
   getSelectedLocationProviderName,
 } from './LocationProvider';
 export {
-  getForegroundPermissionsAsync,
-  requestForegroundPermissionsAsync,
-  getBackgroundPermissionsAsync,
-  requestBackgroundPermissionsAsync,
-  useForegroundPermissions,
-  useBackgroundPermissions,
+  getForegroundPermissions,
+  requestForegroundPermissions,
+  getBackgroundPermissions,
+  requestBackgroundPermissions,
+  useForegroundLocationPermissions,
+  useBackgroundLocationPermissions,
 } from './Permissions';
 export { LocationUpdatesHandle, defineLocationTask } from './LocationUpdates';

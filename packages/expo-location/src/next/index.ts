@@ -2,14 +2,14 @@ export * as Location from './Location';
 
 export {
   useLocationServices,
-  useForegroundPermissions,
-  useBackgroundPermissions,
-  useWatchPosition,
+  useForegroundLocationPermissions,
+  useBackgroundLocationPermissions,
+  useUserLocation,
   PositionWatchHandle,
   LocationProvider,
   LocationUpdatesHandle,
-  type UseWatchPositionOptions,
-  type UseWatchPositionResult,
+  type UseUserLocationOptions,
+  type UseUserLocationResult,
 } from './js';
 
 export {

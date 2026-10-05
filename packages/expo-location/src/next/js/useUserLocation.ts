@@ -3,11 +3,11 @@ import { useEffect, useState } from 'react';
 import type { LocationProfile, Position, PositionWatchError } from '../types';
 import { watchPosition } from './PositionWatchHandle';
 
-export type UseWatchPositionOptions = {
+export type UseUserLocationOptions = {
   profile?: LocationProfile;
 };
 
-export type UseWatchPositionResult =
+export type UseUserLocationResult =
   | {
       position: Position;
       error: null;
@@ -21,10 +21,8 @@ export type UseWatchPositionResult =
       error: null;
     };
 
-export function useWatchPosition({
-  profile,
-}: UseWatchPositionOptions = {}): UseWatchPositionResult {
-  const [result, setResult] = useState<UseWatchPositionResult>({ position: null, error: null });
+export function useUserLocation({ profile }: UseUserLocationOptions = {}): UseUserLocationResult {
+  const [result, setResult] = useState<UseUserLocationResult>({ position: null, error: null });
 
   useEffect(() => {
     setResult({ position: null, error: null });
