@@ -61,7 +61,7 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
-    "@expo/code-signing-certificates": "^0.0.6",
+    "@expo/code-signing-certificates": "^0.0.7",
     "@expo/env": "workspace:^",
     "@expo/plist": "workspace:^",
     "@expo/spawn-async": "^1.8.0",

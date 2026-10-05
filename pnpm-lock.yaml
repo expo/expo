@@ -2018,8 +2018,8 @@ importers:
         specifier: ^0.4.3
         version: 0.4.3(typescript@6.0.3)
       '@expo/code-signing-certificates':
-        specifier: ^0.0.6
-        version: 0.0.6
+        specifier: ^0.0.7
+        version: 0.0.7
       '@expo/config':
         specifier: workspace:~
         version: link:../config
@@ -2147,8 +2147,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       node-forge:
-        specifier: ^1.3.3
-        version: 1.3.3
+        specifier: ^1.4.0
+        version: 1.4.0
       npm-package-arg:
         specifier: ^11.0.0
         version: 11.0.3
@@ -3067,8 +3067,8 @@ importers:
   packages/@expo/pkcs12:
     dependencies:
       node-forge:
-        specifier: ^1.3.3
-        version: 1.3.3
+        specifier: ^1.4.0
+        version: 1.4.0
     devDependencies:
       '@types/node':
         specifier: ^22.14.0
@@ -6380,8 +6380,8 @@ importers:
   packages/expo-updates:
     dependencies:
       '@expo/code-signing-certificates':
-        specifier: ^0.0.6
-        version: 0.0.6
+        specifier: ^0.0.7
+        version: 0.0.7
       '@expo/env':
         specifier: workspace:^
         version: link:../@expo/env
@@ -8355,8 +8355,9 @@ packages:
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
     engines: {node: '>=0.10.0'}
 
-  '@expo/code-signing-certificates@0.0.6':
-    resolution: {integrity: sha512-iNe0puxwBNEcuua9gmTGzq+SuMDa0iATai1FlFTMHJ/vUmKvN/V//drXoLJkVb5i5H3iE/n/qIJxyoBnXouD0w==}
+  '@expo/code-signing-certificates@0.0.7':
+    resolution: {integrity: sha512-zP0tnfqrFFRL8INtOaQ6XwEYfdIpIH9vrEo7y0bHQGQa50z4/QWXE5CI4nRUHxqFW4MVWOwXFg1hom1aAZHNkQ==}
+    engines: {node: '>=22.13.0'}
 
   '@expo/commander@2.21.1':
     resolution: {integrity: sha512-1m0+eqh8y3Wv4BeKutSD3F3l9WQ7rS/52ERW6zempzsXPvrKWTT5cPIrB0AVnMbnPzX0WjXgpABL7v9wNiLNgA==}
@@ -13969,8 +13970,8 @@ packages:
       encoding:
         optional: true
 
-  node-forge@1.3.3:
-    resolution: {integrity: sha512-rLvcdSyRCyouf6jcOIPe/BgwG/d7hKjzMKOas33/pHEr6gbq18IK9zV7DiPvzsz0oBJPme6qr6H6kGZuI9/DZg==}
+  node-forge@1.4.0:
+    resolution: {integrity: sha512-LarFH0+6VfriEhqMMcLX2F7SwSXeWwnEAJEsYm5QKWchiVYVvJyV9v7UDvUv+w5HO23ZpQTXDv/GxdDdMyOuoQ==}
     engines: {node: '>= 6.13.0'}
 
   node-html-parser@6.1.13:
@@ -17445,9 +17446,9 @@ snapshots:
     dependencies:
       uuid: 8.3.2
 
-  '@expo/code-signing-certificates@0.0.6':
+  '@expo/code-signing-certificates@0.0.7':
     dependencies:
-      node-forge: 1.3.3
+      node-forge: 1.4.0
 
   '@expo/commander@2.21.1':
     dependencies:
@@ -23659,7 +23660,7 @@ snapshots:
     optionalDependencies:
       encoding: 0.1.13
 
-  node-forge@1.3.3: {}
+  node-forge@1.4.0: {}
 
   node-html-parser@6.1.13:
     dependencies:
