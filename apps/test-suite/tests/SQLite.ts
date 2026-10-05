@@ -587,6 +587,50 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       }
     });
 
+    nativeIt('preserves constraint codes and details while other statements run', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', {
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      try {
+        await db.execAsync(
+          'CREATE TABLE error_test(id INTEGER PRIMARY KEY); INSERT INTO error_test VALUES (1)'
+        );
+        const readers = await Promise.all(
+          Array.from({ length: 16 }, () => db.prepareAsync('SELECT 1 UNION ALL SELECT 2'))
+        );
+        try {
+          for (let attempt = 0; attempt < 200; attempt++) {
+            const statement = await db.prepareAsync('INSERT INTO error_test VALUES (1)');
+            let executionError: unknown;
+            try {
+              await statement.executeAsync();
+            } catch (error) {
+              executionError = error;
+            }
+            expect(String(executionError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+            // These native calls can replace the connection error between finalize() and error reporting.
+            const reading = Promise.all(readers.map((reader) => reader.executeAsync()));
+            let finalizeError: unknown;
+            try {
+              await statement.finalizeAsync();
+            } catch (error) {
+              finalizeError = error;
+            }
+            await reading;
+            expect(String(finalizeError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+          }
+        } finally {
+          for (const reader of readers) await reader.finalizeAsync();
+        }
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
     it('should throw from getFirstAsync()/getAllAsync() if the cursor is not at the beginning', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`

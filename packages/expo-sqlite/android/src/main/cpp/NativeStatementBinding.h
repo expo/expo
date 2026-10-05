@@ -30,6 +30,7 @@ public:
   int sqlite3_step();
 
   // helpers
+  std::string getLastErrorMessage();
   int bindStatementParam(int index, jni::alias_ref<jni::JObject> param);
   jni::local_ref<jni::JArrayList<jni::JString>> getColumnNames();
   jni::local_ref<jni::JArrayList<jni::JObject>> getColumnValues();
@@ -48,6 +49,7 @@ private:
   friend NativeDatabaseBinding;
 
   exsqlite3_stmt *stmt = nullptr;
+  std::string lastErrorMessage;
 };
 
 } // namespace expo
