@@ -85,9 +85,11 @@ See [Static rendering: Meta tags](/router/web/static-rendering/#meta-tags) for t
 
 ### Update custom Root HTML components
 
-If your static web app has a **src/app/+html.tsx** file, make sure it calls `useServerDocumentContext()` from `expo-router/html`. Spread `htmlAttributes` and `bodyAttributes` onto their respective elements, and render `headNodes` inside `<head>` and `bodyNodes` after `children` inside `<body>`.
+If your app uses `web.output: "static"` or `"server"` and has a **src/app/+html.tsx** file, make sure it calls `useServerDocumentContext()` from `expo-router/html`. Spread `htmlAttributes` and `bodyAttributes` onto their respective elements, and render `headNodes` inside `<head>` and `bodyNodes` after `children` inside `<body>`.
 
-Without these nodes, the exported HTML does not include generated metadata, styles, fonts, or JavaScript bundles. See the [root HTML example](/router/web/static-rendering/#root-html).
+Without these nodes, the rendered HTML does not include generated metadata, styles, fonts, or JavaScript bundles. See the [static rendering](/router/web/static-rendering/#root-html) and [server rendering](/router/web/server-rendering/#root-html) examples.
+
+> **warning** In SDK 58, `bodyNodes` includes the JavaScript bundles required for hydration. Omitting it prevents the app from becoming interactive.
 
 ### Review async route defaults
 
