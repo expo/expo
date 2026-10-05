@@ -9,6 +9,7 @@ import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
+import { loadLayouts } from '../../layoutAnchor';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -451,6 +452,14 @@ export function useNavigationBuilder<
   );
 
   useRegisterRouter(committedState.key, registryEntry);
+
+  React.useEffect(() => {
+    // Native tab presses apply at once, so load the tabs' layouts early to know their anchors.
+    // Layouts nested deeper inside a tab are not loaded here.
+    if (process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy' && router.type === 'tab' && routeNode) {
+      loadLayouts(routeNode.children.filter((child) => child.type === 'layout'));
+    }
+  }, [routeNode, router.type]);
 
   useClientLayoutEffect(() => {
     if (isForeignType) {

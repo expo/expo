@@ -59,10 +59,11 @@ it('should respect `unstable_settings', async () => {
     );
 
   await render({ initialUrl: '/orange' });
-  expect(screen).toHaveSegments(['(two)', 'orange']);
+  // Both groups match `/orange` equally. Group-specific anchors do not rank the matches.
+  expect(screen).toHaveSegments(['(one)', 'orange']);
 
   expect(screen.getByTestId('orange')).toBeVisible();
-  // Orange is the initial route so you can't go back
+  // Orange is the first tab, so you can't go back
   expect(router.canGoBack()).toBeFalsy();
 
   // Reset the app, but start at /banana

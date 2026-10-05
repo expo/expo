@@ -65,7 +65,7 @@ it('isolates queue notifications from its parent', async () => {
   await act(() => enqueue(actionIntent('TEST')));
 
   expect(parentRender).toHaveBeenCalledTimes(1);
-  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'));
+  expect(processIntent).toHaveBeenCalledWith(actionIntent('TEST'), false);
 });
 
 it('processes a queued batch in FIFO order', async () => {

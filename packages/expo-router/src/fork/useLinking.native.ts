@@ -8,6 +8,7 @@ import {
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
+import { withLoadedLayouts } from '../layoutAnchor';
 import {
   type LinkingOptions,
   getStateFromPath as getStateFromPathDefault,
@@ -108,15 +109,14 @@ export function useLinking(
   const getInitialState = useCallback(() => {
     const url = getInitialURL();
     const createInitialState = (url: string | null | undefined) => {
-      let parsedState;
-      if (url && (!filter || filter(url))) {
-        const path = getInitialPath(prefixes, url);
-        parsedState = getStateFromPath(path, config);
-      }
+      const parsedState =
+        url && (!filter || filter(url))
+          ? getStateFromPath(getInitialPath(prefixes, url), config)
+          : undefined;
 
       const routeNode = routerConfig?.routeNode;
       return routeNode
-        ? createSeededRootState(parsedState, routeNode)
+        ? withLoadedLayouts(() => createSeededRootState(parsedState, routeNode))
         : completeParsedState(parsedState, ROOT_CHAIN);
     };
 

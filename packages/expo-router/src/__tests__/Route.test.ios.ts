@@ -90,27 +90,28 @@ describe(sortRoutes, () => {
   });
 });
 
+const asLayoutNode = (anchor: string, children: RouteNode[]): RouteNode => ({
+  ...asRouteNode('_layout'),
+  type: 'layout',
+  loadRoute: () => ({ unstable_settings: { anchor } }),
+  children,
+});
+
 describe(getValidInitialRouteName, () => {
   it('returns the registered route name for a valid setting', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'a';
-    node.children = [asRouteNode('a')];
+    const node = asLayoutNode('a', [asRouteNode('a')]);
 
     expect(getValidInitialRouteName(node)).toBe('a');
   });
 
   it('resolves a directory setting to its registered index route', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'a';
-    node.children = [asRouteNode('a/index')];
+    const node = asLayoutNode('a', [asRouteNode('a/index')]);
 
     expect(getValidInitialRouteName(node)).toBe('a/index');
   });
 
   it('sorts a resolved directory setting before other routes', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'a';
-    node.children = [asRouteNode('b'), asRouteNode('a/index')];
+    const node = asLayoutNode('a', [asRouteNode('b'), asRouteNode('a/index')]);
 
     expect(
       node.children
@@ -120,10 +121,8 @@ describe(getValidInitialRouteName, () => {
   });
 
   it('throws for a missing route', () => {
-    const node = asRouteNode('_layout');
-    node.initialRouteName = 'missing';
+    const node = asLayoutNode('missing', [asRouteNode('index'), asRouteNode('settings/index')]);
     node.contextKey = './app/(tabs)/_layout.tsx';
-    node.children = [asRouteNode('index'), asRouteNode('settings/index')];
 
     expect(() => getValidInitialRouteName(node)).toThrow(
       'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.anchor` to the name of a route in this layout.'

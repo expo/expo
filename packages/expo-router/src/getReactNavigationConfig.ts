@@ -1,4 +1,5 @@
 import type { RouteNode } from './Route';
+import { getGroupAnchor } from './layoutAnchor';
 import { matchDynamicName } from './matchers';
 
 export type Screen =
@@ -65,12 +66,10 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     screens,
   };
 
-  if (node.initialRouteName) {
-    // NOTE(EvanBacon): This is bad because it forces all Layout Routes
-    // to be loaded into memory. We should move towards a system where
-    // the initial route name is either loaded asynchronously in the Layout Route
-    // or defined via a file system convention.
-    screen.initialRouteName = node.initialRouteName;
+  // Only the anchor known without loading the layout ranks equally specific URL matches.
+  const groupAnchor = getGroupAnchor(node);
+  if (groupAnchor) {
+    screen.initialRouteName = groupAnchor;
   }
 
   if (!metaOnly) {
@@ -90,16 +89,8 @@ export function getReactNavigationScreensConfig(
 }
 
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
-  const config = {
+  return {
     initialRouteName: undefined,
     screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
   };
-
-  if (routeTree?.initialRouteName) {
-    // We're using LinkingOptions the generic type is `object` instead of a proper ParamList.
-    // So we need to cast the initialRouteName to `any` to avoid type errors.
-    config.initialRouteName = routeTree.initialRouteName as any;
-  }
-
-  return config;
 }

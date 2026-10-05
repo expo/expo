@@ -21,6 +21,7 @@ import {
 } from '../../global-state/routerRegistry';
 import {
   ImperativeRoutingQueueBridge,
+  NavigationPendingContext,
   RoutingQueueApiContext,
 } from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
@@ -76,6 +77,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
   const routingQueue = use(RoutingQueueApiContext);
+  const isNavigationPending = use(NavigationPendingContext);
   const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   if (!parent.isDefault) {
@@ -94,15 +96,22 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const [registry, setRegistry] = React.useState<RouterRegistry>(() => new Map());
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
-    useNavigationTreeReducer({
-      initialState,
-      routeNode: UNSTABLE_routeNode,
-      registry,
-      routesWithRemovalPrevented,
-      linking: routerConfig?.linking,
-      redirects: routerConfig?.redirects,
-    });
+  const {
+    state,
+    isWaitingForLayouts,
+    report,
+    consumeReportEvents,
+    resetNavigator,
+    handleAction,
+    processIntent,
+  } = useNavigationTreeReducer({
+    initialState,
+    routeNode: UNSTABLE_routeNode,
+    registry,
+    routesWithRemovalPrevented,
+    linking: routerConfig?.linking,
+    redirects: routerConfig?.redirects,
+  });
   const [browserHistory] = React.useState(createBrowserHistoryAdapter);
   useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
@@ -310,7 +319,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
             <RootNavigationStateContext.Provider value={state}>
               <RouterRegistrySettersContext.Provider value={registrySetters}>
                 <EnsureSingleNavigator>
-                  <ThemeProvider value={theme}>{children}</ThemeProvider>
+                  <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
+                    <ThemeProvider value={theme}>{children}</ThemeProvider>
+                  </NavigationPendingContext>
                 </EnsureSingleNavigator>
               </RouterRegistrySettersContext.Provider>
               <ImperativeRoutingQueueBridge
