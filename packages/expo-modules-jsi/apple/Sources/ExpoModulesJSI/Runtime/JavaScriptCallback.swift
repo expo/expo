@@ -96,7 +96,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     runDetached { runtime in
       let arguments = box.value
-      var values: [JavaScriptValue] = []
+      var values = ContiguousArray<JavaScriptValue>()
       repeat values.append(try (each A).encode(each arguments, in: runtime))
       return values
     }
@@ -108,7 +108,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let _: UncheckedSendableBox<Void> = try runBlocking { runtime in
       let arguments = box.value
-      var values: [JavaScriptValue] = []
+      var values = ContiguousArray<JavaScriptValue>()
       repeat values.append(try (each A).encode(each arguments, in: runtime))
       return values
     } decodeResult: { _, _ in
@@ -126,7 +126,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let result = try runBlocking { runtime in
       let arguments = box.value
-      var values: [JavaScriptValue] = []
+      var values = ContiguousArray<JavaScriptValue>()
       repeat values.append(try (each A).encode(each arguments, in: runtime))
       return values
     } decodeResult: { result, runtime in
@@ -141,7 +141,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let _: UncheckedSendableBox<Void> = try await runAsync { runtime in
       let arguments = box.value
-      var values: [JavaScriptValue] = []
+      var values = ContiguousArray<JavaScriptValue>()
       repeat values.append(try (each A).encode(each arguments, in: runtime))
       return values
     } decodeResult: { _, _ in
@@ -159,7 +159,7 @@ public final class JavaScriptCallback: Sendable {
     let box = UncheckedSendableBox((repeat each arguments))
     let result = try await runAsync { runtime in
       let arguments = box.value
-      var values: [JavaScriptValue] = []
+      var values = ContiguousArray<JavaScriptValue>()
       repeat values.append(try (each A).encode(each arguments, in: runtime))
       return values
     } decodeResult: { result, runtime in
@@ -186,8 +186,9 @@ public final class JavaScriptCallback: Sendable {
   // `decodeResult` run on the JavaScript thread.
 
   @usableFromInline
-  internal func runDetached(encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue])
-  {
+  internal func runDetached(
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>
+  ) {
     guard let runtime else {
       print("Error in a JavaScript callback: \(RuntimeLostError())")
       return
@@ -203,7 +204,7 @@ public final class JavaScriptCallback: Sendable {
 
   @usableFromInline
   internal func runBlocking<R: Sendable>(
-    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
     decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
   ) throws -> R {
     let runtime = try liveRuntime()
@@ -214,7 +215,7 @@ public final class JavaScriptCallback: Sendable {
 
   @usableFromInline
   internal func runAsync<R: Sendable>(
-    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
     decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
   ) async throws -> R {
     let runtime = try liveRuntime()
@@ -254,7 +255,7 @@ public final class JavaScriptCallback: Sendable {
   /// sweep released it.
   @JavaScriptActor
   private func call(
-    _ encodeArguments: @JavaScriptActor (JavaScriptRuntime) throws -> [JavaScriptValue],
+    _ encodeArguments: @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
     in runtime: JavaScriptRuntime
   ) throws -> JavaScriptValue {
     guard let function = longLivedState.function.withValue({ $0 }) else {
