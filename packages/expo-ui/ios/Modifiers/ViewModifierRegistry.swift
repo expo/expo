@@ -2535,5 +2535,9 @@ extension ViewModifierRegistry {
     register("onScrollGeometryChange") { params, appContext, eventDispatcher in
       return try OnScrollGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
+
+    register("onHingeChange") { params, appContext, eventDispatcher in
+      return try OnHingeChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
   }
 }
