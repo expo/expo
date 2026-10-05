@@ -361,6 +361,18 @@ The recording exists only while the session runs. It is not saved as a session a
 
 To download it in the browser, open the web preview and select **Download session as HAR** in the network panel.
 
+To download it from the command line, get the session's preview API URL:
+
+<Terminal cmd={['$ eas simulator:get --json']} />
+
+Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<preview-host>/?token=<token>`. Send the token in an `Authorization` header, because the capture routes do not accept it in the URL:
+
+<Terminal
+  cmd={[
+    '$ curl -fsS -H "Authorization: Bearer <token>" -o capture.har "https://<preview-host>/network-capture.har"',
+  ]}
+/>
+
 Each entry in the file has the request and response, the status, and timings, plus the headers and bodies that you chose to keep.
 
 ### If the app behaves differently
