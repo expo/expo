@@ -43,7 +43,6 @@ export type SitemapType = {
   contextKey: string;
   filename: string;
   href: string | Href;
-  isInitial: boolean;
   isInternal: boolean;
   isGenerated: boolean;
   children: SitemapType[];
@@ -53,8 +52,6 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),
-  // The anchor is known only after the layout has rendered.
-  isInitial: false,
   isInternal: route.internal ?? false,
   isGenerated: route.generated ?? false,
   children: [...route.children]
