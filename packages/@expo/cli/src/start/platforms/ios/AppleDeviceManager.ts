@@ -1,4 +1,4 @@
-import * as osascript from '@expo/osascript';
+import { spawnAsync as spawnAppleScriptAsync } from '@expo/osascript';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -211,7 +211,13 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   async activateWindowAsync() {
     await ensureSimulatorAppRunningAsync(this.device);
     // TODO: Focus the individual window
-    await osascript.execAsync(`tell application "Simulator" to activate`);
+    await spawnAppleScriptAsync([
+      `if application "Simulator" is running then`,
+      `tell application "Simulator" to activate`,
+      `else if application "DeviceHub" is running then`,
+      `tell application "DeviceHub" to activate`,
+      `end if`,
+    ]);
   }
 
   getExpoGoAppId(): string {
