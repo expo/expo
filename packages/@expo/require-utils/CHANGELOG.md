@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Switch TypeScript 7.0 fallback transpilation (stripTypeScriptTypes) to `importInterop: 'babel'` ([#51076](https://github.com/expo/expo/pull/51076) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Support TypeScript 7.1 for transpiling TS modules ([#51076](https://github.com/expo/expo/pull/51076) by [@kitten](https://github.com/kitten))
 
 ## 57.0.5 — 2026-08-24
 

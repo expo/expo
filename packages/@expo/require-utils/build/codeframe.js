@@ -26,33 +26,24 @@ function errorToLoc(filename, error) {
   }
   return null;
 }
-function formatDiagnostic(diagnostic) {
+function formatDiagnostic(code, diagnostic) {
   if (!diagnostic) {
     return null;
   }
   const {
-    start,
-    file,
-    messageText
+    loc,
+    message
   } = diagnostic;
-  if (file && messageText && start != null) {
+  if (loc && message) {
     const {
       codeFrameColumns
     } = require('@babel/code-frame');
-    const {
-      line,
-      character
-    } = file.getLineAndCharacterOfPosition(start);
-    const loc = {
-      line: line + 1,
-      column: character + 1
-    };
-    const codeFrame = codeFrameColumns(file.getText(), {
+    const codeFrame = codeFrameColumns(code, {
       start: loc
     }, {
       highlightCode: true
     });
-    const annotatedError = new SyntaxError(`${messageText}\n${codeFrame}`);
+    const annotatedError = new SyntaxError(`${message}\n${codeFrame}`);
     annotatedError.codeFrame = codeFrame;
     delete annotatedError.stack;
     return annotatedError;
