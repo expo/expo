@@ -75,7 +75,6 @@ export function NativeTabsNavigator({
     children,
     backBehavior,
     screenListeners,
-    // Honor layout `unstable_settings.initialRouteName` the same way headless Tabs does.
     initialRouteName: routeNode?.initialRouteName,
     screenOptions: {
       disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
