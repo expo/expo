@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- [Android] Migrate the main module to the Expo Modules API 2.0. ([#51091](https://github.com/expo/expo/pull/51091) by [@lukmccall](https://github.com/lukmccall))
+
 ## 58.0.4
 
 ### Patch Changes

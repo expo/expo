@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- Warn when a package's `app.plugin.js` is missing from its `package.json:exports`, since tools that resolve the config plugin through Node can't find it. ([#51080](https://github.com/expo/expo/pull/51080) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
 ## 58.0.5
 
 ### Patch Changes

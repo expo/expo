@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [iOS][Android] Fixed recorders that the user paused starting to record again when the app returned to the foreground. On iOS, this also happened to recorders that were only prepared, and when an audio interruption ended. Now only recordings that the system paused are resumed. ([#51048](https://github.com/expo/expo/pull/51048) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.5
 
 ### Patch Changes

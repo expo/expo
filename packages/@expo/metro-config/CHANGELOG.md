@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [Internal] Remove `INTERNAL_CALLSITES_REGEX` entries that no longer match any stack frame. ([#50989](https://github.com/expo/expo/pull/50989) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+  - @expo/config@58.0.3
+
 ## 58.0.8
 
 ### Patch Changes

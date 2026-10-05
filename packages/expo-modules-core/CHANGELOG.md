@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [macOS] Attach SwiftUI hosting views even when no `NSViewController` is in the responder chain, such as a React root view set directly as `NSWindow.contentView`. Previously, `@expo/ui` content in such windows rendered nothing. ([#50995](https://github.com/expo/expo/pull/50995) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Update `expo-modules-macros` to 0.15.0, which generates only the unowned decode for `@Union` and skips cases whose `decodableKinds` can't match. ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+- [Internal] Make `AppContext` non-final, so that `TestAppContext` from `expo-modules-test-core` can subclass it. ([#51015](https://github.com/expo/expo/pull/51015) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed a race where a promise resolved and rejected from different threads at the same time could settle twice and throw on the JavaScript thread. ([#51052](https://github.com/expo/expo/pull/51052) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] An Expo Modules API 2.0 module that throws a `CodedException` now reports its `code` to JavaScript. ([#51036](https://github.com/expo/expo/pull/51036) by [@lukmccall](https://github.com/lukmccall))
+- Updated dependencies. ([#50859](https://github.com/expo/expo/pull/50859), [#51015](https://github.com/expo/expo/pull/51015), [#51004](https://github.com/expo/expo/pull/51004), [#51040](https://github.com/expo/expo/pull/51040), [#51055](https://github.com/expo/expo/pull/51055))
+  - expo-modules-jsi@58.0.9
+
 ## 58.0.12
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- Keep large, completed Suspense content visible without JavaScript during streaming SSR. ([#49878](https://github.com/expo/expo/pull/49878) by [@kev-flex](https://github.com/kev-flex))
+
 ## 58.0.7
 
 ### Patch Changes

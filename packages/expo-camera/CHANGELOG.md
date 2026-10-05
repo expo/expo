@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [Android] Fixed barcode scanning stopping after the camera delivers a frame without an image. Also fixed a leak of the ML Kit barcode scanner each time the camera is recreated or unmounted. ([#51050](https://github.com/expo/expo/pull/51050) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed `recordAsync()` never settling when it is called while a recording is already active. It now rejects with an error. ([#51049](https://github.com/expo/expo/pull/51049) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.8
 
 ### Patch Changes

@@ -1,5 +1,25 @@
 # Changelog
 
+## 58.1.3
+
+### Patch Changes
+
+- Prevent the internal `set()` object utility from writing to `Object.prototype` when a path contains `__proto__`, `constructor`, or `prototype`. ([#51066](https://github.com/expo/expo/pull/51066) by [@byCedric](https://github.com/byCedric))
+- Fix `expo start` exiting on Node before v22.14.0 when an API route calls `console.log`. Stack frames whose source map fails to load are printed without source mapping instead of throwing. ([#51089](https://github.com/expo/expo/pull/51089) by [@robhogan](https://github.com/robhogan))
+- Replace `resolve-from` with `@expo/require-utils` for `expo/template.tgz` resolution to allow for direct file resolution. ([#51125](https://github.com/expo/expo/pull/51125) by [@kitten](https://github.com/kitten))
+- Update `@expo/code-signing-certificates` to `^0.0.7`. ([#51085](https://github.com/expo/expo/pull/51085) by [@kitten](https://github.com/kitten))
+- Bump `node-forge` to `^1.4.0`. ([#51085](https://github.com/expo/expo/pull/51085) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080), [#49878](https://github.com/expo/expo/pull/49878), [#51076](https://github.com/expo/expo/pull/51076), [#50989](https://github.com/expo/expo/pull/50989), [#51093](https://github.com/expo/expo/pull/51093), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/config-plugins@58.0.6
+  - @expo/router-server@58.0.8
+  - @expo/require-utils@58.0.3
+  - @expo/metro-config@58.0.9
+  - @expo/metro-file-map@58.0.4
+  - @expo/config@58.0.3
+  - @expo/inline-modules@0.2.3
+  - @expo/prebuild-config@58.0.9
+  - @expo/image-utils@0.12.4
+
 ## 58.1.2
 
 ### Patch Changes
