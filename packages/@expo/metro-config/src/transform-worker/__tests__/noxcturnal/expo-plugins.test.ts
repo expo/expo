@@ -1830,7 +1830,8 @@ it('preserves development deep React Native import warnings', async () => {
     const Image = require("react-native/Libraries/Image/Image");
     require("react-native/Libraries/Core/InitializeCore");
     require("react-native/setup-env");
-    export default [View, Text, Image];`;
+    import { NativeSourceCode } from "react-native/unstable-internals-do-not-use";
+    export default [View, Text, Image, NativeSourceCode];`;
   const result = await transformFileFullyWithNoxcturnal({
     filename: candidate,
     projectRoot: '/app',
@@ -1847,12 +1848,13 @@ it('preserves development deep React Native import warnings', async () => {
   if (result.status !== 'complete') return;
   expect(
     result.result.code.match(/Deep imports from the 'react-native' package are deprecated/g)
-  ).toHaveLength(3);
+  ).toHaveLength(4);
   expect(result.result.code).toContain(`Source: ${candidate} 1:0`);
   expect(result.result.code).not.toContain(
     "deprecated ('react-native/Libraries/Core/InitializeCore')"
   );
   expect(result.result.code).not.toContain("deprecated ('react-native/setup-env')");
+  expect(result.result.code).toContain("deprecated ('react-native/unstable-internals-do-not-use')");
 });
 
 it.each([
