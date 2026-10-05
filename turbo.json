@@ -66,6 +66,7 @@
       "dependsOn": [
         "//#prepare-precompile-android",
         "expo-modules-core#precompile-android-inputs",
+        "expo-modules-core#precompile-android",
         "expo-modules-autolinking#precompile-android-inputs",
         "expo-modules-autolinking#build",
         "^precompile-android-inputs"
@@ -78,6 +79,7 @@
         "!android/**/build/**",
         "!android/**/.gradle/**",
         "!android/**/.cxx/**",
+        "!android/prebuilt/**",
         "node_modules/react-native/package.json",
         "$TURBO_ROOT$/tools/android-precompile/**",
         "$TURBO_ROOT$/tools/src/prebuilds/**"
@@ -99,6 +101,7 @@
         "!android/**/build/**",
         "!android/**/.gradle/**",
         "!android/**/.cxx/**",
+        "!android/prebuilt/**",
         "common/**",
         "src/**"
       ],
