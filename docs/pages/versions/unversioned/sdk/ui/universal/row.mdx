@@ -148,6 +148,25 @@ export default function RowSpacerExample() {
 
 </ComponentExample>
 
+### Size
+
+`style.width` and `style.height` take a number of points, or a percentage of the parent such as `'50%'`. The parent has to be a universal `Row`, `Column`, or `Host`. Give the row a height before a child can use `'100%'` for its own height. A SwiftUI `HStack` or a Jetpack Compose `Row` does not resolve a percentage.
+
+```tsx
+import { Host, Column, Row } from '@expo/ui';
+
+export default function RowSizeExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Row spacing={8} style={{ width: '100%', height: 48 }}>
+        <Column style={{ width: '30%', height: '100%', backgroundColor: '#90CAF9' }} />
+        <Column style={{ width: '70%', height: '100%', backgroundColor: '#1565C0' }} />
+      </Row>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
