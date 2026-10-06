@@ -1,3 +1,4 @@
+import { isScreenRouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
 import type { RedirectConfig } from '../getRoutesCore';
 import { inMemoryContext } from '../testing-library/context-stubs';
@@ -430,7 +431,7 @@ describe('+not-found', () => {
     const notFound = routes.children.find((route) => route.route === '+not-found')!;
 
     // Narrows type for TypeScript
-    if (notFound.type !== 'route') throw new Error('Expected +not-found to be a screen');
+    if (!isScreenRouteNode(notFound)) throw new Error('Expected +not-found to be a screen');
 
     // Ensure this is the generated +not-found
     expect(notFound.generated).toBeTruthy();
@@ -711,7 +712,7 @@ describe('anchor', () => {
 
     const anchor = routes?.children[0];
     // Narrows type for TypeScript
-    if (anchor?.type !== 'route') throw new Error('Expected the anchor to be a screen');
+    if (!isScreenRouteNode(anchor)) throw new Error('Expected the anchor to be a screen');
     expect(anchor.entryPoints).toContain('./a/index.js');
   });
 });
