@@ -11,6 +11,7 @@ import type {
   ReadOnlyGraph,
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
+import * as requireUtils from '@expo/require-utils';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -367,7 +368,7 @@ export function getDefaultConfig(
           // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
           // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
           // Out-of-tree platforms on React Native < 0.87 ship only `InitializeCore`
-          resolveFrom.silent(reactNativeHostPath, './src/setup-env') ??
+          requireUtils.resolveFrom(reactNativeHostPath, './src/setup-env') ??
             require.resolve(path.join(reactNativeHostPath, 'Libraries/Core/InitializeCore')),
         ];
 
