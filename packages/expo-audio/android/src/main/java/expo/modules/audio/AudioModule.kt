@@ -293,7 +293,7 @@ class AudioModule : Module() {
   }
 
   // Called on the main thread, from JS and from outside it (see `Playable.onPlayRequest`).
-  private fun playWithAudioFocus(player: AudioPlayer) {
+  private fun playWithAudioFocus(playable: Playable) {
     if (!audioEnabled) {
       Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
       return
@@ -301,25 +301,17 @@ class AudioModule : Module() {
     if (!shouldPlayInSilentMode()) {
       return
     }
-    if (requestAudioFocus() == AudioFocusResult.FAILED) {
+    val focusResult = requestAudioFocus()
+    if (focusResult == AudioFocusResult.FAILED) {
       return
     }
-    registerAudioSessionActivityKeeper(player)
-    player.ref.play()
-  }
-
-  private fun playWithAudioFocus(playlist: AudioPlaylist) {
-    if (!audioEnabled) {
-      Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+    (playable as? AudioPlayer)?.let { registerAudioSessionActivityKeeper(it) }
+    if (focusResult == AudioFocusResult.DELAYED) {
+      // The AUDIOFOCUS_GAIN branch starts it once the system grants focus.
+      playable.isPaused = true
       return
     }
-    if (!shouldPlayInSilentMode()) {
-      return
-    }
-    if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
-      return
-    }
-    playlist.ref.play()
+    playable.play()
   }
 
   private fun registerAudioSessionActivityKeeper(player: AudioPlayer) {
