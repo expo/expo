@@ -69,7 +69,7 @@ describe('generation rollback', () => {
   ] as const)(
     'restores %s output after a snippet fails (existing target: %s)',
     async (kind, existing) => {
-      const app = createHost(`rollback-${kind}-${existing}`, 55);
+      const app = createHost(`rollback-${kind}-${existing}`, 56);
       const target = path.join(app, ...(kind === 'local' ? ['modules', 'probe'] : ['probe']));
       let before: Record<string, string> = {};
       if (existing) {
@@ -112,7 +112,7 @@ describe('generation rollback', () => {
   );
 
   it('rolls back native and web changes together when adding platforms fails', async () => {
-    const app = createHost('rollback-add-platform', 55);
+    const app = createHost('rollback-add-platform', 56);
     await executePassing(
       [
         'probe',
@@ -199,7 +199,7 @@ process.stdout.write(JSON.stringify([{ filename: 'template.tgz' }]));
   it.each(['create', 'add-platform'])(
     'removes extracted templates and rolls back failed %s',
     async (command) => {
-      const app = createHost(`download-failure-${command}`, 55);
+      const app = createHost(`download-failure-${command}`, 56);
       const target = path.join(app, 'modules/probe');
       let before: Record<string, string> = {};
       if (command === 'add-platform') {
