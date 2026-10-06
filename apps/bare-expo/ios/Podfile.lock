@@ -401,6 +401,9 @@ PODS:
     - ExpoModulesCore
   - ExpoFileSystem (58.0.5):
     - ExpoModulesCore
+  - ExpoFileSystem/Tests (58.0.5):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoFont (58.0.5):
     - ExpoModulesCore
   - ExpoGL (58.0.3):
@@ -3385,6 +3388,7 @@ DEPENDENCIES:
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
+  - ExpoFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
   - ExpoFont (from `../../../packages/expo-font/ios`)
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoGlassEffect (from `../../../packages/expo-glass-effect/ios`)
@@ -4111,7 +4115,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 77a9816436a09a0bfc00f5ace649c6ccb219b96d
   ExpoDocumentPicker: af0917aa6f1b54ab3a0f47977935a1e20ffb1537
   ExpoDomWebView: b2a6d681b9d34c23b1f584321386ca8da1d36afb
-  ExpoFileSystem: cb3fe20e9234fb6e7c3c6c6b9f2145285ebe2ae9
+  ExpoFileSystem: 67731b1361451011d6dff1de21e947d4635888d7
   ExpoFont: 257ed536cad242283e33b8067328c69a4c83e10c
   ExpoGL: 79eb0ca61f7e13317fac3beec5bd6ce94587ac8c
   ExpoGlassEffect: 1542f6b1b15b4e41eca504e2c3914bf4f4c05187
