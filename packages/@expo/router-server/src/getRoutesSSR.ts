@@ -23,7 +23,8 @@ export function getRoutes(
   options: Options = {}
 ): LayoutRouteNode | null {
   return getRoutesCore(contextModule, {
-    getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
+    getSystemRoute(request) {
+      const { route, type } = request;
       if (route === '' && type === 'layout') {
         // Root layout when no layout is defined.
         return {
@@ -62,28 +63,26 @@ export function getRoutes(
           internal: true,
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
         };
-      } else if (type === 'redirect' && redirectConfig && defaults) {
+      } else if (type === 'redirect') {
         return {
-          ...defaults,
+          ...request.defaults,
           loadRoute() {
             return require('expo-router/build/getRoutesRedirects').getRedirectModule(
-              redirectConfig
+              request.redirectConfig
             );
           },
         };
-      } else if (type === 'rewrite' && rewriteConfig && defaults) {
+      } else if (type === 'rewrite') {
         return {
-          ...defaults,
+          ...request.defaults,
           loadRoute() {
             return {
-              default: contextModule(rewriteConfig.destinationContextKey).default,
+              default: contextModule(request.rewriteConfig.destinationContextKey).default,
             };
           },
         };
       }
-      throw new Error(
-        `Unknown system route: ${route} and type: ${type} and redirectConfig: ${redirectConfig} and rewriteConfig: ${rewriteConfig}`
-      );
+      throw new Error(`Unknown system route: ${route} and type: ${type}`);
     },
     ...options,
   });

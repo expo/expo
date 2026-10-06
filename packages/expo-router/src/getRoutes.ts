@@ -20,7 +20,8 @@ export function getRoutes(
   options: Options = {}
 ): LayoutRouteNode | null {
   return getRoutesCore(contextModule, {
-    getSystemRoute({ route, type, defaults, redirectConfig, rewriteConfig }) {
+    getSystemRoute(request) {
+      const { route, type } = request;
       if (route === '' && type === 'layout') {
         // Root layout when no layout is defined.
         return {
@@ -61,28 +62,26 @@ export function getRoutes(
           internal: true,
           dynamic: [{ name: '+not-found', deep: true, notFound: true }],
         };
-      } else if (type === 'redirect' && redirectConfig && defaults) {
+      } else if (type === 'redirect') {
         return {
-          ...defaults,
+          ...request.defaults,
           loadRoute() {
-            return require('./getRoutesRedirects').getRedirectModule(redirectConfig);
+            return require('./getRoutesRedirects').getRedirectModule(request.redirectConfig);
           },
         };
-      } else if (type === 'rewrite' && rewriteConfig && defaults) {
+      } else if (type === 'rewrite') {
         // Rewrite routes only work in a server context and have no equivalent on native or
         // static exports
         return {
-          ...defaults,
+          ...request.defaults,
           loadRoute() {
             return {
-              default: contextModule(rewriteConfig.destinationContextKey).default,
+              default: contextModule(request.rewriteConfig.destinationContextKey).default,
             };
           },
         };
       }
-      throw new Error(
-        `Unknown system route: ${route} and type: ${type} and redirectConfig: ${redirectConfig} and rewriteConfig: ${rewriteConfig}`
-      );
+      throw new Error(`Unknown system route: ${route} and type: ${type}`);
     },
     ...options,
   });
