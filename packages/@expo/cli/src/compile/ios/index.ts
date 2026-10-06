@@ -2,7 +2,6 @@
 import chalk from 'chalk';
 
 import type { Command } from '../../index';
-import * as Log from '../../log';
 import { assertArgs, getProjectRoot, printHelp } from '../../utils/args';
 import { logCmdError } from '../../utils/errors';
 
@@ -35,16 +34,17 @@ export const expoCompileIos: Command = async (argv) => {
   return (async () => {
     const projectRoot = getProjectRoot(args);
     const { resolveMode } = await import('../resolveMode.js');
+    const mode = resolveMode({ dev: args['--dev'], prod: args['--prod'] });
     const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
-    loadEnvFiles(projectRoot, {
-      mode: resolveMode({ dev: args['--dev'], prod: args['--prod'] }),
-    });
+    loadEnvFiles(projectRoot, { mode });
 
     const { resolveOptions } = await import('../resolveOptions.js');
-    resolveOptions(projectRoot, {
+    const options = resolveOptions(projectRoot, {
+      mode,
       outputDir: args['--output-dir'],
     });
 
-    Log.exit(`expo compile:ios is not available yet.`);
+    const { compileIosAsync } = await import('./compileIosAsync.js');
+    return compileIosAsync(projectRoot, options);
   })().catch(logCmdError);
 };
