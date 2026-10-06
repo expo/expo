@@ -453,6 +453,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
     let nextItem = AVPlayerItem(asset: currentItem.asset)
     nextItem.audioTimePitchAlgorithm = currentItem.audioTimePitchAlgorithm
+    nextItem.preferredForwardBufferDuration = currentItem.preferredForwardBufferDuration
     queuePlayer.insert(nextItem, after: currentItem)
   }
 
