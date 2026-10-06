@@ -477,8 +477,8 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         generated: true,
       };
 
-      // A real file at the redirect source keeps its own `loadRoute`. Only a
-      // source with no file behind it gets the generated redirect module.
+      // A screen source gets the generated redirect module. An API route source keeps
+      // its own `loadRoute`.
       const resolved = isScreenRouteNode(node)
         ? asSystemRouteType(
             options.getSystemRoute({
@@ -508,8 +508,8 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         generated: true,
       };
 
-      // A real file at the rewrite source keeps its own `loadRoute`. Only a
-      // source with no file behind it gets the generated rewrite module.
+      // A screen source gets the generated rewrite module. An API route source keeps
+      // its own `loadRoute`.
       const resolved = isScreenRouteNode(node)
         ? asSystemRouteType(
             options.getSystemRoute({
