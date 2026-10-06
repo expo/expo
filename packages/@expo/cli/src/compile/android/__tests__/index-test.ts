@@ -9,19 +9,24 @@ jest.mock('../../../utils/nodeEnv.js', () => ({ loadEnvFiles: jest.fn() }), {
   virtual: true,
 });
 jest.mock('../../../utils/errors', () => ({ logCmdError: jest.fn() }));
-jest.mock('../../../log');
 jest.mock('../../resolveMode.js', () => ({ resolveMode: jest.fn(() => 'development') }), {
   virtual: true,
 });
 jest.mock('../../resolveOptions.js', () => ({ resolveOptions: jest.fn() }), { virtual: true });
+jest.mock('../compileAndroidAsync.js', () => ({ compileAndroidAsync: jest.fn(async () => {}) }), {
+  virtual: true,
+});
 
 const { assertArgs } = require('../../../utils/args') as { assertArgs: jest.Mock };
 const { loadEnvFiles } = require('../../../utils/nodeEnv.js') as { loadEnvFiles: jest.Mock };
 const { logCmdError } = require('../../../utils/errors') as { logCmdError: jest.Mock };
 const { resolveMode } = require('../../resolveMode.js') as { resolveMode: jest.Mock };
 const { resolveOptions } = require('../../resolveOptions.js') as { resolveOptions: jest.Mock };
+const { compileAndroidAsync } = require('../compileAndroidAsync.js') as {
+  compileAndroidAsync: jest.Mock;
+};
 
-it('loads env files in the resolved mode', async () => {
+it('loads env files in the resolved mode before resolving options', async () => {
   assertArgs.mockReturnValue({ '--prod': true });
   resolveMode.mockReturnValueOnce('development');
 
@@ -29,14 +34,20 @@ it('loads env files in the resolved mode', async () => {
 
   expect(resolveMode).toHaveBeenCalledWith({ dev: undefined, prod: true });
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
+  expect(loadEnvFiles.mock.invocationCallOrder[0]).toBeLessThan(
+    resolveOptions.mock.invocationCallOrder[0]!
+  );
 });
 
-it('passes --output-dir to the options', async () => {
+it('compiles with the resolved options', async () => {
+  const options = { mode: 'development', outputDir: '/app/build' };
   assertArgs.mockReturnValue({ '--dev': true, '--output-dir': 'build' });
+  resolveOptions.mockReturnValueOnce(options);
 
   await expoCompileAndroid([]);
 
-  expect(resolveOptions).toHaveBeenCalledWith('/app', { outputDir: 'build' });
+  expect(resolveOptions).toHaveBeenCalledWith('/app', { mode: 'development', outputDir: 'build' });
+  expect(compileAndroidAsync).toHaveBeenCalledWith('/app', options);
 });
 
 it('handles env file errors', async () => {
