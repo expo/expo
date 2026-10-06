@@ -13,11 +13,13 @@ jest.mock('../../../log');
 jest.mock('../../resolveMode.js', () => ({ resolveMode: jest.fn(() => 'development') }), {
   virtual: true,
 });
+jest.mock('../../resolveOptions.js', () => ({ resolveOptions: jest.fn() }), { virtual: true });
 
 const { assertArgs } = require('../../../utils/args') as { assertArgs: jest.Mock };
 const { loadEnvFiles } = require('../../../utils/nodeEnv.js') as { loadEnvFiles: jest.Mock };
 const { logCmdError } = require('../../../utils/errors') as { logCmdError: jest.Mock };
 const { resolveMode } = require('../../resolveMode.js') as { resolveMode: jest.Mock };
+const { resolveOptions } = require('../../resolveOptions.js') as { resolveOptions: jest.Mock };
 
 it('loads env files in the resolved mode', async () => {
   assertArgs.mockReturnValue({ '--prod': true });
@@ -27,6 +29,14 @@ it('loads env files in the resolved mode', async () => {
 
   expect(resolveMode).toHaveBeenCalledWith({ dev: undefined, prod: true });
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
+});
+
+it('passes --output-dir to the options', async () => {
+  assertArgs.mockReturnValue({ '--dev': true, '--output-dir': 'build' });
+
+  await expoCompileAndroid([]);
+
+  expect(resolveOptions).toHaveBeenCalledWith('/app', { outputDir: 'build' });
 });
 
 it('handles env file errors', async () => {
