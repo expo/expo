@@ -515,6 +515,14 @@ describe('Request', () => {
       expect(await request.text()).toMatch(new RegExp(`^--${boundary}\r\n`));
     });
 
+    it('uses the same boundary in the body stream', async () => {
+      const request = new Request('https://example.test/', { method: 'POST', body: formData() });
+      const boundary = boundaryOf(request);
+      // The stream enqueues the whole serialized body as one chunk.
+      const { value } = await request.body!.getReader().read();
+      expect(new TextDecoder().decode(value)).toMatch(new RegExp(`^--${boundary}\r\n`));
+    });
+
     it('keeps the boundary in a clone and in a request built from it', async () => {
       const request = new Request('https://example.test/', { method: 'POST', body: formData() });
       const boundary = boundaryOf(request);

@@ -461,7 +461,10 @@ export class Request implements Body {
           // getting `.body` (which constructs the stream) doesn't flip `bodyUsed`.
           this.consumed = true;
           try {
-            const { body } = await normalizeBodyInitAsync(bodyInit);
+            // Serialize a FormData body with the boundary that the Content-Type header names.
+            const { body } = await normalizeBodyInitAsync(bodyInit, {
+              formDataBoundary: this._formDataBoundary ?? undefined,
+            });
             if (body != null) {
               controller.enqueue(new Uint8Array(body));
             }
