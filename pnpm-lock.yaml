@@ -5476,6 +5476,10 @@ importers:
       react-native:
         specifier: 0.88.0-rc.4
         version: 0.88.0-rc.4(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
+    devDependencies:
+      '@expo/internal-scripts':
+        specifier: workspace:*
+        version: link:../@expo/internal-scripts
 
   packages/expo-modules-test-core:
     dependencies:
