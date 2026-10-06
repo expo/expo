@@ -17,13 +17,13 @@ import { Step } from '~/ui/components/Step';
 ほとんどのアプリには画面が複数あり、下部のタブで切り替えます。次のプロンプトをエージェントに貼り付けてください。
 
 ```text プロンプト|wrap
-アプリにタブバーを追加して。タブは 2 つで、Home タブには現在のホーム画面を表示し、About タブにはいまは "About screen" と表示するだけの画面を置いて。ナビゲーションには Expo Router を使って。全体をダークテーマにして、画面の背景・ヘッダー・タブバーの色は #25292e、テキストは白、選択中のタブの色は黄色（#ffd33d）にして。各タブには @expo/vector-icons ライブラリから内容に合ったアイコンを付けて。Home は家、About は情報の丸アイコンなど。
+アプリにタブバーを追加して。タブは 2 つで、Home タブには現在のホーム画面を表示し、About タブにはいまは "About screen" と表示するだけの画面を置いて。Expo Router のネイティブタブを使って、各プラットフォームでネイティブな見た目のタブバーにして。全体をダークテーマにして、画面の背景とタブバーの色は #25292e、テキストは白、選択中のタブの色は黄色（#ffd33d）にして。各タブには内容に合ったアイコンを付けて。Home は家、About は情報の丸アイコンなど。iOS では SF Symbols、Android では Material Symbols を使って。
 ```
 
 <Collapsible summary="英語の原文プロンプト">
 
 ```text Prompt|wrap
-Add a tab bar to the app with two tabs: a Home tab showing the current home screen, and an About tab with a screen that says "About screen" for now. Use Expo Router for navigation. Style everything with a dark theme: the color #25292e for the screen backgrounds, headers, and tab bar, white text, and yellow (#ffd33d) as the color of the selected tab. Give each tab a fitting icon from the @expo/vector-icons library, such as a house for Home and an info circle for About.
+Add a tab bar to the app with two tabs: a Home tab showing the current home screen, and an About tab with a screen that says "About screen" for now. Use native tabs from Expo Router, so the tab bar looks native on each platform. Style everything with a dark theme: the color #25292e for the screen backgrounds and the tab bar, white text, and yellow (#ffd33d) as the color of the selected tab. Give each tab a fitting icon, such as a house for Home and an info circle for About, using SF Symbols on iOS and Material Symbols on Android.
 ```
 
 </Collapsible>
@@ -45,13 +45,13 @@ Add a tab bar to the app with two tabs: a Home tab showing the current home scre
 次は、ホーム画面の主役となる要素です。大きな写真と 2 つのボタンを配置します。プレースホルダーの写真と、あとで使う絵文字ステッカーをまとめたアセットパックを用意してあります。次のプロンプトをエージェントに貼り付けてください。
 
 ```text プロンプト|wrap
-このアプリで使う画像アセットを https://docs.expo.dev/static/images/tutorial/sticker-smash-assets.zip からダウンロードして、assets/images フォルダに展開して。同じ名前のファイルは置き換えて。そのうえで Home 画面を作って。background-image.png の写真を画面の中央に大きく、角を丸くして表示して。その下に 2 つのボタンを縦に並べて。1 つは "Choose a photo" で、黄色い枠線・白い背景・濃い色のラベル・小さな画像アイコンを持つ目立つボタン。もう 1 つは白いテキストだけのシンプルな "Use this photo" ボタン。画像の表示には expo-image ライブラリを使って。
+このアプリで使う画像アセットを https://docs.expo.dev/static/images/tutorial/sticker-smash-assets.zip からダウンロードして、assets/images フォルダに展開して。同じ名前のファイルは置き換えて。そのうえで Home 画面を作って。background-image.png の写真を画面の中央に大きく、角を丸くして表示して。その下に 2 つのボタンを縦に並べて。1 つは "Choose a photo" で、黄色（#ffd33d）の背景・濃い色のラベル・小さな画像アイコンを持つ目立つボタン。もう 1 つは白いテキストだけのシンプルな "Use this photo" ボタン。Android と iOS では Expo UI（@expo/ui）のネイティブボタンを使い、web では React Native のコンポーネントを使って。画像の表示には expo-image ライブラリを使って。
 ```
 
 <Collapsible summary="英語の原文プロンプト">
 
 ```text Prompt|wrap
-Download the image assets for this app from https://docs.expo.dev/static/images/tutorial/sticker-smash-assets.zip and extract them into the assets/images folder, replacing any files with the same names. Then build out the Home screen: show the background-image.png photo large in the center of the screen with rounded corners, and below it two buttons stacked vertically: "Choose a photo" — a prominent button with a yellow border, a white background, a dark label, and a small picture icon — and a plain "Use this photo" button with white text. Use the expo-image library to display the image.
+Download the image assets for this app from https://docs.expo.dev/static/images/tutorial/sticker-smash-assets.zip and extract them into the assets/images folder, replacing any files with the same names. Then build out the Home screen: show the background-image.png photo large in the center of the screen with rounded corners, and below it two buttons stacked vertically: a prominent "Choose a photo" button with a yellow (#ffd33d) background, a dark label, and a small picture icon, and a plain "Use this photo" button with white text. Use native buttons from Expo UI (@expo/ui) on Android and iOS, and React Native components on the web. Use the expo-image library to display the image.
 ```
 
 </Collapsible>
@@ -62,7 +62,7 @@ Download the image assets for this app from https://docs.expo.dev/static/images/
 
 </Collapsible>
 
-**表示されるもの**: 海に架かる木製の遊歩道の写真が画面の大部分を占め、その下に 2 つのボタンが並びます。
+**表示されるもの**: コーギーの子犬の写真が画面の大部分を占め、その下に 2 つのボタンが並びます。
 
 <ContentSpotlight
   alt="写真ビューアと 2 つのボタンがあるホーム画面"
@@ -90,7 +90,7 @@ Add the expo-image-picker library. When I tap "Choose a photo", open my phone's 
 
 </Collapsible>
 
-**表示されるもの**: **Choose a photo** をタップすると、スマートフォンの写真ライブラリが開きます。初回は写真へのアクセス許可を求められるので、**Allow**（許可）をタップしてください。選んだ写真がプレースホルダーの写真に置き換わります。
+**表示されるもの**: **Choose a photo** をタップすると、スマートフォンの写真ライブラリが開きます。選んだ写真がプレースホルダーの写真に置き換わります。
 
 </Step>
 
