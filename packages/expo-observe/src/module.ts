@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 
+import AppMetrics, { setErrorHandlerEnabled } from './app-metrics';
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
@@ -45,7 +45,7 @@ const Observe: ObserveModule = new Proxy(native, {
         // toggles whether it records anything.
         setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
 
-        // Recording is gated in expo-app-metrics (the producer side), so the setting travels
+        // Recording is gated in app-metrics (the producer side), so the setting travels
         // there rather than into the native `configure` payload. Applies to future captures
         // only; spans persisted earlier in the launch still dispatch.
         AppMetrics.setNetworkTracesConfig(networkTracesConfigFromOption(config.networkTraces));

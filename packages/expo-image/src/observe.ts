@@ -1,8 +1,11 @@
 'use client';
 
 import { requireOptionalNativeModule } from 'expo';
-import type { ExpoAppMetricsModuleType } from 'expo-app-metrics';
-import type { ObserveIntegrationsConfig, ObserveModule } from 'expo-observe';
+import type {
+  ExpoAppMetricsModuleType,
+  ObserveIntegrationsConfig,
+  ObserveModule,
+} from 'expo-observe';
 import { Dimensions, PixelRatio } from 'react-native';
 
 import type { ImageNativeModule } from './Image.types';

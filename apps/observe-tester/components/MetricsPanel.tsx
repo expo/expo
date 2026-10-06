@@ -1,4 +1,4 @@
-import type { Metric } from 'expo-app-metrics';
+import type { Metric } from 'expo-observe/app-metrics';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { JSONView } from '@/components/JSONView';

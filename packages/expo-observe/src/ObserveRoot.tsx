@@ -1,7 +1,7 @@
-import { AppMetricsRoot } from 'expo-app-metrics';
 import type { ComponentProps, ReactNode } from 'react';
 
 import { ObserveProvider } from './ObserveProvider';
+import { AppMetricsRoot } from './app-metrics';
 
 type AppMetricsRootProps = ComponentProps<typeof AppMetricsRoot>;
 

@@ -42,7 +42,7 @@ jest.mock('expo', () => ({
   NativeModule: class {},
   registerWebModule: jest.fn((ModuleClass) => new ModuleClass()),
 }));
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../app-metrics', () => ({
   __esModule: true,
   default: {
     markInteractive: jest.fn(),

@@ -1,5 +1,5 @@
-import AppMetrics, { type CrashReport } from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
+import AppMetrics, { type CrashReport } from 'expo-observe/app-metrics';
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text } from 'react-native';

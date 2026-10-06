@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../app-metrics';
 import { getNavigationRouteParams } from '../navigationConfig';
 import { emitTTI } from './emitTTI';
 import { getPathname } from './getPathname';

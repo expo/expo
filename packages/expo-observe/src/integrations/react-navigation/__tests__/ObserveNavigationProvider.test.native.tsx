@@ -9,7 +9,7 @@ import {
 } from '../context';
 import * as initModule from '../init';
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',
@@ -84,7 +84,7 @@ const reactNavigationModule = require('../reactNavigation') as {
   __setOptionalReactNavigation: (value: unknown) => void;
 };
 const mockAddMetric = (
-  require('expo-app-metrics').default as {
+  require('../../../app-metrics').default as {
     getMainSession: () => { addMetric: jest.Mock };
   }
 ).getMainSession().addMetric;
@@ -282,7 +282,7 @@ describe('ObserveNavigationProvider', () => {
 
   it('records the initial screen exactly once when both the catch-up and the state listener fire for the same state', async () => {
     // Integration-level dedupe contract: use the REAL handleStateChange (only
-    // expo-app-metrics stays mocked) so this asserts the net effect — a single
+    // app-metrics stays mocked) so this asserts the net effect — a single
     // cold_ttr — rather than trusting unit tests to compose.
     const actualHandleStateChange = jest.requireActual(
       '../handleStateChange'

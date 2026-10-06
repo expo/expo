@@ -1,5 +1,5 @@
 import { palette } from '@expo/styleguide-base';
-import type { LogSeverity } from 'expo-app-metrics';
+import type { LogSeverity } from 'expo-observe/app-metrics';
 import { useColorScheme } from 'react-native';
 
 import type { useTheme } from '@/utils/theme';

@@ -1,10 +1,11 @@
 import type { NativeModule } from 'expo';
+
 import type {
   LogAttributeValue,
   LogEventOptions,
   MetricAttributes,
   NetworkRequestFilter,
-} from 'expo-app-metrics';
+} from './app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the

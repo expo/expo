@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react-native';
-import { AppMetricsErrorBoundary } from 'expo-app-metrics';
 import { Text } from 'react-native';
 
 import { ObserveErrorBoundary } from '../ObserveErrorBoundary';
+import { AppMetricsErrorBoundary } from '../app-metrics';
 
 // The boundary reports through the native `ExpoAppMetrics` module; stub `requireNativeModule` so the
 // alias renders for real without touching native code. The stub is memoized inside the factory

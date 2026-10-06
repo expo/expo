@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../app-metrics';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
 import { emitTTI } from './emitTTI';
@@ -8,9 +7,9 @@ import { optionalRouter } from './router';
 import { type RouterIntegrationStorage } from './storage';
 
 // TODO(@ubax): split this module into `.native.ts` / `.web.ts` variants so the
-// web bundle doesn't pull in `expo-app-metrics`' native bridge calls. The web
+// web bundle doesn't pull in app-metrics' native bridge calls. The web
 // version should be an explicit no-op (return a noop cleanup) rather than
-// relying on the web stubs in `expo-app-metrics/module.web.ts`.
+// relying on the web stubs in `app-metrics/module.web.ts`.
 
 let initialized = false;
 let routerIntegrationConfig: ObserveIntegrationsConfig['expo-router'];

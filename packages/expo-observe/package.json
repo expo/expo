@@ -32,6 +32,14 @@
       "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
+    "./app-metrics": {
+      "types": {
+        "expo-source": "./src/app-metrics/index.ts",
+        "default": "./build/app-metrics/index.d.ts"
+      },
+      "expo-source": "./src/app-metrics/index.ts",
+      "default": "./build/app-metrics/index.js"
+    },
     "./integrations/react-navigation": {
       "types": {
         "expo-source": "./src/integrations/react-navigation/index.ts",
@@ -56,8 +64,8 @@
     "prepack": "expo-module prepack"
   },
   "dependencies": {
-    "expo-app-metrics": "workspace:~",
-    "expo-eas-client": "workspace:~"
+    "expo-eas-client": "workspace:~",
+    "expo-updates-interface": "workspace:~"
   },
   "devDependencies": {
     "@react-navigation/native": "^7.1.33",

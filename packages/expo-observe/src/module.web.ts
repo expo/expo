@@ -1,6 +1,6 @@
 import { NativeModule, registerWebModule } from 'expo';
-import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
 
+import AppMetrics, { type LogEventOptions, type MetricAttributes } from './app-metrics';
 import { reportCaughtError } from './reportCaughtError';
 import type {
   ObserveConfig,

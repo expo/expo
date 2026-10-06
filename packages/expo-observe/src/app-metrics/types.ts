@@ -456,7 +456,7 @@ export type NetworkRequestObserverEvents = {
  *
  * @example
  * ```ts
- * import AppMetrics from 'expo-app-metrics';
+ * import AppMetrics from 'expo-observe/app-metrics';
  *
  * const observer = new AppMetrics.NetworkRequestObserver({ hosts: ['api.expo.dev'] });
  * const sub = observer.addListener('requestCompleted', event => {
