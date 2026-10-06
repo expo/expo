@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -82,6 +82,8 @@ for (const outputMode of outputModes) {
       await expect(page.getByTestId('suspense-row')).toHaveCount(400);
       await expect(page.getByTestId('suspense-content')).toBeVisible();
       await expect(page.getByTestId('suspense-count')).toHaveText('0');
+      // React drops a click that arrives before hydration finishes.
+      await expect(page.getByTestId('suspense-mounted')).toBeVisible();
       await page.getByTestId('suspense-increment').click();
       await expect(page.getByTestId('suspense-count')).toHaveText('1');
       expect(pageErrors.all).toEqual([]);
@@ -95,7 +97,7 @@ for (const outputMode of outputModes) {
         }
       });
 
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
       expect(loaderRequests).toHaveLength(0);
 
       await page.click('a[href="/posts/static-post-1"]');
@@ -116,7 +118,7 @@ for (const outputMode of outputModes) {
         }
       });
 
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
       await page.getByText('Go to Grouped Index').click();
       await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
         JSON.stringify({ data: 'grouped-index' }, null, 2)
@@ -136,7 +138,7 @@ for (const outputMode of outputModes) {
         }
       });
 
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
       await page.getByText('Go to Platform Catch-all').click();
       await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
       await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
@@ -170,7 +172,7 @@ for (const outputMode of outputModes) {
         }
       });
 
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
 
       await page.click('a[href="/posts/static-post-1"]');
       await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
@@ -200,7 +202,7 @@ for (const outputMode of outputModes) {
       const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/response');
       const responseUrl = new URL('/response', expoStart.url.href).toString();
 
-      await page.goto(responseUrl);
+      await gotoHydrated(page, responseUrl);
       expect(statuses).toEqual([]);
 
       // The first revisit hits the network — the hydration seed never primes the HTTP cache.
@@ -222,7 +224,7 @@ for (const outputMode of outputModes) {
     test('a declared no-store loader reaches the network on every mount', async ({ page }) => {
       const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/second');
 
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
       await page.click('a[href="/second"]');
       await page.waitForSelector('[data-testid="loader-result"]');
       await page.click('a[href="/"]');
@@ -234,7 +236,7 @@ for (const outputMode of outputModes) {
     });
 
     test('handles loader module fetch errors gracefully', async ({ page }) => {
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
 
       await page.route('**/_expo/loaders/**', (route) => {
         route.abort('failed');
@@ -246,7 +248,7 @@ for (const outputMode of outputModes) {
     });
 
     test('shows suspense fallback while loading', async ({ page }) => {
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
 
       await page.route('**/_expo/loaders/**', async (route) => {
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -271,7 +273,7 @@ for (const outputMode of outputModes) {
         }
       });
 
-      await page.goto(expoStart.url.href);
+      await gotoHydrated(page, expoStart.url.href);
       await page.click('a[href="/slow"]');
       await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
       await expect.poll(() => slowRequests).toHaveLength(1);
@@ -297,7 +299,7 @@ for (const outputMode of outputModes) {
       url.pathname = '/no-loader';
 
       // Start on no loader route
-      await page.goto(url.toString());
+      await gotoHydrated(page, url.toString());
 
       // Navigate to index route (has loader)
       await page.click('a[href="/"]');
@@ -316,7 +318,7 @@ for (const outputMode of outputModes) {
       url.pathname = '/second';
 
       // Start on second route (with loader)
-      await page.goto(url.toString());
+      await gotoHydrated(page, url.toString());
       await page.waitForSelector('[data-testid="loader-result"]');
 
       const secondLoaderDataContent = await page
@@ -335,4 +337,10 @@ for (const outputMode of outputModes) {
       expect(pageErrors.all).toEqual([]);
     });
   });
+}
+
+// React drops a click that arrives before hydration finishes.
+async function gotoHydrated(page: Page, url: string) {
+  await page.goto(url);
+  await page.getByTestId('site-links-mounted').waitFor({ state: 'attached' });
 }
