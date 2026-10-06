@@ -102,6 +102,16 @@ describe(serialAssetsToStaticContentAssets, () => {
     expect(assets.css).toEqual([{ type: 'inline', source: '.a{}', hmrId: 'a' }]);
     expect(assets.js).toEqual(['/index.bundle?platform=web']);
   });
+
+  it('loads without the optional expo-router peer', () => {
+    jest.isolateModules(() => {
+      jest.doMock('expo-router/build/Route', () => {
+        throw new Error("Cannot find module 'expo-router/build/Route'");
+      });
+      expect(() => require('../serializeHtml')).not.toThrow();
+    });
+    jest.dontMock('expo-router/build/Route');
+  });
 });
 
 it('serializes development static html', () => {

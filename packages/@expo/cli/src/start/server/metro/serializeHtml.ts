@@ -1,6 +1,6 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { injectAssetsIntoHtml } from '@expo/router-server/build/utils/html';
-import { isRedirectRouteNode, isScreenRouteNode, type RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/build/Route';
 import type { AssetInfo } from 'expo-server/private';
 
 import { event } from './ssrEvents';
@@ -90,8 +90,9 @@ export function serialAssetsToStaticContentAssets(
 
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
+  // Checks `type` directly, as importing the `expo-router` guards fails without the optional peer.
   const entryPoints =
-    isScreenRouteNode(route) || isRedirectRouteNode(route) ? (route.entryPoints ?? []) : [];
+    route?.type === 'route' || route?.type === 'redirect' ? (route.entryPoints ?? []) : [];
 
   if (entryPoints.length) {
     const syncAssets = orderedJsAssets.filter((a) => !a.metadata.isAsync);
