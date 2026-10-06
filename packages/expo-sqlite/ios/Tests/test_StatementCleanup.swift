@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -10,7 +11,7 @@ struct StatementCleanupTests {
   @Test
   @JavaScriptActor
   func `failed close invalidates cleaned up statements and permits retry`() throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let module = SQLiteModule(appContext: appContext)
     var pointer: OpaquePointer?
     var destination: OpaquePointer?
@@ -49,7 +50,7 @@ struct StatementCleanupTests {
 
   @Test
   func `preparing during close either gets cleaned up or rejects the closed database`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let module = SQLiteModule(appContext: appContext)
     for _ in 0..<50 {
       var pointer: OpaquePointer?
@@ -85,7 +86,7 @@ struct StatementCleanupTests {
   @Test
   @JavaScriptActor
   func `run, step and getAll reject a statement that a failed close finalized`() throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let module = SQLiteModule(appContext: appContext)
     var pointer: OpaquePointer?
     var destination: OpaquePointer?
@@ -116,7 +117,7 @@ struct StatementCleanupTests {
 
   @Test
   func `getAll during close either reads the rows or rejects the finalized statement`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let module = SQLiteModule(appContext: appContext)
     for _ in 0..<50 {
       var pointer: OpaquePointer?

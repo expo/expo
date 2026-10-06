@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -14,7 +15,7 @@ struct NativeStatementJavaScriptTests {
   let runtime: ExpoRuntime
 
   init() throws {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
     runtime = try appContext.runtime
     appContext.moduleRegistry.register(
       holder: ModuleHolder(appContext: appContext, module: SQLiteModule(appContext: appContext), name: "ExpoSQLite")
