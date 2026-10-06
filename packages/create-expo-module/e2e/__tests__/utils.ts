@@ -71,6 +71,23 @@ export async function executePassing(args: string[], options?: SpawnOptions) {
   return expectExecutePassing(result!);
 }
 
+/** Run a `package.json` script of a created project, and validate the status is `0` */
+export async function runScriptPassing(projectName: string, script: string) {
+  let result: SpawnResult | null = null;
+
+  try {
+    result = await spawnAsync('npm', ['run', script], {
+      cwd: getTestPath(projectName),
+      // Run scripts once, without the interactive watch mode
+      env: { ...process.env, CI: '1' },
+    });
+  } catch (error: any) {
+    result = error;
+  }
+
+  return expectExecutePassing(result!);
+}
+
 /** Expect the received spawn result to be ok or "passing" */
 export function expectExecutePassing(spawn: SpawnResult) {
   // Copy the spawn result, that could be an error, and force Jest to list out stdout/stderr when status is not 0

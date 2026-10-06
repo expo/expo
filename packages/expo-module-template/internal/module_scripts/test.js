@@ -29,4 +29,4 @@ if (
 }
 
 const result = spawnSyncWithAutoShell('jest', args, { stdio: 'inherit' });
-process.exit(result.status ?? 0);
+process.exit(result.status ?? 1);
