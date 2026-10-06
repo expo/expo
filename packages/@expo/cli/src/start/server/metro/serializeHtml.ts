@@ -1,7 +1,7 @@
 import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { injectAssetsIntoHtml } from '@expo/router-server/build/utils/html';
-import { isRedirectRouteNode, isScreenRouteNode, type RouteNode } from 'expo-router/build/Route';
+import type { RouteNode } from 'expo-router/build/Route';
 import type { AssetInfo } from 'expo-server/private';
 
 import { event } from './ssrEvents';
