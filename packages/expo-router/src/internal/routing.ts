@@ -21,7 +21,7 @@ export {
   isLayoutRouteNode,
   isRedirectRouteNode,
   isRewriteRouteNode,
-  isScreenRouteNode,
+  isPageRouteNode,
 } from '../Route';
 export type {
   ApiRouteNode,
@@ -30,6 +30,6 @@ export type {
   RedirectRouteNode,
   RewriteRouteNode,
   RouteNode,
-  ScreenRouteNode,
+  PageRouteNode,
 } from '../Route';
 export { sortRoutes } from '../sortRoutes';

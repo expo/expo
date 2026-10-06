@@ -1,4 +1,4 @@
-import { isScreenRouteNode } from '../Route';
+import { isPageRouteNode } from '../Route';
 import { getRoutes } from '../getRoutes';
 import type { RedirectConfig } from '../getRoutesCore';
 import { getValidInitialRouteName } from '../routeNode';
@@ -433,7 +433,7 @@ describe('+not-found', () => {
     const notFound = routes.children.find((route) => route.route === '+not-found')!;
 
     // Narrows type for TypeScript
-    if (!isScreenRouteNode(notFound)) throw new Error('Expected +not-found to be a screen');
+    if (!isPageRouteNode(notFound)) throw new Error('Expected +not-found to be a screen');
 
     // Ensure this is the generated +not-found
     expect(notFound.generated).toBeTruthy();
@@ -713,7 +713,7 @@ describe('anchor', () => {
 
     expect(getValidInitialRouteName(routes!)).toBe('a/index');
     const anchor = routes?.children[0];
-    if (!isScreenRouteNode(anchor)) throw new Error('Expected the anchor to be a screen');
+    if (!isPageRouteNode(anchor)) throw new Error('Expected the anchor to be a screen');
     expect(anchor.entryPoints).toContain('./a/index.js');
   });
 
@@ -735,7 +735,7 @@ describe('anchor', () => {
     );
 
     const screen = routes?.children.find(({ route }) => route === 'c');
-    if (!isScreenRouteNode(screen)) throw new Error('Expected c to be a screen');
+    if (!isPageRouteNode(screen)) throw new Error('Expected c to be a screen');
     expect(screen.entryPoints).toEqual(['./_layout.js', './a/_layout.js', './a/b.js', './c.js']);
   });
 });

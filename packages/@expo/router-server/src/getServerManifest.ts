@@ -4,7 +4,7 @@ import {
   isLayoutRouteNode,
   isRedirectRouteNode,
   isRewriteRouteNode,
-  isScreenRouteNode,
+  isPageRouteNode,
   sortRoutes,
   type LayoutRouteNode,
   type RedirectRouteNode,
@@ -104,7 +104,7 @@ export function getServerManifest(
   const otherRoutes = uniqueBy(
     flat.filter(
       ({ route }) =>
-        isScreenRouteNode(route) ||
+        isPageRouteNode(route) ||
         (isRewriteRouteNode(route) &&
           (route.methods === undefined || route.methods.includes('GET')))
     ),

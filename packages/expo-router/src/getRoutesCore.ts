@@ -2,7 +2,7 @@ import {
   isApiRouteNode,
   isLayoutRouteNode,
   isRedirectRouteNode,
-  isScreenRouteNode,
+  isPageRouteNode,
   type DynamicConvention,
   type LayoutRouteNode,
   type MiddlewareNode,
@@ -500,7 +500,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
       // A screen source gets the generated redirect module. An API route source keeps
       // its own `loadRoute`.
-      const resolved = isScreenRouteNode(node)
+      const resolved = isPageRouteNode(node)
         ? asSystemRouteType(
             options.getSystemRoute({
               type: 'redirect',
@@ -536,7 +536,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
 
       // A screen source gets the generated rewrite module. An API route source keeps
       // its own `loadRoute`.
-      const resolved = isScreenRouteNode(node)
+      const resolved = isPageRouteNode(node)
         ? asSystemRouteType(
             options.getSystemRoute({
               type: 'rewrite',
@@ -949,7 +949,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
   options: Options,
   entryPoints: string[] = []
 ) {
-  if (isScreenRouteNode(node)) {
+  if (isPageRouteNode(node)) {
     node.entryPoints = [...new Set([...entryPoints, node.contextKey])];
   } else if (isRedirectRouteNode(node)) {
     node.entryPoints = [...new Set([...entryPoints, node.destinationContextKey])];

@@ -57,8 +57,8 @@ export type LayoutRouteNode = RouteNodeBase & {
   middleware?: MiddlewareNode;
 };
 
-/** A screen. */
-export type ScreenRouteNode = RouteNodeBase & {
+/** A page. */
+export type PageRouteNode = RouteNodeBase & {
   type: 'route';
   /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
   parentContextKey?: string;
@@ -97,7 +97,7 @@ export type RewriteRouteNode = RouteNodeBase & {
 
 export type RouteNode =
   | LayoutRouteNode
-  | ScreenRouteNode
+  | PageRouteNode
   | ApiRouteNode
   | RedirectRouteNode
   | RewriteRouteNode;
@@ -105,7 +105,7 @@ export type RouteNode =
 export const isLayoutRouteNode = (node: RouteNode | null | undefined): node is LayoutRouteNode =>
   node?.type === 'layout';
 
-export const isScreenRouteNode = (node: RouteNode | null | undefined): node is ScreenRouteNode =>
+export const isPageRouteNode = (node: RouteNode | null | undefined): node is PageRouteNode =>
   node?.type === 'route';
 
 export const isApiRouteNode = (node: RouteNode | null | undefined): node is ApiRouteNode =>

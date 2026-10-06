@@ -4,6 +4,8 @@ import React, { use, useEffect, useLayoutEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
+  isLayoutRouteNode,
+  isPageRouteNode,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -317,7 +319,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
-    const isRouteType = isScreenRouteNode(value);
+    const isRouteType = isPageRouteNode(value);
     const resolvedLoaderPath = useMemo(() => {
       if (!isRouteType || isGuarded) {
         return null;
@@ -595,7 +597,7 @@ export function screenOptionsFactory<TOptions extends object = Record<string, an
     };
 
     // Prevent generated screens from showing up in the tab bar.
-    if ((isScreenRouteNode(route) && route.internal) || isGuarded) {
+    if ((isPageRouteNode(route) && route.internal) || isGuarded) {
       // TODO(@ubax): Document migrating withLayoutContext navigators to standard navigation,
       // where processScreens can map hidden to navigator-specific options.
       output.hidden = true;

@@ -2,7 +2,7 @@ import type { RequireContext } from 'expo-router';
 import {
   getRoutes,
   isLayoutRouteNode,
-  isScreenRouteNode,
+  isPageRouteNode,
   removeSupportedExtensions,
   type RouteNode,
 } from 'expo-router/internal/routing';
@@ -152,7 +152,7 @@ function groupRouteNodes(
   }
 
   // Skip non-route files
-  if (!isScreenRouteNode(routeNode)) {
+  if (!isPageRouteNode(routeNode)) {
     // Layout files are ignored, so every screen is hoisted under the generated root layout.
     if (routeNode.route === '') {
       const children = isLayoutRouteNode(routeNode) ? routeNode.children : [];

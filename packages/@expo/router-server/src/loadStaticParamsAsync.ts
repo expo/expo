@@ -1,6 +1,6 @@
 import {
   isLayoutRouteNode,
-  isScreenRouteNode,
+  isPageRouteNode,
   type DynamicConvention,
   type LayoutRouteNode,
   type RouteNode,
@@ -118,7 +118,7 @@ async function loadStaticParamsRecursive(
       // Only layouts carry children, and only screens track the dynamic route they came from.
       const generatedRoute: RouteNode = isLayoutRouteNode(route)
         ? { ...generated, type: 'layout', children: dynamicChildren }
-        : isScreenRouteNode(route)
+        : isPageRouteNode(route)
           ? { ...generated, type: 'route', parentContextKey: route.contextKey }
           : generated;
 

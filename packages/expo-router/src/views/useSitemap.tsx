@@ -1,7 +1,7 @@
 import { use, useMemo } from 'react';
 
 import type { RouteNode } from '../Route';
-import { isLayoutRouteNode, isScreenRouteNode, sortRoutes } from '../Route';
+import { isLayoutRouteNode, isPageRouteNode, sortRoutes } from '../Route';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
 import { matchDynamicName } from '../matchers';
 import type { Href } from '../types';
@@ -53,7 +53,7 @@ const mapForRoute: (route: RouteNode, parents: string[]) => SitemapType = (route
   contextKey: route.contextKey,
   filename: routeFilename(route),
   href: routeHref(route, parents),
-  isInternal: isScreenRouteNode(route) && (route.internal ?? false),
+  isInternal: isPageRouteNode(route) && (route.internal ?? false),
   isGenerated: route.generated ?? false,
   children: [...(isLayoutRouteNode(route) ? route.children : [])]
     .sort(sortRoutes)

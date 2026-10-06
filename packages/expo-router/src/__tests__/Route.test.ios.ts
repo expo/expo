@@ -1,9 +1,9 @@
-import type { LayoutRouteNode, RouteNode, ScreenRouteNode } from '../Route';
+import type { LayoutRouteNode, RouteNode, PageRouteNode } from '../Route';
 import { sortRoutes, sortRoutesWithInitial } from '../Route';
 import { generateDynamic } from '../getRoutes';
 import { findRouteNodeAndParamsForState, getValidInitialRouteName } from '../routeNode';
 
-const asScreenRouteNode = (route: string): ScreenRouteNode => {
+const asPageRouteNode = (route: string): PageRouteNode => {
   return {
     type: 'route',
     dynamic: generateDynamic(route),
@@ -21,7 +21,7 @@ const asScreenRouteNode = (route: string): ScreenRouteNode => {
 
 function getSortedRoutes(...routes: string[]) {
   return routes
-    .map(asScreenRouteNode)
+    .map(asPageRouteNode)
     .sort(sortRoutes)
     .map((node) => node.route);
 }
@@ -43,54 +43,54 @@ describe(sortRoutes, () => {
   });
   it(`sorts index routes by priority`, () => {
     // Index before deep dynamic
-    expect(sortRoutes(asScreenRouteNode('index'), asScreenRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('[...a]'))).toBe(-1);
     // Index before dynamic
-    expect(sortRoutes(asScreenRouteNode('index'), asScreenRouteNode('[a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('[a]'))).toBe(-1);
     // Index before named
-    expect(sortRoutes(asScreenRouteNode('index'), asScreenRouteNode('a'))).toBe(-1);
-    expect(sortRoutes(asScreenRouteNode('index'), asScreenRouteNode('z'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('a'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('z'))).toBe(-1);
 
     // Index tied with group
-    expect(sortRoutes(asScreenRouteNode('index'), asScreenRouteNode('(z)'))).toBe(2);
+    expect(sortRoutes(asPageRouteNode('index'), asPageRouteNode('(z)'))).toBe(2);
   });
   it(`sorts group routes by priority`, () => {
-    expect(sortRoutes(asScreenRouteNode('(zzz)'), asScreenRouteNode('[...a]'))).toBe(-1);
-    expect(sortRoutes(asScreenRouteNode('(zzz)'), asScreenRouteNode('[a]'))).toBe(-1);
-    expect(sortRoutes(asScreenRouteNode('(zzz)'), asScreenRouteNode('a'))).toBe(-1);
-    expect(sortRoutes(asScreenRouteNode('(zzz)'), asScreenRouteNode('z'))).toBe(-1);
-    expect(sortRoutes(asScreenRouteNode('(zzz)'), asScreenRouteNode('index'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('[a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('a'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('z'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('(zzz)'), asPageRouteNode('index'))).toBe(0);
   });
   it(`sorts multiple dynamic routes higher than a single deep dynamic route`, () => {
     // dynamic before deep dynamic
-    expect(sortRoutes(asScreenRouteNode('[a]/[b]'), asScreenRouteNode('[...a]'))).toBe(-1);
-    expect(sortRoutes(asScreenRouteNode('[...a]'), asScreenRouteNode('[a]/[b]'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]/[b]'), asPageRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('[a]/[b]'))).toBe(1);
   });
 
   it(`sorts dynamic routes by priority`, () => {
     // dynamic before deep dynamic
-    expect(sortRoutes(asScreenRouteNode('[a]'), asScreenRouteNode('[...a]'))).toBe(-1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('[...a]'))).toBe(-1);
     // tied with two dynamic routes
-    expect(sortRoutes(asScreenRouteNode('[a]'), asScreenRouteNode('[b]'))).toBe(0);
-    expect(sortRoutes(asScreenRouteNode('[a]/[b]'), asScreenRouteNode('[b]/[a]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('[b]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[a]/[b]'), asPageRouteNode('[b]/[a]'))).toBe(0);
     // Lower priority
-    expect(sortRoutes(asScreenRouteNode('[a]'), asScreenRouteNode('index'))).toBe(1);
-    expect(sortRoutes(asScreenRouteNode('[a]'), asScreenRouteNode('a'))).toBe(1);
-    expect(sortRoutes(asScreenRouteNode('[a]'), asScreenRouteNode('(a)'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('index'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('a'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[a]'), asPageRouteNode('(a)'))).toBe(1);
   });
   it(`sorts deep dynamic routes by priority`, () => {
-    expect(sortRoutes(asScreenRouteNode('[...a]'), asScreenRouteNode('[...beta]'))).toBe(0);
-    expect(sortRoutes(asScreenRouteNode('[...a]/[b]'), asScreenRouteNode('[...beta]/[c]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('[...beta]'))).toBe(0);
+    expect(sortRoutes(asPageRouteNode('[...a]/[b]'), asPageRouteNode('[...beta]/[c]'))).toBe(0);
     // Lower priority
-    expect(sortRoutes(asScreenRouteNode('[...a]'), asScreenRouteNode('[b]'))).toBe(1);
-    expect(sortRoutes(asScreenRouteNode('[...a]/[a]'), asScreenRouteNode('[b]/[c]'))).toBe(1);
-    expect(sortRoutes(asScreenRouteNode('[...a]'), asScreenRouteNode('index'))).toBe(1);
-    expect(sortRoutes(asScreenRouteNode('[...a]'), asScreenRouteNode('a'))).toBe(1);
-    expect(sortRoutes(asScreenRouteNode('[...a]'), asScreenRouteNode('(a)'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('[b]'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]/[a]'), asPageRouteNode('[b]/[c]'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('index'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('a'))).toBe(1);
+    expect(sortRoutes(asPageRouteNode('[...a]'), asPageRouteNode('(a)'))).toBe(1);
   });
 });
 
 const asLayoutNode = (anchor: string, children: RouteNode[] = []): LayoutRouteNode => ({
-  ...asScreenRouteNode('_layout'),
+  ...asPageRouteNode('_layout'),
   type: 'layout',
   loadRoute: () => ({ unstable_settings: { anchor } }),
   children,
@@ -98,19 +98,19 @@ const asLayoutNode = (anchor: string, children: RouteNode[] = []): LayoutRouteNo
 
 describe(getValidInitialRouteName, () => {
   it('returns the registered route name for a valid setting', () => {
-    const node = asLayoutNode('a', [asScreenRouteNode('a')]);
+    const node = asLayoutNode('a', [asPageRouteNode('a')]);
 
     expect(getValidInitialRouteName(node)).toBe('a');
   });
 
   it('resolves a directory setting to its registered index route', () => {
-    const node = asLayoutNode('a', [asScreenRouteNode('a/index')]);
+    const node = asLayoutNode('a', [asPageRouteNode('a/index')]);
 
     expect(getValidInitialRouteName(node)).toBe('a/index');
   });
 
   it('sorts a resolved directory setting before other routes', () => {
-    const node = asLayoutNode('a', [asScreenRouteNode('b'), asScreenRouteNode('a/index')]);
+    const node = asLayoutNode('a', [asPageRouteNode('b'), asPageRouteNode('a/index')]);
 
     expect(
       node.children
@@ -121,8 +121,8 @@ describe(getValidInitialRouteName, () => {
 
   it('throws for a missing route', () => {
     const node = asLayoutNode('missing', [
-      asScreenRouteNode('index'),
-      asScreenRouteNode('settings/index'),
+      asPageRouteNode('index'),
+      asPageRouteNode('settings/index'),
     ]);
     node.contextKey = './app/(tabs)/_layout.tsx';
 

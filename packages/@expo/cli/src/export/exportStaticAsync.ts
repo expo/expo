@@ -12,7 +12,7 @@ import chalk from 'chalk';
 import {
   isRedirectRouteNode,
   isRewriteRouteNode,
-  isScreenRouteNode,
+  isPageRouteNode,
   type RouteNode,
 } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -193,7 +193,7 @@ function makeRuntimeEntryPointsAbsolute(manifest: ExpoRouterRuntimeManifest, app
   modifyRouteNodeInRuntimeManifest(manifest, (route) => {
     // Only screens and redirects carry entry points.
     if (
-      (isScreenRouteNode(route) || isRedirectRouteNode(route)) &&
+      (isPageRouteNode(route) || isRedirectRouteNode(route)) &&
       Array.isArray(route.entryPoints)
     ) {
       route.entryPoints = route.entryPoints.map((entryPoint) => {
@@ -458,7 +458,7 @@ export async function exportFromServerAsync(
       const routeAssets = new Map<string, string[]>();
       for (const { route } of htmlRoutes) {
         const entryPoints =
-          isScreenRouteNode(route) || isRedirectRouteNode(route) ? (route.entryPoints ?? []) : [];
+          isPageRouteNode(route) || isRedirectRouteNode(route) ? (route.entryPoints ?? []) : [];
         if (!entryPoints.length) {
           continue;
         }
