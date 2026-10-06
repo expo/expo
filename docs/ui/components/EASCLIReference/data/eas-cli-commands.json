@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-10-03T08:12:20.656Z",
-    "cliVersion": "24.10.0"
+    "fetchedAt": "2026-10-06T08:13:31.916Z",
+    "cliVersion": "24.11.0"
   },
   "totalCommands": 164,
   "commands": [
@@ -14,7 +14,7 @@
     {
       "command": "eas account:login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas account:login [-s] [-b]\n\nFLAGS\n  -b, --[no-]browser  Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso           Log in with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
+      "usage": "USAGE\n  $ eas account:login [--non-interactive] [--match <value>  [--resume <value> [--device | -s]]] [-b]\n\nFLAGS\n  -b, --[no-]browser     Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso              Log in with SSO\n      --device           Log in using a code in a browser on any device\n      --match=<value>    Submit the number the user sees in their browser\n      --non-interactive  Run the command in non-interactive mode.\n      --resume=<value>   Resume a saved device login using its request ID (one command at a time)\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login\n\nEXAMPLES\n  $ eas login --device\n\n  $ eas login --device --non-interactive\n\n  $ eas login --device --non-interactive --resume REQUEST_ID --match NUMBER_FROM_USER"
     },
     {
       "command": "eas account:logout",
@@ -424,7 +424,7 @@
     {
       "command": "eas login",
       "description": "log in with your Expo account",
-      "usage": "USAGE\n  $ eas login [-s] [-b]\n\nFLAGS\n  -b, --[no-]browser  Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso           Log in with SSO\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login"
+      "usage": "USAGE\n  $ eas login [--non-interactive] [--match <value>  [--resume <value> [--device | -s]]] [-b]\n\nFLAGS\n  -b, --[no-]browser     Log in with your browser (default; use --no-browser for CLI-based login)\n  -s, --sso              Log in with SSO\n      --device           Log in using a code in a browser on any device\n      --match=<value>    Submit the number the user sees in their browser\n      --non-interactive  Run the command in non-interactive mode.\n      --resume=<value>   Resume a saved device login using its request ID (one command at a time)\n\nDESCRIPTION\n  log in with your Expo account\n\nALIASES\n  $ eas login\n\nEXAMPLES\n  $ eas login --device\n\n  $ eas login --device --non-interactive\n\n  $ eas login --device --non-interactive --resume REQUEST_ID --match NUMBER_FROM_USER"
     },
     {
       "command": "eas logout",
