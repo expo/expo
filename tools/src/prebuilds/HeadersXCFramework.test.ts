@@ -57,6 +57,11 @@ const SOURCE_MODULE_MAP = `framework module ${NAME} {
 }
 `;
 
+// The fixtures and the code under test call plutil and xcrun, which only Apple platforms provide.
+const appleToolsOnly = {
+  skip: process.platform !== 'darwin' && 'needs plutil and xcrun, which only macOS provides',
+};
+
 const product = (platforms: ProductPlatform[] = ['iOS("16.4")']) => ({ name: NAME, platforms });
 
 const tempRoots: string[] = [];
@@ -171,7 +176,7 @@ function definedSymbols(nmOutput: string): string[] {
     .map((fields) => fields[2]);
 }
 
-describe('writeHeadersXCFrameworkAsync', () => {
+describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   it('lays out each slice as a stub archive, a headers directory and the text Swift interfaces', async () => {
     const { destination } = await writeFixtureAsync([DEVICE, SIMULATOR]);
 
@@ -340,6 +345,51 @@ describe('writeHeadersXCFrameworkAsync', () => {
     assert.deepEqual(await fs.readdir(path.dirname(destination)), [`${NAME}Headers.xcframework`]);
   });
 
+  it('keeps the previous output when moving the new one into place fails', async (t) => {
+    const root = await makeTempRootAsync();
+    const source = path.join(root, `${NAME}.xcframework`);
+    const destination = path.join(root, 'out', `${NAME}Headers.xcframework`);
+    await createSourceXCFrameworkAsync(source, [DEVICE, SIMULATOR]);
+    await writeHeadersXCFrameworkAsync(source, product(), destination);
+    const files = await listFilesAsync(destination);
+
+    const rename: (from: string, to: string) => Promise<void> = fs.rename;
+    let movedIntoDestination = false;
+    t.mock.method(fs, 'rename', async (from: string, to: string) => {
+      if (to === destination && !movedIntoDestination) {
+        movedIntoDestination = true;
+        throw new Error('EXDEV: simulated rename failure');
+      }
+      return rename(from, to);
+    });
+
+    await assert.rejects(
+      writeHeadersXCFrameworkAsync(source, product(), destination),
+      /simulated rename failure/
+    );
+
+    assert.deepEqual(await listFilesAsync(destination), files);
+    assert.deepEqual(await fs.readdir(path.dirname(destination)), [`${NAME}Headers.xcframework`]);
+  });
+
+  it('names the product, SDK and xcrun output when building a stub fails', async () => {
+    const root = await makeTempRootAsync();
+    const source = path.join(root, `${NAME}.xcframework`);
+    await createSourceXCFrameworkAsync(source, [{ ...DEVICE, archs: ['bogus'] }]);
+
+    await assert.rejects(
+      writeHeadersXCFrameworkAsync(source, product(), path.join(root, 'out.xcframework')),
+      (error: Error) => {
+        assert.match(error.message, new RegExp(`${NAME}Headers stub`));
+        assert.match(error.message, /ios-arm64/);
+        assert.match(error.message, /xcrun clang/);
+        assert.match(error.message, /xcrun --sdk iphoneos --show-sdk-path/);
+        assert.match(error.message, /unknown target triple/);
+        return true;
+      }
+    );
+  });
+
   it('takes each slice platform from the source, including non-iOS platforms', async () => {
     const tv: FixtureSlice = {
       id: 'tvos-arm64',
@@ -404,22 +454,26 @@ framework module ${NAME}_Private {
 });
 
 describe('composeHeadersXCFrameworkAsync', () => {
-  it('writes the headers xcframework beside the flavor directories of the build output', async () => {
-    const root = await makeTempRootAsync();
-    const buildPath = path.join(root, '.expo-prebuild');
-    await createSourceXCFrameworkAsync(
-      path.join(buildPath, 'output', 'debug', 'xcframeworks', `${NAME}.xcframework`),
-      [DEVICE]
-    );
+  it(
+    'writes the headers xcframework beside the flavor directories of the build output',
+    appleToolsOnly,
+    async () => {
+      const root = await makeTempRootAsync();
+      const buildPath = path.join(root, '.expo-prebuild');
+      await createSourceXCFrameworkAsync(
+        path.join(buildPath, 'output', 'debug', 'xcframeworks', `${NAME}.xcframework`),
+        [DEVICE]
+      );
 
-    const written = await composeHeadersXCFrameworkAsync({ buildPath }, product(), 'Debug');
+      const written = await composeHeadersXCFrameworkAsync({ buildPath }, product(), 'Debug');
 
-    assert.equal(
-      written,
-      path.join(buildPath, 'output', 'headers', 'xcframeworks', `${NAME}Headers.xcframework`)
-    );
-    assert.ok(await fs.pathExists(path.join(written, DEVICE.id, STUB)));
-  });
+      assert.equal(
+        written,
+        path.join(buildPath, 'output', 'headers', 'xcframeworks', `${NAME}Headers.xcframework`)
+      );
+      assert.ok(await fs.pathExists(path.join(written, DEVICE.id, STUB)));
+    }
+  );
 
   it('keeps the version prefix of versioned outputs', () => {
     assert.equal(
@@ -456,7 +510,7 @@ describe('shouldWriteHeadersXCFramework', () => {
   });
 });
 
-describe('composeStep', () => {
+describe('composeStep', appleToolsOnly, () => {
   afterEach(() => mock.restoreAll());
 
   /**

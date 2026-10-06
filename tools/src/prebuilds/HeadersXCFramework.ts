@@ -179,11 +179,28 @@ export async function writeHeadersXCFrameworkAsync(
         XCFrameworkFormatVersion: '1.0',
       })
     );
-    await fs.remove(destination);
-    await fs.rename(staging, destination);
+    await replaceDirectoryAsync(staging, destination);
   } finally {
     await Promise.all([fs.remove(staging), fs.remove(scratch)]);
   }
+}
+
+/** Moves `source` to `destination`, putting the previous `destination` back if the move fails. */
+async function replaceDirectoryAsync(source: string, destination: string): Promise<void> {
+  const backup = `${source}-previous`;
+  const hadPrevious = await fs.pathExists(destination);
+  if (hadPrevious) {
+    await fs.rename(destination, backup);
+  }
+  try {
+    await fs.rename(source, destination);
+  } catch (error) {
+    if (hadPrevious) {
+      await fs.rename(backup, destination);
+    }
+    throw error;
+  }
+  await fs.remove(backup);
 }
 
 const stubLibraryName = (productName: string) => `lib${productName}Headers.a`;
@@ -250,7 +267,7 @@ async function writeSliceAsync(
   await buildStubArchiveAsync(
     library,
     await resolveMinimumVersionAsync(library, framework, product),
-    `${product.name}HeadersStub`,
+    product.name,
     path.join(slice, stubLibraryName(product.name)),
     scratch
   );
@@ -324,18 +341,35 @@ function parseProductPlatform(platform: string): { name: string; version: string
 async function buildStubArchiveAsync(
   library: XCFrameworkLibrary,
   minimumVersion: string,
-  symbolPrefix: string,
+  productName: string,
   output: string,
   scratch: string
 ): Promise<void> {
   const target = sliceTargetFor(library);
+  const xcrunAsync = async (tool: string, args: string[]) => {
+    try {
+      await spawnAsync('xcrun', args);
+    } catch (error) {
+      const stderr = (error as { stderr?: string }).stderr?.trim();
+      throw new Error(
+        `Cannot build the ${productName}Headers stub for slice ${library.LibraryIdentifier}: ` +
+          `\`xcrun ${tool}\` failed for the ${target.sdk} SDK. The Xcode toolchain or the ` +
+          `${target.sdk} SDK may be unavailable, or the command itself failed. Check that ` +
+          `\`xcode-select -p\` points at an Xcode installation and that ` +
+          `\`xcrun --sdk ${target.sdk} --show-sdk-path\` prints a path.` +
+          (stderr ? `\n\n${tool} output:\n${stderr}` : ''),
+        { cause: error }
+      );
+    }
+  };
+
   const source = path.join(scratch, `${library.LibraryIdentifier}.c`);
-  await fs.writeFile(source, `int ${symbolPrefix}_${target.sdk} = 0;\n`);
+  await fs.writeFile(source, `int ${productName}HeadersStub_${target.sdk} = 0;\n`);
   const objects: string[] = [];
   for (const arch of library.SupportedArchitectures) {
     const object = path.join(scratch, `${library.LibraryIdentifier}-${arch}.o`);
     const triple = `${arch}-apple-${target.os}${minimumVersion}${target.environment ? `-${target.environment}` : ''}`;
-    await spawnAsync('xcrun', [
+    await xcrunAsync('clang', [
       '--sdk',
       target.sdk,
       'clang',
@@ -349,7 +383,7 @@ async function buildStubArchiveAsync(
     objects.push(object);
   }
   await fs.mkdirp(path.dirname(output));
-  await spawnAsync('xcrun', ['libtool', '-static', '-o', output, ...objects]);
+  await xcrunAsync('libtool', ['libtool', '-static', '-o', output, ...objects]);
 }
 
 async function readSourceLibrariesAsync(xcframework: string): Promise<XCFrameworkLibrary[]> {
