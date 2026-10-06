@@ -1,6 +1,6 @@
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 @Suite("MemoryMonitoring")
 struct MemoryMonitoringTests {

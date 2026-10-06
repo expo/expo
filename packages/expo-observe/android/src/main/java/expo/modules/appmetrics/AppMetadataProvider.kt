@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import expo.modules.interfaces.constants.ConstantsInterface
+import expo.modules.observe.BuildConfig
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject

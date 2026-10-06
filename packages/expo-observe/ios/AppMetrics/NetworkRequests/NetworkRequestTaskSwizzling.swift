@@ -84,9 +84,8 @@ enum NetworkRequestTaskSwizzling {
   /// on requests to endpoints we control (o.expo.dev); setting it on a request to a third party
   /// leaks `Expo-AppMetrics-Skip: 1` to that host.
   ///
-  /// No `X-` prefix per RFC 6648. Callers that can't import this constant (expo-observe must not
-  /// depend on app-metrics internals) hardcode the same literal — keep the two in sync if this
-  /// ever changes.
+  /// No `X-` prefix per RFC 6648. Callers that can't import this constant (expo-dev-launcher)
+  /// hardcode the same literal — keep them in sync if this ever changes.
   static let internalHeaderName = "Expo-AppMetrics-Skip"
 
   /// Property key that expo-dev-launcher's `ExpoRequestInterceptorProtocol` stamps on the inner
@@ -590,7 +589,7 @@ private final class DelegateProxy: NSObject {
   }
 
   /// Unimplemented selectors go to the wrapped delegate too, so the resulting `unrecognized selector`
-  /// names the caller's delegate and not `ExpoAppMetrics` — except for delegate-less sessions, where
+  /// names the caller's delegate and not `ExpoObserve` — except for delegate-less sessions, where
   /// there is nothing to forward to. Keep `wrapped` a `let` bound to an already-built object: a cycle
   /// back here would tail-call forever instead of crashing.
   override func forwardingTarget(for aSelector: Selector!) -> Any? {

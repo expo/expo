@@ -1,6 +1,6 @@
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 // Pinned to `AppMetricsActor` so tests in this suite (and the sibling
 // `MetricRow+Builder` suite, which also touches `GlobalAttributes`) can't

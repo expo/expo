@@ -45,7 +45,7 @@ class ObserveModule : Module() {
 
       OnCreate {
         appMetricsModule = checkNotNull(appContext.registry.getModule<AppMetricsModule>()) {
-          "AppMetricsModule is required by ObserveModule. Make sure expo-app-metrics is installed."
+          "AppMetricsModule is required by ObserveModule. Make sure it is registered before ObserveModule in expo-module.config.json."
         }
         val sessionManager = appMetricsModule.sessionManager
         observabilityManager = ObservabilityManager(

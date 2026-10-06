@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <sys/sysctl.h>
-#import <ExpoAppMetrics/AppLoadTimeProvider.h>
+#import <ExpoObserve/AppLoadTimeProvider.h>
 
 /**
  Gets the process start time in seconds, relative to Jan 1, 1970.

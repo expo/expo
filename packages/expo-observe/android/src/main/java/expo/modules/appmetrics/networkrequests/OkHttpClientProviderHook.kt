@@ -32,9 +32,9 @@ object OkHttpClientProviderHook {
     if (isClientAlreadyCached()) {
       Log.w(
         TAG,
-        "OkHttpClientProvider.client was already created before expo-app-metrics could install its" +
+        "OkHttpClientProvider.client was already created before expo-observe could install its" +
           " factory. Network requests that went through the existing client won't be observed." +
-          " Either move expo-app-metrics earlier in your initialization or add" +
+          " Either move expo-observe earlier in your initialization or add" +
           " NetworkRequestInterceptor.instance to your custom OkHttp client manually."
       )
     }

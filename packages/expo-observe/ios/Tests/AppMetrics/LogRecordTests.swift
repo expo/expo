@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 @Suite("LogRecord")
 struct LogRecordTests {

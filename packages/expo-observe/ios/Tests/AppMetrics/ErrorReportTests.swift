@@ -2,7 +2,7 @@
 
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 @Suite("ErrorReport")
 struct ErrorReportTests {

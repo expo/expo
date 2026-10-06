@@ -1,7 +1,7 @@
 import Foundation
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 private let fixedStart = Date(timeIntervalSince1970: 1_782_131_895)
 

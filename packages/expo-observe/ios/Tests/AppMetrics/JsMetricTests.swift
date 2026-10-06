@@ -1,6 +1,6 @@
 import Testing
 
-@testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 @Suite("JsMetric → Metric conversion")
 struct JsMetricTests {

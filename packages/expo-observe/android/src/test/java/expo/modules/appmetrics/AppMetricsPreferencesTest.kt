@@ -2,6 +2,7 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.observe.BuildConfig
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

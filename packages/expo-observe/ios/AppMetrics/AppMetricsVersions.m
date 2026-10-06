@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoAppMetrics/AppMetricsVersions.h>
+#import <ExpoObserve/AppMetricsVersions.h>
 
 #define STRINGIZE(x) #x
 #define STRINGIZE2(x) STRINGIZE(x)

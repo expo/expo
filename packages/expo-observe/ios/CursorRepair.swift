@@ -1,10 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoAppMetrics
-
 /// Resets a dispatch cursor to `-1` if it has fallen past the largest id currently in its source
 /// table. The cursors live in UserDefaults; their source tables can be wiped from underneath them
-/// (notably on a schema-version mismatch in `expo-app-metrics`). Without this check the cursor would
+/// (notably on a schema-version mismatch in `MetricsDatabase`). Without this check the cursor would
 /// skip every new row until enough accumulated to pass the stale value.
 ///
 /// - `signalName`: short human-readable label ("metric" / "log") for log messages.

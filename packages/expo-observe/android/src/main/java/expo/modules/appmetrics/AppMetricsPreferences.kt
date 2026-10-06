@@ -3,6 +3,7 @@ package expo.modules.appmetrics
 import android.content.Context
 import androidx.core.content.edit
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
+import expo.modules.observe.BuildConfig
 
 private const val PREFS_NAME = "dev.expo.app-metrics"
 private const val KEY_ENVIRONMENT = "environment"

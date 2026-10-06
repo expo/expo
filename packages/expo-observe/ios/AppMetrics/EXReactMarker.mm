@@ -1,4 +1,4 @@
-#import <ExpoAppMetrics/EXReactMarker.h>
+#import <ExpoObserve/EXReactMarker.h>
 
 @implementation EXAppMetricsReactMarker
 
