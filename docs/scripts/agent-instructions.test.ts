@@ -1,4 +1,4 @@
-import { buildFeedbackSection } from './agent-instructions.ts';
+import { buildAgentInstructions, buildFeedbackSection } from './agent-instructions.ts';
 
 describe('buildFeedbackSection', () => {
   it('prints the Expo feedback CLI command and curl fallback with the page URL', () => {
@@ -13,5 +13,13 @@ Direct HTTP fallback:
 curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"/skills/","feedback":"🤖 Agent feedback for docs: <specific, actionable description> (<model>, <harness>)"}'
 
 Only submit when you have something specific and actionable to report. Try to give the most context.`);
+  });
+});
+
+describe('buildAgentInstructions', () => {
+  it('points to the local docs before the feedback section', () => {
+    const block = buildAgentInstructions('/skills/');
+    expect(block).toContain('npx @expo/agent-cli docs:sync');
+    expect(block.indexOf('## Local Docs')).toBeLessThan(block.indexOf('## Submitting Feedback'));
   });
 });
