@@ -18,6 +18,13 @@ export interface TabProps extends CommonViewModifierProps {
    */
   systemImage?: SFSymbol;
   /**
+   * The URI of a local image file shown as the tab's icon, for example a custom icon set
+   * resolved with `Image.resolveAssetSource(require('./home.png')).uri`. It's drawn as a
+   * template, so the tab bar tints it like an SF Symbol, and a `@2x` / `@3x` suffix in the file
+   * name sets its scale. Takes precedence over `systemImage`.
+   */
+  uiImage?: string;
+  /**
    * The tab's content — rendered when this tab is selected.
    */
   children: React.ReactNode;

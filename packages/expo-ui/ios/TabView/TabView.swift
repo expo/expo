@@ -51,17 +51,25 @@ internal struct TabView: ExpoSwiftUI.View {
       ForEach(tabs, id: \.props.value) { tab in
         // Render children directly (not tab.childView) to avoid double-
         // decorating with the iOS 17 fallback .tabItem.
-        SwiftUI.Tab(
-          tab.props.label ?? "",
-          systemImage: tab.props.systemImage ?? "",
-          value: tab.props.value
-        ) {
-          Self.tabContent(for: tab.props.children ?? [])
-        }
+        Self.tab(for: tab)
 #if !os(tvOS)
         .badge(Self.badgeText(from: tab.props.modifiers))
 #endif
       }
+    }
+  }
+
+  // A custom image (`uiImage`) needs the label-builder form of `Tab`; otherwise the system
+  // image form keeps its SF Symbol behavior.
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, *)
+  private static func tab(for tab: Tab) -> SwiftUI.Tab<String, AnyView, Label<Text, Image>> {
+    let title = Text(tab.props.label ?? "")
+    let icon = Tab.templateImage(from: tab.props.uiImage)
+      ?? Image(systemName: tab.props.systemImage ?? "")
+    return SwiftUI.Tab(value: tab.props.value) {
+      tabContent(for: tab.props.children ?? [])
+    } label: {
+      Label { title } icon: { icon }
     }
   }
 
