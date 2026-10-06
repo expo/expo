@@ -35,6 +35,7 @@ struct HomeTabView: View {
           ProjectsAndSnacksSection()
         }
       }
+      .maxContentWidth()
       .padding()
     }
     .background(Color.expoSystemBackground)
