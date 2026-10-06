@@ -220,6 +220,7 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
         if let message = result.message {
           throw SQLiteErrorException(message)
         }
+        throw SQLiteErrorException("Error code \(result.code)")
       }
       return rows
     }
