@@ -20,9 +20,21 @@ class ExpoBridgeModule(
   fun installModules(): Boolean {
     // Bridgeless ReactHostImpl may have BridgelessReactContext ready but not ReactInstance.
     // Try to busy wait until ReactInstance is available so we could get the javaScriptContextHolder.
-    tryWaitSync(waitMs = 100, retries = 10) {
+    val ready = tryWaitSync(waitMs = 100, retries = 10) {
       reactApplicationContext.hasActiveReactInstance()
     }
+
+    if (!ready) {
+      // Don't fall through silently: without an active ReactInstance, installJSIInterop()
+      // below installs nothing into the runtime and this method still returns true, so the
+      // first visible symptom is JS reading `globalThis.expo` as undefined ("Cannot read
+      // property 'EventEmitter' of undefined") - far from the cause.
+      logger.warn(
+        "hasActiveReactInstance() is still false after waiting; installing JSI interop anyway. " +
+          "globalThis.expo will most likely be missing in the JS runtime."
+      )
+    }
+
     val kotlinInterop = nativeModulesProxy.get()?.kotlinInteropModuleRegistry
       ?: throw IllegalStateException("Couldn't find KotlinInteropModuleRegistry")
 
@@ -30,12 +42,16 @@ class ExpoBridgeModule(
     return true
   }
 
-  private fun tryWaitSync(waitMs: Long, retries: Int, predicate: () -> Boolean) {
-    repeat(retries) inner@{
+  /**
+   * Returns whether the predicate became true within the given budget.
+   */
+  private fun tryWaitSync(waitMs: Long, retries: Int, predicate: () -> Boolean): Boolean {
+    repeat(retries) {
       if (predicate()) {
-        return
+        return true
       }
       Thread.sleep(waitMs)
     }
+    return predicate()
   }
 }
