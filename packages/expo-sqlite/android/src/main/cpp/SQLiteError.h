@@ -27,4 +27,8 @@ inline std::string sqliteErrorMessage(sqlite3 *db, int code) {
   return "Error code " + std::to_string(code) + ": " + exsqlite3_errmsg(db);
 }
 
+inline std::string sqliteErrorMessage(int code) {
+  return "Error code " + std::to_string(code) + ": " + exsqlite3_errstr(code);
+}
+
 } // namespace expo

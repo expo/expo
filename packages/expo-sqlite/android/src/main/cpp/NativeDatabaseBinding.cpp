@@ -103,6 +103,7 @@ int NativeDatabaseBinding::sqlite3_prepare_v2(
     jni::alias_ref<NativeStatementBinding::javaobject> statement) {
   NativeStatementBinding *cStatement = cthis(statement);
   SQLiteDatabaseLock lock(db);
+  cStatement->db = db;
   int ret = ::exsqlite3_prepare_v2(db, source.c_str(), source.size(),
                                 &cStatement->stmt, nullptr);
   if (ret != SQLITE_OK) {

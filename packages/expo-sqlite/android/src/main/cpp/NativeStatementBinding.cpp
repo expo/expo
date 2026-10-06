@@ -62,7 +62,14 @@ std::string NativeStatementBinding::sqlite3_column_name(int index) {
 }
 
 int NativeStatementBinding::sqlite3_finalize() {
-  auto *db = exsqlite3_db_handle(stmt);
+  if (!stmt) {
+    lastErrorMessage.clear();
+    return SQLITE_OK;
+  }
+  if (!db) {
+    lastErrorMessage = sqliteErrorMessage(SQLITE_MISUSE);
+    return SQLITE_MISUSE;
+  }
   SQLiteDatabaseLock lock(db);
   int ret = ::exsqlite3_finalize(stmt);
   stmt = nullptr;
@@ -71,7 +78,14 @@ int NativeStatementBinding::sqlite3_finalize() {
 }
 
 int NativeStatementBinding::sqlite3_reset() {
-  auto *db = exsqlite3_db_handle(stmt);
+  if (!stmt) {
+    lastErrorMessage.clear();
+    return SQLITE_OK;
+  }
+  if (!db) {
+    lastErrorMessage = sqliteErrorMessage(SQLITE_MISUSE);
+    return SQLITE_MISUSE;
+  }
   SQLiteDatabaseLock lock(db);
   int ret = ::exsqlite3_reset(stmt);
   lastErrorMessage = ret == SQLITE_OK ? "" : sqliteErrorMessage(db, ret);
@@ -79,7 +93,10 @@ int NativeStatementBinding::sqlite3_reset() {
 }
 
 int NativeStatementBinding::sqlite3_step() {
-  auto *db = exsqlite3_db_handle(stmt);
+  if (!stmt || !db) {
+    lastErrorMessage = sqliteErrorMessage(SQLITE_MISUSE);
+    return SQLITE_MISUSE;
+  }
   SQLiteDatabaseLock lock(db);
   int ret = ::exsqlite3_step(stmt);
   lastErrorMessage = ret == SQLITE_ROW || ret == SQLITE_DONE

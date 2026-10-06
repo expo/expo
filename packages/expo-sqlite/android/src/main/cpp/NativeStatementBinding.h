@@ -48,6 +48,7 @@ private:
   friend HybridBase;
   friend NativeDatabaseBinding;
 
+  sqlite3 *db = nullptr;
   exsqlite3_stmt *stmt = nullptr;
   std::string lastErrorMessage;
 };
