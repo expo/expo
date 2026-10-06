@@ -115,7 +115,7 @@ module Expo
           resolved_flags = build_configuration.resolve_build_setting(SWIFT_FLAGS, native_target)
 
           # Respect flags inherited from xcconfig files instead of duplicating them in the project file.
-          next if resolved_flags&.include?(configuration_flag)
+          next if Array(resolved_flags).join(' ').include?(configuration_flag)
 
           build_settings = build_configuration.build_settings
 
