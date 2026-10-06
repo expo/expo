@@ -332,7 +332,7 @@ While the session runs, the web preview lists each request in its network panel.
 
 Capture records every HTTP and HTTPS request that an app sends through `URLSession`, the iOS networking layer that React Native `fetch`, image loading, and most iOS SDKs use. This includes requests from libraries and SDKs inside the app, such as analytics, crash reporting, and update checks from `expo-updates`, not only the requests in your own code.
 
-- Relaunch an app that was already running to record its traffic. For agent-device and Argent sessions, capture may start after the installed app's initial launch. Startup-only requests can be missed, and relaunching does not guarantee that those requests recur.
+- Relaunch an app that was already running to record its traffic. In agent-device and Argent sessions, capture can start after the installed app's initial launch. In that case, capture misses requests that the app sends only at startup. Relaunching the app might not send them again.
 - Apple system apps, such as Safari, are not recorded, and neither are requests made with `URLSession.shared`.
 - Network capture is not available on Android or together with `--egress local`.
 
