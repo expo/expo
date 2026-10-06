@@ -54,37 +54,37 @@ describe('useShouldEnableZoomTransition', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('returns true for valid zoom transition route', () => {
+  it('returns true for valid zoom transition route', async () => {
     const routeKey = 'route-1';
     const route = makeRoute(routeKey);
     const descriptors: NativeStackDescriptorMap = {
       [routeKey]: { options: {} } as NativeStackDescriptor,
     };
 
-    const { result } = renderHookWithDescriptors(route, descriptors);
+    const { result } = await renderHookWithDescriptors(route, descriptors);
 
     expect(result.current).toBe(true);
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it('returns false when route has no zoom params', () => {
+  it('returns false when route has no zoom params', async () => {
     const route = { key: 'route-1', name: 'test', params: {} };
 
-    const { result } = renderHookWithDescriptors(route);
+    const { result } = await renderHookWithDescriptors(route);
 
     expect(result.current).toBe(false);
   });
 
-  it('returns false when route is rendered in preview', () => {
+  it('returns false when route is rendered in preview', async () => {
     mockUseIsPreview.mockReturnValue(true);
     const route = makeRoute('route-1');
 
-    const { result } = renderHookWithDescriptors(route);
+    const { result } = await renderHookWithDescriptors(route);
 
     expect(result.current).toBe(false);
   });
 
-  it('returns false when zoomTransitionScreenId does not match route.key', () => {
+  it('returns false when zoomTransitionScreenId does not match route.key', async () => {
     const route = {
       key: 'route-1',
       name: 'test',
@@ -94,12 +94,12 @@ describe('useShouldEnableZoomTransition', () => {
       },
     };
 
-    const { result } = renderHookWithDescriptors(route);
+    const { result } = await renderHookWithDescriptors(route);
 
     expect(result.current).toBe(false);
   });
 
-  it('warns when link preview navigation targets a non-modal screen', () => {
+  it('warns when link preview navigation targets a non-modal screen', async () => {
     const routeKey = 'route-1';
     const route = makeRoute(routeKey, {
       [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
@@ -108,7 +108,7 @@ describe('useShouldEnableZoomTransition', () => {
       [routeKey]: { options: {} } as any,
     };
 
-    const { result } = renderHookWithDescriptors(route, descriptors);
+    const { result } = await renderHookWithDescriptors(route, descriptors);
 
     expect(result.current).toBe(false);
     expect(consoleWarnSpy).toHaveBeenCalledWith(
@@ -118,7 +118,7 @@ describe('useShouldEnableZoomTransition', () => {
 
   it.each(['fullScreenModal', 'modal', 'formSheet', 'pageSheet'] as const)(
     'does not warn when link preview navigation targets a %s screen',
-    (presentation) => {
+    async (presentation) => {
       const routeKey = 'route-1';
       const route = makeRoute(routeKey, {
         [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
@@ -127,20 +127,20 @@ describe('useShouldEnableZoomTransition', () => {
         [routeKey]: { options: { presentation } } as any,
       };
 
-      const { result } = renderHookWithDescriptors(route, descriptors);
+      const { result } = await renderHookWithDescriptors(route, descriptors);
 
       expect(result.current).toBe(true);
       expect(consoleWarnSpy).not.toHaveBeenCalled();
     }
   );
 
-  it('returns false for null route', () => {
-    const { result } = renderHookWithDescriptors(null);
+  it('returns false for null route', async () => {
+    const { result } = await renderHookWithDescriptors(null);
     expect(result.current).toBe(false);
   });
 
-  it('returns false for undefined route', () => {
-    const { result } = renderHookWithDescriptors(undefined);
+  it('returns false for undefined route', async () => {
+    const { result } = await renderHookWithDescriptors(undefined);
     expect(result.current).toBe(false);
   });
 });

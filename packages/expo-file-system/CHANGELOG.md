@@ -1,14 +1,30 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.3 — 2026-09-28
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Added missing permission checks to upload tasks and to file watchers. ([#50582](https://github.com/expo/expo/pull/50582) by [@barthap](https://github.com/barthap))
+- [iOS] Added a missing permission check when opening a file handle. ([#50583](https://github.com/expo/expo/pull/50583) by [@barthap](https://github.com/barthap))
+- [Android] Check permissions for `content://` URIs served by the app's own file providers. ([#50584](https://github.com/expo/expo/pull/50584) by [@barthap](https://github.com/barthap))
 
 ## 58.0.2 — 2026-09-25
 

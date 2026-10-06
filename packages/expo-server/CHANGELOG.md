@@ -1,14 +1,16 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Preserve bundled, external, and inline stylesheet order across static and server rendering. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
 
-### 🐛 Bug fixes
+## 58.0.2
 
-### 💡 Others
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.1 — 2026-09-21
 

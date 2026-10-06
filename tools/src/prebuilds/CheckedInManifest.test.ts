@@ -8,7 +8,7 @@ import { afterEach, it, type TestContext } from 'node:test';
 import { getExpoRepositoryRootDir } from '../Directories';
 import {
   isFirstPartyPackagePath,
-  resolveCheckedInManifestAsync as resolve,
+  resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
@@ -20,6 +20,15 @@ import type {
 } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { SPMPackage } from './SPMPackage';
+
+/** The fixture package declares a single product, so it has no siblings unless a test adds some. */
+function resolve(
+  root: string,
+  product: SPMProduct,
+  siblingProductNames: ReadonlySet<string> = new Set()
+) {
+  return resolveCheckedInManifestAsync(root, product, siblingProductNames);
+}
 
 const temporaryDirectories: string[] = [];
 const originalRepoRoot = process.env.EXPO_ROOT_DIR;
@@ -1136,6 +1145,77 @@ it('preserves resolved SPM product references and sibling transitive dependencie
     /dependencies: \[\.product\(name: "Remote", package: "remote"\), "Sibling", "React"\]/
   );
 });
+
+it('rejects a config dependency that names nothing the generated package can resolve', async () => {
+  const input = fixture();
+  (input.product.targets[0] as SourceTarget).dependencies = ['Typo'];
+  await rejectsManifest(
+    input,
+    /spm\.config\.json lists dependency "Typo", .*cannot resolve because it is not a regular target.*\. Fix the name, or declare it as a regular target in Package\.swift, or list the dependency in externalDependencies or spmPackages in spm\.config\.json\.$/
+  );
+});
+
+const RECOGNISED_CONFIG_DEPENDENCIES: {
+  kind: string;
+  dependency: string;
+  setup?: () => ReturnType<typeof fixture>;
+  siblingProductNames?: ReadonlySet<string>;
+}[] = [
+  {
+    kind: 'an external dependency',
+    dependency: 'React',
+    setup: () => {
+      const input = fixture();
+      input.product.externalDependencies = ['React'];
+      return input;
+    },
+  },
+  {
+    kind: 'an external product of another package',
+    dependency: 'expo-modules-core/ExpoModulesCore',
+    setup: () => {
+      const input = fixture();
+      input.product.externalDependencies = ['expo-modules-core/ExpoModulesCore'];
+      return input;
+    },
+  },
+  {
+    kind: 'an spmPackages product',
+    dependency: 'Remote',
+    setup: () => withPackages(REMOTE_PACKAGE, [remote()]),
+  },
+  {
+    kind: 'a framework target of the same product',
+    dependency: 'Vendor',
+    setup: () => {
+      const input = fixture();
+      input.product.targets.push({ type: 'framework', name: 'Vendor', path: 'Vendor.xcframework' });
+      return input;
+    },
+  },
+  {
+    kind: 'a sibling product',
+    dependency: 'Sibling',
+    siblingProductNames: new Set(['Sibling']),
+  },
+];
+
+for (const {
+  kind,
+  dependency,
+  setup = fixture,
+  siblingProductNames,
+} of RECOGNISED_CONFIG_DEPENDENCIES) {
+  it(`keeps a config dependency on ${kind}`, async () => {
+    const input = setup();
+    (input.product.targets[0] as SourceTarget).dependencies = [dependency];
+    const [target] = await resolve(input.root, input.product, siblingProductNames);
+    assert.ok(
+      target.dependencies.includes(dependency),
+      `Expected ${JSON.stringify(target.dependencies)} to include "${dependency}"`
+    );
+  });
+}
 
 it('uses manifest resources even when config resources no longer exist', async () => {
   const input = fixture('.target(name: "Main", path: "ios", resources: [.copy("asset.txt")])', {

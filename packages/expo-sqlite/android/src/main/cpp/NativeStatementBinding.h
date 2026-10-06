@@ -47,7 +47,7 @@ private:
   friend HybridBase;
   friend NativeDatabaseBinding;
 
-  exsqlite3_stmt *stmt;
+  exsqlite3_stmt *stmt = nullptr;
 };
 
 } // namespace expo

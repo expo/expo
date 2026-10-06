@@ -219,14 +219,22 @@ fun rememberSelectableDates(selectableDatesRecord: SelectableDatesRecord?): Sele
 
       object : SelectableDates {
         override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-          if (startUtcDayMillis != null && utcTimeMillis < startUtcDayMillis) return false
-          if (endUtcDayMillis != null && utcTimeMillis > endUtcDayMillis) return false
+          if (startUtcDayMillis != null && utcTimeMillis < startUtcDayMillis) {
+            return false
+          }
+          if (endUtcDayMillis != null && utcTimeMillis > endUtcDayMillis) {
+            return false
+          }
           return true
         }
 
         override fun isSelectableYear(year: Int): Boolean {
-          if (startYear != null && year < startYear) return false
-          if (endYear != null && year > endYear) return false
+          if (startYear != null && year < startYear) {
+            return false
+          }
+          if (endYear != null && year > endYear) {
+            return false
+          }
           return true
         }
       }
@@ -443,6 +451,7 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
         Text(props.dismissButtonLabel ?: stringResource(android.R.string.cancel))
       }
     },
+    containerColor = timePickerColors.containerColor,
     text = {
       TimePicker(
         state = state,

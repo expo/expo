@@ -12,6 +12,8 @@ import { getPackageName, getSourceFileImports, getSourceFilesAsync, isNCCBuilt }
  *   dependencies?: Record<string, string>,
  *   devDependencies?: Record<string, string>,
  *   peerDependencies?: Record<string, string>,
+ *   optionalDependencies?: Record<string, string>,
+ *   exports?: unknown,
  * }} PackageJson
  *
  * The three levels of which dangerous dependencies are allowed.
@@ -33,6 +35,7 @@ const DependencyKind = {
   Normal: 'dependencies',
   Dev: 'devDependencies',
   Peer: 'peerDependencies',
+  Optional: 'optionalDependencies',
 };
 
 /** @type {string[]} */
@@ -110,7 +113,7 @@ const WORKSPACE_SPECIFIER = 'workspace:';
 /**
  * Checks whether the package has valid dependency chains for each (external) import.
  *
- * @param {{ packageName: string, packagePath: string, packageJson: PackageJson }} pkg Package to check
+ * @param {{ packageName: string, packagePath: string, packageJson: PackageJson, workspacePackageNames?: Set<string> }} pkg Package to check
  * @param {PackageCheckType} [type] What part of the package needs to be checked
  * @param {DepsLogger} [logger]
  * @returns {Promise<void>}
@@ -128,6 +131,8 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
     );
     throw new Error(`${pkg.packageName} has invalid dependency chains.`);
   }
+
+  validateWorkspaceDependencyProtocols(pkg, logger);
 
   if (isNCCBuilt(pkg.packageJson)) {
     return;
@@ -230,6 +235,98 @@ export async function checkDependenciesAsync(pkg, type = 'package', logger = def
 // `devDependencies`. Metro coupling is being consolidated into `@expo/metro-config`, so this list
 // only shrinks.
 const EXPO_METRO_DEPENDENTS = ['@expo/metro-config', '@expo/cli', 'expo'];
+
+/**
+ * Ensures internal dependency declarations use the workspace protocol so pnpm and Changesets
+ * reliably recognize relationships between packages in this repository.
+ *
+ * @param {{ packageName: string, packageJson: PackageJson, workspacePackageNames?: Set<string> }} pkg
+ * @param {DepsLogger} [logger]
+ */
+export function validateWorkspaceDependencyProtocols(pkg, logger = defaultLogger) {
+  if (!pkg.workspacePackageNames) {
+    return;
+  }
+
+  const invalidDependencies = getDependencies(pkg.packageJson, [
+    DependencyKind.Normal,
+    DependencyKind.Dev,
+    DependencyKind.Peer,
+    DependencyKind.Optional,
+  ]).filter(
+    (dependency) =>
+      dependency.name !== pkg.packageName &&
+      pkg.workspacePackageNames.has(dependency.name) &&
+      !(dependency.kind === DependencyKind.Peer && dependency.versionRange === '*') &&
+      !dependency.versionRange.startsWith(WORKSPACE_SPECIFIER)
+  );
+
+  if (!invalidDependencies.length) {
+    return;
+  }
+
+  logger.warn(
+    `📦 Invalid workspace dependency versions: ${invalidDependencies
+      .map(({ kind, name, versionRange }) => `${kind}.${name} (${versionRange})`)
+      .join(', ')}`
+  );
+  throw new Error(`${pkg.packageName} has internal dependencies without the workspace: protocol.`);
+}
+
+/**
+ * Config plugin files a package can ship at its root, resolved as `<package>/app.plugin`.
+ */
+export const PLUGIN_FILES = ['app.plugin.js', 'app.plugin.cjs', 'app.plugin.mjs', 'app.plugin.ts'];
+
+/**
+ * Tools that resolve a config plugin through Node, rather than finding it on disk, can only reach
+ * `<package>/app.plugin.js` when `package.json:exports` lists it.
+ * @param {{ packageName: string, packageJson: PackageJson }} pkg
+ * @param {string[]} pluginFiles Config plugin files present in the package root
+ * @param {DepsLogger} logger
+ */
+export function validatePluginExports(pkg, pluginFiles, logger = defaultLogger) {
+  const { exports } = pkg.packageJson;
+  if (!pluginFiles.length || exports == null) {
+    return;
+  }
+  const missing = pluginFiles.filter((file) => !isSubpathExported(exports, `./${file}`));
+  if (!missing.length) {
+    return;
+  }
+  logger.warn(
+    `📦 Missing config plugin exports: ${missing.map((file) => `"./${file}"`).join(', ')} (add ${missing.map((file) => `"./${file}": "./${file}"`).join(', ')} to "exports")`
+  );
+  throw new Error(`${pkg.packageName} does not export its config plugin.`);
+}
+
+/**
+ * @param {unknown} exports
+ * @param {string} subpath
+ */
+function isSubpathExported(exports, subpath) {
+  if (typeof exports !== 'object' || exports === null || Array.isArray(exports)) {
+    return false;
+  }
+  const keys = Object.keys(exports).filter((key) => key.startsWith('.'));
+  if (keys.includes(subpath)) {
+    return exports[subpath] !== null;
+  }
+  return keys.some((key) => {
+    const star = key.indexOf('*');
+    if (star < 0) {
+      return false;
+    }
+    const prefix = key.slice(0, star);
+    const suffix = key.slice(star + 1);
+    return (
+      subpath.length >= prefix.length + suffix.length &&
+      subpath.startsWith(prefix) &&
+      subpath.endsWith(suffix) &&
+      exports[key] !== null
+    );
+  });
+}
 
 /**
  * @param {SourceFileImportRef} ref

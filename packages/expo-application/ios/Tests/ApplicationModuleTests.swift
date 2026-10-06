@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 import UIKit
 
@@ -13,7 +14,7 @@ struct ApplicationModuleTests {
   let runtime: ExpoRuntime
 
   init() throws {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
     runtime = try appContext.runtime
     appContext.moduleRegistry.register(
       holder: ModuleHolder(

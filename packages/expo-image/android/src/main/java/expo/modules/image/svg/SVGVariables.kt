@@ -87,7 +87,11 @@ object SVGVariables {
 
   private fun copyThroughFirst(chars: CharArray, start: Int, terminator: String, out: StringBuilder): Int {
     val found = indexOf(chars, terminator, start)
-    val end = if (found == -1) chars.size else found + terminator.length
+    val end = if (found == -1) {
+      chars.size
+    } else {
+      found + terminator.length
+    }
     out.append(chars, start, end - start)
     return end
   }
@@ -99,7 +103,11 @@ object SVGVariables {
     out: StringBuilder
   ): Int {
     val found = indexOfIgnoreCase(chars, "</style", start)
-    val end = if (found == -1) chars.size else found
+    val end = if (found == -1) {
+      chars.size
+    } else {
+      found
+    }
     // A CDATA-wrapped stylesheet is still CSS, but its entities are not decoded by the parser.
     val context = if (indexOf(chars, "<![CDATA[", start) in start until end) {
       Context.CDATA_STYLE_BODY
@@ -118,7 +126,9 @@ object SVGVariables {
     while (index < chars.size) {
       val char = chars[index]
       when {
-        quote != null -> if (char == quote) quote = null
+        quote != null -> if (char == quote) {
+          quote = null
+        }
         char == '"' || char == '\'' -> quote = char
         char == '>' -> return index + 1
       }
@@ -183,7 +193,11 @@ object SVGVariables {
     out.append(chars, start, prefixEnd - start)
     for (attribute in attributes) {
       // A `style` attribute is a CSS declaration list, with the same escaping needs as a `<style>` body.
-      val context = if (attribute.name.equals("style", ignoreCase = true)) Context.STYLE_BODY else Context.ATTRIBUTE
+      val context = if (attribute.name.equals("style", ignoreCase = true)) {
+        Context.STYLE_BODY
+      } else {
+        Context.ATTRIBUTE
+      }
       val value = substituteValue(chars, attribute.valueStart, attribute.valueEnd, variables, context)
       if (value.isEntirelyUnresolved) {
         continue
@@ -334,7 +348,11 @@ object SVGVariables {
 
     while (index < end) {
       // CSS function names are case-insensitive, so `VAR(` and `Var(` resolve like `var(`.
-      val closeParen = if (matchesIgnoringCase(chars, index, "var(")) matchingParen(chars, index + 3, end) else -1
+      val closeParen = if (matchesIgnoringCase(chars, index, "var(")) {
+        matchingParen(chars, index + 3, end)
+      } else {
+        -1
+      }
       if (closeParen == -1) {
         out.append(chars[index])
         index += 1
@@ -373,7 +391,17 @@ object SVGVariables {
     depth: Int
   ): Resolution {
     val commaIndex = topLevelCommaIndex(chars, start, end)
-    val name = String(chars, start, (if (commaIndex == -1) end else commaIndex) - start).trim()
+    val name = String(
+      chars,
+      start,
+      (
+        if (commaIndex == -1) {
+          end
+        } else {
+          commaIndex
+        }
+        ) - start
+    ).trim()
 
     if (!name.startsWith("--")) {
       return Resolution.Verbatim

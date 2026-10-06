@@ -1,14 +1,38 @@
 # Changelog
 
-## Unpublished
+## 58.0.15
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
 
-### 🐛 Bug fixes
+## 58.0.14
 
-### 💡 Others
+### Patch Changes
+
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+
+## 58.0.13
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.12
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964))
+  - @expo/config-plugins@58.0.4
+  - @expo/config-types@58.0.2
+  - @expo/plist@0.10.1
+
+## 58.0.11 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.10 — 2026-09-25
 

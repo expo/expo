@@ -225,6 +225,11 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
 }
 
 extension ArrayBuffer: JavaScriptDecodable, JavaScriptEncodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   // MARK: - JavaScriptDecodable
   @JavaScriptActor
   @inlinable

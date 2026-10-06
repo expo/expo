@@ -35,6 +35,40 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `host function returns a fresh string`() throws {
+    let fn = runtime.createFunction("greet") { [runtime] _, _ in
+      return JavaScriptValue(runtime, "hello")
+    }
+    runtime.global().setProperty("greet", value: fn)
+    #expect(try runtime.eval("greet() + ' ' + greet()").getString() == "hello hello")
+  }
+
+  @Test
+  func `host function returns a shared value repeatedly`() throws {
+    // The same instance is returned on every call, so the host call must copy the engine handle
+    // instead of moving it out: the captured value has to stay valid for the next call.
+    let shared = JavaScriptValue(runtime, "shared")
+    let fn = runtime.createFunction("shared") { _, _ in
+      return shared
+    }
+    runtime.global().setProperty("shared", value: fn)
+    #expect(try runtime.eval("shared() + ' ' + shared()").getString() == "shared shared")
+    #expect(shared.getString() == "shared")
+  }
+
+  @Test
+  func `host function returns an object it keeps`() throws {
+    let kept = runtime.createObject()
+    kept.setProperty("answer", value: 42)
+    let fn = runtime.createFunction("kept") { _, _ in
+      return kept.asValue()
+    }
+    runtime.global().setProperty("kept", value: fn)
+    #expect(try runtime.eval("kept().answer + kept().answer").getInt() == 84)
+    #expect(kept.getProperty("answer").getInt() == 42)
+  }
+
+  @Test
   func `evaluate script`() throws {
     #expect(try runtime.eval("'hello' + ' ' + 'world'").getString() == "hello world")
     #expect(try runtime.eval("(function() {})").isFunction() == true)
@@ -56,6 +90,23 @@ struct JavaScriptRuntimeTests {
   func `evaluate to promise`() async throws {
     let result = try await runtime.evalAsync("'hello'")
     #expect(result.getString() == "hello")
+  }
+
+  @Test
+  func `evaluate to promise on the JavaScript thread when called from another thread`() async throws {
+    // The test body runs on a cooperative thread, not on the scheduler's thread. Evaluating there
+    // would run JavaScript concurrently with the work the scheduler runs, such as settling a promise.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    try await testRuntime.scheduler.runIsolated {
+      let isOnJavaScriptThread = runtime.createFunction("isOnJavaScriptThread") { _, _ in
+        return JavaScriptValue(runtime, runtime.isOnJavaScriptThread())
+      }
+      runtime.global().setProperty("isOnJavaScriptThread", value: isOnJavaScriptThread.asValue())
+    }
+
+    let result = try await runtime.evalAsync("Promise.resolve(isOnJavaScriptThread())")
+    #expect(result.getBool() == true)
   }
 
   @Test
@@ -136,11 +187,11 @@ struct JavaScriptRuntimeTests {
     }
 
     await scheduler.run {
-      nonisolated(unsafe) var didRunInline = false
+      let didRunInline = InlineRunFlag()
       runtime.runOrSchedule {
-        didRunInline = true
+        didRunInline.value = true
       }
-      #expect(didRunInline)
+      #expect(didRunInline.value)
     }
 
     await withCheckedContinuation { continuation in
@@ -218,6 +269,31 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `host object getter returns strings`() throws {
+    // `fresh` is created per access and gets moved into the result; `shared` is the same instance on
+    // every access and has to be copied so it stays valid.
+    let shared = JavaScriptValue(runtime, "shared")
+    let hostObject = runtime.createHostObject(
+      get: { [runtime] name in
+        switch name {
+        case "fresh":
+          return JavaScriptValue(runtime, "fresh")
+        case "shared":
+          return shared
+        default:
+          return .undefined
+        }
+      },
+      getPropertyNames: { ["fresh", "shared"] }
+    )
+    runtime.global().setProperty("host", value: hostObject)
+
+    #expect(try runtime.eval("host.fresh + host.fresh").getString() == "freshfresh")
+    #expect(try runtime.eval("host.shared + host.shared").getString() == "sharedshared")
+    #expect(shared.getString() == "shared")
+  }
+
+  @Test
   func `host object set property`() {
     var storedValue: Int?
 
@@ -278,6 +354,46 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval("globalThis.hostObj.greeting")
 
     #expect(result.getString() == "hello")
+  }
+
+  @Test
+  func `host object receives non-ASCII property names`() throws {
+    var receivedNames: [String] = []
+    var setNames: [String] = []
+
+    let hostObject = runtime.createHostObject(
+      get: { name in
+        receivedNames.append(name)
+        return .undefined
+      },
+      set: { name, _ in
+        setNames.append(name)
+      }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+    _ = try runtime.eval("globalThis.hostObj['właściwość']; globalThis.hostObj['🚀'] = 1")
+
+    #expect(receivedNames == ["właściwość"])
+    #expect(setNames == ["🚀"])
+  }
+
+  @Test
+  func `host object receives long property names`() throws {
+    var receivedName: String?
+    let longName = String(repeating: "a", count: 300)
+
+    let hostObject = runtime.createHostObject(
+      get: { name in
+        receivedName = name
+        return .undefined
+      }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+    _ = try runtime.eval("globalThis.hostObj['\(longName)']")
+
+    #expect(receivedName == longName)
   }
 
   @Test
@@ -1047,6 +1163,13 @@ struct JavaScriptRuntimeTests {
     let survives = weakObject.lock()?.getProperty("survives").getBool()
     #expect(survives == true)
   }
+}
+
+/// Records whether a `runOrSchedule` block ran. A class instead of a `nonisolated(unsafe) var` captured
+/// by the block, which Swift 6.2 rejects as a data race. Safe without synchronization: the test only
+/// reads it after the block ran inline on the same thread.
+private final class InlineRunFlag: @unchecked Sendable {
+  var value = false
 }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React

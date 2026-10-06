@@ -1,14 +1,57 @@
 # Changelog
 
-## Unpublished
+## 58.0.13
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- [iOS] Add `ArrangementView` component and `arrangementViewStyle`, `splitArrangementLayoutRatio`, `splitArrangementLayoutSize`, `splitArrangementFixedLayoutSize`, and `overlayArrangementEdge` modifiers. ([#50893](https://github.com/expo/expo/pull/50893) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix `TimePickerDialog` ignoring `elementColors.containerColor`. ([#51116](https://github.com/expo/expo/pull/51116) by [@expo-bot](https://github.com/expo-bot))
+- [iOS][tvOS] Fix the tvOS build failing to compile with `'inlineLarge' is unavailable in tvOS` when `@expo/ui` is linked. `ToolbarTitleDisplayMode.inlineLarge` is unavailable on tvOS, but the `inlineLarge` case of the `toolbarTitleDisplayMode` modifier was only gated behind an OS version check that listed `tvOS 18.0`, so it was compiled into the tvOS slice. It is now guarded by platform and returns `nil` on tvOS. The same check also required iOS 18.0 / macOS 15.0, so `inlineLarge` silently fell back to `automatic` on iOS 17 and macOS 14 even though it is available there; it now applies on those versions. ([#51007](https://github.com/expo/expo/pull/51007) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] `onHingeChange` also accepts a callback from `useWorkletCallback`, which runs on the UI thread to track the hinge angle without a JS-thread round trip. ([#50910](https://github.com/expo/expo/pull/50910) by [@huntie](https://github.com/huntie))
+- [iOS] Added the `onHingeChange` modifier, which reports the device hinge angle and status on iPhone Duo (iOS 27.1+). ([#50909](https://github.com/expo/expo/pull/50909) by [@huntie](https://github.com/huntie))
+- Added the `useWorkletCallback` hook, which wraps a worklet function so a modifier that accepts one can run it synchronously on the UI thread. ([#51108](https://github.com/expo/expo/pull/51108) by [@huntie](https://github.com/huntie))
+
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Added the `smooth`, `snappy`, and `bouncy` spring presets to `Animation`. Like their SwiftUI counterparts, they take an optional `duration` and `extraBounce`. ([#50984](https://github.com/expo/expo/pull/50984) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Fixed `delay()` and `repeat()` modifying the animation they are called on. Chaining from a shared animation, such as `Animation.default` or one stored in a constant, no longer changes that animation everywhere else it is used. ([#50927](https://github.com/expo/expo/pull/50927) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Added the `navigationBarTitleDisplayMode` and `toolbarTitleDisplayMode` modifiers for controlling navigation and toolbar title presentation. ([#50687](https://github.com/expo/expo/pull/50687) by [@0x5bfa](https://github.com/0x5bfa))
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- [Android] Fix an intermittent `performMeasureAndLayout called during measure layout` crash that tore down the ReactHost when a `Host` with `matchContents` was measured while react-native-reanimated was active. The `onLayoutContent` event is now posted after the measure pass instead of emitted inside it. ([#49933](https://github.com/expo/expo/pull/49933) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.10
+
+### Patch Changes
+
+- [android] Fix `community/picker` `Picker` not updating its displayed label after a selection or a `selectedValue` change. ([#50801](https://github.com/expo/expo/pull/50801) by [@RaddishIoW](https://github.com/RaddishIoW))
+- [web] Fix `ListItem` always showing a pointer cursor, even without an `onPress`, because React Native Web's `Pressable` applies one unconditionally. A `ListItem` with no `onPress` now shows the default cursor instead of misleadingly looking clickable. ([#49986](https://github.com/expo/expo/pull/49986) by [@timheilman](https://github.com/timheilman))
+- [iOS][Android] `RNHostView` `matchContents` accepts `{ horizontal, vertical }`, so hosted content can take its width from the parent and its height from the content. ([#50674](https://github.com/expo/expo/pull/50674) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `preferredColorScheme` modifier, which sets the color scheme of a presentation such as `BottomSheet`, including its background. ([#50851](https://github.com/expo/expo/pull/50851) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Added `LazyVStack.ForEach` and `LazyHStack.ForEach`, which render rows from `data` and `keyExtractor` with a `children` function: `{({ item, index }) => <Row item={item} />}`. Rows are recycled from a small pool around the visible range, so large stacks only render the rows near the viewport. Set `recycling={false}` to render every row. ([#50579](https://github.com/expo/expo/pull/50579) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [android] Fix `Switch` label rendering one letter per line inside a `Host` with `matchContents`. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+- [android] Added `IntrinsicSize` support to the `width` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
+
+## 58.0.8 — 2026-09-28
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
-
-### 💡 Others
+- [iOS] Export the `FrameAlignment` type for the `alignment` parameter of `frame()`. ([#50702](https://github.com/expo/expo/pull/50702) by [@amandeepmittal](https://github.com/amandeepmittal))
+- [Android] Add `contentDescription` to the `semantics` modifier, so TalkBack can announce a label other than the visible content. ([#50688](https://github.com/expo/expo/pull/50688) by [@enavermate](https://github.com/enavermate))
+- Added `get()` and `set()` to the universal `ObservableState` type and to the web implementation of `useNativeState`, as React Compiler-compliant alternatives to `.value`. ([#50684](https://github.com/expo/expo/pull/50684) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ## 58.0.7 — 2026-09-25
 

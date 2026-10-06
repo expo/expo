@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.apollographql.apollo.api.ApolloResponse
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
@@ -26,6 +28,7 @@ import host.exp.exponent.graphql.BranchDetailsQuery
 import host.exp.exponent.graphql.BranchesForProjectQuery
 import host.exp.exponent.graphql.Home_AccountAppsQuery
 import host.exp.exponent.graphql.Home_AccountSnacksQuery
+import host.exp.exponent.graphql.Home_CurrentUserActorQuery
 import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.home.auth.AuthRequestType
@@ -38,6 +41,9 @@ import host.exp.exponent.services.ApolloClientService
 import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
 import host.exp.exponent.services.SessionRepository
+import host.exp.exponent.services.SessionsState
+import host.exp.exponent.services.isRevokedSession
+import host.exp.exponent.services.toSessionProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,9 +56,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
@@ -63,10 +72,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import okhttp3.OkHttpClient
 import java.util.Date
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.typeOf
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
-import kotlin.time.toJavaDuration
 
 enum class DevSessionPlatform {
   Native,
@@ -118,8 +125,6 @@ data class FeedbackBody(
   val metadata: Map<String, String?>
 )
 
-fun Int.toJDuration(unit: DurationUnit) = this.toDuration(unit).toJavaDuration()
-
 class HomeAppViewModelFactory(
   private val exponentHistoryService: ExponentHistoryService,
   private val expoViewKernel: ExpoViewKernel,
@@ -168,9 +173,9 @@ class HomeAppViewModel(
 
   private val client = OkHttpClient
     .Builder()
-    .connectTimeout(10.toJDuration(DurationUnit.SECONDS))
-    .readTimeout(10.toJDuration(DurationUnit.SECONDS))
-    .writeTimeout(10.toJDuration(DurationUnit.SECONDS))
+    .connectTimeout(10, TimeUnit.SECONDS)
+    .readTimeout(10, TimeUnit.SECONDS)
+    .writeTimeout(10, TimeUnit.SECONDS)
     .build()
 
   val recents = exponentHistoryService.history
@@ -201,23 +206,37 @@ class HomeAppViewModel(
   private val restClient =
     RESTApiClient(sessionRepository = sessionRepository)
 
+  private val sessionStore get() = sessionRepository.sessionStore
+  val sessions: StateFlow<SessionsState> = sessionRepository.sessionStore.state
+
   val account = refreshableFlow(
     scope = viewModelScope,
-    fetcher = { service.currentUser() },
+    fetcher = {
+      val sessionId = sessionStore.activeSession?.id
+      service.currentUser().map { response -> recordCurrentUser(sessionId, response) }
+    },
     initialValue = null
   )
 
-  private val selectedAccountId = persistedMutableStateFlow(
-    scope = viewModelScope,
-    readValue = { sessionRepository.getSelectedAccountId() },
-    writeValue = { value ->
-      if (value == null) {
-        sessionRepository.clearSelectedAccountId()
-      } else {
-        sessionRepository.saveSelectedAccountId(value)
-      }
+  private fun recordCurrentUser(
+    sessionId: String?,
+    response: ApolloResponse<Home_CurrentUserActorQuery.Data>
+  ): CurrentUserActorData? {
+    if (sessionId == null || sessionStore.activeSession?.id != sessionId) {
+      return null
     }
-  )
+    val actor = response.data?.meActor?.currentUserActorData
+    when {
+      actor != null -> {
+        val profile = actor.toSessionProfile()
+        if (sessionStore.updateProfile(sessionId, profile)) {
+          Toast.makeText(getApplication<Application>(), "You're already signed in as ${profile.username}.", Toast.LENGTH_SHORT).show()
+        }
+      }
+      response.isRevokedSession() -> sessionStore.remove(sessionId)
+    }
+    return actor
+  }
 
   val selectedTheme = persistedMutableStateFlow(
     scope = viewModelScope,
@@ -263,33 +282,23 @@ class HomeAppViewModel(
     )
   }
 
-  private val remoteSnackSessions: StateFlow<List<DevSession>> = flow {
-    while (true) {
-      try {
-        val sessions = restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
-          "development-sessions",
-          typeOf<DevSessionResponse>()
+  private val remoteSnackSessions: StateFlow<List<DevSession>> = pollDevSessions {
+    restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
+      "development-sessions",
+      typeOf<DevSessionResponse>()
+    )
+      .data
+      .map { session ->
+        session.copy(
+          // The `development-sessions` not always contains source, but we can infer it based on the URL
+          source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
+            DevSessionSource.Snack
+          } else {
+            DevSessionSource.Desktop
+          }
         )
-        emit(
-          sessions
-            .data
-            .map { session ->
-              session.copy(
-                // The `development-sessions` not always contains source, but we can infer it based on the URL
-                source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
-                  DevSessionSource.Snack
-                } else {
-                  DevSessionSource.Desktop
-                }
-              )
-            }
-            .filter { session -> session.source == DevSessionSource.Snack }
-        )
-      } catch (_: Exception) {
-        emit(emptyList())
       }
-      delay(3000)
-    }
+      .filter { session -> session.source == DevSessionSource.Snack }
   }.stateIn(
     scope = viewModelScope,
     started = SharingStarted.WhileSubscribed(5000),
@@ -337,16 +346,12 @@ class HomeAppViewModel(
   }
 
   val selectedAccount: StateFlow<CurrentUserActorData.Account?> =
-    selectedAccountId.combine(account.dataFlow) { id, currentUserData ->
+    sessions.combine(account.dataFlow) { state, currentUserData ->
       if (currentUserData == null) {
         return@combine null
       }
-
-      if (id == null) {
-        return@combine currentUserData.accounts.firstOrNull()
-      }
-
-      currentUserData.accounts.find { it.id == id }
+      val selectedId = state.activeSession?.selectedAccountId
+      currentUserData.accounts.find { it.id == selectedId } ?: currentUserData.accounts.firstOrNull()
     }.stateIn(
       scope = viewModelScope,
       started = SharingStarted.WhileSubscribed(5000),
@@ -403,8 +408,10 @@ class HomeAppViewModel(
   }
 
   fun onNewAuthSession(sessionSecret: String) {
-    sessionRepository.saveSessionSecret(sessionSecret)
-    account.refresh()
+    if (sessionStore.activeSession != null) {
+      clearRecents()
+    }
+    sessionStore.add(sessionSecret)
   }
 
   private val nsdPreferencesListener: () -> Unit = {
@@ -412,6 +419,16 @@ class HomeAppViewModel(
   }
 
   init {
+    sessions
+      .map { it.activeSessionId }
+      .distinctUntilChanged()
+      .drop(1)
+      .onEach {
+        service.clearCache()
+        account.refresh()
+      }
+      .launchIn(viewModelScope)
+
     homeActivityEvents
       .onEach { event ->
         when (event) {
@@ -472,17 +489,38 @@ class HomeAppViewModel(
     )
 
   fun logout() {
-    sessionRepository.clearSessionSecret()
-    account.refresh()
-//        TODO: is there a way to logout browser session too?
+    sessionStore.activeSession?.let { sessionStore.remove(it.id) }
+    clearRecents()
+  }
+
+  fun logout(sessionId: String) {
+    if (sessionId == sessionStore.activeSession?.id) {
+      logout()
+    } else {
+      removeSession(sessionId)
+    }
+  }
+
+  fun switchSession(id: String) {
+    clearRecents()
+    sessionStore.activate(id)
+  }
+
+  fun removeSession(id: String) {
+    sessionStore.remove(id)
   }
 
   fun clearRecents() {
     exponentHistoryService.clearHistory()
   }
 
-  fun selectAccount(accountId: String?) {
-    selectedAccountId.value = accountId
+  fun selectAccount(accountId: String, sessionId: String) {
+    sessionStore.selectAccount(accountId, sessionId)
+    if (sessionId == sessionStore.activeSession?.id) {
+      clearRecents()
+    } else {
+      switchSession(sessionId)
+    }
   }
 
   fun sendFeedback(feedback: String, email: String) {

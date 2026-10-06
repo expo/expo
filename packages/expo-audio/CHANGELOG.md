@@ -1,14 +1,30 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS][Android] Fixed recorders that the user paused starting to record again when the app returned to the foreground. On iOS, this also happened to recorders that were only prepared, and when an audio interruption ended. Now only recordings that the system paused are resumed. ([#51048](https://github.com/expo/expo/pull/51048) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 🐛 Bug fixes
+## 58.0.5
 
-### 💡 Others
+### Patch Changes
+
+- [Android] Fixed `prepareToRecordAsync` rejecting when `allowsBackgroundRecording` is `true` and the notification permission is not granted ([#50705](https://github.com/expo/expo/issues/50705)). ([#50968](https://github.com/expo/expo/pull/50968) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fixed an uncaught promise rejection, and `playing` staying `true`, when the browser blocks playback before the user interacts with the page. The player now reports the rejection in `error` on its status ([#36264](https://github.com/expo/expo/issues/36264)). ([#50972](https://github.com/expo/expo/pull/50972) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `prepareToRecordAsync()` hanging forever when background recording is enabled and the recording service never connects. The binding timeout is now started, and the promise also rejects when the React context is lost. ([#50883](https://github.com/expo/expo/pull/50883) by [@Cedric921](https://github.com/Cedric921))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.2 — 2026-09-22
 

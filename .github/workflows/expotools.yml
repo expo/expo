@@ -4,17 +4,13 @@ on:
   workflow_dispatch: {}
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/expotools.yml
       - tools/**
       - packages/**/spm.config.json
       - packages/**/Package.swift
   pull_request:
-    paths:
-      - .github/workflows/expotools.yml
-      - tools/**
-      - packages/**/spm.config.json
-      - packages/**/Package.swift
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -50,12 +46,12 @@ jobs:
       - name: 🛡️ Check SwiftPM manifest collateral
         env:
           EVENT_NAME: ${{ github.event_name }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           PUSH_BEFORE_SHA: ${{ github.event.before }}
         run: |
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            # Checkout uses the PR merge commit, so its merge base is the base tip.
-            base=$(git merge-base "$PR_BASE_SHA" HEAD)
+            # Checkout uses the PR merge commit; its first parent is the base tip it merged into.
+            # pull_request.base.sha can be older, which would count newer base commits as the PR's.
+            base=$(git rev-parse HEAD^1)
           elif [[ "$EVENT_NAME" == "push" && -n "$PUSH_BEFORE_SHA" && "$PUSH_BEFORE_SHA" != "0000000000000000000000000000000000000000" ]]; then
             # Compare the whole push; an unavailable force-push baseline fails the gate.
             base="$PUSH_BEFORE_SHA"

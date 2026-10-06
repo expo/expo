@@ -61,19 +61,27 @@ it('runs `npx expo start --help`', async () => {
         
         -m, --host <string>             Dev server hosting type. Default: lan
                                         lan: Use the local network
-                                        tunnel: Use any network by tunnel through ngrok
+                                        tunnel: Use any network through an Expo tunnel
                                         localhost: Connect to the dev server over localhost
-        --tunnel                        Same as --host tunnel
+        --tunnel [provider]             Use a tunnel. Default: expo (Legacy option: ngrok)
         --lan                           Same as --host lan
         --localhost                     Same as --host localhost
         
         --offline                       Skip network requests and use anonymous manifest signatures
         --https                         Start the dev server with https protocol. Deprecated in favor of --tunnel
         --scheme <scheme>               Custom URI protocol to use when launching an app
-        -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
+        -p, --port <number>             Port to start the dev server on (does not apply to web). Default: 8081
         
         --private-key-path <path>       Path to private key for code signing. Required to sign development manifests when the project is configured with an expo-updates code signing certificate.
         -h, --help                      Usage info
+
+      AGENTS:
+
+      Setting CI=1 turns off file watching and Fast Refresh, so code changes won't reach
+      the app until the dev server restarts. Don't set it for local development.
+
+      Run without the interactive UI and keep Fast Refresh by redirecting output:
+        $ npx expo start > expo.log 2>&1
     "
   `);
 });

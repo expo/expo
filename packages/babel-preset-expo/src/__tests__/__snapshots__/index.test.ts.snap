@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`"lazyImports" option accepts ["inline-comp", "./inline-func", "../inline-func-with-side-effects.fx.ts"] 1`] = `
 "var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports,"__esModule",{value:true});exports.default=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _callSuper2=_interopRequireDefault(require("@babel/runtime/helpers/callSuper"));var _inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits"));var _vectorIcons=require("@expo/vector-icons");

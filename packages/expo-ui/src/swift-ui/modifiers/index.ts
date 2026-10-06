@@ -18,6 +18,7 @@ import {
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
+import { onHingeChange } from './hingeObservation';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
@@ -106,7 +107,11 @@ export const matchedGeometryEffect = (
  */
 export const geometryGroup = () => createModifier('geometryGroup', {});
 
-type FrameAlignment =
+/**
+ * The alignment of a view inside the frame that `frame()` creates.
+ * Most values have no visible effect when the frame is the same size as the view.
+ */
+export type FrameAlignment =
   | 'center'
   | 'leading'
   | 'trailing'
@@ -821,6 +826,16 @@ export const scrollDismissesKeyboard = (
  */
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
+
+/**
+ * Sets the preferred color scheme for the nearest enclosing presentation, such as a `BottomSheet`,
+ * including its background. The value overrides the device's light or dark appearance for that
+ * presentation.
+ * @param colorScheme - The preferred color scheme, or `null` to indicate no preference.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/preferredcolorscheme(_:)).
+ */
+export const preferredColorScheme = (colorScheme: 'light' | 'dark' | null) =>
+  createModifier('preferredColorScheme', { colorScheme });
 
 /**
  * Disables or enables clipping of a scrollable view's content to its bounds.
@@ -1748,6 +1763,41 @@ export const resizable = (
  */
 export const navigationTitle = (title: string) => createModifier('navigationTitle', { title });
 
+/**
+ * Title display modes for the `navigationBarTitleDisplayMode` modifier.
+ * @platform ios
+ */
+export type NavigationBarTitleDisplayMode = 'automatic' | 'inline' | 'large';
+
+/**
+ * Configures the title display mode for a navigation bar.
+ * @param displayMode - The style to use for displaying the navigation bar title.
+ * @platform ios
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationbartitledisplaymode(_:)).
+ */
+export const navigationBarTitleDisplayMode = (displayMode: NavigationBarTitleDisplayMode) =>
+  createModifier('navigationBarTitleDisplayMode', { displayMode });
+
+/**
+ * Title display modes for the `toolbarTitleDisplayMode` modifier. On tvOS, `large` and
+ * `inlineLarge` have no effect. On macOS, `large` has no effect.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ */
+export type ToolbarTitleDisplayMode = 'automatic' | 'inline' | 'inlineLarge' | 'large';
+
+/**
+ * Configures the title display mode for a toolbar.
+ * @param mode - The style to use for displaying the toolbar title.
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @platform macos 14.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/toolbartitledisplaymode(_:)).
+ */
+export const toolbarTitleDisplayMode = (mode: ToolbarTitleDisplayMode) =>
+  createModifier('toolbarTitleDisplayMode', { mode });
+
 // =============================================================================
 // Type Definitions
 // =============================================================================
@@ -1835,6 +1885,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof preferredColorScheme>
   | ReturnType<typeof scrollClipDisabled>
   | ReturnType<typeof scrollIndicators>
   | ReturnType<typeof scrollEdgeEffectStyle>
@@ -1846,6 +1897,7 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollPosition>
   | ReturnType<typeof onScrollPhaseChange>
   | NonNullable<ReturnType<typeof useScrollGeometryChange>>
+  | ReturnType<typeof onHingeChange>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1893,7 +1945,9 @@ export type BuiltInModifier =
   | ReturnType<typeof widgetURL>
   | ReturnType<typeof activityBackgroundTint>
   | ReturnType<typeof containerBackground>
-  | ReturnType<typeof navigationTitle>;
+  | ReturnType<typeof navigationTitle>
+  | ReturnType<typeof navigationBarTitleDisplayMode>
+  | ReturnType<typeof toolbarTitleDisplayMode>;
 
 /**
  * Main ViewModifier type that supports both built-in and 3rd party modifiers.
@@ -1937,6 +1991,7 @@ export * from './pickerStyle';
 export * from './menuOrder';
 export * from './tabViewModifiers';
 export * from './navigationModifiers';
+export * from './arrangementModifiers';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
 export * from './gaugeStyle';
@@ -1946,10 +2001,12 @@ export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
 export * from './symbolEffect';
 export * from './scrollObservation';
+export * from './hingeObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,
   SpringAnimationParams,
   InterpolatingSpringAnimationParams,
+  SpringPresetAnimationParams,
   ChainableAnimationType,
 } from './animation/types';

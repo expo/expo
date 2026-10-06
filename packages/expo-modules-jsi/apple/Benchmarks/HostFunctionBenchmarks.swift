@@ -87,6 +87,47 @@ extension JSIBenchmarks {
     }
   }
 
+  // The integer codables, as bindings call them: `Int.decode` for an `Int` argument and `Int?.decode`
+  // for an optional one.
+
+  @Test
+  func `host function adding two Ints`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("add") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try Int.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try Int.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try Int.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(3, 38); })"
+      ).getFunction()
+      try benchmark("host function: add two Ints", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `host function adding two optional Ints`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("add") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try Int?.decode(arguments.unownedValue(at: 0), in: runtime) ?? 0
+        let b = try Int?.decode(arguments.unownedValue(at: 1), in: runtime) ?? 0
+        return try Int.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(3, 38); })"
+      ).getFunction()
+      try benchmark("host function: add two optional Ints", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
   // MARK: - Unowned-this form with string arguments
 
   @Test

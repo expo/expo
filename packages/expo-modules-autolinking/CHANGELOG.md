@@ -1,8 +1,35 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
+## 58.0.8
+
+### Patch Changes
+
+- [iOS] Fix `pod install` writing a damaged `Pods.xcodeproj` when objects created in a Podfile `post_install` hook or by Expo reuse UUIDs already in the project. ([#50946](https://github.com/expo/expo/pull/50946) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Keep checkout paths out of the Swift compilation cache key so modules importing ExpoModulesCore can reuse cached compilation results across checkouts and worktrees. ([#50354](https://github.com/expo/expo/pull/50354) by [@janicduplessis](https://github.com/janicduplessis))
+
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Warn about incomplete `spmPackages` entries, which the `prebuilt-metadata` document leaves out. ([#50549](https://github.com/expo/expo/pull/50549) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Load the Swift macros plugin from `expo-modules-macros` and its renamed `ExpoModulesMacros` binary. ([#50680](https://github.com/expo/expo/pull/50680) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/require-utils@58.0.2
+
+## 58.0.5 — 2026-09-28
 
 ### 🎉 New features
 
@@ -10,7 +37,7 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Derive `kotlinVersion` and `kspVersion` from the Kotlin Gradle plugin the app actually loads instead of the version catalog alone. ([#50455](https://github.com/expo/expo/pull/50455) by [@lukmccall](https://github.com/lukmccall))
 
 ## 58.0.4 — 2026-09-25
 

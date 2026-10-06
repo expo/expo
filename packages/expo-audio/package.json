@@ -1,6 +1,6 @@
 {
   "name": "expo-audio",
-  "version": "58.0.2",
+  "version": "58.0.6",
   "description": "A cross-platform audio library for React Native and Expo apps.",
   "keywords": [
     "android",
@@ -22,18 +22,21 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
+    "test": "jest",
     "format": "expo-module format",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
@@ -45,6 +48,9 @@
     "expo-asset": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   },
   "title": "Expo Audio"
 }

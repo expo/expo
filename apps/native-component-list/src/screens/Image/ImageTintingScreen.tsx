@@ -29,6 +29,7 @@ const IMAGES: ImageSource[] = [
   'https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg',
   'https://img.icons8.com/?size=512&id=121173&format=png',
   require('../../../assets/images/pin.svg'),
+  require('../../../assets/images/current-color.svg'),
 ];
 
 export default function ImageTintingScreen() {
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
   group: {
     flex: 1,
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 20,
   },
   image: {

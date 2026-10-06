@@ -43,6 +43,7 @@ describe('iOS Updates config', () => {
             testheader: 'test',
           },
           enableBsdiffPatchSupport: true,
+          maxUpdatesToKeep: 5,
         },
       },
       {} as any,
@@ -62,6 +63,7 @@ describe('iOS Updates config', () => {
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
       EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
       EXUpdatesEnableBsdiffPatchSupport: true,
+      EXUpdatesMaxUpdatesToKeep: 5,
     });
   });
 
@@ -90,4 +92,13 @@ describe('iOS Updates config', () => {
     );
     expect(omitted).not.toHaveProperty('EXUpdatesExcludeFromBackup');
   });
+});
+
+it('removes a stale retention setting when the option is omitted', async () => {
+  const config = await Updates.setUpdatesConfigAsync(
+    '/app',
+    { slug: 'my-app', runtimeVersion: '1.0.0', updates: { url: 'https://u.expo.dev/x' } },
+    { EXUpdatesMaxUpdatesToKeep: 5 }
+  );
+  expect(config).not.toHaveProperty('EXUpdatesMaxUpdatesToKeep');
 });

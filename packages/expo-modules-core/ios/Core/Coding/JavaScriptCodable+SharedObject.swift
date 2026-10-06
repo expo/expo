@@ -7,6 +7,11 @@ import ExpoModulesJSI
 // object's structure like `Record`.
 
 extension SharedObject: JavaScriptDecodable, JavaScriptEncodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self

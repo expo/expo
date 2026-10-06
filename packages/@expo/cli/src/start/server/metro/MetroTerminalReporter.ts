@@ -419,7 +419,7 @@ export class MetroTerminalReporter extends TerminalReporter {
             } else {
               if (!s.value.isFallback) {
                 usefulStackCount++;
-              } else {
+              } else if (!(parsed[index] as { message: string }).message) {
                 fallbackIndices.push(index);
               }
               return s.value.stack;

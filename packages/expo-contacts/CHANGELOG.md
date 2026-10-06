@@ -1,14 +1,28 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 🐛 Bug fixes
+## 58.0.5
 
-### 💡 Others
+### Patch Changes
+
+- Fix `Contact.presentCreateForm` on iOS opening the read-only contact view instead of the new-contact editor, and resolve it with a boolean instead of `null`. ([#50957](https://github.com/expo/expo/pull/50957) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.2 — 2026-09-21
 

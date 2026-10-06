@@ -108,7 +108,7 @@ export function ComponentExample({ title, src, darkSrc, alt, android, ios, child
           <SnippetContent className="flex-1 rounded-none border-0 p-0">{children}</SnippetContent>
         </div>
         {image && (
-          <div className="flex w-56 shrink-0 flex-col items-center justify-center gap-3 border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
+          <div className="flex w-56 shrink-0 flex-col items-center gap-3 border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
             <PlatformTabs available={available} active={active} select={select} />
             <div
               className="relative w-full max-w-48 border border-default bg-[#101012] p-0.75 shadow-xs dark:bg-[#3c3c40]"
