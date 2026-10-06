@@ -1092,6 +1092,45 @@ describe('group expansion', () => {
 });
 
 describe('redirects', () => {
+  it.each(['/_layout', '/nested/_layout'])(
+    'throws when a redirect destination is a layout: %s',
+    (destination) => {
+      expect(() =>
+        getRoutes(
+          inMemoryContext({
+            _layout: () => null,
+            'nested/_layout': () => null,
+            'nested/index': () => null,
+            other: () => null,
+          }),
+          {
+            redirects: [{ source: '/other', destination } as RedirectConfig],
+            preserveRedirectAndRewrites: true,
+          }
+        )
+      ).toThrow(
+        `The redirect destination "${destination}" is a layout. Layouts can't be redirect destinations. Use a route as the destination instead.`
+      );
+    }
+  );
+
+  it('throws when a redirect source is a layout', () => {
+    expect(() =>
+      getRoutes(
+        inMemoryContext({
+          './_layout': () => null,
+          './other': () => null,
+        }),
+        {
+          redirects: [{ source: '/_layout', destination: '/other' } as RedirectConfig],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toThrow(
+      'The redirect source "_layout" is a layout. Layouts can\'t be redirect sources. Use a route as the source instead.'
+    );
+  });
+
   it('redirects from an api route without replacing its module', () => {
     const apiModule = { default: () => null };
     const routes = getRoutes(

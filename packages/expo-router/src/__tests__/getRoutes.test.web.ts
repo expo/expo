@@ -3,6 +3,45 @@ import type { RewriteConfig } from '../getRoutesCore';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 describe('rewrites', () => {
+  it.each(['/_layout', '/nested/_layout'])(
+    'throws when a rewrite destination is a layout: %s',
+    (destination) => {
+      expect(() =>
+        getRoutes(
+          inMemoryContext({
+            _layout: () => null,
+            'nested/_layout': () => null,
+            'nested/index': () => null,
+            other: () => null,
+          }),
+          {
+            rewrites: [{ source: '/other', destination } as RewriteConfig],
+            preserveRedirectAndRewrites: true,
+          }
+        )
+      ).toThrow(
+        `The rewrite destination "${destination}" is a layout. Layouts can't be rewrite destinations. Use a route as the destination instead.`
+      );
+    }
+  );
+
+  it('throws when a rewrite source is a layout', () => {
+    expect(() =>
+      getRoutes(
+        inMemoryContext({
+          './_layout': () => null,
+          './other': () => null,
+        }),
+        {
+          rewrites: [{ source: '/_layout', destination: '/other' } as RewriteConfig],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toThrow(
+      'The rewrite source "_layout" is a layout. Layouts can\'t be rewrite sources. Use a route as the source instead.'
+    );
+  });
+
   it('can handle rewrites', () => {
     expect(
       getRoutes(

@@ -290,6 +290,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           : getValidDestinations().find(
               (key) => key.nameWithoutInvisible === targetDestinationName
             );
+        if (
+          validDestination &&
+          getFileMeta(validDestination.contextKey, options, redirects, rewrites).isLayout
+        ) {
+          throw new Error(
+            `The redirect destination "${redirect.destination}" is a layout. Layouts can't be redirect destinations. Use a route as the destination instead.`
+          );
+        }
         const destination = isExternalRedirect
           ? targetDestinationName
           : validDestination?.nameWithoutInvisible;
@@ -342,6 +350,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         const validDestination = getValidDestinations().find(
           (key) => key.nameWithoutInvisible === targetDestinationName
         );
+        if (
+          validDestination &&
+          getFileMeta(validDestination.contextKey, options, redirects, rewrites).isLayout
+        ) {
+          throw new Error(
+            `The rewrite destination "${rewrite.destination}" is a layout. Layouts can't be rewrite destinations. Use a route as the destination instead.`
+          );
+        }
         const destination = validDestination?.nameWithoutInvisible;
         const destinationContextKey = validDestination?.contextKey;
 
@@ -467,6 +483,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
       }
+      if (meta.isLayout) {
+        throw new Error(
+          `The redirect source "${meta.route}" is a layout. Layouts can't be redirect sources. Use a route as the source instead.`
+        );
+      }
 
       const redirect = redirects[meta.route]!;
       const defaults: RedirectRouteNode = {
@@ -498,6 +519,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     if (meta.isRewrite) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
+      }
+      if (meta.isLayout) {
+        throw new Error(
+          `The rewrite source "${meta.route}" is a layout. Layouts can't be rewrite sources. Use a route as the source instead.`
+        );
       }
 
       const rewrite = rewrites[meta.route]!;
