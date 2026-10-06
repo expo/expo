@@ -22,6 +22,9 @@ const commands: { [command: string]: () => Promise<Command> } = {
   run: () => import('../src/run/index.js').then((i) => i.expoRun),
   'run:ios': () => import('../src/run/ios/index.js').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
+  'compile:ios': () => import('../src/compile/ios/index.js').then((i) => i.expoCompileIos),
+  'compile:android': () =>
+    import('../src/compile/android/index.js').then((i) => i.expoCompileAndroid),
   start: () => import('../src/start/index.js').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild/index.js').then((i) => i.expoPrebuild),
   config: () => import('../src/config/index.js').then((i) => i.expoConfig),
@@ -129,6 +132,8 @@ if (!isSubcommand && args['--help']) {
     run: _run,
     // NOTE(cedric): Still pending the migration to ESLint's flat config
     lint: _lint,
+    'compile:ios': _compileIos,
+    'compile:android': _compileAndroid,
     serve,
     // All other commands
     ...others
