@@ -324,16 +324,16 @@ On iOS, a session can record the HTTP and HTTPS requests that apps on the device
   ]}
 />
 
-While the session runs, the web preview lists each request in its network panel.
+While the session runs, the web preview lists each request under **Network requests** in its **Tools** panel.
 
-> **warning** Network capture decrypts HTTPS, so recordings can contain credentials and cookies in cleartext. Keep only the fields you need, and treat the preview link and the downloaded file as secret.
+> **warning** Network capture decrypts HTTPS. It does not redact the bodies and query values that you keep, so they can contain credentials in cleartext. Keep only the fields you need, and treat the preview link and the downloaded file as secret.
 
 ### What gets recorded
 
-Capture records every HTTP and HTTPS request that an app sends through `URLSession`, the iOS networking layer that React Native `fetch`, image loading, and most iOS SDKs use. This includes requests from libraries and SDKs inside the app, such as analytics, crash reporting, and update checks from `expo-updates`, not only the requests in your own code.
+Capture records HTTP and HTTPS requests that an app sends through a `URLSession` that it creates. React Native `fetch` and image loading send requests this way. Capture also records requests from libraries and SDKs that create their own `URLSession`, such as update checks from `expo-updates`.
 
 - Relaunch an app that was already running to record its traffic. In agent-device and Argent sessions, capture can start after the installed app's initial launch. In that case, capture misses requests that the app sends only at startup. Relaunching the app might not send them again.
-- Apple system apps, such as Safari, are not recorded, and neither are requests made with `URLSession.shared`.
+- Capture does not record traffic from Apple system apps, such as Safari, or requests that use `URLSession.shared`.
 - Network capture is not available on Android or together with `--egress local`.
 
 ### Choose what to keep
@@ -357,9 +357,9 @@ Repeat the flag, or pass a comma-separated list:
 
 ### Download the recording
 
-The recording exists only while the session runs. It is not saved as a session artifact, so download it before you stop the session. The download is a HAR file, which browser developer tools and HTTP debugging tools can open.
+The recording exists only while capture is on. EAS does not save it as a session artifact. Download it before you stop the session or select **Turn off and restart** under **Network requests**, because both actions delete it. The download is an HTTP Archive (HAR) file, which browser developer tools and HTTP debugging tools can open.
 
-To download it in the browser, open the web preview and select **Download session as HAR** in the network panel.
+To download it in the browser, open the **Tools** panel in the web preview. Under **Network requests**, select the download icon, whose tooltip reads **Download session as HAR**.
 
 To download it from the command line, get the session's preview API URL:
 
@@ -377,7 +377,7 @@ Each entry in the file has the request and response, the status, and timings, pl
 
 ### Troubleshoot apps that fail during capture
 
-Capture sends the app's traffic through a proxy on the session's machine and decrypts it. Some apps react to that: apps that pin their server certificates cannot connect, and other requests can fail or time out. If the app behaves in an unexpected way while capture is on, start a new session without `--network-capture` to check whether capture causes it, and leave capture off when you do not need it.
+Capture sends the app's traffic through a proxy on the session's machine and decrypts it. Some apps react to that: apps that pin their server certificates cannot connect, and other requests can fail or time out. If the app behaves in an unexpected way while capture is on, start a new session without `--network-capture` to check whether capture causes it. Leave capture off when you do not need it.
 
 ## Use the iOS browser preview
 
