@@ -45,18 +45,19 @@ struct HomeTabView: View {
     .navigationTitle(HomeTab.home.title)
     .navigationBarTitleDisplayMode(.large)
     .homeToolbar(onEnterURL: { showingURLInput = true })
-    .sheet(isPresented: $showingURLInput) {
-      EnterURLSheet(
-        urlText: $urlText,
-        isLoading: false,
-        onConnect: { url in
-          viewModel.openApp(url: url)
-        },
-        onDismiss: {
-          showingURLInput = false
-          urlText = ""
-        }
-      )
+    .alert("Add project by URL", isPresented: $showingURLInput) {
+      TextField("exp://192.168.1.1:8081", text: $urlText)
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .keyboardType(.URL)
+      Button("Cancel", role: .cancel) {
+        urlText = ""
+      }
+      Button("Connect", action: connect)
+        .keyboardShortcut(.defaultAction)
+        .disabled(!EnterURLForm.canConnect(urlText))
+    } message: {
+      Text("Enter the URL of your development server or project.")
     }
     .onAppear {
       reviewManager.recordHomeAppear()
@@ -68,5 +69,12 @@ struct HomeTabView: View {
     .onChange(of: viewModel.snacks.count) { _ in
       reviewManager.updateCounts(apps: viewModel.projects.count, snacks: viewModel.snacks.count)
     }
+  }
+
+  private func connect() {
+    if let url = EnterURLForm.connectURL(urlText) {
+      viewModel.openApp(url: url)
+    }
+    urlText = ""
   }
 }
