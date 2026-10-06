@@ -141,7 +141,7 @@ describe('initReanimatedIntegration', () => {
     expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(1);
   });
 
-  it('stops reporting new messages after 100 distinct ones', () => {
+  it('stops reporting new warnings after 100 distinct ones in a window', () => {
     const onLog = initAndGetOnLog();
 
     for (let i = 0; i < 101; i++) {
@@ -149,6 +149,115 @@ describe('initReanimatedIntegration', () => {
     }
 
     expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(100);
+  });
+
+  it('stops reporting new errors after 100 distinct ones in a window', () => {
+    const onLog = initAndGetOnLog();
+
+    for (let i = 0; i < 101; i++) {
+      onLog({ level: ERROR, message: `message ${i}` });
+    }
+
+    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(100);
+  });
+
+  it('reports an error after the warning limit for the window is reached', () => {
+    const onLog = initAndGetOnLog();
+
+    for (let i = 0; i < 100; i++) {
+      onLog({ level: WARN, message: `warning ${i}` });
+    }
+    onLog({ level: ERROR, message: 'error after warnings' });
+
+    expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(100);
+    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a warning after the error limit for the window is reached', () => {
+    const onLog = initAndGetOnLog();
+
+    for (let i = 0; i < 100; i++) {
+      onLog({ level: ERROR, message: `error ${i}` });
+    }
+    onLog({ level: WARN, message: 'warning after errors' });
+
+    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(100);
+    expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(1);
+  });
+
+  describe('reporting window', () => {
+    const WINDOW_MS = 60_000;
+
+    beforeEach(() => {
+      jest.useFakeTimers({ now: 0 });
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('does not report a repeated message again within the window', () => {
+      const onLog = initAndGetOnLog();
+
+      onLog({ level: ERROR, message: 'repeated' });
+      jest.advanceTimersByTime(WINDOW_MS - 1);
+      onLog({ level: ERROR, message: 'repeated' });
+
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports a repeated message again after the window passes', () => {
+      const onLog = initAndGetOnLog();
+
+      onLog({ level: WARN, message: 'repeated' });
+      jest.advanceTimersByTime(WINDOW_MS);
+      onLog({ level: WARN, message: 'repeated' });
+
+      expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(2);
+    });
+
+    it('reports new messages after a surge leaves the window', () => {
+      const onLog = initAndGetOnLog();
+
+      for (let i = 0; i < 100; i++) {
+        onLog({ level: ERROR, message: `surge ${i}` });
+      }
+      onLog({ level: ERROR, message: 'dropped during surge' });
+      jest.advanceTimersByTime(WINDOW_MS);
+      onLog({ level: ERROR, message: 'after surge' });
+
+      expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(101);
+      expect(mockAppMetrics.reportError).toHaveBeenLastCalledWith(
+        expect.objectContaining({ message: 'after surge' })
+      );
+    });
+
+    it('expires each message at the end of its own window', () => {
+      const onLog = initAndGetOnLog();
+
+      onLog({ level: WARN, message: 'first' });
+      jest.advanceTimersByTime(WINDOW_MS / 2);
+      onLog({ level: WARN, message: 'second' });
+      jest.advanceTimersByTime(WINDOW_MS / 2);
+      onLog({ level: WARN, message: 'first' });
+      onLog({ level: WARN, message: 'second' });
+
+      expect(mockAppMetrics.logEvent.mock.calls.map(([, options]) => options.body)).toEqual([
+        'first',
+        'second',
+        'first',
+      ]);
+    });
+  });
+
+  it('tracks errors and warnings with the same message separately', () => {
+    const onLog = initAndGetOnLog();
+
+    onLog({ level: WARN, message: 'same message' });
+    onLog({ level: ERROR, message: 'same message' });
+
+    expect(mockAppMetrics.logEvent).toHaveBeenCalledTimes(1);
+    expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
   });
 
   it('truncates the message attribute but keeps the full body', () => {

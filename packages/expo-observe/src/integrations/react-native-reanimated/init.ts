@@ -14,14 +14,20 @@ const MIN_MINOR = 7;
 const REANIMATED_ERROR_NAME = 'reanimated.error';
 const REANIMATED_WARNING_EVENT = 'reanimated.warning';
 
-// A UI-runtime log can repeat every frame, so each distinct message is reported once. The cap
-// bounds the set when messages embed varying values.
-const MAX_DISTINCT_MESSAGES = 100;
+// A UI-runtime log can repeat every frame, so each distinct message is reported at most once per
+// window. The cap bounds the reports in a window when messages embed varying values, and the
+// window lets new messages be reported again after a surge. Errors and warnings have separate
+// windows, so a screen with many distinct warnings cannot stop errors from being reported.
+const REPORT_WINDOW_MS = 60_000;
+const MAX_DISTINCT_MESSAGES_PER_WINDOW = 100;
 // Attribute values are sent on every dispatch, and strict-mode messages append a docs
 // reference, so the copied message is capped.
 const MAX_MESSAGE_LENGTH = 500;
 
-const reportedMessages = new Set<string>();
+// Maps each message reported in the current window to the time it was reported. A `Map` keeps
+// insertion order, so the oldest report is always first.
+const reportedErrors = new Map<string, number>();
+const reportedWarnings = new Map<string, number>();
 
 /**
  * A Reanimated error reported to Observe. The stack is set explicitly so it points at the
@@ -47,20 +53,32 @@ function supportsOnLog(version: string): boolean {
   return major > MIN_MAJOR || (major === MIN_MAJOR && minor >= MIN_MINOR);
 }
 
-function shouldReport(message: string): boolean {
-  if (reportedMessages.has(message) || reportedMessages.size >= MAX_DISTINCT_MESSAGES) {
+function removeExpiredReports(reported: Map<string, number>, now: number): void {
+  for (const [message, reportedAt] of reported) {
+    if (now - reportedAt < REPORT_WINDOW_MS) {
+      return;
+    }
+    reported.delete(message);
+  }
+}
+
+function shouldReport(reported: Map<string, number>, message: string): boolean {
+  const now = Date.now();
+  removeExpiredReports(reported, now);
+  if (reported.has(message) || reported.size >= MAX_DISTINCT_MESSAGES_PER_WINDOW) {
     return false;
   }
-  reportedMessages.add(message);
+  reported.set(message, now);
   return true;
 }
 
 // Reanimated already prints every log to the console, so this only reports to Observe.
 function reportReanimatedLog({ level, message }: ReanimatedLogData): void {
-  if (!shouldReport(message)) {
+  const isError = level === LOG_LEVEL_ERROR;
+  if (!shouldReport(isError ? reportedErrors : reportedWarnings, message)) {
     return;
   }
-  if (level === LOG_LEVEL_ERROR) {
+  if (isError) {
     // For a log on the React Native runtime, Reanimated calls `onLog` synchronously, so this
     // stack includes the frames that led to the log. A log on the UI runtime is delivered later,
     // so its stack only shows the delivery.
