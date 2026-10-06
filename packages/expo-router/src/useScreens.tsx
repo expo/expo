@@ -4,8 +4,8 @@ import React, { use, useEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
-  isLayoutRouteNode,
   getValidInitialRouteName,
+  isLayoutRouteNode,
   isScreenRouteNode,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,

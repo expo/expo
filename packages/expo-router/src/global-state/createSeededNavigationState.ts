@@ -125,7 +125,7 @@ function completeExistingState(
     if (route.key === undefined) {
       routesChanged = true;
     }
-    if (!childNode || !isLayoutRouteNode(childNode) || childNode.children.length === 0) {
+    if (!isLayoutRouteNode(childNode) || childNode.children.length === 0) {
       return completeRoute;
     }
 
