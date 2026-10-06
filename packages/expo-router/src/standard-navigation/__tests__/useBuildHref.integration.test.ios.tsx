@@ -43,8 +43,8 @@ const StandardTabs = createStandardRouterNavigator<
 });
 
 describe('useBuildHref (integration)', () => {
-  it('resolves real hrefs (index → /, group segment stripped) for navigator routes', () => {
-    renderRouter({
+  it('resolves real hrefs (index → /, group segment stripped) for navigator routes', async () => {
+    await renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />

@@ -24,8 +24,8 @@ const indicesOf = (props: any): number[] =>
 
 beforeEach(() => jest.clearAllMocks());
 
-it('passes the axis of each stack to the native view', () => {
-  render(
+it('passes the axis of each stack to the native view', async () => {
+  await render(
     <>
       <LazyVStack>
         <LazyVStack.ForEach data={data} keyExtractor={keyExtractor}>
@@ -49,8 +49,8 @@ it('passes the axis of each stack to the native view', () => {
 it.each([
   ['LazyVStack.ForEach', LazyVStack],
   ['LazyHStack.ForEach', LazyHStack],
-] as const)('names %s in its own errors', (name, Stack) => {
-  expect(() =>
+] as const)('names %s in its own errors', async (name, Stack) => {
+  await expect(
     render(
       <Stack>
         <Stack.ForEach data={data} keyExtractor={keyExtractor} overscanCount={-1}>
@@ -58,11 +58,11 @@ it.each([
         </Stack.ForEach>
       </Stack>
     )
-  ).toThrow(`${name} overscanCount must be a non-negative integer`);
+  ).rejects.toThrow(`${name} overscanCount must be a non-negative integer`);
 });
 
-it('maintains independent windows for a LazyVStack and a LazyHStack block', () => {
-  render(
+it('maintains independent windows for a LazyVStack and a LazyHStack block', async () => {
+  await render(
     <>
       <LazyVStack>
         <LazyVStack.ForEach data={data} keyExtractor={keyExtractor} overscanCount={3}>
@@ -77,14 +77,14 @@ it('maintains independent windows for a LazyVStack and a LazyHStack block', () =
     </>
   );
   const [vertical, horizontal] = mockForEach.mock.calls.map(([props]) => props);
-  act(() =>
+  await act(() =>
     vertical.onWindowChange({ nativeEvent: { first: 500, last: 502, revision: vertical.revision } })
   );
   const latest = () => mockForEach.mock.calls.at(-1)![0];
   expect(latest().axis).toBe('vertical');
   expect(indicesOf(latest())).toContain(500);
   expect(indicesOf(horizontal)).toEqual([0, 1]);
-  act(() =>
+  await act(() =>
     horizontal.onWindowChange({
       nativeEvent: { first: 15, last: 16, revision: horizontal.revision },
     })
@@ -93,9 +93,9 @@ it('maintains independent windows for a LazyVStack and a LazyHStack block', () =
   expect(indicesOf(latest())).toContain(15);
 });
 
-it('renders every row as a plain stack child when recycling is disabled', () => {
+it('renders every row as a plain stack child when recycling is disabled', async () => {
   const renderItem = jest.fn(({ index }: { index: number }) => <Text>{`row-${index}`}</Text>);
-  const screen = render(
+  const screen = await render(
     <LazyVStack>
       <LazyVStack.ForEach data={data.slice(0, 50)} keyExtractor={keyExtractor} recycling={false}>
         {renderItem}

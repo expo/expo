@@ -89,9 +89,15 @@ Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTI
 - **How:** how you built the feature or fixed the bug, and why you took that approach.
 - **Test Plan:** how you tested the change and how a reviewer can reproduce it — include terminal
   output or screenshots when there are no automated tests.
-- **Checklist:** added a `CHANGELOG.md` entry and verified the change builds, type-checks, lints,
+- **Checklist:** added a changeset and verified the change builds, type-checks, lints,
   and tests via `et check-packages`; confirmed the change works with `npx expo prebuild` & EAS Build
   if relevant; follows the documentation style guide.
+
+**Changeset:** changes to published packages need a `.changeset/*.md` file; see
+[`.changeset/README.md`](../.changeset/README.md). `pnpm changeset` is interactive, so write the
+file directly. Do not edit package `CHANGELOG.md` files or add a PR link or author; both are
+generated.
+
 **Before submitting:** run `et check-packages` (builds, type-checks, lints, and tests), remove stray
 `console.log`s or commented-out code, and do not stage the gitignored `build/` output.
 

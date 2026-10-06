@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.0-preview.8",
+  "version": "58.0.5",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -178,6 +178,7 @@
     "./dom/entry.js": "./dom/entry.js",
     "./dom/entry": "./dom/entry.js",
     "./AppEntry.js": "./AppEntry.js",
+    "./template.tgz": "./template.tgz",
     "./virtual/*.js": "./virtual/*.js",
     "./virtual/*": "./virtual/*.js",
     "./scripts/*.js": "./scripts/*.js",
@@ -239,7 +240,6 @@
     "whatwg-url-minimum": "^0.2.0"
   },
   "devDependencies": {
-    "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",

@@ -76,7 +76,9 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   fun setBlurRadius(radius: Float) {
     blurRadius = radius
 
-    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) return
+    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) {
+      return
+    }
 
     when (blurMethod) {
       BlurMethod.NONE -> {
@@ -108,7 +110,9 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
       BlurMethod.NONE
     }
 
-    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) return
+    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) {
+      return
+    }
 
     when (safeMethod) {
       BlurMethod.NONE -> {
@@ -139,7 +143,9 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   }
 
   fun applyTint() {
-    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) return
+    if (blurConfiguration == BlurViewConfiguration.UNCONFIGURED) {
+      return
+    }
 
     when (blurMethod) {
       BlurMethod.NONE -> {

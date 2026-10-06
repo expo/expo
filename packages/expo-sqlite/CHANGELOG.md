@@ -1,5 +1,35 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Speed up binding parameters and reading rows by converting them through typed values instead of `Any`. Reading rows is up to about 3.3 times faster and inserts up to about 2.8 times faster in the native benchmarks.
+
+  A `bigint` bind parameter now binds as a 64-bit integer instead of `NULL`. It still reads back as a number, with the same precision loss above 2^53 as other integer columns.
+
+  `onDatabaseChange` no longer drops the event for a row id above 2^53.
+
+  ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Android][iOS] Fixed database closing failure with FTS ([#38168](https://github.com/expo/expo/issues/38168)). ([#50121](https://github.com/expo/expo/pull/50121) by [@savv](https://github.com/savv))
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
 ## 58.0.6 — 2026-09-25
 
 _This version does not introduce any user-facing changes._

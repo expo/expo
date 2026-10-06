@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "58.0.8",
+  "version": "58.0.11",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0"
   }
 }

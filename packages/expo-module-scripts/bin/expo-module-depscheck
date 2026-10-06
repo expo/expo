@@ -6,7 +6,11 @@ import path from 'node:path';
 import { glob } from 'glob';
 import resolveWorkspaceRoot from 'resolve-workspace-root';
 
-import { checkDependenciesAsync } from '../utils/depscheck/check.js';
+import {
+  checkDependenciesAsync,
+  PLUGIN_FILES,
+  validatePluginExports,
+} from '../utils/depscheck/check.js';
 
 const { getWorkspaceGlobs, resolveWorkspaceRoot: findWorkspaceRoot } = resolveWorkspaceRoot;
 
@@ -58,6 +62,12 @@ async function runAsync() {
     /** @param {string} message */
     verbose: (message) => console.warn(message),
   };
+
+  validatePluginExports(
+    pkg,
+    PLUGIN_FILES.filter((file) => fs.existsSync(path.join(packagePath, file))),
+    logger
+  );
 
   for (const target of targets) {
     await checkDependenciesAsync(pkg, /** @type {any} */ (target), logger);

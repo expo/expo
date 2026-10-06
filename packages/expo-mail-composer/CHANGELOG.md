@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.0.3
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.2
+
+### Patch Changes
+
+- [Web] Fix spaces in the `subject` and `body` of `composeAsync` appearing as "+" in the mail client. ([#41465](https://github.com/expo/expo/pull/41465) by [@jpaas](https://github.com/jpaas))
+
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
 ## 58.0.0 — 2026-09-10
 
 _This version does not introduce any user-facing changes._

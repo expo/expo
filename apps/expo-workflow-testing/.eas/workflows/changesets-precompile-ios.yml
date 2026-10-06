@@ -6,11 +6,12 @@ defaults:
 
 on:
   workflow_dispatch: {}
-  push:
-    branches: ["changeset-release/*"]
+  pull_request:
+    if: ${{ startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
 
 concurrency:
-  group: ${{ workflow.filename }}-${{ github.ref }}
+  # Release PRs reuse the same branch; only cancel older runs for the same PR.
+  group: ${{ workflow.filename }}-${{ github.event.number || workflow.id }}
   cancel_in_progress: true
 
 jobs:

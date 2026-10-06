@@ -83,8 +83,16 @@ class ExpoCropImageActivity :
 
   private fun resolveCustomizationColors(): CustomizationColors {
     val isNight = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-    val defaultBackgroundColor = if (isNight) Color.BLACK else Color.WHITE
-    val defaultContentColor = if (isNight) Color.WHITE else Color.BLACK
+    val defaultBackgroundColor = if (isNight) {
+      Color.BLACK
+    } else {
+      Color.WHITE
+    }
+    val defaultContentColor = if (isNight) {
+      Color.WHITE
+    } else {
+      Color.BLACK
+    }
 
     // Try theme attributes first, then fall back to color resources
     val expoCropBackButtonIconColor = getThemeColor(theme, R.attr.expoCropBackButtonIconColor)

@@ -1,5 +1,32 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Expand the call stack and show its code frame when every frame is collapsed, like React Native's LogBox. ([#50976](https://github.com/expo/expo/pull/50976) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Only enable LogBox WebView debugging in debuggable apps. ([#49529](https://github.com/expo/expo/pull/49529) by [@kosumic](https://github.com/kosumic))
+
+## 58.0.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/dom-webview@58.0.2
+  - @expo/log-box-utils@58.0.1
+
 ## 58.0.6 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

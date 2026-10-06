@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     // Redirect monorepo package typings to src
-    "customConditions": ["expo-source", "react-native-legacy-deep-imports"],
+    "customConditions": [
+      "expo-source",
+      "react-native-legacy-deep-imports",
+      "react-native-unstable-internals"
+    ],
 
     // Typings
     "lib": ["dom", "DOM.Iterable", "esnext"],

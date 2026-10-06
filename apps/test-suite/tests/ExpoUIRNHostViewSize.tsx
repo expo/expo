@@ -256,7 +256,7 @@ function NestedHostProbe({ onMeasured }: { onMeasured: (size: Axes) => void }) {
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <View style={{ width: BOX_WIDTH, height: BOX_HEIGHT }} />
             <Host matchContents={{ horizontal: true }} style={{ height: BOX_HEIGHT }}>
-              <Button>{TEXT}</Button>
+              <Button label={TEXT} />
             </Host>
           </View>
         </RNHostView>

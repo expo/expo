@@ -6,6 +6,18 @@ on:
       - main
       # - sdk-58
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Operation to run
+        type: choice
+        default: canary
+        options:
+          - canary
+          - sync-published-packages
+      dry-run:
+        description: Validate the sync without changing npm tags or www
+        type: boolean
+        default: true
   schedule:
     - cron: 0 1 * * * # Nightly at 1:00 AM UTC
 
@@ -60,6 +72,8 @@ jobs:
     if: needs.stable-mode.outputs.mode == 'version'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      GIT_OPTIONAL_LOCKS: "0"
     concurrency:
       group: publish-packages-version-${{ github.ref_name }}
       cancel-in-progress: true
@@ -69,7 +83,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          # NOTE: Changesets automatically deepens the clone for older changeset entries.
+          fetch-depth: 100
       - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
@@ -78,8 +93,10 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: Build Expo Tools and workspace dependencies
-        run: pnpm turbo run build --filter=expotools...
+      - name: Prerequisites
+        run: |
+          pnpm turbo run build --filter=expotools...
+          rm -f .git/index.lock
       - name: Create release PR
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
         with:
@@ -93,8 +110,9 @@ jobs:
     name: Publish stable packages
     needs: stable-mode
     if: needs.stable-mode.outputs.mode == 'publish'
-    runs-on: macos-26
-    timeout-minutes: 180
+    runs-on:
+      group: macos-publishing
+    timeout-minutes: 300
     environment: npm-publish-stable
     concurrency:
       group: publish-packages-stable-${{ github.ref_name }}
@@ -105,7 +123,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          fetch-depth: 0
+          # NOTE: The version-commit safeguard compares HEAD against HEAD^.
+          fetch-depth: 2
       - run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - run: echo "$(pwd)/bin" >> "$GITHUB_PATH"
       - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
@@ -123,20 +142,105 @@ jobs:
       - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Build Expo Tools and workspace dependencies
         run: pnpm turbo run build --filter=expotools...
+
+      - name: Install EAS CLI
+        id: eas-cli
+        timeout-minutes: 5
+        continue-on-error: true
+        run: npm install --global eas-cli@^24.8.0
+
+      - name: Wait for ongoing EAS precompilation
+        if: steps.eas-cli.outcome == 'success'
+        shell: bash
+        timeout-minutes: 90
+        continue-on-error: true
+        working-directory: apps/expo-workflow-testing
+        env:
+          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
+        run: |
+          test -n "$EXPO_TOKEN"
+          runs_file="$RUNNER_TEMP/precompile-runs.json"
+
+          # Snapshot both workflows before waiting, so later runs don't extend the wait.
+          for platform in ios android; do
+            eas workflow:runs \
+              --workflow "changesets-precompile-$platform.yml" \
+              --limit 10 --json || echo '[]'
+          done | jq -s 'add' > "$runs_file"
+
+          ongoing_run_ids=$(jq -r '
+            .[] | select(.status | IN("SUCCESS", "FAILURE", "CANCELED") | not) | .id
+          ' "$runs_file")
+
+          for run_id in $ongoing_run_ids; do
+            echo "Waiting for EAS precompile run $run_id"
+            eas workflow:status "$run_id" --wait --non-interactive ||
+              echo "::warning::Run $run_id did not succeed; continuing with local precompilation."
+          done
+
       - name: Publish with Changesets
         uses: changesets/action@66d7d1ddafddf1ef45f98ee51a7496f9cdadb2f4 # v2.1.2
-        env:
-          EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
         with:
           github-token: ${{ github.token }}
           publish-script: pnpm expotools publish-packages
+
+  sync-published-packages:
+    name: Sync published packages
+    needs: stable-publish
+    if: >-
+      !cancelled() && github.repository == 'expo/expo' && github.ref_name == 'main' &&
+      (needs.stable-publish.result == 'success' ||
+       (github.event_name == 'workflow_dispatch' && inputs.operation == 'sync-published-packages'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    concurrency:
+      # All SDK branches update the same versions document.
+      group: sync-published-packages
+      queue: max
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          registry-url: https://registry.npmjs.org/
+      - run: npm install --global npm@^11.21.0
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm turbo run build --filter=expotools...
+      - name: Sync staging versions from this main commit
+        run: pnpm expotools sync-published-packages --env staging ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}
+        env:
+          EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
+          EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
+      - name: Sync production versions from this main commit
+        run: |
+          attempt=1
+          echo "Production sync attempt $attempt."
+          until pnpm expotools sync-published-packages --env production ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run && '--dry-run' || '' }}; do
+            echo "Attempt $attempt failed; retrying in 10 minutes."
+            sleep 600
+            attempt=$((attempt + 1))
+            echo "Production sync attempt $attempt."
+          done
+        env:
+          EXPO_VERSIONS_SECRET: ${{ secrets.EXPO_VERSIONS_SECRET }}
+          EXPO_SDK_NATIVE_MODULES_SECRET: ${{ secrets.EXPO_SDK_NATIVE_MODULES_SECRET }}
 
   canary-publish:
     name: Publish canary packages
     if: >-
       github.repository == 'expo/expo' &&
-      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-    runs-on: macos-26
+      (github.event_name == 'schedule' ||
+       (github.event_name == 'workflow_dispatch' && inputs.operation != 'sync-published-packages'))
+    runs-on:
+      group: macos-publishing
     timeout-minutes: 180
     environment: npm-publish-canary
     concurrency:

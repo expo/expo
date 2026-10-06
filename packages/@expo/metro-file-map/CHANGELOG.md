@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- Remove the `micromatch` dependency, and with it the transitive dependency on `braces` ([GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)). Watchers now filter changes by extension, file name and file name prefix instead of globs. ([#51093](https://github.com/expo/expo/pull/51093) by [@robhogan](https://github.com/robhogan))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
 ## 58.0.2 — 2026-09-28
 
 ### 💡 Others

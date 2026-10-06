@@ -1,5 +1,29 @@
 # Changelog
 
+## 58.0.10
+
+No changes in this release.
+
+## 58.0.9
+
+### Patch Changes
+
+- [Internal] Bump `babel-plugin-react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.8
+
+No changes in this release.
+
+## 58.0.7
+
+No changes in this release.
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
 ## 58.0.5 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

@@ -216,7 +216,7 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 ## 🔎 Before Submitting
 
-- Remember to add a concise description of any user-facing changes to `CHANGELOG.md` file in the package you've changed or [root's CHANGELOG.md](/CHANGELOG.md) if your changes don't apply to any package. This is especially helpful for breaking changes!
+- Remember to add a changeset containing a concise description of any user-facing changes using `pnpm changeset` for the packages you've changed. This is especially helpful for breaking changes!
 
 To keep CI green, please make sure of the following:
 

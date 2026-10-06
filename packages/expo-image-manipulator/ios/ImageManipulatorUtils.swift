@@ -1,6 +1,7 @@
 internal import SDWebImageWebPCoder
 import Photos
 import ExpoModulesCore
+import UIKit
 
 internal typealias SaveImageResult = (url: URL, data: Data)
 

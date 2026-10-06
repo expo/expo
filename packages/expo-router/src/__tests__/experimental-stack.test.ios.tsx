@@ -103,8 +103,8 @@ afterEach(() => {
 });
 
 describe('ExperimentalStack — basic navigation', () => {
-  it('marks its routes as nested inside a native navigator', () => {
-    renderRouter({
+  it('marks its routes as nested inside a native navigator', async () => {
+    await renderRouter({
       _layout: () => <ExperimentalStack />,
       index: NativeNavigatorContextProbe,
     });
@@ -112,8 +112,8 @@ describe('ExperimentalStack — basic navigation', () => {
     expect(screen.getByText('true')).toBeVisible();
   });
 
-  it('renders Stack.Host and pushes new routes', () => {
-    renderRouter(
+  it('renders Stack.Host and pushes new routes', async () => {
+    await renderRouter(
       {
         a: () => <Text testID="a">A</Text>,
         b: () => <Text testID="b">B</Text>,
@@ -126,17 +126,17 @@ describe('ExperimentalStack — basic navigation', () => {
     expect(screen).toHavePathname('/a');
     expect(router.canDismiss()).toBe(false);
 
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
 
     expect(screen).toHavePathname('/b');
     expect(router.canDismiss()).toBe(true);
   });
 
-  it('removes guarded routes from history when a guard flips false', () => {
+  it('removes guarded routes from history when a guard flips false', async () => {
     let setGuard: Dispatch<SetStateAction<boolean>>;
     warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-    renderRouter({
+    await renderRouter({
       _layout: function Layout() {
         const [guard, setState] = useState(true);
         setGuard = setState;
@@ -154,10 +154,10 @@ describe('ExperimentalStack — basic navigation', () => {
       other: () => <Text testID="other">other</Text>,
     });
 
-    act(() => router.push('/secret'));
-    act(() => router.push('/other'));
-    act(() => setGuard(false));
-    act(() => router.back());
+    await act(() => router.push('/secret'));
+    await act(() => router.push('/other'));
+    await act(() => setGuard(false));
+    await act(() => router.back());
 
     expect(warnSpy).toHaveBeenCalledWith(
       expect.stringContaining("ignoring unsupported screenOption 'hidden'")
@@ -166,8 +166,8 @@ describe('ExperimentalStack — basic navigation', () => {
     expect(router.canGoBack()).toBe(false);
   });
 
-  it('pops via router.dismiss', () => {
-    renderRouter(
+  it('pops via router.dismiss', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -177,19 +177,19 @@ describe('ExperimentalStack — basic navigation', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.push('/b'));
-    act(() => router.push('/c'));
+    await act(() => router.push('/b'));
+    await act(() => router.push('/c'));
     expect(screen).toHavePathname('/c');
 
-    act(() => router.dismiss());
+    await act(() => router.dismiss());
     expect(screen).toHavePathname('/b');
 
-    act(() => router.dismiss());
+    await act(() => router.dismiss());
     expect(screen).toHavePathname('/a');
   });
 
-  it('replaces with router.replace', () => {
-    renderRouter(
+  it('replaces with router.replace', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -198,13 +198,13 @@ describe('ExperimentalStack — basic navigation', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.replace('/b'));
+    await act(() => router.replace('/b'));
     expect(screen).toHavePathname('/b');
     expect(router.canDismiss()).toBe(false);
   });
 
-  it('does not pop to top for native tabPress events', () => {
-    renderRouter(
+  it('does not pop to top for native tabPress events', async () => {
+    await renderRouter(
       {
         _layout: () => (
           <NativeTabs>
@@ -218,7 +218,7 @@ describe('ExperimentalStack — basic navigation', () => {
       { initialUrl: '/home' }
     );
 
-    act(() => router.push('/home/second'));
+    await act(() => router.push('/home/second'));
     const mockedScreens: typeof import('react-native-screens') & {
       __triggerTabSelected: (event: NativeSyntheticEvent<TabSelectedEvent>) => void;
       Tabs: {
@@ -226,7 +226,7 @@ describe('ExperimentalStack — basic navigation', () => {
       };
     } = jest.requireMock('react-native-screens');
     const homeTabKey = mockedScreens.Tabs.Screen.mock.calls.at(-1)![0].screenKey!;
-    act(() =>
+    await act(() =>
       mockedScreens.__triggerTabSelected({
         nativeEvent: {
           selectedScreenKey: homeTabKey,
@@ -238,14 +238,14 @@ describe('ExperimentalStack — basic navigation', () => {
         // React Native's synthetic event has runtime fields irrelevant to this callback.
       } as NativeSyntheticEvent<TabSelectedEvent>)
     );
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
     expect(screen).toHavePathname('/home/second');
   });
 });
 
 describe('ExperimentalStack — option mapping', () => {
-  it('passes title to Stack.HeaderConfig', () => {
-    renderRouter(
+  it('passes title to Stack.HeaderConfig', async () => {
+    await renderRouter(
       {
         a: () => null,
         _layout: () => <ExperimentalStack screenOptions={{ title: 'Hello' }} />,
@@ -258,8 +258,8 @@ describe('ExperimentalStack — option mapping', () => {
     expect(headerProps.title).toBe('Hello');
   });
 
-  it('maps headerShown=false to hidden=true', () => {
-    renderRouter(
+  it('maps headerShown=false to hidden=true', async () => {
+    await renderRouter(
       {
         a: () => null,
         _layout: () => <ExperimentalStack screenOptions={{ headerShown: false }} />,
@@ -271,8 +271,8 @@ describe('ExperimentalStack — option mapping', () => {
     expect(lastCallProps.hidden).toBe(true);
   });
 
-  it('maps headerShown=true to hidden=false (explicit override)', () => {
-    renderRouter(
+  it('maps headerShown=true to hidden=false (explicit override)', async () => {
+    await renderRouter(
       {
         a: () => null,
         _layout: () => <ExperimentalStack screenOptions={{ headerShown: true }} />,
@@ -284,8 +284,8 @@ describe('ExperimentalStack — option mapping', () => {
     expect(lastCallProps.hidden).toBe(false);
   });
 
-  it('leaves hidden undefined when headerShown is unset', () => {
-    renderRouter(
+  it('leaves hidden undefined when headerShown is unset', async () => {
+    await renderRouter(
       {
         a: () => null,
         _layout: () => <ExperimentalStack />,
@@ -297,8 +297,8 @@ describe('ExperimentalStack — option mapping', () => {
     expect(lastCallProps.hidden).toBeUndefined();
   });
 
-  it('passes headerTransparent and headerBackVisible through', () => {
-    renderRouter(
+  it('passes headerTransparent and headerBackVisible through', async () => {
+    await renderRouter(
       {
         a: () => null,
         _layout: () => (
@@ -317,8 +317,8 @@ describe('ExperimentalStack — option mapping', () => {
 });
 
 describe('ExperimentalStack — Screen activityMode', () => {
-  it('uses activityMode="attached" for the focused route', () => {
-    renderRouter(
+  it('uses activityMode="attached" for the focused route', async () => {
+    await renderRouter(
       {
         a: () => null,
         _layout: () => <ExperimentalStack />,
@@ -331,8 +331,8 @@ describe('ExperimentalStack — Screen activityMode', () => {
     expect(screens.every((s: any) => s.activityMode === 'attached')).toBe(true);
   });
 
-  it('passes route.key as screenKey', () => {
-    renderRouter(
+  it('passes route.key as screenKey', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -341,7 +341,7 @@ describe('ExperimentalStack — Screen activityMode', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
 
     const props = screenPropsByKey();
     const keys = Object.keys(props);
@@ -349,8 +349,8 @@ describe('ExperimentalStack — Screen activityMode', () => {
     expect(keys.some((k) => k.startsWith('b:'))).toBe(true);
   });
 
-  it('detaches preloaded routes until they are focused', () => {
-    renderRouter(
+  it('detaches preloaded routes until they are focused', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -359,12 +359,12 @@ describe('ExperimentalStack — Screen activityMode', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.prefetch('/b'));
+    await act(() => router.prefetch('/b'));
 
     const preloaded = Object.entries(screenPropsByKey()).find(([key]) => key.startsWith('b:'))?.[1];
     expect(preloaded?.activityMode).toBe('detached');
 
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
 
     const focused = Object.entries(screenPropsByKey()).find(([key]) => key.startsWith('b:'))?.[1];
     expect(focused?.activityMode).toBe('attached');
@@ -372,8 +372,8 @@ describe('ExperimentalStack — Screen activityMode', () => {
 });
 
 describe('ExperimentalStack — dismiss handlers', () => {
-  it('does not subscribe to onDismiss — JS-initiated pops would otherwise double-pop', () => {
-    renderRouter(
+  it('does not subscribe to onDismiss — JS-initiated pops would otherwise double-pop', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -382,7 +382,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
@@ -392,11 +392,11 @@ describe('ExperimentalStack — dismiss handlers', () => {
     expect(propsB.onDismiss).toBeUndefined();
   });
 
-  it('does not log a useDismissedRouteError when JS pops the route', () => {
+  it('does not log a useDismissedRouteError when JS pops the route', async () => {
     const errSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     try {
-      renderRouter(
+      await renderRouter(
         {
           a: () => null,
           b: () => null,
@@ -405,8 +405,8 @@ describe('ExperimentalStack — dismiss handlers', () => {
         { initialUrl: '/a' }
       );
 
-      act(() => router.push('/b'));
-      act(() => router.dismiss());
+      await act(() => router.push('/b'));
+      await act(() => router.dismiss());
       expect(screen).toHavePathname('/a');
 
       const stuck = errSpy.mock.calls.find(
@@ -420,8 +420,8 @@ describe('ExperimentalStack — dismiss handlers', () => {
     }
   });
 
-  it('onNativeDismiss pops and advances state', () => {
-    renderRouter(
+  it('onNativeDismiss pops and advances state', async () => {
+    await renderRouter(
       {
         a: () => null,
         b: () => null,
@@ -430,24 +430,24 @@ describe('ExperimentalStack — dismiss handlers', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
       .find((p: any) => p.screenKey?.startsWith('b:'));
 
-    act(() => {
+    await act(() => {
       propsB.onNativeDismiss(propsB.screenKey);
     });
 
     expect(screen).toHavePathname('/a');
   });
 
-  it('onNativeDismissPrevented warns without prevention context', () => {
+  it('onNativeDismissPrevented warns without prevention context', async () => {
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
-      renderRouter(
+      await renderRouter(
         {
           a: () => null,
           b: () => null,
@@ -456,14 +456,14 @@ describe('ExperimentalStack — dismiss handlers', () => {
         { initialUrl: '/a' }
       );
 
-      act(() => router.push('/b'));
+      await act(() => router.push('/b'));
       const propsB = MockedScreen.mock.calls
         .map((call) => call[0])
         .reverse()
         .find((props: any) => props.screenKey?.startsWith('b:'));
 
       expect(propsB.preventNativeDismiss).toBe(false);
-      act(() => propsB.onNativeDismissPrevented());
+      await act(() => propsB.onNativeDismissPrevented());
 
       expect(screen).toHavePathname('/b');
       expect(warn).toHaveBeenCalledWith(
@@ -474,7 +474,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     }
   });
 
-  it('onNativeDismissPrevented dispatches a pop through nested prevention', () => {
+  it('onNativeDismissPrevented dispatches a pop through nested prevention', async () => {
     const onPreventRemove = jest.fn();
     const onGestureCancel = jest.fn();
     const ProtectedScreen = () => {
@@ -485,7 +485,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
       <ExperimentalStack screenListeners={{ gestureCancel: onGestureCancel }} />
     );
 
-    renderRouter(
+    await renderRouter(
       {
         a: () => null,
         _layout: RootLayout,
@@ -495,14 +495,14 @@ describe('ExperimentalStack — dismiss handlers', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.push('/nested'));
+    await act(() => router.push('/nested'));
     const propsNested = MockedScreen.mock.calls
       .map((call) => call[0])
       .reverse()
       .find((props: any) => props.screenKey?.startsWith('nested:'));
 
     expect(propsNested.preventNativeDismiss).toBe(true);
-    act(() => propsNested.onNativeDismissPrevented());
+    await act(() => propsNested.onNativeDismissPrevented());
 
     expect(screen).toHavePathname('/nested');
     expect(onPreventRemove).toHaveBeenCalledWith({
@@ -516,11 +516,11 @@ describe('ExperimentalStack — dismiss handlers', () => {
 });
 
 describe('ExperimentalStack — unsupported option warning', () => {
-  it('warns once for unsupported screenOptions', () => {
+  it('warns once for unsupported screenOptions', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
-      renderRouter(
+      await renderRouter(
         {
           a: () => null,
           _layout: () => (
@@ -550,11 +550,11 @@ describe('ExperimentalStack — unsupported option warning', () => {
     }
   });
 
-  it('does not warn when only supported options are passed', () => {
+  it('does not warn when only supported options are passed', async () => {
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     try {
-      renderRouter(
+      await renderRouter(
         {
           a: () => null,
           _layout: () => (

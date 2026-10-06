@@ -36,6 +36,7 @@ internal final class ObserveUserDefaults: UserDefaults {
     // It's safe to force-unwrap as `init?(suiteName:)` fails only if `suiteName`
     // is the same as the app's main bundle identifier or the global domain.
     super.init(suiteName: "dev.expo.observe")!
+    Self.cleanUpLegacyKeys(from: self)
   }
 
   /// Date when events with metrics were last sent and received by the backend.
@@ -93,5 +94,24 @@ internal final class ObserveUserDefaults: UserDefaults {
   static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
+  }
+
+  // MARK: - Legacy keys
+
+  /// Keys that older versions wrote and nothing reads anymore.
+  private enum LegacyKeys: String, CaseIterable {
+    /// Replaced by `config`.
+    case dispatchingEnabled
+    /// Replaced by `lastDispatchedMetricId` when the JSON storage was replaced with SQLite.
+    case lastDispatchedEntryId
+    /// Replaced by `lastDispatchedLogId` when the JSON storage was replaced with SQLite.
+    case lastDispatchedLogEntryId
+  }
+
+  /// Removes the values stored under `LegacyKeys` so they don't stay on the device forever.
+  nonisolated static func cleanUpLegacyKeys(from defaults: UserDefaults) {
+    for key in LegacyKeys.allCases where defaults.object(forKey: key.rawValue) != nil {
+      defaults.removeObject(forKey: key.rawValue)
+    }
   }
 }

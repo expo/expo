@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.14.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/json-file@11.2.1
+
 ## 1.14.0 — 2026-09-10
 
 ### 🎉 New features

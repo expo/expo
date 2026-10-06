@@ -9,6 +9,7 @@ import {
   matchDynamicName,
   matchGroupName,
   matchLastGroupName,
+  getPlatformFromFilePath,
   removeFileSystemDots,
   removeFileSystemExtensions,
   removeSupportedExtensions,
@@ -81,8 +82,6 @@ export type PageHeadersConfig = {
   source: string;
   headers: Record<string, string | string[]>;
 };
-
-const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
 
 /**
  * Given a Metro context module, return an array of nested routes.
@@ -708,14 +707,17 @@ function getFileMeta(
   rewrites: Record<string, RewriteConfig>
 ) {
   // Remove the leading `./`
+  // NOTE(@hassankhan): Why not use `getNameFromFilePath()` here?
   const key = removeSupportedExtensions(removeFileSystemDots(originalKey));
   let route = key;
 
   const parts = removeFileSystemDots(originalKey).split('/');
   const filename = parts[parts.length - 1]!;
-  const filenameParts = removeSupportedExtensions(filename).split('.');
-  const filenameWithoutExtensions = filenameParts[0]!;
-  const platformExtension = filenameParts[1];
+  const filenameWithoutFileExtension = removeSupportedExtensions(filename);
+  const platformExtension = getPlatformFromFilePath(filename);
+  const filenameWithoutExtensions = platformExtension
+    ? filenameWithoutFileExtension.slice(0, -(platformExtension.length + 1))
+    : filenameWithoutFileExtension;
 
   const isLayout = filenameWithoutExtensions === '_layout';
   const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
@@ -733,7 +735,7 @@ function getFileMeta(
   }
   let specificity = 0;
 
-  const hasPlatformExtension = validPlatforms.has(platformExtension!);
+  const hasPlatformExtension = platformExtension != null;
   const usePlatformRoutes = options.platformRoutes ?? true;
 
   if (hasPlatformExtension) {
@@ -762,7 +764,7 @@ function getFileMeta(
       );
     }
 
-    route = route.replace(new RegExp(`.${platformExtension}$`), '');
+    route = route.slice(0, -(platformExtension.length + 1));
   }
 
   return {

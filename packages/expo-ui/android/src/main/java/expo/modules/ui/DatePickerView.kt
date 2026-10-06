@@ -451,6 +451,7 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
         Text(props.dismissButtonLabel ?: stringResource(android.R.string.cancel))
       }
     },
+    containerColor = timePickerColors.containerColor,
     text = {
       TimePicker(
         state = state,

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`DevelopmentTeam module setDevelopmentTeamForPbxproj adds the \`DEVELOPMENT_TEAM\` to all build configurations when providing a team id 1`] = `
 "// !$*UTF8*$!

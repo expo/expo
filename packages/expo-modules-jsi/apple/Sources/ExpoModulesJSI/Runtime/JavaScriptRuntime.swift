@@ -38,6 +38,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   internal let runtimePointee: facebook.jsi.Runtime
   internal let scheduler: expo.RuntimeScheduler
 
+  /// Strong handle that values hold instead of a `weak` reference to the runtime. See
+  /// ``JavaScriptRuntimeHandle`` for why.
+  internal let handle: JavaScriptRuntimeHandle
+
   /// Whether this wrapper owns the underlying `jsi::Runtime` and must destroy it on `deinit`. True
   /// only for the standalone `init()`, which creates the runtime via `createHermesRuntime()`. The
   /// other initializers adopt a runtime owned elsewhere (e.g. React Native), which must never be
@@ -62,8 +66,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   internal init(_ runtime: facebook.jsi.Runtime) {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
-    self.scheduler = expo.RuntimeScheduler()
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = false
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
@@ -73,8 +79,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let runtime = expo.createHermesRuntime()
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
-    self.scheduler = expo.RuntimeScheduler()
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = true
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
@@ -85,8 +93,10 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
-    self.scheduler = expo.RuntimeScheduler()
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = false
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
@@ -112,12 +122,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     let fn = unsafeBitCast(dispatch, to: expo.RuntimeScheduler.ScheduleFn.self)
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
-    self.scheduler = expo.RuntimeScheduler(scheduler, fn)
+    self.handle = JavaScriptRuntimeHandle(self.pointee)
+    self.scheduler = expo.RuntimeScheduler.create(scheduler, fn)
     self.ownsRuntime = false
+    handle.attach(self)
     installLongLivedObjectsTeardown()
   }
 
   deinit {
+    handle.detach()
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
     guard ownsRuntime else {
@@ -133,7 +146,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // when the last reference is gone. `deinit` is `nonisolated`, so it can touch the actor-isolated
     // registry directly given that exclusive access.
     propNameIdsRegistry.removeAll()
-    cachedDeferredPromiseFactory = nil
+    cache.clear()
     expo.destroyRuntime(runtimePointee)
   }
 
@@ -181,16 +194,17 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ) -> JavaScriptObject {
     func getter(
       context: UnsafeMutableRawPointer,
-      propertyName: UnsafePointer<CChar>,
+      propertyName: UnsafePointer<facebook.jsi.PropNameID>,
       resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
     ) -> Bool {
-      let propertyName = String(cString: propertyName)
-      nonisolated(unsafe) let resultPtr = resultPtr
+      let resultPtr = UncheckedSendable(resultPtr)
 
       return withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
+        let propertyName = String(jsiPropNameID: propertyName.pointee, in: runtime.pointee)
         return JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
-            try context.get(propertyName).writeJSIValue(to: resultPtr)
+            var result = try context.get(propertyName)
+            JavaScriptValue.write(&result, to: resultPtr.value)
           }
         }
       }
@@ -198,15 +212,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
     func setter(
       context: UnsafeMutableRawPointer,
-      propertyName: UnsafePointer<CChar>,
+      propertyName: UnsafePointer<facebook.jsi.PropNameID>,
       valuePointer: UnsafeMutableRawPointer
     ) -> Bool {
-      let propertyName = String(cString: propertyName)
-
       return withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
+        let propertyName = String(jsiPropNameID: propertyName.pointee, in: runtime.pointee)
         guard let set = context.set else {
           // Unreachable in practice: when the user passed `nil` for `set`, the call site
-          // below at `expo.HostObjectCallbacks(...)` also passes `nil` to C++, and
+          // below creates the read-only `expo.HostObjectCallbacks` without a setter, and
           // `HostObjectCallbacks::set` throws a `jsi::JSError` directly instead of
           // calling back into Swift. Trap loudly so a future C++ refactor can't silently
           // swallow assignments.
@@ -255,17 +268,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc))
       .toOpaque()
-    let setterPointer:
-      (@convention(c) (UnsafeMutableRawPointer, UnsafePointer<CChar>, UnsafeMutableRawPointer) -> Bool)? = setter
-    // Pass a null setter to C++ when the Swift setter is nil so that JS assignment
-    // raises a `jsi::JSError` directly, without crossing the Swift boundary.
-    let callbacks = expo.HostObjectCallbacks(
-      context,
-      getter,
-      set == nil ? nil : setterPointer,
-      propertyNamesGetter,
-      deallocate
-    )
+    // Without a Swift setter, use the read-only callbacks so that JS assignment raises a
+    // `jsi::JSError` directly, without crossing the Swift boundary.
+    let callbacks =
+      set == nil
+      ? expo.HostObjectCallbacks(context, getter, propertyNamesGetter, deallocate)
+      : expo.HostObjectCallbacks(context, getter, setter, propertyNamesGetter, deallocate)
     let hostObject = expo.HostObject.makeObject(pointee, consume callbacks)
 
     return JavaScriptObject(self, hostObject)
@@ -685,8 +693,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
-    let result = try eval(label: label, source)
-    return result.is("Promise") ? try await result.getPromise().await() : result
+    // `@JavaScriptActor` runs this on the caller's thread, so go through `execute` to evaluate on the
+    // JavaScript thread. It runs the closure in place when already there, or when the runtime has no
+    // scheduler and thus no other thread to go to.
+    // The result is boxed because `execute` needs a `Sendable` result and `JavaScriptValue` is not one.
+    let result = try await execute { () async throws -> NonisolatedUnsafeVar<JavaScriptValue> in
+      let value = try self.eval(label: label, source)
+      return NonisolatedUnsafeVar(value.is("Promise") ? try await value.getPromise().await() : value)
+    }
+    return result.value
   }
 
   // MARK: - Garbage collection
@@ -782,12 +797,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @JavaScriptActor
   internal var propNameIdsRegistry: [String: JavaScriptPropNameID] = [:]
 
-  // MARK: - Deferred promise factory
+  // MARK: - Cache
 
-  /// The JavaScript function ``JavaScriptPromise`` uses to create deferred promises, built on first
-  /// use and released with the runtime. See `JavaScriptPromise.init(_:)` for why it exists.
+  /// Values cached with ``cached(_:_:)``. Unchecked exclusivity skips the dynamic access checks on
+  /// every lookup: the cache is only used on the JavaScript thread, and `cached(_:_:)` never keeps an
+  /// access open while it calls out, so accesses can't overlap.
   @JavaScriptActor
-  internal var cachedDeferredPromiseFactory: JavaScriptValue?
+  @exclusivity(unchecked)
+  internal var cache = Cache()
 
   // MARK: - Long-lived objects
 
@@ -819,12 +836,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         // hop back to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
-          // Also flush the cached `jsi::PropNameID`s and the deferred-promise factory: a non-owning
-          // wrapper can outlive its runtime (e.g. captured by a task abandoned on reload) and would
-          // otherwise destroy them against the freed runtime when it deallocates. `self` is weak so
-          // the teardown object doesn't retain the wrapper; the owning wrapper clears both in `deinit`.
+          // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
+          // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
+          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't retain the
+          // wrapper; the owning wrapper clears both in `deinit`.
           self?.propNameIdsRegistry.removeAll()
-          self?.cachedDeferredPromiseFactory = nil
+          self?.cache.clear()
         }
       }
       let object = createObject()
@@ -861,22 +878,23 @@ private func createFunctionClosure(
     // heap-allocated `JavaScriptRef` (Swift 6.2 rejects capturing/consuming a `~Copyable` value in the
     // escaping closure that `withoutActuallyEscaping` synthesizes), the closure constructs the buffer
     // locally from the raw pointer + count. Those are read-only call-scoped inputs that never outlive the
-    // synchronous call, so the `nonisolated(unsafe)` capture is sound. This removes a per-call class
+    // synchronous call, so capturing them through `UncheckedSendable` is sound. This removes a per-call class
     // allocation + retain/release + dealloc that profiling showed dominating the no-op `@JS` host-call
     // floor.
-    nonisolated(unsafe) let thisPtr = thisPtr
-    nonisolated(unsafe) let argumentsPtr = argumentsPtr
-    nonisolated(unsafe) let resultPtr = resultPtr
+    let thisPtr = UncheckedSendable(thisPtr)
+    let argumentsPtr = UncheckedSendable(argumentsPtr)
+    let resultPtr = UncheckedSendable(resultPtr)
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: HostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let this = UnsafeMutablePointer(mutating: thisPtr).move()
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
+          let this = UnsafeMutablePointer(mutating: thisPtr.value).move()
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
           let thisValue = JavaScriptValue(runtime, this)
-          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
+          var result = try context.call(thisValue, consume arguments)
+          JavaScriptValue.write(&result, to: resultPtr.value)
         }
       }
     }
@@ -908,18 +926,19 @@ private func createFunctionClosure(
     // handed in as a borrowed `JavaScriptUnownedValue` pointing straight at the C++-owned `this` slot:
     // it is not moved out and no owning `JavaScriptValue` is allocated, so the closure avoids the
     // per-call `weak`-runtime form/destroy and heap object that the owning `this` pays.
-    nonisolated(unsafe) let thisPtr = thisPtr
-    nonisolated(unsafe) let argumentsPtr = argumentsPtr
-    nonisolated(unsafe) let resultPtr = resultPtr
+    let thisPtr = UncheckedSendable(thisPtr)
+    let argumentsPtr = UncheckedSendable(argumentsPtr)
+    let resultPtr = UncheckedSendable(resultPtr)
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: UnownedThisHostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
-          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
-          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
+          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
+          var result = try context.call(thisValue, consume arguments)
+          JavaScriptValue.write(&result, to: resultPtr.value)
         }
       }
     }

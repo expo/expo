@@ -245,7 +245,6 @@
 				"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK)",
 				"$(RN_SPM_HERMES_FRAMEWORK)",
 				"$(RN_SPM_EXPO_FILE_SYSTEM_FRAMEWORK)",
-				"$(RN_SPM_EXPO_FONT_FRAMEWORK)",
 				"$(RN_SPM_EXPO_MODULES_CORE_FRAMEWORK)",
 				"$(RN_SPM_EXPO_MODULES_JSI_FRAMEWORK)",
 				"$(RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK)",
@@ -258,14 +257,13 @@
 				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ReactNativeDependencies.framework",
 				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/hermesvm.framework",
 				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoFileSystem.framework",
-				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoFont.framework",
 				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoModulesCore.framework",
 				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoModulesJSI.framework",
 				"$(TARGET_BUILD_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ExpoModulesWorklets.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euo pipefail\n\ndestination=\"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\nmkdir -p \"$destination\"\n\nvalidate_framework() {\n  source=\"$1\"\n  name=\"$2\"\n  if [ -z \"$source\" ] || [ ! -d \"$source\" ]; then\n    echo \"error: React Native SwiftPM framework '$name' is unavailable for configuration '$CONFIGURATION' and SDK '$SDK_NAME': $source\"\n    exit 1\n  fi\n  binary=\"${name%.framework}\"\n  if [ ! -e \"$source/$binary\" ] && [ ! -e \"$source/Versions/Current/$binary\" ]; then\n    echo \"error: React Native SwiftPM framework '$name' is invalid for configuration '$CONFIGURATION': expected $source/$binary or $source/Versions/Current/$binary\"\n    exit 1\n  fi\n}\n\ncopy_and_sign() {\n  source=\"$1\"\n  name=\"$2\"\n  /usr/bin/rsync -a --delete \"$source/\" \"$destination/$name/\"\n  if [ \"${CODE_SIGNING_ALLOWED:-YES}\" != \"NO\" ]; then\n    identity=\"${EXPANDED_CODE_SIGN_IDENTITY:--}\"\n    if [ \"$identity\" = \"-\" ]; then\n      /usr/bin/codesign --force --sign - --timestamp=none --preserve-metadata=identifier,entitlements,flags \"$destination/$name\"\n    else\n      /usr/bin/codesign --force --sign \"$identity\" --preserve-metadata=identifier,entitlements,flags \"$destination/$name\"\n    fi\n  fi\n}\n\nvalidate_framework \"${RN_SPM_REACT_FRAMEWORK:-}\" \"React.framework\"\nvalidate_framework \"${RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK:-}\" \"ReactNativeDependencies.framework\"\nvalidate_framework \"${RN_SPM_HERMES_FRAMEWORK:-}\" \"hermesvm.framework\"\nvalidate_framework \"${RN_SPM_EXPO_FILE_SYSTEM_FRAMEWORK:-}\" \"ExpoFileSystem.framework\"\nvalidate_framework \"${RN_SPM_EXPO_FONT_FRAMEWORK:-}\" \"ExpoFont.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_CORE_FRAMEWORK:-}\" \"ExpoModulesCore.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_JSI_FRAMEWORK:-}\" \"ExpoModulesJSI.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK:-}\" \"ExpoModulesWorklets.framework\"\ncopy_and_sign \"${RN_SPM_REACT_FRAMEWORK:-}\" \"React.framework\"\ncopy_and_sign \"${RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK:-}\" \"ReactNativeDependencies.framework\"\ncopy_and_sign \"${RN_SPM_HERMES_FRAMEWORK:-}\" \"hermesvm.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_FILE_SYSTEM_FRAMEWORK:-}\" \"ExpoFileSystem.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_FONT_FRAMEWORK:-}\" \"ExpoFont.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_CORE_FRAMEWORK:-}\" \"ExpoModulesCore.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_JSI_FRAMEWORK:-}\" \"ExpoModulesJSI.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK:-}\" \"ExpoModulesWorklets.framework\"\n";
+			shellScript = "set -euo pipefail\n\ndestination=\"$TARGET_BUILD_DIR/$FRAMEWORKS_FOLDER_PATH\"\nmkdir -p \"$destination\"\n\nvalidate_framework() {\n  source=\"$1\"\n  name=\"$2\"\n  if [ -z \"$source\" ] || [ ! -d \"$source\" ]; then\n    echo \"error: React Native SwiftPM framework '$name' is unavailable for configuration '$CONFIGURATION' and SDK '$SDK_NAME': $source\"\n    exit 1\n  fi\n  binary=\"${name%.framework}\"\n  if [ ! -e \"$source/$binary\" ] && [ ! -e \"$source/Versions/Current/$binary\" ]; then\n    echo \"error: React Native SwiftPM framework '$name' is invalid for configuration '$CONFIGURATION': expected $source/$binary or $source/Versions/Current/$binary\"\n    exit 1\n  fi\n}\n\ncopy_and_sign() {\n  source=\"$1\"\n  name=\"$2\"\n  /usr/bin/rsync -a --delete \"$source/\" \"$destination/$name/\"\n  if [ \"${CODE_SIGNING_ALLOWED:-YES}\" != \"NO\" ]; then\n    identity=\"${EXPANDED_CODE_SIGN_IDENTITY:--}\"\n    if [ \"$identity\" = \"-\" ]; then\n      /usr/bin/codesign --force --sign - --timestamp=none --preserve-metadata=identifier,entitlements,flags \"$destination/$name\"\n    else\n      /usr/bin/codesign --force --sign \"$identity\" --preserve-metadata=identifier,entitlements,flags \"$destination/$name\"\n    fi\n  fi\n}\n\nvalidate_framework \"${RN_SPM_REACT_FRAMEWORK:-}\" \"React.framework\"\nvalidate_framework \"${RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK:-}\" \"ReactNativeDependencies.framework\"\nvalidate_framework \"${RN_SPM_HERMES_FRAMEWORK:-}\" \"hermesvm.framework\"\nvalidate_framework \"${RN_SPM_EXPO_FILE_SYSTEM_FRAMEWORK:-}\" \"ExpoFileSystem.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_CORE_FRAMEWORK:-}\" \"ExpoModulesCore.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_JSI_FRAMEWORK:-}\" \"ExpoModulesJSI.framework\"\nvalidate_framework \"${RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK:-}\" \"ExpoModulesWorklets.framework\"\ncopy_and_sign \"${RN_SPM_REACT_FRAMEWORK:-}\" \"React.framework\"\ncopy_and_sign \"${RN_SPM_REACT_NATIVE_DEPENDENCIES_FRAMEWORK:-}\" \"ReactNativeDependencies.framework\"\ncopy_and_sign \"${RN_SPM_HERMES_FRAMEWORK:-}\" \"hermesvm.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_FILE_SYSTEM_FRAMEWORK:-}\" \"ExpoFileSystem.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_CORE_FRAMEWORK:-}\" \"ExpoModulesCore.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_JSI_FRAMEWORK:-}\" \"ExpoModulesJSI.framework\"\ncopy_and_sign \"${RN_SPM_EXPO_MODULES_WORKLETS_FRAMEWORK:-}\" \"ExpoModulesWorklets.framework\"\n";
 		};
 		708C4700668F67C0665B08ED /* Generate Expo app.config */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -333,12 +331,6 @@
 				"RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64";
 				"RN_SPM_EXPO_MODULES_CORE_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework/ExpoModulesCore";
 				"RN_SPM_EXPO_MODULES_CORE_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework";
-				"RN_SPM_EXPO_FONT_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64_x86_64-simulator";
-				"RN_SPM_EXPO_FONT_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64_x86_64-simulator/ExpoFont.framework/ExpoFont";
-				"RN_SPM_EXPO_FONT_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64_x86_64-simulator/ExpoFont.framework";
-				"RN_SPM_EXPO_FONT_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64";
-				"RN_SPM_EXPO_FONT_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64/ExpoFont.framework/ExpoFont";
-				"RN_SPM_EXPO_FONT_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64/ExpoFont.framework";
 				"RN_SPM_EXPO_FILE_SYSTEM_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-file-system.xcframework/ios-arm64_x86_64-simulator";
 				"RN_SPM_EXPO_FILE_SYSTEM_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-file-system.xcframework/ios-arm64_x86_64-simulator/ExpoFileSystem.framework/ExpoFileSystem";
 				"RN_SPM_EXPO_FILE_SYSTEM_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-file-system.xcframework/ios-arm64_x86_64-simulator/ExpoFileSystem.framework";
@@ -405,7 +397,6 @@
 					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH)",
 					"$(RN_SPM_HERMES_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_FILE_SYSTEM_SEARCH_PATH)",
-					"$(RN_SPM_EXPO_FONT_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH)",
@@ -443,7 +434,6 @@
 					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY)",
 					"$(RN_SPM_HERMES_BINARY)",
 					"$(RN_SPM_EXPO_FILE_SYSTEM_BINARY)",
-					"$(RN_SPM_EXPO_FONT_BINARY)",
 					"$(RN_SPM_EXPO_MODULES_CORE_BINARY)",
 					"$(RN_SPM_EXPO_MODULES_JSI_BINARY)",
 					"$(RN_SPM_EXPO_MODULES_WORKLETS_BINARY)",
@@ -488,12 +478,6 @@
 				"RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64";
 				"RN_SPM_EXPO_MODULES_CORE_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework/ExpoModulesCore";
 				"RN_SPM_EXPO_MODULES_CORE_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-modules-core.xcframework/ios-arm64/ExpoModulesCore.framework";
-				"RN_SPM_EXPO_FONT_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64_x86_64-simulator";
-				"RN_SPM_EXPO_FONT_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64_x86_64-simulator/ExpoFont.framework/ExpoFont";
-				"RN_SPM_EXPO_FONT_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64_x86_64-simulator/ExpoFont.framework";
-				"RN_SPM_EXPO_FONT_SEARCH_PATH[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64";
-				"RN_SPM_EXPO_FONT_BINARY[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64/ExpoFont.framework/ExpoFont";
-				"RN_SPM_EXPO_FONT_FRAMEWORK[sdk=iphoneos*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-font.xcframework/ios-arm64/ExpoFont.framework";
 				"RN_SPM_EXPO_FILE_SYSTEM_SEARCH_PATH[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-file-system.xcframework/ios-arm64_x86_64-simulator";
 				"RN_SPM_EXPO_FILE_SYSTEM_BINARY[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-file-system.xcframework/ios-arm64_x86_64-simulator/ExpoFileSystem.framework/ExpoFileSystem";
 				"RN_SPM_EXPO_FILE_SYSTEM_FRAMEWORK[sdk=iphonesimulator*]" = "$(SRCROOT)/build/xcframeworks/$(RN_SPM_FLAVOR)/plugins/expo-file-system.xcframework/ios-arm64_x86_64-simulator/ExpoFileSystem.framework";
@@ -560,7 +544,6 @@
 					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_SEARCH_PATH)",
 					"$(RN_SPM_HERMES_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_FILE_SYSTEM_SEARCH_PATH)",
-					"$(RN_SPM_EXPO_FONT_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_MODULES_CORE_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_MODULES_JSI_SEARCH_PATH)",
 					"$(RN_SPM_EXPO_MODULES_WORKLETS_SEARCH_PATH)",
@@ -589,7 +572,6 @@
 					"$(RN_SPM_REACT_NATIVE_DEPENDENCIES_BINARY)",
 					"$(RN_SPM_HERMES_BINARY)",
 					"$(RN_SPM_EXPO_FILE_SYSTEM_BINARY)",
-					"$(RN_SPM_EXPO_FONT_BINARY)",
 					"$(RN_SPM_EXPO_MODULES_CORE_BINARY)",
 					"$(RN_SPM_EXPO_MODULES_JSI_BINARY)",
 					"$(RN_SPM_EXPO_MODULES_WORKLETS_BINARY)",

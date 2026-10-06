@@ -1,5 +1,32 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Fix assets moved with `Album.create` (with `moveAssets` set to `true`) or `album.add` sometimes disappearing from the media library. The file was moved, but its MediaStore entry was deleted, so it only showed up again after a rescan, with a new ID. ([#50817](https://github.com/expo/expo/pull/50817) by [@devonik](https://github.com/devonik))
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Fix `Album.getAll()` not returning albums nested inside folders. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `Album.getSmartAlbums()` and `Album.getType()`. ([#47822](https://github.com/expo/expo/pull/47822) by [@Wenszel](https://github.com/Wenszel))
+- Add `Album.getAlbumsMetadata()` for cheap bulk album listing and `album.getAssetCount()`. ([#47903](https://github.com/expo/expo/pull/47903) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.3 — 2026-09-28
 
 _This version does not introduce any user-facing changes._

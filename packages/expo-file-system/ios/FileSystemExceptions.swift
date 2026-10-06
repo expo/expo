@@ -204,3 +204,15 @@ internal final class FilePreviewFileNotFoundException: GenericException<URL>, @u
     "File does not exist: \(param.absoluteString)"
   }
 }
+
+internal final class FilePreviewInvalidInputException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    param
+  }
+}
+
+internal final class BackgroundDownloadNotFinishedException: Exception {
+  override var reason: String {
+    "Background completion can only be acknowledged after the download finishes"
+  }
+}

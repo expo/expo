@@ -13,6 +13,7 @@ import { getPackageName, getSourceFileImports, getSourceFilesAsync, isNCCBuilt }
  *   devDependencies?: Record<string, string>,
  *   peerDependencies?: Record<string, string>,
  *   optionalDependencies?: Record<string, string>,
+ *   exports?: unknown,
  * }} PackageJson
  *
  * The three levels of which dangerous dependencies are allowed.
@@ -270,6 +271,61 @@ export function validateWorkspaceDependencyProtocols(pkg, logger = defaultLogger
       .join(', ')}`
   );
   throw new Error(`${pkg.packageName} has internal dependencies without the workspace: protocol.`);
+}
+
+/**
+ * Config plugin files a package can ship at its root, resolved as `<package>/app.plugin`.
+ */
+export const PLUGIN_FILES = ['app.plugin.js', 'app.plugin.cjs', 'app.plugin.mjs', 'app.plugin.ts'];
+
+/**
+ * Tools that resolve a config plugin through Node, rather than finding it on disk, can only reach
+ * `<package>/app.plugin.js` when `package.json:exports` lists it.
+ * @param {{ packageName: string, packageJson: PackageJson }} pkg
+ * @param {string[]} pluginFiles Config plugin files present in the package root
+ * @param {DepsLogger} logger
+ */
+export function validatePluginExports(pkg, pluginFiles, logger = defaultLogger) {
+  const { exports } = pkg.packageJson;
+  if (!pluginFiles.length || exports == null) {
+    return;
+  }
+  const missing = pluginFiles.filter((file) => !isSubpathExported(exports, `./${file}`));
+  if (!missing.length) {
+    return;
+  }
+  logger.warn(
+    `📦 Missing config plugin exports: ${missing.map((file) => `"./${file}"`).join(', ')} (add ${missing.map((file) => `"./${file}": "./${file}"`).join(', ')} to "exports")`
+  );
+  throw new Error(`${pkg.packageName} does not export its config plugin.`);
+}
+
+/**
+ * @param {unknown} exports
+ * @param {string} subpath
+ */
+function isSubpathExported(exports, subpath) {
+  if (typeof exports !== 'object' || exports === null || Array.isArray(exports)) {
+    return false;
+  }
+  const keys = Object.keys(exports).filter((key) => key.startsWith('.'));
+  if (keys.includes(subpath)) {
+    return exports[subpath] !== null;
+  }
+  return keys.some((key) => {
+    const star = key.indexOf('*');
+    if (star < 0) {
+      return false;
+    }
+    const prefix = key.slice(0, star);
+    const suffix = key.slice(star + 1);
+    return (
+      subpath.length >= prefix.length + suffix.length &&
+      subpath.startsWith(prefix) &&
+      subpath.endsWith(suffix) &&
+      exports[key] !== null
+    );
+  });
 }
 
 /**
