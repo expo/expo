@@ -468,6 +468,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
       }
+      if (meta.isLayout) {
+        throw new Error(
+          `The redirect source "${meta.route}" is a layout. Layouts can't be redirect sources. Use a route as the source instead.`
+        );
+      }
 
       const redirect = redirects[meta.route]!;
       const defaults: RedirectRouteNode = {
@@ -499,6 +504,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     if (meta.isRewrite) {
       if (processedRedirectsRewrites.has(meta.route)) {
         continue;
+      }
+      if (meta.isLayout) {
+        throw new Error(
+          `The rewrite source "${meta.route}" is a layout. Layouts can't be rewrite sources. Use a route as the source instead.`
+        );
       }
 
       const rewrite = rewrites[meta.route]!;

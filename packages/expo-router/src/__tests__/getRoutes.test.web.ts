@@ -3,6 +3,23 @@ import type { RewriteConfig } from '../getRoutesCore';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 describe('rewrites', () => {
+  it('throws when a rewrite source is a layout', () => {
+    expect(() =>
+      getRoutes(
+        inMemoryContext({
+          './_layout': () => null,
+          './other': () => null,
+        }),
+        {
+          rewrites: [{ source: '/_layout', destination: '/other' } as RewriteConfig],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toThrow(
+      'The rewrite source "_layout" is a layout. Layouts can\'t be rewrite sources. Use a route as the source instead.'
+    );
+  });
+
   it('can handle rewrites', () => {
     expect(
       getRoutes(
