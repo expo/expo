@@ -63,6 +63,9 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/menu': ['swift-ui/Menu/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/modifiers': ['swift-ui/modifiers/index.ts', 'expo-ui'],
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationdestination': ['swift-ui/NavigationDestination/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationlink': ['swift-ui/NavigationLink/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationstack': ['swift-ui/NavigationStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/overlay': ['swift-ui/Overlay/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/popover': ['swift-ui/Popover/index.tsx', 'expo-ui'],
@@ -395,11 +398,7 @@ const executeCommand = async (
     const isMainPackageEntry = jsonFileName === packageName;
     const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
     const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
-    if (
-      isMainPackageEntry &&
-      fs.existsSync(pluginEntryPath) &&
-      fs.existsSync(pluginTsConfigPath)
-    ) {
+    if (isMainPackageEntry && fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
       const pluginApp = await Application.bootstrapWithPlugins(
         {
           ...typedocOptions,
