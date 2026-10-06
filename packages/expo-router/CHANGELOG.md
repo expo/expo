@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix platform-specific route parsing and loader keys. ([#49035](https://github.com/expo/expo/pull/49035) by [@hassankhan](https://github.com/hassankhan))
+- NativeTabs now honors layout `unstable_settings.initialRouteName` instead of always selecting the first Trigger. ([#49900](https://github.com/expo/expo/pull/49900) by [@terijaki](https://github.com/terijaki))
 
 ### 💡 Others
 
