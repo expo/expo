@@ -58,7 +58,11 @@ export async function withFileRollback<T>(
         if (original === null) {
           await fs.promises.rm(filePath, { force: true });
         } else {
-          await fs.promises.writeFile(filePath, original);
+          // Skip unchanged files, e.g. a read-only file whose write failed.
+          const current = await fs.promises.readFile(filePath).catch(() => null);
+          if (!current?.equals(original)) {
+            await fs.promises.writeFile(filePath, original);
+          }
         }
       } catch (rollbackError) {
         rollbackErrors.push(rollbackError);

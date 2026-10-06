@@ -51,6 +51,22 @@ describe(withFileRollback, () => {
     expect((await fs.promises.stat(directory)).isDirectory()).toBe(true);
   });
 
+  it('reports the original error when a read-only file was left unchanged', async () => {
+    const readOnly = path.join(root, 'read-only.ts');
+    await fs.promises.writeFile(readOnly, 'original');
+    await fs.promises.chmod(readOnly, 0o444);
+
+    const result = withFileRollback(async (writeFile) => {
+      await writeFile(path.join(root, 'new.ts'), 'new');
+      await writeFile(readOnly, 'replacement');
+    });
+
+    await expect(result).rejects.not.toBeInstanceOf(AggregateError);
+    await expect(result).rejects.toMatchObject({ code: 'EACCES' });
+    expect(await fs.promises.readFile(readOnly, 'utf8')).toBe('original');
+    expect(await fs.promises.readdir(root)).toEqual(['read-only.ts']);
+  });
+
   it('preserves a dangling symlink when refusing to overwrite it', async () => {
     const link = path.join(root, 'index.ts');
     await fs.promises.symlink('missing.ts', link);
