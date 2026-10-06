@@ -17,6 +17,16 @@ Run `et --help` to discover the rest (publishing, changelogs, on-call dashboards
 - **Red/green:** write the test first and watch it fail, then implement the feature or fix until
   it passes. Don't write the implementation before the failing test exists.
 
+## Long-term goals
+
+Prefer these in new code, and migrate existing call sites when you touch them:
+
+- **Module resolution:** use `resolveFrom` from `@expo/require-utils` instead of the legacy
+  `resolve-from` package (including `resolveFrom.silent`). It returns `null` instead of throwing,
+  and checks direct file paths before falling back to Node resolution, so file specifiers resolve
+  regardless of a package's `"exports"`. `@expo/require-utils` will eventually replace all legacy
+  `resolve-from` calls.
+
 ## Writing tests
 
 ### Unit tests
