@@ -4,6 +4,7 @@
     {
       "name": "ExpoModulesJSI",
       "podName": "ExpoModulesJSI",
+      "headersXCFramework": true,
       "platforms": [
         "iOS(\"16.4\")"
       ],
