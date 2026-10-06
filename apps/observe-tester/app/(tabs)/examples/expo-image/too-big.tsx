@@ -31,9 +31,10 @@ export default function TooBigImage() {
         A 4000×4000px image loaded with no size constraints. Decoded:{' '}
         {image ? `${image.width * image.scale}×${image.height * image.scale}px` : '…'} — far beyond
         this device's screen ({Math.round(screen.width)}×{Math.round(screen.height)}pt @
-        {PixelRatio.get()}x), so an `expo-image.oversized` warning is logged. The source URL carries
-        fake signing params; the event reports it without them and with `urlSanitized: true`, unless
-        `includeUrlParams` is enabled in the integration config. Check the Sessions tab.
+        {PixelRatio.get()}x), so an `expo-image.oversized` warning is logged. The source URL
+        carries fake signing params; the event reports it without them and with `urlSanitized:
+        true`, unless `includeUrlParams` is enabled in the integration config. Check the Sessions
+        tab.
       </Text>
       {failed ? (
         <Text style={[styles.body, { color: theme.text.secondary }]}>
