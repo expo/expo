@@ -2,13 +2,13 @@
 
 import type { ConfigAPI, PluginObj } from '@babel/core';
 
-import { getPlatform } from '../common';
+import { getBundler, getPlatform } from '../common';
 
 export function expoImportMetaTransformPluginFactory(pluginEnabled: boolean) {
   return (api: ConfigAPI & typeof import('@babel/core')): PluginObj => {
     const { types: t } = api;
     const platform = api.caller(getPlatform);
-    const isJest = api.caller((caller: any) => !!caller?.isJest);
+    const bundler = api.caller(getBundler);
 
     return {
       name: 'expo-import-meta-transform',
@@ -17,7 +17,7 @@ export function expoImportMetaTransformPluginFactory(pluginEnabled: boolean) {
           const { node } = path;
           if (node.meta.name === 'import' && node.property.name === 'meta') {
             // Jest runs each file in Node, so `import.meta.url` can be the module's own file URL.
-            if (isJest) {
+            if (bundler === 'jest') {
               path.replaceWith(
                 api.template.expression
                   .ast`({ url: require('url').pathToFileURL(__filename).href })`

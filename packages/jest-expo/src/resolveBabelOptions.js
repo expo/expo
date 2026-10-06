@@ -78,7 +78,7 @@ function resolveBabelOptions(projectRoot = process.cwd()) {
     configFile: true,
     extends: babelConfigOpts.exts,
     presets: babelConfigOpts.presets,
-    caller: { name: 'metro', bundler: 'metro', platform: 'ios', isJest: true },
+    caller: { name: 'metro', bundler: 'jest', platform: 'ios' },
   };
 }
 

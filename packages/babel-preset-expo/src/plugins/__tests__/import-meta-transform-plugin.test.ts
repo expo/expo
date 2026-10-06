@@ -70,7 +70,7 @@ it(`transforms import.meta.url to the module file URL under Jest`, () => {
       engine: 'hermes',
       platform: 'ios',
       isDev: true,
-      isJest: true,
+      bundler: 'jest',
     }),
   };
 
@@ -89,7 +89,7 @@ it(`transforms import.meta.url to the module file URL for server bundles under J
       platform: 'web',
       isDev: true,
       isServer: true,
-      isJest: true,
+      bundler: 'jest',
     }),
   };
 

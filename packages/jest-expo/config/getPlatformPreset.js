@@ -60,7 +60,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
           ...babelJestOptions,
           caller: {
             name: 'metro',
-            bundler: 'metro',
+            bundler: 'jest',
             // Add support for the `platform` babel transforms and inlines such as
             // Platform.OS and `process.env.EXPO_OS`.
             platform,
@@ -68,7 +68,6 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
             isServer,
             // Bundle in React Server Component mode.
             isReactServer,
-            isJest: true,
           },
         },
       ],
