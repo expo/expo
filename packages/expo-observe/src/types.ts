@@ -153,7 +153,9 @@ export interface ObserveIntegrationsConfig {
   /**
    * Enables the `react-native-reanimated` integration, which reports Reanimated errors as
    * `reanimated.error` errors and Reanimated warnings as `reanimated.warning` events. Reanimated
-   * still prints them to the console. Each distinct message is reported once per app launch.
+   * still prints them to the console. Each distinct message is reported at most once per minute,
+   * and at most 100 distinct errors and 100 distinct warnings are reported in any one-minute
+   * period.
    *
    * Requires `react-native-reanimated` 4.7.0 or later to be installed.
    *
