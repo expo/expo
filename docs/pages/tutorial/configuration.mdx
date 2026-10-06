@@ -28,31 +28,29 @@ In this chapter, we'll address some app details before deploying our app to an a
 Inside **src/app/\_layout.tsx**:
 
 1. Import `StatusBar` from `expo-status-bar`.
-2. Group the `StatusBar` and existing `Stack` components with [React's Fragment component](https://react.dev/reference/react/Fragment).
+2. Add the `StatusBar` component after the `Stack` component, inside `GestureHandlerRootView`. Set its `style` prop to `light`, so the status bar text and icons are light on the dark background.
 
 {/* prettier-ignore */}
 ```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 /* @tutinfo */
 import { StatusBar } from 'expo-status-bar';
 /* @end */
 
 export default function RootLayout() {
   return (
-    /* @tutinfo Group the `StatusBar` and existing `Stack` components with React's Fragment component. */
-    <>
-    /* @end */
+    <GestureHandlerRootView>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
-      /* @tutinfo */<StatusBar style="light" />
-    </>
-    /* @end */
+      /* @tutinfo Add the `StatusBar` component with the `light` style. */<StatusBar style="light" />/* @end */
+    </GestureHandlerRootView>
   );
 }
 ```
 
-Let's take a look at our app now on Android, and iOS:
+Let's take a look at our app now on Android and iOS:
 
 <ContentSpotlight
   alt="StatusBar with light style shown on both Android and iOS."
@@ -74,17 +72,29 @@ Inside the project, there's an **icon.png** file inside the **assets/images** di
   className="max-w-[150px]"
 />
 
-Like the splash screen image, the `"icon"` property in the **app.json** file configures the app icon's path. By default, a new Expo project defines the correct path to `"./assets/images/icon.png"`. We don't have to change anything.
+Like the splash screen image, the `"icon"` property in the **app.json** file configures the app icon's path. By default, a new Expo project defines the correct path to `"./assets/images/icon.png"`.
+
+A new Expo project also has platform-specific icon properties, which take priority over `"icon"`:
+
+- On Android, the `"android.adaptiveIcon"` property uses the **android-icon-foreground.png**, **android-icon-background.png**, and **android-icon-monochrome.png** files from the **assets/images** directory. The [downloaded assets](/tutorial/create-your-first-app/#download-assets) replaced these files with the StickerSmash icon, so we don't have to change anything.
+- On iOS, the `"ios.icon"` property uses the default Expo icon from the **assets/expo.icon** file. To use our **icon.png** on iOS, remove the following `"ios"` property from **app.json**:
+
+```json app.json
+{
+  "expo": {
+    "icon": "./assets/images/icon.png",
+    /* @hide ... */ /* @end */
+    "ios": {
+      "icon": "./assets/expo.icon"
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+Expo Go doesn't show our app icon. We'll see it on the device after we build the app. To learn more, see the [app icon](/develop/user-interface/splash-screen-and-app-icon/#app-icon) guide.
 
 > Eventually, when you'll build your app for the app stores, [Expo Application Services (EAS)](/eas/) will take this image and create optimized icon for every device.
-
-You can see the icon in various places in Expo Go. Here is an example of the app icon displayed in the developer menu of Expo Go:
-
-<ContentSpotlight
-  alt="Splash screen on Developer Menu in Expo Go app."
-  src="/static/images/tutorial/app-icon-visible.webp"
-  className="max-w-[240px]"
-/>
 
 </Step>
 
