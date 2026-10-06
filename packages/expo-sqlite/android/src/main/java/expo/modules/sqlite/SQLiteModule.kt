@@ -371,9 +371,8 @@ class SQLiteModule : Module() {
       synchronized(statement) {
         maybeThrowForFinalizedStatement(statement)
         maybeThrowForClosedDatabase(database)
-        if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
-          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-        }
+        // Native prepare throws with the error captured under SQLite's connection mutex.
+        database.ref.sqlite3_prepare_v2(source, statement.ref)
         statement.isPrepared = true
         database.statements.add(statement)
       }
