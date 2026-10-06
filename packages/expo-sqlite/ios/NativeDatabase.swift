@@ -175,12 +175,6 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
   }
 }
 
-internal func sqliteErrorMessage(for db: OpaquePointer?) -> String {
-  let code = exsqlite3_errcode(db)
-  let message = String(cString: exsqlite3_errmsg(db), encoding: .utf8) ?? ""
-  return "Error code \(code): \(message)"
-}
-
 // `==` lives in an extension: an operator declared inside a type that carries a member-attribute macro
 // is seen twice by the compiler and fails the `Equatable` conformance check.
 // swiftlint:disable:next no_grouping_extension
