@@ -149,7 +149,8 @@ function groupRouteNodes(
   if (!isScreenRouteNode(routeNode)) {
     // Except the root layout
     if (routeNode.route === '') {
-      for (const child of isLayoutRouteNode(routeNode) ? routeNode.children : []) {
+      const children = isLayoutRouteNode(routeNode) ? routeNode.children : [];
+      for (const child of children) {
         groupRouteNodes(child, groupedContextKeys);
       }
       return groupedContextKeys;
