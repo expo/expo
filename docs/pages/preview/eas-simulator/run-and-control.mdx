@@ -375,7 +375,7 @@ Copy `remoteConfig.previewApiUrl` from the output. It has the form `https://<pre
 
 Each entry in the file has the request and response, the status, and timings, plus the headers and bodies that you chose to keep.
 
-### If the app behaves differently
+### Troubleshoot apps that fail during capture
 
 Capture sends the app's traffic through a proxy on the session's machine and decrypts it. Some apps react to that: apps that pin their server certificates cannot connect, and other requests can fail or time out. If the app behaves in an unexpected way while capture is on, start a new session without `--network-capture` to check whether capture causes it, and leave capture off when you do not need it.
 
