@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Patch Changes
+
+- Fix `expo-source` resolution for published package entry points and deep `build/*` imports.
+
 ## 58.0.16
 
 ### Patch Changes
