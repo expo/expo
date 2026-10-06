@@ -16,6 +16,11 @@ internal final class FileSystemPreviewItem: NSObject, QLPreviewItem {
 internal final class FileSystemPreviewController: QLPreviewController {
   // Keep the data source and file access alive for the native viewer's lifetime.
   var session: FileSystemPreviewSession?
+  var onPresentationFailure: (() -> Void)?
+
+  deinit {
+    onPresentationFailure?()
+  }
 }
 
 internal final class FileSystemPreviewSession: NSObject, QLPreviewControllerDataSource, QLPreviewControllerDelegate {

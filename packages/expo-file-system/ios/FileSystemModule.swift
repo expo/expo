@@ -128,13 +128,19 @@ public final class FileSystemModule: Module {
       }
     }
     previewController.session = session
+    previewController.onPresentationFailure = { [weak self] in
+      self?.isPresentingPreview = false
+      self?.previewController = nil
+      promise.reject(FilePreviewPresentationException())
+    }
     isPresentingPreview = true
     self.previewController = previewController
     previewController.dataSource = session
     previewController.delegate = session
     previewController.currentPreviewItemIndex = initialIndex
 
-    currentViewController.present(previewController, animated: true) {
+    currentViewController.present(previewController, animated: true) { [weak previewController] in
+      previewController?.onPresentationFailure = nil
       promise.resolve()
     }
   }

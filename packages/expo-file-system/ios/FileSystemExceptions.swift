@@ -211,6 +211,12 @@ internal final class FilePreviewInvalidInputException: GenericException<String>,
   }
 }
 
+internal final class FilePreviewPresentationException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Unable to present file preview"
+  }
+}
+
 internal final class BackgroundDownloadNotFinishedException: Exception {
   override var reason: String {
     "Background completion can only be acknowledged after the download finishes"
