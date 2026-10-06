@@ -137,8 +137,9 @@ export function evalMetroNoHandling(
   });
 }
 
-// Node can't load an index map (with `sections`), which Metro emits for bundles, so stack
-// traces from the bundle are only source-mapped when given a flat map.
+// NOTE(@robhogan): Node can't load an index map (with `sections`), which Metro emits for
+// bundles, so stack traces from the bundle are only source-mapped when given a flat map.
+// This can be removed once Node loads index maps from a `sourceMappingURL`.
 function toFlatSourceMap(sourceMap: string): string {
   const parsed = JSON.parse(sourceMap);
   return 'sections' in parsed ? JSON.stringify(flattenSourceMap(parsed)) : sourceMap;
