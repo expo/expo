@@ -12,6 +12,7 @@ export const expoCompileAndroid: Command = async (argv) => {
       '--help': Boolean,
       '--dev': Boolean,
       '--prod': Boolean,
+      '--output-dir': String,
       '-h': '--help',
     },
     argv
@@ -22,10 +23,11 @@ export const expoCompileAndroid: Command = async (argv) => {
       `Build the Android app binary locally`,
       chalk`npx expo compile:android {dim <dir>}`,
       [
-        chalk`<dir>       Directory of the Expo project. {dim Default: Current working directory}`,
-        `--dev       Build in development mode`,
-        `--prod      Build in production mode (default)`,
-        `-h, --help  Usage info`,
+        chalk`<dir>               Directory of the Expo project. {dim Default: Current working directory}`,
+        `--dev               Build in development mode`,
+        `--prod              Build in production mode (default)`,
+        `--output-dir <dir>  Directory to copy the built app to`,
+        `-h, --help          Usage info`,
       ].join('\n')
     );
   }
@@ -36,6 +38,11 @@ export const expoCompileAndroid: Command = async (argv) => {
     const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
     loadEnvFiles(projectRoot, {
       mode: resolveMode({ dev: args['--dev'], prod: args['--prod'] }),
+    });
+
+    const { resolveOptions } = await import('../resolveOptions.js');
+    resolveOptions(projectRoot, {
+      outputDir: args['--output-dir'],
     });
 
     Log.exit(`expo compile:android is not available yet.`);
