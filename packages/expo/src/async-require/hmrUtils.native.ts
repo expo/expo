@@ -1,9 +1,8 @@
 // Based on https://github.com/facebook/react-native/blob/9ab95dd2b5746e8323ad1d65591d5a4ec7718790/packages/react-native/Libraries/Utilities/HMRClient.js
 
-import LogBox from 'react-native/Libraries/LogBox/LogBox';
+import { DevSettings, LogBox } from 'react-native';
 // @ts-expect-error missing types
 import NativeRedBox from 'react-native/Libraries/NativeModules/specs/NativeRedBox';
-import DevSettings from 'react-native/Libraries/Utilities/DevSettings';
 
 import getDevServer from '../utils/getDevServer';
 import { HMRMetroBuildError } from './buildErrors';
@@ -20,12 +19,10 @@ export function hideLoading() {
 
 export function resetErrorOverlay() {
   dismissRedbox();
-  // @ts-expect-error clearAllLogs exists, but ts types are missing
   LogBox.clearAllLogs();
 }
 
 export function reload() {
-  // @ts-expect-error missing types
   DevSettings.reload('Bundle Splitting – Metro disconnected');
 }
 
@@ -87,10 +84,10 @@ export function handleCompileError(cause: any) {
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
   dismissRedbox();
 
-  const LogBox = require('react-native/Libraries/LogBox/LogBox').default;
   // The error is passed thru LogBox APIs directly to the parsing function.
   // Won't log the error in devtools console
   // (using throw would mangle the error message and print with ANSI
   // because throw on native is processed as console.error)
+  // @ts-expect-error Metro build errors are parsed by LogBox, not RN ExceptionData
   LogBox.addException(new HMRMetroBuildError(cause.message, cause.type, cause.cause));
 }
