@@ -1,6 +1,8 @@
+import { MaterialSymbols_700Bold_Filled } from '@expo-google-fonts/material-symbols/700Bold_Filled';
+
 import type { AndroidSymbolWeight } from '../..';
 const weight: AndroidSymbolWeight = {
   name: 'MaterialSymbols_700Bold_Filled',
-  font: require('../../../../assets/fonts/MaterialSymbols_700Bold_Filled.ttf'),
+  font: MaterialSymbols_700Bold_Filled,
 };
 export default weight;

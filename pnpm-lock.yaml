@@ -6182,8 +6182,8 @@ importers:
   packages/expo-symbols:
     dependencies:
       '@expo-google-fonts/material-symbols':
-        specifier: ^0.4.1
-        version: 0.4.27
+        specifier: ^0.4.49
+        version: 0.4.49
       expo:
         specifier: '*'
         version: link:../expo
@@ -8366,8 +8366,8 @@ packages:
   '@expo-google-fonts/inter@0.2.3':
     resolution: {integrity: sha512-iHK9FI+dnE45X5c2Z5hSFwNH4zUWethizpbv3XUn0FIGw5jwvzriENz0a6wCdkI4/d+1QkurnHo5XHti7TbNJA==}
 
-  '@expo-google-fonts/material-symbols@0.4.27':
-    resolution: {integrity: sha512-cnb3DZnWUWpezGFkJ8y4MT5f/lw6FcgDzeJzic+T+vpQHLHG1cg3SC3i1w1i8Bk4xKR4HPY3t9iIRNvtr5ml8A==}
+  '@expo-google-fonts/material-symbols@0.4.49':
+    resolution: {integrity: sha512-HtoaXYCk7A9kOjwoxrjq6i0iDtAoQnOPm31zUn+TgmKlHVUU+yyqvQDxN830MvGmBQV8eINv/SK7JRtWhB2xcg==}
 
   '@expo/browser-polyfill@1.0.1':
     resolution: {integrity: sha512-0K6USycVKDj/k9Gr2UYa+7MiCjb0f2NznsE4LX11H85vQMJma5JS3a2oe6lxCfleY9hDcQ/9zKCYS8O6crsv3A==}
@@ -17452,7 +17452,7 @@ snapshots:
 
   '@expo-google-fonts/inter@0.2.3': {}
 
-  '@expo-google-fonts/material-symbols@0.4.27': {}
+  '@expo-google-fonts/material-symbols@0.4.49': {}
 
   '@expo/browser-polyfill@1.0.1(expo-asset@packages+expo-asset)(expo-file-system@packages+expo-file-system)(react-native@0.88.0-rc.3(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
