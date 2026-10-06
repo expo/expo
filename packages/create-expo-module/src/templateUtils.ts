@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { usesCompose, usesExpoUI, usesSwiftUI } from './features';
+import { MIN_SUPPORTED_LOCAL_SDK } from './localSdk';
 import type { Platform } from './prompts';
 import {
   buildAppSnippets,
@@ -164,18 +165,6 @@ export function normalizeNpmPackResult(result: unknown): unknown[] | null {
   }
 }
 
-/**
- * Gets expo SDK version major from the local package.json.
- */
-async function getLocalSdkMajorVersion(): Promise<string | null> {
-  const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
-  if (!path) {
-    return null;
-  }
-  const { version } = require(path) ?? {};
-  return version?.split('.')[0] ?? null;
-}
-
 // The first SDK the CLI is versioned in lockstep with (CLI major == SDK major). Earlier releases
 // used an independent scheme (e.g. `1.x` for sdk-54, `2.x` for sdk-55) whose major doesn't map to
 // an SDK, so anything below this falls back to `latest`.
@@ -195,23 +184,22 @@ export function getTemplateDistTag(version: string | undefined): string {
 /**
  * Selects correct version of the template based on the SDK version and EXPO_BETA flag.
  *
- * - For local modules, the SDK is derived from the host project's `expo` dependency.
+ * - For local modules, `sdkVersion` is the host project's `expo` major. An SDK older than the
+ *   template supports (allowed only with `--ignore-compatibility-check`) uses this CLI's template,
+ *   because the older `sdk-<major>` tags use a legacy format.
  * - For standalone modules, the SDK is derived from the CLI's own version, so that
  *   `create-expo-module@sdk-XX` scaffolds an SDK XX module rather than always using `latest`.
  *
  * In both cases we fall back to `latest` when the SDK can't be determined.
  */
-async function getTemplateVersion(isLocal: boolean) {
+export function getTemplateVersion(isLocal: boolean, sdkVersion: number | null): string {
   if (env.EXPO_BETA) {
     return 'next';
   }
-  if (!isLocal) {
+  if (!isLocal || (sdkVersion != null && sdkVersion < MIN_SUPPORTED_LOCAL_SDK)) {
     return getTemplateDistTag(require('../package.json').version);
   }
-  try {
-    const sdkVersionMajor = await getLocalSdkMajorVersion();
-    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
-  } catch {
+  if (sdkVersion == null) {
     console.log();
     console.warn(
       chalk.yellow(
@@ -220,14 +208,19 @@ async function getTemplateVersion(isLocal: boolean) {
     );
     return 'latest';
   }
+  return `sdk-${sdkVersion}`;
 }
 
 /**
  * Downloads the template from NPM registry.
  */
-export async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
+export async function downloadPackageAsync(
+  targetDir: string,
+  isLocal = false,
+  sdkVersion: number | null = null
+): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const templateVersion = await getTemplateVersion(isLocal);
+    const templateVersion = getTemplateVersion(isLocal, sdkVersion);
     const packageName = 'expo-module-template';
     const tmpDir = path.join(os.tmpdir(), '.create-expo-module');
 

@@ -5,6 +5,7 @@ import path from 'node:path';
 import {
   getGeneratedWebStubSentinel,
   getTemplateDistTag,
+  getTemplateVersion,
   normalizeNpmPackResult,
   updateWebStub,
 } from '../templateUtils';
@@ -78,6 +79,28 @@ describe('getTemplateDistTag', () => {
     expect(getTemplateDistTag(undefined)).toBe('latest');
     expect(getTemplateDistTag('')).toBe('latest');
     expect(getTemplateDistTag('not-a-version')).toBe('latest');
+  });
+});
+
+describe(getTemplateVersion, () => {
+  const cliTag = getTemplateDistTag(require('../../package.json').version);
+
+  beforeEach(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it.each([
+    ['a local module in a supported SDK', true, 56, 'sdk-56'],
+    ['a local module in an unsupported SDK', true, 55, cliTag],
+    ['a local module in an unknown SDK', true, null, 'latest'],
+    ['a standalone module', false, null, cliTag],
+  ])('selects the template for %s', (_label, isLocal, sdkVersion, expected) => {
+    expect(getTemplateVersion(isLocal, sdkVersion)).toBe(expected);
   });
 });
 
