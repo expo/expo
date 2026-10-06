@@ -24,9 +24,10 @@ it('warns on the unstable-internals entry point', () => {
   expect(code).toContain("deprecated ('react-native/unstable-internals-do-not-use')");
 });
 
-it('does not warn on InitializeCore', () => {
+it('does not warn on InitializeCore or setup-env', () => {
   const code = transform(`
     require('react-native/Libraries/Core/InitializeCore');
+    require('react-native/setup-env');
   `);
   expect(code).not.toContain('deprecated');
 });
