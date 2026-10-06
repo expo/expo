@@ -36,10 +36,10 @@ The phone's status bar (the clock and battery icons at the top of the screen) is
 
 ## Set the app icon and splash screen
 
-The asset pack you downloaded earlier includes an app icon and a splash screen image. Paste the following prompt into your agent:
+The asset pack you downloaded earlier includes an app icon, the Android adaptive icon layers, and a splash screen image. Paste the following prompt into your agent:
 
 ```text Prompt|wrap
-Set the app's icon to assets/images/icon.png, and configure the splash screen using the expo-splash-screen config plugin so it shows assets/images/splash-icon.png centered on a #25292e background on Android, iOS, and web.
+Set the app's icon to assets/images/icon.png. In app.json, remove the "ios.icon" property, so iOS uses icon.png instead of the default Expo icon, and keep the Android adaptive icon that uses the android-icon-foreground.png, android-icon-background.png, and android-icon-monochrome.png files. Then configure the splash screen using the expo-splash-screen config plugin so it shows assets/images/splash-icon.png centered on a #25292e background on Android, iOS, and web.
 ```
 
 **What you should see**: these settings live in the app's configuration, so restart the development server to apply them: press <kbd>Ctrl</kbd> + <kbd>C</kbd> in the terminal, run `npx expo start` again, and reopen the app from Expo Go. You'll briefly see the splash screen while the project loads.
