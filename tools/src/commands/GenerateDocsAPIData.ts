@@ -383,7 +383,11 @@ const executeCommand = async (
     const isMainPackageEntry = jsonFileName === packageName;
     const pluginEntryPath = path.join(basePath, 'plugin', 'src', 'index.ts');
     const pluginTsConfigPath = path.join(basePath, 'plugin', 'tsconfig.json');
-    if (isMainPackageEntry && fs.existsSync(pluginEntryPath) && fs.existsSync(pluginTsConfigPath)) {
+    if (
+      isMainPackageEntry &&
+      fs.existsSync(pluginEntryPath) &&
+      fs.existsSync(pluginTsConfigPath)
+    ) {
       const pluginApp = await Application.bootstrapWithPlugins(
         {
           ...typedocOptions,
