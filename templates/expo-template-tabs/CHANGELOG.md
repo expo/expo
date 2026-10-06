@@ -1,5 +1,13 @@
 # expo-template-tabs
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50863](https://github.com/expo/expo/pull/50863), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#51115](https://github.com/expo/expo/pull/51115), [#51084](https://github.com/expo/expo/pull/51084))
+  - expo@58.0.6
+  - expo-router@58.0.16
+
 ## 58.0.14
 
 ### Patch Changes

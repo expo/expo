@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Fix `currentDate` call in `replace()` freezing the app for up to several seconds while the new source loads. ([#50724](https://github.com/expo/expo/pull/50724) by [@tomKFM](https://github.com/tomKFM))
+
 ## 58.0.6
 
 ### Patch Changes

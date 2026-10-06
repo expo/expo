@@ -1,5 +1,22 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047), [#51179](https://github.com/expo/expo/pull/51179), [#51044](https://github.com/expo/expo/pull/51044), [#50863](https://github.com/expo/expo/pull/50863), [#51092](https://github.com/expo/expo/pull/51092), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#50543](https://github.com/expo/expo/pull/50543), [#50696](https://github.com/expo/expo/pull/50696), [#51177](https://github.com/expo/expo/pull/51177))
+  - expo-modules-autolinking@58.0.10
+  - @expo/cli@58.1.5
+  - expo-modules-core@58.0.14
+  - @expo/metro-config@58.0.10
+  - babel-preset-expo@58.0.11
+  - expo-asset@58.0.13
+  - @expo/log-box@58.0.11
+  - expo-file-system@58.0.7
+
 ## 58.0.5
 
 ### Patch Changes

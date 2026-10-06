@@ -1,5 +1,13 @@
 # Changelog
 
+## 56.0.8
+
+### Patch Changes
+
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#50860](https://github.com/expo/expo/pull/50860))
+  - jest-expo@58.0.8
+
 ## 56.0.7
 
 ### Patch Changes
