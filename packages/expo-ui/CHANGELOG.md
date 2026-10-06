@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix the community `DateTimePicker` reading `value` as a UTC day while `minimumDate`/`maximumDate` use the device-local day. In non-UTC timezones the picker could select and return the wrong day — one before `minimumDate`. `value`'s local calendar day is now sent to Material3 as a UTC day, and the picked day is returned as a local date that keeps `value`'s time of day. ([#50941](https://github.com/expo/expo/pull/50941) by [@expo-bot](https://github.com/expo-bot))
 - [Android] Fix `TimePickerDialog` ignoring `elementColors.containerColor`. ([#51116](https://github.com/expo/expo/pull/51116) by [@expo-bot](https://github.com/expo-bot))
 - [Android] Fix an intermittent `performMeasureAndLayout called during measure layout` crash that tore down the ReactHost when a `Host` with `matchContents` was measured while react-native-reanimated was active. The `onLayoutContent` event is now posted after the measure pass instead of emitted inside it. ([#49933](https://github.com/expo/expo/pull/49933) by [@expo-bot](https://github.com/expo-bot))
 - [android] Fix `Switch` label rendering one letter per line inside a `Host` with `matchContents`. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))

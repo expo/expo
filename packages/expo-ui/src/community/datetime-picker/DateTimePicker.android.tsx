@@ -1,4 +1,5 @@
 import { buildEvent, buildChangeEvent, type DateTimePickerProps } from './types';
+import { localDateToUtcDayISOString, utcDayToLocalDate } from './utils';
 import {
   DateTimePicker as AndroidPicker,
   DatePickerDialog as AndroidDatePickerDialog,
@@ -52,6 +53,14 @@ export function DateTimePicker(props: DateTimePickerProps) {
     negativeButton,
   } = props;
 
+  // Material3 date pickers work in UTC days, while `value` and the reported date are local —
+  // matching `@react-native-community/datetimepicker`. Send `value`'s local calendar day as a UTC
+  // day and convert the picked UTC day back, keeping `value`'s time of day. The native side
+  // already converts `minimumDate`/`maximumDate` by their local calendar day. Time pickers read
+  // local hours from the instant, so they take `value` unchanged.
+  const usesDateComponents = mode !== 'time';
+  const initialDate = usesDateComponents ? localDateToUtcDayISOString(value) : value.toISOString();
+
   const onDismissed = () => {
     if (onDismissProp) {
       onDismissProp();
@@ -70,10 +79,11 @@ export function DateTimePicker(props: DateTimePickerProps) {
   };
 
   const onDateSelected = (date: Date) => {
+    const selected = usesDateComponents ? utcDayToLocalDate(date, value) : date;
     if (onValueChange) {
-      onValueChange(buildChangeEvent(date), date);
+      onValueChange(buildChangeEvent(selected), selected);
     } else {
-      onChange?.(buildEvent(date), date);
+      onChange?.(buildEvent(selected), selected);
     }
   };
 
@@ -81,7 +91,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
     minimumDate || maximumDate ? { start: minimumDate, end: maximumDate } : undefined;
 
   const dialogProps = {
-    initialDate: value.toISOString(),
+    initialDate,
     color: accentColor,
     confirmButtonLabel: positiveButton?.label,
     dismissButtonLabel: negativeButton?.label,
@@ -111,7 +121,7 @@ export function DateTimePicker(props: DateTimePickerProps) {
   return (
     <Host matchContents={{ vertical: true }} style={style}>
       <AndroidPicker
-        initialDate={value.toISOString()}
+        initialDate={initialDate}
         displayedComponents={modeToDisplayedComponents(mode)}
         variant={displayToAndroidVariant(display)}
         selectableDates={selectableDates}
