@@ -4571,7 +4571,7 @@ SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
-  EASClient: 0a37063ccb7acd90d4a490e804b16c9bf709d34a
+  EASClient: cfe73ae0bda35b6d4a911e974b8c5d471d421d5d
   EXApplication: a727f05eb8592f0bc764f6ab8d51eacc158652ec
   EXConstants: fdc6f92b1559e5bd69df9e684e8c7ba5d912890e
   EXJSONUtils: a49e3ef80dff762108e5690c7b2f360675dcf7f6
