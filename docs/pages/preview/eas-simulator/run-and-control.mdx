@@ -320,7 +320,7 @@ On iOS, a session can record the HTTP and HTTPS requests that apps on the device
 
 <Terminal
   cmd={[
-    '$ eas simulator:start --platform ios --build-id <build-id> --network-capture --non-interactive',
+    '$ eas simulator:start --platform ios --type web-preview-only --build-id <build-id> --network-capture --non-interactive',
   ]}
 />
 
@@ -334,7 +334,7 @@ Capture records HTTP and HTTPS requests that an app sends through a `URLSession`
 
 - Relaunch an app that was already running to record its traffic. In agent-device and Argent sessions, capture can start after the installed app's initial launch. In that case, capture misses requests that the app sends only at startup. Relaunching the app might not send them again.
 - Capture does not record traffic from Apple system apps, such as Safari, or requests that use `URLSession.shared`.
-- Network capture is not available on Android or together with `--egress local`.
+- Network capture is not available on Android, or when the session sends its traffic through your machine with `--egress local`. If you pass both `--network-capture` and `--egress local`, `eas simulator:start` fails with an error.
 
 ### Choose what to keep
 
@@ -351,7 +351,7 @@ Repeat the flag, or pass a comma-separated list:
 
 <Terminal
   cmd={[
-    '$ eas simulator:start --platform ios --expo-go --network-capture --network-capture-field header,response-body --non-interactive',
+    '$ eas simulator:start --platform ios --type web-preview-only --expo-go --network-capture --network-capture-field header,response-body --non-interactive',
   ]}
 />
 
