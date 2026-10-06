@@ -155,7 +155,8 @@ function groupRouteNodes(
   if (!isScreenRouteNode(routeNode)) {
     // Layout files are ignored, so every screen is hoisted under the generated root layout.
     if (routeNode.route === '') {
-      for (const child of isLayoutRouteNode(routeNode) ? routeNode.children : []) {
+      const children = isLayoutRouteNode(routeNode) ? routeNode.children : [];
+      for (const child of children) {
         groupRouteNodes(child, groupedContextKeys);
       }
       return groupedContextKeys;
