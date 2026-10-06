@@ -52,6 +52,27 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBeTruthy();
   });
 
+  it('warns about expo-app-metrics from SDK 58 and points to expo-observe', async () => {
+    const check = new DirectPackageInstallCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0', dependencies: { 'expo-app-metrics': '~57.0.0' } },
+      ...additionalProjectProps,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '58.0.0' },
+    });
+    expect(result.isSuccessful).toBeFalsy();
+    expect(result.issues).toEqual([expect.stringContaining('expo-observe')]);
+  });
+
+  it('does not warn about expo-app-metrics before SDK 58', async () => {
+    const check = new DirectPackageInstallCheck();
+    const result = await check.runAsync({
+      pkg: { name: 'name', version: '1.0.0', dependencies: { 'expo-app-metrics': '~57.0.0' } },
+      ...additionalProjectProps,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '57.0.0' },
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
+
   const dependencyLocations = ['dependencies', 'devDependencies'];
 
   dependencyLocations.forEach((dependencyLocation) => {
@@ -65,6 +86,10 @@ describe('runAsync', () => {
     });
 
     directPackageInstallCheckItems.forEach((transitiveOnlyDependency) => {
+      // Only applies from SDK 58; covered by the tests above.
+      if (transitiveOnlyDependency.packageName === 'expo-app-metrics') {
+        return;
+      }
       it(`returns result with isSuccessful = false if ${dependencyLocation} contains ${transitiveOnlyDependency.packageName}`, async () => {
         const check = new DirectPackageInstallCheck();
         const result = await check.runAsync({
