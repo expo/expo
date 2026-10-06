@@ -451,6 +451,92 @@ describe(modifyConfigAsync, () => {
     expect(config?.android?.intentFilters).toEqual([intentFilter]);
   });
 
+  it('removes duplicate entries within the modification', async () => {
+    createProject('/static-arrays-modification-duplicates', {
+      'app.json': JSON.stringify(appFile),
+    });
+
+    const { config } = await modifyConfigAsync('/static-arrays-modification-duplicates', {
+      android: { permissions: ['CAMERA', 'CAMERA'] },
+    });
+
+    expect(config?.android?.permissions).toEqual(['CAMERA']);
+  });
+
+  it('removes duplicate entries already in a modified array', async () => {
+    createProject('/static-arrays-existing-duplicates', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        android: { permissions: ['CAMERA', 'CAMERA'] },
+      }),
+    });
+
+    const { config } = await modifyConfigAsync('/static-arrays-existing-duplicates', {
+      android: { permissions: ['RECORD_AUDIO'] },
+    });
+
+    expect(config?.android?.permissions).toEqual(['CAMERA', 'RECORD_AUDIO']);
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when the modification has duplicate array entries', async () => {
+    createProject('/static-dynamic-function-modification-duplicates', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-modification-duplicates', {
+        android: { permissions: ['CAMERA', 'CAMERA'] },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: { android: { permissions: ['CAMERA'] } },
+    });
+  });
+
+  it('succeeds when modifying static with function-like dynamic config, when appending to an existing array', async () => {
+    createProject('/static-dynamic-function-array-append', {
+      'app.json': JSON.stringify({
+        ...appFile,
+        android: { permissions: ['CAMERA'] },
+      }),
+      'app.config.js': `module.exports = ({ config }) => ({ ...config, version: '9.9.9' });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-array-append', {
+        android: { permissions: ['RECORD_AUDIO'] },
+      })
+    ).resolves.toMatchObject({
+      type: 'success',
+      config: { android: { permissions: ['CAMERA', 'RECORD_AUDIO'] } },
+    });
+  });
+
+  it('warns and rolls back when the dynamic config drops a modified array entry', async () => {
+    createProject('/static-dynamic-function-array-dropped', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = ({ config }) => ({
+        ...config,
+        android: { ...config.android, permissions: [] },
+      });`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-array-dropped', {
+        android: { permissions: ['CAMERA'] },
+      })
+    ).resolves.toMatchObject({ type: 'warn', config: null });
+
+    expect(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function-array-dropped/app.json', {
+          encoding: 'utf-8',
+        }) as string
+      )
+    ).toEqual(appFile);
+  });
+
   it('warns when modifying dynamic config only', async () => {
     createProject('/dynamic-only', {
       'app.config.js': `module.exports = () => JSON.parse(\`${JSON.stringify({ ...appFile, version: '9.9.9' })}\`);`,

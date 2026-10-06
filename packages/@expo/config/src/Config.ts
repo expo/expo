@@ -357,12 +357,13 @@ export async function modifyConfigAsync(
 }
 
 /**
- * Append the source items that are not in the target array yet.
- * This avoids duplicate entries when a modification repeats existing array values.
+ * Append the source items to the target array, then remove duplicate entries, keeping the first
+ * occurrence. Expo config arrays (permissions, asset patterns, intent filters) are sets, so a
+ * modification that repeats existing values, or contains a value twice, doesn't write it twice.
  */
 function mergeArraysWithoutDuplicates(target: unknown[], source: unknown[]): unknown[] {
-  const result = [...target];
-  for (const item of source) {
+  const result: unknown[] = [];
+  for (const item of [...target, ...source]) {
     if (!result.some((existing) => isDeepStrictEqual(existing, item))) {
       result.push(item);
     }
@@ -456,7 +457,11 @@ function isMatchingObject<T extends Record<string, any>>(
       continue;
     }
 
-    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+    if (Array.isArray(expectedValues[key])) {
+      if (!isMatchingArray(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
       if (!isMatchingObject(expectedValues[key], actualValues[key])) {
         return false;
       }
@@ -467,6 +472,23 @@ function isMatchingObject<T extends Record<string, any>>(
     }
   }
   return true;
+}
+
+/**
+ * Arrays are merged as sets (see `mergeArraysWithoutDuplicates`), so an expected array matches
+ * when each of its items is in the actual array, regardless of order or repeated items.
+ */
+function isMatchingArray(expectedItems: unknown[], actualItems: unknown): boolean {
+  if (!Array.isArray(actualItems)) {
+    return false;
+  }
+  return expectedItems.every((expected) =>
+    actualItems.some((actual) =>
+      typeof expected === 'object' && expected !== null
+        ? typeof actual === 'object' && actual !== null && isMatchingObject(expected, actual)
+        : expected === actual
+    )
+  );
 }
 
 function ensureConfigHasDefaultValues({
