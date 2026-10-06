@@ -65,6 +65,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/namespace': ['swift-ui/Namespace.tsx', 'expo-ui'],
   'expo-ui/swift-ui/navigationdestination': ['swift-ui/NavigationDestination/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/navigationlink': ['swift-ui/NavigationLink/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/navigationsplitview': ['swift-ui/NavigationSplitView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/navigationstack': ['swift-ui/NavigationStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/overlay': ['swift-ui/Overlay/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/picker': ['swift-ui/Picker/index.tsx', 'expo-ui'],
