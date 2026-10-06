@@ -32,6 +32,7 @@ struct DiagnosticsTabView: View {
         }
         .buttonStyle(PlainButtonStyle())
       }
+      .maxContentWidth()
       .padding()
     }
     .background(Color.expoSystemBackground)

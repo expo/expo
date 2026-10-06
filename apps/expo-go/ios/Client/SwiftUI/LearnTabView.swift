@@ -71,6 +71,7 @@ struct LearnTabView: View {
 
         Spacer()
       }
+      .maxContentWidth()
       .padding()
     }
     .navigationTitle(HomeTab.learn.title)

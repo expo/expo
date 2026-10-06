@@ -202,6 +202,7 @@ struct SettingsTabView: View {
           }
         }
       }
+      .maxContentWidth()
       .padding()
     }
     .background(Color.expoSystemBackground)
