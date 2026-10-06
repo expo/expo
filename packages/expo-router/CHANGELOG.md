@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix platform-specific route parsing and loader keys. ([#49035](https://github.com/expo/expo/pull/49035) by [@hassankhan](https://github.com/hassankhan))
-
 ### 💡 Others
+
+## 57.0.25 — 2026-10-06
+
+### 🐛 Bug fixes
+
+- Fix platform-specific route parsing and loader keys. ([#49035](https://github.com/expo/expo/pull/49035) by [@hassankhan](https://github.com/hassankhan))
 
 ## 57.0.24 — 2026-09-29
 

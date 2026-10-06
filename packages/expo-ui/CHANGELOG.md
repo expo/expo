@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.22 — 2026-10-06
+
+### 🎉 New features
+
 - [android] Added `IntrinsicSize` support to the `width` modifier. ([#50693](https://github.com/expo/expo/pull/50693) by [@janicduplessis](https://github.com/janicduplessis))
 - [iOS] Added the `preferredColorScheme` modifier, which sets the color scheme of a presentation such as `BottomSheet`, including its background. ([#50851](https://github.com/expo/expo/pull/50851) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `navigationBarTitleDisplayMode` and `toolbarTitleDisplayMode` modifiers for controlling navigation and toolbar title presentation. ([#50687](https://github.com/expo/expo/pull/50687) by [@0x5bfa](https://github.com/0x5bfa))
@@ -22,8 +30,6 @@
 - [iOS] Fixed `delay()` and `repeat()` modifying the animation they are called on. Chaining from a shared animation, such as `Animation.default` or one stored in a constant, no longer changes that animation everywhere else it is used. ([#50927](https://github.com/expo/expo/pull/50927) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS][tvOS] Fix the tvOS build failing to compile with `'inlineLarge' is unavailable in tvOS` when `@expo/ui` is linked. `ToolbarTitleDisplayMode.inlineLarge` is unavailable on tvOS, but the `inlineLarge` case of the `toolbarTitleDisplayMode` modifier was only gated behind an OS version check that listed `tvOS 18.0`, so it was compiled into the tvOS slice. It is now guarded by platform and returns `nil` on tvOS. The same check also required iOS 18.0 / macOS 15.0, so `inlineLarge` silently fell back to `automatic` on iOS 17 and macOS 14 even though it is available there; it now applies on those versions. ([#51007](https://github.com/expo/expo/pull/51007) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 57.0.21 — 2026-09-29
 

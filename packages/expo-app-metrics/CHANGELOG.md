@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.22 — 2026-10-06
+
+### 🐛 Bug fixes
+
 - [iOS] Added a privacy manifest describing required reason API usage. ([#50734](https://github.com/expo/expo/pull/50734) by [@enavermate](https://github.com/enavermate))
 - [iOS] [Android] Stop attributing native crash stack frames to unrelated functions, and keep enough detail in the report to symbolicate them off-device. ([#49921](https://github.com/expo/expo/pull/49921) by [@tsapeta](https://github.com/tsapeta))
-
-### 💡 Others
 
 ## 57.0.21 — 2026-09-24
 

@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.6 — 2026-10-06
+
+### 🐛 Bug fixes
+
 - Switch TypeScript 7.0 fallback transpilation (stripTypeScriptTypes) to `importInterop: 'babel'` ([#51076](https://github.com/expo/expo/pull/51076) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

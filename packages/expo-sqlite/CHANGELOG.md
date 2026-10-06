@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed reading a prepared statement result after the same statement ran again returning the later run's rows instead of throwing. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 57.0.4 — 2026-10-06
+
+### 🐛 Bug fixes
+
+- Fixed reading a prepared statement result after the same statement ran again returning the later run's rows instead of throwing. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.3 — 2026-09-11
 

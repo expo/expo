@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "57.0.21",
+  "version": "57.0.22",
   "description": "A collection of UI components",
   "sideEffects": [
     "*.fx.js",

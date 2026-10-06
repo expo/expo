@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.4 — 2026-10-06
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed a repeated `preventScreenCaptureAsync` call with a new key corrupting the layer hierarchy and permanently black-screening the app, and made `preventScreenCaptureAsync` reject instead of silently leaving the app unprotected when the secure canvas cannot attach. ([#49372](https://github.com/expo/expo/pull/49372) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix `OnDestroy` removing the app-switcher privacy overlay off the main thread on reload. ([#49562](https://github.com/expo/expo/pull/49562) by [@vonovak](https://github.com/vonovak))
-
-### 💡 Others
 
 ## 57.0.3 — 2026-09-11
 

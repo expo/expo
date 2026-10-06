@@ -20,7 +20,7 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {
     "@expo/schema-utils": "workspace:^57.0.2",
-    "expo-dev-menu": "workspace:~57.0.18",
+    "expo-dev-menu": "workspace:~57.0.19",
     "expo-manifests": "workspace:~57.0.2"
   },
   "peerDependencies": {
