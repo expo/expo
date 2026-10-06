@@ -362,12 +362,13 @@ export function getDefaultConfig(
         : createNumericModuleIdFactory,
 
       getModulesRunBeforeMainModule: () => {
+        const reactNativeHostPath = getReactNativeHostPath(projectRoot);
         const preModules: string[] = [
           // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
           // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
-          require.resolve(
-            path.join(getReactNativeHostPath(projectRoot), 'Libraries/Core/InitializeCore')
-          ),
+          // Out-of-tree platforms on React Native < 0.87 ship only `InitializeCore`
+          resolveFrom.silent(reactNativeHostPath, './src/setup-env') ??
+            require.resolve(path.join(reactNativeHostPath, 'Libraries/Core/InitializeCore')),
         ];
 
         const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');
