@@ -565,7 +565,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
               `The layouts "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`
             );
           }
-        } else {
+        } else if (isLayoutRouteNode(node)) {
           node = getLayoutNode(node);
           directory.layout[meta.specificity] = node;
         }
@@ -908,10 +908,9 @@ function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
   }
 }
 
-function getLayoutNode(node: RouteNode) {
+function getLayoutNode(node: LayoutRouteNode): LayoutRouteNode {
   return {
     ...node,
-    type: 'layout',
     route: node.route.replace(/\/?_layout$/, ''),
     children: [], // Each layout should have its own children
     // `(a,b)/(c)/_layout` generates `(a)/(c)/_layout` and `(b)/(c)/_layout`, each with its own group.
