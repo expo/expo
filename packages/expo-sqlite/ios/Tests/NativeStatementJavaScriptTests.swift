@@ -23,7 +23,7 @@ struct NativeStatementJavaScriptTests {
     _ = try runtime.eval(
       """
       var NativeStatement = expo.modules.ExpoSQLite.NativeStatement;
-      var db = new expo.modules.ExpoSQLite.NativeDatabase(':memory:', { useNewConnection: true });
+      var db = expo.modules.ExpoSQLite.createNativeDatabase(':memory:', { useNewConnection: true });
       db.initSync();
       db.execSync('CREATE TABLE t (id INTEGER PRIMARY KEY NOT NULL, value TEXT)');
       function prepare(source) {

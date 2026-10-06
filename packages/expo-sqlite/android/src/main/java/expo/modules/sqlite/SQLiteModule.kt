@@ -78,6 +78,14 @@ class SQLiteModule : Module() {
   @JS
   fun deleteDatabaseSync(databasePath: String): Unit = deleteDatabase(databasePath)
 
+  // A factory rather than a constructor, to match iOS, where a constructor can't return the cached instance.
+  @JS
+  private fun createNativeDatabase(
+    databasePath: String,
+    options: OpenDatabaseOptions,
+    serializedData: ByteArray?
+  ): NativeDatabase = NativeDatabase(databasePath, options, serializedData)
+
   @JS
   suspend fun importAssetDatabaseAsync(
     databasePath: String,

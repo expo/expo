@@ -13,7 +13,7 @@ import io.github.expo.modules.v2.module
  * open count are shared, as one cached object shared them before.
  */
 @ExpoSharedObject
-internal class NativeDatabase @JS constructor(
+internal class NativeDatabase(
   databasePath: String,
   options: OpenDatabaseOptions,
   serializedData: ByteArray?
