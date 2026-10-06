@@ -8,10 +8,12 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import assert from 'node:assert/strict';
-import { afterEach, describe, it } from 'node:test';
+import { afterEach, describe, it, mock } from 'node:test';
 import os from 'os';
 import path from 'path';
 
+import type { SPMPackageSource } from './ExternalPackage';
+import { Frameworks } from './Frameworks';
 import {
   composeHeadersXCFrameworkAsync,
   getHeadersXCFrameworkPath,
@@ -19,6 +21,8 @@ import {
   writeHeadersXCFrameworkAsync,
 } from './HeadersXCFramework';
 import type { ProductPlatform, SPMProduct } from './SPMConfig.types';
+import { createContext, createRequest } from './pipeline/Context';
+import { composeStep } from './pipeline/ProductSteps';
 import schema from './schemas/spm.config.schema.json';
 
 const NAME = 'Fixture';
@@ -27,6 +31,8 @@ const STUB = `lib${NAME}Headers.a`;
 type FixtureSlice = {
   id: string;
   archs: string[];
+  /** The source `SupportedPlatform`; `ios` when absent. */
+  platform?: 'ios' | 'tvos';
   variant?: 'simulator';
   /** `null` writes a framework Info.plist without `MinimumOSVersion`. */
   minimumOSVersion?: string | null;
@@ -66,7 +72,10 @@ async function makeTempRootAsync(): Promise<string> {
 }
 
 function swiftTriples(slice: FixtureSlice): string[] {
-  return slice.archs.map((arch) => `${arch}-apple-ios${slice.variant ? `-${slice.variant}` : ''}`);
+  const os = slice.platform ?? 'ios';
+  return slice.archs.map(
+    (arch) => `${arch}-apple-${os}${slice.variant ? `-${slice.variant}` : ''}`
+  );
 }
 
 async function writeBinaryPlistAsync(file: string, contents: object): Promise<void> {
@@ -76,7 +85,8 @@ async function writeBinaryPlistAsync(file: string, contents: object): Promise<vo
 
 async function createSourceXCFrameworkAsync(
   xcframework: string,
-  slices: FixtureSlice[]
+  slices: FixtureSlice[],
+  moduleMap: string = SOURCE_MODULE_MAP
 ): Promise<void> {
   for (const slice of slices) {
     const framework = path.join(xcframework, slice.id, `${NAME}.framework`);
@@ -90,7 +100,7 @@ async function createSourceXCFrameworkAsync(
     );
     await fs.outputFile(path.join(framework, 'Headers', `${NAME}.h`), 'int fixture(void);\n');
     await fs.outputFile(path.join(framework, 'Headers', `${NAME}-Swift.h`), '// generated\n');
-    await fs.outputFile(path.join(framework, 'Modules', 'module.modulemap'), SOURCE_MODULE_MAP);
+    await fs.outputFile(path.join(framework, 'Modules', 'module.modulemap'), moduleMap);
     const swiftmodule = path.join(framework, 'Modules', `${NAME}.swiftmodule`);
     for (const triple of swiftTriples(slice)) {
       await fs.outputFile(path.join(swiftmodule, `${triple}.swiftinterface`), `// ${triple}\n`);
@@ -120,7 +130,7 @@ async function createSourceXCFrameworkAsync(
         LibraryIdentifier: slice.id,
         LibraryPath: `${NAME}.framework`,
         SupportedArchitectures: slice.archs,
-        SupportedPlatform: 'ios',
+        SupportedPlatform: slice.platform ?? 'ios',
         ...(slice.variant ? { SupportedPlatformVariant: slice.variant } : {}),
       })),
       CFBundlePackageType: 'XFWK',
@@ -308,6 +318,89 @@ describe('writeHeadersXCFrameworkAsync', () => {
     assert.deepEqual(await listFilesAsync(destination), firstRun);
     assert.deepEqual(await fs.readdir(path.dirname(destination)), [`${NAME}Headers.xcframework`]);
   });
+
+  it('keeps the previous output and leaves nothing behind when a write fails', async () => {
+    const root = await makeTempRootAsync();
+    const valid = path.join(root, 'valid', `${NAME}.xcframework`);
+    const broken = path.join(root, 'broken', `${NAME}.xcframework`);
+    const destination = path.join(root, 'out', `${NAME}Headers.xcframework`);
+    await createSourceXCFrameworkAsync(valid, [DEVICE, SIMULATOR]);
+    await createSourceXCFrameworkAsync(broken, [{ ...DEVICE, minimumOSVersion: undefined }]);
+    await writeHeadersXCFrameworkAsync(valid, product(), destination);
+    const files = await listFilesAsync(destination);
+    const infoPlist = await fs.readFile(path.join(destination, 'Info.plist'), 'utf8');
+
+    await assert.rejects(
+      writeHeadersXCFrameworkAsync(broken, product(['macOS(.v11)']), destination),
+      /no MinimumOSVersion/
+    );
+
+    assert.deepEqual(await listFilesAsync(destination), files);
+    assert.equal(await fs.readFile(path.join(destination, 'Info.plist'), 'utf8'), infoPlist);
+    assert.deepEqual(await fs.readdir(path.dirname(destination)), [`${NAME}Headers.xcframework`]);
+  });
+
+  it('takes each slice platform from the source, including non-iOS platforms', async () => {
+    const tv: FixtureSlice = {
+      id: 'tvos-arm64',
+      archs: ['arm64'],
+      platform: 'tvos',
+      minimumOSVersion: '15.0',
+    };
+    const { destination } = await writeFixtureAsync([DEVICE, SIMULATOR, tv]);
+
+    const info = await readPlistAsync(path.join(destination, 'Info.plist'));
+    assert.deepEqual(
+      info.AvailableLibraries.map(
+        (library: {
+          LibraryIdentifier: string;
+          SupportedPlatform: string;
+          SupportedPlatformVariant?: string;
+        }) => [
+          library.LibraryIdentifier,
+          library.SupportedPlatform,
+          library.SupportedPlatformVariant,
+        ]
+      ),
+      [
+        [DEVICE.id, 'ios', undefined],
+        [SIMULATOR.id, 'ios', 'simulator'],
+        [tv.id, 'tvos', undefined],
+      ]
+    );
+    const tvStub = path.join(destination, tv.id, STUB);
+    assert.deepEqual(definedSymbols(await outputOfAsync('nm', ['-g', tvStub])), [
+      `_${NAME}HeadersStub_appletvos`,
+    ]);
+    // LC_BUILD_VERSION platform 3 is tvOS.
+    assert.match(await outputOfAsync('otool', ['-l', tvStub]), /platform 3\n\s+minos 15\.0/);
+  });
+
+  it('rewrites every framework module declaration, not only one on the first line', async () => {
+    const moduleMap = `// Written by the fixture.
+framework module ${NAME} {
+    header "${NAME}.h"
+}
+
+framework module ${NAME}_Private {
+    header "${NAME}-Swift.h"
+}
+`;
+    const root = await makeTempRootAsync();
+    const source = path.join(root, `${NAME}.xcframework`);
+    const destination = path.join(root, 'out', `${NAME}Headers.xcframework`);
+    await createSourceXCFrameworkAsync(source, [DEVICE], moduleMap);
+
+    await writeHeadersXCFrameworkAsync(source, product(), destination);
+
+    assert.equal(
+      await fs.readFile(
+        path.join(destination, DEVICE.id, 'Headers', NAME, 'module.modulemap'),
+        'utf8'
+      ),
+      moduleMap.replaceAll('framework module ', 'module ')
+    );
+  });
 });
 
 describe('composeHeadersXCFrameworkAsync', () => {
@@ -348,6 +441,11 @@ describe('shouldWriteHeadersXCFramework', () => {
     assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Debug', 'Release']), false);
   });
 
+  it('prefers debug whatever order the run lists its flavors in', () => {
+    assert.equal(shouldWriteHeadersXCFramework(flagged, 'Debug', ['Release', 'Debug']), true);
+    assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Release', 'Debug']), false);
+  });
+
   it('writes from the release flavor when the run builds only release', () => {
     assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Release']), true);
   });
@@ -355,6 +453,82 @@ describe('shouldWriteHeadersXCFramework', () => {
   it('never writes for a product that did not opt in', () => {
     assert.equal(shouldWriteHeadersXCFramework(unflagged, 'Debug', ['Debug']), false);
     assert.equal(shouldWriteHeadersXCFramework(unflagged, 'Release', ['Release']), false);
+  });
+});
+
+describe('composeStep', () => {
+  afterEach(() => mock.restoreAll());
+
+  /**
+   * Runs the compose step for one product in a Debug + Release run, at its Debug iteration. The
+   * SPM compose is stubbed to lay out the product's xcframework; a customBuild product goes
+   * through the real compose, which copies the script output from the package.
+   */
+  async function composeAsync(overrides: Partial<SPMProduct>) {
+    const root = await makeTempRootAsync();
+    const stepProduct: SPMProduct = { ...product(), podName: NAME, targets: [], ...overrides };
+    const pkg: SPMPackageSource = {
+      path: path.join(root, 'package'),
+      buildPath: path.join(root, 'build'),
+      packageName: 'fixture-package',
+      packageVersion: '1.0.0',
+      getSwiftPMConfiguration: () => ({ products: [stepProduct] }),
+    };
+    await createSourceXCFrameworkAsync(path.join(pkg.path, 'Products', `${NAME}.xcframework`), [
+      DEVICE,
+    ]);
+    const composeXCFramework = mock.method(Frameworks, 'composeXCFrameworkAsync', async () => {
+      await createSourceXCFrameworkAsync(
+        Frameworks.getFrameworkPath(pkg.buildPath, NAME, 'Debug'),
+        [DEVICE]
+      );
+    });
+
+    const ctx = createContext(
+      createRequest([], {
+        clean: false,
+        cleanCache: false,
+        skipGenerate: false,
+        skipArtifacts: false,
+        skipBuild: false,
+        skipCompose: false,
+        skipVerify: false,
+        verbose: false,
+      })
+    );
+    ctx.currentPackage = pkg;
+    ctx.currentProduct = stepProduct;
+    ctx.currentFlavor = 'Debug';
+    await composeStep.run(ctx);
+
+    return {
+      composeXCFrameworkCalls: composeXCFramework.mock.callCount(),
+      headersWritten: await fs.pathExists(
+        path.join(getHeadersXCFrameworkPath(pkg.buildPath, NAME), DEVICE.id, STUB)
+      ),
+    };
+  }
+
+  it('writes the headers xcframework after composing an opted-in SPM product', async () => {
+    assert.deepEqual(await composeAsync({ headersXCFramework: true }), {
+      composeXCFrameworkCalls: 1,
+      headersWritten: true,
+    });
+  });
+
+  it('writes the headers xcframework after composing an opted-in customBuild product', async () => {
+    const customBuild = { script: 'build.sh', output: `Products/${NAME}.xcframework` };
+    assert.deepEqual(await composeAsync({ headersXCFramework: true, customBuild }), {
+      composeXCFrameworkCalls: 0,
+      headersWritten: true,
+    });
+  });
+
+  it('writes no headers xcframework for a product that did not opt in', async () => {
+    assert.deepEqual(await composeAsync({}), {
+      composeXCFrameworkCalls: 1,
+      headersWritten: false,
+    });
   });
 });
 

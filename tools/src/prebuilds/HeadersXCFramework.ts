@@ -56,7 +56,9 @@ const SLICE_TARGETS: Record<string, SliceTarget> = {
     minimumVersionKey: 'MinimumOSVersion',
     productPlatform: 'iOS',
   },
-  // Mac Catalyst triples carry the iOS version, so its macOS LSMinimumSystemVersion is no use.
+  // Mac Catalyst triples carry an iOS-numbered version, but a Catalyst framework's Info.plist
+  // usually records only the macOS LSMinimumSystemVersion, so in practice the version comes from
+  // the product's macCatalyst platform.
   'ios-maccatalyst': {
     sdk: 'macosx',
     os: 'ios',
