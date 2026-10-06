@@ -1,0 +1,372 @@
+/**
+ * Compile-only "headers" xcframeworks. An app compiles against one (headers, module map, Swift
+ * interfaces) while React Native links and embeds the real dynamic framework.
+ *
+ * It is a LIBRARY xcframework on purpose: Xcode embeds every framework a SwiftPM binary target
+ * vends, static or not, so a framework copy would collide with the one React Native embeds. A
+ * library slice is linked, never embedded, and its stub archive defines one unreferenced symbol,
+ * so the linker pulls nothing from it.
+ */
+
+import plist from '@expo/plist';
+import spawnAsync from '@expo/spawn-async';
+import fs from 'fs-extra';
+import os from 'os';
+import path from 'path';
+
+import logger from '../Logger';
+import type { SPMPackageSource } from './ExternalPackage';
+import { Frameworks } from './Frameworks';
+import type { BuildFlavor } from './Prebuilder.types';
+import type { SPMProduct } from './SPMConfig.types';
+
+type HeadersProduct = Pick<SPMProduct, 'name' | 'platforms'>;
+
+type XCFrameworkLibrary = {
+  LibraryIdentifier: string;
+  LibraryPath: string;
+  SupportedArchitectures: string[];
+  SupportedPlatform: string;
+  SupportedPlatformVariant?: string;
+};
+
+type SliceTarget = {
+  sdk: string;
+  /** The OS component of the clang target triple. */
+  os: string;
+  environment?: string;
+  /** The framework Info.plist key holding the deployment target. */
+  minimumVersionKey: 'MinimumOSVersion' | 'LSMinimumSystemVersion';
+  /** The `platforms` entry of spm.config.json that applies to the slice. */
+  productPlatform: string;
+};
+
+/** Keyed by the slice's `SupportedPlatform`, then `-<SupportedPlatformVariant>` when present. */
+const SLICE_TARGETS: Record<string, SliceTarget> = {
+  ios: {
+    sdk: 'iphoneos',
+    os: 'ios',
+    minimumVersionKey: 'MinimumOSVersion',
+    productPlatform: 'iOS',
+  },
+  'ios-simulator': {
+    sdk: 'iphonesimulator',
+    os: 'ios',
+    environment: 'simulator',
+    minimumVersionKey: 'MinimumOSVersion',
+    productPlatform: 'iOS',
+  },
+  // Mac Catalyst triples carry the iOS version, so its macOS LSMinimumSystemVersion is no use.
+  'ios-maccatalyst': {
+    sdk: 'macosx',
+    os: 'ios',
+    environment: 'macabi',
+    minimumVersionKey: 'MinimumOSVersion',
+    productPlatform: 'macCatalyst',
+  },
+  macos: {
+    sdk: 'macosx',
+    os: 'macos',
+    minimumVersionKey: 'LSMinimumSystemVersion',
+    productPlatform: 'macOS',
+  },
+  tvos: {
+    sdk: 'appletvos',
+    os: 'tvos',
+    minimumVersionKey: 'MinimumOSVersion',
+    productPlatform: 'tvOS',
+  },
+  'tvos-simulator': {
+    sdk: 'appletvsimulator',
+    os: 'tvos',
+    environment: 'simulator',
+    minimumVersionKey: 'MinimumOSVersion',
+    productPlatform: 'tvOS',
+  },
+};
+
+/**
+ * Returns where a product's headers xcframework is written: beside the flavor directories of the
+ * build output, `<buildPath>/output/[<versionPrefix>/]headers/xcframeworks/<Product>Headers.xcframework`.
+ */
+export function getHeadersXCFrameworkPath(
+  buildPath: string,
+  productName: string,
+  versionPrefix?: string
+): string {
+  return path.join(
+    buildPath,
+    'output',
+    ...(versionPrefix ? [versionPrefix] : []),
+    'headers',
+    'xcframeworks',
+    `${productName}Headers.xcframework`
+  );
+}
+
+/**
+ * A run writes one headers xcframework per opted-in product, from its debug flavor when the run
+ * builds debug and from release otherwise. The flavors differ only in a swift-module-flags line.
+ */
+export function shouldWriteHeadersXCFramework(
+  product: SPMProduct,
+  flavor: BuildFlavor,
+  runFlavors: readonly BuildFlavor[]
+): boolean {
+  const sourceFlavor: BuildFlavor = runFlavors.includes('Debug') ? 'Debug' : 'Release';
+  return product.headersXCFramework === true && flavor === sourceFlavor;
+}
+
+/** Writes the headers xcframework of a product from the flavored xcframework this run composed. */
+export async function composeHeadersXCFrameworkAsync(
+  pkg: Pick<SPMPackageSource, 'buildPath' | 'outputVersionPrefix'>,
+  product: HeadersProduct,
+  flavor: BuildFlavor
+): Promise<string> {
+  const source = Frameworks.getFrameworkPath(
+    pkg.buildPath,
+    product.name,
+    flavor,
+    pkg.outputVersionPrefix
+  );
+  const destination = getHeadersXCFrameworkPath(
+    pkg.buildPath,
+    product.name,
+    pkg.outputVersionPrefix
+  );
+  await writeHeadersXCFrameworkAsync(source, product, destination);
+  logger.info(`📦 Wrote ${path.basename(destination)} from the ${flavor} xcframework.`);
+  return destination;
+}
+
+/**
+ * Writes `destination` as the headers xcframework of `sourceXCFramework`, replacing any previous
+ * output. Slices, identifiers and platforms come from the source's Info.plist; a slice with no
+ * headers and no Swift interfaces (a placeholder) is left out.
+ */
+export async function writeHeadersXCFrameworkAsync(
+  sourceXCFramework: string,
+  product: HeadersProduct,
+  destination: string
+): Promise<void> {
+  const libraries = await readSourceLibrariesAsync(sourceXCFramework);
+  await fs.mkdirp(path.dirname(destination));
+  const staging = await fs.mkdtemp(
+    path.join(path.dirname(destination), `.${path.basename(destination)}-`)
+  );
+  const scratch = await fs.mkdtemp(path.join(os.tmpdir(), 'headers-xcframework-'));
+  try {
+    const written: XCFrameworkLibrary[] = [];
+    for (const library of libraries) {
+      if (await writeSliceAsync(sourceXCFramework, library, product, staging, scratch)) {
+        written.push(library);
+      }
+    }
+    if (written.length === 0) {
+      throw new Error(
+        `${sourceXCFramework} has no slice with headers or Swift interfaces, so there is nothing ` +
+          `to compile ${product.name} against. Rebuild ${product.name} and check that its ` +
+          `framework slices contain Headers or Modules.`
+      );
+    }
+    await fs.writeFile(
+      path.join(staging, 'Info.plist'),
+      plist.build({
+        AvailableLibraries: written.map((library) => headersLibraryEntry(product.name, library)),
+        CFBundlePackageType: 'XFWK',
+        XCFrameworkFormatVersion: '1.0',
+      })
+    );
+    await fs.remove(destination);
+    await fs.rename(staging, destination);
+  } finally {
+    await Promise.all([fs.remove(staging), fs.remove(scratch)]);
+  }
+}
+
+const stubLibraryName = (productName: string) => `lib${productName}Headers.a`;
+
+function headersLibraryEntry(productName: string, library: XCFrameworkLibrary) {
+  return {
+    BinaryPath: stubLibraryName(productName),
+    HeadersPath: 'Headers',
+    LibraryIdentifier: library.LibraryIdentifier,
+    LibraryPath: stubLibraryName(productName),
+    SupportedArchitectures: library.SupportedArchitectures,
+    SupportedPlatform: library.SupportedPlatform,
+    ...(library.SupportedPlatformVariant
+      ? { SupportedPlatformVariant: library.SupportedPlatformVariant }
+      : {}),
+  };
+}
+
+/**
+ * Lays out one slice: `Headers/<Module>/` with the module map rewritten for a plain include
+ * directory, `<Module>.swiftmodule/` with only the textual interfaces, and the stub archive.
+ * Returns false for a placeholder slice, which is skipped.
+ */
+async function writeSliceAsync(
+  sourceXCFramework: string,
+  library: XCFrameworkLibrary,
+  product: HeadersProduct,
+  xcframework: string,
+  scratch: string
+): Promise<boolean> {
+  const framework = path.join(sourceXCFramework, library.LibraryIdentifier, library.LibraryPath);
+  const moduleName = path.basename(library.LibraryPath, '.framework');
+  const sourceHeaders = path.join(framework, 'Headers');
+  const sourceSwiftModule = path.join(framework, 'Modules', `${moduleName}.swiftmodule`);
+  const swiftInterfaces = (await fs.pathExists(sourceSwiftModule))
+    ? (await fs.readdir(sourceSwiftModule)).filter((file) => file.endsWith('.swiftinterface'))
+    : [];
+  const hasHeaders = await fs.pathExists(sourceHeaders);
+  if (!hasHeaders && swiftInterfaces.length === 0) {
+    return false;
+  }
+
+  const slice = path.join(xcframework, library.LibraryIdentifier);
+  const headers = path.join(slice, 'Headers', moduleName);
+  if (hasHeaders) {
+    // Copied, not linked: Xcode copies each slice into the build products directory, where a
+    // relative symlink would no longer resolve. Dereferenced for versioned macOS frameworks.
+    await fs.copy(sourceHeaders, headers, { dereference: true });
+  }
+  const moduleMap = await readModuleMapAsync(framework);
+  if (moduleMap != null) {
+    await fs.outputFile(
+      path.join(headers, 'module.modulemap'),
+      moduleMap.replace(/^(\s*)framework module /gm, '$1module ')
+    );
+  }
+  for (const swiftInterface of swiftInterfaces) {
+    await fs.copy(
+      path.join(sourceSwiftModule, swiftInterface),
+      path.join(slice, `${moduleName}.swiftmodule`, swiftInterface)
+    );
+  }
+
+  await buildStubArchiveAsync(
+    library,
+    await resolveMinimumVersionAsync(library, framework, product),
+    `${product.name}HeadersStub`,
+    path.join(slice, stubLibraryName(product.name)),
+    scratch
+  );
+  return true;
+}
+
+async function readModuleMapAsync(framework: string): Promise<string | null> {
+  for (const candidate of ['Modules', 'Headers']) {
+    const file = path.join(framework, candidate, 'module.modulemap');
+    if (await fs.pathExists(file)) {
+      return fs.readFile(file, 'utf8');
+    }
+  }
+  return null;
+}
+
+function sliceTargetFor(library: XCFrameworkLibrary): SliceTarget {
+  const key = [library.SupportedPlatform, library.SupportedPlatformVariant]
+    .filter(Boolean)
+    .join('-');
+  const target = SLICE_TARGETS[key];
+  if (!target) {
+    throw new Error(
+      `Cannot write a headers xcframework slice for ${library.LibraryIdentifier}: platform "${key}" ` +
+        `is not supported. Supported platforms: ${Object.keys(SLICE_TARGETS).join(', ')}.`
+    );
+  }
+  return target;
+}
+
+/** The framework's own deployment target, else the version the product declares for its platform. */
+async function resolveMinimumVersionAsync(
+  library: XCFrameworkLibrary,
+  framework: string,
+  product: HeadersProduct
+): Promise<string> {
+  const target = sliceTargetFor(library);
+  for (const infoPlist of ['Info.plist', path.join('Resources', 'Info.plist')]) {
+    const file = path.join(framework, infoPlist);
+    if (await fs.pathExists(file)) {
+      const version = (await readPlistAsync(file))[target.minimumVersionKey];
+      if (typeof version === 'string') {
+        return version;
+      }
+    }
+  }
+  const declared = product.platforms
+    .map(parseProductPlatform)
+    .find((platform) => platform?.name === target.productPlatform);
+  if (declared) {
+    return declared.version;
+  }
+  throw new Error(
+    `Cannot build the ${product.name}Headers stub for slice ${library.LibraryIdentifier}: its ` +
+      `framework declares no ${target.minimumVersionKey} and the product's "platforms" in ` +
+      `spm.config.json have no ${target.productPlatform} entry. Add a ${target.productPlatform} ` +
+      `platform with its deployment target to the product.`
+  );
+}
+
+/** Parses `iOS(.v15)`, `macOS(.v10_15)` and `iOS("16.4")` into a name and a dotted version. */
+function parseProductPlatform(platform: string): { name: string; version: string } | null {
+  const match = platform.match(/^(\w+)\((?:\.v(\d+)(?:_(\d+))?|"([\d.]+)")\)$/);
+  if (!match) {
+    return null;
+  }
+  const [, name, major, minor, literal] = match;
+  return { name, version: literal ?? `${major}.${minor ?? '0'}` };
+}
+
+async function buildStubArchiveAsync(
+  library: XCFrameworkLibrary,
+  minimumVersion: string,
+  symbolPrefix: string,
+  output: string,
+  scratch: string
+): Promise<void> {
+  const target = sliceTargetFor(library);
+  const source = path.join(scratch, `${library.LibraryIdentifier}.c`);
+  await fs.writeFile(source, `int ${symbolPrefix}_${target.sdk} = 0;\n`);
+  const objects: string[] = [];
+  for (const arch of library.SupportedArchitectures) {
+    const object = path.join(scratch, `${library.LibraryIdentifier}-${arch}.o`);
+    const triple = `${arch}-apple-${target.os}${minimumVersion}${target.environment ? `-${target.environment}` : ''}`;
+    await spawnAsync('xcrun', [
+      '--sdk',
+      target.sdk,
+      'clang',
+      '-target',
+      triple,
+      '-c',
+      source,
+      '-o',
+      object,
+    ]);
+    objects.push(object);
+  }
+  await fs.mkdirp(path.dirname(output));
+  await spawnAsync('xcrun', ['libtool', '-static', '-o', output, ...objects]);
+}
+
+async function readSourceLibrariesAsync(xcframework: string): Promise<XCFrameworkLibrary[]> {
+  const infoPlist = path.join(xcframework, 'Info.plist');
+  if (!(await fs.pathExists(infoPlist))) {
+    throw new Error(
+      `Cannot write a headers xcframework: ${infoPlist} does not exist. Compose the product's ` +
+        `xcframework first.`
+    );
+  }
+  const { AvailableLibraries } = await readPlistAsync(infoPlist);
+  if (!Array.isArray(AvailableLibraries)) {
+    throw new Error(`${infoPlist} has no AvailableLibraries array; it is not a valid xcframework.`);
+  }
+  return AvailableLibraries as XCFrameworkLibrary[];
+}
+
+/** Reads XML and binary plists alike; xcodebuild writes framework Info.plists in binary form. */
+async function readPlistAsync(file: string): Promise<Record<string, unknown>> {
+  const { stdout } = await spawnAsync('plutil', ['-convert', 'json', '-o', '-', file]);
+  return JSON.parse(stdout);
+}
