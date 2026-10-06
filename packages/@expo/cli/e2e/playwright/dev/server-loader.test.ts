@@ -37,24 +37,22 @@ for (const outputMode of outputModes) {
       await expoStart.stopAsync();
     });
 
-    // TODO(@hassankhan): Remove server-specific guard after #46526 is merged
-    (outputMode === 'server' ? test : test.skip)(
-      'writes large completed Suspense content before the bootstrap script',
-      async ({ request }) => {
-        const response = await request.get(new URL('/large-suspense', expoStart.url).href);
-        expect(response.status()).toBe(200);
-        const html = await response.text();
-        const contentStart = html.indexOf('data-testid="suspense-content"');
-        const contentEnd = html.indexOf('data-testid="suspense-content-end"');
-        const bootstrap = html.indexOf('globalThis.__EXPO_ROUTER_HYDRATE__');
+    test('writes large completed Suspense content before the bootstrap script', async ({
+      request,
+    }) => {
+      const response = await request.get(new URL('/large-suspense', expoStart.url).href);
+      expect(response.status()).toBe(200);
+      const html = await response.text();
+      const contentStart = html.indexOf('data-testid="suspense-content"');
+      const contentEnd = html.indexOf('data-testid="suspense-content-end"');
+      const bootstrap = html.indexOf('globalThis.__EXPO_ROUTER_LOADER_DATA__');
 
-        expect(contentStart).toBeGreaterThan(-1);
-        expect(contentEnd).toBeGreaterThan(contentStart);
-        expect(bootstrap).toBeGreaterThan(contentEnd);
-        expect(html).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
-        expect(html).not.toContain('<div hidden id="S:');
-      }
-    );
+      expect(contentStart).toBeGreaterThan(-1);
+      expect(contentEnd).toBeGreaterThan(contentStart);
+      expect(bootstrap).toBeGreaterThan(contentEnd);
+      expect(html).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
+      expect(html).not.toContain('<div hidden id="S:');
+    });
 
     test('shows large completed Suspense content without JavaScript', async ({ browser }) => {
       const page = await browser.newPage({ javaScriptEnabled: false });

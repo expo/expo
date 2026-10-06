@@ -177,8 +177,10 @@ You can customize the root HTML file by creating a **src/app/+html.tsx** file in
 
 > **Note**: Global context providers should go in the [Root Layout](/router/basics/navigation-layouts/#root-layout) component, not the Root HTML component.
 
+Static rendering requires custom HTML components to render the values from `useServerDocumentContext()`. Include `headNodes` inside `<head>` and `bodyNodes` after `children` inside `<body>` to include metadata, styles, fonts, and JavaScript bundles.
+
 ```tsx src/app/+html.tsx
-import { ScrollViewStyleReset } from 'expo-router/html';
+import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
 // This file is web-only and used to configure the root HTML for every
@@ -186,8 +188,10 @@ import { type PropsWithChildren } from 'react';
 // The contents of this function only run in Node.js environments and
 // do not have access to the DOM or browser APIs.
 export default function Root({ children }: PropsWithChildren) {
+  const { headNodes, bodyNodes, htmlAttributes, bodyAttributes } = useServerDocumentContext();
+
   return (
-    <html lang="en">
+    <html lang="en" {...htmlAttributes}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -200,16 +204,20 @@ export default function Root({ children }: PropsWithChildren) {
         <ScrollViewStyleReset />
 
         {/* Add any additional <head> elements that you want globally available on web... */}
+        {headNodes}
       </head>
-      <body>{children}</body>
+      <body {...bodyAttributes}>
+        {children}
+        {bodyNodes}
+      </body>
     </html>
   );
 }
 ```
 
 - The `children` prop comes with the root `<div id="root" />` tag included inside.
-- The JavaScript scripts are appended after the static render.
-- React Native web styles are statically injected automatically.
+- `headNodes` includes generated metadata and styles, including React Native web styles.
+- `bodyNodes` includes font resources and JavaScript bundles.
 - Global CSS should not be imported into this file. Instead, use the [Root Layout](/router/basics/navigation-layouts/#root-layout). Expo Router traverses the dependency graph starting from the root layout, so importing CSS elsewhere can cause unexpected loading order where **node_modules** CSS takes precedence over your custom styles.
 - Browser APIs like `window.location` are unavailable in this component as it only runs in Node.js during static rendering.
 
@@ -217,30 +225,34 @@ export default function Root({ children }: PropsWithChildren) {
 
 The exports from `expo-router/html` are related to the Root HTML component.
 
+- `useServerDocumentContext`: Returns the generated head and body nodes and document attributes for your root HTML component to render.
 - `ScrollViewStyleReset`: Root style-reset for full-screen [React Native web apps](https://necolas.github.io/react-native-web/docs/setup/#root-element) with a root `<ScrollView />` should use the following styles to ensure native parity.
 
 ## Meta tags
 
-You can add meta tags to your pages with the `<Head />` module from `expo-router`:
+In SDK 58 and later, export a `generateMetadata()` function from a route to include metadata in its generated HTML. Expo CLI resolves this function at build time for each static path.
 
 ```tsx src/app/about.tsx
-import Head from 'expo-router/head';
+import type { Metadata } from 'expo-router/server';
 import { Text } from 'react-native';
 
+export function generateMetadata(): Metadata {
+  return {
+    title: 'My Blog Website',
+    description: 'This is my blog.',
+  };
+}
+
 export default function Page() {
-  return (
-    <>
-      <Head>
-        <title>My Blog Website</title>
-        <meta name="description" content="This is my blog." />
-      </Head>
-      <Text>About my blog</Text>
-    </>
-  );
+  return <Text>About my blog</Text>;
 }
 ```
 
-The head elements can be updated dynamically using the same API. However, it's useful for SEO to have static head elements rendered ahead of time.
+The function can be asynchronous and receives `undefined` as its first argument and the route's parameters as its second argument. Static rendering does not provide a request, including during development. See [metadata with server rendering](/router/web/server-rendering/#metadata) for supported fields and dynamic examples.
+
+Use `generateMetadata()` for metadata that must be present before JavaScript runs. The `<Head>` component from `expo-router/head` can update metadata after hydration, but its tags are not included in the initial static HTML. In SDK 57 and earlier, use `<Head>` for initial static metadata.
+
+When upgrading from SDK 57, follow [Migrate static page metadata](/router/migrate/sdk-57-to-58/#migrate-static-page-metadata) to move existing `Head` tags and document attributes.
 
 ## Static files
 
