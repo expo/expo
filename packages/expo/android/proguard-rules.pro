@@ -25,6 +25,11 @@
 -keepnames class * extends expo.modules.core.BasePackage
 -keepnames class * implements expo.modules.core.interfaces.Package
 
+# For Expo Modules v2 autolinking. ExpoModulesV2Host loads this class by name.
+-keep class expo.modules.ExpoModulesV2ModuleList {
+  public <init>();
+}
+
 # For React Native WindowUtilKt edge-to-edge support
 -keep class com.facebook.react.views.view.WindowUtilKt {
   *;

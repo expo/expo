@@ -48,3 +48,25 @@
 -keep class * implements expo.modules.kotlin.services.Service {
     <init>(...);
 }
+
+# Expo Modules v2. The runtime's JNI layer (libexpo-kolibri.so) looks up these classes' fields and
+# methods by name, and calls module, shared object and record members by name.
+-keep class io.github.expo.kolibri.** {
+  *;
+}
+
+-keep class io.github.expo.modules.v2.** {
+  *;
+}
+
+-keep class * extends io.github.expo.modules.v2.ExpoObject {
+  *;
+}
+
+-keep @io.github.expo.modules.v2.Record class * {
+  *;
+}
+
+-keep class * implements io.github.expo.modules.v2.records.Record {
+  *;
+}
