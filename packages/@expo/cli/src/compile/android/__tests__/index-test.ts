@@ -40,20 +40,28 @@ it('loads env files in the resolved mode before resolving options', async () => 
 });
 
 it('compiles with the resolved options', async () => {
-  const options = { mode: 'development', device: 'iPhone 18 Pro', outputDir: '/app/build' };
+  const options = {
+    mode: 'development',
+    device: 'iPhone 18 Pro',
+    outputDir: '/app/build',
+    outputType: 'aab',
+  };
   assertArgs.mockReturnValue({
     '--dev': true,
     '--device': 'iPhone 18 Pro',
     '--output-dir': 'build',
+    '--output-type': 'aab',
   });
   resolveOptions.mockReturnValueOnce(options);
 
   await expoCompileAndroid([]);
 
   expect(resolveOptions).toHaveBeenCalledWith('/app', {
+    platform: 'android',
     mode: 'development',
     device: 'iPhone 18 Pro',
     outputDir: 'build',
+    outputType: 'aab',
   });
   expect(compileAndroidAsync).toHaveBeenCalledWith('/app', options);
 });

@@ -40,12 +40,13 @@ it('runs `npx expo compile:android --help`', async () => {
         $ npx expo compile:android <dir>
 
       Options
-        <dir>               Directory of the Expo project. Default: Current working directory
-        --dev               Build in development mode
-        --prod              Build in production mode (default)
-        --device <device>   Device name or ID to build the app for
-        --output-dir <dir>  Directory to copy the built app to
-        -h, --help          Usage info
+        <dir>                    Directory of the Expo project. Default: Current working directory
+        --dev                    Build in development mode
+        --prod                   Build in production mode (default)
+        --device <device>        Device name or ID to build the app for
+        --output-dir <dir>       Directory to copy the built app to
+        --output-type <apk|aab>  Type of app binary to build
+        -h, --help               Usage info
     "
   `);
 });
