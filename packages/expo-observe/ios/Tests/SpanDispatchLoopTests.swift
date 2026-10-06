@@ -1,4 +1,3 @@
-import ExpoAppMetrics
 import Testing
 
 @testable import ExpoObserve

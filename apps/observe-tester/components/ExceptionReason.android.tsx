@@ -1,4 +1,4 @@
-import type { CrashReport } from 'expo-app-metrics';
+import type { CrashReport } from 'expo-observe/app-metrics';
 import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from '@/utils/theme';

@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import android.util.Log
+import expo.modules.appmetrics.networkrequests.INTERNAL_HEADER_NAME
 import expo.modules.easclient.EASClientID
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.MediaType.Companion.toMediaType
@@ -112,13 +113,10 @@ class EventDispatcher(
     val request = Request
       .Builder()
       .url(endpointUrl)
-      // Tells the expo-app-metrics network observer to skip this request so our own telemetry
+      // Tells the network-request observer to skip this request so our own telemetry
       // uploads don't get logged back into the network-request stream. The interceptor strips
-      // the header before forwarding so the server never sees it. The name is duplicated here
-      // rather than imported: expo-observe must not depend on expo-app-metrics internals. Keep
-      // it in sync with `INTERNAL_HEADER_NAME` in
-      // `expo-app-metrics/android/.../networkrequests/NetworkRequestInterceptor.kt`.
-      .addHeader("Expo-AppMetrics-Skip", "1")
+      // the header before forwarding so the server never sees it.
+      .addHeader(INTERNAL_HEADER_NAME, "1")
       .post(body.toRequestBody("application/json".toMediaType()))
       .build()
 

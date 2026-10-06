@@ -1,6 +1,6 @@
-import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
 import { use, useCallback, useEffect, useRef } from 'react';
 
+import AppMetrics, { type MetricAttributes } from '../../app-metrics';
 import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { getNavigationMetricParams } from '../navigationConfig';
 import { ObserveRouterIntegrationContext } from './ObserveRouterIntegrationProvider';

@@ -1,4 +1,4 @@
-import type { Session } from 'expo-app-metrics';
+import type { Session } from '../../app-metrics';
 
 export function emitTTI(args: {
   session: Pick<Session, 'addMetric'>;

@@ -9,7 +9,7 @@ import {
 } from '../ObserveRouterIntegrationProvider';
 import * as initModule from '../init';
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../../../app-metrics', () => ({
   __esModule: true,
   default: {
     markInteractive: jest.fn(),

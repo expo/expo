@@ -1,10 +1,10 @@
+import { useObserve } from 'expo-observe';
 import AppMetrics, {
   type CrashReport,
   type DebugSession,
   type Session,
   type SessionType,
-} from 'expo-app-metrics';
-import { useObserve } from 'expo-observe';
+} from 'expo-observe/app-metrics';
 import { type Href, router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import {

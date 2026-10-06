@@ -11,7 +11,6 @@ on:
       - packages/expo-age-range/**/*.swift
       - packages/expo-app-integrity/**/*.swift
       - packages/expo-app-intents/**/*.swift
-      - packages/expo-app-metrics/**/*.swift
       - packages/expo-application/**/*.swift
       - packages/expo-asset/**/*.swift
       - packages/expo-background-fetch/**/*.swift
@@ -98,7 +97,6 @@ jobs:
             packages/expo-age-range
             packages/expo-app-integrity
             packages/expo-app-intents
-            packages/expo-app-metrics
             packages/expo-application
             packages/expo-asset
             packages/expo-background-fetch

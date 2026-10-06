@@ -5,7 +5,7 @@ import AppMetrics, {
   type NetworkRequestFilter,
   type NetworkRequestObserver,
   type NetworkRequestStartedEvent,
-} from 'expo-app-metrics';
+} from 'expo-observe/app-metrics';
 import { fetch } from 'expo/fetch';
 
 import type { JasmineInterface } from '../types';
@@ -553,7 +553,7 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
     }
 
     it('installs by wrapping the global ErrorUtils handler', () => {
-      // The handler is installed when expo-app-metrics is imported, so a global handler is present.
+      // The handler is installed when expo-observe is imported, so a global handler is present.
       expect(typeof ErrorUtils.getGlobalHandler()).toBe('function');
     });
 

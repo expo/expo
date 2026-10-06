@@ -1,4 +1,4 @@
-import type { CallStackFrame, CallStackTree } from 'expo-app-metrics';
+import type { CallStackFrame, CallStackTree } from 'expo-observe/app-metrics';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 

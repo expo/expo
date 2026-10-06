@@ -33,7 +33,7 @@ jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
 }));
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
 }));

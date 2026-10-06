@@ -57,6 +57,12 @@ export const directPackageInstallCheckItems: DirectPackageInstallCheckItem[] = [
     sdkVersionRange: '>=49.0.0',
   },
   {
+    packageName: 'expo-app-metrics',
+    getMessage: (packageName: string) =>
+      `The package "${packageName}" has been merged into "expo-observe" and should not be installed directly in your project. Remove "${packageName}" from your dependencies and upgrade "expo-observe" to the latest version.`,
+    sdkVersionRange: '>=58.0.0',
+  },
+  {
     packageName: '@expo/prebuild-config',
     ...baseCheckItem,
     // This has been true for a while, but I can't predict if removing it will cause issues in past SDK versions

@@ -3,7 +3,7 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from '@expo/ui/community/bottom-sheet';
-import type { Metric } from 'expo-app-metrics';
+import type { Metric } from 'expo-observe/app-metrics';
 import { useMemo, useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 

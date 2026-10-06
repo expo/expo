@@ -29,7 +29,7 @@ jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
 }));
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
   setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
@@ -65,7 +65,7 @@ beforeEach(() => {
   jest.resetModules();
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
-  jest.doMock('expo-app-metrics', () => ({
+  jest.doMock('../app-metrics', () => ({
     __esModule: true,
     default: mockAppMetrics,
     setErrorHandlerEnabled: mockSetErrorHandlerEnabled,

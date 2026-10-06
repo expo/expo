@@ -1,6 +1,6 @@
-import type { MetricAttributes } from 'expo-app-metrics';
 import { useEffect, useRef, useState } from 'react';
 
+import type { MetricAttributes } from './app-metrics';
 import { useObserve } from './useObserve';
 
 export type ObserveInteractiveMarkerProps = {

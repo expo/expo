@@ -25,7 +25,6 @@ on:
       - packages/expo-structured-headers/ios/**
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
-      - packages/expo-app-metrics/ios/**
       - packages/expo-audio/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**
@@ -59,7 +58,6 @@ on:
       - packages/expo-structured-headers/ios/**
       - packages/expo-updates/ios/**
       - packages/expo-updates-interface/ios/**
-      - packages/expo-app-metrics/ios/**
       - packages/expo-audio/ios/**
       - packages/expo-blur/ios/**
       - packages/expo-crypto/ios/**

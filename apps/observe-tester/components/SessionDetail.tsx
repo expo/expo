@@ -1,5 +1,5 @@
-import type { DebugSession, Session } from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
+import type { DebugSession, Session } from 'expo-observe/app-metrics';
 import { Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text } from 'react-native';

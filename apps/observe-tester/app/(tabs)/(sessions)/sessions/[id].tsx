@@ -1,4 +1,4 @@
-import AppMetrics, { type DebugSession } from 'expo-app-metrics';
+import AppMetrics, { type DebugSession } from 'expo-observe/app-metrics';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 

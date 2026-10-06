@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../../app-metrics';
 import { initListeners, initRouterIntegration } from '../init';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 
@@ -13,7 +12,7 @@ type ActionDispatchedEvent = any;
 type PageFocusedEvent = any;
 type PagePreloadedEvent = any;
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',
