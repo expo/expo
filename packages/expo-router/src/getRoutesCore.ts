@@ -566,7 +566,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
               `The layouts "${filePath}" and "${existing.contextKey}" conflict on the route "/${route}". Remove or rename one of these files.`
             );
           }
-        } else {
+        } else if (isLayoutRouteNode(node)) {
           node = getLayoutNode(node, options);
           directory.layout[meta.specificity] = node;
         }
@@ -909,14 +909,14 @@ function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
   }
 }
 
-function getLayoutNode(node: RouteNode, options: Options): LayoutRouteNode {
+function getLayoutNode(node: LayoutRouteNode, options: Options) {
   /**
    * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
    * Each of these layouts will have a different anchor based upon the first group name.
    */
   // We may strip loadRoute during testing
   const groupName = matchLastGroupName(node.route);
-  const childMatchingGroup = (isLayoutRouteNode(node) ? node.children : []).find((child) => {
+  const childMatchingGroup = node.children.find((child) => {
     return child.route.replace(/\/index$/, '') === groupName;
   });
   let anchor = childMatchingGroup?.route;
@@ -953,7 +953,6 @@ function getLayoutNode(node: RouteNode, options: Options): LayoutRouteNode {
 
   return {
     ...node,
-    type: 'layout',
     route: node.route.replace(/\/?_layout$/, ''),
     children: [], // Each layout should have its own children
     initialRouteName: anchor,
