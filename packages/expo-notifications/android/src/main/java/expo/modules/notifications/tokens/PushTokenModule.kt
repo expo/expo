@@ -14,13 +14,19 @@ private const val REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED"
 private const val UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED"
 
 class PushTokenModule : Module(), FirebaseTokenListener {
+  private var lastEmittedToken: String? = null
+
   /**
    * Callback called when [FirebaseMessagingDelegate] gets notified of a new token.
-   * Emits a [NEW_TOKEN_EVENT_NAME] event.
+   * Emits a [NEW_TOKEN_EVENT_NAME] event if the token differs from the last emitted one.
    *
    * @param token New push token.
    */
   override fun onNewToken(token: String) {
+    if (token == lastEmittedToken) {
+      return
+    }
+    lastEmittedToken = token
     runCatching {
       // onNewToken is emitted asynchronously and the module may be destroyed by the time sendEvent is called
       // that would result in an exception

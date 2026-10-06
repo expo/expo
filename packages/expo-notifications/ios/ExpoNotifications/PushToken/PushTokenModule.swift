@@ -8,6 +8,7 @@ let onDevicePushTokenEventName = "onDevicePushToken"
 
 public class PushTokenModule: Module, NotificationDelegate {
   var promiseNotYetResolved: Promise?
+  private var lastEmittedToken: String?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoPushTokenManager")
@@ -54,6 +55,10 @@ To obtain the push token, await the result of the newer call.
   public func didRegister(_ deviceToken: String) {
     promiseNotYetResolved?.resolve(deviceToken)
     promiseNotYetResolved = nil
+    if deviceToken == lastEmittedToken {
+      return
+    }
+    lastEmittedToken = deviceToken
     self.sendEvent(onDevicePushTokenEventName, ["devicePushToken": deviceToken])
   }
 
