@@ -43,7 +43,6 @@
 
 ### 🐛 Bug fixes
 
-- Fixed fingerprints differing between machines with different locales (for example Croatian, Czech, Swedish, or Turkish versus English), which made a locally computed runtime version never match the one computed on EAS. Sources, directory entries, and `.gitignore` files are now sorted with a fixed English collator instead of the process default locale. ([#49334](https://github.com/expo/expo/pull/49334) by [@filipfrlic](https://github.com/filipfrlic))
 - Resolve the git root from the project root instead of the process working directory during project workflow detection, so fingerprinting a project (for example a git worktree) while the working directory is inside another repository no longer flips the workflow from `managed` to `generic` and silently changes the hash. ([#49435](https://github.com/expo/expo/pull/49435) by [@janicduplessis](https://github.com/janicduplessis))
 - Set development mode before loading Expo config and `.env` files. ([#48839](https://github.com/expo/expo/pull/48839) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fixed ignore patterns (built-in and `.fingerprintignore`) not matching on Windows, which made fingerprints differ between Windows machines and EAS builds ("Runtime version mismatch"). ([#46816](https://github.com/expo/expo/pull/46816) by [@blurbyte](https://github.com/blurbyte))
