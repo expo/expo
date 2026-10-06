@@ -1,6 +1,6 @@
 ---
 title: Take a screenshot
-description: In this tutorial, learn how to capture a screenshot using a third-party library and Expo Media Library.
+description: In this tutorial, learn how to capture a screenshot using a third-party library, save it with Expo Media Library on Android and iOS, and download it on the web.
 hasVideoLink: true
 ---
 
@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) to take a screenshot and [`expo-media-library`](/versions/latest/sdk/media-library/) to save an image on device's media library.
+In this chapter, we'll learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) to take a screenshot and [`expo-media-library`](/versions/latest/sdk/media-library/) to save an image on device's media library. Web browsers don't give apps access to a media library, so on the web, we'll download the screenshot as an image file.
 
 > **info** So far, we have used third-party libraries, such as `react-native-gesture-handler`, `react-native-reanimated`. We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/) depending on a use case.
 
@@ -270,6 +270,189 @@ const styles = StyleSheet.create({
 Now, choose a photo and add a sticker in the app. Then tap the **Save** button. We should see the following result on Android and iOS:
 
 <ContentSpotlight file="tutorial/saving-screenshot.mp4" />
+
+</Step>
+
+<Step label="5">
+
+## Save the screenshot on the web
+
+`react-native-view-shot` can also capture a screenshot on the web. However, `expo-media-library` works only on Android and iOS. On the web, we'll download the screenshot as an image file instead.
+
+Using `Platform` module from React Native, we can implement platform-specific behavior. On the web, `captureRef()` returns the screenshot as a [data URL](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data) when we set the `result` option to `'data-uri'`. We can pass this data URL to a link element to download the image.
+
+Inside **src/app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function to check whether the current platform is `'web'` with the `Platform.OS` property:
+
+1. If it is not `'web'`, we'll keep using the same logic added for Android and iOS.
+2. If it is `'web'`, we'll use the `captureRef()` method to capture the current `<View>` as a JPEG image. Then, we'll create a link element with the data URL and click it to download the image.
+
+The `Platform` module is already imported from `react-native`, because the `imageContainer` style uses it.
+
+{/* prettier-ignore */}
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { captureRef } from 'react-native-view-shot';
+import type { ImageSource } from 'expo-image';
+
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
+import EmojiPicker from '@/components/emoji-picker';
+import EmojiList from '@/components/emoji-list';
+import EmojiSticker from '@/components/emoji-sticker';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const imageRef = useRef<ComponentRef<typeof View>>(null);
+
+  useEffect(() => {
+    if (!permissionResponse?.granted) {
+      requestPermission();
+    }
+  }, []);
+
+  const pickImageAsync = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const onSaveImageAsync = async () => {
+    /* @tutinfo Add the if condition here to check whether the current platform is web or not. */
+    if (Platform.OS !== 'web') {
+    /* @end */
+      try {
+        const localUri = await captureRef(imageRef, {
+          height: 440,
+          quality: 1,
+        });
+
+        await MediaLibrary.Asset.create(localUri);
+        alert('Saved!');
+      } catch (e) {
+        console.log(e);
+      }
+    /* @tutinfo Add an else condition to run the logic when the current platform is the web. */
+    } else {
+      try {
+        const dataUrl = await captureRef(imageRef, {
+          format: 'jpg',
+          quality: 0.95,
+          result: 'data-uri',
+        });
+
+        const link = document.createElement('a');
+        link.download = 'sticker-smash.jpeg';
+        link.href = dataUrl;
+        link.click();
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    /* @end */
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <View ref={imageRef} collapsable={false}>
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+          {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
+        </View>
+      </View>
+      {showAppOptions ? (
+        <View style={styles.footerContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/refresh.xml'),
+                ios: 'arrow.counterclockwise',
+                web: 'refresh',
+              }}
+              label="Reset"
+              onPress={onReset}
+            />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/download.xml'),
+                ios: 'square.and.arrow.down',
+                web: 'download',
+              }}
+              label="Save"
+              onPress={onSaveImageAsync}
+            />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
+```
+
+On running the app in a web browser, we can now save a screenshot:
+
+<ContentSpotlight file="tutorial/web.mp4" />
 
 </Step>
 

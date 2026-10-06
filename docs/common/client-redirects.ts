@@ -660,4 +660,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After removing the Vexo guide
   '/guides/using-vexo/': '/guides/using-analytics/',
+
+  // After merging Handle platform differences into Take a screenshot
+  '/tutorial/platform-differences/': '/tutorial/screenshot/#save-the-screenshot-on-the-web',
+  '/ja/tutorial/platform-differences/': '/ja/tutorial/screenshot/',
 };

@@ -731,6 +731,12 @@
 /guides/using-vexo /guides/using-analytics 301
 /guides/using-vexo/ /guides/using-analytics 301
 /guides/using-vexo.md /guides/using-analytics.md 301
+/tutorial/platform-differences /tutorial/screenshot/#save-the-screenshot-on-the-web 301
+/tutorial/platform-differences/ /tutorial/screenshot/#save-the-screenshot-on-the-web 301
+/tutorial/platform-differences.md /tutorial/screenshot.md 301
+/ja/tutorial/platform-differences /ja/tutorial/screenshot 301
+/ja/tutorial/platform-differences/ /ja/tutorial/screenshot 301
+/ja/tutorial/platform-differences.md /ja/tutorial/screenshot.md 301
 /eas-update/updating-your-app /eas-update/getting-started 301
 /eas-update/updating-your-app/ /eas-update/getting-started 301
 /eas-update/updating-your-app.md /eas-update/getting-started.md 301

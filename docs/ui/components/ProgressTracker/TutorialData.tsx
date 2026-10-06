@@ -68,22 +68,15 @@ export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
     summary: (
       <>
         We've successfully used <CODE>react-native-view-shot</CODE> and{' '}
-        <CODE>expo-media-library</CODE> to capture a screenshot and save it on the device's library.
+        <CODE>expo-media-library</CODE> to capture a screenshot and save it on the device's library,
+        and to download it on the web.
       </>
     ),
     nextDescription:
-      "In the next chapter, let's learn how to handle the differences between mobile and web platforms to implement the same functionality on web.",
+      "The app does everything we set out for it to do. In the next chapter, we will customize the app's status bar, splash screen, and app icon.",
   },
   {
-    title: 'Chapter 8: Handle platform differences',
-    slug: '/tutorial/platform-differences',
-    summary:
-      "The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic..",
-    nextDescription:
-      "In the next chapter, we will customize the app's status bar, splash screen, and app icon.",
-  },
-  {
-    title: 'Chapter 9: Configure status bar, splash screen and app icon',
+    title: 'Chapter 8: Configure status bar, splash screen and app icon',
     slug: '/tutorial/configuration',
     summary:
       'Well done! We built an app that runs on Android, iOS, and the web from the same codebase.',
