@@ -35,8 +35,8 @@ struct DiagnosticsTabView: View {
       .padding()
     }
     .background(Color.expoSystemBackground)
-    .navigationTitle("Diagnostics")
-    .navigationBarTitleDisplayMode(.inline)
+    .navigationTitle(HomeTab.diagnostics.title)
+    .navigationBarTitleDisplayMode(.large)
   }
 }
 

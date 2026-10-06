@@ -73,7 +73,8 @@ struct LearnTabView: View {
       }
       .padding()
     }
-    .navigationTitle("Learn")
+    .navigationTitle(HomeTab.learn.title)
+    .navigationBarTitleDisplayMode(.large)
     .onAppear {
       viewModel.settingsManager.refreshCompletedLessons()
       if let lessonId = viewModel.pendingLessonId,

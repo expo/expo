@@ -43,6 +43,8 @@ struct HomeTabView: View {
         await viewModel.refreshData()
       }
     }
+    .navigationTitle(HomeTab.home.title)
+    .navigationBarTitleDisplayMode(.large)
     .onAppear {
       reviewManager.recordHomeAppear()
       reviewManager.updateCounts(apps: viewModel.projects.count, snacks: viewModel.snacks.count)
