@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Support immediate camera updates with duration 0 and reject negative durations. ([#51101](https://github.com/expo/expo/pull/51101) by [@eliotgevers](https://github.com/eliotgevers))
+
 ### 💡 Others
 
 ## 57.0.3 — 2026-09-11

@@ -422,7 +422,8 @@ export type GoogleMapsViewProps = {
  */
 export type SetCameraPositionConfig = CameraPosition & {
     /**
-     * The duration of the animation in milliseconds.
+     * The duration of the animation in milliseconds. Must be nonnegative.
+     * Use 0 for an immediate update.
      */
     duration?: number;
 };
