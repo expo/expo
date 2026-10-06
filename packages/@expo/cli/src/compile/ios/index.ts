@@ -11,6 +11,7 @@ export const expoCompileIos: Command = async (argv) => {
       '--help': Boolean,
       '--dev': Boolean,
       '--prod': Boolean,
+      '--device': String,
       '--output-dir': String,
       '-h': '--help',
     },
@@ -25,6 +26,7 @@ export const expoCompileIos: Command = async (argv) => {
         chalk`<dir>               Directory of the Expo project. {dim Default: Current working directory}`,
         `--dev               Build in development mode`,
         `--prod              Build in production mode (default)`,
+        `--device <device>   Device name or ID to build the app for`,
         `--output-dir <dir>  Directory to copy the built app to`,
         `-h, --help          Usage info`,
       ].join('\n')
@@ -34,13 +36,18 @@ export const expoCompileIos: Command = async (argv) => {
   return (async () => {
     const projectRoot = getProjectRoot(args);
     const { resolveMode } = await import('../resolveMode.js');
-    const mode = resolveMode({ dev: args['--dev'], prod: args['--prod'] });
+    const mode = resolveMode({
+      dev: args['--dev'],
+      prod: args['--prod'],
+      device: args['--device'],
+    });
     const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
     loadEnvFiles(projectRoot, { mode });
 
     const { resolveOptions } = await import('../resolveOptions.js');
     const options = resolveOptions(projectRoot, {
       mode,
+      device: args['--device'],
       outputDir: args['--output-dir'],
     });
 
