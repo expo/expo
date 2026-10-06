@@ -135,7 +135,8 @@ export type LoadedModuleSource =
 /**
  * Observe every CommonJS module compiled while the hook is installed.
  * We hook `Module.prototype._compile` to keep each module's authoritative filename and source
- * content.
+ * content. Every argument is forwarded: Node 22.18+ passes a `format` argument that tells it to
+ * strip types from a `.ts` file.
  */
 export function installModuleCaptureHook(): {
   getCapturedModules: () => CapturedModule[];
@@ -144,9 +145,14 @@ export function installModuleCaptureHook(): {
   const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
   const capturedModules: CapturedModule[] = [];
   const originalCompile = moduleProto._compile;
-  moduleProto._compile = function (this: { id?: string }, content: string, filename: string) {
+  moduleProto._compile = function (
+    this: { id?: string },
+    content: string,
+    filename: string,
+    ...rest: unknown[]
+  ) {
     capturedModules.push({ id: this.id ?? filename, filename, content });
-    return originalCompile.call(this, content, filename);
+    return originalCompile.call(this, content, filename, ...rest);
   };
   return {
     getCapturedModules: () => capturedModules,
@@ -157,7 +163,12 @@ export function installModuleCaptureHook(): {
 }
 
 interface ModuleCompilePrototype {
-  _compile: (this: { id?: string }, content: string, filename: string) => unknown;
+  _compile: (
+    this: { id?: string },
+    content: string,
+    filename: string,
+    ...rest: unknown[]
+  ) => unknown;
 }
 
 /**
