@@ -63,13 +63,20 @@ export type Options = {
  * A request for a system route. Redirects and rewrites only need their module
  * swapped, so they pass the node built so far as `defaults`.
  */
-export type SystemRouteRequest = {
-  type: RouteNode['type'];
-  route: RouteNode['route'];
-  defaults?: RedirectRouteNode | RewriteRouteNode;
-  redirectConfig?: RedirectConfig;
-  rewriteConfig?: RewriteConfig;
-};
+export type SystemRouteRequest =
+  | { type: 'layout' | 'route'; route: RouteNode['route'] }
+  | {
+      type: 'redirect';
+      route: RouteNode['route'];
+      defaults: RedirectRouteNode;
+      redirectConfig: RedirectConfig;
+    }
+  | {
+      type: 'rewrite';
+      route: RouteNode['route'];
+      defaults: RewriteRouteNode;
+      rewriteConfig: RewriteConfig;
+    };
 
 /**
  * `getSystemRoute` is supplied by the caller, so its return type is only as
