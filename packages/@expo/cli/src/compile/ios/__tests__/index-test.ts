@@ -25,12 +25,12 @@ const { resolveOptions } = require('../../resolveOptions.js') as { resolveOption
 const { compileIosAsync } = require('../compileIosAsync.js') as { compileIosAsync: jest.Mock };
 
 it('loads env files in the resolved mode before resolving options', async () => {
-  assertArgs.mockReturnValue({ '--prod': true });
+  assertArgs.mockReturnValue({ '--prod': true, '--device': 'iPhone 18 Pro' });
   resolveMode.mockReturnValueOnce('development');
 
   await expoCompileIos([]);
 
-  expect(resolveMode).toHaveBeenCalledWith({ dev: undefined, prod: true });
+  expect(resolveMode).toHaveBeenCalledWith({ dev: undefined, prod: true, device: 'iPhone 18 Pro' });
   expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'development' });
   expect(loadEnvFiles.mock.invocationCallOrder[0]).toBeLessThan(
     resolveOptions.mock.invocationCallOrder[0]!
@@ -38,13 +38,21 @@ it('loads env files in the resolved mode before resolving options', async () => 
 });
 
 it('compiles with the resolved options', async () => {
-  const options = { mode: 'development', outputDir: '/app/build' };
-  assertArgs.mockReturnValue({ '--dev': true, '--output-dir': 'build' });
+  const options = { mode: 'development', device: 'iPhone 18 Pro', outputDir: '/app/build' };
+  assertArgs.mockReturnValue({
+    '--dev': true,
+    '--device': 'iPhone 18 Pro',
+    '--output-dir': 'build',
+  });
   resolveOptions.mockReturnValueOnce(options);
 
   await expoCompileIos([]);
 
-  expect(resolveOptions).toHaveBeenCalledWith('/app', { mode: 'development', outputDir: 'build' });
+  expect(resolveOptions).toHaveBeenCalledWith('/app', {
+    mode: 'development',
+    device: 'iPhone 18 Pro',
+    outputDir: 'build',
+  });
   expect(compileIosAsync).toHaveBeenCalledWith('/app', options);
 });
 
