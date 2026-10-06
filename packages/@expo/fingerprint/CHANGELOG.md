@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed hoisted modules in a monorepo not matching the config loading ignore paths on Windows, which added them to the `expoConfigPlugins` sources and made fingerprints differ from macOS, Linux and EAS Build. ([#51190](https://github.com/expo/expo/pull/51190) by [@Cedric921](https://github.com/Cedric921))
+
 ### 💡 Others
 
 ## 0.20.13 — 2026-09-11
