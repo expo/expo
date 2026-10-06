@@ -86,6 +86,8 @@ test.describe('server loaders in production', () => {
     await expect(page.getByTestId('suspense-row')).toHaveCount(400);
     await expect(page.getByTestId('suspense-content')).toBeVisible();
     await expect(page.getByTestId('suspense-count')).toHaveText('0');
+    // React drops a click that arrives before hydration finishes.
+    await expect(page.getByTestId('suspense-mounted')).toBeVisible();
     await page.getByTestId('suspense-increment').click();
     await expect(page.getByTestId('suspense-count')).toHaveText('1');
     expect(pageErrors.all).toEqual([]);
