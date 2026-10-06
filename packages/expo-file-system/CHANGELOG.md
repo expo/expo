@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Add opt-in control over background download completion with `DownloadTask.acknowledgeBackgroundCompletionAsync()`, so apps can finish processing downloads before returning control to iOS. ([#50543](https://github.com/expo/expo/pull/50543) by [@savv](https://github.com/savv))
+- Added static `File.preview()` and `File.canPreview()` methods for a file or array of files, with multi-file previews and initial selection on iOS. ([#50696](https://github.com/expo/expo/pull/50696) by [@eliotgevers](https://github.com/eliotgevers))
+
 ## 58.0.6
 
 ### Patch Changes

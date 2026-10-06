@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.1.5
+
+### Patch Changes
+
+- Fix stack traces for errors thrown in API routes and server data loaders during `expo start`, which pointed into the server bundle or at the wrong source file. ([#51179](https://github.com/expo/expo/pull/51179) by [@robhogan](https://github.com/robhogan))
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#50863](https://github.com/expo/expo/pull/50863), [#50860](https://github.com/expo/expo/pull/50860), [#51177](https://github.com/expo/expo/pull/51177))
+  - @expo/metro-config@58.0.10
+  - @expo/log-box@58.0.11
+  - @expo/prebuild-config@58.0.10
+  - @expo/router-server@58.0.10
+
 ## 58.1.4
 
 ### Patch Changes

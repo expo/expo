@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fix the community `DateTimePicker` reading `value` as a UTC day while `minimumDate`/`maximumDate` use the device-local day. In non-UTC timezones the picker could select and return the wrong day — one before `minimumDate`. `value`'s local calendar day is now sent to Material3 as a UTC day, and the picked day is returned as a local date that keeps `value`'s time of day. ([#50941](https://github.com/expo/expo/pull/50941) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
 ## 58.0.13
 
 ### Patch Changes

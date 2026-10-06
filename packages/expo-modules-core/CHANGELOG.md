@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fixed a data race on the Fabric view state-prop map when Expo registers its view components while React Native builds a component descriptor registry on another thread. ([#51044](https://github.com/expo/expo/pull/51044) by [@hirvesh](https://github.com/hirvesh))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+
 ## 58.0.13
 
 ### Patch Changes

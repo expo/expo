@@ -1,5 +1,15 @@
 # expo-template-default
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50941](https://github.com/expo/expo/pull/50941), [#50863](https://github.com/expo/expo/pull/50863), [#51092](https://github.com/expo/expo/pull/51092), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#50916](https://github.com/expo/expo/pull/50916), [#51115](https://github.com/expo/expo/pull/51115), [#51084](https://github.com/expo/expo/pull/51084))
+  - @expo/ui@58.0.14
+  - expo@58.0.6
+  - expo-image@58.0.13
+  - expo-router@58.0.16
+
 ## 58.0.14
 
 ### Patch Changes
