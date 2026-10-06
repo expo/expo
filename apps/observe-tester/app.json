@@ -55,11 +55,6 @@
                 "name": "ExpoObserve",
                 "path": "../../../packages/expo-observe/ios",
                 "testspecs": ["Tests"]
-              },
-              {
-                "name": "ExpoAppMetrics",
-                "path": "../../../packages/expo-app-metrics/ios",
-                "testspecs": ["Tests"]
               }
             ]
           }

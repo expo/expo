@@ -106,7 +106,7 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
   [request setValue:@"application/expo+json,application/json" forHTTPHeaderField:@"accept"];
   // Dev-launcher infrastructure, not app traffic. Without this the reachability probe wins
   // `slowest` on nearly every dev launch and skews the launch metrics summary. Mirrors
-  // `NetworkRequestTaskSwizzling.internalHeaderName` in expo-app-metrics. Unlike Android, the
+  // `NetworkRequestTaskSwizzling.internalHeaderName` in expo-observe. Unlike Android, the
   // iOS side can't strip the header once the task exists, so it reaches the server the user
   // pointed the dev client at.
   [request setValue:@"1" forHTTPHeaderField:@"Expo-AppMetrics-Skip"];

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the iOS unit-test schemes for ExpoAppMetrics and ExpoObserve against
+# Run the iOS unit-test scheme for ExpoObserve against
 # the currently booted iOS simulator. If none is booted, the newest
 # available iPhone simulator is booted automatically.
 
@@ -43,11 +43,6 @@ if command -v xcbeautify >/dev/null 2>&1; then
 else
   FORMATTER=(cat)
 fi
-
-xcodebuild test \
-  -workspace ios/Observe.xcworkspace \
-  -scheme ExpoAppMetrics-Unit-Tests \
-  -destination "id=$UDID" | "${FORMATTER[@]}"
 
 xcodebuild test \
   -workspace ios/Observe.xcworkspace \

@@ -18,7 +18,6 @@
   "expo-app-auth": "~11.1.0",
   "expo-app-intents": "~0.5.2",
   "expo-app-loader-provider": "~8.0.0",
-  "expo-app-metrics": "~58.0.11",
   "expo-apple-authentication": "~58.0.2",
   "expo-application": "~58.0.4",
   "expo-asset": "~58.0.12",

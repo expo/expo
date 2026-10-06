@@ -89,7 +89,7 @@ class DevLauncherManifestParser(
       "accept" to "application/expo+json,application/json",
       // Dev-launcher infrastructure, not app traffic. Without this the reachability probe wins
       // `slowest` on nearly every dev launch and skews the launch metrics summary. Mirrors
-      // `INTERNAL_HEADER_NAME` in expo-app-metrics, which strips the header before sending.
+      // `INTERNAL_HEADER_NAME` in expo-observe, which strips the header before sending.
       "Expo-AppMetrics-Skip" to "1"
     )
     headersMap.putAll(getForwardedHeaders(url))

@@ -54,7 +54,6 @@ target 'Expo Go' do
     ],
     exclude: [
       'expo-app-intents',
-      'expo-app-metrics',
       'expo-module-template',
       'expo-dev-launcher',
       'expo-dev-client',
