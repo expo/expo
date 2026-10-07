@@ -76,10 +76,13 @@ const {
   assertDistinctFlavoredFrameworks,
   assertHeadersMatchSources,
   byteOrder,
+  frameworkSource,
   headersXCFrameworkDirs,
+  headersXCFrameworkSearchPaths,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
+  resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
 const { DIRECT_MODULES, emitDirectPackage, prepareDirectWatchPaths } = require('./direct');
@@ -390,6 +393,57 @@ function linkPrecompiledPods(identities, records, cacheDir) {
   return linked;
 }
 
+const SOURCE_LABELS = {
+  env: 'EXPO_PRECOMPILED_MODULES_PATH',
+  monorepo: 'the Expo monorepo prebuild output',
+  bundled: 'its npm package',
+};
+
+const describeSource = (source) => `${SOURCE_LABELS[source.kind]} (${source.dir})`;
+
+/**
+ * Compares the kind of place, not the directory: every package has its own directory in
+ * each of them.
+ *
+ * @param subjects `{ label, packageName, source }` for each precompiled artifact to check.
+ */
+function assertSameSourceAsCore(coreSource, subjects) {
+  const mixed = subjects.filter((subject) => subject.source?.kind !== coreSource?.kind);
+  if (mixed.length === 0) return;
+  const packages = [...new Set(mixed.map((subject) => subject.packageName))].join(' ');
+  throw pluginError({
+    what: `${mixed
+      .map(
+        (subject) =>
+          `${subject.label} (${subject.packageName}) comes from ${describeSource(subject.source)}`
+      )
+      .join('; ')}, but ExpoModulesCore comes from ${describeSource(coreSource)}.`,
+    why: 'Precompiled Expo modules, and the headers Expo modules compile against, are bound to the exact ExpoModulesCore build they were made with, so mixing builds from different places crashes the app at launch on a missing symbol.',
+    how: `Take every precompiled module from one place: unset EXPO_PRECOMPILED_MODULES_PATH if it is set; in the Expo monorepo, build the packages into the same place as ExpoModulesCore with \`et prebuild ${packages}\`; otherwise reinstall your JavaScript dependencies so every package uses the build it ships. Then run \`npx react-native spm update\` again.`,
+  });
+}
+
+/**
+ * The ExpoModulesCore headers xcframework, for direct modules to compile against. It must
+ * come from the same kind of place as the ExpoModulesCore binary.
+ */
+function resolveCoreHeaders(core, coreSource, cacheDir) {
+  const { packageName, moduleRoot, productName } = core;
+  const lookup = { packageName, moduleRoot, productName };
+  const headers = resolveHeadersXCFrameworkWithSource({ ...lookup, cacheDir });
+  if (headers == null) {
+    throw pluginError({
+      what: `Expo modules built from their own Package.swift compile against ${productName}Headers.xcframework, which was not found (searched ${headersXCFrameworkSearchPaths(lookup).join(', ')}).`,
+      why: `The installed ${packageName} was published without a headers xcframework, or the local prebuild has not produced it yet.`,
+      how: `In the Expo monorepo, run \`et prebuild ${packageName}\`. Otherwise upgrade ${packageName} to a version that ships a headers xcframework. Then run \`npx react-native spm update\` again.`,
+    });
+  }
+  assertSameSourceAsCore(coreSource, [
+    { label: `${productName}Headers.xcframework`, packageName, source: headers.source },
+  ]);
+  return headers.xcframework;
+}
+
 /**
  * Emits the source package of the module whose first pod is `identity`: its
  * checked-in manifest mirrored, or else one Swift target over its sources. A
@@ -405,7 +459,8 @@ function emitSourceModule(identity, hasManifest, emitContext) {
       moduleRoot,
       packageName,
       outDir: emitContext.outDir,
-      compileInterfacesDir: emitContext.frameworkSearchPath,
+      coreHeadersXCFramework: emitContext.coreHeadersXCFramework,
+      jsiHeadersPkgPath: emitContext.jsiHeadersPkgPath,
       macroTool: emitContext.macroTool,
     });
   }
@@ -762,17 +817,32 @@ module.exports = function expoSpmPlugin(context) {
     (a, b) => byteOrder(a.id, b.id)
   );
   assertDistinctFlavoredFrameworks(flavoredFrameworks);
+  const coreRecord = precompiled.find((r) => r.identity.podName === CORE_POD) ?? null;
+  const coreSource = coreRecord && frameworkSource(coreRecord.framework);
+  if (coreRecord != null) {
+    assertSameSourceAsCore(
+      coreSource,
+      precompiled
+        .filter((r) => r !== coreRecord)
+        .map(({ identity, framework }) => ({
+          label: identity.productName,
+          packageName: identity.packageName,
+          source: frameworkSource(framework),
+        }))
+    );
+  }
   const satisfiedDependencies = new Set(dependencyFrameworks.map((f) => f.frameworkName));
   const frameworkSearchPath =
     precompiled.length > 0
       ? prepareCompileInterfaces(flavoredFrameworks, path.join(outDir, 'compile-interfaces'))
       : null;
 
-  const core = precompiled.find((r) => r.identity.podName === CORE_POD)?.identity ?? null;
+  const core = coreRecord?.identity ?? null;
   const coreAvailable = core != null && frameworkSearchPath != null;
   let sourceModules = { emitted: [], refusals: new Map() };
   if (coreAvailable) {
     let resolvedMacroFlags = null;
+    let resolvedCoreHeadersXCFramework = null;
     sourceModules = linkSourceModules(modules, identities, records, {
       react,
       frameworkSearchPath,
@@ -788,6 +858,14 @@ module.exports = function expoSpmPlugin(context) {
       },
       get macroTool() {
         return macroPluginTool(core.moduleRoot);
+      },
+      // Lazy: only a direct module needs the headers, and only then must they exist.
+      get coreHeadersXCFramework() {
+        return (resolvedCoreHeadersXCFramework ??= resolveCoreHeaders(
+          core,
+          coreSource,
+          artifactCacheDir
+        ));
       },
     });
   }
