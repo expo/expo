@@ -1,2 +1,2 @@
-import RNViewShot from './specs/NativeRNViewShot';
+import RNViewShot from "./specs/NativeRNViewShot";
 export default RNViewShot;

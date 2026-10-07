@@ -2450,7 +2450,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-view-shot (5.1.1):
+  - react-native-view-shot (6.1.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3522,7 +3522,7 @@ DEPENDENCIES:
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.88.0-rc.4_@babel_d12750a1c529898a0059c7d3f6fa4dc4/node_modules/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.13.1_9e6acf0f22b312bb56f0a59dfb382943/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider`)"
-  - "react-native-view-shot (from `../../../node_modules/.pnpm/react-native-view-shot@5.1.1_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+_c883c480c5028405e7f0b01f19cd6da6/node_modules/react-native-view-shot`)"
+  - "react-native-view-shot (from `../../../node_modules/.pnpm/react-native-view-shot@6.1.1_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+_dd022a33ed6843d5518ad593bfe30d1a/node_modules/react-native-view-shot`)"
   - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@14.0.1_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+m_263ad3452028c9db0918395d96401eab/node_modules/react-native-webview`)"
   - "React-NativeModulesApple (from `../../../node_modules/.pnpm/react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_33cb2c707805eb224cf3d62cb7cc971d/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
   - "React-networking (from `../../../node_modules/.pnpm/react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+co_33cb2c707805eb224cf3d62cb7cc971d/node_modules/react-native/ReactCommon/react/networking`)"
@@ -3974,7 +3974,7 @@ EXTERNAL SOURCES:
   react-native-slider:
     :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.1/node_modules/@react-native-community/slider"
   react-native-view-shot:
-    :path: "../../../node_modules/.pnpm/react-native-view-shot@5.1.1_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+_c883c480c5028405e7f0b01f19cd6da6/node_modules/react-native-view-shot"
+    :path: "../../../node_modules/.pnpm/react-native-view-shot@6.1.1_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+_dd022a33ed6843d5518ad593bfe30d1a/node_modules/react-native-view-shot"
   react-native-webview:
     :path: "../../../node_modules/.pnpm/react-native-webview@14.0.1_react-native@0.88.0-rc.4_@babel+core@7.29.7_@react-native+m_263ad3452028c9db0918395d96401eab/node_modules/react-native-webview"
   React-NativeModulesApple:
@@ -4236,7 +4236,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: bf6e0032726727498e18dd437ae88afcdbc18e99
   react-native-skia: c3b6af86e9957a781a6b3bb4edea5d50abe97730
   react-native-slider: 92596cf8c74eb17d7c7879a277a7a5488a3e06f2
-  react-native-view-shot: 7cd983712b63348b1527ae6e85bc064bc3aa7997
+  react-native-view-shot: c403627f5139c6ec89e76f4480bd4aadda965cea
   react-native-webview: 3a3d1fd130d39e4dcabeebe89e6b245478ee177e
   React-NativeModulesApple: 863f27eedc512edfaa5cb671b86249e90d86e511
   React-networking: 8700a753d02a837eee0c7538b5ce05037f5ab20f

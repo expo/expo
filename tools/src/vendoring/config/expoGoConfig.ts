@@ -20,6 +20,7 @@ const config: VendoringTargetConfig = {
         'example-expo/**/*',
         'CLAUDE.md',
         'babel.config.js',
+        'babel.config.cjs',
         'eslint.config.js',
         'jest.config.cjs',
         'react-native.config.cjs',
