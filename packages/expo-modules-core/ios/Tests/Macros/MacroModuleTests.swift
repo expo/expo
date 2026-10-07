@@ -311,13 +311,19 @@ private struct MacroModuleTests {
   @Test
   func `a stored closure argument can be called later`() throws {
     register(MacroCallbacks(appContext: appContext))
-    let value = try runtime.eval(
-      """
-      expo.modules.MacroCallbacks.store((value) => { globalThis.received = value })
-      expo.modules.MacroCallbacks.fire('later')
-      globalThis.received
-      """)
-    #expect(try value.asString() == "later")
+    let runtime = try runtime
+    // A non-throwing closure is called detached, which runs inline only on the JavaScript thread.
+    // Elsewhere it's scheduled and may not have run yet when `globalThis.received` is read.
+    let value = try runtime.execute {
+      try runtime.eval(
+        """
+        expo.modules.MacroCallbacks.store((value) => { globalThis.received = value })
+        expo.modules.MacroCallbacks.fire('later')
+        globalThis.received
+        """
+      ).asString()
+    }
+    #expect(value == "later")
   }
 
   @Test
