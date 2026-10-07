@@ -37,9 +37,14 @@ export function FieldSection({
 
   const { header, footer, rows } = extractFieldSectionSlots(children);
 
-  // fillMaxWidth owns the width axis, so it must not be passed when style.width is set.
+  // A numeric width owns the axis, so fillMaxWidth stays off.
+  // A percentage is only parent data. This LazyColumn does not read it, and no width() is emitted.
+  // Stretch in that case, which is what the section did before percentages existed.
+  const widthIsPercentage = typeof style?.width === 'string';
   const sectionModifiers =
-    style?.width == null ? [fillMaxWidth(), ...(extraModifiers ?? [])] : extraModifiers;
+    style?.width == null || widthIsPercentage
+      ? [fillMaxWidth(), ...(extraModifiers ?? [])]
+      : extraModifiers;
 
   const outerModifiers = transformToModifiers(
     style,

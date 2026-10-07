@@ -89,8 +89,15 @@ internal data class UniversalLayoutElement(
 internal class UniversalLayoutNode(
   var dimensions: UniversalLayoutDimensions
 ) : Modifier.Node(), ParentDataModifierNode {
-  override fun Density.modifyParentData(parentData: Any?): Any =
-    parentData.asUniversalLayoutParentData().copy(dimensions = dimensions)
+  override fun Density.modifyParentData(parentData: Any?): Any {
+    // This node is outer, and Compose walks parent data from inner to outer.
+    // A platform Row, Column, FlowRow, or Box already stored weight or align.
+    // Those parents do not read this data, so keep theirs.
+    if (parentData != null && parentData !is UniversalLayoutParentData) {
+      return parentData
+    }
+    return parentData.asUniversalLayoutParentData().copy(dimensions = dimensions)
+  }
 }
 
 internal data class UniversalWeightElement(val weight: Float) : ModifierNodeElement<UniversalWeightNode>() {
