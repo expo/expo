@@ -1,28 +1,28 @@
 import type { SharedRef } from 'expo';
 
-import { NativeLocationModuleNext, NativeLocationProvider } from '../native';
+import { getNativeLocationModuleNext } from '../native';
 import type { LocationProviderRefType } from '../types';
 
 export class LocationProvider {
   static Gms(): SharedRef<LocationProviderRefType> {
-    return NativeLocationProvider.Gms();
+    return getNativeLocationModuleNext().LocationProvider.Gms();
   }
 
   static Android(): SharedRef<LocationProviderRefType> {
-    return NativeLocationProvider.Android();
+    return getNativeLocationModuleNext().LocationProvider.Android();
   }
 
   static Fallback(
     providers: SharedRef<LocationProviderRefType>[]
   ): SharedRef<LocationProviderRefType> {
-    return NativeLocationProvider.Fallback(providers);
+    return getNativeLocationModuleNext().LocationProvider.Fallback(providers);
   }
 }
 
 export function setLocationProvider(provider: SharedRef<LocationProviderRefType>): void {
-  NativeLocationModuleNext.setLocationProvider(provider);
+  getNativeLocationModuleNext().setLocationProvider(provider);
 }
 
 export function getSelectedLocationProviderName(): string {
-  return NativeLocationModuleNext.getSelectedLocationProviderName();
+  return getNativeLocationModuleNext().getSelectedLocationProviderName();
 }

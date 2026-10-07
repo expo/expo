@@ -1,6 +1,6 @@
-import { NativeLocationModuleNext } from '../native';
+import { getNativeLocationModuleNext } from '../native';
 import type { GetPositionOptions, Position } from '../types';
 
 export async function getPosition(options?: GetPositionOptions): Promise<Position | null> {
-  return NativeLocationModuleNext.getPosition(options);
+  return getNativeLocationModuleNext().getPosition(options);
 }

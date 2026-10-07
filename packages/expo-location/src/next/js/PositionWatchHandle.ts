@@ -1,6 +1,6 @@
 import type { EventSubscription } from 'expo';
 
-import { NativeLocationModuleNext } from '../native';
+import { getNativeLocationModuleNext } from '../native';
 import type { NativePositionWatchHandleClass } from '../native';
 import { LocationProfile } from '../types';
 import type {
@@ -14,7 +14,7 @@ export class PositionWatchHandle {
   private readonly nativeHandle: NativePositionWatchHandleClass;
 
   constructor(profile: LocationProfile = LocationProfile.DEFAULT) {
-    this.nativeHandle = NativeLocationModuleNext.watchPosition(profile);
+    this.nativeHandle = getNativeLocationModuleNext().watchPosition(profile);
   }
 
   pause(): void {

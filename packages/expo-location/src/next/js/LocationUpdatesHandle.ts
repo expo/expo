@@ -1,6 +1,6 @@
 import type { TaskManagerError } from 'expo-task-manager';
 
-import { NativeLocationUpdatesHandle } from '../native';
+import { getNativeLocationModuleNext } from '../native';
 import type { NativeLocationUpdatesHandleClass } from '../native';
 import type { LocationProfile, Position } from '../types';
 
@@ -10,7 +10,7 @@ export class LocationUpdatesHandle {
   private readonly nativeHandle: NativeLocationUpdatesHandleClass;
 
   constructor(taskName: string = DEFAULT_LOCATION_TASK_NAME) {
-    this.nativeHandle = new NativeLocationUpdatesHandle(taskName);
+    this.nativeHandle = new (getNativeLocationModuleNext().LocationUpdatesHandle)(taskName);
   }
 
   withProfile(profile: LocationProfile): this {
