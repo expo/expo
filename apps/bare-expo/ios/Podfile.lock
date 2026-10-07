@@ -559,6 +559,9 @@ PODS:
   - ExpoModulesTestCore (58.0.3):
     - ExpoModulesCore
     - React-hermes
+  - ExpoModulesTestCore/Tests (58.0.3):
+    - ExpoModulesCore
+    - React-hermes
   - ExpoModulesWorklets (58.0.14):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -3422,6 +3425,7 @@ DEPENDENCIES:
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
+  - ExpoModulesTestCore/Tests (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
@@ -4142,7 +4146,7 @@ SPEC CHECKSUMS:
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
   ExpoModulesCore: e9d07579d0343a9976d70053244d78de1431a67f
   ExpoModulesJSI: 7c7fe196e0a31de3e30406568b4c0ebd8a1cb3c6
-  ExpoModulesTestCore: 7d992fd67e6726a651acb4dc3a9f67a578c385da
+  ExpoModulesTestCore: 956e69b16ff60a1eeca3af0f58670dacbf0ad190
   ExpoModulesWorklets: d64f0a2adcb2f8845b67abb6bde38fe21eed0d3b
   ExpoModulesWorkletsAdapter: a92fc2b75c173d27f0b3aeda3ae9e3343e133f0c
   ExpoNetwork: 05cec4bdbf35b954ab0434f5ecfec363cf826b33
@@ -4292,6 +4296,6 @@ SPEC CHECKSUMS:
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: c22fd4a541850efc0b4423593a8b09824452b7f6
+PODFILE CHECKSUM: b46d0a0d797249b2ee9bfc5e5201ab7b799fca2a
 
 COCOAPODS: 1.16.2
