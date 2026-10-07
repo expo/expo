@@ -121,7 +121,6 @@ class SQLiteModule : Module() {
     )
   }
 
-
   @JS
   private fun backupDatabaseSync(
     destDatabase: NativeDatabase,

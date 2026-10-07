@@ -5,7 +5,6 @@ package expo.modules.sqlite
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.ReentrantLock
 
-
 internal class DatabaseConnection(
   val databasePath: String,
   val openOptions: OpenDatabaseOptions

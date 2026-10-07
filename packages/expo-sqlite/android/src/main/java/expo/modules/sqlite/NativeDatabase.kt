@@ -76,7 +76,6 @@ internal class NativeDatabase @JS constructor(
   @JS
   suspend fun execAsync(source: String): Unit = io { exec(source) }
 
-
   @JS
   fun execSync(source: String): Unit = exec(source)
 
