@@ -5240,6 +5240,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
+      expo-task-manager:
+        specifier: workspace:~
+        version: link:../expo-task-manager
 
   packages/expo-mail-composer:
     devDependencies:
