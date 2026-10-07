@@ -63,24 +63,6 @@
     "./tsconfig.*": "./tsconfig.*.json",
     "./tsconfig": "./tsconfig.json"
   },
-  "publishConfig": {
-    "executableFiles": [
-      "./bin/expo-module-build",
-      "./bin/expo-module-clean",
-      "./bin/expo-module-configure",
-      "./bin/expo-module-depscheck",
-      "./bin/expo-module-format",
-      "./bin/expo-module-jest",
-      "./bin/expo-module-prepare",
-      "./bin/expo-module-prepack",
-      "./bin/expo-module-prepublishOnly",
-      "./bin/expo-module-readme",
-      "./bin/expo-module-test",
-      "./bin/expo-module-tsc",
-      "./bin/expo-module-typecheck",
-      "./bin/expo-module.js"
-    ]
-  },
   "scripts": {
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
