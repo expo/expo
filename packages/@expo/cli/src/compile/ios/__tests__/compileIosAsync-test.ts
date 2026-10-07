@@ -1,4 +1,5 @@
 import { Log } from '../../../log';
+import { debugEvent, event } from '../../events';
 import type { ResolvedOptions } from '../../resolveOptions';
 import { compileIosAsync } from '../compileIosAsync';
 import type { BuildProps } from '../resolveOptions';
@@ -8,6 +9,19 @@ import { buildAsync } from '../xcodebuild';
 jest.mock('../../../log');
 jest.mock('../resolveOptions');
 jest.mock('../xcodebuild');
+jest.mock('../../events', () => {
+  const done = jest.fn();
+  return {
+    event: Object.assign(jest.fn(), {
+      span: jest.fn(() => done),
+      error: jest.fn((error) => error),
+      path: jest.fn((path) => path),
+    }),
+    debugEvent: Object.assign(jest.fn(), {
+      path: jest.fn((path) => path),
+    }),
+  };
+});
 
 const mockPlatform = (value: typeof process.platform) =>
   Object.defineProperty(process, 'platform', {
@@ -44,5 +58,22 @@ describe(compileIosAsync, () => {
     await compileIosAsync('/app', options);
     expect(resolveOptionsAsync).toHaveBeenCalledWith('/app', options);
     expect(buildAsync).toHaveBeenCalledWith(props);
+    expect(debugEvent).toHaveBeenCalledWith('ios:build_props', {
+      scheme: 'app',
+      configuration: 'Debug',
+      osType: 'iOS',
+      xcodeProject: '/app/ios/app.xcworkspace',
+    });
+    const done = jest.mocked(event.span).mock.results[0]?.value;
+    expect(done).toHaveBeenCalledWith('build:done', { platform: 'ios', mode: 'development' });
+  });
+
+  it(`reports a failed build`, async () => {
+    mockPlatform('darwin');
+    jest.mocked(resolveOptionsAsync).mockResolvedValueOnce(props);
+    const error = new Error('build failed');
+    jest.mocked(buildAsync).mockRejectedValueOnce(error);
+    await expect(compileIosAsync('/app', options)).rejects.toBe(error);
+    expect(event).toHaveBeenCalledWith('build:failed', { platform: 'ios', error });
   });
 });
