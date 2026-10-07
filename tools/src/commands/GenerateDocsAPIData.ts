@@ -250,6 +250,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-local-authentication': ['LocalAuthentication.ts'],
   'expo-localization': ['Localization.ts'],
   'expo-location': ['index.ts'],
+  'expo-location-next': ['next/index.ts', 'expo-location'],
   'expo-maps': [
     [
       'index.ts',
