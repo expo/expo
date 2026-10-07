@@ -368,6 +368,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       manifest: {
         ...manifest,
         htmlRoutes: prerenderManifest.htmlRoutes,
+        ...(this.instanceMetroOptions.mode === 'development' && { mode: 'development' }),
       },
       files,
     };
