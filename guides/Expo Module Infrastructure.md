@@ -43,18 +43,23 @@ In a module, include `@expo/internal-scripts` as a development dependency in pac
 ```json
 {
   "scripts": {
+    "build": "expo-build src",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck",
     "prepublishOnly": "expo-module prepublishOnly"
   }
 }
 ```
 
-The `expo-module` program is provided by `@expo/internal-scripts`. You can run `pnpm expo-module --help` to see all of the commands. Several of the scripts are interactive and start file watchers as they are intended for human developers rather than CI. To run the commands in non-interactive mode, set the environment variable `EXPO_NONINTERACTIVE=1`.
+The `expo-module` program is provided by `@expo/internal-scripts`. You can run `pnpm expo-module --help` to see all of the commands. Testing and type checking invoke Jest and TypeScript directly; pass `--watch` explicitly when needed.
 
 ## Auto-generated Configuration Files
 
-The `postinstall` script auto-generates configuration files in the package when necessary. For example, Babel looks for its configuration files in the package's directory. Commit these files to Git so we can track changes to these files. This also makes it possible to manually edit and commit those files if necessary.
+Run `pnpm expo-module configure` manually from the package directory to generate shared configuration files. It creates missing files and refreshes files marked `@generated`; optional templates are refreshed only when the file already exists and is marked `@generated`. Commit the generated files to Git.
 
 ## Directory Structure
 
@@ -74,7 +79,7 @@ Running `pnpm clean` will delete the `build` directory.
 
 Run `pnpm build` to compile the source code from `src` to `build`. Run `pnpm typecheck` to type-check the package with `tsc` without emitting output. When working across the monorepo, prefer running these through Turborepo from the repo root (`pnpm build`, `pnpm typecheck`) so only affected packages are rebuilt and results are cached.
 
-The `postinstall` script generates a small tsconfig.json file that extends the main configuration file inside of `@expo/internal-scripts`.
+The `configure` command generates a small tsconfig.json file extending `@expo/internal-scripts/tsconfig.base`, with `noEmit` enabled. `expo-build` handles build output separately.
 
 ## Fast Unit Tests
 
@@ -88,9 +93,9 @@ The `postinstall` script generates a small tsconfig.json file that extends the m
 }
 ```
 
-This preset enables TypeScript support with `ts-jest`. It creates a custom tsconfig.json file for Jest tests and configures Jest to run both TypeScript and Babel with `babel-preset-expo` so we more accurately transform the code as if it were part of an app.
+This preset creates iOS, Android, web, and Node test projects using `jest-expo`. It enables the `expo-source` export condition so tests resolve workspace source files without requiring build outputs.
 
-Run `pnpm test` to run Jest in watcher mode. By default, Jest will run tests affected by changed files and re-run tests when files are edited and saved. Since the unit tests run every time a file changes, we need to keep these tests fast and deterministic.
+Run `pnpm test` to run Jest once, or `pnpm test --watch` to rerun affected tests when files change. Keep unit tests fast and deterministic.
 
 # package.json Fields
 

@@ -106,6 +106,9 @@ In order to prevent overlapping native code in `node_modules`, we should move an
 
 ```js
 "scripts": {
+    "build": "expo-build src",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
     "clean": "expo-module clean",
     "prepublishOnly": "expo-module prepublishOnly"
 }
@@ -113,7 +116,7 @@ In order to prevent overlapping native code in `node_modules`, we should move an
 
 ## Generate a `tsconfig.json` file with `@expo/internal-scripts`
 
-To get the `tsconfig` that we use in all of our modules, run `expo-module prepare` or the yarn script `yarn prepare` (given the script is defined in a module's `package.json`)
+Run `pnpm expo-module configure` manually from the package directory to generate the shared `tsconfig.json`.
 
 **`/tsconfig.json`**
 
@@ -122,10 +125,10 @@ To get the `tsconfig` that we use in all of our modules, run `expo-module prepar
 {
   "extends": "@expo/internal-scripts/tsconfig.base",
   "compilerOptions": {
-    "outDir": "./build"
+    "rootDir": "./src",
+    "noEmit": true
   },
-  "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["./src"]
 }
 ```
 
