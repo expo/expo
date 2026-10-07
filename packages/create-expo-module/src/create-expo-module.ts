@@ -10,6 +10,7 @@ import { addPlatformSupport } from './addPlatformSupport';
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
 import { ALL_FEATURES, filterFeaturesByPlatforms, resolveFeatures } from './features';
+import { assertSupportedLocalSdk, getLocalSdkMajorVersion } from './localSdk';
 import {
   PACKAGE_MANAGERS,
   installDependencies,
@@ -40,6 +41,7 @@ import {
 import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
 import { buildDefaultsWarning } from './utils/defaults';
 import { isInteractive } from './utils/env';
+import { UserError } from './utils/errors';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 import { newStep } from './utils/ora';
@@ -285,6 +287,9 @@ function resolveModuleName(rawName: string): string {
  * @param options An options object for `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
+  const sdkVersion = options.local ? getLocalSdkMajorVersion(CWD) : null;
+  assertSupportedLocalSdk(sdkVersion, options.ignoreCompatibilityCheck, true);
+
   const interactive = isInteractive();
   if (!interactive) {
     debug('Running in non-interactive mode');
@@ -324,7 +329,7 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   const packagePath = options.source
     ? path.resolve(CWD, options.source)
-    : await downloadPackageAsync(targetDir, options.local);
+    : await downloadPackageAsync(targetDir, options.local, sdkVersion);
 
   await logEventAsync(eventCreateExpoModule(packageManager, options));
 
@@ -930,6 +935,11 @@ program
       `Package manager to use. Available values: ${PACKAGE_MANAGERS.join(', ')}.`
     ).choices([...PACKAGE_MANAGERS])
   )
+  .option(
+    '--ignore-compatibility-check',
+    "Create a local module even if the project's Expo SDK is older than the template supports.",
+    false
+  )
   .action(main);
 
 program
@@ -951,6 +961,11 @@ program
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'
   )
+  .option(
+    '--ignore-compatibility-check',
+    "Add platforms to a local module even if the project's Expo SDK is older than the template supports.",
+    false
+  )
   .action(addPlatformSupport);
 
 program.hook('postAction', async () => {
@@ -960,5 +975,8 @@ program.hook('postAction', async () => {
 const isInProcessUnitTest =
   !!process.env.JEST_WORKER_ID && !process.argv[1]?.includes('create-expo-module');
 if (!isInProcessUnitTest) {
-  program.parse(process.argv);
+  program.parseAsync(process.argv).catch((error) => {
+    console.error(error instanceof UserError ? chalk.red(error.message) : error);
+    process.exit(1);
+  });
 }

@@ -6,6 +6,7 @@ import prompts from 'prompts';
 
 import { detectFeaturesFromFile, findModuleDefinitionFile } from './featureDetection';
 import { filterFeaturesByPlatforms, resolveFeatures, type Feature } from './features';
+import { assertSupportedLocalSdk, getLocalSdkMajorVersion } from './localSdk';
 import { formatRunCommand, resolvePackageManager } from './packageManager';
 import { ALL_PLATFORMS, type Platform } from './prompts';
 import { copyNativeFileSnippets, copyWebFileSnippets } from './snippets';
@@ -276,6 +277,7 @@ export type AddPlatformSupportOptions = {
   platform?: string[];
   features?: string[];
   source?: string;
+  ignoreCompatibilityCheck?: boolean;
 };
 
 type TemplatePathInfo = {
@@ -452,7 +454,8 @@ async function updatePublicModuleNameFromSources(
 
 async function resolveTemplatePath(
   options: AddPlatformSupportOptions,
-  moduleInfo: ExistingModuleInfo
+  moduleInfo: ExistingModuleInfo,
+  sdkVersion: number | null
 ): Promise<TemplatePathInfo> {
   if (options.source) {
     const templatePath = path.resolve(CWD, options.source);
@@ -474,7 +477,7 @@ async function resolveTemplatePath(
   const templateTempDir = await fs.promises.mkdtemp(
     path.join(os.tmpdir(), 'add-platform-support-')
   );
-  const templatePath = await downloadPackageAsync(templateTempDir, moduleInfo.isLocal);
+  const templatePath = await downloadPackageAsync(templateTempDir, moduleInfo.isLocal, sdkVersion);
   return { templatePath, templateTempDir };
 }
 
@@ -553,6 +556,12 @@ export async function addPlatformSupport(
   const moduleRoot = modulePathArg ? path.resolve(CWD, modulePathArg) : CWD;
   const configPath = path.join(moduleRoot, 'expo-module.config.json');
   const moduleInfo = await readModuleInfoOrExit(moduleRoot, configPath);
+  // Prefer the app above the module. A module outside the app (for example, in a custom
+  // `nativeModulesDir`) has no `expo` above it, so fall back to the app in the working directory.
+  const sdkVersion = moduleInfo.isLocal
+    ? (getLocalSdkMajorVersion(moduleRoot) ?? getLocalSdkMajorVersion(CWD))
+    : null;
+  assertSupportedLocalSdk(sdkVersion, options.ignoreCompatibilityCheck);
   const moduleDefinitionFile = await findExistingModuleDefinitionFile(moduleRoot, moduleInfo);
   const platformsToAdd = await resolvePlatformsToAdd(moduleInfo, options);
   if (!platformsToAdd) {
@@ -576,7 +585,11 @@ export async function addPlatformSupport(
     detectedFeatures,
     sharedObjectName
   );
-  const { templatePath, templateTempDir } = await resolveTemplatePath(options, moduleInfo);
+  const { templatePath, templateTempDir } = await resolveTemplatePath(
+    options,
+    moduleInfo,
+    sdkVersion
+  );
 
   try {
     await addNativePlatformFiles(
