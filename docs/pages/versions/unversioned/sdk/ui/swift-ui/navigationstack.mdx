@@ -1,0 +1,255 @@
+---
+title: NavigationStack
+description: A SwiftUI NavigationStack, with the links and destinations that push views onto it.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+
+Expo UI NavigationStack matches the official SwiftUI [NavigationStack API](https://developer.apple.com/documentation/swiftui/navigationstack) and shows a root view that can push other views on top of it.
+
+Tapping a [`NavigationLink`](#navigationlink) pushes the [`NavigationDestination`](#navigationdestination) with the same `value`.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic navigation
+
+Put the root view and the destinations inside the stack. Give a link and its destination the same `value`. Set the title of each screen with the [`navigationTitle`](modifiers/#navigationtitletitle) modifier.
+
+<ComponentExample
+  title="NavigationStackExample.tsx"
+  src="/static/images/expo-ui/examples/navigationstack-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/navigationstack-basic-ios-dark.webp"
+  alt="A Settings list with Account and Notifications rows, each with a chevron">
+
+```tsx
+import {
+  Host,
+  List,
+  NavigationDestination,
+  NavigationLink,
+  NavigationStack,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
+import {
+  navigationTitle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function NavigationStackExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <NavigationStack>
+        <List modifiers={[navigationTitle('Settings')]}>
+          <NavigationLink value="account">
+            <Text>Account</Text>
+          </NavigationLink>
+          <NavigationLink value="notifications">
+            <Text>Notifications</Text>
+          </NavigationLink>
+        </List>
+        <NavigationDestination value="account">
+          <VStack
+            modifiers={[
+              padding({ all: 20 }),
+              navigationTitle('Account'),
+            ]}>
+            <Text>Signed in as bird@example.com</Text>
+          </VStack>
+        </NavigationDestination>
+        <NavigationDestination value="notifications">
+          <VStack
+            modifiers={[
+              padding({ all: 20 }),
+              navigationTitle('Notifications'),
+            ]}>
+            <Text>All notifications are on.</Text>
+          </VStack>
+        </NavigationDestination>
+      </NavigationStack>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+Inside a [`List`](list), a link renders as a row with a chevron. A destination has to be a direct child of the stack, however deeply the link that pushes it is nested.
+
+> **info** Keep the links inside the `NavigationStack` itself. Content presented from the stack, such as a [`BottomSheet`](bottomsheet) or a [`Popover`](popover), needs its own `NavigationStack` and its own destinations.
+
+### Any view as a link
+
+A link can wrap any view.
+
+<ComponentExample
+  title="NavigationLinkCardExample.tsx"
+  src="/static/images/expo-ui/examples/navigationstack-link-card-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/navigationstack-link-card-ios-dark.webp"
+  alt="A Today screen with a Weekly report card acting as a navigation link">
+
+```tsx
+import {
+  Host,
+  HStack,
+  Image,
+  NavigationDestination,
+  NavigationLink,
+  NavigationStack,
+  Spacer,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
+import {
+  font,
+  foregroundStyle,
+  navigationTitle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function NavigationLinkCardExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <NavigationStack>
+        <VStack
+          modifiers={[
+            padding({ all: 20 }),
+            navigationTitle('Today'),
+          ]}>
+          <NavigationLink value="report">
+            <HStack spacing={12}>
+              <Image systemName="chart.bar.fill" size={28} />
+              <VStack alignment="leading" spacing={2}>
+                <Text modifiers={[font({ textStyle: 'headline' })]}>
+                  Weekly report
+                </Text>
+                <Text
+                  modifiers={[
+                    font({ textStyle: 'caption' }),
+                    foregroundStyle('secondaryLabel'),
+                  ]}>
+                  Ready to read
+                </Text>
+              </VStack>
+              <Spacer />
+            </HStack>
+          </NavigationLink>
+        </VStack>
+        <NavigationDestination value="report">
+          <VStack
+            modifiers={[
+              padding({ all: 20 }),
+              navigationTitle('Weekly report'),
+            ]}>
+            <Text>Sessions are up by 12% on last week.</Text>
+          </VStack>
+        </NavigationDestination>
+      </NavigationStack>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Read and set the path
+
+The stack keeps its own path by default. Pass `path` and `onPathChange` to drive it from state. The path holds the `value` of each pushed view, in push order. Set it to an empty array to return to the root view.
+
+<ComponentExample
+  title="NavigationStackPathExample.tsx"
+  src="/static/images/expo-ui/examples/navigationstack-path-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/navigationstack-path-ios-dark.webp"
+  alt="The pushed Nesting screen with a back button and a Back to the articles button">
+
+```tsx
+import {
+  Button,
+  Host,
+  List,
+  NavigationDestination,
+  NavigationLink,
+  NavigationStack,
+  Text,
+  VStack,
+} from '@expo/ui/swift-ui';
+import {
+  navigationTitle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+import { useState } from 'react';
+
+const ARTICLES = ['Nesting', 'Migration', 'Song'];
+
+export default function NavigationStackPathExample() {
+  const [path, setPath] = useState<string[]>([]);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <NavigationStack path={path} onPathChange={setPath}>
+        <List modifiers={[navigationTitle('Articles')]}>
+          {ARTICLES.map(article => (
+            <NavigationLink key={article} value={article}>
+              <Text>{article}</Text>
+            </NavigationLink>
+          ))}
+        </List>
+        {ARTICLES.map(article => (
+          <NavigationDestination key={article} value={article}>
+            <VStack
+              spacing={12}
+              modifiers={[
+                padding({ all: 20 }),
+                navigationTitle(article),
+              ]}>
+              <Text>
+                The chapter about {article.toLowerCase()}.
+              </Text>
+              <Button
+                label="Back to the articles"
+                onPress={() => setPath([])}
+              />
+            </VStack>
+          </NavigationDestination>
+        ))}
+      </NavigationStack>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+## API
+
+```tsx
+import {
+  NavigationDestination,
+  NavigationLink,
+  NavigationStack,
+} from '@expo/ui/swift-ui';
+```
+
+<APISection
+  packageName="expo-ui/swift-ui/navigationstack"
+  apiName="NavigationStack"
+/>
+
+<APISection
+  packageName="expo-ui/swift-ui/navigationlink"
+  apiName="NavigationLink"
+/>
+
+<APISection
+  packageName="expo-ui/swift-ui/navigationdestination"
+  apiName="NavigationDestination"
+/>
