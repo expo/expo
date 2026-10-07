@@ -1,0 +1,79 @@
+name: e2e
+
+on:
+  schedule:
+    - cron: '0 4 * * *'
+  workflow_dispatch: {}
+
+defaults:
+  tools:
+    pnpm: '12.2.1'
+
+jobs:
+  build_ios:
+    type: build
+    params:
+      platform: ios
+      profile: e2e
+
+  build_android:
+    type: build
+    params:
+      platform: android
+      profile: e2e
+
+  e2e_ios:
+    needs: [build_ios]
+    runs_on: macos-medium
+    # The simulator runtime comes from the image, and the accessibility tree changes between iOS versions.
+    image: macos-tahoe-26.6-xcode-27.0
+    environment: preview
+    env:
+      CI: '1'
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_ios.outputs.build_id }}
+          extensions: [app]
+      - uses: eas/start_ios_simulator
+      - name: Install the app
+        run: xcrun simctl install booted "${{ steps.download_build.outputs.artifact_path }}"
+      - name: Run e2e
+        run: pnpm exec e2e run --target ios --reporter list,junit
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: e2e-ios
+          path: .e2e
+
+  e2e_android:
+    needs: [build_android]
+    runs_on: linux-medium-nested-virtualization
+    environment: preview
+    env:
+      CI: '1'
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_android.outputs.build_id }}
+          extensions: [apk]
+      - uses: eas/start_android_emulator
+        with:
+          system_image_package: system-images;android-35;google_apis;x86_64
+      - name: Install the app
+        run: adb install -r "${{ steps.download_build.outputs.artifact_path }}"
+      - name: Run e2e
+        run: pnpm exec e2e run --target android --reporter list,junit
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: e2e-android
+          path: .e2e

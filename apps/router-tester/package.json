@@ -8,7 +8,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "eas:build": "./scripts/eas-build.sh",
+    "eas:build": "./scripts/eas.sh build",
+    "eas:e2e": "./scripts/eas.sh workflow:run e2e.yml",
     "lint": "expo lint",
     "test:e2e": "./maestro/test.sh"
   },
@@ -37,6 +38,10 @@
     "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
-    "@types/react": "~19.3.0"
+    "@ai-sdk/openai": "^4.0.84",
+    "@e2e-dev/mobile": "0.9.2",
+    "@types/react": "~19.3.0",
+    "ai": "^7.0.128",
+    "e2e": "0.17.0"
   }
 }

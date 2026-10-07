@@ -40,3 +40,6 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# e2e run output
+.e2e/

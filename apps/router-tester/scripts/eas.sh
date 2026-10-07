@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 
-# Runs `eas build` with a temporary root `.easignore` so the upload contains only
-# what this app needs. eas-cli archives the whole git root plus the `.git` pack of
-# the shallow clone, and once `.easignore` exists it replaces every `.gitignore`,
-# so the file must also list what git currently ignores on disk.
+# Runs an `eas` command (`build`, `workflow:run`) with a temporary root
+# `.easignore` so the upload contains only what this app needs. eas-cli archives
+# the whole git root plus the `.git` pack of the shallow clone, and once
+# `.easignore` exists it replaces every `.gitignore`, so the file must also list
+# what git currently ignores on disk.
 
 set -euo pipefail
 
@@ -23,4 +24,4 @@ trap 'rm -f "$EASIGNORE"' EXIT
     sed -e 's/[][*?]/\\&/g' -e 's|^|/|'
 } > "$EASIGNORE"
 
-eas build "$@"
+eas "$@"

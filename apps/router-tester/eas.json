@@ -30,6 +30,16 @@
       "pnpm": "12.2.1",
       "distribution": "store",
       "autoIncrement": true
+    },
+    "e2e": {
+      "pnpm": "12.2.1",
+      "withoutCredentials": true,
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {
