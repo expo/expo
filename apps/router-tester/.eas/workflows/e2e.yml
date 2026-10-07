@@ -26,7 +26,7 @@ jobs:
     needs: [build_ios]
     runs_on: macos-medium
     # The simulator runtime comes from the image, and the accessibility tree changes between iOS versions.
-    image: macos-tahoe-26.5-xcode-26.6
+    image: macos-tahoe-26.6-xcode-27.0
     environment: preview
     env:
       CI: '1'

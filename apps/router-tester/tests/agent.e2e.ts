@@ -1,9 +1,9 @@
-import { test } from '@e2e-dev/mobile';
+import { test } from './fixtures';
 import { expect } from 'e2e';
 
-test('the agent opens a nested dynamic route', async ({ agent, app, device, screen }) => {
+test('the agent opens a nested dynamic route', async ({ agent, app, openLink, screen }) => {
   await app.open();
-  await device.openLink('router-tester://params');
+  await openLink('router-tester://params');
 
   await agent.act('open the nested params case for path 456 with the x and y query params');
 

@@ -1,4 +1,4 @@
-import { test } from '@e2e-dev/mobile';
+import { test } from './fixtures';
 import { expect } from 'e2e';
 
 test('shows the home screen', async ({ app, platform, screen }) => {
@@ -11,18 +11,18 @@ test('shows the home screen', async ({ app, platform, screen }) => {
 });
 
 // The home screen links use `Link.Preview`, which hides them from the iOS accessibility tree.
-test('opens native tabs from a deep link', async ({ app, device, screen }) => {
+test('opens native tabs from a deep link', async ({ app, openLink, screen }) => {
   await app.open();
 
-  await device.openLink('router-tester://tabs');
+  await openLink('router-tester://tabs');
 
   await expect(screen.getByText('Index screen')).toBeVisible();
   await expect(screen.getByText('Index tab')).toBeVisible();
 });
 
-test('opens a dynamic route', async ({ app, device, screen }) => {
+test('opens a dynamic route', async ({ app, openLink, screen }) => {
   await app.open();
-  await device.openLink('router-tester://params');
+  await openLink('router-tester://params');
 
   await screen.getByText('/params/123').tap();
 
