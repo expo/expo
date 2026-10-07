@@ -28,25 +28,16 @@ beforeEach(() => {
   mockAddListener.mockClear();
 });
 
-it('calls the listener only once for two events with the same token', () => {
+it('calls the listener only when the token changes', () => {
   const listener = jest.fn();
   addPushTokenListener(listener);
 
   nativeHandlerOf(0)({ devicePushToken: 'token-a' });
   nativeHandlerOf(0)({ devicePushToken: 'token-a' });
-
   expect(listener).toHaveBeenCalledTimes(1);
   expect(listener).toHaveBeenCalledWith({ data: 'token-a', type: 'ios' });
-});
 
-it('calls the listener again when the token changes', () => {
-  const listener = jest.fn();
-  addPushTokenListener(listener);
-
-  nativeHandlerOf(0)({ devicePushToken: 'token-a' });
-  nativeHandlerOf(0)({ devicePushToken: 'token-a' });
   nativeHandlerOf(0)({ devicePushToken: 'token-b' });
-
   expect(listener).toHaveBeenCalledTimes(2);
   expect(listener).toHaveBeenLastCalledWith({ data: 'token-b', type: 'ios' });
 });
