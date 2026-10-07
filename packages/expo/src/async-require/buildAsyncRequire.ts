@@ -50,7 +50,8 @@ export function buildAsyncRequire(): AsyncRequire {
       if (cache.get(cacheKey) === promise) cache.delete(cacheKey);
       throw new Error(
         `Chunk ${cacheKey} did not finish registering its modules. ` +
-          'Check the browser console for script errors, then retry loading the chunk.'
+          'Check the browser console for an earlier script error. ' +
+          'If none is present, report this as an Expo bug.'
       );
     }
   }
