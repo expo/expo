@@ -81,6 +81,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/toolbar': ['swift-ui/Toolbar/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/usenativestate': [
     ['State/useNativeState.ts', 'State/useWorkletCallback.ts'],
     'expo-ui',
