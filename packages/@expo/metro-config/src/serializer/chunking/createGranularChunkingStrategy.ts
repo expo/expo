@@ -55,6 +55,8 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
       const workers = collectWorkerChunks(context, strategy, plan.workerEntries);
       workerChunksByEntryPath = workers.chunksByEntryPath;
       for (const workerChunk of workers.chunks) chunks.add(workerChunk);
+      // Page chunks share one module registry. Extract its runtime so HTML can install it
+      // before registering route chunks; sealed workers already carry independent runtimes.
       if ([...chunks].some((chunk) => chunk.isAsync && !chunk.sealed)) {
         createRuntimeChunk(
           entryChunk,
@@ -143,6 +145,7 @@ type PageChunks = {
   chunksByAtom: Map<ChunkAtom, Chunk>;
 };
 
+/** Assign each ownership group to one file while retaining the logical entry identities. */
 function createPageChunks(
   { entryFile, preModules, graph, options }: ChunkingContext,
   strategy: ChunkingImplementation,
@@ -176,6 +179,7 @@ function createPageChunks(
     if (entryIndices.length === 1) {
       ownerChunk = facadesByEntryPath.get(plan.entryPoints[entryIndices[0]!]!.module.path)!;
     } else {
+      // Owner paths remain stable when unrelated entries shift the planner's bit positions.
       const ownerPaths = entryIndices
         .map((index) =>
           toPosixPath(
@@ -199,6 +203,10 @@ function createPageChunks(
   return { chunks, entryChunk, entryPathsByChunk, facadesByEntryPath, chunksByAtom };
 }
 
+/**
+ * Translate logical requirements into files. An entry's module may live entirely in other
+ * chunks, so removing its empty facade must preserve the entry-to-files mapping.
+ */
 function assignEntryChunkRequirements(
   plan: BitSetChunkPlan,
   { chunks, entryChunk, entryPathsByChunk, facadesByEntryPath, chunksByAtom }: PageChunks
@@ -212,6 +220,7 @@ function assignEntryChunkRequirements(
       chunks.delete(facade);
       entryPathsByChunk.delete(facade);
       requiredChunks.delete(facade);
+      // An entry supplied entirely by the initial bundle has no additional files to request.
       if (requiredChunks.size === 0) entryPathsByChunk.get(entryChunk)!.push(entryPath);
     }
     for (const ownerChunk of requiredChunks) {
@@ -258,7 +267,7 @@ function assignModuleIds(
   chunks: Iterable<Chunk>,
   createModuleId: ChunkingContext['options']['createModuleId']
 ): void {
-  // Allocate module IDs in sorted order, preserving any IDs already assigned.
+  // Preallocate IDs so per-chunk serialization order cannot choose them. Existing IDs survive.
   const modulePaths = new Set<string>();
   for (const chunk of chunks) {
     for (const module of [...chunk.preModules, ...chunk.deps]) {

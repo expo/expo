@@ -3,6 +3,15 @@ import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency
 
 import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';
 
+/**
+ * Plan page chunks in two bitset domains. Entry bits identify the initial or dynamic entries
+ * that synchronously reach a module. Modules with identical entry sets form a raw atom.
+ * Atom bits identify these raw groups within an entry's dependency or availability set.
+ *
+ * Reachability says who needs a module; normalized ownership says which entries must supply
+ * it. An entry can stop owning an atom only when every importer path already supplies it.
+ * These are build-time guarantees, not observations of the browser's loaded modules.
+ */
 export type BitSet = bigint;
 type GraphModule = Module<MixedOutput>;
 
@@ -90,6 +99,7 @@ export function computeBitSetChunkPlan(
   };
 }
 
+/** Transpose atom owners into each entry's synchronous closure, including the entry itself. */
 function getStaticDependencyAtomsByEntry(
   entryPoints: readonly PlannerEntryPoint[],
   rawAtoms: readonly ChunkAtom[]
@@ -106,6 +116,7 @@ function getStaticDependencyAtomsByEntry(
   return staticDependencyAtomsByEntry;
 }
 
+/** Find atoms guaranteed to be registered before each entry loads, across all importer paths. */
 function computeGuaranteedLoadedAtoms(
   entryPoints: readonly PlannerEntryPoint[],
   dynamicImportsByEntry: readonly BitSet[],
@@ -113,6 +124,8 @@ function computeGuaranteedLoadedAtoms(
   atomCount: number
 ): BitSet[] {
   const allAtoms = (1n << BigInt(atomCount)) - 1n;
+  // Initial entries inherit nothing. Dynamic entries start with every atom as a candidate;
+  // propagation from the initial roots removes candidates not supplied on every path.
   const guaranteedLoadedAtomsByEntry = entryPoints.map((entry) =>
     entry.kind === 'initial' ? 0n : allAtoms
   );
@@ -125,8 +138,8 @@ function computeGuaranteedLoadedAtoms(
     const availableAtoms =
       staticDependencyAtomsByEntry[entryIndex]! | guaranteedLoadedAtomsByEntry[entryIndex]!;
     for (const targetIndex of bitIndices(dynamicImportsByEntry[entryIndex]!)) {
-      // Availability only shrinks. Intersect each reduction into the target instead of
-      // revisiting all of its importers; re-queue changed targets to propagate through cycles.
+      // An importer supplies its own closure plus what it inherited. Intersecting each
+      // importer can only remove bits, so re-queuing changed targets also converges in cycles.
       const updatedLoadedAtoms = guaranteedLoadedAtomsByEntry[targetIndex]! & availableAtoms;
       if (updatedLoadedAtoms === guaranteedLoadedAtomsByEntry[targetIndex]) continue;
       guaranteedLoadedAtomsByEntry[targetIndex] = updatedLoadedAtoms;
@@ -137,6 +150,12 @@ function computeGuaranteedLoadedAtoms(
   return guaranteedLoadedAtomsByEntry;
 }
 
+/**
+ * Remove owners that always inherit an atom, then merge groups whose remaining owners match.
+ * For main => a => b, with a -> shared and b -> shared, only a needs to own shared.
+ * Adding main => b prevents that removal: b can now load without a supplying shared.
+ * Here => is a dynamic import and -> is a synchronous dependency.
+ */
 function normalizeAtomOwners(
   rawAtoms: readonly ChunkAtom[],
   guaranteedLoadedAtomsByEntry: readonly BitSet[]
@@ -149,7 +168,8 @@ function normalizeAtomOwners(
         owners &= ~(1n << BigInt(entryIndex));
       }
     }
-    // The first owner on a path from an initial entry cannot already have this atom loaded.
+    // On a path from an initial entry, the first owner cannot inherit this atom from the
+    // preceding non-owners. Its bit must survive; losing every owner is an analysis bug.
     if (owners === 0n) {
       throw new Error(
         `BitSet atom containing ${[...atom.modules][0]!.path} lost every owner. ` +
@@ -162,6 +182,7 @@ function normalizeAtomOwners(
   return groupModulesByOwners(normalizedOwnersByModule);
 }
 
+/** Keep complete entry requirements even when normalization moves ownership to an importer. */
 function getRequiredChunksByEntryPath(
   entryPoints: readonly PlannerEntryPoint[],
   chunks: readonly ChunkAtom[],
@@ -169,7 +190,6 @@ function getRequiredChunksByEntryPath(
 ): Map<string, readonly ChunkAtom[]> {
   const requiredChunksByEntry = entryPoints.map(() => [] as ChunkAtom[]);
   for (const chunk of chunks) {
-    // Keep original reachability: an entry still requires chunks that its importers load.
     let requiredBy = 0n;
     for (const module of chunk.modules) {
       requiredBy |= dependentEntriesByModule.get(module)!;
@@ -213,6 +233,7 @@ type DiscoveredEntryGraph = {
   workerEntries: readonly GraphModule[];
 };
 
+/** Discover from initial roots so disconnected dynamic cycles never enter availability analysis. */
 function discoverEntryGraph(
   initialEntries: readonly GraphModule[],
   graph: ReadOnlyGraph,
@@ -279,6 +300,7 @@ function discoverEntryGraph(
   };
 }
 
+/** Follow synchronous edges per entry; record dynamic targets without absorbing their closures. */
 function computeEntryReachability(
   entryPoints: readonly PlannerEntryPoint[],
   edgesByModule: ReadonlyMap<GraphModule, readonly ModuleEdge[]>
