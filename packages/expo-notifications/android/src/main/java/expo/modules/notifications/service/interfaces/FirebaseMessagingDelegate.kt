@@ -8,7 +8,7 @@ import expo.modules.notifications.service.NotificationsService
  */
 interface FirebaseMessagingDelegate {
   /**
-   * Called on new token, dispatches it to [NotificationsService.sTokenListenersReferences].
+   * Called on new token, dispatches it to the registered token listeners.
    *
    * @param token New device push token.
    */
