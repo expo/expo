@@ -9,8 +9,17 @@ platforms: ['ios', 'tvos', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI NavigationSplitView matches the official SwiftUI [NavigationSplitView API](https://developer.apple.com/documentation/swiftui/navigationsplitview) and shows two or three columns side by side. The columns collapse into one when there is not enough room.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/navigationsplitview/ios-light.webp"
+  darkSrc="/static/images/expo-ui/navigationsplitview/ios-dark.webp"
+  alt="A Notes sidebar next to the detail of the selected note"
+/>
 
 ## Installation
 
@@ -22,7 +31,7 @@ Expo UI NavigationSplitView matches the official SwiftUI [NavigationSplitView AP
 
 Provide `NavigationSplitView.Sidebar` and `NavigationSplitView.Detail`. Set the title of each column with the [`navigationTitle`](modifiers/#navigationtitletitle) modifier.
 
-On iPhone, only the sidebar shows. To open the detail on tap, set `preferredCompactColumn` to `'detail'`, and pass the value from `onPreferredCompactColumnChange` back in so the back button works.
+On iPhone, only the sidebar shows. On iOS 17 and later, set `preferredCompactColumn` to `'detail'` to open the detail on tap. Pass the value from `onPreferredCompactColumnChange` back in so the back button works.
 
 <ComponentExample
   title="NavigationSplitViewExample.tsx"
@@ -116,9 +125,9 @@ export default function NavigationSplitViewExample() {
 
 ### Three columns
 
-Add `NavigationSplitView.Content` between the sidebar and the detail. Set the width of a column with the [`navigationSplitViewColumnWidth`](modifiers/#navigationsplitviewcolumnwidthwidth) modifier, and how the columns share the space with [`navigationSplitViewStyle`](modifiers/#navigationsplitviewstylestyle).
+Add `NavigationSplitView.Content` between the sidebar and the detail. Set the width of a column with the [`navigationSplitViewColumnWidth`](modifiers/#navigationsplitviewcolumnwidthwidth) modifier. Set how the columns share the space with the [`navigationSplitViewStyle`](modifiers/#navigationsplitviewstylestyle) modifier.
 
-The split view picks the visible columns by default. Set `columnVisibility` to `'all'` to show every column, or `'detailOnly'` to hide the sidebar. When there is not enough room, it shows fewer columns. Pass the value from `onColumnVisibilityChange` back in, otherwise dragging the divider has no effect.
+The split view picks the visible columns by default. Set `columnVisibility` to `'all'` to show every column, or `'detailOnly'` to show only the detail. When there is not enough room, it shows fewer columns. Pass the value from `onColumnVisibilityChange` back in. Otherwise, dragging the divider has no effect.
 
 ## API
 
