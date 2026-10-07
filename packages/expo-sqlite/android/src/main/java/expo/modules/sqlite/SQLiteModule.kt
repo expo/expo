@@ -371,9 +371,7 @@ class SQLiteModule : Module() {
       synchronized(statement) {
         maybeThrowForFinalizedStatement(statement)
         maybeThrowForClosedDatabase(database)
-        if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
-          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-        }
+        database.ref.sqlite3_prepare_v2(source, statement.ref)
         statement.isPrepared = true
         database.statements.add(statement)
       }
@@ -413,7 +411,7 @@ class SQLiteModule : Module() {
 
       val ret = statement.ref.sqlite3_step()
       if (ret != NativeDatabaseBinding.SQLITE_ROW && ret != NativeDatabaseBinding.SQLITE_DONE) {
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        throw SQLiteErrorException(statement.ref.getLastErrorMessage())
       }
       val firstRowValues: SQLiteColumnValues =
         if (ret == NativeDatabaseBinding.SQLITE_ROW) {
@@ -441,7 +439,7 @@ class SQLiteModule : Module() {
         return statement.getTransformedColumnValues()
       }
       if (ret != NativeDatabaseBinding.SQLITE_DONE) {
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        throw SQLiteErrorException(statement.ref.getLastErrorMessage())
       }
       return null
     }
@@ -463,7 +461,7 @@ class SQLiteModule : Module() {
         } else if (ret == NativeDatabaseBinding.SQLITE_DONE) {
           break
         }
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        throw SQLiteErrorException(statement.ref.getLastErrorMessage())
       }
       return columnValuesList
     }
@@ -477,7 +475,7 @@ class SQLiteModule : Module() {
       maybeThrowForClosedDatabase(database)
 
       if (statement.ref.sqlite3_reset() != NativeDatabaseBinding.SQLITE_OK) {
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        throw SQLiteErrorException(statement.ref.getLastErrorMessage())
       }
     }
   }
@@ -491,14 +489,19 @@ class SQLiteModule : Module() {
         maybeThrowForClosedDatabase(database)
 
         val ret = statement.ref.sqlite3_finalize()
+        val error = if (ret != NativeDatabaseBinding.SQLITE_OK) {
+          statement.ref.getLastErrorMessage()
+        } else {
+          null
+        }
         // SQLite destroys the statement even when returning an earlier execution error.
         statement.isFinalized = true
         database.statements.removeAll { it === statement }
         if (statement.releasedByJavaScript) {
           statement.ref.close()
         }
-        if (ret != NativeDatabaseBinding.SQLITE_OK) {
-          throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        if (error != null) {
+          throw SQLiteErrorException(error)
         }
       }
     }
