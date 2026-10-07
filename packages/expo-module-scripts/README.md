@@ -1,5 +1,9 @@
 # Expo Module Scripts
 
+> [!IMPORTANT]
+> This package has been made internal, and shouldn't be confused with the currently published version of `expo-module-scripts`.
+> The public package is deprecated. This internal package does not align with it anymore and is due to be renamed.
+
 This package contains a collection of common scripts for all Expo modules and the Expo SDK package. This sets us up to have a consistent way of compiling JS, testing, linting, and other common tasks so that the Expo SDK is coherent and unified. Knowledge and experience from working on an Expo module in this repository will carry over to working on other modules. And ultimately, we want the development experience for Expo developers to be similar across modules. A structurally unified way of developing Expo modules helps us achieve these goals.
 
 **This is the package that installs Babel CLI, TypeScript, Jest, and other common development dependencies.** Update the dependencies in this package when changing them for the Expo repository.

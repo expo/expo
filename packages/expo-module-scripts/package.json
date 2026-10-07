@@ -2,6 +2,7 @@
   "name": "expo-module-scripts",
   "version": "56.0.8",
   "description": "A private package for various tasks for Expo module packages like compiling and testing",
+  "private": true,
   "keywords": [
     "babel-preset",
     "expo",
