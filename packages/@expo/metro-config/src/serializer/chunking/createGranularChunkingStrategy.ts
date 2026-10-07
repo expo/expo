@@ -230,7 +230,8 @@ function collectWorkerChunks(
 ): { chunks: Set<Chunk>; chunksByEntryPath: Map<string, Chunk> } {
   const { preModules } = context;
   const workerChunksByEntryPath = new Map<string, Chunk>();
-  // Workers keep their own copies of dependencies shared with the page.
+  // The eligibility scan excludes worker-local async imports before planning. Supported
+  // workers keep their own runtime and copies of dependencies shared with the page.
   const workerChunks = new Set<Chunk>();
   const collectChunk = createChunkCollector(
     context,

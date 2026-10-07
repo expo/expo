@@ -62,6 +62,28 @@ describe('Granular chunk emission', () => {
     ).toBe(true);
   });
 
+  it('uses legacy page chunks when a worker dynamically imports a module', async () => {
+    const artifacts: SerialAsset[] = await serializeSplitAsync(
+      {
+        ...publicGraph,
+        'index.js': `import('./a'); import('./b'); require.unstable_resolveWorker('./worker');`,
+        'worker.js': `import('./worker-target');`,
+        'worker-target.js': `console.log('worker target');`,
+      },
+      { chunkingStrategy: 'granular' }
+    );
+
+    const commonChunk = artifacts.find((asset) => asset.filename.includes('__common'));
+    expect(commonChunk?.metadata.modulePaths).toContain('/app/shared.js');
+    expect(artifacts.some((asset) => asset.filename.includes('__shared-'))).toBe(false);
+    expect(artifacts.every((asset) => asset.metadata.chunkingStrategy === undefined)).toBe(true);
+    expect(
+      artifacts
+        .flatMap((asset) => Object.values(asset.metadata.paths ?? {}).flatMap(Object.values))
+        .every((value) => typeof value === 'string')
+    ).toBe(true);
+  });
+
   it('keeps DOM exports on the legacy pipeline even when requested', async () => {
     const [entry, premodules, graph, options] = await microBundle({
       fs: publicGraph,
