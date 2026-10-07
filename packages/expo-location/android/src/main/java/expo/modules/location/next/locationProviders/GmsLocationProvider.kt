@@ -21,6 +21,7 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
 import expo.modules.interfaces.taskManager.TaskConsumer
+import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
 import expo.modules.location.next.BatchedPositions
 import expo.modules.location.next.LocationTaskConsumer
@@ -132,7 +133,14 @@ class GmsLocationProvider(
 
   override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
     if (!isServiceAvailable()) {
-      return ProviderResult.Unsupported
+      return ProviderResult.Unavailable
+    }
+    return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
+  }
+
+  override fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
+    if (!taskManager.taskHasConsumerOfClass(taskName, GmsLocationTaskConsumer::class.java)) {
+      return ProviderResult.Unavailable
     }
     return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
   }
@@ -224,9 +232,10 @@ class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUti
         .requestLocationUpdates(request, pendingIntent)
         .addOnFailureListener {
           reportRequestFailed(it)
-          Log.w("EXPO_LOCATION", "Background location request failed: $it")
         }
       return true
+    }.onFailure {
+      reportRequestFailed(it)
     }
     return false
   }
@@ -235,7 +244,6 @@ class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUti
     runCatching {
       fusedLocationProvider
         .removeLocationUpdates(pendingIntent)
-        .addOnCompleteListener { pendingIntent.cancel() }
     }
   }
 

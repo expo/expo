@@ -2,6 +2,7 @@ package expo.modules.location.next.locationProviders
 
 import android.app.Activity
 import expo.modules.interfaces.taskManager.TaskConsumer
+import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.location.next.LocationProfile
 import expo.modules.location.next.Position
@@ -117,6 +118,8 @@ interface LocationProvider {
 
   // This class must have (Context, TaskManagerUtilsInterface?) constructor as it will be constructed like this by TaskManager.
   fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
+
+  fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
 }
 
 class OperationUnavailableException(functionName: String) : CodedException("$functionName is currently unavailable")

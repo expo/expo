@@ -9,12 +9,15 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskInterface
+import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.BackgroundUpdatesParameters
+import expo.modules.location.next.locationProviders.LocationProvider
+import expo.modules.location.next.locationProviders.ProviderResult
 import expo.modules.location.next.locationProviders.toBackgroundUpdatesParameters
 import java.util.concurrent.ConcurrentHashMap
 
@@ -24,8 +27,9 @@ abstract class LocationTaskConsumer(
 ) : TaskConsumer(context, taskManagerUtils) {
   @Volatile
   var task: TaskInterface? = null
+
   @Volatile
-  var pendingIntent: PendingIntent? = null
+  protected var pendingIntent: PendingIntent? = null
 
   private val currentOptions: BackgroundUpdatesParameters
     get() = (task?.options ?: emptyMap()).toBackgroundUpdatesParameters()
@@ -33,20 +37,32 @@ abstract class LocationTaskConsumer(
   override fun taskType(): String = "location"
 
   final override fun didRegister(registeredTask: TaskInterface?) {
-    val registered = registeredTask ?: return
-    task = registered
-    val newPendingIntent = taskManagerUtils.createTaskIntent(context, registered)
+    task = registeredTask ?: return
+
+    val newPendingIntent = taskManagerUtils.createTaskIntent(context, registeredTask)
+    pendingIntent = newPendingIntent
+
     val started = requestLocationUpdates(newPendingIntent, currentOptions)
-    if (started) {
-      pendingIntent = newPendingIntent
+
+    statuses.compute(registeredTask.name) { _, previousStatus ->
+      val status = previousStatus ?: BackgroundTaskStatus()
+      status.copy(
+        isRunning = started,
+        lastError = if (started) {
+          null
+        } else {
+          status.lastError
+        }
+      )
     }
-    statuses[registered.name] = statuses.getOrDefault(registered.name, BackgroundTaskStatus()).copy(isRunning = started)
   }
 
   protected fun reportRequestFailed(cause: Throwable) {
     val name = task?.name ?: return
-    statuses[name] = statuses.getOrDefault(name, BackgroundTaskStatus())
-      .copy(isRunning = false, lastError = cause.message ?: cause.toString())
+    statuses.compute(name) { _, previousStatus ->
+      (previousStatus ?: BackgroundTaskStatus())
+        .copy(isRunning = false, lastError = cause.message ?: cause.toString())
+    }
   }
 
   abstract fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean = false): Boolean
@@ -62,9 +78,19 @@ abstract class LocationTaskConsumer(
 
   final override fun setOptions(options: MutableMap<String, Any>?) {
     val currentTask = task ?: return
-    pendingIntent?.let {
-      val started = requestLocationUpdates(it, currentOptions, updateExisting = true)
-      statuses[currentTask.name] = statuses.getOrDefault(currentTask.name, BackgroundTaskStatus()).copy(isRunning = started)
+    val pendingIntentNow = pendingIntent ?: return
+    val started = requestLocationUpdates(pendingIntentNow, currentOptions, updateExisting = true)
+
+    statuses.compute(currentTask.name) { _, previousStatus ->
+      val status = previousStatus ?: BackgroundTaskStatus()
+      status.copy(
+        isRunning = started,
+        lastError = if (started) {
+          null
+        } else {
+          status.lastError
+        }
+      )
     }
   }
 
@@ -75,9 +101,11 @@ abstract class LocationTaskConsumer(
       return
     }
 
-    locationData.data?.lastOrNull()?.let {
-      statuses[currentTask.name] = statuses.getOrDefault(currentTask.name, BackgroundTaskStatus())
-        .copy(isRunning = true, lastFixAt = it.timestamp)
+    locationData.data?.lastOrNull()?.let { position ->
+      statuses.compute(currentTask.name) { _, previousStatus ->
+        (previousStatus ?: BackgroundTaskStatus())
+          .copy(isRunning = true, lastFixAt = position.timestamp, lastError = null)
+      }
     }
 
     if (LocationModuleNext.modulesStarted.get() > 0) {
@@ -85,7 +113,7 @@ abstract class LocationTaskConsumer(
     } else {
       runCatching {
         taskManagerUtils.scheduleJob(context, currentTask, locationData.toPersistableBundleList())
-      }
+      }.onFailure { reportRequestFailed(it) }
     }
   }
   abstract fun decodeBatchedPositions(intent: Intent?): BatchedPositions
@@ -111,6 +139,7 @@ class BackgroundLocationHandle(
   val taskName: String,
   @Volatile
   var profile: LocationProfile,
+  val locationProvider: LocationProvider
 ) : SharedObject()
 
 @OptimizedRecord
@@ -153,4 +182,12 @@ fun List<PersistableBundle>.toBatchedPositions(): BatchedPositions = if (isEmpty
     map { it.toPosition() },
     null
   )
+}
+
+fun getExistingOrNewLocationTaskConsumer(handle: BackgroundLocationHandle, taskManager: TaskManagerInterface): ProviderResult<Class<out TaskConsumer>> {
+  val existing = handle.locationProvider.getRegisteredTaskConsumerClass(taskManager, handle.taskName)
+  if (existing is ProviderResult.Available) {
+    return existing
+  }
+  return handle.locationProvider.getLocationTaskConsumerClass()
 }
