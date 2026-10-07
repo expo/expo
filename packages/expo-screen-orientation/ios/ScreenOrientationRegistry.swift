@@ -20,8 +20,15 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
   private let queue = DispatchQueue(label: "expo.screenorientationregistry", attributes: .concurrent)
   private let notificationQueue = DispatchQueue(label: "expo.screenorientationregistry.notifications")
+  // Written on the main thread (`traitCollectionDidChange(to:)`) and read on `notificationQueue`
+  // (`ScreenOrientationModule.screenOrientationDidChange`), so it must be guarded by `queue`.
+  private var _currentTraitCollection: UITraitCollection?
   @objc
-  public var currentTraitCollection: UITraitCollection?
+  public var currentTraitCollection: UITraitCollection? {
+    get { queue.sync { _currentTraitCollection } }
+    // Asynchronous barrier: the main thread never waits on `queue` here.
+    set { queue.async(flags: .barrier) { self._currentTraitCollection = newValue } }
+  }
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
     return SceneGeometry.keyWindow()?.rootViewController
@@ -38,7 +45,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
   private override init() {
     self.currentScreenOrientation = .unknown
-    self.currentTraitCollection = nil
+    self._currentTraitCollection = nil
     self.lastOrientationMask = []
 
     super.init()
