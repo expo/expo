@@ -3,6 +3,7 @@ import { Platform, UnavailabilityError } from 'expo';
 import type {
   ApplicationReleaseType,
   PushNotificationServiceEnvironment,
+  StoreEnvironment,
 } from './Application.types';
 import ExpoApplication from './ExpoApplication';
 
@@ -142,6 +143,28 @@ export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationRe
   return await ExpoApplication.getApplicationReleaseTypeAsync();
 }
 
+/**
+ * Gets the store environment the app was installed from. Unlike [`getIosApplicationReleaseTypeAsync`](#applicationgetiosapplicationreleasetypeasync),
+ * which reports `APP_STORE` for both, this tells a TestFlight build apart from an App Store release.
+ * In Expo Go, this reports Expo Go's own environment.
+ *
+ * @example
+ * ```ts
+ * if ((await Application.getIosStoreEnvironmentAsync()) === 'testFlight') {
+ *   // Show beta-only settings
+ * }
+ * ```
+ * @return A `Promise` which fulfills with a [`StoreEnvironment`](#storeenvironment).
+ * @platform ios
+ * @platform tvos
+ */
+export async function getIosStoreEnvironmentAsync(): Promise<StoreEnvironment> {
+  if (!ExpoApplication.getStoreEnvironmentAsync) {
+    throw new UnavailabilityError('expo-application', 'getStoreEnvironmentAsync');
+  }
+  return await ExpoApplication.getStoreEnvironmentAsync();
+}
+
 // @needsAudit
 /**
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
@@ -207,4 +230,5 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
 export {
   ApplicationReleaseType,
   type PushNotificationServiceEnvironment,
+  type StoreEnvironment,
 } from './Application.types';

@@ -1,6 +1,7 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
 import ExpoModulesTestCore
+import StoreKit
 import Testing
 import UIKit
 
@@ -85,6 +86,30 @@ struct ApplicationModuleTests {
     let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getApplicationReleaseTypeAsync()")
 
     #expect(try result.asInt() == EXAppReleaseType.simulator.rawValue)
+  }
+
+  @Test
+  func `getStoreEnvironmentAsync resolves to a non-store environment on the simulator`() async throws {
+    let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getStoreEnvironmentAsync()")
+
+    #expect(["development", "unknown"].contains(try result.asString()))
+  }
+
+  @Test(arguments: [
+    (AppStore.Environment.production, EXAppReleaseType.appStore, "appStore"),
+    (AppStore.Environment.sandbox, EXAppReleaseType.appStore, "testFlight"),
+    (AppStore.Environment.sandbox, EXAppReleaseType.dev, "development"),
+    (AppStore.Environment.sandbox, EXAppReleaseType.adHoc, "development"),
+    (AppStore.Environment.sandbox, EXAppReleaseType.enterprise, "development"),
+    (AppStore.Environment.xcode, EXAppReleaseType.simulator, "development"),
+    (AppStore.Environment(rawValue: "Future"), EXAppReleaseType.appStore, "unknown"),
+  ])
+  func `storeEnvironment maps the StoreKit environment and signing to a store environment`(
+    environment: AppStore.Environment,
+    releaseType: EXAppReleaseType,
+    expected: String
+  ) {
+    #expect(ApplicationModule.storeEnvironment(environment, releaseType: releaseType) == expected)
   }
 
   @Test

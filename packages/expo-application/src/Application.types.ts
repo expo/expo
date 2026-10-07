@@ -16,3 +16,14 @@ export enum ApplicationReleaseType {
  * @platform ios
  */
 export type PushNotificationServiceEnvironment = 'development' | 'production' | null;
+
+/**
+ * The store environment the app was installed from, derived from StoreKit's [`AppTransaction.environment`](https://developer.apple.com/documentation/storekit/apptransaction/environment) and the app's code signing.
+ * - `'appStore'`: An App Store release.
+ * - `'testFlight'`: A store-signed build in the sandbox environment: installed from TestFlight, or under App Store Review. StoreKit does not distinguish the two.
+ * - `'development'`: A development, ad hoc or enterprise-signed build, or one run with a StoreKit configuration file in Xcode.
+ * - `'unknown'`: StoreKit returned no verified app transaction, such as on a simulator without a StoreKit configuration file.
+ * @platform ios
+ * @platform tvos
+ */
+export type StoreEnvironment = 'appStore' | 'testFlight' | 'development' | 'unknown';

@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 import ExpoModulesCore
+import StoreKit
 
 @ExpoModule("ExpoApplication")
 public class ApplicationModule: Module {
@@ -56,6 +57,29 @@ public class ApplicationModule: Module {
   func getApplicationReleaseTypeAsync() async -> Int {
     let mainProvisioningProfile = EXProvisioningProfile.main()
     return mainProvisioningProfile.appReleaseType().rawValue
+  }
+
+  @JS(.concurrent)
+  func getStoreEnvironmentAsync() async -> String {
+    guard case .verified(let transaction) = try? await AppTransaction.shared else {
+      return "unknown"
+    }
+    return Self.storeEnvironment(transaction.environment, releaseType: EXProvisioningProfile.main().appReleaseType())
+  }
+
+  // StoreKit reports TestFlight, App Review and development-signed builds all as `.sandbox`.
+  // Only store-signed builds ship without a provisioning profile, which separates TestFlight.
+  static func storeEnvironment(_ environment: AppStore.Environment, releaseType: EXAppReleaseType) -> String {
+    switch environment {
+    case .production:
+      return "appStore"
+    case .sandbox:
+      return releaseType == .appStore ? "testFlight" : "development"
+    case .xcode:
+      return "development"
+    default:
+      return "unknown"
+    }
   }
 
   @JS(.concurrent)
