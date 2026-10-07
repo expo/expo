@@ -1,18 +1,22 @@
 ---
 title: Hinge
-description: A library that provides the device hinge angle and status on iPhone Duo.
+description: A library that provides the device hinge angle and status on iPhone Duo and Android foldables.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-hinge'
 packageName: 'expo-hinge'
-platforms: ['ios']
+platforms: ['android', 'ios']
 isNew: true
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`expo-hinge` exposes the hinge of a foldable device, such as iPhone Duo, to the whole app. It reports the angle in degrees and whether the hinge is closed, partially open, or fully open. A [`UIHingeInteraction`](https://developer.apple.com/documentation/uikit/uihingeinteraction) on the app's window provides these values. For reacting to the hinge from one SwiftUI view, use the [`onHingeChange`](./ui/swift-ui/modifiers/#onhingechange) modifier from `@expo/ui` instead.
+`expo-hinge` exposes the hinge of a foldable device, such as iPhone Duo or an Android foldable, to the whole app. It reports the angle in degrees and whether the hinge is closed, partially open, or fully open. On iOS, a [`UIHingeInteraction`](https://developer.apple.com/documentation/uikit/uihingeinteraction) on the app's window provides these values. On Android, the hinge angle sensor provides the angle and Jetpack WindowManager's [`FoldingFeature`](https://developer.android.com/reference/androidx/window/layout/FoldingFeature) provides the status. For reacting to the hinge from one SwiftUI view, use the [`onHingeChange`](./ui/swift-ui/modifiers/#onhingechange) modifier from `@expo/ui` instead.
 
-> **important** Hinge updates need iOS 27.1 or later and a build made with Xcode 27.1 or later. On older builds and systems, and on devices without a hinge, the hinge is `null`. Use hinge state for interactions and effects, not for layout.
+> **important** Hinge updates need iOS 27.1 or later and a build made with Xcode 27.1 or later, or Android 11 (API level 30) or later. On older builds and systems, and on devices without a hinge, the hinge is `null`. Use hinge state for interactions and effects, not for layout.
+
+### Status on Android
+
+Android has no public API that reports a closed hinge, so the status is never `closed` on Android. Android reports the hinge state only while the app's window spans the fold, so the status is `unknown` otherwise, such as on the outer screen of a closed device. The angle is still reported in those cases. To detect a closed device on Android, check for an angle near `0`, and choose a threshold that suits your app, since device makers define their own ranges.
 
 ## Installation
 

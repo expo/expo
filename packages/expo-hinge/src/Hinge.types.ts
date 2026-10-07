@@ -1,8 +1,9 @@
 /**
  * Status of the device hinge, as reported by UIKit's `UIHinge.Status` on iOS and by the state of
- * Jetpack WindowManager's `FoldingFeature` on Android. Android never reports `closed`, and reports
- * `unknown` while the app's window does not span the fold, such as on the outer screen of a closed
- * device.
+ * Jetpack WindowManager's `FoldingFeature` on Android. Android has no public API for a closed hinge,
+ * so it never reports `closed`. It reports `unknown` while the app's window does not span the fold,
+ * such as on the outer screen of a closed device. To detect a closed device on Android, check for an
+ * `angle` near `0` with a threshold that suits your app.
  */
 export type HingeStatus = 'closed' | 'partiallyOpen' | 'fullyOpen' | 'unknown';
 
