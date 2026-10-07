@@ -106,12 +106,8 @@ In order to prevent overlapping native code in `node_modules`, we should move an
 
 ```js
 "scripts": {
-    "build": "expo-module build",
     "clean": "expo-module clean",
-    "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
 }
 ```
 

@@ -43,13 +43,9 @@ In a module, include `@expo/internal-scripts` as a development dependency in pac
 ```json
 {
   "scripts": {
-    "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "expo-module test",
-    "postinstall": "expo-module postinstall",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   }
 }
 ```
