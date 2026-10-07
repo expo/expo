@@ -1,0 +1,11 @@
+{
+  "platforms": ["android"],
+  "android": {
+    "modules": ["expo.modules.location.next.locationProviders.HmsModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.location.huawei",
+      "repository": "local-maven-repo"
+    }
+  }
+}
