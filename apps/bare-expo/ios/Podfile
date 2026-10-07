@@ -97,6 +97,6 @@ abstract_target 'BareExpoMain' do
       :app_path => "#{Pod::Config.instance.installation_root}/..",
     )
 
-    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
+    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios", :testspecs => ['Tests']
   end
 end
