@@ -121,6 +121,8 @@
 
 ## 58.0.8 — 2026-09-28
 
+- Detect Simulator.app with `pgrep` instead of AppleScript, so `run:ios` and `start` no longer crash after launching the app from a sandboxed or headless process. ([#50297](https://github.com/expo/expo/pull/50297) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
 
 - [Internal] Fix the `BundleOptions` import in `internal/unstable-expo-updates-exports.d.ts`, which pointed at a subpath `@expo/metro` doesn't ship. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
