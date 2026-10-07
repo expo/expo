@@ -415,8 +415,7 @@ export async function exportFromServerAsync(
         loaderReferences,
       });
 
-      const toAssetUrl = (filename: string) =>
-        baseUrl ? `${baseUrl}/${filename}` : `/${filename}`;
+      const toAssetUrl = (filename: string) => getChunkUrl(baseUrl, filename);
 
       const cssAssets = resources.artifacts
         .filter((asset) => asset.type === 'css' || asset.type === 'css-external')
@@ -430,9 +429,6 @@ export async function exportFromServerAsync(
       const isGranular = jsArtifacts.some(
         (asset) => asset.metadata.chunkingStrategy === 'granular'
       );
-      const toJsAssetUrl = isGranular
-        ? (filename: string) => getChunkUrl(baseUrl, filename)
-        : toAssetUrl;
       const orderedJsAssets = isGranular
         ? getGranularAssetsForRoute(jsArtifacts)
         : assetsRequiresSort(jsArtifacts);
@@ -442,10 +438,10 @@ export async function exportFromServerAsync(
       const topLevelJs = new Set(
         isGranular ? syncJs.filter((asset) => !asset.metadata.entryPaths?.length) : syncJs
       );
-      const topLevelJsAssets = [...topLevelJs].map((asset) => toJsAssetUrl(asset.filename));
+      const topLevelJsAssets = [...topLevelJs].map((asset) => toAssetUrl(asset.filename));
       const fallbackJsAssets = syncJs
         .filter((asset) => !topLevelJs.has(asset))
-        .map((asset) => toJsAssetUrl(asset.filename));
+        .map((asset) => toAssetUrl(asset.filename));
 
       const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
 
@@ -461,7 +457,7 @@ export async function exportFromServerAsync(
             route.contextKey,
             getGranularAssetsForRoute(jsArtifacts, route.entryPoints)
               .filter((asset) => !topLevelJs.has(asset))
-              .map((asset) => toJsAssetUrl(asset.filename))
+              .map((asset) => toAssetUrl(asset.filename))
           );
           continue;
         }
