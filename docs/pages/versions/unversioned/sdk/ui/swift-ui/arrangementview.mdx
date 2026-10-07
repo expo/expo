@@ -9,8 +9,17 @@ platforms: ['ios', 'tvos', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-Expo UI ArrangementView matches the official SwiftUI [ArrangementView API](https://developer.apple.com/documentation/swiftui/arrangementview) and arranges a primary and a secondary view with a layout that adapts to the environment.
+Expo UI ArrangementView matches the official SwiftUI [ArrangementView API](https://developer.apple.com/documentation/swiftui/arrangementview) and arranges a primary and a secondary view. The layout adapts to the available size and to hardware features, such as a foldable display.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/arrangementview/ios-light.webp"
+  darkSrc="/static/images/expo-ui/arrangementview/ios-dark.webp"
+  alt="A photo placeholder on the left and a Details form on the right"
+/>
 
 > **info** ArrangementView requires iOS 27.1 or later. On earlier versions, the children render without a container.
 
@@ -30,7 +39,7 @@ The `'split'` style places the two views side by side. Limit the size of a view 
   title="SplitArrangementExample.tsx"
   src="/static/images/expo-ui/examples/arrangementview-split-duo-light.webp"
   darkSrc="/static/images/expo-ui/examples/arrangementview-split-duo-dark.webp"
-  alt="A photo on the left and a Details form on the right">
+  alt="A photo placeholder on the left and a Details form on the right">
 
 ```tsx
 import {
