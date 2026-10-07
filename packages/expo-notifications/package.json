@@ -47,11 +47,11 @@
     "expo-constants": "workspace:~"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   },
   "peerDependencies": {

@@ -52,6 +52,6 @@
     "zx": "^8.8.5"
   },
   "devDependencies": {
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*"
   }
 }

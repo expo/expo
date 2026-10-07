@@ -55,11 +55,11 @@
     "xml2js": "0.6.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@expo/plist": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   },
   "peerDependencies": {

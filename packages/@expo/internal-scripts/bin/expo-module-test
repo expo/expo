@@ -24,7 +24,7 @@ if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
   if (fs.existsSync(path.join(targetDir, 'jest.config.js'))) {
     args.push('--config', `${target}/jest.config.js`);
   } else {
-    const jestConfigPath = require.resolve(`expo-module-scripts/jest-preset-${target}.js`);
+    const jestConfigPath = require.resolve(`@expo/internal-scripts/jest-preset-${target}.js`);
     args.push('--config', jestConfigPath);
   }
   // Push the rest of the arguments minus the `plugin` arg

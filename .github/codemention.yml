@@ -167,6 +167,8 @@ rules:
     mentions: ['jakex7']
   - patterns: ['packages/expo-module-scripts/**']
     mentions: ['ide']
+  - patterns: ['packages/@expo/internal-scripts/**']
+    mentions: ['kitten']
   - patterns: ['packages/expo-module-template/**']
     mentions: ['behenate']
   - patterns: ['packages/expo-module-template-local/**']

@@ -9,7 +9,7 @@ const { scriptPhasesForModules } = require('../script-phases');
 
 const REPO_ROOT = path.resolve(__dirname, '../../../../..');
 const WITH_NODE_COPIES = [
-  'packages/expo-module-scripts/templates/scripts/with-node.sh',
+  'packages/@expo/internal-scripts/templates/scripts/with-node.sh',
   'packages/expo-constants/scripts/with-node.sh',
   'packages/expo-updates/scripts/with-node.sh',
   'packages/expo-widgets/scripts/with-node.sh',

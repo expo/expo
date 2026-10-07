@@ -52,14 +52,14 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "expo-modules-cli": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

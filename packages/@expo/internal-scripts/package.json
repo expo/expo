@@ -1,14 +1,9 @@
 {
-  "name": "expo-module-scripts",
-  "version": "56.0.8",
-  "description": "A private package for various tasks for Expo module packages like compiling and testing",
+  "name": "@expo/internal-scripts",
+  "version": "58.0.0",
   "private": true,
-  "keywords": [
-    "babel-preset",
-    "expo",
-    "jest-preset"
-  ],
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-module-scripts#readme",
+  "description": "An internal package for internal expo/expo monorepo scripts",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/internal-scripts#readme",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
@@ -17,7 +12,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/expo/expo.git",
-    "directory": "packages/expo-module-scripts"
+    "directory": "packages/@expo/internal-scripts"
   },
   "bin": {
     "expo-build": "bin/expo-build",

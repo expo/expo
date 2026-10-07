@@ -51,10 +51,10 @@
     "yaml": "^2.3.2"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@jest/globals": "^30.0.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
     "jest": "^30.0.0"
   }
 }

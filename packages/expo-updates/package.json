@@ -80,6 +80,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@expo/metro-config": "workspace:*",
     "@testing-library/react-native": "^14.0.1",
     "@types/debug": "^4.1.7",
@@ -91,7 +92,6 @@
     "@types/react": "~19.3.0",
     "@vercel/ncc": "^0.38.4",
     "expo-dev-client": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "memfs": "^3.6.0",

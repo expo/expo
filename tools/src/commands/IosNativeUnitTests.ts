@@ -203,7 +203,7 @@ const INFRA_PATH_PATTERNS = [
   /^apps\/bare-expo\/ios\//,
   /^\.github\/workflows\/ios-unit-tests\.yml$/,
   /^packages\/expo-modules-autolinking\//,
-  /^packages\/expo-module-scripts\//,
+  /^packages\/@expo\/internal-scripts\//,
   /^packages\/expo-modules-test-core\//,
   /^pnpm-lock\.yaml$/,
   // CocoaPods and xcodeproj come from the bundle, so gem bumps change how pods install.

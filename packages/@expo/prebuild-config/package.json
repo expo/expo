@@ -49,10 +49,10 @@
     "semver": "^7.7.4"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@expo/plist": "workspace:*",
     "@types/debug": "^4.1.5",
     "@types/semver": "^7.7.1",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   }
 }
