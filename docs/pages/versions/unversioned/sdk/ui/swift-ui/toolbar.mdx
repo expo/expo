@@ -1,9 +1,9 @@
 ---
 title: Toolbar
-description: A SwiftUI Toolbar component that places items in the bar of the view it wraps.
+description: A SwiftUI Toolbar component that places items in the toolbar of the view it wraps.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'expo-go']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -76,7 +76,7 @@ export default function ToolbarExample() {
 
 </ComponentExample>
 
-### Choose where an item goes
+### Toolbar item placement
 
 Wrap an item in a [`ToolbarItem`](#toolbaritem) and set its `placement`. An item without a `ToolbarItem` uses the `automatic` placement.
 
@@ -137,15 +137,15 @@ export default function ToolbarItemExample() {
 
 A `ToolbarItem` has to be inside `Toolbar.Content`. If the current platform or OS version does not offer a placement, the item uses `automatic`.
 
-### A close button in a sheet
+### Close button in a sheet
 
-A sheet has no navigation bar of its own, so give its content a [`NavigationStack`](navigationstack). A [`Button`](button) with `role="close"` and no `label` or children shows as an xmark.
+A sheet has no navigation bar of its own, so give its content a [`NavigationStack`](navigationstack). On iOS 26 and later, a [`Button`](button) with `role="close"` and no `label` or children shows as a close (X) icon. On earlier versions, set a `label` and `systemImage="xmark"` instead.
 
 <ComponentExample
   title="ToolbarCloseButtonExample.tsx"
   src="/static/images/expo-ui/examples/toolbar-sheet-ios-light.webp"
   darkSrc="/static/images/expo-ui/examples/toolbar-sheet-ios-dark.webp"
-  alt="A sheet titled Grey Heron with an xmark button in its navigation bar">
+  alt="A sheet titled Grey Heron with a close button in its navigation bar">
 
 ```tsx
 import {
