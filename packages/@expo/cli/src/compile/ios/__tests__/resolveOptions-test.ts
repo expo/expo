@@ -19,6 +19,8 @@ describe(resolveOptionsAsync, () => {
         outputType: 'app',
         configuration,
         xcodeProject: { name: '/app/ios/ReactNativeProject.xcodeproj', isWorkspace: false },
+        scheme: 'ReactNativeProject',
+        osType: 'iOS',
       });
     }
   );
@@ -39,6 +41,26 @@ describe(resolveOptionsAsync, () => {
     await expect(
       resolveOptionsAsync('/app', { mode: 'development', outputType: 'ipa' })
     ).rejects.toThrow('Building an ipa is not supported yet. Omit --output-type to build an app.');
+  });
+
+  it(`rejects a non-iOS app`, async () => {
+    const pbxprojPath = 'ios/ReactNativeProject.xcodeproj/project.pbxproj';
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        [pbxprojPath]: rnFixture[pbxprojPath].replace(
+          /PRODUCT_NAME = ReactNativeProject;/g,
+          'PRODUCT_NAME = ReactNativeProject; SDKROOT = appletvos;'
+        ),
+      },
+      '/app'
+    );
+
+    await expect(
+      resolveOptionsAsync('/app', { mode: 'development', outputType: 'app' })
+    ).rejects.toThrow(
+      'The ReactNativeProject scheme builds a tvOS app. compile:ios only supports iOS apps for now. Use `npx expo run:ios` to build it.'
+    );
   });
 
   it(`rejects a malformed ios project`, async () => {
