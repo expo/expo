@@ -10,7 +10,10 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   /// Handle to the runtime the value belongs to. `nil` only for runtime-free values (undefined, null,
   /// booleans and numbers).
   internal let runtimeHandle: JavaScriptRuntimeHandle?
-  internal let pointee: facebook.jsi.Value
+  /// Mutable only so that ``write(_:to:)`` can move the engine value out of a uniquely referenced
+  /// instance on the JS thread, right before it is deallocated. Unchecked exclusivity keeps reads of
+  /// a mutable class property free of the dynamic exclusivity check.
+  @exclusivity(unchecked) nonisolated(unsafe) internal var pointee: facebook.jsi.Value
 
   /// The runtime the value belongs to, or `nil` if it has been deallocated or the value is runtime-free.
   /// Prefer ``jsiRuntime`` on hot paths: it costs no reference counting.
@@ -117,6 +120,45 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
       // which can't happen since facebook.jsi.Value has a non-zero size.
       return try body(bytes.baseAddress!)
     }
+  }
+
+  /// Calls `body` with a `JavaScriptUnownedValue` that borrows this value's `jsi::Value`, without
+  /// copying it. The unowned value is valid only for the duration of the closure and must not be
+  /// stored or escaped.
+  ///
+  /// `runtime` must be the runtime the value belongs to. It is passed in because a runtime-free value
+  /// (undefined, null, a boolean or a number) doesn't hold one.
+  ///
+  /// Inlinable, so the closure and `R` specialize in the caller; only `borrowUnownedValue(in:)` is a
+  /// call into this module.
+  @inlinable
+  public func withUnownedValue<R>(
+    in runtime: borrowing JavaScriptRuntime,
+    _ body: (borrowing JavaScriptUnownedValue) throws -> R
+  ) rethrows -> R {
+    let unownedValue = borrowUnownedValue(in: runtime)
+    // The unowned value points into `self`, so `self` must outlive `body`.
+    defer { withExtendedLifetime(self) {} }
+    return try body(unownedValue)
+  }
+
+  /// A `JavaScriptUnownedValue` pointing at the stored `jsi::Value`. It stays valid while `self` is
+  /// alive: the value is a stored property of this instance, so its address doesn't change, and
+  /// `withUnsafeBytes(of:)` yields that address because a `jsi::Value` can't be copied. Not inlinable,
+  /// since it touches the JSI types; `withUnownedValue(in:_:)` is the only caller.
+  @usableFromInline
+  internal func borrowUnownedValue(in runtime: borrowing JavaScriptRuntime) -> JavaScriptUnownedValue {
+    let pointer = withUnsafeBytes(of: pointee) { bytes in
+      // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`, for the same SIL optimizer crash
+      // `withUnsafePointee(_:)` avoids.
+      guard let baseAddress = bytes.baseAddress else {
+        preconditionFailure(
+          "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
+        )
+      }
+      return baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
+    }
+    return JavaScriptUnownedValue(runtime.pointee, pointer)
   }
 
   // MARK: - Type checks
@@ -532,6 +574,17 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   public func asValue() -> JavaScriptValue {
     // We need to copy the value as `self` would be borrowed
     return copy()
+  }
+
+  /// Writes `value` into a host callback's result slot. A uniquely referenced instance, the normal
+  /// case for a value the callback just created, has its engine value moved out instead of cloned,
+  /// since the instance is deallocated right after. Shared instances go through ``writeJSIValue(to:)``.
+  internal static func write(_ value: inout JavaScriptValue, to slot: UnsafeMutablePointer<facebook.jsi.Value>) {
+    if value.runtimeHandle != nil, isKnownUniquelyReferenced(&value) {
+      expo.emplaceMovedValue(slot, &value.pointee)
+    } else {
+      value.writeJSIValue(to: slot)
+    }
   }
 
   /// Writes this value into a host callback's result slot. Undefined, null, booleans and numbers are

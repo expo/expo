@@ -50,8 +50,8 @@
     "xmlbuilder": "^15.1.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.14.0"
   }
 }

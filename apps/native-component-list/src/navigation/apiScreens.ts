@@ -268,6 +268,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/HingeScreen'));
+    },
+    name: 'Hinge',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/CalendarsScreen'));
     },
     name: 'Calendars',
@@ -401,6 +407,13 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/Location/LocationScreen'));
     },
     name: 'Location',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/Location@Next/LocationNextScreen'));
+    },
+    name: 'Location@Next',
+    options: { title: 'Location@Next' },
   },
   {
     getComponent() {

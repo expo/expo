@@ -1,6 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
 import { BracketsEllipsesDuotoneIcon } from '@expo/styleguide-icons/duotone/BracketsEllipsesDuotoneIcon';
-import Link from 'next/link';
 import { forwardRef, useState, type MouseEvent } from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
@@ -39,7 +38,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
     return (
       <Tooltip.Root open={tooltipVisible}>
         <Tooltip.Trigger asChild>
-          <Link
+          <a
             ref={ref}
             onMouseOver={isCode ? onMouseOver : undefined}
             onMouseOut={isCode ? onMouseOut : undefined}
@@ -69,7 +68,7 @@ export const TableOfContentsLink = forwardRef<HTMLAnchorElement, SidebarLinkProp
               )}
               {isDeprecated && <span className="sr-only">Deprecated section</span>}
             </TitleElement>
-          </Link>
+          </a>
         </Tooltip.Trigger>
         <Tooltip.Content
           side="bottom"

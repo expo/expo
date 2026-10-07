@@ -19,12 +19,20 @@ const COPY_FILTER = (source: string): boolean => {
     '.expo-prebuild-android',
     '.git',
     '.gradle',
+    '.cxx',
     'build',
     'local-maven-repo',
     'node_modules',
     'prebuilds',
   ].includes(basename);
 };
+
+const NATIVE_LIBS_PACKAGE_NAMES = ['expo-modules-core'];
+const NATIVE_LIBS_DIRECTORY = 'android/prebuilt';
+
+function moduleDirectoryName(packageName: string): string {
+  return packageName.replace(/^@/, '').replace('/', '-');
+}
 
 function androidProjects(pkg: Package) {
   const config = pkg.expoModuleConfig;
@@ -93,9 +101,10 @@ async function runAndroidPrecompileAsync(packageRoot: string, prepareJdkImage: b
   }
 
   const projects = androidProjects(pkg);
-  const manifest = prepareJdkImage
-    ? null
-    : createAndroidPublicationManifest(pkg.packageName, pkg.packageVersion, projects);
+  const manifest =
+    prepareJdkImage || NATIVE_LIBS_PACKAGE_NAMES.includes(pkg.packageName)
+      ? null
+      : createAndroidPublicationManifest(pkg.packageName, pkg.packageVersion, projects);
   const closure = await resolveNativeClosureAsync(pkg);
   const bareExpoRoot = path.join(EXPO_DIR, 'apps/bare-expo');
   const reactNative = await resolveReactNativeAsync(bareExpoRoot);
@@ -120,10 +129,7 @@ async function runAndroidPrecompileAsync(packageRoot: string, prepareJdkImage: b
         filter: COPY_FILTER,
       }),
       ...closure.map(async (dependency) => {
-        const destination = path.join(
-          modulesRoot,
-          dependency.packageName.replace(/^@/, '').replace('/', '-')
-        );
+        const destination = path.join(modulesRoot, moduleDirectoryName(dependency.packageName));
         await fs.copy(dependency.path, destination, { filter: COPY_FILTER });
         const dependencyNodeModules = path.join(dependency.path, 'node_modules');
         if (await fs.pathExists(dependencyNodeModules)) {
@@ -140,19 +146,20 @@ async function runAndroidPrecompileAsync(packageRoot: string, prepareJdkImage: b
       `-Pexpo.precompileAndroid.reactNativeVersion=${reactNative.version}`,
       `-Pexpo.precompileAndroid.repository=${repositoryRoot}`,
     ];
+    const projectTask = manifest
+      ? 'publishReleasePublicationToNPMPackageRepository'
+      : 'cachePrebuiltNativeLibs';
     const tasks = prepareJdkImage
       ? ['prepareAndroidJdkImage']
-      : projects.map(
-          ({ projectName }) => `:${projectName}:publishReleasePublicationToNPMPackageRepository`
-        );
+      : projects.map(({ projectName }) => `:${projectName}:${projectTask}`);
     await spawnAsync(
       path.join(EXPO_DIR, 'apps/bare-expo/android/gradlew'),
       [
         '-p',
         hostRoot,
         ...tasks,
-        '--no-daemon',
-        '--no-build-cache',
+        '--daemon',
+        '--build-cache',
         '--no-configuration-cache',
         '--no-watch-fs',
         '--project-cache-dir',
@@ -162,7 +169,17 @@ async function runAndroidPrecompileAsync(packageRoot: string, prepareJdkImage: b
       { cwd: EXPO_DIR, stdio: 'inherit' }
     );
 
-    if (!manifest) return;
+    if (prepareJdkImage) return;
+
+    if (!manifest) {
+      const nativeLibsRoot = path.join(pkg.path, NATIVE_LIBS_DIRECTORY);
+      await fs.remove(nativeLibsRoot);
+      await fs.copy(
+        path.join(modulesRoot, moduleDirectoryName(pkg.packageName), NATIVE_LIBS_DIRECTORY),
+        nativeLibsRoot
+      );
+      return;
+    }
 
     await validateAndroidPublicationRepositoryAsync(repositoryRoot, manifest);
     await removeNondeterministicMavenMetadataAsync(repositoryRoot);

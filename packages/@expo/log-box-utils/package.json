@@ -30,7 +30,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "expo-build src",
+    "build": "expo-build cjs:src",
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
@@ -40,7 +40,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "npm-run-all2": "^8.0.4",
     "rimraf": "^6.1.2"
   }

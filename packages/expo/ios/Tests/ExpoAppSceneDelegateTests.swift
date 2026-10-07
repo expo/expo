@@ -347,6 +347,23 @@ struct ExpoAppSceneDelegateTests {
 
   @Test
   @MainActor
+  func `passes no root properties by default`() {
+    // The app-delegate life cycle started React Native with no initial properties, so adopting the
+    // scene life cycle must not start handing the root component properties it never had.
+    #expect(ExpoAppSceneDelegate().initialProperties == nil)
+  }
+
+  @Test
+  @MainActor
+  func `lets a subclass supply root properties`() {
+    // Restores what `RCTAppDelegate.initialProps` gave apps before React Native moved its startup
+    // into `scene(_:willConnectTo:)`.
+    let properties = PropertySupplyingSceneDelegate().initialProperties
+    #expect(properties?["myProperty"] as? Bool == true)
+  }
+
+  @Test
+  @MainActor
   func `forwards to the app delegate of the running application`() {
     let forwarder = ExpoAppSceneDelegate().forwarder
     #expect(forwarder.appDelegate() === UIApplication.shared.delegate as? ExpoAppDelegate)
@@ -419,6 +436,14 @@ private final class UserActivityRecordingSubscriber: NSObject, ExpoAppDelegateSu
     error: Error
   ) {
     failures.append(Failure(application: application, activityType: userActivityType, error: error))
+  }
+}
+
+/// Scene delegate shaped like an app that supplies its own root properties, the way apps did with
+/// `RCTAppDelegate.initialProps` under the app-delegate life cycle.
+private final class PropertySupplyingSceneDelegate: ExpoAppSceneDelegate {
+  override var initialProperties: [AnyHashable: Any]? {
+    return ["myProperty": true]
   }
 }
 

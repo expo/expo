@@ -34,9 +34,9 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/react": "~19.3.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
@@ -44,6 +44,6 @@
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts/universal"
+    "preset": "@expo/internal-scripts/universal"
   }
 }

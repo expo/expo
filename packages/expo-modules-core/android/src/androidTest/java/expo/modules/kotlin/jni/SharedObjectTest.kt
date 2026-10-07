@@ -99,6 +99,27 @@ class SharedObjectTest {
   }
 
   @Test
+  fun releases_frozen_object() = withExampleSharedClass {
+    // React Native deep-freezes view props in development, so a shared object passed as a prop is
+    // frozen by the time its owner releases it.
+    val sharedObjectId = evaluateScript(
+      "sharedObject = new $moduleRef.SharedObjectExampleClass()",
+      "Object.freeze(sharedObject)",
+      "sharedObject.release()",
+      "sharedObject.release()",
+      "sharedObject.$sharedObjectIdPropertyName"
+    ).getInt()
+    val containSharedObject = jsiInterop
+      .runtimeHolder
+      .get()
+      ?.sharedObjectRegistry
+      ?.pairs
+      ?.contains(SharedObjectId(sharedObjectId))
+
+    Truth.assertThat(containSharedObject).isFalse()
+  }
+
+  @Test
   fun has_functions_from_base_class() = withExampleSharedClass {
     val releaseFunction = evaluateScript(
       "sharedObject = new $moduleRef.SharedObjectExampleClass()",

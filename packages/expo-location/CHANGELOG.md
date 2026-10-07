@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Change the requestBackgroundPermissions and emitted errors to match the TypeScript API defined in PR https://github.com/expo/expo/pull/49849. ([#51067](https://github.com/expo/expo/pull/51067) by [@HubertBer](https://github.com/HubertBer))
+- Updated dependencies.
+  - @expo/image-utils@0.12.4
+
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/image-utils@0.12.3
+
 ## 58.0.10
 
 ### Patch Changes

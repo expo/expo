@@ -1,6 +1,6 @@
 {
   "name": "expo-template-default",
-  "version": "58.0.11",
+  "version": "58.0.15",
   "license": "0BSD",
   "repository": {
     "type": "git",
@@ -33,7 +33,7 @@
     "expo-web-browser": "workspace:~",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.3",
+    "react-native": "0.88.0-rc.4",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-reanimated": "4.7.0",
     "react-native-safe-area-context": "~5.9.1",

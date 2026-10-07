@@ -146,6 +146,28 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime)))
   }
 
+  /// Calls `body` with the property of the object with the given name, or `undefined` if there is no
+  /// such property, lent as a `JavaScriptUnownedValue` instead of wrapped in a new `JavaScriptValue`.
+  /// The value is valid only for the duration of the closure and must not be stored or escaped.
+  public func withUnownedProperty<R>(_ name: String, _ body: (borrowing JavaScriptUnownedValue) throws -> R) rethrows
+    -> R
+  {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let property = pointee.getProperty(jsiRuntime, name.toJSIPropNameID(in: jsiRuntime))
+    // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
+    return try withUnsafeBytes(of: property) { bytes in
+      guard let baseAddress = bytes.baseAddress else {
+        preconditionFailure(
+          "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
+        )
+      }
+      let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
+      return try body(JavaScriptUnownedValue(jsiRuntime, pointer))
+    }
+  }
+
   /// Returns the property of the object with the given prop name id,
   /// or `undefined` value if the name is not a property of the object.
   public func getProperty(_ propName: JavaScriptPropNameID) -> JavaScriptValue {
@@ -353,19 +375,50 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    try! runtime
-      .global()
-      .getPropertyAsObject("Object")
-      .getPropertyAsFunction("defineProperty")
-      .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+    do {
+      try definePropertyFunction(in: runtime).function
+        .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+    } catch {
+      FatalError.definePropertyFailed(name, error)
+    }
   }
 
   public func defineProperty(_ name: String, descriptor: consuming PropertyDescriptor = .init()) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let descriptorObject = descriptor.toObject(runtime)
-    defineProperty(name, descriptor: descriptorObject)
+    let defineProperty = definePropertyFunction(in: runtime)
+    let jsiRuntime = runtime.pointee
+    let hasValue = descriptor.value != nil
+    let value = descriptor.value?.toJSIValue(in: jsiRuntime) ?? facebook.jsi.Value.undefined()
+    var utf8Name = name
+    utf8Name.withUTF8 { nameUtf8 in
+      // A JS error can't propagate through Swift, so `capturingCppErrors` captures it and rethrows it
+      // here; `defineProperty` doesn't throw, so it stops execution with that error.
+      do {
+        try capturingCppErrors {
+          expo.defineProperty(
+            jsiRuntime,
+            defineProperty.function.pointee,
+            defineProperty.configurableKey.pointee,
+            defineProperty.enumerableKey.pointee,
+            defineProperty.writableKey.pointee,
+            defineProperty.valueKey.pointee,
+            pointee,
+            // An empty buffer may have no base address; any non-null pointer works with a zero length.
+            nameUtf8.baseAddress ?? UnsafePointer(bitPattern: 1)!,
+            nameUtf8.count,
+            value,
+            hasValue,
+            descriptor.writable,
+            descriptor.enumerable,
+            descriptor.configurable
+          )
+        }
+      } catch {
+        FatalError.definePropertyFailed(name, error)
+      }
+    }
   }
 
   public func defineProperty<T: JavaScriptRepresentable & ~Copyable>(
@@ -649,6 +702,43 @@ extension JavaScriptObject {
 
     public var description: String {
       return "Property '\(name)' is not an object"
+    }
+  }
+}
+
+// MARK: - Object.defineProperty
+
+/// Holds the runtime's `Object.defineProperty` and the property names of a descriptor, created once per
+/// runtime instead of on every `defineProperty` call.
+private final class DefinePropertyFunction {
+  let function: JavaScriptFunction
+  let configurableKey: JavaScriptPropNameID
+  let enumerableKey: JavaScriptPropNameID
+  let writableKey: JavaScriptPropNameID
+  let valueKey: JavaScriptPropNameID
+
+  init(_ function: consuming JavaScriptFunction, in runtime: JavaScriptRuntime) {
+    self.function = function
+    self.configurableKey = JavaScriptPropNameID(runtime, string: "configurable")
+    self.enumerableKey = JavaScriptPropNameID(runtime, string: "enumerable")
+    self.writableKey = JavaScriptPropNameID(runtime, string: "writable")
+    self.valueKey = JavaScriptPropNameID(runtime, string: "value")
+  }
+}
+
+private let definePropertyFunctionKey = JavaScriptRuntime.Cache.Key<DefinePropertyFunction>()
+
+/// Returns the runtime's `Object.defineProperty`, cached in the runtime. Property definitions run on the
+/// JavaScript thread like every other JSI call, which is where the runtime's cache is isolated.
+private func definePropertyFunction(in runtime: JavaScriptRuntime) -> DefinePropertyFunction {
+  return JavaScriptActor.assumeIsolated {
+    runtime.cached(definePropertyFunctionKey) {
+      do {
+        let function = try runtime.global().getPropertyAsObject("Object").getPropertyAsFunction("defineProperty")
+        return DefinePropertyFunction(function, in: runtime)
+      } catch {
+        FatalError.definePropertyUnavailable(error)
+      }
     }
   }
 }

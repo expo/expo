@@ -15,6 +15,11 @@ import CoreGraphics
 // MARK: - Bool
 
 extension Bool: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .bool
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Bool
@@ -40,6 +45,11 @@ extension Bool: JavaScriptCodable {
 // MARK: - String
 
 extension String: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .string
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -74,6 +84,11 @@ extension String: JavaScriptCodable {
 // undefined behavior — a native crash, not a catchable error.
 
 extension Double: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -100,6 +115,11 @@ extension Double: JavaScriptCodable {
 }
 
 extension Float: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Float
@@ -123,6 +143,11 @@ extension Float: JavaScriptCodable {
 }
 
 extension CGFloat: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -170,6 +195,11 @@ extension CGFloat: JavaScriptCodable {
 // back, and a JS caller may pass either form.
 
 extension Int: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int {
@@ -192,6 +222,11 @@ extension Int: JavaScriptCodable {
 }
 
 extension Int8: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int8
@@ -215,6 +250,11 @@ extension Int8: JavaScriptCodable {
 }
 
 extension Int16: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int16
@@ -238,6 +278,11 @@ extension Int16: JavaScriptCodable {
 }
 
 extension Int32: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int32
@@ -261,6 +306,11 @@ extension Int32: JavaScriptCodable {
 }
 
 extension Int64: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Int64
@@ -284,6 +334,11 @@ extension Int64: JavaScriptCodable {
 }
 
 extension UInt: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt
@@ -307,6 +362,11 @@ extension UInt: JavaScriptCodable {
 }
 
 extension UInt8: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> UInt8
@@ -330,6 +390,11 @@ extension UInt8: JavaScriptCodable {
 }
 
 extension UInt16: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -356,6 +421,11 @@ extension UInt16: JavaScriptCodable {
 }
 
 extension UInt32: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .number
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -382,6 +452,11 @@ extension UInt32: JavaScriptCodable {
 }
 
 extension UInt64: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return [.number, .bigint]
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -407,13 +482,134 @@ extension UInt64: JavaScriptCodable {
   }
 }
 
+// MARK: - Integer conversion entry points
+
+// The inlinable integer witnesses call these non-generic overloads rather than the generic
+// implementations below. A client can devirtualize a witness and inline it only when its body calls
+// non-generic functions; through a generic, non-inlinable call, it falls back to dynamic dispatch, and a
+// direct call runs the generic implementation unspecialized. Each overload runs a copy of the generic
+// implementation specialized inside the framework.
+
+@usableFromInline
+@JavaScriptActor
+func decodeInteger(_ number: Double, as type: Int8.Type) throws -> Int8 {
+  return try genericDecodeInteger(number, as: Int8.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeInteger(_ number: Double, as type: Int16.Type) throws -> Int16 {
+  return try genericDecodeInteger(number, as: Int16.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeInteger(_ number: Double, as type: Int32.Type) throws -> Int32 {
+  return try genericDecodeInteger(number, as: Int32.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeInteger(_ number: Double, as type: UInt8.Type) throws -> UInt8 {
+  return try genericDecodeInteger(number, as: UInt8.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeInteger(_ number: Double, as type: UInt16.Type) throws -> UInt16 {
+  return try genericDecodeInteger(number, as: UInt16.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeInteger(_ number: Double, as type: UInt32.Type) throws -> UInt32 {
+  return try genericDecodeInteger(number, as: UInt32.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: Int.Type) throws -> Int {
+  return try genericDecodeWideInteger(value, as: Int.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: Int.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> Int {
+  return try genericDecodeWideInteger(value, as: Int.self, runtime: runtime)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: Int64.Type) throws -> Int64 {
+  return try genericDecodeWideInteger(value, as: Int64.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: Int64.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> Int64 {
+  return try genericDecodeWideInteger(value, as: Int64.self, runtime: runtime)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: UInt.Type) throws -> UInt {
+  return try genericDecodeWideInteger(value, as: UInt.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: UInt.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> UInt {
+  return try genericDecodeWideInteger(value, as: UInt.self, runtime: runtime)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(_ value: borrowing JavaScriptValue, as type: UInt64.Type) throws -> UInt64 {
+  return try genericDecodeWideInteger(value, as: UInt64.self)
+}
+
+@usableFromInline
+@JavaScriptActor
+func decodeWideInteger(
+  _ value: borrowing JavaScriptUnownedValue,
+  as type: UInt64.Type,
+  runtime: borrowing JavaScriptRuntime
+) throws -> UInt64 {
+  return try genericDecodeWideInteger(value, as: UInt64.self, runtime: runtime)
+}
+
+@usableFromInline
+@JavaScriptActor
+func encodeSafeInteger(_ value: Int) throws -> JavaScriptValue {
+  return try genericEncodeSafeInteger(value)
+}
+
+@usableFromInline
+@JavaScriptActor
+func encodeSafeInteger(_ value: UInt) throws -> JavaScriptValue {
+  return try genericEncodeSafeInteger(value)
+}
+
+// MARK: - Generic integer conversions
+
 /// Rounds a JavaScript number to the nearest integer and narrows it to `T`, throwing instead of
 /// trapping when the value is non-finite or outside `T`'s representable range. `T(exactly:)` on the
 /// already-rounded value is nil only when out of range, sidestepping the lossy `Double(T.max)`
 /// boundary comparison for 64-bit widths.
-@usableFromInline
 @JavaScriptActor
-func decodeInteger<T: FixedWidthInteger>(_ number: Double, as type: T.Type) throws -> T {
+func genericDecodeInteger<T: FixedWidthInteger>(_ number: Double, as type: T.Type) throws -> T {
   guard number.isFinite, let result = T(exactly: number.rounded()) else {
     throw IntegerOutOfRangeException(value: number, type: "\(T.self)")
   }
@@ -424,47 +620,41 @@ func decodeInteger<T: FixedWidthInteger>(_ number: Double, as type: T.Type) thro
 /// case is checked first since it's the common one: a single `isNumber()` tag check, then the
 /// assert-only `getDouble()` reads the value without re-checking the tag. A `bigint` is read losslessly
 /// through its 64-bit accessor; anything else throws the same `TypeError` the `number` read would.
-@usableFromInline
 @JavaScriptActor
-func decodeWideInteger<T: FixedWidthInteger>(_ value: borrowing JavaScriptValue, as type: T.Type) throws -> T {
+func genericDecodeWideInteger<T: FixedWidthInteger>(_ value: borrowing JavaScriptValue, as type: T.Type) throws -> T {
   guard value.isNumber() else {
     guard value.isBigInt() else {
-      // Neither a number nor a bigint: `asDouble()` throws the canonical `TypeError`. Throwing it
-      // through the accessor (rather than constructing it here) keeps this inlinable helper from
-      // referencing `TypeError`'s internal memberwise initializer.
-      return try decodeInteger(value.asDouble(), as: T.self)
+      // Neither a number nor a bigint: `asDouble()` throws the canonical `TypeError`.
+      return try genericDecodeInteger(value.asDouble(), as: T.self)
     }
-    return try decodeBigInt(value.getBigInt(), as: T.self)
+    return try genericDecodeBigInt(value.getBigInt(), as: T.self)
   }
-  return try decodeInteger(value.getDouble(), as: T.self)
+  return try genericDecodeInteger(value.getDouble(), as: T.self)
 }
 
 /// `JavaScriptUnownedValue` overload of `decodeWideInteger`. The common `number` path stays zero-copy
 /// and pays a single tag check (see the owning overload); only a `bigint` materializes an owning value
 /// (the borrowed value exposes no BigInt accessor), which is acceptable on this rare branch.
-@usableFromInline
 @JavaScriptActor
-func decodeWideInteger<T: FixedWidthInteger>(
+func genericDecodeWideInteger<T: FixedWidthInteger>(
   _ value: borrowing JavaScriptUnownedValue,
   as type: T.Type,
   runtime: borrowing JavaScriptRuntime
 ) throws -> T {
   guard value.isNumber() else {
     guard value.isBigInt() else {
-      // See the owning overload: route the not-a-number throw through `asDouble()` rather than
-      // constructing `TypeError` here, which this inlinable helper can't reference.
-      return try decodeInteger(value.asDouble(), as: T.self)
+      // Neither a number nor a bigint: `asDouble()` throws the canonical `TypeError`.
+      return try genericDecodeInteger(value.asDouble(), as: T.self)
     }
-    return try decodeBigInt(value.copied(in: runtime).getBigInt(), as: T.self)
+    return try genericDecodeBigInt(value.copied(in: runtime).getBigInt(), as: T.self)
   }
-  return try decodeInteger(value.getDouble(), as: T.self)
+  return try genericDecodeInteger(value.getDouble(), as: T.self)
 }
 
 /// Narrows a `JavaScriptBigInt` to `T`, reading it through the signed or unsigned 64-bit accessor to
 /// match `T`'s signedness and throwing rather than truncating when it falls outside `T`'s range.
-@usableFromInline
 @JavaScriptActor
-func decodeBigInt<T: FixedWidthInteger>(_ bigInt: borrowing JavaScriptBigInt, as type: T.Type) throws -> T {
+func genericDecodeBigInt<T: FixedWidthInteger>(_ bigInt: borrowing JavaScriptBigInt, as type: T.Type) throws -> T {
   let wide: T? =
     if T.isSigned {
       bigInt.isInt64() ? T(exactly: bigInt.getInt64()) : nil
@@ -480,9 +670,8 @@ func decodeBigInt<T: FixedWidthInteger>(_ bigInt: borrowing JavaScriptBigInt, as
 /// Encodes a 64-bit-wide integer to a JS `number`, throwing when it falls outside JavaScript's
 /// safe-integer range where a `Double` could no longer represent it exactly. Used by `Int`/`UInt`,
 /// whose JS mapping stays a `number`; the explicitly-sized 64-bit types encode as a `bigint` instead.
-@usableFromInline
 @JavaScriptActor
-func encodeSafeInteger<T: FixedWidthInteger>(_ value: T) throws -> JavaScriptValue {
+func genericEncodeSafeInteger<T: FixedWidthInteger>(_ value: T) throws -> JavaScriptValue {
   // `Number.MAX_SAFE_INTEGER` (2^53 - 1): the largest magnitude where every integer up to it, and the
   // next one, is representable as a JS number. 2^53 itself is representable but unsafe (it collides with
   // 2^53 + 1), so the bound is exclusive above this. Used by `Int`/`UInt`, both 64-bit, so 2^53 fits.

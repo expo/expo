@@ -13,27 +13,38 @@ internal final class FileSystemPreviewItem: NSObject, QLPreviewItem {
   }
 }
 
+internal final class FileSystemPreviewController: QLPreviewController {
+  // Keep the data source and file access alive for the native viewer's lifetime.
+  var session: FileSystemPreviewSession?
+  var onPresentationFailure: (() -> Void)?
+
+  deinit {
+    onPresentationFailure?()
+  }
+}
+
 internal final class FileSystemPreviewSession: NSObject, QLPreviewControllerDataSource, QLPreviewControllerDelegate {
-  private let item: FileSystemPreviewItem
+  private let items: [FileSystemPreviewItem]
   // Retain security-scoped access while Quick Look is open.
-  private let scopedAccess: FileSystemScopedAccess
+  private let scopedAccesses: [FileSystemScopedAccess]
   private let onFinish: () -> Void
 
-  init(item: FileSystemPreviewItem, scopedAccess: FileSystemScopedAccess, onFinish: @escaping () -> Void) {
-    self.item = item
-    self.scopedAccess = scopedAccess
+  init(items: [FileSystemPreviewItem], scopedAccesses: [FileSystemScopedAccess], onFinish: @escaping () -> Void) {
+    self.items = items
+    self.scopedAccesses = scopedAccesses
     self.onFinish = onFinish
   }
 
   func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
-    return 1
+    return items.count
   }
 
   func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
-    return item
+    return items[index]
   }
 
   func previewControllerDidDismiss(_ controller: QLPreviewController) {
+    (controller as? FileSystemPreviewController)?.session = nil
     onFinish()
   }
 }

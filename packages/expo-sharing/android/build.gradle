@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.13'
+version = '58.0.15'
 
 android {
   namespace "expo.modules.sharing"
   defaultConfig {
     versionCode 16
-    versionName '58.0.13'
+    versionName '58.0.15'
   }
 }
 

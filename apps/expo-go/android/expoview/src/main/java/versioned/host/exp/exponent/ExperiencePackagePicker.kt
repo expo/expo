@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent
 
-import expo.modules.application.ApplicationModule
 import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
@@ -18,7 +17,6 @@ import expo.modules.constants.ConstantsService
 import expo.modules.contacts.ContactsModule
 import expo.modules.contacts.next.ContactsNextModule
 import expo.modules.core.interfaces.Package
-import expo.modules.crypto.CryptoModule
 import expo.modules.crypto.aes.AesCryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
@@ -29,7 +27,6 @@ import expo.modules.filesystem.legacy.FileSystemLegacyModule
 import expo.modules.font.FontLoaderModule
 import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
-import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderService
 import expo.modules.imagemanipulator.ImageManipulatorModule
@@ -74,7 +71,6 @@ import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
-import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
@@ -118,7 +114,6 @@ object ExperiencePackagePicker : ModulesProvider {
 
   override fun getModulesMap(): Map<Class<out Module>, String?> = mapOf(
     AudioModule::class.java to null,
-    ApplicationModule::class.java to null,
     // Sensors
     AccelerometerModule::class.java to null,
     AssetModule::class.java to null,
@@ -148,7 +143,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CameraViewModule::class.java to null,
     CellularModule::class.java to null,
     ClipboardModule::class.java to null,
-    CryptoModule::class.java to null,
     ConstantsModule::class.java to null,
     ContactsModule::class.java to null,
     ContactsNextModule::class.java to null,
@@ -166,7 +160,6 @@ object ExperiencePackagePicker : ModulesProvider {
     FontLoaderModule::class.java to null,
     PrintModule::class.java to null,
     GLModule::class.java to null,
-    HapticsModule::class.java to null,
     ImagePickerModule::class.java to null,
     ImageManipulatorModule::class.java to null,
     ExpoImageModule::class.java to null,
@@ -190,7 +183,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SpeechModule::class.java to null,
     SplashScreenModule::class.java to null,
     StoreReviewModule::class.java to null,
-    SQLiteModule::class.java to null,
     SystemUIModule::class.java to null,
     TaskManagerModule::class.java to null,
     TrackingTransparencyModule::class.java to null,

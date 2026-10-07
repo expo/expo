@@ -208,8 +208,10 @@ function resolveAppTarget(appRoot) {
 }
 
 /**
- * Podfile.properties.json (as precompiled_modules.rb#read_podfile_properties). Missing → {};
- * present but unusable → throw, since every gate would silently fall to its default.
+ * Podfile.properties.json. Missing → {}; present but unusable → throw, since every gate would
+ * silently fall to its default. This intentionally differs from
+ * precompiled_modules.rb#read_podfile_properties and the Podfile template, which both rescue an
+ * invalid file to {}.
  */
 function readPodfileProperties(propertiesPath) {
   if (typeof propertiesPath !== 'string' || propertiesPath.length === 0) return {};

@@ -3,6 +3,7 @@
 internal import ExpoModulesJSI_Cxx
 import Foundation
 internal import jsi
+import os
 
 /// A Swift wrapper around a JavaScript runtime. Provides access to a JavaScript execution environment, allowing you to evaluate
 /// JavaScript code, create and manipulate JavaScript objects, functions, and values, and bridge between Swift and JavaScript.
@@ -67,7 +68,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler()
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -80,7 +81,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler()
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = true
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -94,7 +95,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler()
+    self.scheduler = expo.RuntimeScheduler.create()
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -123,7 +124,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.runtimePointee = runtime
     self.pointee = expo.iruntime(runtime)
     self.handle = JavaScriptRuntimeHandle(self.pointee)
-    self.scheduler = expo.RuntimeScheduler(scheduler, fn)
+    self.scheduler = expo.RuntimeScheduler.create(scheduler, fn)
     self.ownsRuntime = false
     handle.attach(self)
     installLongLivedObjectsTeardown()
@@ -146,7 +147,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // when the last reference is gone. `deinit` is `nonisolated`, so it can touch the actor-isolated
     // registry directly given that exclusive access.
     propNameIdsRegistry.removeAll()
-    cachedDeferredPromiseFactory = nil
+    cache.clear()
     expo.destroyRuntime(runtimePointee)
   }
 
@@ -197,13 +198,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       propertyName: UnsafePointer<facebook.jsi.PropNameID>,
       resultPtr: UnsafeMutablePointer<facebook.jsi.Value>
     ) -> Bool {
-      nonisolated(unsafe) let resultPtr = resultPtr
+      let resultPtr = UncheckedSendable(resultPtr)
 
       return withGuaranteedContext(context) { (context: HostObjectContext, runtime) in
         let propertyName = String(jsiPropNameID: propertyName.pointee, in: runtime.pointee)
         return JavaScriptActor.assumeIsolated {
           return forwardingSwiftErrorsToJS(runtime: runtime) {
-            try context.get(propertyName).writeJSIValue(to: resultPtr)
+            var result = try context.get(propertyName)
+            JavaScriptValue.write(&result, to: resultPtr.value)
           }
         }
       }
@@ -508,7 +510,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     }
 
     var result: Result<R, any Error>!
-    nonisolated(unsafe) let callerRunLoop = CFRunLoopGetCurrent()
+    let waiter = ThreadWaiter()
 
     scheduler.scheduleTask(.ImmediatePriority) {
       do {
@@ -516,24 +518,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       } catch {
         result = .failure(error)
       }
-      // Wake the caller's run loop so its `CFRunLoopRunInMode(...)` returns immediately
-      // instead of waiting out the timeout backstop.
-      CFRunLoopPerformBlock(callerRunLoop, CFRunLoopMode.commonModes.rawValue) {}
-      CFRunLoopWakeUp(callerRunLoop)
+      waiter.wake()
     }
 
-    // Pump the caller's run loop until the task finishes. As opposed to DispatchSemaphore
-    // or DispatchGroup, this lets the run loop continue to process other events in the meantime,
-    // and the spin is also faster than a real kernel-mediated context switch when the JS work
-    // is short (the common case). The 100ms timeout is a backstop in case the wakeup is missed;
-    // the common path is woken by `CFRunLoopWakeUp` from the scheduled block above.
-    //
-    // `CFRunLoopRunInMode` is the C API rather than `RunLoop.current.run(mode:before:)` to
-    // avoid the per-iteration `+[NSRunLoop currentRunLoop]` autorelease push and `Date()`
-    // allocation that dominated the caller-thread profile otherwise.
-    while result == nil {
-      CFRunLoopRunInMode(.commonModes, 0.1, false)
-    }
+    waiter.wait(until: {
+      result != nil
+    })
     return try result.get()
   }
 
@@ -546,9 +536,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ) throws -> sending R {
     let result = NonisolatedUnsafeVar<Result<R, any Error>>()
     let runInline = isOnJavaScriptThread()
-    // Wrapped in `NonisolatedUnsafeVar` instead of `nonisolated(unsafe) let`
-    // to work around a Swift 6.2.3 compiler bug.
-    let callerRunLoop = NonisolatedUnsafeVar(CFRunLoopGetCurrent())
+    let waiter = ThreadWaiter()
 
     func body() {
       Task.immediate_polyfill(priority: .high) {
@@ -557,10 +545,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         } catch {
           result.value = .failure(error)
         }
-        // Wake the caller's run loop so its `CFRunLoopRunInMode(...)` returns immediately
-        // instead of waiting out the timeout backstop.
-        CFRunLoopPerformBlock(callerRunLoop.value, CFRunLoopMode.commonModes.rawValue) {}
-        CFRunLoopWakeUp(callerRunLoop.value)
+        waiter.wake()
       }
     }
     if runInline {
@@ -569,12 +554,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       scheduler.scheduleTask(.ImmediatePriority, body)
     }
 
-    // Pump the caller's run loop until the task finishes. See the sync overload above for
-    // the rationale on `CFRunLoopRunInMode` vs. `RunLoop.current.run(...)` and on pumping
-    // the run loop instead of blocking on a semaphore.
-    while result.value == nil {
-      CFRunLoopRunInMode(.commonModes, 0.1, false)
-    }
+    waiter.wait(until: {
+      result.value != nil
+    })
     return try result.value.get()
   }
 
@@ -692,8 +674,15 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @discardableResult
   @JavaScriptActor
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
-    let result = try eval(label: label, source)
-    return result.is("Promise") ? try await result.getPromise().await() : result
+    // `@JavaScriptActor` runs this on the caller's thread, so go through `execute` to evaluate on the
+    // JavaScript thread. It runs the closure in place when already there, or when the runtime has no
+    // scheduler and thus no other thread to go to.
+    // The result is boxed because `execute` needs a `Sendable` result and `JavaScriptValue` is not one.
+    let result = try await execute { () async throws -> NonisolatedUnsafeVar<JavaScriptValue> in
+      let value = try self.eval(label: label, source)
+      return NonisolatedUnsafeVar(value.is("Promise") ? try await value.getPromise().await() : value)
+    }
+    return result.value
   }
 
   // MARK: - Garbage collection
@@ -789,12 +778,14 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @JavaScriptActor
   internal var propNameIdsRegistry: [String: JavaScriptPropNameID] = [:]
 
-  // MARK: - Deferred promise factory
+  // MARK: - Cache
 
-  /// The JavaScript function ``JavaScriptPromise`` uses to create deferred promises, built on first
-  /// use and released with the runtime. See `JavaScriptPromise.init(_:)` for why it exists.
+  /// Values cached with ``cached(_:_:)``. Unchecked exclusivity skips the dynamic access checks on
+  /// every lookup: the cache is only used on the JavaScript thread, and `cached(_:_:)` never keeps an
+  /// access open while it calls out, so accesses can't overlap.
   @JavaScriptActor
-  internal var cachedDeferredPromiseFactory: JavaScriptValue?
+  @exclusivity(unchecked)
+  internal var cache = Cache()
 
   // MARK: - Long-lived objects
 
@@ -826,12 +817,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         // hop back to the JavaScript thread first.
         JavaScriptActor.assumeIsolated {
           longLivedObjects.clear()
-          // Also flush the cached `jsi::PropNameID`s and the deferred-promise factory: a non-owning
-          // wrapper can outlive its runtime (e.g. captured by a task abandoned on reload) and would
-          // otherwise destroy them against the freed runtime when it deallocates. `self` is weak so
-          // the teardown object doesn't retain the wrapper; the owning wrapper clears both in `deinit`.
+          // Also flush the cached `jsi::PropNameID`s and the cache: a non-owning wrapper can outlive its
+          // runtime (e.g. captured by a task abandoned on reload) and would otherwise destroy them against
+          // the freed runtime when it deallocates. `self` is weak so the teardown object doesn't retain the
+          // wrapper; the owning wrapper clears both in `deinit`.
           self?.propNameIdsRegistry.removeAll()
-          self?.cachedDeferredPromiseFactory = nil
+          self?.cache.clear()
         }
       }
       let object = createObject()
@@ -868,22 +859,23 @@ private func createFunctionClosure(
     // heap-allocated `JavaScriptRef` (Swift 6.2 rejects capturing/consuming a `~Copyable` value in the
     // escaping closure that `withoutActuallyEscaping` synthesizes), the closure constructs the buffer
     // locally from the raw pointer + count. Those are read-only call-scoped inputs that never outlive the
-    // synchronous call, so the `nonisolated(unsafe)` capture is sound. This removes a per-call class
+    // synchronous call, so capturing them through `UncheckedSendable` is sound. This removes a per-call class
     // allocation + retain/release + dealloc that profiling showed dominating the no-op `@JS` host-call
     // floor.
-    nonisolated(unsafe) let thisPtr = thisPtr
-    nonisolated(unsafe) let argumentsPtr = argumentsPtr
-    nonisolated(unsafe) let resultPtr = resultPtr
+    let thisPtr = UncheckedSendable(thisPtr)
+    let argumentsPtr = UncheckedSendable(argumentsPtr)
+    let resultPtr = UncheckedSendable(resultPtr)
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: HostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let this = UnsafeMutablePointer(mutating: thisPtr).move()
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
+          let this = UnsafeMutablePointer(mutating: thisPtr.value).move()
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
           let thisValue = JavaScriptValue(runtime, this)
-          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
+          var result = try context.call(thisValue, consume arguments)
+          JavaScriptValue.write(&result, to: resultPtr.value)
         }
       }
     }
@@ -915,18 +907,19 @@ private func createFunctionClosure(
     // handed in as a borrowed `JavaScriptUnownedValue` pointing straight at the C++-owned `this` slot:
     // it is not moved out and no owning `JavaScriptValue` is allocated, so the closure avoids the
     // per-call `weak`-runtime form/destroy and heap object that the owning `this` pays.
-    nonisolated(unsafe) let thisPtr = thisPtr
-    nonisolated(unsafe) let argumentsPtr = argumentsPtr
-    nonisolated(unsafe) let resultPtr = resultPtr
+    let thisPtr = UncheckedSendable(thisPtr)
+    let argumentsPtr = UncheckedSendable(argumentsPtr)
+    let resultPtr = UncheckedSendable(resultPtr)
 
     // See `withGuaranteedContext` for why neither the context nor the runtime is retained here, and
     // why the result is written to the caller's slot instead of being returned.
     return withGuaranteedContext(context) { (context: UnownedThisHostFunctionContext, runtime) in
       return JavaScriptActor.assumeIsolated {
         return forwardingSwiftErrorsToJS(runtime: runtime) {
-          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount)
-          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr)
-          try context.call(thisValue, consume arguments).writeJSIValue(to: resultPtr)
+          let arguments = JavaScriptValuesBuffer(runtime, start: argumentsPtr.value, count: argumentsCount)
+          let thisValue = JavaScriptUnownedValue(runtime.pointee, thisPtr.value)
+          var result = try context.call(thisValue, consume arguments)
+          JavaScriptValue.write(&result, to: resultPtr.value)
         }
       }
     }
@@ -950,6 +943,73 @@ extension JavaScriptRuntime {
 
     public var description: String {
       return "'\(identifier)' is not a valid JavaScript identifier"
+    }
+  }
+}
+
+/// Blocks the thread that creates it in ``wait(until:)`` until another thread calls ``wake()``.
+private final class ThreadWaiter: @unchecked Sendable {
+  private enum Sleep {
+    case runLoop(CFRunLoop, CFRunLoopSource, CFRunLoopMode)
+    case semaphore(DispatchSemaphore)
+  }
+
+  private static let spinNanoseconds: UInt64 = 20_000
+
+  private let isWoken = OSAllocatedUnfairLock(initialState: false)
+  private let sleep: Sleep
+
+  init() {
+    // A thread inside its run loop, such as the main thread or the JavaScript thread, keeps running
+    // it during the wait, in the same mode: the work the caller waits for may be delivered through
+    // it. A source signaled by `wake()` makes the run loop return when the task is done. Other
+    // threads, such as dispatch workers, have nothing to run, so they wait on a semaphore.
+    let runLoop: CFRunLoop = CFRunLoopGetCurrent()
+    guard let mode = CFRunLoopCopyCurrentMode(runLoop) else {
+      sleep = .semaphore(DispatchSemaphore(value: 0))
+      return
+    }
+    var context = CFRunLoopSourceContext()
+    context.perform = { _ in }
+    let source: CFRunLoopSource = CFRunLoopSourceCreate(nil, 0, &context)
+    CFRunLoopAddSource(runLoop, source, mode)
+    sleep = .runLoop(runLoop, source, mode)
+  }
+
+  func wake() {
+    isWoken.withLock { isWoken in
+      isWoken = true
+    }
+    switch sleep {
+    case .runLoop(let runLoop, let source, _):
+      CFRunLoopSourceSignal(source)
+      CFRunLoopWakeUp(runLoop)
+    case .semaphore(let semaphore):
+      // Makes a system call only when the caller already sleeps in `wait`.
+      semaphore.signal()
+    }
+  }
+
+  func wait(until isFinished: () -> Bool) {
+    let spinDeadline = clock_gettime_nsec_np(CLOCK_UPTIME_RAW) + Self.spinNanoseconds
+    while !isWoken.withLock({ $0 }) && clock_gettime_nsec_np(CLOCK_UPTIME_RAW) < spinDeadline {
+      // Spins on purpose: short tasks finish within a few microseconds, sooner than a sleeping
+      // thread wakes up. After the deadline, the thread sleeps below.
+    }
+    switch sleep {
+    case .runLoop(_, let source, let mode):
+      defer {
+        // Also removes the source from the run loop. A later `wake()` does nothing.
+        CFRunLoopSourceInvalidate(source)
+      }
+      // The timeout is a backstop for a missed wake-up.
+      while !isFinished() {
+        CFRunLoopRunInMode(mode, 0.1, true)
+      }
+    case .semaphore(let semaphore):
+      if !isFinished() {
+        semaphore.wait()
+      }
     }
   }
 }

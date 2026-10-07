@@ -43,15 +43,15 @@
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "@expo/package-manager": "workspace:*",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "@types/prompts": "^2.0.6",
     "@vercel/ncc": "^0.38.4",
     "agent-cli-detector": "0.1.6",
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "ci-info": "^3.3.0",
-    "expo-module-scripts": "workspace:*",
     "prompts": "^2.3.2",
     "sandbox-cli-detector": "^0.2.0"
   },

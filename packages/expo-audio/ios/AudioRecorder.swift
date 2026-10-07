@@ -19,6 +19,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var currentState: RecordingState = .idle
   private var recordingSession = AVAudioSession.sharedInstance()
   var allowsRecording = false
+  private var isPausedBySystem = false
   weak var owningRegistry: AudioComponentRegistry?
   private var mediaServicesDidReset = false
   private var currentOptions: RecordingOptions?
@@ -158,6 +159,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   func startRecording() throws -> [String: Any] {
+    isPausedBySystem = false
     guard allowsRecording else {
       throw RecordingDisabledException()
     }
@@ -189,6 +191,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
   // Public method to update state when calling native recording methods directly
   func updateStateForDirectRecording() {
+    isPausedBySystem = false
     if currentState != .paused {
       resetDurationTracking()
     }
@@ -208,6 +211,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   func pauseRecording() {
+    isPausedBySystem = false
     guard currentState == .recording else {
       return
     }
@@ -216,6 +220,19 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     totalRecordedDuration += currentSessionDuration
     startTimestamp = 0
     currentState = .paused
+  }
+
+  func pauseForSystem() {
+    if currentState == .recording {
+      pauseRecording()
+      isPausedBySystem = true
+    }
+  }
+
+  func resumeAfterSystemPause() throws {
+    if isPausedBySystem && currentState == .paused {
+      _ = try startRecording()
+    }
   }
 
   func getRecordingStatus() -> [String: Any] {

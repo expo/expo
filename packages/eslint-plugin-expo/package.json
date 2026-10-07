@@ -33,13 +33,13 @@
     "eslint": "^9.24.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/eslint": "^8.56.12",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "@typescript-eslint/rule-tester": "^8.59.0",
     "eslint-config-universe": "workspace:*",
     "eslint-plugin-eslint-plugin": "^6.2.0",
-    "expo-module-scripts": "workspace:*",
-    "jest": "^29.7.0"
+    "jest": "^30.0.0"
   },
   "peerDependencies": {
     "eslint": ">=8.10"

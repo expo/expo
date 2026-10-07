@@ -37,9 +37,9 @@
     "getenv": "^2.0.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.3",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   },
   "engines": {

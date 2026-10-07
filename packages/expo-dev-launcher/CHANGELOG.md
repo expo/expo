@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- [Android] Request the local network permission on Android 17 so the launcher can discover and load development servers. ([#50951](https://github.com/expo/expo/pull/50951) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.10
 
 ### Patch Changes

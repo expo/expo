@@ -44,6 +44,21 @@ extension View {
   }
 }
 
+enum ContentLayout {
+  static let maxContentWidth: CGFloat = 600
+
+  static func contentWidth(for available: CGFloat) -> CGFloat {
+    min(available, maxContentWidth)
+  }
+}
+
+extension View {
+  func maxContentWidth() -> some View {
+    frame(maxWidth: ContentLayout.maxContentWidth)
+      .frame(maxWidth: .infinity)
+  }
+}
+
 struct ErrorBanner: View {
   let message: String
 

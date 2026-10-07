@@ -1,6 +1,6 @@
 {
   "name": "@expo/inline-modules",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "The Expo inline modules",
   "keywords": [
     "expo",
@@ -37,8 +37,8 @@
     "@expo/config-plugins": "workspace:~"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^22.14.0"
   }
 }

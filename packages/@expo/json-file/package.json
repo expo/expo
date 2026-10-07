@@ -49,11 +49,11 @@
     "json5": "^2.2.3"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/babel__code-frame": "^7.27.0",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "@types/json5": "^2.2.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   }
 }

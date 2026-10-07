@@ -27,14 +27,19 @@ notify_slack() {
 }
 
 upload_crashlytics_symbols() {
+  local variant="MobileRelease"
+  if [[ "${EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID:-}" == "host.exp.exponent.quest" ]]; then
+    variant="QuestRelease"
+  fi
+
   pushd $ROOT_DIR/apps/eas-expo-go/android
-  ./gradlew :app:uploadCrashlyticsSymbolFile$1
+  ./gradlew ":app:uploadCrashlyticsSymbolFile${variant}"
   popd
 }
 
 if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "MobileRelease"
+    upload_crashlytics_symbols
   fi
 
   SLUG="release-client"
@@ -57,7 +62,7 @@ fi
 
 if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-    upload_crashlytics_symbols "MobileRelease"
+    upload_crashlytics_symbols
   fi
 
   SLUG="publish-client"
