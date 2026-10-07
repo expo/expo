@@ -2,20 +2,9 @@
 
 package expo.modules.sqlite
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
-internal data class Query(
-  @Field
-  val sql: String,
-  @Field
-  val args: List<Any?>
-) : Record
-
-internal enum class SQLAction(val value: String) : Enumerable {
+internal enum class SQLAction(val value: String) {
   INSERT("insert"),
   UPDATE("update"),
   DELETE("delete"),
@@ -32,3 +21,20 @@ internal enum class SQLAction(val value: String) : Enumerable {
     }
   }
 }
+
+@Record
+internal data class DatabaseChangeEvent(
+  val databaseName: String,
+  val databaseFilePath: String,
+  val tableName: String,
+  val rowId: Long,
+  val typeId: SQLAction
+)
+
+/** What running a statement reports: its effect, and the first row it produced, if any. */
+@Record(bufferSafe = false)
+internal data class RunResult(
+  val lastInsertRowId: Long,
+  val changes: Int,
+  val firstRowValues: List<Any?>
+)
