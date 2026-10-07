@@ -18,7 +18,11 @@ fi
 trap 'rm -f "$EASIGNORE"' EXIT
 
 {
-  printf '%s\n' '/.git' '/docs/' '/guides/' '/apps/*' '!/apps/router-tester'
+  printf '%s\n' '/docs/' '/guides/' '/apps/*' '!/apps/router-tester'
+  # Workflow build jobs run eas-cli again on the worker, which fails without a git repository.
+  if [ "${1:-}" != workflow:run ]; then
+    printf '%s\n' '/.git'
+  fi
   # Paths git ignores right now, anchored to the root with glob characters escaped.
   git -C "$ROOT_DIR" ls-files --others --ignored --exclude-standard --directory |
     sed -e 's/[][*?]/\\&/g' -e 's|^|/|'
