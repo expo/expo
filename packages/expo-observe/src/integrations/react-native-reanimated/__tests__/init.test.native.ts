@@ -260,6 +260,19 @@ describe('initReanimatedIntegration', () => {
     expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(1);
   });
 
+  it.each([
+    ['warnings', WARN, mockAppMetrics.logEvent],
+    ['errors', ERROR, mockAppMetrics.reportError],
+  ])('reports %s that differ only after 500 characters once', (_, level, report) => {
+    const onLog = initAndGetOnLog();
+    const prefix = 'x'.repeat(500);
+
+    onLog({ level, message: `${prefix} first` });
+    onLog({ level, message: `${prefix} second` });
+
+    expect(report).toHaveBeenCalledTimes(1);
+  });
+
   it('truncates the message attribute but keeps the full body', () => {
     const message = 'x'.repeat(600);
 
