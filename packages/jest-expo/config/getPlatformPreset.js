@@ -96,17 +96,12 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   preset.testEnvironmentOptions ??= {};
   if (!preset.testEnvironmentOptions.customExportConditions) {
     preset.testEnvironmentOptions.customExportConditions = isServer
-      ? ['node', 'require', 'expo-source']
+      ? ['node', 'require']
       : platform === 'web'
-        ? ['browser', 'expo-source']
-        : ['react-native', 'expo-source'];
-  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('expo-source')) {
-    preset.testEnvironmentOptions.customExportConditions.push('expo-source');
+        ? ['browser']
+        : ['react-native'];
   }
   preset.moduleNameMapper = {
-    // Source exports can contain TypeScript files that use explicit `.js`
-    // extensions for runtime ESM compatibility.
-    '^(\\.{1,2}/.*)\\.js$': '$1',
     // See the note in `../jest-preset.js`: mapped targets must be absolute paths on Jest 30.
     '^react-native/asset-registry$': expoPreset.moduleNameMapper['^react-native/asset-registry$'],
     '^react-native/unstable-internals-do-not-use$':
@@ -134,7 +129,6 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       'node',
       'require',
       'react-server',
-      'expo-source',
       'workerd',
     ];
   }
