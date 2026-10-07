@@ -14,7 +14,8 @@ final class PositionRequester {
     guard options.maxCachedAge >= 0 else {
       throw InvalidMaxCachedAgeException()
     }
-    if let cached = await cachedLocation(), isAcceptable(cached, options: options) {
+    let requestedAt = Date()
+    if let cached = await cachedLocation(), isRecentEnough(cached, asOf: requestedAt, options: options) {
       return cached
     }
     guard options.timeout > 0 else {
@@ -22,7 +23,7 @@ final class PositionRequester {
     }
     return try await withThrowingTaskGroup(of: CLLocation?.self) { group in
       group.addTask {
-        try await self.firstLocation(options: options)
+        try await self.firstLocation(options: options, requestedAt: requestedAt)
       }
       if options.timeout != .infinity {
         group.addTask {
@@ -39,17 +40,16 @@ final class PositionRequester {
     }
   }
 
-  private func firstLocation(options: GetPositionOptions) async throws -> CLLocation? {
+  private func firstLocation(options: GetPositionOptions, requestedAt: Date) async throws -> CLLocation? {
     for try await location in liveUpdates(options.profile) {
-      if let location {
+      if let location, isRecentEnough(location, asOf: requestedAt, options: options) {
         return location
       }
     }
     return nil
   }
 
-  private func isAcceptable(_ location: CLLocation, options: GetPositionOptions) -> Bool {
-    let age = -location.timestamp.timeIntervalSinceNow
-    return age <= options.maxCachedAge
+  private func isRecentEnough(_ location: CLLocation, asOf reference: Date, options: GetPositionOptions) -> Bool {
+    reference.timeIntervalSince(location.timestamp) <= options.maxCachedAge
   }
 }
