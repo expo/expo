@@ -19792,7 +19792,7 @@ snapshots:
       eslint: 9.39.4(jiti@2.7.0)
       json-stable-stringify-without-jsonify: 1.0.1
       lodash.merge: 4.6.2
-      semver: 7.8.5
+      semver: 7.7.4
     transitivePeerDependencies:
       - typescript
 
@@ -19825,7 +19825,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 8.59.1
       debug: 4.4.3
       minimatch: 10.2.5
-      semver: 7.8.5
+      semver: 7.7.4
       tinyglobby: 0.2.15
       ts-api-utils: 2.5.0(typescript@6.0.3)
       typescript: 6.0.3
@@ -21220,7 +21220,7 @@ snapshots:
   eslint-compat-utils@0.5.1(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
       eslint: 9.39.4(jiti@2.7.0)
-      semver: 7.8.5
+      semver: 7.7.4
 
   eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.7.0)):
     dependencies:
@@ -21316,7 +21316,7 @@ snapshots:
       globals: 15.15.0
       globrex: 0.1.2
       ignore: 5.3.2
-      semver: 7.8.5
+      semver: 7.7.4
       ts-declaration-location: 1.0.7(typescript@6.0.3)
     transitivePeerDependencies:
       - typescript
@@ -22333,7 +22333,7 @@ snapshots:
 
   is-bun-module@2.0.0:
     dependencies:
-      semver: 7.8.5
+      semver: 7.7.4
 
   is-callable@1.2.7: {}
 
@@ -23726,7 +23726,7 @@ snapshots:
     dependencies:
       hosted-git-info: 7.0.2
       proc-log: 4.2.0
-      semver: 7.8.5
+      semver: 7.7.4
       validate-npm-package-name: 5.0.1
 
   npm-packlist@5.1.3:
@@ -24361,7 +24361,7 @@ snapshots:
       react-native: 0.88.0-rc.4(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
       react-native-is-edge-to-edge: 1.3.1(react-native@0.88.0-rc.4(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-worklets: 0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.88.0-rc.4(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      semver: 7.8.5
+      semver: 7.7.4
 
   react-native-safe-area-context@5.9.1(react-native@0.88.0-rc.4(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
     dependencies:
@@ -24487,7 +24487,7 @@ snapshots:
       convert-source-map: 2.0.0
       react: 19.3.0
       react-native: 0.88.0-rc.4(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
-      semver: 7.8.5
+      semver: 7.7.4
       whatwg-fetch: 3.6.20
 
   react-native@0.88.0-rc.4(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0):
@@ -24981,7 +24981,7 @@ snapshots:
     dependencies:
       color: 4.2.3
       detect-libc: 2.1.2
-      semver: 7.8.5
+      semver: 7.7.4
     optionalDependencies:
       '@img/sharp-darwin-arm64': 0.34.2
       '@img/sharp-darwin-x64': 0.34.2
