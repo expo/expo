@@ -1,3 +1,4 @@
+import { useTheme, type ThemeType } from 'ThemeProvider';
 import {
   createSessionAsync,
   LanguageModelError,
@@ -5,15 +6,13 @@ import {
   type LanguageModelSession,
 } from 'expo-ai';
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import MonoText from '../../components/MonoText';
-import Colors from '../../constants/Colors';
 
 export const SOURCE_TEXT =
   'Our checkout page started timing out yesterday afternoon. Customers watch a spinner for about thirty seconds and then get an error. It only happens on phones, and only for carts with more than five items.';
-
-export const SESSION_INSTRUCTIONS = 'You are terse. Answer in one short sentence.';
 
 export type Action =
   | 'availability'
@@ -28,9 +27,28 @@ export type Action =
   | 'stream'
   | 'stream-session';
 
+export const ACTION_TITLES: Record<Action, string> = {
+  availability: 'getAvailabilityAsync',
+  prepare: 'prepareAsync({ allowDownload: true })',
+  'prepare-offline': 'prepareAsync({ allowDownload: false })',
+  generate: 'generateAsync',
+  summarize: 'summarizeAsync',
+  categorize: 'categorizeAsync',
+  structured: 'generateAsync({ schema })',
+  session: 'createSessionAsync',
+  turns: 'session.generateAsync',
+  stream: 'generateAsync({ onUpdate })',
+  'stream-session': 'session.generateStream',
+};
+
 export type ErrorReport = { code: string | null; message: string };
 
-type RunAction = (action: Action, task: () => Promise<string>) => Promise<void>;
+/** What a call returned. `mono` renders the body as code instead of prose. */
+export type ResultContent = { body: string; mono?: boolean; meta?: string };
+
+export type Outcome = { title: string } & ({ content: ResultContent } | { error: ErrorReport });
+
+export type StatusTone = keyof ThemeType['icon'];
 
 export const formatNullable = (value: string | number | null) =>
   value === null ? 'null' : String(value);
@@ -41,13 +59,24 @@ export function describeGeneration({
   model,
   format,
   usage,
-}: GenerationResult<unknown>): string {
-  return [
-    typeof value === 'string' ? value : JSON.stringify(value, null, 2),
-    '',
+}: GenerationResult<unknown>): ResultContent {
+  const meta = [
     `provider: ${provider} · model: ${formatNullable(model)} · format: ${format}`,
     `inputTokens: ${formatNullable(usage.inputTokens)} · outputTokens: ${formatNullable(usage.outputTokens)}`,
   ].join('\n');
+  return typeof value === 'string'
+    ? { body: value, meta }
+    : { body: JSON.stringify(value, null, 2), mono: true, meta };
+}
+
+export function describeSession({ capabilities }: LanguageModelSession): ResultContent {
+  return {
+    body: 'Session created.',
+    meta: [
+      `provider: ${capabilities.provider} · model: ${formatNullable(capabilities.model)}`,
+      `contextTokens: ${formatNullable(capabilities.contextTokens)}`,
+    ].join('\n'),
+  };
 }
 
 function toErrorReport(cause: unknown): ErrorReport {
@@ -57,105 +86,192 @@ function toErrorReport(cause: unknown): ErrorReport {
   return { code: null, message: cause instanceof Error ? cause.message : String(cause) };
 }
 
-export function useIsMounted() {
-  const isMounted = useRef(true);
+/** Runs one demo call at a time and owns the outcome shown in the result panel of a screen. */
+export function useAIAction() {
+  const [outcome, setOutcome] = useState<Outcome | null>(null);
+  const [pending, setPending] = useState<Action | null>(null);
+  const isMounted = useRef(false);
+
   useEffect(() => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
     };
   }, []);
-  return isMounted;
-}
 
-/** Runs one demo call at a time and owns the result and error panels of a screen. */
-export function useAIAction() {
-  const [result, setResult] = useState<string | null>(null);
-  const [error, setError] = useState<ErrorReport | null>(null);
-  const [pending, setPending] = useState<Action | null>(null);
-
-  const run: RunAction = async (action, task) => {
+  const run = async (action: Action, task: () => Promise<ResultContent>) => {
+    const title = ACTION_TITLES[action];
     setPending(action);
-    setError(null);
-    setResult(null);
     try {
-      setResult(await task());
+      const content = await task();
+      if (isMounted.current) setOutcome({ title, content });
     } catch (cause) {
-      setError(toErrorReport(cause));
-    } finally {
-      setPending(null);
+      if (isMounted.current) setOutcome({ title, error: toErrorReport(cause) });
     }
+    if (isMounted.current) setPending(null);
   };
 
-  const showResult = (text: string) => {
-    setError(null);
-    setResult(text);
-  };
+  const showResult = (title: string, body: string) => setOutcome({ title, content: { body } });
 
   const buttonProps = (action: Action, blocked = false) => ({
+    ...buttonLayout,
     loading: pending === action,
     disabled: blocked || (pending !== null && pending !== action),
-    style: styles.button,
   });
 
-  return { result, error, pending, run, showResult, buttonProps };
+  return { outcome, pending, run, showResult, buttonProps };
 }
 
-/** Opens a session that lives as long as the screen that asked for it. */
-export function useModelSession(run: RunAction) {
+/** Holds one session and disposes it when it is replaced, disposed, or the screen unmounts. */
+export function useSession(instructions?: string) {
   const [session, setSession] = useState<LanguageModelSession | null>(null);
-  const isMounted = useIsMounted();
+  // A ref, not the state: the state may not commit before an unmount, which would leak the session.
+  const latest = useRef<LanguageModelSession | null>(null);
+  const isMounted = useRef(false);
 
-  // Replacing the session, or leaving the screen, has to release the native session it holds.
-  useEffect(() => () => session?.dispose(), [session]);
+  const replace = (next: LanguageModelSession | null) => {
+    latest.current?.dispose();
+    latest.current = next;
+  };
 
-  const createSession = () =>
-    run('session', async () => {
-      const opened = await createSessionAsync({ instructions: SESSION_INSTRUCTIONS });
-      // A session that arrives after unmount never reaches the cleanup above, because React
-      // discards the state update that the cleanup reads.
-      if (!isMounted.current) {
-        opened.dispose();
-        return 'Session disposed; the screen was gone before it opened.';
-      }
-      setSession(opened);
-      const { provider, model, contextTokens } = opened.capabilities;
-      return [
-        'Session created.',
-        `provider: ${provider} · model: ${formatNullable(model)}`,
-        `contextTokens: ${formatNullable(contextTokens)}`,
-      ].join('\n');
-    });
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+      replace(null);
+    };
+  }, []);
 
-  return { session, setSession, createSession };
+  const create = async () => {
+    const created = await createSessionAsync({ instructions });
+    if (isMounted.current) {
+      replace(created);
+      setSession(created);
+    } else {
+      created.dispose();
+    }
+    return created;
+  };
+
+  const dispose = () => {
+    replace(null);
+    setSession(null);
+  };
+
+  return { session, create, dispose };
 }
 
+/**
+ * Always mounted, so the screen does not jump; a running call dims the previous outcome.
+ * While `pending`, the panel never shrinks, so a shorter new outcome cannot move the scroll position.
+ */
 export function AIResultPanel({
-  result,
-  error,
+  outcome,
+  dimmed,
+  pending = dimmed,
 }: {
-  result: string | null;
-  error: ErrorReport | null;
+  outcome: Outcome | null;
+  dimmed: boolean;
+  pending?: boolean;
 }) {
-  return (
-    <>
-      {result && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultLabel}>Result:</Text>
-          <MonoText containerStyle={styles.resultText}>{result}</MonoText>
-        </View>
-      )}
+  const { theme } = useTheme();
+  const [height, setHeight] = useState(0);
+  const failed = outcome !== null && 'error' in outcome;
 
-      {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorLabel}>
-            {error.code === null ? 'Error:' : 'LanguageModelError:'}
-          </Text>
-          {error.code !== null && <Text style={styles.errorCode}>code: {error.code}</Text>}
-          <Text style={styles.errorText}>{error.message}</Text>
-        </View>
+  return (
+    <View
+      onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
+      style={[
+        styles.panel,
+        failed
+          ? { backgroundColor: theme.background.danger, borderColor: theme.border.danger }
+          : { backgroundColor: theme.background.subtle, borderColor: theme.border.default },
+        pending && { minHeight: height },
+        dimmed && styles.dimmed,
+      ]}>
+      {outcome === null ? (
+        <BodyText color="tertiary">Press a button to run.</BodyText>
+      ) : (
+        <>
+          <BodyText style={styles.panelTitle}>{outcome.title}</BodyText>
+          {'error' in outcome ? (
+            <>
+              <BodyText color="danger" style={styles.errorLabel}>
+                {outcome.error.code === null
+                  ? 'Error'
+                  : `LanguageModelError: ${outcome.error.code}`}
+              </BodyText>
+              <BodyText color="danger" style={styles.prose}>
+                {outcome.error.message}
+              </BodyText>
+            </>
+          ) : (
+            <>
+              {outcome.content.mono ? (
+                <MonoText
+                  containerStyle={styles.bareMono}
+                  textStyle={{ ...styles.monoText, color: theme.text.default }}>
+                  {outcome.content.body}
+                </MonoText>
+              ) : (
+                <BodyText style={styles.prose}>{outcome.content.body}</BodyText>
+              )}
+              {outcome.content.meta && (
+                <BodyText color="secondary" style={styles.meta}>
+                  {outcome.content.meta}
+                </BodyText>
+              )}
+            </>
+          )}
+        </>
       )}
-    </>
+    </View>
+  );
+}
+
+/** A literal value that a call receives, such as a prompt or a schema. */
+export function InputBlock({ label, children }: { label: string; children: string }) {
+  const { theme } = useTheme();
+  return (
+    <View style={styles.inputBlock}>
+      <BodyText color="secondary" style={styles.caption}>
+        {label}
+      </BodyText>
+      <MonoText
+        containerStyle={{
+          ...styles.boxedMono,
+          backgroundColor: theme.background.subtle,
+          borderColor: theme.border.default,
+        }}
+        textStyle={{ ...styles.monoText, color: theme.text.default }}>
+        {children}
+      </MonoText>
+    </View>
+  );
+}
+
+export function StatusRow({ tone, label }: { tone: StatusTone; label: string }) {
+  const { theme } = useTheme();
+  return (
+    <View style={styles.statusRow}>
+      <View style={[styles.statusDot, { backgroundColor: theme.icon[tone] }]} />
+      <BodyText>{label}</BodyText>
+    </View>
+  );
+}
+
+export function ThemedTextInput({ style, ...props }: TextInputProps) {
+  const { theme } = useTheme();
+  return (
+    <TextInput
+      placeholderTextColor={theme.text.quaternary}
+      {...props}
+      style={[
+        styles.input,
+        { color: theme.text.default, borderColor: theme.border.default },
+        style,
+      ]}
+    />
   );
 }
 
@@ -172,56 +288,81 @@ export const styles = StyleSheet.create({
     lineHeight: 20,
   },
   button: {
-    marginBottom: 20,
+    marginBottom: 12,
   },
-  textInput: {
-    marginBottom: 20,
+  buttonFill: {
+    alignSelf: 'stretch',
+    minHeight: 36,
+  },
+  input: {
+    marginBottom: 12,
     padding: 10,
-    minHeight: 96,
-    borderColor: Colors.border,
     borderWidth: 1,
     borderRadius: 3,
   },
-  resultContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
+  promptInput: {
+    minHeight: 96,
+    textAlignVertical: 'top',
   },
-  resultLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  panel: {
+    marginTop: 8,
+    marginBottom: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  dimmed: {
+    opacity: 0.4,
+  },
+  panelTitle: {
+    fontWeight: '600',
     marginBottom: 8,
-    color: Colors.tintColor,
   },
-  resultText: {
-    fontSize: 12,
-    borderWidth: 0,
-  },
-  errorContainer: {
-    backgroundColor: '#ffe8e8',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ff4444',
+  prose: {
+    fontSize: 14,
+    lineHeight: 20,
   },
   errorLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#cc0000',
-  },
-  errorCode: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginBottom: 4,
-    color: '#cc0000',
   },
-  errorText: {
-    fontSize: 14,
-    color: '#cc0000',
+  meta: {
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 8,
+  },
+  monoText: {
+    fontSize: 12,
+  },
+  bareMono: {
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    padding: 0,
+    marginVertical: 0,
+  },
+  boxedMono: {
+    marginVertical: 0,
+    padding: 8,
+    borderRadius: 3,
+  },
+  inputBlock: {
+    marginBottom: 12,
+  },
+  caption: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 8,
   },
 });
+
+export const buttonLayout = { style: styles.button, buttonStyle: styles.buttonFill };

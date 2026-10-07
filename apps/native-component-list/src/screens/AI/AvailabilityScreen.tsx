@@ -5,15 +5,23 @@ import {
   type ModelRequirements,
 } from 'expo-ai';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
-import MonoText from '../../components/MonoText';
 import TitledSwitch from '../../components/TitledSwitch';
-import Colors from '../../constants/Colors';
-import { AIResultPanel, formatNullable, styles, useAIAction } from './shared';
+import {
+  AIResultPanel,
+  formatNullable,
+  InputBlock,
+  StatusRow,
+  styles,
+  ThemedTextInput,
+  useAIAction,
+  type ResultContent,
+  type StatusTone,
+} from './shared';
 
 type RequiredFeature = NonNullable<ModelRequirements['requires']>[number];
 
@@ -24,22 +32,13 @@ const REQUIRED_FEATURES = [
   'imageTools',
 ] as const satisfies readonly RequiredFeature[];
 
-const NO_FEATURES: Record<RequiredFeature, boolean> = {
-  constrainedOutput: false,
-  runtimeToolDeclarations: false,
-  images: false,
-  imageTools: false,
+const STATUS_TONES: Record<ModelAvailability['status'], StatusTone> = {
+  available: 'success',
+  downloadable: 'warning',
+  downloading: 'warning',
+  'not-ready': 'warning',
+  unavailable: 'danger',
 };
-
-type RequirementControls = {
-  provider: boolean;
-  features: Record<RequiredFeature, boolean>;
-  inputLanguages: string;
-  outputLanguage: string;
-};
-
-/** Tracks enough to tell "onProgress never ran" apart from "onProgress reported null". */
-type ProgressReport = { calls: number; last: { value: number | null; at: number } | null };
 
 function describeAvailability(availability: ModelAvailability): string {
   switch (availability.status) {
@@ -64,62 +63,54 @@ function describeAvailability(availability: ModelAvailability): string {
   }
 }
 
-/** Every unset control is omitted, so the echoed object is what the two calls receive. */
-function buildRequirements({
-  provider,
-  features,
-  inputLanguages,
-  outputLanguage,
-}: RequirementControls): ModelRequirements {
-  const requires = REQUIRED_FEATURES.filter((feature) => features[feature]);
-  // A blank language is rejected with ERR_OPTIONS_INVALID, so a trailing comma must not survive.
+/** Leaves blank controls out, because a blank language fails with ERR_OPTIONS_INVALID. */
+function buildRequirements(
+  requires: RequiredFeature[],
+  inputLanguages: string,
+  outputLanguage: string
+): ModelRequirements {
   const languages = inputLanguages
     .split(',')
     .map((language) => language.trim())
-    .filter((language) => language.length > 0);
+    .filter(Boolean);
   const output = outputLanguage.trim();
   return {
-    ...(provider ? { provider: 'system' as const } : {}),
-    ...(languages.length > 0 ? { inputLanguages: languages } : {}),
-    ...(output.length > 0 ? { outputLanguage: output } : {}),
-    // An empty requires list behaves like no list at all, so omitting it is the honest echo.
     ...(requires.length > 0 ? { requires } : {}),
+    ...(languages.length > 0 ? { inputLanguages: languages } : {}),
+    ...(output ? { outputLanguage: output } : {}),
   };
 }
 
-function describeRequirements(requirements: ModelRequirements): string {
-  return JSON.stringify(requirements, null, 2);
-}
-
-function describeProgress({ calls, last }: ProgressReport): string {
-  if (!last) {
-    return 'onProgress calls: 0\nThe callback never ran during this attempt.';
-  }
-  return [
-    `onProgress calls: ${calls}`,
-    `last raw value: ${formatNullable(last.value)}`,
-    last.value === null
-      ? 'The provider reported no percentage for that call.'
-      : `That is ${Math.round(last.value * 100)}% of the download.`,
-    `last call: #${calls} at ${new Date(last.at).toISOString().slice(11, 23)} UTC`,
-  ].join('\n');
+function describeDownload(progress: number | null): string {
+  return progress === null
+    ? 'Download: progress unknown'
+    : `Download: ${Math.round(progress * 100)}%`;
 }
 
 export default function AvailabilityScreen() {
-  const { result, error, run, buttonProps } = useAIAction();
-  const [progress, setProgress] = useState<ProgressReport | null>(null);
-  const [provider, setProvider] = useState(false);
-  const [features, setFeatures] = useState(NO_FEATURES);
+  const { outcome, pending, run, buttonProps } = useAIAction();
+  const [requires, setRequires] = useState<RequiredFeature[]>([]);
   const [inputLanguages, setInputLanguages] = useState('');
   const [outputLanguage, setOutputLanguage] = useState('');
+  const [availability, setAvailability] = useState<ModelAvailability | null>(null);
+  const [download, setDownload] = useState<string | null>(null);
 
-  const requirements = buildRequirements({ provider, features, inputLanguages, outputLanguage });
+  const requirements = buildRequirements(requires, inputLanguages, outputLanguage);
 
-  const setFeature = (feature: RequiredFeature, value: boolean) =>
-    setFeatures((current) => ({ ...current, [feature]: value }));
+  const setRequired = (feature: RequiredFeature, required: boolean) =>
+    setRequires((current) =>
+      required ? [...current, feature] : current.filter((item) => item !== feature)
+    );
 
-  const checkAvailability = () =>
-    run('availability', async () => describeAvailability(await getAvailabilityAsync(requirements)));
+  const report = (latest: ModelAvailability): ResultContent => {
+    setAvailability(latest);
+    return { body: describeAvailability(latest), mono: true };
+  };
+
+  const checkAvailability = () => {
+    setDownload(null);
+    return run('availability', async () => report(await getAvailabilityAsync(requirements)));
+  };
 
   useEffect(() => {
     checkAvailability();
@@ -127,108 +118,60 @@ export default function AvailabilityScreen() {
 
   const prepare = (allowDownload: boolean) =>
     run(allowDownload ? 'prepare' : 'prepare-offline', async () => {
-      setProgress({ calls: 0, last: null });
-      const availability = await prepareAsync({
+      setDownload('Download: no progress reported');
+      const prepared = await prepareAsync({
         ...requirements,
         allowDownload,
-        onProgress: (value) =>
-          setProgress((previous) => ({
-            calls: (previous?.calls ?? 0) + 1,
-            last: { value, at: Date.now() },
-          })),
+        onProgress: (progress) => setDownload(describeDownload(progress)),
       });
-      return describeAvailability(availability);
+      return report(prepared);
     });
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <AIResultPanel result={result} error={error} />
-
-      <BodyText color="secondary" style={styles.description}>
-        expo-ai runs a system language model on the device: Apple Foundation Models on iOS, ML Kit's
-        Gemini Nano on Android, and the browser's Prompt API on web. Every step in this demo is its
-        own button, so a failure points at a single call.
-      </BodyText>
-
       <HeadingText style={localStyles.heading}>Requirements</HeadingText>
 
       <BodyText color="secondary" style={styles.description}>
-        The controls below build one ModelRequirements object, which is checked during the
-        availability check and during preparation. It reaches those two calls only, so the three
-        buttons under Availability and Preparation read it and every other screen in this demo runs
-        without requirements.
-      </BodyText>
-
-      <BodyText color="secondary" style={styles.description}>
-        Each switch adds one capability to the requires list. A capability the provider does not
-        report as "supported" makes availability come back "unavailable" with reason
-        "unsupported-feature". A provider that already reports "unavailable" keeps its own reason,
-        so this one appears only when the provider has not already refused.
+        These controls build the requirements object that the calls below receive.
       </BodyText>
 
       {REQUIRED_FEATURES.map((feature) => (
         <TitledSwitch
           key={feature}
           title={feature}
-          value={features[feature]}
-          setValue={(value) => setFeature(feature, value)}
+          value={requires.includes(feature)}
+          setValue={(required) => setRequired(feature, required)}
         />
       ))}
 
-      <BodyText color="secondary" style={styles.description}>
-        provider has exactly one legal value, "system". The library validates the key and nothing
-        more, because there is no second provider to choose between, so the switch below changes the
-        object without changing any answer.
-      </BodyText>
-
-      <TitledSwitch title="provider: system" value={provider} setValue={setProvider} />
-
-      <BodyText color="secondary" style={styles.description}>
-        Input languages are comma separated, for example: en-GB, ja. Naming any input or output
-        language on Android returns "unavailable" with reason "language-support-unknown", because ML
-        Kit's Prompt API has no public supported-locale query. A device that cannot run the backend
-        at all answers first with its own reason instead, such as "unsupported-os-version" below
-        Android 8.0.
-      </BodyText>
-
-      <TextInput
-        style={localStyles.languageInput}
-        placeholder="inputLanguages, comma separated"
-        placeholderTextColor={Colors.secondaryText}
+      <ThemedTextInput
+        placeholder="inputLanguages, comma separated (en-GB, ja)"
         autoCapitalize="none"
         autoCorrect={false}
         value={inputLanguages}
         onChangeText={setInputLanguages}
       />
 
-      <TextInput
-        style={localStyles.languageInput}
+      <ThemedTextInput
         placeholder="outputLanguage"
-        placeholderTextColor={Colors.secondaryText}
         autoCapitalize="none"
         autoCorrect={false}
         value={outputLanguage}
         onChangeText={setOutputLanguage}
       />
 
-      <BodyText color="secondary" style={styles.description}>
-        The report below is the object those two calls receive, printed exactly as it is sent. A
-        control you leave unset is left out of it rather than sent empty, so an empty object means
-        both calls run on the provider's own defaults.
-      </BodyText>
-
-      <View style={styles.resultContainer}>
-        <Text style={styles.resultLabel}>Requirements:</Text>
-        <MonoText containerStyle={styles.resultText}>{describeRequirements(requirements)}</MonoText>
-      </View>
+      <InputBlock label="requirements">{JSON.stringify(requirements, null, 2)}</InputBlock>
 
       <HeadingText style={localStyles.heading}>Availability</HeadingText>
 
       <BodyText color="secondary" style={styles.description}>
-        Reports whether the requested model is ready, and never starts a download. Unsupported
-        hardware, Apple Intelligence turned off, a browser without the Prompt API, and a missing
-        native module all report status "unavailable" with a reason instead of failing.
+        Reports whether the model is ready, and never starts a download.
       </BodyText>
+
+      <StatusRow
+        tone={availability ? STATUS_TONES[availability.status] : 'tertiary'}
+        label={availability?.status ?? 'not checked'}
+      />
 
       <Button
         {...buttonProps('availability')}
@@ -239,9 +182,7 @@ export default function AvailabilityScreen() {
       <HeadingText style={localStyles.heading}>Preparation</HeadingText>
 
       <BodyText color="secondary" style={styles.description}>
-        Preparation is the only step that downloads the model, and the download is large. Android
-        needs allowDownload: true and the app in the foreground. Apple manages its model in system
-        Settings, so iOS can neither start the download here nor report its progress.
+        Downloads the model if allowed; iOS manages its model in Settings instead.
       </BodyText>
 
       <Button
@@ -249,30 +190,15 @@ export default function AvailabilityScreen() {
         onPress={() => prepare(true)}
         title="Prepare and allow download"
       />
-
-      <BodyText color="secondary" style={styles.description}>
-        Preparing without a download returns the current availability right away. That early return
-        is one of the reasons onProgress can stay at zero calls.
-      </BodyText>
-
       <Button
         {...buttonProps('prepare-offline')}
         onPress={() => prepare(false)}
         title="Prepare without downloading"
       />
 
-      <BodyText color="secondary" style={styles.description}>
-        The report below separates three cases that otherwise look identical: onProgress never ran,
-        it ran and carried null because the provider does not know the percentage, and it ran with a
-        real fraction. Values are printed exactly as they arrive.
-      </BodyText>
+      <AIResultPanel outcome={outcome} dimmed={pending !== null} />
 
-      {progress && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultLabel}>Preparation progress:</Text>
-          <MonoText containerStyle={styles.resultText}>{describeProgress(progress)}</MonoText>
-        </View>
-      )}
+      {download && <BodyText style={styles.description}>{download}</BodyText>}
     </ScrollView>
   );
 }
@@ -280,12 +206,5 @@ export default function AvailabilityScreen() {
 const localStyles = StyleSheet.create({
   heading: {
     marginBottom: 12,
-  },
-  languageInput: {
-    marginBottom: 12,
-    padding: 10,
-    borderColor: Colors.border,
-    borderWidth: 1,
-    borderRadius: 3,
   },
 });
