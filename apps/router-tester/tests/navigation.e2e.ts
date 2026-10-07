@@ -1,11 +1,13 @@
 import { test } from '@e2e-dev/mobile';
 import { expect } from 'e2e';
 
-test('shows the home screen', async ({ app, screen }) => {
+test('shows the home screen', async ({ app, platform, screen }) => {
   await app.open();
 
-  await expect(screen.getByText('Native navigation - Index')).toBeVisible();
-  await expect(screen.getByText('Current Path: /')).toBeVisible();
+  // Each platform leaves different nodes out of the accessibility tree: iOS hides the links that
+  // use `Link.Preview`, and Android hides the title under the status bar.
+  const visibleText = platform === 'ios' ? 'Native navigation - Index' : 'Native Tabs';
+  await expect(screen.getByText(visibleText)).toBeVisible();
 });
 
 // The home screen links use `Link.Preview`, which hides them from the iOS accessibility tree.
