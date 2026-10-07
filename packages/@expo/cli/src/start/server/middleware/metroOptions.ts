@@ -158,7 +158,12 @@ export function getMetroDirectBundleOptionsForExpoConfig(
 }
 
 export function getChunkingStrategyFromExpoConfig(exp: ExpoConfig): 'granular' | 'legacy' {
-  return exp.experiments?.chunking?.mode === 'granular' &&
+  const experiments = exp.experiments as
+    | (NonNullable<ExpoConfig['experiments']> & {
+        chunking?: { mode: 'granular' | 'legacy' };
+      })
+    | undefined;
+  return experiments?.chunking?.mode === 'granular' &&
     !exp.experiments?.reactServerComponentRoutes &&
     !exp.experiments?.reactServerFunctions
     ? 'granular'

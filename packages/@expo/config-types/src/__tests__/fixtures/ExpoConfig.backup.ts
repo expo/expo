@@ -297,15 +297,6 @@ export interface ExpoConfig {
        */
       xcodeProjectTargets?: string[];
     };
-    /**
-     * Configure how JavaScript is split for async routes in production web apps. Requires `asyncRoutes` to be enabled.
-     */
-    chunking?: {
-      /**
-       * The strategy used to split JavaScript for async routes. Use `granular` to group shared dependencies by the async routes that need them. Defaults to `legacy` when `chunking` is omitted.
-       */
-      mode: 'legacy' | 'granular';
-    };
   };
   /**
    * Internal properties for developer tools

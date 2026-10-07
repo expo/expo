@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config';
 import { env } from 'node:process';
 
 import {
@@ -58,7 +59,7 @@ describe('chunking options', () => {
       const config = {
         name: 'test',
         slug: 'test',
-        experiments: { chunking: { mode } },
+        experiments: { chunking: { mode } } as ExpoConfig['experiments'],
         extra: { router: { asyncRoutes: false } },
       };
       expect(getChunkingStrategyFromExpoConfig(config)).toBe(mode);
