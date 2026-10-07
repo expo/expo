@@ -77,34 +77,17 @@ function NavigationContainerInner({
   });
 
   const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
-  // Add additional linking related info to the ref
-  // This will be used by the devtools
-  React.useEffect(() => {
-    if (refContainer.current) {
-      REACT_NAVIGATION_DEVTOOLS.set(refContainer.current, {
-        get linking() {
-          return {
-            ...linking,
-            prefixes: linking?.prefixes ?? [],
-            getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
-            getPathFromState: linking?.getPathFromState ?? getPathFromState,
-          };
-        },
-      });
-    }
-  });
-
   // Kept outside the Suspense boundary so a retry after loading reads the same promise.
   const [initialState] = React.useState(getInitialState);
 
   return (
-    // Suspense keeps server-rendered HTML in place while the initial state loads.
     <React.Suspense fallback={<ThemeProvider value={theme}>{fallback}</ThemeProvider>}>
       <LocaleDirContext.Provider value={direction}>
         <LinkingContext.Provider value={linkingContext}>
           <InitialStateNavigationContainer
             {...rest}
             initialState={initialState}
+            linking={linking}
             theme={theme}
             routeNode={routerConfig?.routeNode ?? undefined}
             containerRef={refContainer}
@@ -118,22 +101,39 @@ function NavigationContainerInner({
 
 function InitialStateNavigationContainer({
   initialState: initialStateOrPromise,
+  linking,
   routeNode,
   containerRef,
   ref,
   ...rest
 }: Omit<NavigationContainerProps, 'initialState'> & {
   initialState: NavigationState | undefined | PromiseLike<NavigationState | undefined>;
+  linking: LinkingOptions<ParamListBase> | undefined;
   routeNode: RouteNode | undefined;
   containerRef: React.RefObject<NavigationContainerRef<ParamListBase> | null>;
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>;
 }) {
-  // The value never changes, so every render either calls `use` or skips it.
   const initialState = isThenable(initialStateOrPromise)
     ? React.use(initialStateOrPromise)
     : initialStateOrPromise;
   // Set here, not in the parent, so the ref is set once the container mounts after waiting.
   React.useImperativeHandle(ref, () => containerRef.current!);
+  // Add additional linking related info to the ref
+  // This will be used by the devtools
+  React.useEffect(() => {
+    if (containerRef.current) {
+      REACT_NAVIGATION_DEVTOOLS.set(containerRef.current, {
+        get linking() {
+          return {
+            ...linking,
+            prefixes: linking?.prefixes ?? [],
+            getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
+            getPathFromState: linking?.getPathFromState ?? getPathFromState,
+          };
+        },
+      });
+    }
+  });
   if (initialState === undefined) {
     throw new Error(
       'Linking did not produce an initial navigation state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
