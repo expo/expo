@@ -173,7 +173,7 @@ internal struct ParentAwareHStackLayout: Layout {
   }
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-    let measurement = measure(proposal: ProposedViewSize(bounds.size), subviews: subviews)
+    let measurement = measure(proposal: placementProposal(bounds: bounds, proposal: proposal), subviews: subviews)
     // minX stays leading.
     // SwiftUI mirrors a custom layout in right-to-left.
     var cursor = bounds.minX
@@ -259,7 +259,7 @@ internal struct ParentAwareVStackLayout: Layout {
   }
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-    let measurement = measure(proposal: ProposedViewSize(bounds.size), subviews: subviews)
+    let measurement = measure(proposal: placementProposal(bounds: bounds, proposal: proposal), subviews: subviews)
     var cursor = bounds.minY
     for index in subviews.indices {
       let size = measurement.sizes[index]
@@ -586,6 +586,16 @@ private func resolvedAxis(_ fraction: CGFloat?, proposal: CGFloat?) -> CGFloat? 
     return nil
   }
   return min(base * fraction, base)
+}
+
+/// Bounds replace an axis the parent already made finite.
+/// An unspecified or infinite axis stays as proposed, so a content size is not a percentage base.
+@available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
+private func placementProposal(bounds: CGRect, proposal: ProposedViewSize) -> ProposedViewSize {
+  ProposedViewSize(
+    width: finite(proposal.width) != nil ? bounds.width : proposal.width,
+    height: finite(proposal.height) != nil ? bounds.height : proposal.height
+  )
 }
 
 private func finite(_ value: CGFloat?) -> CGFloat? {
