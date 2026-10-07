@@ -19,7 +19,8 @@ public struct ScrollViewComponent: ExpoSwiftUI.View {
     ScrollView(props.axes.toAxis(), showsIndicators: props.showsIndicators) {
       Children()
     }
-    // Scroll content resolves percentages, same as the Android scroll stack.
+    // The cross axis resolves a child percentage against the viewport.
+    // The scroll axis stays unbounded, so a percentage on that axis does not.
     .environment(\.universalPercentageParent, true)
   }
 }
