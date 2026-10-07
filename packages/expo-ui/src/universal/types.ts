@@ -10,8 +10,12 @@ export type { UniversalDimension } from './modifierUtils';
  * and Jetpack Compose modifiers. On web, passes through to React Native StyleSheet.
  *
  * `width` and `height` also accept a percentage of the parent, such as `'50%'`.
- * A percentage resolves when the parent is a universal `Row`, `Column`, or `Host` with a size on that axis.
- * A SwiftUI stack or a Jetpack Compose `Row` or `Column` does not resolve it.
+ * On Android and iOS, a percentage resolves when the parent is a universal `Row`, `Column`,
+ * or `Host` with a size on that axis.
+ * A universal `ScrollView` resolves the cross axis only.
+ * The scroll axis stays unbounded.
+ * On web, the value is passed through to the view style.
+ * A Jetpack Compose `Row` or `Column`, or a SwiftUI stack, does not resolve it.
  * @docsInline
  */
 export type UniversalStyle = Pick<
@@ -31,12 +35,16 @@ export type UniversalStyle = Pick<
 > & {
   /**
    * Fixed size in density-independent pixels, or a percentage of the parent's content width.
-   * Percentages resolve when the parent is a universal `Row`, `Column`, or `Host` with a defined width.
+   * On Android and iOS, percentages resolve when the parent is a universal `Row`, `Column`,
+   * `ScrollView`, or `Host` with a defined width.
+   * A horizontal `ScrollView` leaves width unbounded.
    */
   width?: UniversalDimension;
   /**
    * Fixed size in density-independent pixels, or a percentage of the parent's content height.
-   * Percentages resolve when the parent is a universal `Row`, `Column`, or `Host` with a defined height.
+   * On Android and iOS, percentages resolve when the parent is a universal `Row`, `Column`,
+   * `ScrollView`, or `Host` with a defined height.
+   * A vertical `ScrollView` leaves height unbounded.
    */
   height?: UniversalDimension;
 };

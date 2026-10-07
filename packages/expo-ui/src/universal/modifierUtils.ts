@@ -28,6 +28,7 @@ export function omitUserOverridden<T extends { $type: string }>(
 /**
  * A fixed size in density-independent pixels, or a percentage of the parent.
  * `'50%'` is half of the parent's content size on that axis.
+ * @docsInline
  */
 export type UniversalDimension = number | `${number}%` | null;
 
@@ -112,8 +113,10 @@ export function serializeUniversalDimensions(
 
 /**
  * Which axes a user modifier already owns.
- * `weight` is intentionally ignored: it applies to the parent's main axis, and
- * the stack still needs an explicit cross-axis size from `style`.
+ * `weight` applies to the parent's main axis, so the cross axis still comes from `style`.
+ * `defaultMinSize` only applies when the incoming constraint is 0, so it does not replace a size.
+ * A `frame` owns an axis only when it sets `width` or `height`.
+ * A minimum or maximum limits that size.
  */
 export function getUserSizingOverrides(
   userModifiers: readonly ModifierConfig[] | undefined,
@@ -130,15 +133,13 @@ export function getUserSizingOverrides(
       } else if (
         modifier.$type === 'width' ||
         modifier.$type === 'fillMaxWidth' ||
-        modifier.$type === 'wrapContentWidth' ||
-        (modifier.$type === 'defaultMinSize' && modifier.minWidth != null)
+        modifier.$type === 'wrapContentWidth'
       ) {
         width = true;
       } else if (
         modifier.$type === 'height' ||
         modifier.$type === 'fillMaxHeight' ||
-        modifier.$type === 'wrapContentHeight' ||
-        (modifier.$type === 'defaultMinSize' && modifier.minHeight != null)
+        modifier.$type === 'wrapContentHeight'
       ) {
         height = true;
       }
@@ -146,16 +147,8 @@ export function getUserSizingOverrides(
     }
 
     if (modifier.$type === 'frame') {
-      width ||=
-        modifier.width != null ||
-        modifier.minWidth != null ||
-        modifier.idealWidth != null ||
-        modifier.maxWidth != null;
-      height ||=
-        modifier.height != null ||
-        modifier.minHeight != null ||
-        modifier.idealHeight != null ||
-        modifier.maxHeight != null;
+      width ||= modifier.width != null;
+      height ||= modifier.height != null;
     } else if (modifier.$type === 'containerRelativeFrame') {
       width ||= modifier.axes === 'horizontal' || modifier.axes === 'both';
       height ||= modifier.axes === 'vertical' || modifier.axes === 'both';
