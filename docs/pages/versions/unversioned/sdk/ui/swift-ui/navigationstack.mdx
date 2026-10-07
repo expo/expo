@@ -3,7 +3,7 @@ title: NavigationStack
 description: A SwiftUI NavigationStack, with the links and destinations that push views onto it.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'expo-go']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -83,7 +83,7 @@ export default function NavigationStackExample() {
 
 </ComponentExample>
 
-Inside a [`List`](list) a link renders as a row with a chevron. A destination has to be a direct child of the stack, however deeply the link that pushes it is nested.
+Inside a [`List`](list), a link renders as a row with a chevron. A destination has to be a direct child of the stack, however deeply the link that pushes it is nested.
 
 > **info** Keep the links inside the `NavigationStack` itself. Content presented from the stack, such as a [`BottomSheet`](bottomsheet) or a [`Popover`](popover), needs its own `NavigationStack` and its own destinations.
 
