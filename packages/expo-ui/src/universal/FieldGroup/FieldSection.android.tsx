@@ -7,6 +7,7 @@ import {
 import { clip, fillMaxWidth, padding, Shapes } from '@expo/ui/jetpack-compose/modifiers';
 
 import { useUniversalLifecycle } from '../hooks';
+import { getUserSizingOverrides } from '../modifierUtils';
 import { transformToModifiers } from '../transformStyle';
 import { extractFieldSectionSlots } from './FieldSectionSlots';
 import { getFieldItemPosition, type FieldItemPosition, type FieldSectionProps } from './types';
@@ -38,11 +39,12 @@ export function FieldSection({
   const { header, footer, rows } = extractFieldSectionSlots(children);
 
   // A numeric width owns the axis, so fillMaxWidth stays off.
-  // A percentage is only parent data. This LazyColumn does not read it, and no width() is emitted.
-  // Stretch in that case, which is what the section did before percentages existed.
+  // A percentage is only parent data. This LazyColumn does not read it.
+  // Stretch in that case, unless a user modifier already owns the width.
   const widthIsPercentage = typeof style?.width === 'string';
+  const userOwnsWidth = getUserSizingOverrides(extraModifiers, 'android').width;
   const sectionModifiers =
-    style?.width == null || widthIsPercentage
+    !userOwnsWidth && (style?.width == null || widthIsPercentage)
       ? [fillMaxWidth(), ...(extraModifiers ?? [])]
       : extraModifiers;
 
