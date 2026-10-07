@@ -1,13 +1,5 @@
 import { microBundle } from '../../fork/__tests__/mini-metro';
-import {
-  addBit,
-  allBits,
-  analyzeBitSetGraph,
-  bitIndices,
-  computeBitSetChunkPlan,
-  hasBit,
-  removeBit,
-} from '../computeBitSetChunks';
+import { analyzeBitSetGraph, bitIndices, computeBitSetChunkPlan } from '../computeBitSetChunks';
 
 async function loadGraph(fs: Record<string, string>, legacyTraverseWeakDependencies = false) {
   const [entryPath, , graph] = await microBundle({
@@ -17,68 +9,14 @@ async function loadGraph(fs: Record<string, string>, legacyTraverseWeakDependenc
   return { graph, entry: graph.dependencies.get(entryPath)! };
 }
 
-describe('BigInt bitsets', () => {
-  it.each([
-    [0n, 2, 0b100n],
-    [0b010n, 2, 0b110n],
-    [0b100n, 2, 0b100n],
-    [0n, 70, 0x400000000000000000n],
-  ] as const)('adds bit %s / %s', (bits, index, expected) => {
-    expect(addBit(bits, index)).toBe(expected);
-  });
-
-  it.each([
-    [0b110n, 2, 0b010n],
-    [0b110n, 3, 0b110n],
-    [0b100n, 2, 0n],
-    [0x400000000000000001n, 70, 1n],
-  ] as const)('removes bit %s / %s', (bits, index, expected) => {
-    expect(removeBit(bits, index)).toBe(expected);
-  });
-
-  it.each([
-    [0n, 0, false],
-    [0b100n, 2, true],
-    [0b100n, 1, false],
-    [0x400000000000000000n, 70, true],
-  ] as const)('tests bit %s / %s', (bits, index, expected) => {
-    expect(hasBit(bits, index)).toBe(expected);
-  });
-
-  it.each([
-    [0, 0n],
-    [1, 1n],
-    [5, 0b11111n],
-    [31, 0x7fffffffn],
-    [32, 0xffffffffn],
-    [33, 0x1ffffffffn],
-    [63, 0x7fffffffffffffffn],
-    [64, 0xffffffffffffffffn],
-    [65, 0x1ffffffffffffffffn],
-    [127, 0x7fffffffffffffffffffffffffffffffn],
-    [128, 0xffffffffffffffffffffffffffffffffn],
-    [129, 0x1ffffffffffffffffffffffffffffffffn],
-  ] as const)('creates a bounded mask for %s bits', (count, expected) => {
-    expect(allBits(count)).toBe(expected);
-  });
-
+describe(bitIndices, () => {
   it('iterates only set bits, including high sparse bits', () => {
     expect([...bitIndices(0n)]).toEqual([]);
     expect([...bitIndices(0x400000000000000005n)]).toEqual([0, 2, 70]);
   });
 
-  it.each([-1, 0.5, NaN, Infinity])('rejects invalid indices and counts: %s', (index) => {
-    expect(() => addBit(0n, index)).toThrow(/non-negative safe integer/);
-    expect(() => removeBit(0n, index)).toThrow(/non-negative safe integer/);
-    expect(() => hasBit(0n, index)).toThrow(/non-negative safe integer/);
-    expect(() => allBits(index)).toThrow(/non-negative safe integer/);
-  });
-
   it('rejects negative bitsets instead of looping forever', () => {
     expect(() => [...bitIndices(-1n)]).toThrow(/non-negative/);
-    expect(() => addBit(-1n, 0)).toThrow(/non-negative/);
-    expect(() => removeBit(-1n, 0)).toThrow(/non-negative/);
-    expect(() => hasBit(-1n, 0)).toThrow(/non-negative/);
   });
 });
 
@@ -199,12 +137,9 @@ describe('atoms and already-loaded ownership', () => {
       [...atom.modules].some((m) => m.path === '/app/shared.js')
     );
     expect(plan.rawAtoms[atomIndex]!.dependentEntries).toBe(0b0101n);
-    expect(plan.alreadyLoadedAtoms.map((bits) => hasBit(bits, atomIndex))).toEqual([
-      false,
-      true,
-      true,
-      false,
-    ]);
+    expect(
+      plan.alreadyLoadedAtoms.map((bits) => (bits & (1n << BigInt(atomIndex))) !== 0n)
+    ).toEqual([false, true, true, false]);
     expect(owners(plan, 'shared')).toEqual(['/app/a.js']);
   });
 

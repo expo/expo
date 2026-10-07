@@ -6,41 +6,8 @@ import type { AsyncDependencyType } from '../../transform-worker/collect-depende
 export type BitSet = bigint;
 type GraphModule = Module<MixedOutput>;
 
-function validateBits(bits: BitSet): void {
-  if (bits < 0n) throw new Error('BitSet operations require a non-negative value.');
-}
-
-function validateIndex(index: number): void {
-  if (!Number.isSafeInteger(index) || index < 0) {
-    throw new Error('BitSet indices and counts must be a non-negative safe integer.');
-  }
-}
-
-export function addBit(bits: BitSet, index: number): BitSet {
-  validateBits(bits);
-  validateIndex(index);
-  return bits | (1n << BigInt(index));
-}
-
-export function removeBit(bits: BitSet, index: number): BitSet {
-  validateBits(bits);
-  validateIndex(index);
-  return bits & ~(1n << BigInt(index));
-}
-
-export function hasBit(bits: BitSet, index: number): boolean {
-  validateBits(bits);
-  validateIndex(index);
-  return (bits & (1n << BigInt(index))) !== 0n;
-}
-
-export function allBits(count: number): BitSet {
-  validateIndex(count);
-  return (1n << BigInt(count)) - 1n;
-}
-
 export function* bitIndices(bits: BitSet): IterableIterator<number> {
-  validateBits(bits);
+  if (bits < 0n) throw new Error('BitSet operations require a non-negative value.');
   for (let index = 0; bits !== 0n; index++, bits >>= 1n) {
     if ((bits & 1n) !== 0n) yield index;
   }
@@ -108,7 +75,7 @@ export function computeBitSetChunkPlan(
     }
   }
 
-  const allAtoms = allBits(rawAtoms.length);
+  const allAtoms = (1n << BigInt(rawAtoms.length)) - 1n;
   const alreadyLoadedAtoms = entryPoints.map((entry) => (entry.kind === 'initial' ? 0n : allAtoms));
   const pendingEntries = new Set<number>();
   for (const [index, entry] of entryPoints.entries()) {
@@ -131,8 +98,9 @@ export function computeBitSetChunkPlan(
   for (const [atomIndex, atom] of rawAtoms.entries()) {
     let owners = atom.dependentEntries;
     for (const entryIndex of bitIndices(owners)) {
-      if (hasBit(alreadyLoadedAtoms[entryIndex]!, atomIndex))
-        owners = removeBit(owners, entryIndex);
+      if ((alreadyLoadedAtoms[entryIndex]! & (1n << BigInt(atomIndex))) !== 0n) {
+        owners &= ~(1n << BigInt(entryIndex));
+      }
     }
     // The first owner on a path from an initial entry cannot already have this atom loaded.
     if (owners === 0n) {
@@ -249,10 +217,8 @@ export function analyzeBitSetGraph(
         } else {
           const targetIndex = entryIndexByPath.get(edge.target.path)!;
           if (entryPoints[targetIndex]!.kind !== 'initial') {
-            dynamicImportsByEntry[entryIndex] = addBit(
-              dynamicImportsByEntry[entryIndex]!,
-              targetIndex
-            );
+            dynamicImportsByEntry[entryIndex] =
+              dynamicImportsByEntry[entryIndex]! | (1n << BigInt(targetIndex));
           }
         }
       }
