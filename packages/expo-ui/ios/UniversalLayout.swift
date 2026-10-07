@@ -190,7 +190,7 @@ internal struct ParentAwareHStackLayout: Layout {
   }
 
   private func measure(proposal: ProposedViewSize, subviews: Subviews) -> StackMeasurement {
-    let spacings = stackSpacings(subviews: subviews, axis: .horizontal, explicit: spacing)
+    let spacings = stackSpacings(subviews: subviews, explicit: spacing)
     let measured = measureChildren(
       subviews: subviews,
       proposal: proposal,
@@ -270,7 +270,7 @@ internal struct ParentAwareVStackLayout: Layout {
   }
 
   private func measure(proposal: ProposedViewSize, subviews: Subviews) -> StackMeasurement {
-    let spacings = stackSpacings(subviews: subviews, axis: .vertical, explicit: spacing)
+    let spacings = stackSpacings(subviews: subviews, explicit: spacing)
     let measured = measureChildren(
       subviews: subviews,
       proposal: proposal,
@@ -535,11 +535,15 @@ private func crossLength(_ size: CGSize, axis: Axis) -> CGFloat {
   axis == .horizontal ? size.height : size.width
 }
 
+/// Unset spacing is 0.
+/// The system distance sits on top of child percentages and pushes them past the stack.
+/// An explicit spacing is kept.
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
-private func stackSpacings(subviews: LayoutSubviews, axis: Axis, explicit: CGFloat?) -> [CGFloat] {
-  subviews.indices.map { index in
+private func stackSpacings(subviews: LayoutSubviews, explicit: CGFloat?) -> [CGFloat] {
+  let gap = explicit ?? 0
+  return subviews.indices.map { index in
     guard index < subviews.count - 1 else { return 0 }
-    return explicit ?? subviews[index].spacing.distance(to: subviews[index + 1].spacing, along: axis)
+    return gap
   }
 }
 
@@ -555,6 +559,7 @@ private extension ProposedViewSize {
 
 /// An axis with no fraction keeps the proposal, including infinity.
 /// A fraction of a non-finite proposal is nil, not infinity.
+/// A larger fraction is clamped to the proposal, so 150% stays inside the parent.
 private func resolvedAxis(_ fraction: CGFloat?, proposal: CGFloat?) -> CGFloat? {
   guard let fraction else {
     return proposal
@@ -562,7 +567,7 @@ private func resolvedAxis(_ fraction: CGFloat?, proposal: CGFloat?) -> CGFloat? 
   guard let base = finite(proposal) else {
     return nil
   }
-  return base * fraction
+  return min(base * fraction, base)
 }
 
 private func finite(_ value: CGFloat?) -> CGFloat? {
