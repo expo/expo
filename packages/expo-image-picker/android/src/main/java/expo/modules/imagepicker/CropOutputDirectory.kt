@@ -19,6 +19,6 @@ internal fun ensureCropOutputDirectoryExists(outputFilePath: String?) {
   try {
     File(outputFilePath).parentFile?.mkdirs()
   } catch (_: SecurityException) {
-    // Best-effort: a missing directory is still reported as a cropper error.
+    // Best-effort: if the directory cannot be created, the cropper write fails as it did before.
   }
 }
