@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.location.Location
 import android.os.Looper
+import com.huawei.hms.api.ConnectionResult
+import com.huawei.hms.api.HuaweiApiAvailability
 import com.huawei.hms.location.LocationServices
 import com.huawei.hms.location.FusedLocationProviderClient
 import com.huawei.hms.location.LocationCallback
@@ -18,29 +20,7 @@ import expo.modules.location.next.Position
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
-
-// Location provider backed by Huawei Mobile Services (HMS) Location Kit. HMS mirrors the
-// pre-Builder GMS API almost 1:1 (LocationRequest.create(), Task-based FusedLocationProviderClient),
-// so this implementation follows GmsLocationProvider closely.
-//
-// NOTE(module API): this file does not compile or run on its own - the following changes are
-// needed outside of it:
-// 1. build.gradle: add `implementation "com.huawei.hms:location:<version>"` AND the Huawei maven
-//    repository (`https://developer.huawei.com/repo/`) - check whether the repo-wide gradle
-//    config accepts extra repositories for a single package before committing to this track.
-// 2. LocationModuleNext: a lazy `huaweiLocationProviderInstance` (needs `mContext` to create the
-//    HMS client via com.huawei.hms.location.LocationServices.getFusedLocationProviderClient) and
-//    a `StaticFunction("Huawei")` inside Class("LocationProvider").
-// 3. Availability: on devices without HMS Core every call fails at runtime. Consider gating the
-//    static (or the provider construction) with
-//    HuaweiApiAvailability.getInstance().isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS
-//    and surfacing ProviderOutcome.Unavailable otherwise - needs a Context, so it belongs in the
-//    module or in a provider constructor parameter.
-// 4. FallbackLocationProvider default ordering: decide where HMS sits (e.g. GMS -> HMS -> Android).
-// 5. JS surface: regenerate types / add `Huawei()` to the LocationProvider statics (also in the
-//    Swift skeleton to keep the surfaces mirrored) + an NCL provider button.
 
 fun LocationPriority.toHmsPriority(): Int = when (this) {
   LocationPriority.HIGH_ACCURACY -> LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -50,13 +30,16 @@ fun LocationPriority.toHmsPriority(): Int = when (this) {
 }
 
 class HuaweiLocationProvider(
-  val fusedLocationProvider: FusedLocationProviderClient
+  val fusedLocationProvider: FusedLocationProviderClient,
+  val isServiceAvailable: () -> Boolean
 ) : LocationProvider {
-  override fun name(): String {
-    return "Huawei"
-  }
+  override val name = "Huawei"
+
   @SuppressLint("MissingPermission")
   override suspend fun getPosition(options: GetCurrentPositionOptions): ProviderResult<Position> {
+    if (!isServiceAvailable()) {
+      return ProviderResult.Unsupported
+    }
     val request = LocationRequest.create()
       .setPriority(options.priority.toHmsPriority())
       .setNumUpdates(1)
@@ -87,25 +70,31 @@ class HuaweiLocationProvider(
     if (location == null) {
       return ProviderResult.Unavailable
     }
-    return ProviderResult.Success(location.toPosition())
+    return ProviderResult.Available(location.toPosition())
   }
 
-  override fun watchPosition(): ProviderResult<WatchSession> {
-    return ProviderResult.Success(HmsWatchSession(fusedLocationProvider))
+  override fun watchPosition(): ProviderResult<PositionUpdatesSession> {
+    if (!isServiceAvailable()) {
+      return ProviderResult.Unsupported
+    }
+    return ProviderResult.Available(HmsWatchSession(fusedLocationProvider))
   }
 
-  override suspend fun enableLocationServices(activity: Activity, storeContinuationObject: (Continuation<Boolean>) -> Unit): ProviderResult<Boolean> {
+  override suspend fun enableLocationServices(activity: Activity): ProviderResult<EnableLocationServicesResult> {
+    if (!isServiceAvailable()) {
+      return ProviderResult.Unsupported
+    }
     return ProviderResult.Unavailable
   }
 }
 
 private class HmsWatchSession(
   private val fusedLocationProvider: FusedLocationProviderClient
-) : WatchSession {
+) : PositionUpdatesSession {
   private var callback: LocationCallback? = null
 
   @SuppressLint("MissingPermission")
-  override fun startUpdates(parameters: WatchPositionParameters, onPosition: (Position) -> Unit): Boolean {
+  override fun startUpdates(parameters: WatchPositionParameters, onUpdate: (WatchUpdate) -> Unit): Boolean {
     stopUpdates()
     val locationRequest = LocationRequest.create()
       .setPriority(parameters.priority.toHmsPriority())
@@ -114,7 +103,7 @@ private class HmsWatchSession(
     val callback = object: LocationCallback() {
       override fun onLocationResult(locationResult: LocationResult) {
         locationResult.lastLocation?.let {
-          onPosition(it.toPosition())
+          onUpdate(WatchUpdate.Fix(it.toPosition()))
         }
       }
     }
@@ -127,16 +116,24 @@ private class HmsWatchSession(
     callback?.let { fusedLocationProvider.removeLocationUpdates(it) }
     callback = null
   }
+
+  override fun isSubscribed(): Boolean = callback != null
+
+  override fun canDeliverUpdates(): Boolean = callback != null
 }
 
 class HmsModule : Module() {
   lateinit var mContext: Context
   val locationProvider: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
-    val hmsLocationProvider = HuaweiLocationProvider(fusedLocationProvider)
+    val hmsLocationProvider = HuaweiLocationProvider(fusedLocationProvider) {
+      HuaweiApiAvailability.getInstance().isHuaweiMobileServicesAvailable(mContext) == ConnectionResult.SUCCESS
+    }
     SharedRef(hmsLocationProvider)
   }
   override fun definition() = ModuleDefinition {
+    Name("HmsModule")
+
     OnCreate {
       mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
     }
