@@ -6,11 +6,6 @@ export {
 } from './locationServices';
 export { PositionWatchHandle, watchPosition } from './PositionWatchHandle';
 export {
-  useUserLocation,
-  type UseUserLocationOptions,
-  type UseUserLocationResult,
-} from './useUserLocation';
-export {
   LocationProvider,
   setLocationProvider,
   getSelectedLocationProviderName,

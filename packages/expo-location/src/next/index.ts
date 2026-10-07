@@ -4,13 +4,10 @@ export {
   useForegroundLocationPermissions,
   useBackgroundLocationPermissions,
   useLocationServices,
-  useUserLocation,
   PositionWatchHandle,
   LocationProvider,
   LocationUpdatesHandle,
   defineLocationTask,
-  type UseUserLocationOptions,
-  type UseUserLocationResult,
 } from './js';
 
 export {
