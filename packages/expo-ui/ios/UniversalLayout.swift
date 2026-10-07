@@ -349,14 +349,32 @@ private func measureChildren(
 ) -> MeasuredChildren {
   let offeredMain = finite(axis == .horizontal ? proposal.width : proposal.height)
   let offeredCross = finite(axis == .horizontal ? proposal.height : proposal.width)
-  // Points are this stack's fixed frame.
-  // A fraction is too, but only after a universal parent resolves it.
   let ownMainPoints = axis == .horizontal ? ownDimensions.widthPoints : ownDimensions.heightPoints
   let ownMainFraction = axis == .horizontal ? ownDimensions.widthFraction : ownDimensions.heightFraction
   let ownCrossPoints = axis == .horizontal ? ownDimensions.heightPoints : ownDimensions.widthPoints
   let ownCrossFraction = axis == .horizontal ? ownDimensions.heightFraction : ownDimensions.widthFraction
-  let definiteMain = (ownMainPoints != nil || (ownMainFraction != nil && resolvesOwnPercentage)) ? offeredMain : nil
-  let definiteCross = (ownCrossPoints != nil || (ownCrossFraction != nil && resolvesOwnPercentage)) ? offeredCross : nil
+  var childHasMainFraction = false
+  var childHasCrossFraction = false
+  for subview in subviews {
+    let dimensions = subview[UniversalLayoutDimensionsKey.self]
+    let mainFraction = axis == .horizontal ? dimensions.widthFraction : dimensions.heightFraction
+    let crossFraction = axis == .horizontal ? dimensions.heightFraction : dimensions.widthFraction
+    childHasMainFraction = childHasMainFraction || mainFraction != nil
+    childHasCrossFraction = childHasCrossFraction || crossFraction != nil
+  }
+  let ownsMain = ownMainPoints != nil || (ownMainFraction != nil && resolvesOwnPercentage)
+  let ownsCross = ownCrossPoints != nil || (ownCrossFraction != nil && resolvesOwnPercentage)
+  var definiteMain = ownsMain ? offeredMain : nil
+  var definiteCross = ownsCross ? offeredCross : nil
+  // A child fraction adopts a positive offer, and the stack returns that size.
+  // A zero proposal is the minimum-size probe, so it still shrink-wraps.
+  // Otherwise the next pass would resolve the fraction against the smaller result.
+  if definiteMain == nil, childHasMainFraction, let offeredMain, offeredMain > 0 {
+    definiteMain = offeredMain
+  }
+  if definiteCross == nil, childHasCrossFraction, let offeredCross, offeredCross > 0 {
+    definiteCross = offeredCross
+  }
 
   var children: [MeasuredChild] = []
   children.reserveCapacity(subviews.count)
@@ -367,7 +385,7 @@ private func measureChildren(
     let dimensions = subview[UniversalLayoutDimensionsKey.self]
     let mainFraction = axis == .horizontal ? dimensions.widthFraction : dimensions.heightFraction
     let crossFraction = axis == .horizontal ? dimensions.heightFraction : dimensions.widthFraction
-    // A fraction resolves only against this stack's own size.
+    // A fraction uses the size chosen above.
     // Every other child still gets the offered cross size, so text can wrap.
     let crossProposal = crossFraction != nil ? definiteCross : offeredCross
 
