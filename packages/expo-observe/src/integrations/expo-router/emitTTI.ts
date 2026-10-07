@@ -2,6 +2,7 @@ import type { Session } from 'expo-app-metrics';
 
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
+import { recordMetric } from '../recordMetric';
 
 export function emitTTI(args: {
   session: Pick<Session, 'addMetric'>;
@@ -13,7 +14,7 @@ export function emitTTI(args: {
   url: string | undefined;
   config?: ObserveIntegrationsConfig['expo-router'];
 }): Promise<void> {
-  return args.session.addMetric({
+  return recordMetric(args.session, {
     timestamp: args.timestamp,
     category: 'navigation',
     name: 'tti',

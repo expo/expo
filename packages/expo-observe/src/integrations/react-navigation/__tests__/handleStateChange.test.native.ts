@@ -321,6 +321,21 @@ describe('createStateChangeHandler', () => {
     expect(entry!.dispatchTime!).toBeLessThan(entry!.lastInteractiveCall!);
   });
 
+  it('warns instead of rejecting when a metric write fails', async () => {
+    const error = new Error('Cannot use shared object that was already released');
+    mockAddMetric.mockRejectedValueOnce(error).mockRejectedValueOnce(error);
+    // A pending interactive makes the handler take the awaited TTI path as well.
+    storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
+
+    handle(stackState([{ key: 'a' }]));
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[expo-observe]'), error);
+    warnSpy.mockClear();
+  });
+
   it('does not emit tti when no pending interactive is waiting', async () => {
     handle(stackState([{ key: 'a' }], 0));
     await flushAsync();
