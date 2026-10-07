@@ -11,6 +11,9 @@ final class PositionRequester {
     guard options.timeout >= 0 else {
       throw InvalidLocationTimeoutException()
     }
+    guard options.maxCachedAge >= 0 else {
+      throw InvalidMaxCachedAgeException()
+    }
     if let cached = await cachedLocation(), isAcceptable(cached, options: options) {
       return cached
     }

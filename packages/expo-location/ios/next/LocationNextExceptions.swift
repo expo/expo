@@ -6,6 +6,12 @@ final class InvalidLocationTimeoutException: Exception, @unchecked Sendable {
   }
 }
 
+final class InvalidMaxCachedAgeException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "maxCachedAge must be a non-negative number of seconds"
+  }
+}
+
 final class LocationServicesDisabledGlobally: Exception, @unchecked Sendable {
   override var reason: String {
     "Location Services are turned off for the whole device, so no app can receive location updates. " +
