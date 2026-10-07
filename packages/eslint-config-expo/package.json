@@ -53,7 +53,7 @@
     "eslint8": "npm:eslint@^8.57.1",
     "prettier": "^3.8.3",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.3"
+    "react-native": "0.88.0-rc.4"
   },
   "peerDependencies": {
     "eslint": ">=8.10"

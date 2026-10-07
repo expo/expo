@@ -102,6 +102,10 @@ Resolve the output directory by running `bun run .claude/skills/deep-code-review
 
 **IMPORTANT — `line_content` field:** Always include `line_content` with a unique substring from the target line of code. The posting script fetches the PR diff, searches for this substring, and resolves the correct line number — protecting against miscounted line numbers. The `line` field is used as a hint when multiple matches exist. During local-preview, the script shows the actual code at each target line so you can verify placement before posting.
 
+**Multi-line comments:** To comment on a range of lines, add `start_line` (the first line) and `start_line_content` (a unique substring from it). `line` and `line_content` then point to the last line of the range. The whole range must be on the same `side` and inside one diff hunk; local-preview shows every line of the range and warns if GitHub would reject it, and post-pending refuses to post such a range.
+
+**Suggested changes:** When a comment has a simple fix, add a GitHub suggestion block after the reasoning in `body` so the author can apply it with one click. The block replaces the commented line, or the whole range for a multi-line comment, so it must contain the complete new lines with their original indentation. Use it only on `RIGHT`-side comments and only when the fix is clear; otherwise show the code in a normal fenced block.
+
 **NEVER use `gh pr review` to post reviews.** It always submits immediately (publicly visible). Only use `post-review.ts` which creates proper PENDING drafts via the GitHub API.
 
 **IMPORTANT: NEVER run `post-pending` or `submit` without explicit user approval.** Each step below that touches GitHub requires the user to confirm before proceeding. Do not chain steps together.

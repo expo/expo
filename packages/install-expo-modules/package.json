@@ -1,6 +1,6 @@
 {
   "name": "install-expo-modules",
-  "version": "0.18.1",
+  "version": "0.18.2",
   "description": "Tools to install expo-modules for existing react-native projects",
   "keywords": [
     "expo",
@@ -48,13 +48,13 @@
   "devDependencies": {
     "@expo/config": "workspace:*",
     "@expo/config-plugins": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "@expo/package-manager": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/prompts": "^2.0.6",
     "@types/semver": "^7.7.1",
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "expo-module-scripts": "workspace:*",
     "glob": "^13.0.6",
     "prompts": "^2.3.2",
     "resolve-from": "^5.0.0",

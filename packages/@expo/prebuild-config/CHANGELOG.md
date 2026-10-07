@@ -1,5 +1,33 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047))
+  - expo-modules-autolinking@58.0.10
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+  - @expo/config@58.0.3
+  - @expo/image-utils@0.12.4
+  - expo-modules-autolinking@58.0.9
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50946](https://github.com/expo/expo/pull/50946), [#50354](https://github.com/expo/expo/pull/50354), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - expo-modules-autolinking@58.0.8
+  - @expo/config@58.0.2
+  - @expo/image-utils@0.12.3
+
 ## 58.0.7
 
 ### Patch Changes

@@ -299,6 +299,7 @@ function LogBoxContent({
               // If no frame from a stack is expanded, likely no frame is from user code, let's not show the code snippet.
               // This avoid cluttering the overlay with irrelevant code frames of node_modules and internals.
               if (
+                key === 'component' &&
                 log.getStackStatus(key) === 'COMPLETE' &&
                 log.getAvailableStack(key) &&
                 // If there are no frames (for example in build errors) we want to show the code frame.

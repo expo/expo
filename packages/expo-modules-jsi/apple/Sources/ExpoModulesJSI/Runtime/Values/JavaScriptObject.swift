@@ -375,19 +375,50 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    try! runtime
-      .global()
-      .getPropertyAsObject("Object")
-      .getPropertyAsFunction("defineProperty")
-      .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+    do {
+      try definePropertyFunction(in: runtime).function
+        .call(arguments: self.asValue().ref(), JavaScriptValue(runtime, name).ref(), descriptor.ref())
+    } catch {
+      FatalError.definePropertyFailed(name, error)
+    }
   }
 
   public func defineProperty(_ name: String, descriptor: consuming PropertyDescriptor = .init()) {
     guard let runtime else {
       FatalError.runtimeLost()
     }
-    let descriptorObject = descriptor.toObject(runtime)
-    defineProperty(name, descriptor: descriptorObject)
+    let defineProperty = definePropertyFunction(in: runtime)
+    let jsiRuntime = runtime.pointee
+    let hasValue = descriptor.value != nil
+    let value = descriptor.value?.toJSIValue(in: jsiRuntime) ?? facebook.jsi.Value.undefined()
+    var utf8Name = name
+    utf8Name.withUTF8 { nameUtf8 in
+      // A JS error can't propagate through Swift, so `capturingCppErrors` captures it and rethrows it
+      // here; `defineProperty` doesn't throw, so it stops execution with that error.
+      do {
+        try capturingCppErrors {
+          expo.defineProperty(
+            jsiRuntime,
+            defineProperty.function.pointee,
+            defineProperty.configurableKey.pointee,
+            defineProperty.enumerableKey.pointee,
+            defineProperty.writableKey.pointee,
+            defineProperty.valueKey.pointee,
+            pointee,
+            // An empty buffer may have no base address; any non-null pointer works with a zero length.
+            nameUtf8.baseAddress ?? UnsafePointer(bitPattern: 1)!,
+            nameUtf8.count,
+            value,
+            hasValue,
+            descriptor.writable,
+            descriptor.enumerable,
+            descriptor.configurable
+          )
+        }
+      } catch {
+        FatalError.definePropertyFailed(name, error)
+      }
+    }
   }
 
   public func defineProperty<T: JavaScriptRepresentable & ~Copyable>(
@@ -671,6 +702,43 @@ extension JavaScriptObject {
 
     public var description: String {
       return "Property '\(name)' is not an object"
+    }
+  }
+}
+
+// MARK: - Object.defineProperty
+
+/// Holds the runtime's `Object.defineProperty` and the property names of a descriptor, created once per
+/// runtime instead of on every `defineProperty` call.
+private final class DefinePropertyFunction {
+  let function: JavaScriptFunction
+  let configurableKey: JavaScriptPropNameID
+  let enumerableKey: JavaScriptPropNameID
+  let writableKey: JavaScriptPropNameID
+  let valueKey: JavaScriptPropNameID
+
+  init(_ function: consuming JavaScriptFunction, in runtime: JavaScriptRuntime) {
+    self.function = function
+    self.configurableKey = JavaScriptPropNameID(runtime, string: "configurable")
+    self.enumerableKey = JavaScriptPropNameID(runtime, string: "enumerable")
+    self.writableKey = JavaScriptPropNameID(runtime, string: "writable")
+    self.valueKey = JavaScriptPropNameID(runtime, string: "value")
+  }
+}
+
+private let definePropertyFunctionKey = JavaScriptRuntime.Cache.Key<DefinePropertyFunction>()
+
+/// Returns the runtime's `Object.defineProperty`, cached in the runtime. Property definitions run on the
+/// JavaScript thread like every other JSI call, which is where the runtime's cache is isolated.
+private func definePropertyFunction(in runtime: JavaScriptRuntime) -> DefinePropertyFunction {
+  return JavaScriptActor.assumeIsolated {
+    runtime.cached(definePropertyFunctionKey) {
+      do {
+        let function = try runtime.global().getPropertyAsObject("Object").getPropertyAsFunction("defineProperty")
+        return DefinePropertyFunction(function, in: runtime)
+      } catch {
+        FatalError.definePropertyUnavailable(error)
+      }
     }
   }
 }

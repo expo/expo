@@ -43,7 +43,7 @@ enum class LocationAccuracyOption(val value: String) : Enumerable {
   REDUCED("reduced")
 }
 
-class RequestForegroundPermissionsOptions(
+class RequestPermissionsOptions(
   @Field val accuracy: LocationAccuracyOption? = null
 ) : Record
 

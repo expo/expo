@@ -1,5 +1,33 @@
 # expo-template-blank
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50863](https://github.com/expo/expo/pull/50863), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860))
+  - expo@58.0.6
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.5
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#50997](https://github.com/expo/expo/pull/50997), [#50988](https://github.com/expo/expo/pull/50988))
+  - expo@58.0.4
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#50458](https://github.com/expo/expo/pull/50458), [#50853](https://github.com/expo/expo/pull/50853))
+  - expo@58.0.3
+
 ## 58.0.11
 
 ### Patch Changes

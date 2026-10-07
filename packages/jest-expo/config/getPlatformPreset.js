@@ -96,19 +96,16 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
   preset.testEnvironmentOptions ??= {};
   if (!preset.testEnvironmentOptions.customExportConditions) {
     preset.testEnvironmentOptions.customExportConditions = isServer
-      ? ['node', 'require', 'expo-source']
+      ? ['node', 'require']
       : platform === 'web'
-        ? ['browser', 'expo-source']
-        : ['react-native', 'expo-source'];
-  } else if (!preset.testEnvironmentOptions.customExportConditions.includes('expo-source')) {
-    preset.testEnvironmentOptions.customExportConditions.push('expo-source');
+        ? ['browser']
+        : ['react-native'];
   }
   preset.moduleNameMapper = {
-    // Source exports can contain TypeScript files that use explicit `.js`
-    // extensions for runtime ESM compatibility.
-    '^(\\.{1,2}/.*)\\.js$': '$1',
     // See the note in `../jest-preset.js`: mapped targets must be absolute paths on Jest 30.
     '^react-native/asset-registry$': expoPreset.moduleNameMapper['^react-native/asset-registry$'],
+    '^react-native/unstable-internals-do-not-use$':
+      expoPreset.moduleNameMapper['^react-native/unstable-internals-do-not-use$'],
     ...preset.moduleNameMapper,
   };
 
@@ -132,7 +129,6 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
       'node',
       'require',
       'react-server',
-      'expo-source',
       'workerd',
     ];
   }
@@ -156,16 +152,17 @@ function getBaseWebPreset() {
 }
 
 // `getPlatformPreset` builds its own `moduleNameMapper` from scratch, so spreading it over the
-// base preset drops the mappers that the upstream React Native preset defines. Since React Native
-// 0.87 those mappers are required: `jest/setup.js` mocks `react-native/setup-env`, which is only
-// reachable through the `^react-native/setup-env$` alias. Merge them back for the native presets,
-// keeping the platform mappers last so platform-specific entries still win.
-function withNativeModuleNameMapper(platformPreset) {
+// base preset drops the mappers that the base preset defines. Those mappers are required: since
+// React Native 0.87 `jest/setup.js` mocks `react-native/setup-env`, which is only reachable
+// through the `^react-native/setup-env$` alias, and `withTypescriptMapping` adds the aliases from
+// the project's `tsconfig.json` `paths`. Merge them back for every platform preset, keeping the
+// platform mappers last so platform-specific entries still win.
+function withBaseModuleNameMapper(basePreset, platformPreset) {
   return {
-    ...expoPreset,
+    ...basePreset,
     ...platformPreset,
     moduleNameMapper: {
-      ...expoPreset.moduleNameMapper,
+      ...basePreset.moduleNameMapper,
       ...platformPreset.moduleNameMapper,
     },
   };
@@ -173,32 +170,32 @@ function withNativeModuleNameMapper(platformPreset) {
 
 module.exports = {
   getWebPreset({ isReactServer } = {}) {
-    const preset = {
-      ...getBaseWebPreset(),
-      testEnvironment: 'jsdom',
-      ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web', {
+    return withBaseModuleNameMapper(
+      { ...getBaseWebPreset(), testEnvironment: 'jsdom' },
+      getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web'], 'web', {
         isReactServer,
-      }),
-    };
-    return preset;
+      })
+    );
   },
   getNodePreset() {
-    return {
-      ...getBaseWebPreset(),
-      ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web'], 'web', {
+    return withBaseModuleNameMapper(
+      getBaseWebPreset(),
+      getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web'], 'web', {
         isServer: true,
-      }),
-    };
+      })
+    );
   },
   getIOSPreset({ isReactServer } = {}) {
-    return withNativeModuleNameMapper(
+    return withBaseModuleNameMapper(
+      expoPreset,
       getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native'], 'ios', {
         isReactServer,
       })
     );
   },
   getAndroidPreset({ isReactServer } = {}) {
-    return withNativeModuleNameMapper(
+    return withBaseModuleNameMapper(
+      expoPreset,
       getPlatformPreset(
         { name: 'Android', color: 'blueBright' },
         ['android', 'native'],

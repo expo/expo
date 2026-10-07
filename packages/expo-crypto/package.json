@@ -1,6 +1,6 @@
 {
   "name": "expo-crypto",
-  "version": "58.0.4",
+  "version": "58.0.5",
   "description": "Provides cryptography primitives for Android, iOS and web.",
   "keywords": [
     "android",
@@ -52,14 +52,14 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "expo-modules-cli": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
+## 58.0.7
+
+### Patch Changes
+
+- Upgrade to Jest 30 and declare `jest@^30` as a peer dependency. ([#50427](https://github.com/expo/expo/pull/50427) by [@hassankhan](https://github.com/hassankhan))
+- Preserve the base preset's `moduleNameMapper` entries in web and Node presets. ([#50444](https://github.com/expo/expo/pull/50444) by [@joernroeder](https://github.com/joernroeder))
+- Bump `lodash` to `^4.18.1`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.6
 
 ### Patch Changes

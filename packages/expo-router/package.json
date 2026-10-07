@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "58.0.12",
+  "version": "58.0.16",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",
@@ -263,6 +263,7 @@
       "default": "./_ctx.js"
     },
     "./_error.js": "./_error.js",
+    "./_error": "./_error.js",
     "./entry-classic.js": "./entry-classic.js",
     "./entry-classic": "./entry-classic.js",
     "./entry.js": "./entry.js",
@@ -298,7 +299,7 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
     "@react-native-masked-view/masked-view": "^0.3.2",
-    "@react-native/normalize-colors": "0.88.0-rc.3",
+    "@react-native/normalize-colors": "0.88.0-rc.4",
     "client-only": "^0.0.1",
     "expo-glass-effect": "workspace:^",
     "expo-server": "workspace:^",

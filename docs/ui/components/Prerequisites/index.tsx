@@ -110,6 +110,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             <LinkBase
               href={'#' + heading.current.slug}
               ref={heading.current.ref}
+              skipNextLink
               onClick={() => {
                 setIsOpen(true);
               }}

@@ -93,6 +93,23 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `evaluate to promise on the JavaScript thread when called from another thread`() async throws {
+    // The test body runs on a cooperative thread, not on the scheduler's thread. Evaluating there
+    // would run JavaScript concurrently with the work the scheduler runs, such as settling a promise.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    try await testRuntime.scheduler.runIsolated {
+      let isOnJavaScriptThread = runtime.createFunction("isOnJavaScriptThread") { _, _ in
+        return JavaScriptValue(runtime, runtime.isOnJavaScriptThread())
+      }
+      runtime.global().setProperty("isOnJavaScriptThread", value: isOnJavaScriptThread.asValue())
+    }
+
+    let result = try await runtime.evalAsync("Promise.resolve(isOnJavaScriptThread())")
+    #expect(result.getBool() == true)
+  }
+
+  @Test
   func `is equatable`() {
     #expect((runtime == runtime) == true)
     #expect((runtime != JavaScriptRuntime()) == true)
@@ -170,11 +187,11 @@ struct JavaScriptRuntimeTests {
     }
 
     await scheduler.run {
-      nonisolated(unsafe) var didRunInline = false
+      let didRunInline = InlineRunFlag()
       runtime.runOrSchedule {
-        didRunInline = true
+        didRunInline.value = true
       }
-      #expect(didRunInline)
+      #expect(didRunInline.value)
     }
 
     await withCheckedContinuation { continuation in
@@ -231,6 +248,65 @@ struct JavaScriptRuntimeTests {
         }
       }
     }
+  }
+
+  // A standalone runtime runs scheduled work inline on the caller, so the next four tests give the
+  // runtime its own thread with `TestRuntimeScheduler` to make the caller wait for it.
+
+  @Test
+  func `execute sync waits without spinning on a thread without run loop sources`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let cpuTime = try await onSyncOffThread {
+      try measureThreadCPUTime {
+        try runtime.execute { @JavaScriptActor in
+          _ = usleep(200_000)
+        }
+      }
+    }
+    #expect(cpuTime < 0.05)
+  }
+
+  @Test
+  func `execute blocking-async waits without spinning on a thread without run loop sources`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let cpuTime = try await onSyncOffThread {
+      try measureThreadCPUTime {
+        try runtime.execute { @JavaScriptActor () async in
+          _ = usleep(200_000)
+        }
+      }
+    }
+    #expect(cpuTime < 0.05)
+  }
+
+  @Test
+  func `execute sync returns as soon as a short task finishes`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let elapsed = try await onSyncOffThread {
+      let start = ContinuousClock.now
+      for _ in 0..<20 {
+        try runtime.execute { @JavaScriptActor in }
+      }
+      return ContinuousClock.now - start
+    }
+    #expect(elapsed < .milliseconds(500))
+  }
+
+  @Test
+  func `execute blocking-async returns as soon as a short task finishes`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let runtime = testRuntime.runtime
+    let elapsed = try await onSyncOffThread {
+      let start = ContinuousClock.now
+      for _ in 0..<20 {
+        try runtime.execute { @JavaScriptActor () async in }
+      }
+      return ContinuousClock.now - start
+    }
+    #expect(elapsed < .milliseconds(500))
   }
 
   // MARK: - Host objects
@@ -1146,6 +1222,25 @@ struct JavaScriptRuntimeTests {
     let survives = weakObject.lock()?.getProperty("survives").getBool()
     #expect(survives == true)
   }
+}
+
+/// Returns the CPU time the calling thread spent in `body`, in seconds.
+private func measureThreadCPUTime(_ body: () throws -> Void) rethrows -> Double {
+  func threadCPUTime() -> Double {
+    var time = timespec()
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &time)
+    return Double(time.tv_sec) + Double(time.tv_nsec) / 1e9
+  }
+  let start = threadCPUTime()
+  try body()
+  return threadCPUTime() - start
+}
+
+/// Records whether a `runOrSchedule` block ran. A class instead of a `nonisolated(unsafe) var` captured
+/// by the block, which Swift 6.2 rejects as a data race. Safe without synchronization: the test only
+/// reads it after the block ran inline on the same thread.
+private final class InlineRunFlag: @unchecked Sendable {
+  var value = false
 }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React

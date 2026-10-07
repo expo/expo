@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-file-map",
-  "version": "58.0.3",
+  "version": "58.0.4",
   "description": "A metro-file-map fork for Expo used with the Metro bundler",
   "keywords": [
     "expo",
@@ -40,16 +40,14 @@
     "fb-watchman": "^2.0.2",
     "invariant": "^2.2.4",
     "jest-worker": "^29.7.0",
-    "micromatch": "^4.0.4",
     "walker": "^1.0.8"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/debug": "^4.1.7",
     "@types/fb-watchman": "^2.0.6",
     "@types/invariant": "^2.2.37",
-    "@types/micromatch": "^4.0.10",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   }
 }

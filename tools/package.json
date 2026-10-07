@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@expo/internal-scripts": "workspace:*",
     "@types/diff": "^5.0.2",
     "@types/folder-hash": "^4.0.4",
     "@types/fs-extra": "^11.0.4",
@@ -77,7 +78,6 @@
     "eslint": "^9.39.4",
     "eslint-config-universe": "workspace:^",
     "eslint-plugin-lodash": "^7.4.0",
-    "expo-module-scripts": "workspace:*",
     "prettier": "^3.8.3",
     "taskr": "1.1.0",
     "typescript": "^6.0.3"

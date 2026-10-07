@@ -71,7 +71,11 @@ android {
 
   flavorDimensions += "device"
   productFlavors {
-    quest { dimension "device" }
+    quest {
+      dimension "device"
+      applicationIdSuffix ".quest"
+      minSdkVersion 29
+    }
     mobile { dimension "device" }
   }
 

@@ -10,6 +10,9 @@ internal enum AnimationType: String, Enumerable {
   case linear
   case spring
   case interpolatingSpring
+  case smooth
+  case snappy
+  case bouncy
   case `default`
 }
 
@@ -31,6 +34,7 @@ internal struct AnimationConfig: Record {
   private static let defaultDampingFraction: Double = 0.825
   private static let defaultBlendDuration: Double = 0.0
   private static let defaultBounce: Double = 0.0
+  private static let defaultExtraBounce: Double = 0.0
 
   @Field var type: AnimationType = .default
   @Field var duration: Double?
@@ -42,6 +46,7 @@ internal struct AnimationConfig: Record {
   @Field var stiffness: Double?
   @Field var damping: Double?
   @Field var initialVelocity: Double = 0.0
+  @Field var extraBounce: Double?
   @Field var delay: Double?
   @Field var repeatCount: Int?
   @Field var autoreverses: Bool = true
@@ -93,6 +98,21 @@ internal struct AnimationConfig: Record {
       } else {
         animation = .interpolatingSpring
       }
+    case .smooth:
+      animation = .smooth(
+        duration: duration ?? Self.defaultDuration,
+        extraBounce: extraBounce ?? Self.defaultExtraBounce
+      )
+    case .snappy:
+      animation = .snappy(
+        duration: duration ?? Self.defaultDuration,
+        extraBounce: extraBounce ?? Self.defaultExtraBounce
+      )
+    case .bouncy:
+      animation = .bouncy(
+        duration: duration ?? Self.defaultDuration,
+        extraBounce: extraBounce ?? Self.defaultExtraBounce
+      )
     default:
       animation = .default
     }

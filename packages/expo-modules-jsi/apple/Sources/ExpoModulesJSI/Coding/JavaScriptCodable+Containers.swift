@@ -10,6 +10,12 @@
 // MARK: - Array
 
 extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
+  // A non-array value is decoded as a single-element array, so it's accepted when the element is.
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return Element.decodableKinds.union(.object)
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -56,6 +62,11 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
 // MARK: - Optional
 
 extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return Wrapped.decodableKinds.union([.null, .undefined])
+  }
+
   // Optional copies nothing itself, so it overrides the zero-copy overload too and forwards the
   // borrowed value straight through — a wrapped primitive argument stays fully zero-copy.
   @JavaScriptActor
@@ -98,6 +109,11 @@ extension Optional: JavaScriptEncodable where Wrapped: JavaScriptEncodable {
 // MARK: - Dictionary
 
 extension Dictionary: JavaScriptDecodable where Key == String, Value: JavaScriptDecodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws

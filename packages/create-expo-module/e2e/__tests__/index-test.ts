@@ -907,3 +907,31 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
     expect(ktContent).not.toContain('AsyncFunction(');
   });
 });
+
+describe('standalone SharedObject imports', () => {
+  it('installs and builds outside an Expo app', async () => {
+    const projectName = 'shared-object-standalone';
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name',
+      'DependencyProbe',
+      '--package-manager',
+      'npm',
+      '--author-name',
+      'Test',
+      '--author-email',
+      'test@example.com',
+      '--author-url',
+      'https://example.com',
+      '--repo',
+      'https://example.com/module',
+      '--features',
+      'SharedObject',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expectFileExists(projectName, 'build/DependencyProbeModuleSharedObject.d.ts');
+  });
+});

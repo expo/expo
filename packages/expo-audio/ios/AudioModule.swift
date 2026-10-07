@@ -685,9 +685,7 @@ public class AudioModule: Module {
 
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.isRecording {
-        recorder.pauseRecording()
-      }
+      recorder.pauseForSystem()
     }
 #endif
 
@@ -774,9 +772,7 @@ public class AudioModule: Module {
 
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.allowsRecording && !recorder.isRecording {
-        _ = try? recorder.startRecording()
-      }
+      try? recorder.resumeAfterSystemPause()
     }
 #endif
 
@@ -805,9 +801,7 @@ public class AudioModule: Module {
   private func pauseAllRecorders() {
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.isRecording {
-        recorder.pauseRecording()
-      }
+      recorder.pauseForSystem()
     }
 #endif
   }
@@ -815,9 +809,7 @@ public class AudioModule: Module {
   private func resumeAllRecorders() {
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.allowsRecording && !recorder.isRecording {
-        _ = try? recorder.startRecording()
-      }
+      try? recorder.resumeAfterSystemPause()
     }
 #endif
   }

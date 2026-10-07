@@ -4,12 +4,20 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.4'
+version = '58.0.5'
+
+expoModule {
+  v2 true
+}
 
 android {
   namespace "expo.modules.haptics"
   defaultConfig {
     versionCode 16
-    versionName '58.0.4'
+    versionName '58.0.5'
   }
+}
+
+dependencies {
+  testImplementation 'junit:junit:4.13.2'
 }

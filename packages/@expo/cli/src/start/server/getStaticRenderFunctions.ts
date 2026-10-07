@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getMetroServerRoot } from '@expo/config/paths';
+import { flattenSourceMap } from '@expo/metro-config/build/serializer/sourceMap';
 import { evalModule } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
@@ -132,6 +133,14 @@ export function evalMetroNoHandling(
 
   return profile(evalModule, 'eval-metro-bundle')(src, filename, {
     cache: false,
-    sourceMap,
+    sourceMap: sourceMap && toFlatSourceMap(sourceMap),
   });
+}
+
+// NOTE(@robhogan): Node can't load an index map (with `sections`), which Metro emits for
+// bundles, so stack traces from the bundle are only source-mapped when given a flat map.
+// This can be removed once Node loads index maps from a `sourceMappingURL`.
+function toFlatSourceMap(sourceMap: string): string {
+  const parsed = JSON.parse(sourceMap);
+  return 'sections' in parsed ? JSON.stringify(flattenSourceMap(parsed)) : sourceMap;
 }

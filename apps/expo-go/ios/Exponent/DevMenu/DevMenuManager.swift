@@ -26,6 +26,7 @@ public class DevMenuManager: NSObject {
 
   var window: DevMenuWindow?
   var fabWindow: DevMenuFABWindow?
+  private(set) var onboardingContentHeight: CGFloat?
   private var isNavigatingHome = false
   private var didHandleInitialContentAppear = false
 
@@ -301,6 +302,14 @@ public class DevMenuManager: NSObject {
 
   @objc func setOnboardingFinished(_ finished: Bool) {
     DevMenuPreferences.isOnboardingFinished = finished
+  }
+
+  func setOnboardingContentHeight(_ height: CGFloat?) {
+    guard onboardingContentHeight != height else {
+      return
+    }
+    onboardingContentHeight = height
+    window?.invalidateSheetDetents()
   }
 
   @objc func getMotionGestureEnabled() -> Bool {

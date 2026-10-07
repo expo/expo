@@ -1,6 +1,7 @@
 ---
 title: Using TesterArmy
 description: Learn how to test your Expo app with TesterArmy on each push and pull request, using EAS Build and EAS Workflows.
+hasVideoLink: true
 ---
 
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
@@ -10,10 +11,19 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 [TesterArmy](https://tester.army/) is a hosted testing platform that tests your app with AI agents. An agent opens your app, taps through a flow like a user does, and checks the result. TesterArmy runs saved tests and an exploration agent on cloud Android Emulators and iOS Simulators.
 
 This guide shows how to build your app with [EAS Build](/build/introduction/) and run TesterArmy tests on each push and pull request with [EAS Workflows](/eas/workflows/introduction/). To run tests on your own emulator or simulator with TesterArmy's open source e2e framework, see [Using e2e by TesterArmy](/guides/using-e2e/).
+
+<VideoBoxLink
+  videoId="yrtWWbhTsHE"
+  title="Agentic CI for Expo apps with TesterArmy"
+  description="Build or repack your app with EAS Workflows, and let a TesterArmy agent test each pull request on a cloud simulator."
+/>
+
+---
 
 <Prerequisites>
   <Requirement title="A TesterArmy mobile project with a test">

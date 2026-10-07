@@ -1,6 +1,6 @@
 {
   "name": "expo-video",
-  "version": "58.0.6",
+  "version": "58.0.8",
   "description": "A cross-platform, performant video component for React Native and Expo with Web support",
   "keywords": [
     "expo",
@@ -35,12 +35,12 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "jest-expo": "workspace:*"
   },
   "peerDependencies": {
@@ -49,7 +49,7 @@
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   },
   "title": "Expo Video"
 }

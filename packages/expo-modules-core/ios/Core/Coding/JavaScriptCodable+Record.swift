@@ -18,6 +18,12 @@ import ExpoModulesJSI
 // reads it straight from the borrowed value, so a record argument isn't copied first.
 
 extension Record {
+  // A record decodes only from an object.
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self

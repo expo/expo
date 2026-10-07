@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Update `@expo/code-signing-certificates` to `^0.0.7`. ([#51085](https://github.com/expo/expo/pull/51085) by [@kitten](https://github.com/kitten))
+
+## 58.0.14
+
+### Patch Changes
+
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+
 ## 58.0.13
 
 ### Patch Changes
