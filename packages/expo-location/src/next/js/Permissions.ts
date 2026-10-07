@@ -1,26 +1,26 @@
 import { createPermissionHook } from 'expo-modules-core';
 
-import { getNativeLocationModuleNext } from '../native';
+import { NativeLocationModuleNext } from '../native';
 import type { LocationPermissionResponse, RequestPermissionsOptions } from '../types';
 
 export async function getForegroundPermissions(): Promise<LocationPermissionResponse> {
-  return getNativeLocationModuleNext().getForegroundPermissions();
+  return NativeLocationModuleNext.getForegroundPermissions();
 }
 
 export async function requestForegroundPermissions(
   options?: RequestPermissionsOptions
 ): Promise<LocationPermissionResponse> {
-  return getNativeLocationModuleNext().requestForegroundPermissions(options);
+  return NativeLocationModuleNext.requestForegroundPermissions(options);
 }
 
 export async function getBackgroundPermissions(): Promise<LocationPermissionResponse> {
-  return getNativeLocationModuleNext().getBackgroundPermissions();
+  return NativeLocationModuleNext.getBackgroundPermissions();
 }
 
 export async function requestBackgroundPermissions(
   options?: RequestPermissionsOptions
 ): Promise<LocationPermissionResponse> {
-  return getNativeLocationModuleNext().requestBackgroundPermissions(options);
+  return NativeLocationModuleNext.requestBackgroundPermissions(options);
 }
 
 export const useForegroundLocationPermissions = createPermissionHook({
