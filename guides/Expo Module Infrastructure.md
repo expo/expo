@@ -48,7 +48,6 @@ In a module, include `@expo/internal-scripts` as a development dependency in pac
     "lint": "expo-module lint",
     "test": "expo-module test",
     "postinstall": "expo-module postinstall",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   }
