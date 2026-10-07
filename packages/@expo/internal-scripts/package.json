@@ -19,7 +19,6 @@
     "expo-module": "bin/expo-module.js"
   },
   "type": "module",
-  "main": "index.js",
   "exports": {
     "./package.json": "./package.json",
     "./oxlint.config.base": {
