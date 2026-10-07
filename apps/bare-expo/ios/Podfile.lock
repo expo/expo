@@ -671,6 +671,8 @@ PODS:
     - ExpoModulesCore
   - ExpoSensors (58.0.2):
     - ExpoModulesCore
+  - ExpoSensors/Tests (58.0.2):
+    - ExpoModulesCore
   - ExpoSharing (58.0.15):
     - ExpoModulesCore
   - ExpoSMS (58.0.2):
@@ -3436,6 +3438,7 @@ DEPENDENCIES:
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
   - ExpoSensors (from `../../../packages/expo-sensors/ios`)
+  - ExpoSensors/Tests (from `../../../packages/expo-sensors/ios`)
   - ExpoSharing (from `../../../packages/expo-sharing/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
@@ -4150,7 +4153,7 @@ SPEC CHECKSUMS:
   ExpoScreenCapture: 777a2f5ff850cfbdddc03a7f97fc060519c2555c
   ExpoScreenOrientation: 5c5444d0bdd7e91b18fa3684852fe17cd45fa20d
   ExpoSecureStore: 64e1fe78b5b0a1edb61beff044bb2cad03084f9c
-  ExpoSensors: 65795037a8ce9b40e14be4e9a57cd41c4014abb1
+  ExpoSensors: 1a2ae31ec214cefc109a26f9e0f702158da477e6
   ExpoSharing: b36e4698eeb3e735a8a32fc6a1e6a1d6a1af3673
   ExpoSMS: c8b282d16f6ed0846beeec28f59bdf9218199d91
   ExpoSpeech: c5197a19bf647a5f0d5766fa76fa597cc3139414
