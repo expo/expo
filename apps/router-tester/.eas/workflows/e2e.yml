@@ -26,7 +26,7 @@ jobs:
     needs: [build_ios]
     runs_on: macos-medium
     # The simulator runtime comes from the image, and the accessibility tree changes between iOS versions.
-    image: macos-tahoe-26.6-xcode-27.0
+    image: macos-tahoe-26.5-xcode-26.6
     environment: preview
     env:
       CI: '1'
@@ -43,12 +43,16 @@ jobs:
         run: xcrun simctl install booted "${{ steps.download_build.outputs.artifact_path }}"
       - name: Run e2e
         run: pnpm exec e2e run --target ios --reporter list,junit
+      # `eas/upload_artifact` does not find `.e2e` in the app directory, so upload an archive from $HOME.
+      - name: Pack e2e output
+        if: ${{ always() }}
+        run: tar -czf "$HOME/e2e-ios.tar.gz" .e2e
       - uses: eas/upload_artifact
         if: ${{ always() }}
         with:
           type: other
           name: e2e-ios
-          path: .e2e
+          path: ${{ env.HOME }}/e2e-ios.tar.gz
 
   e2e_android:
     needs: [build_android]
@@ -71,9 +75,13 @@ jobs:
         run: adb install -r "${{ steps.download_build.outputs.artifact_path }}"
       - name: Run e2e
         run: pnpm exec e2e run --target android --reporter list,junit
+      # `eas/upload_artifact` does not find `.e2e` in the app directory, so upload an archive from $HOME.
+      - name: Pack e2e output
+        if: ${{ always() }}
+        run: tar -czf "$HOME/e2e-android.tar.gz" .e2e
       - uses: eas/upload_artifact
         if: ${{ always() }}
         with:
           type: other
           name: e2e-android
-          path: .e2e
+          path: ${{ env.HOME }}/e2e-android.tar.gz
