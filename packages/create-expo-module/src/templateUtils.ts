@@ -51,6 +51,17 @@ export const LOCAL_EXCLUDED_FILES = new Set([
 ]);
 export const LOCAL_EXCLUDED_DIRS = new Set(['example', 'internal']);
 
+// pnpm settings for the module and its example app, copied by `copyPnpmWorkspaceFiles`. They're in
+// `snippets`, so that versions of the CLI that don't know these files never copy them.
+const PNPM_WORKSPACE_FILES: Record<string, string> = {
+  'pnpm-workspace.yaml': path.join('snippets', 'pnpm', 'pnpm-workspace.yaml'),
+  [path.join('example', 'pnpm-workspace.yaml')]: path.join(
+    'snippets',
+    'pnpm',
+    'example-pnpm-workspace.yaml'
+  ),
+};
+
 /**
  * Maps template top-level directory names to the platform name in `expo-module.config.json`.
  * Files under these directories are only copied when the corresponding platform is selected.
@@ -413,6 +424,25 @@ export async function copyTemplateFiles(
     const renderedContent = ejs.render(template, augmentedData);
 
     await writeFile(toPath, renderedContent);
+  }
+}
+
+/**
+ * Copies the pnpm settings for the module and its example app. See `shouldCreatePnpmWorkspace`.
+ * Templates published before these files were added don't have them, and existing files are kept
+ * so that rerunning the command doesn't revert settings, e.g. from `pnpm approve-builds`.
+ */
+export async function copyPnpmWorkspaceFiles(
+  templatePath: string,
+  targetPath: string,
+  writeFile: WriteFile = writeFileAsync
+) {
+  for (const [file, source] of Object.entries(PNPM_WORKSPACE_FILES)) {
+    const fromPath = path.join(templatePath, source);
+    const toPath = path.join(targetPath, file);
+    if (fs.existsSync(fromPath) && fs.existsSync(path.dirname(toPath)) && !fs.existsSync(toPath)) {
+      await writeFile(toPath, await fs.promises.readFile(fromPath, 'utf8'));
+    }
   }
 }
 
