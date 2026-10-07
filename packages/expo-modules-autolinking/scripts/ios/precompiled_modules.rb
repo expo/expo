@@ -216,6 +216,7 @@ module Expo
       # - Hardcoded list of pods with React headers in their public API
       # - Pods that vendor xcframeworks (already precompiled)
       # - Source-built pods that depend on React-Core (non-modular includes)
+      # - Pods that depend, directly or transitively, on a static pod (CocoaPods rejects that for frameworks)
       #
       # Also stages shared SPM dep xcframework symlinks inside their owner pod's
       # directory — must run before `generate_pods_project` reads each xcframework's
@@ -233,6 +234,13 @@ module Expo
           if has_vendored_xcframeworks?(t)
             pods_to_downgrade.add(t.name)
           elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
+            pods_to_downgrade.add(t.name)
+          end
+        end
+
+        installer.pod_targets.each do |t|
+          next unless t.should_build? && t.build_as_dynamic?
+          if t.recursive_dependent_targets.any? { |d| pods_to_downgrade.include?(d.name) || d.build_as_static? }
             pods_to_downgrade.add(t.name)
           end
         end
