@@ -404,6 +404,23 @@ describe(_loadTsConfigWithExtends, () => {
     expect(result!.baseUrl).toBe('/project/src');
   });
 
+  it('substitutes ${configDir} without a separator', () => {
+    vol.fromJSON(
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: { paths: { '@/*': ['${configDir}src/*'] } },
+        }),
+      },
+      '/project'
+    );
+    const result = _loadTsConfigWithExtends(
+      '/project',
+      '/project/tsconfig.json',
+      createDepGraph('/project')
+    );
+    expect(result!.paths!['@/*']).toEqual(['/project/src/*']);
+  });
+
   it('substitutes ${configDir} in paths values', () => {
     vol.fromJSON(
       {
