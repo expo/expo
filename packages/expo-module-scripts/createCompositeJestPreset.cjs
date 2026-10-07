@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const basePreset = require('./jest-preset.cjs');
+const createJestPreset = require('./createJestPreset.cjs');
 
 // Builds a single multi-project Jest config for a package that has build sub-targets
 // (e.g. `plugin`, `cli`, `utils`) with their own tests. The package's `src` tests run via
@@ -45,7 +46,7 @@ module.exports = function createCompositeJestPreset(
       }),
       // RSC `__rsc_tests__` as their own per-platform projects (named `rsc/<platform>`). These
       // only match `**/__rsc_tests__/**`, so they're inert for packages without such tests.
-      ...(rsc ? require('jest-expo/rsc/jest-preset').projects : []),
+      ...(rsc ? require('jest-expo/rsc/jest-preset').projects.map(createJestPreset) : []),
     ],
   };
 };

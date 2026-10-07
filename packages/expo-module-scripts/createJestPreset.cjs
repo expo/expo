@@ -36,6 +36,7 @@ module.exports = function createJestPreset(basePreset) {
 };
 
 function _createJestPreset(basePreset) {
+  // Internal tests resolve workspace source files instead of requiring build outputs.
   const customExportConditions =
     basePreset.testEnvironmentOptions?.customExportConditions?.slice() ?? [];
   if (!customExportConditions.includes('expo-source')) {
