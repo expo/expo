@@ -36,7 +36,7 @@ export default function SizeScreen() {
 
           <Column spacing={8} style={{ width: '100%' }}>
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Row split</Text>
-            <Row testID="universal-size-row" spacing={8} style={{ width: '100%', height: 64 }}>
+            <Row testID="universal-size-row" spacing={0} style={{ width: '100%', height: 64 }}>
               <Column
                 testID="universal-size-row-start"
                 style={{
