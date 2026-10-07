@@ -1,5 +1,6 @@
 package expo.modules.location.taskConsumers
 
+import android.Manifest
 import android.app.PendingIntent
 import android.app.job.JobParameters
 import android.app.job.JobService
@@ -7,12 +8,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.os.PersistableBundle
 import android.util.Log
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -204,6 +207,12 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
     // Foreground service is requested but not running.
     if (mService == null) {
+      // Starting a location foreground service without a location permission throws a SecurityException on Android 14+.
+      // The permission can be gone while the task is still registered (e.g. "Only this time" expired).
+      if (!hasLocationPermission()) {
+        Log.w(TAG, "Foreground location task cannot be started without a location permission")
+        return
+      }
       val serviceIntent = Intent(context, LocationTaskService::class.java)
       val extras = Bundle()
       val serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle()
@@ -213,7 +222,12 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       extras.putString("taskName", task.name)
       extras.putBoolean("killService", serviceOptions.getBoolean("killServiceOnDestroy", false))
       serviceIntent.putExtras(extras)
-      context.startForegroundService(serviceIntent)
+      try {
+        context.startForegroundService(serviceIntent)
+      } catch (e: Exception) {
+        Log.w(TAG, "Foreground location task could not be started", e)
+        return
+      }
       context.bindService(
         serviceIntent,
         object : ServiceConnection {
@@ -221,7 +235,14 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
             mService = (service as? ServiceBinder)?.service
             mService?.let {
               it.setParentContext(context)
-              it.startForeground(serviceOptions)
+              try {
+                it.startForeground(serviceOptions)
+              } catch (e: Exception) {
+                // Otherwise the system kills the app when the service doesn't enter the foreground in time.
+                Log.w(TAG, "Foreground location task could not enter the foreground", e)
+                it.stop()
+                mService = null
+              }
             }
           }
 
@@ -234,7 +255,19 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       )
     } else {
       // Restart the service with new service options.
-      mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      try {
+        mService?.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      } catch (e: Exception) {
+        Log.w(TAG, "Foreground location task could not be restarted", e)
+        mService?.stop()
+        mService = null
+      }
+    }
+  }
+
+  private fun hasLocationPermission(): Boolean {
+    return listOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION).any {
+      ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
     }
   }
 
