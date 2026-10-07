@@ -64,12 +64,4 @@ class HingeObserverTest {
     assertNull(observer.hinge)
     assertEquals(listOf(HingeState(90.0, HingeStatus.UNKNOWN), null), changes)
   }
-
-  @Test
-  fun convertsTheHingeForJS() {
-    assertEquals(
-      mapOf("angle" to 90.0, "status" to "partiallyOpen"),
-      HingeState(90.0, HingeStatus.PARTIALLY_OPEN).toMap()
-    )
-  }
 }

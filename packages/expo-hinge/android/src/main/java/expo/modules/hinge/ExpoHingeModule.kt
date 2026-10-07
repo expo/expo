@@ -26,13 +26,13 @@ class ExpoHingeModule : Module() {
     Events(HINGE_CHANGE_EVENT)
 
     Function("getHinge") {
-      observer.hinge?.toMap()
+      observer.hinge
     }
 
     OnCreate {
       observer.onChange = { hinge ->
         if (hasListeners) {
-          sendEvent(HINGE_CHANGE_EVENT, mapOf("hinge" to hinge?.toMap()))
+          sendEvent(HINGE_CHANGE_EVENT, mapOf("hinge" to hinge))
         }
       }
       attach()

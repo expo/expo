@@ -9,7 +9,10 @@ import android.os.Build
 import androidx.annotation.MainThread
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -24,9 +27,11 @@ internal enum class HingeStatus(val value: String) : Enumerable {
 /**
  * The hinge state as sent to JS. The angle is in degrees, where 0 is closed and 180 is flat.
  */
-internal data class HingeState(val angle: Double, val status: HingeStatus) {
-  fun toMap(): Map<String, Any> = mapOf("angle" to angle, "status" to status.value)
-}
+@OptimizedRecord
+internal data class HingeState(
+  @Field val angle: Double,
+  @Field val status: HingeStatus
+) : Record
 
 /**
  * Observes the device hinge through the hinge angle sensor and the folding feature of the current
