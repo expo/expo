@@ -5,9 +5,9 @@ import ExpoHinge from './ExpoHinge';
 import type { Hinge, HingeChangeEvent } from './Hinge.types';
 
 /**
- * Whether this build and OS can report the hinge: iOS 27.1 or later, built with the iOS 27.1 SDK.
- * It does not mean the device has a hinge, which [`getHinge()`](#gethinge) answers with a non-`null`
- * value. Always `false` on Android and web.
+ * Whether this build and OS can report the hinge: iOS 27.1 or later, built with the iOS 27.1 SDK, or
+ * Android 11 (API level 30) or later. It does not mean the device has a hinge, which
+ * [`getHinge()`](#gethinge) answers with a non-`null` value. Always `false` on web.
  */
 export function isAvailable(): boolean {
   return ExpoHinge?.isAvailable ?? false;

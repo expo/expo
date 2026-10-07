@@ -1,6 +1,6 @@
 # expo-hinge
 
-Provides the device hinge angle and status on iPhone Duo, for the whole app, through a sync getter, a listener and a `useHinge()` hook. For a per-view SwiftUI modifier, see `onHingeChange` in `@expo/ui`.
+Provides the device hinge angle and status on iPhone Duo and Android foldables, for the whole app, through a sync getter, a listener and a `useHinge()` hook. For a per-view SwiftUI modifier, see `onHingeChange` in `@expo/ui`.
 
 # API documentation
 
@@ -24,6 +24,10 @@ npx expo install expo-hinge
 ### Configure for iOS
 
 Run `npx pod-install` after installing the npm package. Hinge updates need iOS 27.1 and a build made with the iOS 27.1 SDK (Xcode 27.1); older builds and devices without a hinge report `null`.
+
+### Configure for Android
+
+No additional set up necessary. Hinge updates need Android 11 (API level 30) or later and a device with a hinge angle sensor; other devices report `null`.
 
 # Contributing
 
