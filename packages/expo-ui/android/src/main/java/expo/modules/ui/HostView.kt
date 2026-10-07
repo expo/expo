@@ -252,11 +252,27 @@ internal class HostView(context: Context, appContext: AppContext) :
 
       val contentWidthPx = placeables.maxOfOrNull { it.width } ?: 0
       val contentHeightPx = placeables.maxOfOrNull { it.height } ?: 0
+      // A child percentage is a fraction of the safe area proposed above.
+      // Publishing that result as the view size makes the next pass resolve it again.
+      val widthFromPercentage = definiteWidth != null && measurables.any {
+        it.parentData.asUniversalLayoutParentData().dimensions.widthFraction != null
+      }
+      val heightFromPercentage = definiteHeight != null && measurables.any {
+        it.parentData.asUniversalLayoutParentData().dimensions.heightFraction != null
+      }
 
       if (useViewportSizeMeasurement && (constraints.maxWidth == 0 || constraints.maxHeight == 0)) {
         with(density) {
-          val widthDp = contentWidthPx.toDp().value.toDouble()
-          val heightDp = contentHeightPx.toDp().value.toDouble()
+          val widthDp = if (widthFromPercentage) {
+            safeWidthPx.toDp().value.toDouble()
+          } else {
+            contentWidthPx.toDp().value.toDouble()
+          }
+          val heightDp = if (heightFromPercentage) {
+            safeHeightPx.toDp().value.toDouble()
+          } else {
+            contentHeightPx.toDp().value.toDouble()
+          }
 
           shadowNodeProxy.setViewSize(
             if (constraints.maxWidth == 0) {

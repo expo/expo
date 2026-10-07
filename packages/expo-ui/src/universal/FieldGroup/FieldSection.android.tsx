@@ -37,10 +37,14 @@ export function FieldSection({
 
   const { header, footer, rows } = extractFieldSectionSlots(children);
 
+  // fillMaxWidth owns the width axis, so it must not be passed when style.width is set.
+  const sectionModifiers =
+    style?.width == null ? [fillMaxWidth(), ...(extraModifiers ?? [])] : extraModifiers;
+
   const outerModifiers = transformToModifiers(
     style,
     { disabled, hidden, testID },
-    [fillMaxWidth(), ...(extraModifiers ?? [])],
+    sectionModifiers,
     { componentName: 'FieldSection' }
   );
 

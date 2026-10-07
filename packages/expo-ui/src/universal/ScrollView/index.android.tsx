@@ -28,6 +28,9 @@ export function ScrollView({
     { componentName: 'ScrollView' }
   );
 
+  // verticalScroll and horizontalScroll clear the main-axis max before measure.
+  // A percentage on the scroll axis has no definite parent, so it is ignored.
+  // The cross axis still resolves.
   if (direction === 'horizontal') {
     return (
       <Row resolvesChildPercentages modifiers={[...modifiers, horizontalScroll()]}>

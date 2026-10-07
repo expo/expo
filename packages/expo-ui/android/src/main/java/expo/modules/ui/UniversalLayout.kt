@@ -316,10 +316,17 @@ private fun MeasureScope.measureUniversalStack(
     } else {
       (maxMain - occupiedMain - totalSpacing).coerceAtLeast(0)
     }
-    val childConstraints = if (horizontal) {
-      fixedOrBoundedConstraints(width, height, resolvedMain ?: remainingMain, maxCross)
+    // The percentage uses the whole stack.
+    // The tight constraint is then limited to the incoming max, so 150% cannot paint past the parent.
+    val mainLimit = if (resolvedMain == null || maxMain == Constraints.Infinity) {
+      resolvedMain ?: remainingMain
     } else {
-      fixedOrBoundedConstraints(width, height, maxCross, resolvedMain ?: remainingMain)
+      resolvedMain.coerceAtMost(maxMain.coerceAtLeast(0))
+    }
+    val childConstraints = if (horizontal) {
+      fixedOrBoundedConstraints(width, height, mainLimit, maxCross)
+    } else {
+      fixedOrBoundedConstraints(width, height, maxCross, mainLimit)
     }
     val placeable = measurable.measure(childConstraints)
     placeables[index] = placeable
