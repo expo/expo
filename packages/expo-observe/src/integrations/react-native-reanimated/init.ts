@@ -21,11 +21,12 @@ const REANIMATED_WARNING_EVENT = 'reanimated.warning';
 const REPORT_WINDOW_MS = 60_000;
 const MAX_DISTINCT_MESSAGES_PER_WINDOW = 100;
 // Attribute values are sent on every dispatch, and strict-mode messages append a docs
-// reference, so the copied message is capped.
+// reference, so the copied message is capped. Messages are also deduplicated by this capped
+// text, so two messages that differ only after the cap do not send the same attribute twice.
 const MAX_MESSAGE_LENGTH = 500;
 
-// Maps each message reported in the current window to the time it was reported. A `Map` keeps
-// insertion order, so the oldest report is always first.
+// Maps the capped text of each message reported in the current window to the time it was
+// reported. A `Map` keeps insertion order, so the oldest report is always first.
 const reportedErrors = new Map<string, number>();
 const reportedWarnings = new Map<string, number>();
 
@@ -62,20 +63,21 @@ function removeExpiredReports(reported: Map<string, number>, now: number): void 
   }
 }
 
-function shouldReport(reported: Map<string, number>, message: string): boolean {
+function shouldReport(reported: Map<string, number>, cappedMessage: string): boolean {
   const now = Date.now();
   removeExpiredReports(reported, now);
-  if (reported.has(message) || reported.size >= MAX_DISTINCT_MESSAGES_PER_WINDOW) {
+  if (reported.has(cappedMessage) || reported.size >= MAX_DISTINCT_MESSAGES_PER_WINDOW) {
     return false;
   }
-  reported.set(message, now);
+  reported.set(cappedMessage, now);
   return true;
 }
 
 // Reanimated already prints every log to the console, so this only reports to Observe.
 function reportReanimatedLog({ level, message }: ReanimatedLogData): void {
   const isError = level === LOG_LEVEL_ERROR;
-  if (!shouldReport(isError ? reportedErrors : reportedWarnings, message)) {
+  const cappedMessage = message.slice(0, MAX_MESSAGE_LENGTH);
+  if (!shouldReport(isError ? reportedErrors : reportedWarnings, cappedMessage)) {
     return;
   }
   if (isError) {
@@ -91,7 +93,7 @@ function reportReanimatedLog({ level, message }: ReanimatedLogData): void {
     severity: 'warn',
     // `eas observe:events` and `observe:session` show `attributes` but not `body`, so the
     // message is copied here to stay queryable.
-    attributes: { message: message.slice(0, MAX_MESSAGE_LENGTH) },
+    attributes: { message: cappedMessage },
   });
 }
 
