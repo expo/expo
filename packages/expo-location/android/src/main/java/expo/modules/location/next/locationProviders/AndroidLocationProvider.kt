@@ -3,6 +3,7 @@ package expo.modules.location.next.locationProviders
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,10 +16,17 @@ import android.os.CancellationSignal
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings
+import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.IntentCompat
 import androidx.core.location.LocationListenerCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.core.location.LocationRequestCompat
+import expo.modules.interfaces.taskManager.TaskConsumer
+import expo.modules.interfaces.taskManager.TaskManagerInterface
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
+import expo.modules.location.next.BatchedPositions
+import expo.modules.location.next.LocationTaskConsumer
 import expo.modules.location.next.Position
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
 import expo.modules.location.next.toPosition
@@ -27,14 +35,17 @@ import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.resume
 import kotlin.time.Duration
 
-private fun getValidSystemProviders(context: Context, locationManager: LocationManager): List<String> {
+private fun getPermittedSystemProviders(context: Context, locationManager: LocationManager, enabledOnly: Boolean): List<String> {
   val fineGranted = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-  val enabledProviders = locationManager.getProviders(true)
+  val providers = locationManager.getProviders(enabledOnly)
   // Avoid GPS_PROVIDER, when only coarse permissions are given.
-  return enabledProviders.filter {
+  return providers.filter {
     it != LocationManager.GPS_PROVIDER || fineGranted
   }
 }
+
+private fun getValidSystemProviders(context: Context, locationManager: LocationManager): List<String> =
+  getPermittedSystemProviders(context, locationManager, enabledOnly = true)
 
 private fun downgradeSystemProvider(provider: String) = when (provider) {
   LocationManager.FUSED_PROVIDER -> LocationManager.GPS_PROVIDER
@@ -51,9 +62,9 @@ fun LocationPriority.toQuality(): Int {
   }
 }
 
-fun resolveSystemProviderName(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? {
+private fun desiredSystemProvider(locationPriority: LocationPriority): String {
   // Pick the desired provider based on LocationPriority options
-  val desiredProvider = when (locationPriority) {
+  return when (locationPriority) {
     LocationPriority.HIGH_ACCURACY, LocationPriority.BALANCED_POWER_ACCURACY -> {
       if (Build.VERSION.SDK_INT >= 31) {
         LocationManager.FUSED_PROVIDER
@@ -64,15 +75,19 @@ fun resolveSystemProviderName(locationPriority: LocationPriority, context: Conte
     LocationPriority.LOW_POWER -> LocationManager.NETWORK_PROVIDER
     LocationPriority.PASSIVE -> LocationManager.PASSIVE_PROVIDER
   }
-  val validProviders = getValidSystemProviders(context, locationManager)
+}
 
+private fun resolveProviderFrom(locationPriority: LocationPriority, validProviders: List<String>): String? {
   // Downgrade provider if it is not valid.
-  var provider: String? = desiredProvider
+  var provider: String? = desiredSystemProvider(locationPriority)
   while (provider != null && provider !in validProviders) {
     provider = downgradeSystemProvider(provider)
   }
   return provider
 }
+
+fun resolveSystemProviderName(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? =
+  resolveProviderFrom(locationPriority, getValidSystemProviders(context, locationManager))
 
 class AndroidLocationProvider(private val context: Context) : LocationProvider {
   val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -120,6 +135,17 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
       return ProviderResult.Unavailable
     }
     return ProviderResult.Available(AndroidPositionUpdatesSession(context, locationManager))
+  }
+
+  override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    return ProviderResult.Available(AndroidLocationTaskConsumer::class.java)
+  }
+
+  override fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
+    if (!taskManager.taskHasConsumerOfClass(taskName, AndroidLocationTaskConsumer::class.java)) {
+      return ProviderResult.Unavailable
+    }
+    return ProviderResult.Available(AndroidLocationTaskConsumer::class.java)
   }
 
   // On plain android we can only move user to settings.
@@ -226,5 +252,80 @@ private class AndroidPositionUpdatesSession(
     if (listener != null) {
       state = SessionState(listener, provider)
     }
+  }
+}
+
+class AndroidLocationTaskConsumer(
+  context: Context,
+  taskManagerUtils: TaskManagerUtilsInterface?
+) : LocationTaskConsumer(context, taskManagerUtils) {
+  private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as? LocationManager
+
+  @SuppressLint("MissingPermission")
+  override fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean): Boolean {
+    val locationManager = locationManager ?: return false
+    val provider = runCatching {
+      resolveProviderFrom(options.priority, getPermittedSystemProviders(context, locationManager, enabledOnly = false))
+    }.getOrNull() ?: return false
+
+    return runCatching {
+      if (Build.VERSION.SDK_INT >= 31) {
+        val request = LocationRequestCompat.Builder(options.interval.inWholeMilliseconds)
+          .setQuality(options.priority.toQuality())
+          .setMaxUpdateDelayMillis(options.maxUpdateDelay.inWholeMilliseconds)
+          .setMinUpdateDistanceMeters(options.minUpdateDistance)
+          .build()
+          .toLocationRequest()
+        locationManager.requestLocationUpdates(provider, request, pendingIntent)
+      } else {
+        locationManager.requestLocationUpdates(
+          provider,
+          options.interval.inWholeMilliseconds,
+          options.minUpdateDistance,
+          pendingIntent
+        )
+      }
+      true
+    }.onFailure {
+      reportRequestFailed(it)
+      Log.w("ExpoLocation", "Could not request background location updates from \"$provider\"", it)
+    }.getOrDefault(false)
+  }
+
+  @SuppressLint("MissingPermission")
+  override fun stopLocationUpdates(pendingIntent: PendingIntent) {
+    runCatching {
+      locationManager?.removeUpdates(pendingIntent)
+      pendingIntent.cancel()
+    }.onFailure {
+      Log.w("ExpoLocation", "Could not stop background location updates", it)
+    }
+  }
+
+  override fun decodeBatchedPositions(intent: Intent?): BatchedPositions {
+    intent ?: return BatchedPositions(null, "Received a location broadcast without an intent.")
+    return runCatching { decodeIntent(intent) }.getOrElse {
+      Log.w("ExpoLocation", "Could not decode a location broadcast", it)
+      BatchedPositions(null, "Could not read the location update sent by the system.")
+    }
+  }
+
+  private fun decodeIntent(intent: Intent): BatchedPositions {
+    if (Build.VERSION.SDK_INT >= 31) {
+      val batch = IntentCompat
+        .getParcelableArrayExtra(intent, LocationManager.KEY_LOCATIONS, Location::class.java)
+        ?.filterIsInstance<Location>()
+        ?.takeIf { it.isNotEmpty() }
+      if (batch != null) {
+        return BatchedPositions(batch.map { it.toPosition() }, null)
+      }
+    }
+
+    val location = IntentCompat.getParcelableExtra(intent, LocationManager.KEY_LOCATION_CHANGED, Location::class.java)
+    if (location != null) {
+      return BatchedPositions(listOf(location.toPosition()), null)
+    }
+
+    return BatchedPositions(null, null)
   }
 }
