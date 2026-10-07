@@ -65,7 +65,7 @@
     "@expo/env": "workspace:^",
     "@expo/plist": "workspace:^",
     "@expo/spawn-async": "^1.8.0",
-    "@react-native/asset-utils": "0.88.0-rc.3",
+    "@react-native/asset-utils": "0.88.0-rc.4",
     "arg": "^4.1.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",

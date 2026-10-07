@@ -19,7 +19,7 @@
     "expo": "workspace:~",
     "expo-status-bar": "workspace:~",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.3"
+    "react-native": "0.88.0-rc.4"
   },
   "devDependencies": {
     "@types/react": "~19.3.0",
