@@ -11,17 +11,14 @@ test('shows the home screen', async ({ app, platform, screen }) => {
 });
 
 // The home screen links use `Link.Preview`, which hides them from the iOS accessibility tree.
-test('opens native tabs from a deep link', async ({ app, openLink, screen }) => {
-  await app.open();
-
+test('opens native tabs from a deep link', async ({ openLink, screen }) => {
   await openLink('router-tester://tabs');
 
   await expect(screen.getByText('Index screen')).toBeVisible();
   await expect(screen.getByText('Index tab')).toBeVisible();
 });
 
-test('opens a dynamic route', async ({ app, openLink, screen }) => {
-  await app.open();
+test('opens a dynamic route', async ({ openLink, screen }) => {
   await openLink('router-tester://params');
 
   await screen.getByText('/params/123').tap();
