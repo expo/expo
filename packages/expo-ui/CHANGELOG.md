@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `Picker` not reporting a selection that equals the last `selection` prop when the user changes it again before the prop updates. ([#51196](https://github.com/expo/expo/pull/51196) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 57.0.22 — 2026-10-06
