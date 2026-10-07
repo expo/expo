@@ -91,8 +91,8 @@ describe('atoms and already-loaded ownership', () => {
       [0b100n, ['/app/index.js']],
       [0b101n, ['/app/expo-mock/async-require']],
     ]);
-    expect(plan.staticAtoms).toEqual([0b10101n, 0b00110n, 0b11000n]);
-    expect(plan.alreadyLoadedAtoms).toEqual([0b11000n, 0b11101n, 0n]);
+    expect(plan.staticDependencyAtomsByEntry).toEqual([0b10101n, 0b00110n, 0b11000n]);
+    expect(plan.guaranteedLoadedAtomsByEntry).toEqual([0b11000n, 0b11101n, 0n]);
     expect(
       plan.chunks.map((chunk) => [chunk.dependentEntries, [...chunk.modules].map((m) => m.path)])
     ).toEqual([
@@ -138,7 +138,7 @@ describe('atoms and already-loaded ownership', () => {
     );
     expect(plan.rawAtoms[atomIndex]!.dependentEntries).toBe(0b0101n);
     expect(
-      plan.alreadyLoadedAtoms.map((bits) => (bits & (1n << BigInt(atomIndex))) !== 0n)
+      plan.guaranteedLoadedAtomsByEntry.map((bits) => (bits & (1n << BigInt(atomIndex))) !== 0n)
     ).toEqual([false, true, true, false]);
     expect(owners(plan, 'shared')).toEqual(['/app/a.js']);
   });
@@ -287,7 +287,7 @@ describe('atoms and already-loaded ownership', () => {
     expect(plan.rawAtoms).toHaveLength(130);
     expect(plan.chunks).toHaveLength(130);
     expect(owners(plan, 'dep129')).toEqual(['/app/route0.js', '/app/route7.js']);
-    expect(plan.staticAtoms[8]! >> 128n).toBe(0b11n);
+    expect(plan.staticDependencyAtomsByEntry[8]! >> 128n).toBe(0b11n);
   });
 });
 

@@ -34,8 +34,8 @@ export interface ChunkAtom {
 export interface BitSetChunkPlan extends BitSetGraphAnalysis {
   readonly rawAtoms: readonly ChunkAtom[];
   /** Bits refer to rawAtoms, not entrypoints. */
-  readonly staticAtoms: readonly BitSet[];
-  readonly alreadyLoadedAtoms: readonly BitSet[];
+  readonly staticDependencyAtomsByEntry: readonly BitSet[];
+  readonly guaranteedLoadedAtomsByEntry: readonly BitSet[];
   readonly chunks: readonly ChunkAtom[];
   /** All chunks needed by each entry, including ones already loaded. */
   readonly requiredChunksByEntryPath: ReadonlyMap<string, readonly ChunkAtom[]>;
@@ -67,38 +67,85 @@ export function computeBitSetChunkPlan(
   const analysis = analyzeBitSetGraph(initialEntries, graph, options);
   const { entryPoints, dependentEntriesByModule, dynamicImportsByEntry } = analysis;
   const rawAtoms = groupModulesByOwners(dependentEntriesByModule);
-  const staticAtoms = entryPoints.map(() => 0n);
+  const staticDependencyAtomsByEntry = getStaticDependencyAtomsByEntry(entryPoints, rawAtoms);
+  const guaranteedLoadedAtomsByEntry = computeGuaranteedLoadedAtoms(
+    entryPoints,
+    dynamicImportsByEntry,
+    staticDependencyAtomsByEntry,
+    rawAtoms.length
+  );
+  const chunks = normalizeAtomOwners(rawAtoms, guaranteedLoadedAtomsByEntry);
+  const requiredChunksByEntryPath = getRequiredChunksByEntryPath(
+    entryPoints,
+    chunks,
+    dependentEntriesByModule
+  );
+  return {
+    ...analysis,
+    rawAtoms,
+    staticDependencyAtomsByEntry,
+    guaranteedLoadedAtomsByEntry,
+    chunks,
+    requiredChunksByEntryPath,
+  };
+}
+
+function getStaticDependencyAtomsByEntry(
+  entryPoints: readonly PlannerEntryPoint[],
+  rawAtoms: readonly ChunkAtom[]
+): BitSet[] {
+  const staticDependencyAtomsByEntry = entryPoints.map(() => 0n);
   for (const [atomIndex, atom] of rawAtoms.entries()) {
     const atomMask = 1n << BigInt(atomIndex);
     for (const entryIndex of bitIndices(atom.dependentEntries)) {
-      staticAtoms[entryIndex] = staticAtoms[entryIndex]! | atomMask;
+      staticDependencyAtomsByEntry[entryIndex] =
+        staticDependencyAtomsByEntry[entryIndex]! | atomMask;
     }
   }
 
-  const allAtoms = (1n << BigInt(rawAtoms.length)) - 1n;
-  const alreadyLoadedAtoms = entryPoints.map((entry) => (entry.kind === 'initial' ? 0n : allAtoms));
+  return staticDependencyAtomsByEntry;
+}
+
+function computeGuaranteedLoadedAtoms(
+  entryPoints: readonly PlannerEntryPoint[],
+  dynamicImportsByEntry: readonly BitSet[],
+  staticDependencyAtomsByEntry: readonly BitSet[],
+  atomCount: number
+): BitSet[] {
+  const allAtoms = (1n << BigInt(atomCount)) - 1n;
+  const guaranteedLoadedAtomsByEntry = entryPoints.map((entry) =>
+    entry.kind === 'initial' ? 0n : allAtoms
+  );
   const pendingEntries = new Set<number>();
   for (const [index, entry] of entryPoints.entries()) {
     if (entry.kind === 'initial') pendingEntries.add(index);
   }
   for (const entryIndex of pendingEntries) {
     pendingEntries.delete(entryIndex);
-    const availableAtoms = staticAtoms[entryIndex]! | alreadyLoadedAtoms[entryIndex]!;
+    const availableAtoms =
+      staticDependencyAtomsByEntry[entryIndex]! | guaranteedLoadedAtomsByEntry[entryIndex]!;
     for (const targetIndex of bitIndices(dynamicImportsByEntry[entryIndex]!)) {
       // Availability only shrinks. Intersect each reduction into the target instead of
       // revisiting all of its importers; re-queue changed targets to propagate through cycles.
-      const updatedLoadedAtoms = alreadyLoadedAtoms[targetIndex]! & availableAtoms;
-      if (updatedLoadedAtoms === alreadyLoadedAtoms[targetIndex]) continue;
-      alreadyLoadedAtoms[targetIndex] = updatedLoadedAtoms;
+      const updatedLoadedAtoms = guaranteedLoadedAtomsByEntry[targetIndex]! & availableAtoms;
+      if (updatedLoadedAtoms === guaranteedLoadedAtomsByEntry[targetIndex]) continue;
+      guaranteedLoadedAtomsByEntry[targetIndex] = updatedLoadedAtoms;
       pendingEntries.add(targetIndex);
     }
   }
 
+  return guaranteedLoadedAtomsByEntry;
+}
+
+function normalizeAtomOwners(
+  rawAtoms: readonly ChunkAtom[],
+  guaranteedLoadedAtomsByEntry: readonly BitSet[]
+): ChunkAtom[] {
   const normalizedOwnersByModule = new Map<GraphModule, BitSet>();
   for (const [atomIndex, atom] of rawAtoms.entries()) {
     let owners = atom.dependentEntries;
     for (const entryIndex of bitIndices(owners)) {
-      if ((alreadyLoadedAtoms[entryIndex]! & (1n << BigInt(atomIndex))) !== 0n) {
+      if ((guaranteedLoadedAtomsByEntry[entryIndex]! & (1n << BigInt(atomIndex))) !== 0n) {
         owners &= ~(1n << BigInt(entryIndex));
       }
     }
@@ -112,7 +159,14 @@ export function computeBitSetChunkPlan(
     for (const module of atom.modules) normalizedOwnersByModule.set(module, owners);
   }
 
-  const chunks = groupModulesByOwners(normalizedOwnersByModule);
+  return groupModulesByOwners(normalizedOwnersByModule);
+}
+
+function getRequiredChunksByEntryPath(
+  entryPoints: readonly PlannerEntryPoint[],
+  chunks: readonly ChunkAtom[],
+  dependentEntriesByModule: ReadonlyMap<GraphModule, BitSet>
+): Map<string, readonly ChunkAtom[]> {
   const requiredChunksByEntry = entryPoints.map(() => [] as ChunkAtom[]);
   for (const chunk of chunks) {
     // Keep original reachability: an entry still requires chunks that its importers load.
@@ -124,16 +178,9 @@ export function computeBitSetChunkPlan(
       requiredChunksByEntry[entryIndex]!.push(chunk);
     }
   }
-  return {
-    ...analysis,
-    rawAtoms,
-    staticAtoms,
-    alreadyLoadedAtoms,
-    chunks,
-    requiredChunksByEntryPath: new Map(
-      entryPoints.map((entry, index) => [entry.module.path, requiredChunksByEntry[index]!])
-    ),
-  };
+  return new Map(
+    entryPoints.map((entry, index) => [entry.module.path, requiredChunksByEntry[index]!])
+  );
 }
 
 function compareModules(a: GraphModule, b: GraphModule): number {
@@ -144,8 +191,33 @@ function compareModules(a: GraphModule, b: GraphModule): number {
 export function analyzeBitSetGraph(
   initialEntries: readonly GraphModule[],
   graph: ReadOnlyGraph,
-  { isLazyBundle }: { isLazyBundle: boolean }
+  options: { isLazyBundle: boolean }
 ): BitSetGraphAnalysis {
+  const { entryPoints, edgesByModule, workerEntries } = discoverEntryGraph(
+    initialEntries,
+    graph,
+    options
+  );
+  return {
+    entryPoints,
+    ...computeEntryReachability(entryPoints, edgesByModule),
+    workerEntries,
+  };
+}
+
+type ModuleEdge = { target: GraphModule; isDynamic: boolean };
+
+type DiscoveredEntryGraph = {
+  entryPoints: readonly PlannerEntryPoint[];
+  edgesByModule: ReadonlyMap<GraphModule, readonly ModuleEdge[]>;
+  workerEntries: readonly GraphModule[];
+};
+
+function discoverEntryGraph(
+  initialEntries: readonly GraphModule[],
+  graph: ReadOnlyGraph,
+  { isLazyBundle }: { isLazyBundle: boolean }
+): DiscoveredEntryGraph {
   if (isLazyBundle) {
     throw new Error(
       'BitSet chunking requires a complete non-lazy export graph. Disable lazy bundling.'
@@ -166,13 +238,13 @@ export function analyzeBitSetGraph(
     entriesByPath.set(module.path, { module, kind: 'initial' });
   }
 
-  const edgesByModule = new Map<GraphModule, { target: GraphModule; isDynamic: boolean }[]>();
+  const edgesByModule = new Map<GraphModule, ModuleEdge[]>();
   const workerEntries = new Set<GraphModule>();
   const pendingModules = [...entriesByPath.values()].map((entry) => entry.module);
   for (let index = 0; index < pendingModules.length; index++) {
     const module = pendingModules[index]!;
     if (edgesByModule.has(module)) continue;
-    const moduleEdges: { target: GraphModule; isDynamic: boolean }[] = [];
+    const moduleEdges: ModuleEdge[] = [];
     edgesByModule.set(module, moduleEdges);
     for (const dependency of module.dependencies.values()) {
       const asyncType = dependency.data.data.asyncType as AsyncDependencyType | null;
@@ -200,6 +272,17 @@ export function analyzeBitSetGraph(
   const entryPoints = [...entriesByPath.values()].sort((a, b) =>
     compareModules(a.module, b.module)
   );
+  return {
+    entryPoints,
+    edgesByModule,
+    workerEntries: [...workerEntries].sort(compareModules),
+  };
+}
+
+function computeEntryReachability(
+  entryPoints: readonly PlannerEntryPoint[],
+  edgesByModule: ReadonlyMap<GraphModule, readonly ModuleEdge[]>
+): Pick<BitSetGraphAnalysis, 'dependentEntriesByModule' | 'dynamicImportsByEntry'> {
   const entryIndexByPath = new Map(entryPoints.map((entry, index) => [entry.module.path, index]));
   const dependentEntriesByModule = new Map<GraphModule, BitSet>();
   const dynamicImportsByEntry = entryPoints.map(() => 0n);
@@ -226,11 +309,9 @@ export function analyzeBitSetGraph(
   }
 
   return {
-    entryPoints,
     dependentEntriesByModule: new Map(
       [...dependentEntriesByModule].sort(([a], [b]) => compareModules(a, b))
     ),
     dynamicImportsByEntry,
-    workerEntries: [...workerEntries].sort(compareModules),
   };
 }
