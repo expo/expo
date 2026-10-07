@@ -1,11 +1,4 @@
-import React, {
-  ReactNode,
-  useRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  forwardRef,
-} from "react";
+import React, { ReactNode, useRef, useCallback, useEffect, useMemo, forwardRef } from 'react';
 import {
   View,
   Platform,
@@ -13,8 +6,9 @@ import {
   StyleProp,
   ViewStyle,
   LayoutChangeEvent,
-} from "react-native";
-import RNViewShot from "./RNViewShot";
+} from 'react-native';
+
+import RNViewShot from './RNViewShot';
 
 // Global type for React Native's __DEV__ variable
 declare const __DEV__: boolean;
@@ -42,7 +36,7 @@ export interface CaptureOptions {
    * `webm` is accepted as a deprecated alias for `webp` (it has always produced WEBP-encoded
    * data — the extension was misnamed).
    */
-  format?: "jpg" | "png" | "webp" | "webm" | "raw";
+  format?: 'jpg' | 'png' | 'webp' | 'webm' | 'raw';
   /**
    * the quality. 0.0 - 1.0 (default). (only available on lossy formats like jpg)
    */
@@ -55,7 +49,7 @@ export interface CaptureOptions {
    * - data-uri: same as base64 but also includes the Data URI scheme header.
    * - zip-base64: compress data with zip deflate algorithm and than convert to base64 and return as a raw string.
    */
-  result?: "tmpfile" | "base64" | "data-uri" | "zip-base64";
+  result?: 'tmpfile' | 'base64' | 'data-uri' | 'zip-base64';
   /**
    * if true and when view is a ScrollView, the "content container" height will be evaluated instead of the
    * container height.
@@ -86,7 +80,7 @@ export interface ViewShotProperties {
    * - "update" EXPERIMENTAL, this will capture images each time React redraw (on did update). For very specific
    *   use-cases.
    */
-  captureMode?: "mount" | "continuous" | "update";
+  captureMode?: 'mount' | 'continuous' | 'update';
   /**
    * children of ViewShot component
    */
@@ -109,18 +103,18 @@ export interface ViewShotProperties {
   style?: StyleProp<ViewStyle>;
 }
 
-const acceptedFormats = ["png", "jpg"].concat(
-  Platform.OS === "android" ? ["webp", "webm", "raw"] : [],
+const acceptedFormats = ['png', 'jpg'].concat(
+  Platform.OS === 'android' ? ['webp', 'webm', 'raw'] : []
 );
 
-const acceptedResults = ["tmpfile", "base64", "data-uri"].concat(
-  Platform.OS === "android" ? ["zip-base64"] : [],
+const acceptedResults = ['tmpfile', 'base64', 'data-uri'].concat(
+  Platform.OS === 'android' ? ['zip-base64'] : []
 );
 
 const defaultOptions: CaptureOptions = {
-  format: "png",
+  format: 'png',
   quality: 1,
-  result: "tmpfile",
+  result: 'tmpfile',
   snapshotContentContainer: false,
   handleGLSurfaceViewOnAndroid: false,
 };
@@ -136,66 +130,55 @@ function validateOptions(input?: CaptureOptions): {
   };
   const errors: string[] = [];
   if (
-    "width" in options &&
-    (typeof options.width !== "number" ||
-      !Number.isFinite(options.width) ||
-      options.width <= 0)
+    'width' in options &&
+    (typeof options.width !== 'number' || !Number.isFinite(options.width) || options.width <= 0)
   ) {
-    errors.push("option width should be a positive number");
+    errors.push('option width should be a positive number');
     delete options.width;
   }
   if (
-    "height" in options &&
-    (typeof options.height !== "number" ||
-      !Number.isFinite(options.height) ||
-      options.height <= 0)
+    'height' in options &&
+    (typeof options.height !== 'number' || !Number.isFinite(options.height) || options.height <= 0)
   ) {
-    errors.push("option height should be a positive number");
+    errors.push('option height should be a positive number');
     delete options.height;
   }
   if (
-    typeof options.quality !== "number" ||
+    typeof options.quality !== 'number' ||
     !Number.isFinite(options.quality) ||
     options.quality < 0 ||
     options.quality > 1
   ) {
-    errors.push("option quality should be a number between 0.0 and 1.0");
+    errors.push('option quality should be a number between 0.0 and 1.0');
     options.quality = defaultOptions.quality;
   }
-  if (typeof options.snapshotContentContainer !== "boolean") {
-    errors.push("option snapshotContentContainer should be a boolean");
+  if (typeof options.snapshotContentContainer !== 'boolean') {
+    errors.push('option snapshotContentContainer should be a boolean');
     options.snapshotContentContainer = defaultOptions.snapshotContentContainer;
   }
-  if (typeof options.handleGLSurfaceViewOnAndroid !== "boolean") {
-    errors.push("option handleGLSurfaceViewOnAndroid should be a boolean");
-    options.handleGLSurfaceViewOnAndroid =
-      defaultOptions.handleGLSurfaceViewOnAndroid;
+  if (typeof options.handleGLSurfaceViewOnAndroid !== 'boolean') {
+    errors.push('option handleGLSurfaceViewOnAndroid should be a boolean');
+    options.handleGLSurfaceViewOnAndroid = defaultOptions.handleGLSurfaceViewOnAndroid;
   }
-  if (acceptedFormats.indexOf(options.format || "") === -1) {
+  if (acceptedFormats.indexOf(options.format || '') === -1) {
     const badFormat = options.format;
     options.format = defaultOptions.format;
     errors.push(
-      "option format '" +
-        badFormat +
-        "' is not in valid formats: " +
-        acceptedFormats.join(" | "),
+      "option format '" + badFormat + "' is not in valid formats: " + acceptedFormats.join(' | ')
     );
-  } else if (options.format === "webm") {
+  } else if (options.format === 'webm') {
     errors.push(
-      "option format 'webm' is deprecated and will be removed in a future version. Use 'webp' instead (the encoded data has always been WEBP, only the extension was misnamed).",
+      "option format 'webm' is deprecated and will be removed in a future version. Use 'webp' instead (the encoded data has always been WEBP, only the extension was misnamed)."
     );
   }
-  if (acceptedResults.indexOf(options.result || "") === -1) {
+  if (acceptedResults.indexOf(options.result || '') === -1) {
     const badResult = options.result;
     options.result = defaultOptions.result;
     errors.push(
-      "option result '" +
-        badResult +
-        "' is not a valid result: " +
-        acceptedResults.join(" | "),
+      "option result '" + badResult + "' is not a valid result: " + acceptedResults.join(' | ')
     );
   }
-  return {options, errors};
+  return { options, errors };
 }
 
 // `HostElement` is the minimal shape of an HTMLElement; web callers can pass
@@ -211,52 +194,44 @@ type CaptureTarget =
   | React.RefObject<React.Component | HostElement | null>
   | null;
 
-export function captureRef(
-  view: CaptureTarget,
-  optionsObject?: CaptureOptions,
-): Promise<string> {
+export function captureRef(view: CaptureTarget, optionsObject?: CaptureOptions): Promise<string> {
   if (!RNViewShot) {
     console.warn(
-      "react-native-view-shot: RNViewShot is undefined. Make sure the library is linked on the native side.",
+      'react-native-view-shot: RNViewShot is undefined. Make sure the library is linked on the native side.'
     );
     throw new Error(
-      "react-native-view-shot: NativeModules.RNViewShot is undefined. Make sure the library is linked on the native side.",
+      'react-native-view-shot: NativeModules.RNViewShot is undefined. Make sure the library is linked on the native side.'
     );
   }
   let viewHandle: number | React.Component | HostElement | null =
-    typeof view === "number"
+    typeof view === 'number'
       ? view
-      : view && typeof view === "object" && "current" in view
+      : view && typeof view === 'object' && 'current' in view
         ? view.current
         : view;
-  if (Platform.OS !== "web" && typeof viewHandle !== "number") {
+  if (Platform.OS !== 'web' && typeof viewHandle !== 'number') {
     const node = findNodeHandle(viewHandle as React.Component | null);
     if (!node) {
-      return Promise.reject(
-        new Error("findNodeHandle failed to resolve view=" + String(view)),
-      );
+      return Promise.reject(new Error('findNodeHandle failed to resolve view=' + String(view)));
     }
     viewHandle = node;
   }
-  const {options, errors} = validateOptions(optionsObject);
+  const { options, errors } = validateOptions(optionsObject);
   if (errors.length > 0) {
-    console.warn(
-      "react-native-view-shot: bad options:\n" +
-        errors.map(e => `- ${e}`).join("\n"),
-    );
+    console.warn('react-native-view-shot: bad options:\n' + errors.map((e) => `- ${e}`).join('\n'));
   }
-  if (Platform.OS === "windows" && optionsObject?.snapshotContentContainer) {
+  if (Platform.OS === 'windows' && optionsObject?.snapshotContentContainer) {
     console.warn(
-      "react-native-view-shot: `snapshotContentContainer` is not supported on Windows. The option is ignored; only the visible viewport will be captured.",
+      'react-native-view-shot: `snapshotContentContainer` is not supported on Windows. The option is ignored; only the visible viewport will be captured.'
     );
   }
   return RNViewShot.captureRef(viewHandle as number, options);
 }
 
 export function releaseCapture(uri: string): void {
-  if (typeof uri !== "string") {
+  if (typeof uri !== 'string') {
     if (__DEV__) {
-      console.warn("Invalid argument to releaseCapture. Got: " + uri);
+      console.warn('Invalid argument to releaseCapture. Got: ' + uri);
     }
   } else {
     RNViewShot.releaseCapture(uri);
@@ -266,18 +241,15 @@ export function releaseCapture(uri: string): void {
 export function captureScreen(optionsObject?: CaptureOptions): Promise<string> {
   if (!RNViewShot) {
     console.warn(
-      "react-native-view-shot: RNViewShot is undefined. Make sure the library is linked on the native side.",
+      'react-native-view-shot: RNViewShot is undefined. Make sure the library is linked on the native side.'
     );
     throw new Error(
-      "react-native-view-shot: NativeModules.RNViewShot is undefined. Make sure the library is linked on the native side.",
+      'react-native-view-shot: NativeModules.RNViewShot is undefined. Make sure the library is linked on the native side.'
     );
   }
-  const {options, errors} = validateOptions(optionsObject);
+  const { options, errors } = validateOptions(optionsObject);
   if (errors.length > 0) {
-    console.warn(
-      "react-native-view-shot: bad options:\n" +
-        errors.map(e => `- ${e}`).join("\n"),
-    );
+    console.warn('react-native-view-shot: bad options:\n' + errors.map((e) => `- ${e}`).join('\n'));
   }
   return RNViewShot.captureScreen(options);
 }
@@ -289,17 +261,16 @@ function checkCompatibleProps(props: ViewShotProperties): void {
     // in that case, it's authorized if you call capture() yourself
   } else if (props.captureMode && !props.onCapture) {
     console.warn(
-      "react-native-view-shot: captureMode prop is defined but onCapture prop callback is missing",
+      'react-native-view-shot: captureMode prop is defined but onCapture prop callback is missing'
     );
   } else if (
-    (props.captureMode === "continuous" || props.captureMode === "update") &&
+    (props.captureMode === 'continuous' || props.captureMode === 'update') &&
     props.options &&
     props.options.result &&
-    props.options.result !== "tmpfile"
+    props.options.result !== 'tmpfile'
   ) {
     console.warn(
-      "react-native-view-shot: result=tmpfile is recommended for captureMode=" +
-        props.captureMode,
+      'react-native-view-shot: result=tmpfile is recommended for captureMode=' + props.captureMode
     );
   }
 }
@@ -318,29 +289,19 @@ export type ViewShotRef = React.ComponentRef<typeof View> & {
 
 const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
   function ViewShot(props, ref) {
-    const {
-      children,
-      options,
-      captureMode,
-      onCapture,
-      onCaptureFailure,
-      onLayout,
-      style,
-    } = props;
+    const { children, options, captureMode, onCapture, onCaptureFailure, onLayout, style } = props;
 
     const rootRef = useRef<React.ComponentRef<typeof View> | null>(null);
     const rafRef = useRef<number | null>(null);
     const lastCapturedURIRef = useRef<string | null>(null);
-    const resolveFirstLayoutRef = useRef<((layout: unknown) => void) | null>(
-      null,
-    );
+    const resolveFirstLayoutRef = useRef<((layout: unknown) => void) | null>(null);
 
     const firstLayoutPromise = useMemo(
       () =>
-        new Promise<unknown>(resolve => {
+        new Promise<unknown>((resolve) => {
           resolveFirstLayoutRef.current = resolve;
         }),
-      [],
+      []
     );
 
     // Keep latest props in refs so stable callbacks always see fresh values
@@ -359,7 +320,7 @@ const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
             return captureRef(rootRef.current, optionsRef.current);
           })
           .then(
-            uri => {
+            (uri) => {
               if (!rootRef.current) return uri;
               if (lastCapturedURIRef.current) {
                 setTimeout(releaseCapture, 500, lastCapturedURIRef.current);
@@ -368,33 +329,33 @@ const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
               if (onCaptureRef.current) onCaptureRef.current(uri);
               return uri;
             },
-            e => {
+            (e) => {
               if (!rootRef.current) throw e;
               if (onCaptureFailureRef.current) onCaptureFailureRef.current(e);
               throw e;
-            },
+            }
           ) as Promise<string>,
-      [firstLayoutPromise],
+      [firstLayoutPromise]
     );
 
     const setRootRef = useCallback(
       (node: React.ComponentRef<typeof View> | null): void => {
         rootRef.current = node;
         if (node) (node as ViewShotRef).capture = capture;
-        if (typeof ref === "function") {
+        if (typeof ref === 'function') {
           ref(node as ViewShotRef | null);
         } else if (ref) {
           ref.current = node as ViewShotRef | null;
         }
       },
-      [capture, ref],
+      [capture, ref]
     );
 
     const syncCaptureLoop = useCallback(
-      (mode: ViewShotProperties["captureMode"] | null): void => {
+      (mode: ViewShotProperties['captureMode'] | null): void => {
         cancelAnimationFrame(rafRef.current as number);
-        if (mode === "continuous") {
-          let previousCaptureURI: string | null = "-";
+        if (mode === 'continuous') {
+          let previousCaptureURI: string | null = '-';
           const loop = (): void => {
             rafRef.current = requestAnimationFrame(loop);
             if (previousCaptureURI === lastCapturedURIRef.current) return;
@@ -404,12 +365,12 @@ const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
           rafRef.current = requestAnimationFrame(loop);
         }
       },
-      [capture],
+      [capture]
     );
 
     useEffect(() => {
       if (__DEV__) checkCompatibleProps(props);
-      if (captureMode === "mount") capture();
+      if (captureMode === 'mount') capture();
       // Run once: re-firing on prop changes would double-trigger `mount`
       // capture; the `[captureMode]` effect below handles loop sync, and the
       // no-deps effect below handles `update` mode.
@@ -427,7 +388,7 @@ const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
         isFirstRender.current = false;
         return;
       }
-      if (captureMode === "update") capture();
+      if (captureMode === 'update') capture();
     });
 
     const onLayoutHandler = useCallback(
@@ -438,20 +399,15 @@ const ViewShotComponent = forwardRef<ViewShotRef, ViewShotProperties>(
         }
         if (onLayout) onLayout(e);
       },
-      [onLayout],
+      [onLayout]
     );
 
     return (
-      <View
-        ref={setRootRef}
-        collapsable={false}
-        onLayout={onLayoutHandler}
-        style={style}
-      >
+      <View ref={setRootRef} collapsable={false} onLayout={onLayoutHandler} style={style}>
         {children}
       </View>
     );
-  },
+  }
 );
 
 const ViewShot = ViewShotComponent as typeof ViewShotComponent & {

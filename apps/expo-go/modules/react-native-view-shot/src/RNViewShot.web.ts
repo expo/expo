@@ -1,6 +1,6 @@
-import type {CaptureOptions} from "./index";
+import type { CaptureOptions } from './index';
 
-type Html2Canvas = typeof import("html2canvas-pro").default;
+type Html2Canvas = typeof import('html2canvas-pro').default;
 
 let html2canvasPromise: Promise<Html2Canvas> | undefined;
 
@@ -11,29 +11,26 @@ let html2canvasPromise: Promise<Html2Canvas> | undefined;
 // environments that resolve modules at runtime (native ESM, import maps...).
 function loadHtml2Canvas(): Promise<Html2Canvas> {
   if (!html2canvasPromise) {
-    html2canvasPromise = import("html2canvas-pro").then(
-      m => m.default,
-      e => {
+    html2canvasPromise = import('html2canvas-pro').then(
+      (m) => m.default,
+      (e) => {
         html2canvasPromise = undefined;
         throw new Error(
-          "react-native-view-shot: html2canvas-pro is required on web. " +
-            "Install it with `npm install html2canvas-pro`.\n" +
-            (e instanceof Error ? e.message : String(e)),
+          'react-native-view-shot: html2canvas-pro is required on web. ' +
+            'Install it with `npm install html2canvas-pro`.\n' +
+            (e instanceof Error ? e.message : String(e))
         );
-      },
+      }
     );
   }
   return html2canvasPromise;
 }
 
-async function captureRef(
-  view: HTMLElement,
-  options: CaptureOptions,
-): Promise<string> {
-  if (options.result === "tmpfile") {
+async function captureRef(view: HTMLElement, options: CaptureOptions): Promise<string> {
+  if (options.result === 'tmpfile') {
     console.warn(
-      "Tmpfile is not implemented for web. Try base64 or file.\n" +
-        "For compatibility, it currently returns the same result as data-uri",
+      'Tmpfile is not implemented for web. Try base64 or file.\n' +
+        'For compatibility, it currently returns the same result as data-uri'
     );
   }
 
@@ -47,29 +44,21 @@ async function captureRef(
 
   if (options.width && options.height) {
     // Resize result
-    const resizedCanvas = document.createElement("canvas");
-    const resizedContext = resizedCanvas.getContext("2d");
+    const resizedCanvas = document.createElement('canvas');
+    const resizedContext = resizedCanvas.getContext('2d');
     if (!resizedContext) {
-      throw new Error("Failed to get 2d context from canvas");
+      throw new Error('Failed to get 2d context from canvas');
     }
     resizedCanvas.height = options.height;
     resizedCanvas.width = options.width;
-    resizedContext.drawImage(
-      renderedCanvas,
-      0,
-      0,
-      resizedCanvas.width,
-      resizedCanvas.height,
-    );
+    resizedContext.drawImage(renderedCanvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
     renderedCanvas = resizedCanvas;
   }
 
-  const mimeType =
-    "image/" + (options.format === "jpg" ? "jpeg" : options.format);
+  const mimeType = 'image/' + (options.format === 'jpg' ? 'jpeg' : options.format);
   const dataUrl = renderedCanvas.toDataURL(mimeType, options.quality);
-  if (options.result === "data-uri" || options.result === "tmpfile")
-    return dataUrl;
-  return dataUrl.replace(/data:image\/(\w+);base64,/, "");
+  if (options.result === 'data-uri' || options.result === 'tmpfile') return dataUrl;
+  return dataUrl.replace(/data:image\/(\w+);base64,/, '');
 }
 
 function captureScreen(options: CaptureOptions): Promise<string> {
