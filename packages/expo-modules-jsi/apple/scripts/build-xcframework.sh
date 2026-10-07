@@ -311,6 +311,8 @@ build_slice() {
   # - @available(*, unavailable) attributes that Swift 6.4 prints on their own line before
   #   those conformances, which would otherwise attach to the next declaration
   #   e.g. "@available(*, unavailable)\nextension Swift::Optional : P where Wrapped : _Constraint... {}"
+  #   The JSIRepresentable conformances that produce them are marked @_spi, so Swift doesn't print
+  #   them today. Stripping them is a fallback for conformances added without @_spi.
   # NOTE: If these patterns change in a future Swift version, the build will fail with
   # "expected declaration" or "expected type" errors in the .swiftinterface file.
   # Run plain `sed` to a temp file and move it back instead of `sed -i ''`:
