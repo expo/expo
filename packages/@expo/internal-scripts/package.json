@@ -1,13 +1,8 @@
 {
   "name": "@expo/internal-scripts",
-  "version": "56.0.8",
+  "version": "58.0.0",
   "private": true,
-  "description": "A private package for various tasks for Expo module packages like compiling and testing",
-  "keywords": [
-    "babel-preset",
-    "expo",
-    "jest-preset"
-  ],
+  "description": "An internal package for internal expo/expo monorepo scripts",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/internal-scripts#readme",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
