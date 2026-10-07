@@ -547,10 +547,22 @@ private func stackSpacings(subviews: LayoutSubviews, axis: Axis, explicit: CGFlo
 private extension ProposedViewSize {
   func resolving(_ dimensions: UniversalLayoutDimensions) -> ProposedViewSize {
     ProposedViewSize(
-      width: dimensions.widthFraction.flatMap { fraction in finite(width).map { $0 * fraction } } ?? finite(width),
-      height: dimensions.heightFraction.flatMap { fraction in finite(height).map { $0 * fraction } } ?? finite(height)
+      width: resolvedAxis(dimensions.widthFraction, proposal: width),
+      height: resolvedAxis(dimensions.heightFraction, proposal: height)
     )
   }
+}
+
+/// An axis with no fraction keeps the proposal, including infinity.
+/// A fraction of a non-finite proposal is nil, not infinity.
+private func resolvedAxis(_ fraction: CGFloat?, proposal: CGFloat?) -> CGFloat? {
+  guard let fraction else {
+    return proposal
+  }
+  guard let base = finite(proposal) else {
+    return nil
+  }
+  return base * fraction
 }
 
 private func finite(_ value: CGFloat?) -> CGFloat? {
