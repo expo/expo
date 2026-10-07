@@ -217,20 +217,16 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       throw Exceptions.FileSystemModuleNotFound()
     }
 
-    // `URL(fileURLWithPath:)` reads a `file://` string as a relative path, so keep
-    // parsing those as URLs. Plain paths with spaces or non-ASCII characters make
-    // `URL(string:)` return nil on iOS 16 and percent-encode on iOS 17+.
-    let pathUrl: URL
-    if path.hasPrefix("file:") {
-      guard let url = URL(string: path) else {
-        throw DatabaseInvalidPathException(path)
-      }
-      pathUrl = url
-    } else {
-      pathUrl = URL(fileURLWithPath: path)
+    guard let pathUrl = DatabaseFileUtils.fileURL(fromDatabasePath: path) else {
+      throw DatabaseInvalidPathException(path)
     }
-
+    let filePath = pathUrl.toFilePath()
     fileSystem.ensureDirExists(withPath: pathUrl.deletingLastPathComponent().toFilePath())
+
+    // Installs made on iOS 17+ before this resolution opened a percent-encoded file name.
+    if let legacyPath = DatabaseFileUtils.legacyEncodedPath(forDatabasePath: path, resolvedPath: filePath) {
+      try DatabaseFileUtils.migrateLegacyDatabaseFiles(fromPath: legacyPath, toPath: filePath)
+    }
 
     return pathUrl
   }
@@ -403,7 +399,8 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       fileManager.fileExists(atPath: assetPath) else {
       throw DatabaseNotFoundException(assetDatabasePath)
     }
-    try? fileManager.removeItem(atPath: path.toFilePath())
+    // A leftover `-wal` would be replayed over the fresh copy, bringing the old tables back.
+    DatabaseFileUtils.removeDatabaseFiles(atPath: path.toFilePath())
     try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
   }
 
