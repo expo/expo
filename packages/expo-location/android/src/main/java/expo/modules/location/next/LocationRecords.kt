@@ -198,7 +198,11 @@ class Position(
 }
 
 private fun PersistableBundle.getDoubleOrNull(key: String): Double? =
-  if (containsKey(key)) getDouble(key) else null
+  if (containsKey(key)) {
+    getDouble(key)
+  } else {
+    null
+  }
 
 fun PersistableBundle.toPosition(): Position = Position(
   coordinates = getPersistableBundle("coordinates")?.toCoordinates() ?: Coordinates(0.0, 0.0),
