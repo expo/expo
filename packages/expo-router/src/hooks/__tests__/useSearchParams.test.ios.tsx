@@ -52,6 +52,18 @@ describe(useSearchParams, () => {
     warn.mockRestore();
   });
 
+  it('omits undefined params from the URLSearchParams', async () => {
+    const { result } = await renderHook(() => useSearchParams(), ['index'], {
+      initialUrl: '/?test=1',
+    });
+
+    expect([...result.current.entries()]).toEqual([['test', '1']]);
+
+    await act(() => router.setParams({ test: undefined }));
+
+    expect([...result.current.entries()]).toEqual([]);
+  });
+
   it(`cannot set params`, async () => {
     const { result } = await renderHook(() => useSearchParams(), ['index'], {
       initialUrl: '/?test=1&test=2',

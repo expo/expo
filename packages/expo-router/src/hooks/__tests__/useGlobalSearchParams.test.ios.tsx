@@ -4,10 +4,15 @@ import { expectTypeOf } from 'expect-type';
 import { router, Slot } from '../../exports';
 import Stack from '../../layouts/Stack';
 import { renderRouter } from '../../testing-library';
+import type { UnknownOutputParams } from '../../types';
 import { useGlobalSearchParams } from '../useGlobalSearchParams';
 import { useLocalSearchParams } from '../useLocalSearchParams';
 import { usePathname } from '../usePathname';
 import { renderHook, renderHookOnce } from './renderHook';
+
+interface SearchParamsWithOmittedId extends UnknownOutputParams {
+  id?: string;
+}
 
 describe(useGlobalSearchParams, () => {
   it(`return params of deeply nested routes`, async () => {
@@ -42,6 +47,11 @@ describe(useGlobalSearchParams, () => {
     const params = await renderHookOnce(() => useGlobalSearchParams<{ a: string }>());
     expectTypeOf(params).toExtend<{ a?: string }>();
     expectTypeOf(params.a).toExtend<string | undefined>();
+  });
+  it(`allows an interface extending UnknownOutputParams to declare an optional param`, async () => {
+    const params = await renderHookOnce(() => useGlobalSearchParams<SearchParamsWithOmittedId>());
+    expectTypeOf(params).toExtend<{ id?: string }>();
+    expectTypeOf(params.id).toEqualTypeOf<string | undefined>();
   });
 
   it(`only renders once per navigation`, async () => {
