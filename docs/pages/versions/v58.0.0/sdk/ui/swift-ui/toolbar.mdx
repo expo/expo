@@ -9,8 +9,17 @@ platforms: ['ios', 'tvos', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Toolbar matches the official SwiftUI [`toolbar(content:)` API](<https://developer.apple.com/documentation/swiftui/view/toolbar(content:)>) and adds a toolbar to the view it wraps.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/toolbar/ios-light.webp"
+  darkSrc="/static/images/expo-ui/toolbar/ios-dark.webp"
+  alt="A Birds list with a sort button in the navigation bar"
+/>
 
 Put the toolbar items in [`Toolbar.Content`](#toolbarcontent). Everything else inside `Toolbar` is the view the toolbar belongs to. Inside a [`NavigationStack`](navigationstack), the items go into the navigation bar.
 
