@@ -2,10 +2,10 @@ import { Platform, UnavailabilityError } from 'expo';
 import { useCallback, useEffect, useState } from 'react';
 import { AppState } from 'react-native';
 
-import { getNativeLocationModuleNext } from '../native';
+import { NativeLocationModuleNext } from '../native';
 
 export function hasLocationServicesEnabled(): boolean {
-  return getNativeLocationModuleNext().hasLocationServicesEnabled();
+  return NativeLocationModuleNext.hasLocationServicesEnabled();
 }
 
 export async function enableLocationServices(): Promise<boolean> {
@@ -13,7 +13,7 @@ export async function enableLocationServices(): Promise<boolean> {
     throw new UnavailabilityError('expo-location', 'enableLocationServices');
   }
 
-  return getNativeLocationModuleNext().enableLocationServices();
+  return NativeLocationModuleNext.enableLocationServices();
 }
 
 export function useLocationServices(): [enabled: boolean, enable: () => Promise<boolean>] {

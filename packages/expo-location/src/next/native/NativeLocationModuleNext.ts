@@ -1,13 +1,9 @@
-import { UnavailabilityError, requireOptionalNativeModule } from 'expo';
+import { requireNativeModule } from 'expo';
 
 import type { NativeLocationModuleNextClass } from './types/NativeLocationModuleNextClass.types';
 
-const nativeModule =
-  requireOptionalNativeModule<NativeLocationModuleNextClass>('LocationModuleNext');
-
-export function getNativeLocationModuleNext(): NativeLocationModuleNextClass {
-  if (!nativeModule) {
-    throw new UnavailabilityError('expo-location/next', 'LocationModuleNext');
-  }
-  return nativeModule;
-}
+export const NativeLocationModuleNext =
+  requireNativeModule<NativeLocationModuleNextClass>('LocationModuleNext');
+export const NativeLocationProvider = NativeLocationModuleNext.LocationProvider;
+export const NativePositionWatchHandle = NativeLocationModuleNext.PositionWatchHandle;
+export const NativeLocationUpdatesHandle = NativeLocationModuleNext.LocationUpdatesHandle;
