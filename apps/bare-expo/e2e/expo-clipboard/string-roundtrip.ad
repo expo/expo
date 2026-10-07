@@ -1,0 +1,12 @@
+# expo-clipboard: set a string, read it back, and check hasStringAsync.
+open ${APP_ID} --relaunch
+wait text "Expo Test Suite" 20000
+open "bareexpo://apis/clipboard"
+wait text "setStringAsync" 20000
+press label="setStringAsync: RUN"
+wait text "setStringAsync = true" 10000
+press label="getStringAsync: RUN"
+wait text "getStringAsync = Hello, world!" 10000
+press label="hasXAsync: hasStringAsync"
+wait text "hasXAsync = true" 10000
+close

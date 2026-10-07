@@ -35,6 +35,7 @@ const Button = ({
       disabled={disabled || loading}
       onPressIn={onPressIn}
       onPress={onPress}
+      accessibilityRole="button"
       underlayColor={Colors.highlightColor}>
       {children ||
         (loading ? (

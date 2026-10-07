@@ -6,6 +6,7 @@ import MonoTextWithCountdown from '../MonoTextWithCountdown';
 import ActionButton from './ActionButton';
 import Configurator from './Configurator';
 import Divider from './Divider';
+import { FunctionNameContext } from './FunctionNameContext';
 import FunctionSignature, { generateFunctionSignature } from './FunctionSignature';
 import Platforms from './Platforms';
 import {
@@ -158,7 +159,7 @@ function FunctionDemoContent({
   );
 
   return (
-    <>
+    <FunctionNameContext.Provider value={name}>
       <Configurator parameters={parameters} onChange={updateArgument} value={args} />
       {additionalParameters.length > 0 && (
         <>
@@ -173,26 +174,33 @@ function FunctionDemoContent({
       <View style={styles.container}>
         <FunctionSignature namespace={namespace} name={name} parameters={parameters} args={args} />
         <View style={styles.buttonsContainer}>
-          {actionsList.map(({ name, action }) => (
-            <ActionButton key={name} name={name} action={action} onPress={handlePress} />
+          {actionsList.map(({ name: actionName, action }) => (
+            <ActionButton
+              key={actionName}
+              name={actionName}
+              functionName={name}
+              action={action}
+              onPress={handlePress}
+            />
           ))}
         </View>
       </View>
       {result.type === 'success' ? (
         <>
-          <MonoTextWithCountdown onCountdownEnded={() => setResult({ type: 'none' })}>
-            {resultToString(result.result)}
+          <MonoTextWithCountdown persistent onCountdownEnded={() => setResult({ type: 'none' })}>
+            {`${name} = ${resultToString(result.result)}`}
           </MonoTextWithCountdown>
           {renderAdditionalResult?.(result.result)}
         </>
       ) : result.type === 'error' ? (
         <MonoTextWithCountdown
+          persistent
           style={styles.errorResult}
           onCountdownEnded={() => setResult({ type: 'none' })}>
-          {errorToString(result.error)}
+          {`${name} = ${errorToString(result.error)}`}
         </MonoTextWithCountdown>
       ) : null}
-    </>
+    </FunctionNameContext.Provider>
   );
 }
 

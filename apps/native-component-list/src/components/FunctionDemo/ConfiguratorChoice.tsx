@@ -1,9 +1,10 @@
 import Checkbox from 'expo-checkbox';
-import React, { useCallback } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { BodyText } from '../BodyText';
 import EnumButton from './EnumButton';
+import { FunctionNameContext } from './FunctionNameContext';
 import Platforms from './Platforms';
 import {
   ArgumentName,
@@ -40,19 +41,21 @@ export default function ConfiguratorChoice({
     (newValue: PrimitiveArgument) => onChange(name, newValue),
     [name, onChange]
   );
+  const displayName = Array.isArray(name) ? name.join('.') : name;
+  const functionName = useContext(FunctionNameContext);
+  const accessibilityLabel = `${functionName}: ${displayName}`;
 
   return (
     <View style={styles.container}>
       <Platforms platforms={platforms} />
-      <BodyText style={[styles.label, disabled && styles.labelDisabled]}>
-        {Array.isArray(name) ? name.join('.') : name}
-      </BodyText>
+      <BodyText style={[styles.label, disabled && styles.labelDisabled]}>{displayName}</BodyText>
       {type === 'boolean' ? (
         <Checkbox
           disabled={disabled}
           style={styles.checkbox}
           onValueChange={onChangeCallback}
           value={value as boolean}
+          accessibilityLabel={accessibilityLabel}
         />
       ) : (
         <EnumButton
@@ -60,6 +63,7 @@ export default function ConfiguratorChoice({
           value={value as Exclude<PrimitiveArgument, boolean>}
           onChange={onChangeCallback}
           values={values}
+          accessibilityLabel={accessibilityLabel}
         />
       )}
     </View>
