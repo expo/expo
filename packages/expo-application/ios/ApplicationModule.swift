@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 import ExpoModulesCore
+import StoreKit
 
 @ExpoModule("ExpoApplication")
 public class ApplicationModule: Module {
@@ -56,6 +57,24 @@ public class ApplicationModule: Module {
   func getApplicationReleaseTypeAsync() async -> Int {
     let mainProvisioningProfile = EXProvisioningProfile.main()
     return mainProvisioningProfile.appReleaseType().rawValue
+  }
+
+  @JS(.concurrent)
+  func getStoreEnvironmentAsync() async -> String {
+    guard case .verified(let transaction) = try? await AppTransaction.shared else {
+      return "unknown"
+    }
+    switch transaction.environment {
+    case .production:
+      return "appStore"
+    // StoreKit reports App Store Review as `.sandbox` too.
+    case .sandbox:
+      return "testFlight"
+    case .xcode:
+      return "development"
+    default:
+      return "unknown"
+    }
   }
 
   @JS(.concurrent)

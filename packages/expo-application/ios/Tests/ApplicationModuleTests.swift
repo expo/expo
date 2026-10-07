@@ -88,6 +88,13 @@ struct ApplicationModuleTests {
   }
 
   @Test
+  func `getStoreEnvironmentAsync resolves to a non-store environment on the simulator`() async throws {
+    let result = try await runtime.evalAsync("expo.modules.ExpoApplication.getStoreEnvironmentAsync()")
+
+    #expect(["development", "unknown"].contains(try result.asString()))
+  }
+
+  @Test
   func `getPushNotificationServiceEnvironmentAsync resolves to null without a provisioning profile`() async throws {
     let result = try await runtime.evalAsync(
       "expo.modules.ExpoApplication.getPushNotificationServiceEnvironmentAsync()"
