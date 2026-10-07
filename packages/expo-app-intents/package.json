@@ -40,13 +40,13 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/app-intents",
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.4.9",
     "@types/react": "~19.3.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "dependencies": {
     "@expo/ui": "workspace:^58.0.14",

@@ -71,10 +71,10 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

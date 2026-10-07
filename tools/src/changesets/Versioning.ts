@@ -76,7 +76,7 @@ async function updateModuleTemplateAsync(
 ): Promise<void> {
   const versions = new Map(
     packages
-      .filter((pkg) => ['expo-modules-core', 'expo-module-scripts', 'expo'].includes(pkg.name))
+      .filter((pkg) => ['expo-modules-core', '@expo/internal-scripts', 'expo'].includes(pkg.name))
       .map((pkg) => [pkg.name, pkg.after])
   );
   if (!versions.size) return;

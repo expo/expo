@@ -68,9 +68,9 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
     "jest-expo": "workspace:*"
   },
   "peerDependencies": {
@@ -78,6 +78,6 @@
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

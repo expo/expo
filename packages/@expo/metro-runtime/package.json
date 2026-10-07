@@ -52,9 +52,9 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/react": "~19.3.0",
     "expo-constants": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "react-dom": "19.3.0"
   },
   "peerDependencies": {

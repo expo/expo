@@ -43,11 +43,11 @@
     "walker": "^1.0.8"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/debug": "^4.1.7",
     "@types/fb-watchman": "^2.0.6",
     "@types/invariant": "^2.2.37",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   }
 }

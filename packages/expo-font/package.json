@@ -67,11 +67,11 @@
     "typecheck": "tsc -b tsconfig.all.json"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "@types/react": "~19.3.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/react": "~19.3.0"
   },
   "peerDependencies": {
     "expo": "*",

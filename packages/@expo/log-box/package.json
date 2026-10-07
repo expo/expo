@@ -80,10 +80,10 @@
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
     "@types/react": "~19.3.0",
     "@types/react-dom": "^19.1.7",
-    "expo-module-scripts": "workspace:*",
     "glob": "^13.0.6",
     "npm-run-all2": "^8.0.4",
     "react": "19.3.0",

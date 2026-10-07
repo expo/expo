@@ -201,7 +201,7 @@
     ]
   },
   "scripts": {
-    "build": "../expo-module-scripts/bin/expo-build src",
+    "build": "../@expo/internal-scripts/bin/expo-build src",
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
@@ -278,7 +278,7 @@
     }
   },
   "jest": {
-    "preset": "../expo-module-scripts/jest-preset.cjs"
+    "preset": "../@expo/internal-scripts/jest-preset.cjs"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"

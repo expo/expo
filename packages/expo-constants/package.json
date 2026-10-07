@@ -63,9 +63,9 @@
     "@expo/require-utils": "workspace:^"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/node": "^22.14.0",
     "expo-manifests": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "expo-updates": "workspace:*"
   },
   "peerDependencies": {

@@ -29,13 +29,13 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-crypto": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "expo-crypto": "workspace:*"
   },
   "peerDependencies": {
     "expo-crypto": "workspace:^"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }
