@@ -317,7 +317,11 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    if (ev.actionMasked == MotionEvent.ACTION_CANCEL && !dispatchesTouchesToJS) {
+    if (
+      ev.actionMasked == MotionEvent.ACTION_CANCEL &&
+      !dispatchesTouchesToJS &&
+      !isCancelFromReactNative()
+    ) {
       // Compose cancels this subtree when a gesture detector above it claims the gesture. The
       // ancestor root, which dispatches this subtree's touches, keeps streaming moves, so a
       // `Pressable` still fires on release. Tell it a native child took over.
@@ -369,6 +373,23 @@ private class TouchDispatchingRootViewGroup(
       }
     }
     return handled
+  }
+
+  /**
+   * Whether this cancel reached the `Host` from React Native rather than from Compose. The JS
+   * responder's view intercepts the stream once it's granted, which cancels its native children,
+   * including the `Host` of a `MaskedView` laid over a `Pressable`. JS still owns that gesture, so
+   * reporting it as a native one would cancel the press it belongs to.
+   */
+  private fun isCancelFromReactNative(): Boolean {
+    var current: ViewParent? = parent
+    while (current != null) {
+      if (current is HostView) {
+        return current.isDispatchingCancelFromParent
+      }
+      current = current.parent
+    }
+    return false
   }
 
   private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {
