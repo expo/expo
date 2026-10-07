@@ -1,14 +1,22 @@
 import { CodedError } from 'expo';
 import { useEffect, useState } from 'react';
 
-import type { LocationProfile, Position, PositionWatchError } from '../types';
+import type {
+  LocationPermissionResponse,
+  LocationProfile,
+  Position,
+  PositionWatchError,
+  RequestPermissionsAccuracyOption,
+} from '../types';
+import { useForegroundLocationPermissions } from './Permissions';
 import { watchPosition, type PositionWatchHandle } from './PositionWatchHandle';
 
 export type UseUserLocationOptions = {
+  accuracy?: RequestPermissionsAccuracyOption;
   profile?: LocationProfile;
 };
 
-export type UseUserLocationResult =
+type WatchResult =
   | {
       position: Position;
       error: null;
@@ -22,11 +30,22 @@ export type UseUserLocationResult =
       error: null;
     };
 
-export function useUserLocation({ profile }: UseUserLocationOptions = {}): UseUserLocationResult {
-  const [result, setResult] = useState<UseUserLocationResult>({ position: null, error: null });
+export type UseUserLocationResult = WatchResult & {
+  permission: LocationPermissionResponse | null;
+  requestPermission: () => Promise<LocationPermissionResponse>;
+};
+
+export function useUserLocation(options: UseUserLocationOptions = {}): UseUserLocationResult {
+  const { accuracy, profile } = options;
+  const [permission, requestPermission] = useForegroundLocationPermissions({ accuracy });
+  const [result, setResult] = useState<WatchResult>({ position: null, error: null });
+  const granted = permission?.granted ?? false;
 
   useEffect(() => {
     setResult({ position: null, error: null });
+    if (!granted) {
+      return;
+    }
     let handle: PositionWatchHandle;
     try {
       handle = watchPosition({
@@ -42,7 +61,7 @@ export function useUserLocation({ profile }: UseUserLocationOptions = {}): UseUs
       return;
     }
     return () => handle.dispose();
-  }, [profile]);
+  }, [granted, profile]);
 
-  return result;
+  return { ...result, permission, requestPermission };
 }
