@@ -33,9 +33,9 @@ import {
 } from 'react-native';
 
 import { BodyText } from '../components/BodyText';
-import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
+import { SectionHeading, SectionIndex, SectionIndexScrollView } from '../components/SectionIndex';
 import SimpleActionDemo from '../components/SimpleActionDemo';
 
 FileSystemScreen.navigationOptions = {
@@ -127,8 +127,9 @@ export default function FileSystemScreen() {
   }
 
   return (
-    <ScrollView>
+    <SectionIndexScrollView>
       <View style={styles.container}>
+        <SectionIndex />
         {currentFile && (
           <View style={styles.currentFileBar}>
             <Text style={styles.currentFileText}>Current: {truncate(currentFile.uri, 80)}</Text>
@@ -164,7 +165,7 @@ export default function FileSystemScreen() {
         <UploadSection currentFile={currentFile} />
         <DownloadTaskSection />
       </View>
-    </ScrollView>
+    </SectionIndexScrollView>
   );
 }
 
@@ -173,7 +174,7 @@ export default function FileSystemScreen() {
 function FileSourcesSection({ setCurrentFile }: { setCurrentFile: (f: File) => void }) {
   return (
     <>
-      <HeadingText>File Sources</HeadingText>
+      <SectionHeading title="File Sources" />
       <Text style={styles.note}>Pick or create a file to use in sections below</Text>
 
       <ListButton
@@ -283,7 +284,7 @@ type WithCurrentFile = (fn: (file: File) => Promise<any>) => () => Promise<any>;
 function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile }) {
   return (
     <>
-      <HeadingText>File Info & Properties</HeadingText>
+      <SectionHeading title="File Info & Properties" />
       <SimpleActionDemo
         title="Show file properties"
         action={withCurrentFile(async (file) => ({
@@ -336,7 +337,7 @@ function FilePreviewSection({
 
   return (
     <>
-      <HeadingText>File Preview</HeadingText>
+      <SectionHeading title="File Preview" />
       <Text style={styles.note}>Open local files with the platform file preview flow</Text>
 
       <ListButton
@@ -418,7 +419,7 @@ function FilePreviewSection({
 function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile }) {
   return (
     <>
-      <HeadingText>Read Operations</HeadingText>
+      <SectionHeading title="Read Operations" />
       <SimpleActionDemo
         title="text()"
         action={withCurrentFile(async (file) => truncate(await file.text()))}
@@ -438,7 +439,7 @@ function ReadWriteSection({ withCurrentFile }: { withCurrentFile: WithCurrentFil
         })}
       />
 
-      <HeadingText>Write Operations</HeadingText>
+      <SectionHeading title="Write Operations" />
       <Text style={styles.note}>Works on local and picked files. Throws on static assets.</Text>
       <SimpleActionDemo
         title="write() text"
@@ -501,7 +502,7 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
 
   return (
     <>
-      <HeadingText>File Handle (Random Access)</HeadingText>
+      <SectionHeading title="File Handle (Random Access)" />
       <Text style={styles.note}>Works on local and picked files</Text>
       {Platform.OS === 'android' && (
         <View style={styles.optionRow}>
@@ -665,7 +666,7 @@ function FileWatcherSection({ currentFile }: { currentFile: File | null }) {
 
   return (
     <>
-      <HeadingText>File System Watcher</HeadingText>
+      <SectionHeading title="File System Watcher" />
       <Text style={styles.note}>Watch files or directories for changes</Text>
 
       <ListButton
@@ -730,7 +731,7 @@ function CopyMoveSection({
 
   return (
     <>
-      <HeadingText>Copy & Move</HeadingText>
+      <SectionHeading title="Copy & Move" />
       <View style={styles.optionRow}>
         <Checkbox value={overwrite} onValueChange={setOverwrite} style={styles.checkbox} />
         <BodyText style={styles.optionLabel}>overwrite</BodyText>
@@ -811,7 +812,7 @@ function DirectoryOperationsSection({
 }) {
   return (
     <>
-      <HeadingText>Picked Directory Operations</HeadingText>
+      <SectionHeading title="Picked Directory Operations" />
       <ListButton
         title="Pick directory"
         onPress={async () => {
@@ -891,7 +892,7 @@ function AndroidIntentsSection({
 }) {
   return (
     <>
-      <HeadingText>Content URI & Intents</HeadingText>
+      <SectionHeading title="Content URI & Intents" />
       <SimpleActionDemo
         title="Get contentUri for current file"
         action={withCurrentFile(async (file) => ({
@@ -945,7 +946,7 @@ function FileLifecycleSection({
 }) {
   return (
     <>
-      <HeadingText>File Lifecycle</HeadingText>
+      <SectionHeading title="File Lifecycle" />
       <SimpleActionDemo
         title="Create new file in cache"
         action={async () => {
@@ -1022,7 +1023,7 @@ function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => vo
   };
   return (
     <>
-      <HeadingText>File Picker</HeadingText>
+      <SectionHeading title="File Picker" />
       <View style={styles.optionRow}>
         <Checkbox value={multiple} onValueChange={setMultiple} style={styles.checkbox} />
         <BodyText style={styles.optionLabel}>multiple files</BodyText>
@@ -1156,7 +1157,7 @@ function DownloadSection() {
 
   return (
     <>
-      <HeadingText>Large File Download (100 MB)</HeadingText>
+      <SectionHeading title="Large File Download (100 MB)" />
 
       {status === 'idle' && <ListButton title="Start download" onPress={startDownload} />}
 
@@ -1260,7 +1261,7 @@ function UploadSection({ currentFile }: { currentFile: File | null }) {
 
   return (
     <>
-      <HeadingText>Upload Task</HeadingText>
+      <SectionHeading title="Upload Task" />
       <ListButton
         title="Upload binary"
         disabled={!currentFile || uploading}
@@ -1428,7 +1429,7 @@ function DownloadTaskSection() {
 
   return (
     <>
-      <HeadingText>Download Task</HeadingText>
+      <SectionHeading title="Download Task" />
       <ListButton
         title="Start download"
         disabled={status === 'downloading'}
