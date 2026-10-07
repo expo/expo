@@ -3,6 +3,7 @@ import AppMetrics from 'expo-app-metrics';
 import { reportCaughtError } from '../../reportCaughtError';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { loadReanimated, type ReanimatedLogData } from './reanimated';
+import { removeLoggerFrames } from './stack';
 
 // Value of Reanimated's `ReanimatedLogLevel.error`.
 const LOG_LEVEL_ERROR = 2;
@@ -73,7 +74,8 @@ function shouldReport(reported: Map<string, number>, cappedMessage: string): boo
   return true;
 }
 
-// Reanimated already prints every log to the console, so this only reports to Observe.
+// Reanimated already prints every log to the console, so this only reports to Observe. The name
+// of this function is matched in `removeLoggerFrames`, so keep the two in sync.
 function reportReanimatedLog({ level, message }: ReanimatedLogData): void {
   const isError = level === LOG_LEVEL_ERROR;
   const cappedMessage = message.slice(0, MAX_MESSAGE_LENGTH);
@@ -83,8 +85,8 @@ function reportReanimatedLog({ level, message }: ReanimatedLogData): void {
   if (isError) {
     // For a log on the React Native runtime, Reanimated calls `onLog` synchronously, so this
     // stack includes the frames that led to the log. A log on the UI runtime is delivered later,
-    // so its stack only shows the delivery.
-    reportCaughtError(new ReanimatedError(message, new Error(message).stack));
+    // so its stack has no frames left after `removeLoggerFrames`.
+    reportCaughtError(new ReanimatedError(message, removeLoggerFrames(new Error(message).stack)));
     return;
   }
   AppMetrics.logEvent(REANIMATED_WARNING_EVENT, {
