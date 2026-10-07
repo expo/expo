@@ -54,23 +54,33 @@ function existingArtifactSource(baseDir, flavor, frameworkName) {
 }
 
 /**
- * Lookup order: EXPO_PRECOMPILED_MODULES_PATH, monorepo prebuild output, the npm package's
- * `prebuilds/` copy.
+ * Lookup order: EXPO_PRECOMPILED_MODULES_PATH (`env`), monorepo prebuild output (`monorepo`),
+ * the npm package's `prebuilds/` copy (`bundled`, skipped without a module root).
  */
-function precompiledBaseDirs(buildPath, moduleRoot, bundledPath) {
+function precompiledBases(buildPath, moduleRoot, bundledPath) {
   const bases = [];
   if (process.env.EXPO_PRECOMPILED_MODULES_PATH) {
-    bases.push(path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, ...buildPath));
+    bases.push({
+      kind: 'env',
+      dir: path.resolve(process.env.EXPO_PRECOMPILED_MODULES_PATH, ...buildPath),
+    });
   }
-  bases.push(
-    path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
-    path.join(moduleRoot, 'prebuilds', ...bundledPath)
-  );
-  return Array.from(new Set(bases));
+  bases.push({
+    kind: 'monorepo',
+    dir: path.resolve(__dirname, '..', '..', '..', 'precompile', '.build', ...buildPath),
+  });
+  if (moduleRoot != null) {
+    bases.push({ kind: 'bundled', dir: path.join(moduleRoot, 'prebuilds', ...bundledPath) });
+  }
+  return bases.filter((base, index) => bases.findIndex((b) => b.dir === base.dir) === index);
+}
+
+function artifactBases(packageName, moduleRoot) {
+  return precompiledBases([packageName, 'output'], moduleRoot, ['output']);
 }
 
 function artifactBaseDirs(packageName, moduleRoot) {
-  return precompiledBaseDirs([packageName, 'output'], moduleRoot, ['output']);
+  return artifactBases(packageName, moduleRoot).map((base) => base.dir);
 }
 
 /**
@@ -224,14 +234,20 @@ function validateFlavoredFramework(framework) {
 }
 
 /**
+ * The declaration goes to React Native as is, so where it was resolved from is kept beside
+ * it rather than in it.
+ */
+const frameworkSources = new WeakMap();
+
+/**
  * Returns null when this module has no precompiled artifact at all. Once any
  * flavor is present, both are mandatory at the same source base; a partial
  * build must not silently degrade to a one-flavor declaration.
  */
 function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cacheDir }) {
-  for (const baseDir of artifactBaseDirs(packageName, moduleRoot)) {
+  for (const base of artifactBases(packageName, moduleRoot)) {
     const sources = Object.fromEntries(
-      FLAVORS.map((flavor) => [flavor, existingArtifactSource(baseDir, flavor, frameworkName)])
+      FLAVORS.map((flavor) => [flavor, existingArtifactSource(base.dir, flavor, frameworkName)])
     );
     if (sources.debug == null && sources.release == null) {
       continue;
@@ -239,12 +255,12 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
     for (const flavor of FLAVORS) {
       if (sources[flavor] == null) {
         throw pluginError({
-          what: `${frameworkName} has an incomplete precompiled pair in ${baseDir}: missing ${flavor}.`,
+          what: `${frameworkName} has an incomplete precompiled pair in ${base.dir}: missing ${flavor}.`,
           how: `Run the Expo prebuild pipeline for both Debug and Release before \`${SPM_UPDATE_COMMAND}\`.`,
         });
       }
     }
-    return validateFlavoredFramework({
+    const framework = validateFlavoredFramework({
       id: stableFrameworkId(frameworkName),
       frameworkName,
       linkage: 'dynamic',
@@ -253,20 +269,37 @@ function resolveFlavoredFramework({ packageName, moduleRoot, frameworkName, cach
         release: prepareArtifactSource(sources.release, frameworkName, cacheDir, 'release'),
       },
     });
+    frameworkSources.set(framework, base);
+    return framework;
   }
   return null;
 }
 
+/** The `{ kind, dir }` base a `resolveFlavoredFramework` declaration came from. */
+function frameworkSource(framework) {
+  return frameworkSources.get(framework) ?? null;
+}
+
+const HEADERS_FLAVOR = 'headers';
+
+/** Every path `resolveHeadersXCFrameworkWithSource` tries, in its order. */
+function headersXCFrameworkSearchPaths({ packageName, moduleRoot, productName }) {
+  return artifactBases(packageName, moduleRoot).flatMap((base) =>
+    Object.values(artifactCandidates(base.dir, HEADERS_FLAVOR, `${productName}Headers`))
+  );
+}
+
 /**
  * The interface-only `<Product>Headers` XCFramework a product publishes in place of its
- * binaries, from the same bases as its flavored frameworks. Null when no base has one.
+ * binaries, from the first of its flavored frameworks' bases that has one, as
+ * `{ xcframework, source }`. Null when no base has one.
  */
-function resolveHeadersXCFramework({ packageName, moduleRoot, productName, cacheDir }) {
+function resolveHeadersXCFrameworkWithSource({ packageName, moduleRoot, productName, cacheDir }) {
   const frameworkName = `${productName}Headers`;
-  for (const baseDir of artifactBaseDirs(packageName, moduleRoot)) {
-    const source = existingArtifactSource(baseDir, 'headers', frameworkName);
-    if (source == null) continue;
-    const xcframework = prepareArtifactSource(source, frameworkName, cacheDir, 'headers');
+  for (const base of artifactBases(packageName, moduleRoot)) {
+    const artifact = existingArtifactSource(base.dir, HEADERS_FLAVOR, frameworkName);
+    if (artifact == null) continue;
+    const xcframework = prepareArtifactSource(artifact, frameworkName, cacheDir, HEADERS_FLAVOR);
     if (!fs.existsSync(path.join(xcframework, 'Info.plist'))) {
       throw pluginError({
         what: `${xcframework} has no Info.plist.`,
@@ -274,15 +307,20 @@ function resolveHeadersXCFramework({ packageName, moduleRoot, productName, cache
         how: `Reinstall ${packageName}, or delete it and run the Expo prebuild pipeline for ${packageName} again.`,
       });
     }
-    return xcframework;
+    return { xcframework, source: base };
   }
   return null;
+}
+
+/** `resolveHeadersXCFrameworkWithSource` without the source: the XCFramework path, or null. */
+function resolveHeadersXCFramework(lookup) {
+  return resolveHeadersXCFrameworkWithSource(lookup)?.xcframework ?? null;
 }
 
 /** The directories `resolveHeadersXCFramework` searches, in lookup order. */
 function headersXCFrameworkDirs(packageName, moduleRoot) {
   return artifactBaseDirs(packageName, moduleRoot).map((baseDir) =>
-    artifactDir(baseDir, 'headers')
+    artifactDir(baseDir, HEADERS_FLAVOR)
   );
 }
 
@@ -292,7 +330,9 @@ function headersXCFrameworkDirs(packageName, moduleRoot) {
  * of the module that links it.
  */
 function spmDependencyBaseDirs(depName, ownerModuleRoot) {
-  return precompiledBaseDirs(['.spm-deps', depName], ownerModuleRoot, ['spm-deps', depName]);
+  return precompiledBases(['.spm-deps', depName], ownerModuleRoot, ['spm-deps', depName]).map(
+    (base) => base.dir
+  );
 }
 
 function readXcframeworkPlist(plistPath) {
@@ -507,10 +547,13 @@ module.exports = {
   artifactBaseDirs,
   assertDistinctFlavoredFrameworks,
   byteOrder,
+  frameworkSource,
   headersXCFrameworkDirs,
+  headersXCFrameworkSearchPaths,
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
+  resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
   stableFrameworkId,
   validateFlavoredFramework,

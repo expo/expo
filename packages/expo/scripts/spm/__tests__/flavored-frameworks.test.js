@@ -12,6 +12,7 @@ const {
   prepareCompileInterfaces,
   resolveFlavoredFramework,
   resolveHeadersXCFramework,
+  resolveHeadersXCFrameworkWithSource,
   stableFrameworkId,
   validateFlavoredFramework,
 } = require('../flavored-frameworks');
@@ -326,6 +327,59 @@ describe('artifact preparation', () => {
         cacheDir: path.join(root, 'cache'),
       })
     ).toThrow('is not part of an .xcframework');
+  });
+
+  it('returns a headers xcframework directory where it lies', () => {
+    const headers = path.join(root, 'expo-modules-core', 'output', 'headers', 'xcframeworks');
+    const xcframework = makeXcframework(headers, 'ExpoModulesCoreHeaders', '.');
+
+    expect(
+      resolveHeadersXCFrameworkWithSource({
+        packageName: 'expo-modules-core',
+        moduleRoot: path.join(root, 'module'),
+        productName: 'ExpoModulesCore',
+        cacheDir: path.join(root, 'cache'),
+      })
+    ).toEqual({
+      xcframework,
+      source: { kind: 'env', dir: path.join(root, 'expo-modules-core', 'output') },
+    });
+  });
+
+  itNotWindows('expands a bundled headers tarball into the cache', () => {
+    const source = path.join(root, 'source');
+    makeXcframework(source, 'ExpoModulesCoreHeaders', 'headers');
+    const moduleRoot = path.join(root, 'module');
+    packTarball(
+      path.join(source, 'headers'),
+      path.join(
+        moduleRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoModulesCoreHeaders.tar.gz'
+      ),
+      ['ExpoModulesCoreHeaders.xcframework']
+    );
+
+    const result = resolveHeadersXCFrameworkWithSource({
+      packageName: 'expo-spm-headers-fixture',
+      moduleRoot,
+      productName: 'ExpoModulesCore',
+      cacheDir: path.join(root, 'cache'),
+    });
+    expect(result).toEqual({
+      xcframework: path.join(
+        root,
+        'cache',
+        'expo-modules-core-headers',
+        'headers',
+        'ExpoModulesCoreHeaders.xcframework'
+      ),
+      source: { kind: 'bundled', dir: path.join(moduleRoot, 'prebuilds', 'output') },
+    });
+    expect(fs.existsSync(path.join(result.xcframework, 'Info.plist'))).toBe(true);
   });
 
   it('produces byte-identical compile interfaces regardless of declaration order', () => {
