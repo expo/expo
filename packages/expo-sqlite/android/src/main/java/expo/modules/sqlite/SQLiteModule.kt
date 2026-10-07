@@ -489,7 +489,11 @@ class SQLiteModule : Module() {
         maybeThrowForClosedDatabase(database)
 
         val ret = statement.ref.sqlite3_finalize()
-        val error = if (ret != NativeDatabaseBinding.SQLITE_OK) statement.ref.getLastErrorMessage() else null
+        val error = if (ret != NativeDatabaseBinding.SQLITE_OK) {
+          statement.ref.getLastErrorMessage()
+        } else {
+          null
+        }
         // SQLite destroys the statement even when returning an earlier execution error.
         statement.isFinalized = true
         database.statements.removeAll { it === statement }
