@@ -113,6 +113,26 @@ describe('omitUserOverriddenDimensions', () => {
     ).toEqual(dimensions);
   });
 
+  it('keeps a percentage when defaultMinSize sets a minimum', () => {
+    expect(
+      omitUserOverriddenDimensions(
+        dimensions,
+        [{ $type: 'defaultMinSize', minWidth: 8, minHeight: 8 }],
+        'android'
+      )
+    ).toEqual(dimensions);
+  });
+
+  it('keeps a percentage when a frame sets only a minimum or maximum', () => {
+    expect(
+      omitUserOverriddenDimensions(
+        dimensions,
+        [{ $type: 'frame', minWidth: 20, maxHeight: 40 }],
+        'ios'
+      )
+    ).toEqual(dimensions);
+  });
+
   it('drops an iOS axis when the user frame sets that axis', () => {
     expect(
       omitUserOverriddenDimensions(dimensions, [{ $type: 'frame', height: 12 }], 'ios')
