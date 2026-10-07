@@ -225,6 +225,18 @@ abstract class ExpoComposeView<T : ComposeProps>(
       // SavedStateRegistry (set below), so without one they'd collide on a single key and only
       // the first could save/restore state.
       HostingViewSaveableState.assignNamespace(it)
+      // The keyboard-focusable view is the AndroidComposeView that ComposeView adds as its child.
+      // React Native's ScrollView.focusSearch keeps a focus target only if
+      // findViewById(target.id) finds it, so without an id Tab / Shift+Tab skip the Host.
+      it.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
+        override fun onChildViewAdded(parent: View?, child: View?) {
+          if (child != null && child.id == View.NO_ID) {
+            child.id = generateViewId()
+          }
+        }
+
+        override fun onChildViewRemoved(parent: View?, child: View?) = Unit
+      })
       it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       // Pin the composition to the Activity lifecycle so it survives
       // react-native-screens detaching inactive screens on every switch.
