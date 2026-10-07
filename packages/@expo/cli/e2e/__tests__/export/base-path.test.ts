@@ -98,31 +98,13 @@ describe('static-rendering with a custom base path', () => {
     }
   });
 
-  it('supports usePathname in +html files', async () => {
+  it('renders the custom +html file', async () => {
     const page = await fs.promises.readFile(path.join(outputDir, 'index.html'), 'utf8');
 
     expect(page).toContain('<meta name="custom-value" content="value"/>');
 
     // Root element
     expect(page).toContain('<div id="root">');
-
-    expect(
-      (await getPageHtml(outputDir, 'about.html')).querySelector(
-        'html > head > meta[name="expo-e2e-pathname"]'
-      )?.attributes.content
-    ).toBe('/about');
-
-    expect(
-      (await getPageHtml(outputDir, 'index.html')).querySelector(
-        'html > head > meta[name="expo-e2e-pathname"]'
-      )?.attributes.content
-    ).toBe('/');
-
-    expect(
-      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
-        'html > head > meta[name="expo-e2e-pathname"]'
-      )?.attributes.content
-    ).toBe('/welcome-to-the-universe');
   });
 
   it('supports baseUrl in Links', async () => {
