@@ -6,8 +6,7 @@
   "android": {
     "modules": [
       "expo.modules.location.LocationModule",
-      "expo.modules.location.next.LocationModuleNext",
-      "expo.modules.location.next.locationProviders.HmsModule"
+      "expo.modules.location.next.LocationModuleNext"
     ],
     "publication": {
       "groupId": "host.exp.exponent",
