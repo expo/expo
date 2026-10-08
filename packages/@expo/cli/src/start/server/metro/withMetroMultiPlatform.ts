@@ -244,8 +244,10 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
  * - Alias `react-native` to `react-native-web` on web.
- * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to the shared virtual asset registry module on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ * - Redirect legacy AssetRegistry imports to new public RN API (to remove in Expo SDK 59)
+ *   - `react-native/Libraries/Image/AssetRegistry` -> `react-native/asset-registry`
+ *   - `@react-native/assets-registry/registry` -> `react-native/asset-registry`
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -640,6 +642,19 @@ export function withExtendedResolver(
     ) {
       if (moduleName === config.transformer.asyncRequireModulePath) {
         return getAsyncRequireModule();
+      }
+
+      // TODO(@bycedric): React Native 0.87+ drops `react-native/Libraries/Image/AssetRegistry.js`,
+      // in favor of the public API alternative `import { AssetRegistry } from 'react-native'`.
+      // Some libraries have not moved over to `@react-native/assets-registry/registry` or the
+      // new public API, causing resolution or registry issues. This forces usage of the new API.
+      // `react-native-web@>=0.21.4` contains the `react-native-web/asset-registry` export too.
+      // TODO(@bycedric): Drop this in Expo SDK 59
+      if (
+        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName) ||
+        /^react-native\/Libraries\/Image\/AssetRegistry(\.js)?$/.test(moduleName)
+      ) {
+        return getStrictResolver(context, platform)('react-native/asset-registry');
       }
 
       return null;
