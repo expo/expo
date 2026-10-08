@@ -338,11 +338,11 @@ public final class VideoModule: Module {
       }
 
       Function("play") { player in
-        player.ref.play()
+        player.play()
       }
 
       Function("pause") { player in
-        player.ref.pause()
+        player.pause()
       }
 
       Function("replace") { (player, source: Either<String, VideoSource>?) in
@@ -363,7 +363,7 @@ public final class VideoModule: Module {
 
       Function("replay") { player in
         player.seeker.seek(to: CMTime.zero)
-        player.ref.play()
+        player.play()
       }
 
       AsyncFunction("generateThumbnailsAsync") { (player: VideoPlayer, times: [CMTime]?, options: VideoThumbnailOptions?) -> [VideoThumbnail] in
