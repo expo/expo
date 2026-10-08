@@ -8,7 +8,7 @@
       android:exported="false"
       android:foregroundServiceType="location" />
     <service
-      android:name=".next.LocationForegroundService"
+      android:name=".next.locationForegroundService.LocationForegroundService"
       android:exported="false"
       android:foregroundServiceType="location" />
   </application>

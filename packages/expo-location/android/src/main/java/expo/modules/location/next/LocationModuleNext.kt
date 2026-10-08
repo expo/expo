@@ -1,9 +1,9 @@
 package expo.modules.location.next
 
 import android.content.Context
-import android.content.Intent
 import android.location.LocationManager
 import android.os.Build
+import android.util.Log
 import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -15,11 +15,19 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.location.next.locationForegroundService.BackgroundSessionOptions
+import expo.modules.location.next.locationForegroundService.BackgroundSessionState
+import expo.modules.location.next.locationForegroundService.LocationForegroundService
+import expo.modules.location.next.locationForegroundService.ServicePromotionFailedException
+import expo.modules.location.next.locationForegroundService.ServicePromotionResult
+import expo.modules.location.next.locationForegroundService.ServicePromotionTimedOutException
+import expo.modules.location.next.locationForegroundService.SessionState
 import expo.modules.location.next.locationProviders.AndroidLocationProvider
 import expo.modules.location.next.locationProviders.EnableLocationServicesResult
 import expo.modules.location.next.locationProviders.FallbackLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.next.locationProviders.LocationProvider
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import expo.modules.location.next.locationProviders.WatchPositionParameters
 import expo.modules.location.next.locationProviders.PositionUpdatesSession
@@ -194,12 +202,19 @@ class LocationModuleNext : Module() {
 
     Class("BackgroundSession") {
       StaticAsyncFunction("ensureStarted") Coroutine { backgroundSessionOptions: BackgroundSessionOptions? ->
-        if (!LocationForegroundService.canPostNotifications(context)) {
-          throw MissingNotificationPermissionException()
+        if (!LocationForegroundService.isForegroundServiceRequired) {
+          return@Coroutine
         }
+        permissionsManager.ensureForegroundServicePermissions()
 
-        val options = backgroundSessionOptions ?: BackgroundSessionOptions()
-        BackgroundSessionOptions.persist(context, options)
+        val requested = backgroundSessionOptions
+        val options = if (requested != null) {
+          BackgroundSessionOptions.persist(context, requested)
+          requested
+        } else {
+          BackgroundSessionOptions.readPersisted(context)
+            ?: BackgroundSessionOptions().also { BackgroundSessionOptions.persist(context, it) }
+        }
 
         val sessionState = LocationForegroundService.startOrUpdate(context, options, updateOnly = !isForegrounded)
         if (sessionState !is SessionState.Starting) {
@@ -215,11 +230,11 @@ class LocationModuleNext : Module() {
       }
 
       StaticAsyncFunction("stop") Coroutine { ->
-        (LocationForegroundService.state as? SessionState.Starting)?.promotion?.let {
-          withTimeoutOrNull(4.seconds) { it.await() }
+        val currentState = LocationForegroundService.state
+        if (currentState is SessionState.Starting) {
+          withTimeoutOrNull(4.seconds) { currentState.promotion.await() }
         }
-        BackgroundSessionOptions.clearPersisted(context)
-        context.stopService(Intent(context, LocationForegroundService::class.java))
+        LocationForegroundService.stop(context)
       }
 
       StaticFunction("status") {
@@ -277,18 +292,20 @@ class LocationModuleNext : Module() {
       isForegrounded = true
       updateWatchSessions()
 
-      if (!LocationForegroundService.canPostNotifications(context)) {
-        return@OnActivityEntersForeground
-      }
       appContext.backgroundCoroutineScope.launch {
-        runCatching {
+        try {
           BackgroundSessionOptions.readPersisted(context)?.let {
+            permissionsManager.ensureForegroundServicePermissions()
             val sessionState = LocationForegroundService.startOrUpdate(context, it, updateOnly = !isForegrounded)
             if (sessionState is SessionState.Starting) {
               sessionState.promotion.await()
               updateWatchSessions()
             }
           }
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          Log.w("ExpoLocation", "Could not restart the background session after entering the foreground", e)
         }
       }
     }

@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.location.next.locationForegroundService.MissingNotificationPermissionException
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsStatus
@@ -62,9 +63,19 @@ internal suspend fun Permissions.requestBackgroundPermissions() {
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
 private fun supportsNotificationPermission(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
+private fun supportsForegroundServicePermission(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+private fun supportsForegroundServiceTypePermission(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
 internal suspend fun Permissions.requestNotificationPermissions() {
   if (!supportsNotificationPermission()) {
     return
+  }
+
+  if (!isPermissionPresentInManifest(Manifest.permission.POST_NOTIFICATIONS)) {
+    throw NoPermissionInManifestException("POST_NOTIFICATIONS")
   }
 
   requestPermissions(Manifest.permission.POST_NOTIFICATIONS)
@@ -138,6 +149,20 @@ internal fun Permissions.ensureForegroundPermissions() {
   val hasCoarse = hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
   if (!hasFine && !hasCoarse) {
     throw ForegroundLocationPermissionsNotGrantedException()
+  }
+}
+
+internal fun Permissions.ensureForegroundServicePermissions() {
+  ensureForegroundPermissions()
+
+  if (supportsForegroundServicePermission() && !isPermissionPresentInManifest(Manifest.permission.FOREGROUND_SERVICE)) {
+    throw NoPermissionInManifestException("FOREGROUND_SERVICE")
+  }
+  if (supportsForegroundServiceTypePermission() && !isPermissionPresentInManifest(Manifest.permission.FOREGROUND_SERVICE_LOCATION)) {
+    throw NoPermissionInManifestException("FOREGROUND_SERVICE_LOCATION")
+  }
+  if (supportsNotificationPermission() && !hasGrantedPermissions(Manifest.permission.POST_NOTIFICATIONS)) {
+    throw MissingNotificationPermissionException()
   }
 }
 
