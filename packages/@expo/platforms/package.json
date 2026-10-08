@@ -47,6 +47,6 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*"
   }
 }
