@@ -132,14 +132,16 @@ export interface DateTimePickerProps {
    */
   showVariantToggle?: boolean;
   /**
-   * Whether the picker shows its title, such as "Select date". When `false`, Material 3's `title`
-   * slot is set to `null`.
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot. This prop has no effect when `displayedComponents` is
+   * `'hourAndMinute'`.
    * @default true
    */
   showTitle?: boolean;
   /**
    * Whether the picker shows its headline, which displays the current selection. When `false`,
-   * Material 3's `headline` slot is set to `null`.
+   * the picker passes `null` to Material 3's `headline` slot. This prop has no effect when
+   * `displayedComponents` is `'hourAndMinute'`.
    * @default true
    */
   showHeadline?: boolean;
@@ -265,14 +267,14 @@ export interface DateRangePickerProps {
    */
   showVariantToggle?: boolean;
   /**
-   * Whether the picker shows its title, such as "Select date". When `false`, Material 3's `title`
-   * slot is set to `null`.
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot.
    * @default true
    */
   showTitle?: boolean;
   /**
    * Whether the picker shows its headline, which displays the current selection. When `false`,
-   * Material 3's `headline` slot is set to `null`.
+   * the picker passes `null` to Material 3's `headline` slot.
    * @default true
    */
   showHeadline?: boolean;
@@ -357,14 +359,14 @@ export interface DatePickerDialogProps {
   variant?: AndroidVariant;
   showVariantToggle?: boolean;
   /**
-   * Whether the picker shows its title, such as "Select date". When `false`, Material 3's `title`
-   * slot is set to `null`.
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot.
    * @default true
    */
   showTitle?: boolean;
   /**
    * Whether the picker shows its headline, which displays the current selection. When `false`,
-   * Material 3's `headline` slot is set to `null`.
+   * the picker passes `null` to Material 3's `headline` slot.
    * @default true
    */
   showHeadline?: boolean;
