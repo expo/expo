@@ -96,12 +96,8 @@ declare module 'react-native' {
     visibility?: string;
     /** @platform web */
     willChange?: string;
-    // TODO: restore once https://github.com/react/react-native/pull/58168 ships. React Native
-    // declares `position` as 'absolute' | 'relative' | 'static'. Declaring it here again widens
-    // the public interface away from the type the component actually accepts, so `fixed` and
-    // `sticky` cannot be added back until augmenting the style type reaches that type.
-    // /** @platform web */
-    // position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+    /** @platform web */
+    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
   }
 
   /**
@@ -145,11 +141,8 @@ declare module 'react-native' {
     backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
     /** @platform web */
     clip?: string;
-    // TODO: restore once https://github.com/react/react-native/pull/58168 ships. React Native
-    // declares `cursor` as CursorValue, which is 'auto' | 'pointer'. The web set is much larger,
-    // but widening it here detaches `TextStyle` from the type the component actually accepts.
-    // /** @platform web */
-    // cursor?: string;
+    /** @platform web */
+    cursor?: string;
     /** @platform web */
     gridAutoColumns?: string;
     /** @platform web */
@@ -204,12 +197,8 @@ declare module 'react-native' {
     visibility?: string;
     /** @platform web */
     willChange?: string;
-    // TODO: restore once https://github.com/react/react-native/pull/58168 ships. React Native
-    // declares `position` as 'absolute' | 'relative' | 'static'. Declaring it here again widens
-    // the public interface away from the type the component actually accepts, so `fixed` and
-    // `sticky` cannot be added back until augmenting the style type reaches that type.
-    // /** @platform web */
-    // position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
+    /** @platform web */
+    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
     /** @platform web */
     fontFeatureSettings?: string;
     /** @platform web */
