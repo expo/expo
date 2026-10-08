@@ -148,7 +148,11 @@ internal struct UniversalPercentageLayout: Layout {
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
     guard let subview = subviews.first else { return }
-    let childProposal = resolvesPercentages ? ProposedViewSize(bounds.size) : proposal
+    // This modifier sits outside the stack, so the stack sees this proposal.
+    // Offering `bounds` would turn a nil scroll axis into a percentage base.
+    let childProposal = resolvesPercentages
+      ? placementProposal(bounds: bounds, proposal: proposal)
+      : proposal
     subview.place(at: bounds.origin, proposal: childProposal)
   }
 }
