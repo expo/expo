@@ -182,8 +182,8 @@ fun buildMediaSourceFactory(
   val extractorsFactory = androidx.media3.extractor.DefaultExtractorsFactory()
     .setTsExtractorFlags(
       androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES or
-      androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_IGNORE_SPLICE_INFO_STREAM or
-      androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
+        androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_IGNORE_SPLICE_INFO_STREAM or
+        androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
     )
   val factory = DefaultMediaSourceFactory(context, extractorsFactory).setDataSourceFactory(dataSourceFactory)
   if (fallbackOnTransportError) {
@@ -191,7 +191,6 @@ fun buildMediaSourceFactory(
   }
   return factory
 }
-
 
 @OptIn(UnstableApi::class)
 fun buildExpoVideoMediaSource(
