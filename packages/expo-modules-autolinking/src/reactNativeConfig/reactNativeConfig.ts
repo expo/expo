@@ -1,3 +1,4 @@
+import { isAppleTargetPlatform, isOutOfTreePlatform } from '@expo/platforms';
 import fs from 'fs';
 import path from 'path';
 
@@ -135,7 +136,7 @@ export async function resolveReactNativeModule(
       reactNativeConfig.platforms?.ios,
       maybeExpoModuleConfig
     );
-  } else if (platform === 'tvos' || platform === 'macos') {
+  } else if (isOutOfTreePlatform(platform)) {
     // tvos/macos build through the Apple toolchain, so they reuse the iOS autolinking resolver.
     // Use the platform-specific `react-native.config` entry when it's set — including an explicit
     // `null`, which disables autolinking for that platform — and only fall back to `platforms.ios`
@@ -143,7 +144,7 @@ export async function resolveReactNativeModule(
     // When the config says nothing about the platform, the podspec decides: a library whose
     // podspec does not declare it is skipped, so codegen and Metro do not see native code that
     // the Podfile is going to filter out anyway.
-    const platformConfig = reactNativeConfig.platforms?.[platform as 'tvos' | 'macos'];
+    const platformConfig = reactNativeConfig.platforms?.[platform];
     const appleConfig =
       platformConfig !== undefined ? platformConfig : reactNativeConfig.platforms?.ios;
     platformData = await resolveDependencyConfigImplIosAsync(
@@ -287,7 +288,7 @@ export async function resolveAppProjectConfigAsync(
     };
   }
 
-  if (platform === 'ios' || platform === 'tvos' || platform === 'macos') {
+  if (isAppleTargetPlatform(platform)) {
     // tvos/macos may reuse the iOS (Apple) toolchain but are reported under their own platform key
     return {
       [platform]: {
