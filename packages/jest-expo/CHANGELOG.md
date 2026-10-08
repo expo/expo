@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remapped `import.meta.url` under Jest to the module's `file://` URL. `jest-expo` now reports `bundler: 'jest'` to Babel. ([#51110](https://github.com/expo/expo/pull/51110) by [@abappi19](https://github.com/abappi19))
+
 ### 💡 Others
 
 ## 57.0.5 — 2026-08-26
