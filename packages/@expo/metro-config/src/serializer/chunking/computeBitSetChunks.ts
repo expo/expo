@@ -4,13 +4,13 @@ import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency
 import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';
 
 /**
- * Plan page chunks in two bitset domains. Entry bits identify the initial or dynamic entries
+ * Plan application chunks in two bitset domains. Entry bits identify the initial or dynamic entries
  * that synchronously reach a module. Modules with identical entry sets form a raw atom.
  * Atom bits identify these raw groups within an entry's dependency or availability set.
  *
  * Reachability says who needs a module; normalized ownership says which entries must supply
  * it. An entry can stop owning an atom only when every importer path already supplies it.
- * These are build-time guarantees, not observations of the browser's loaded modules.
+ * Availability is a build-time guarantee about which modules are registered before an entry loads.
  */
 export type BitSet = bigint;
 type GraphModule = Module<MixedOutput>;
@@ -207,7 +207,7 @@ function compareModules(a: GraphModule, b: GraphModule): number {
   return a.path < b.path ? -1 : a.path > b.path ? 1 : 0;
 }
 
-/** Analyze a complete page graph, excluding worker dependencies. */
+/** Analyze a complete application graph, excluding worker dependencies. */
 export function analyzeBitSetGraph(
   initialEntries: readonly GraphModule[],
   graph: ReadOnlyGraph,
