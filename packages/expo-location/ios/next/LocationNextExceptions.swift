@@ -78,6 +78,29 @@ final class PermissionsModuleUnavailable: Exception, @unchecked Sendable {
   }
 }
 
+final class TaskManagerUnavailable: Exception, @unchecked Sendable {
+  override var reason: String {
+    "'expo-task-manager' module is required to use background services"
+  }
+}
+
+final class SignificantLocationChangesUnavailable: Exception, @unchecked Sendable {
+  override var reason: String {
+    "This device cannot monitor significant location changes, which background location updates " +
+    "are built on. The capability is missing on this hardware, and the app cannot turn it on. " +
+    "Watch the position while the app runs instead of registering a background task"
+  }
+}
+
+final class MissingLocationBackgroundMode: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Background location updates need 'location' in the 'UIBackgroundModes' array of your " +
+    "Info.plist, and this app does not declare it, so the system would stop the updates as soon " +
+    "as the app leaves the foreground. Set 'isIosBackgroundLocationEnabled' in the 'expo-location' " +
+    "config plugin, or add the key by hand, then rebuild the app"
+  }
+}
+
 final class PermissionRequestFailedException: Exception, @unchecked Sendable {
   override var reason: String {
     "The system reported an error while requesting location permissions, so the request could not " +

@@ -24,12 +24,17 @@ final class PositionUpdatesSource {
 
 extension PositionUpdatesSource {
   static func foreground(for profile: Profile) -> PositionUpdatesSource {
-    if profile == .lowPower {
-      return PositionUpdatesCompatibilitySource().updates(for: profile)
+    return updates(for: profile, allowsBackgroundUpdates: false)
+  }
+
+  static func background(for profile: Profile) -> PositionUpdatesSource {
+    return updates(for: profile, allowsBackgroundUpdates: true)
+  }
+
+  private static func updates(for profile: Profile, allowsBackgroundUpdates: Bool) -> PositionUpdatesSource {
+    if profile != .lowPower, #available(iOS 17.0, *) {
+      return PositionUpdatesLiveSource().updates(for: profile, allowsBackgroundUpdates: allowsBackgroundUpdates)
     }
-    if #available(iOS 17.0, *) {
-      return PositionUpdatesLiveSource().updates(for: profile)
-    }
-    return PositionUpdatesCompatibilitySource().updates(for: profile)
+    return PositionUpdatesCompatibilitySource().updates(for: profile, allowsBackgroundUpdates: allowsBackgroundUpdates)
   }
 }
