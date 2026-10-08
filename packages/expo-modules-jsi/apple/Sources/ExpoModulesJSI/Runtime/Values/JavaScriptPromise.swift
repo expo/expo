@@ -40,6 +40,12 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     /// a `then` call per promise. Its presence is what marks the callbacks as installed.
     var deferredPromise: DeferredPromise?
 
+    // Construction touches no actor-isolated state (every stored property
+    // is its own independent default value) — only later use needs
+    // JavaScriptActor, so make init nonisolated to allow constructing this
+    // from JavaScriptPromise's own synchronous initializer.
+    nonisolated init() {}
+
     func allowRelease() {
       object.release()
       resolveFunction.release()
