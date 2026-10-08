@@ -25,9 +25,7 @@ describe('atoms and already-loaded ownership', () => {
     const chunk = plan.chunks.find((chunk) =>
       [...chunk.modules].some((module) => module.path === `/app/${path}.js`)
     )!;
-    return [...bitIndices(chunk.dependentEntries)].map(
-      (index) => plan.entryPoints[index]!.module.path
-    );
+    return [...bitIndices(chunk.ownerEntries)].map((index) => plan.entryPoints[index]!.module.path);
   }
 
   it.each([false, true])(
@@ -83,7 +81,7 @@ describe('atoms and already-loaded ownership', () => {
     });
     const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
     expect(
-      plan.rawAtoms.map((atom) => [atom.dependentEntries, [...atom.modules].map((m) => m.path)])
+      plan.rawAtoms.map((atom) => [atom.ownerEntries, [...atom.modules].map((m) => m.path)])
     ).toEqual([
       [0b001n, ['/app/a.js']],
       [0b010n, ['/app/b.js']],
@@ -94,7 +92,7 @@ describe('atoms and already-loaded ownership', () => {
     expect(plan.staticDependencyAtomsByEntry).toEqual([0b10101n, 0b00110n, 0b11000n]);
     expect(plan.guaranteedLoadedAtomsByEntry).toEqual([0b11000n, 0b11101n, 0n]);
     expect(
-      plan.chunks.map((chunk) => [chunk.dependentEntries, [...chunk.modules].map((m) => m.path)])
+      plan.chunks.map((chunk) => [chunk.ownerEntries, [...chunk.modules].map((m) => m.path)])
     ).toEqual([
       [0b001n, ['/app/a.js', '/app/shared-leaf.js', '/app/shared.js']],
       [0b010n, ['/app/b.js']],
@@ -102,7 +100,7 @@ describe('atoms and already-loaded ownership', () => {
     ]);
     // Canonical requirements use original reachability, not the reduced owner bits.
     expect(
-      plan.requiredChunksByEntryPath.get('/app/b.js')!.map((chunk) => chunk.dependentEntries)
+      plan.requiredChunksByEntryPath.get('/app/b.js')!.map((chunk) => chunk.ownerEntries)
     ).toEqual([1n, 2n]);
   });
 
@@ -136,7 +134,7 @@ describe('atoms and already-loaded ownership', () => {
     const atomIndex = plan.rawAtoms.findIndex((atom) =>
       [...atom.modules].some((m) => m.path === '/app/shared.js')
     );
-    expect(plan.rawAtoms[atomIndex]!.dependentEntries).toBe(0b0101n);
+    expect(plan.rawAtoms[atomIndex]!.ownerEntries).toBe(0b0101n);
     expect(
       plan.guaranteedLoadedAtomsByEntry.map((bits) => (bits & (1n << BigInt(atomIndex))) !== 0n)
     ).toEqual([false, true, true, false]);
@@ -193,7 +191,7 @@ describe('atoms and already-loaded ownership', () => {
         { isLazyBundle: false }
       );
       expect(owners(plan, 'shared')).toEqual(['/app/c.js']);
-      expect(plan.chunks.map((chunk) => chunk.dependentEntries)).toEqual([1n, 2n, 4n, 8n]);
+      expect(plan.chunks.map((chunk) => chunk.ownerEntries)).toEqual([1n, 2n, 4n, 8n]);
     }
   );
 
@@ -234,9 +232,9 @@ describe('atoms and already-loaded ownership', () => {
     });
     const plan = computeBitSetChunkPlan([entry], graph, { isLazyBundle: false });
     expect(owners(plan, 'b')).toEqual(['/app/a.js']);
-    expect(plan.requiredChunksByEntryPath.get('/app/b.js')!.map((c) => c.dependentEntries)).toEqual(
-      [1n]
-    );
+    expect(plan.requiredChunksByEntryPath.get('/app/b.js')!.map((c) => c.ownerEntries)).toEqual([
+      1n,
+    ]);
   });
 
   it('does not mutate the graph or depend on entry/root/dependency insertion order', async () => {
@@ -266,7 +264,7 @@ describe('atoms and already-loaded ownership', () => {
       { isLazyBundle: false }
     );
     const getPlanSignature = (plan: typeof originalPlan) =>
-      plan.chunks.map((c) => [c.dependentEntries, [...c.modules].map((m) => m.path)]);
+      plan.chunks.map((c) => [c.ownerEntries, [...c.modules].map((m) => m.path)]);
     expect(getPlanSignature(reorderedPlan)).toEqual(getPlanSignature(originalPlan));
     expect(owners(reorderedPlan, 'shared')).toEqual(['/app/a.js', '/app/b.js']);
   });
@@ -462,7 +460,7 @@ describe('raw entrypoint reachability', () => {
     );
     expect(
       analysis.chunks.find((chunk) => chunk.modules.has(graph.dependencies.get('/app/shared.js')!))!
-        .dependentEntries
+        .ownerEntries
     ).toBe(0x3fffffffffffffffen);
   });
 });
