@@ -36,7 +36,11 @@ export interface BitSetGraphAnalysis {
 
 /** Modules with the same entrypoint owners. */
 export interface ChunkAtom {
-  readonly dependentEntries: BitSet;
+  /**
+   * Raw atoms start with all dependent entries as owners. Normalization removes entries
+   * that inherit these modules from every importer path.
+   */
+  readonly ownerEntries: BitSet;
   readonly modules: ReadonlySet<GraphModule>;
 }
 
@@ -62,8 +66,8 @@ function groupModulesByOwners(ownersByModule: ReadonlyMap<GraphModule, BitSet>):
   }
   return [...modulesByOwners]
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-    .map(([dependentEntries, modules]) => ({
-      dependentEntries,
+    .map(([ownerEntries, modules]) => ({
+      ownerEntries,
       modules: new Set(modules.sort(compareModules)),
     }));
 }
@@ -107,7 +111,7 @@ function getStaticDependencyAtomsByEntry(
   const staticDependencyAtomsByEntry = entryPoints.map(() => 0n);
   for (const [atomIndex, atom] of rawAtoms.entries()) {
     const atomMask = 1n << BigInt(atomIndex);
-    for (const entryIndex of bitIndices(atom.dependentEntries)) {
+    for (const entryIndex of bitIndices(atom.ownerEntries)) {
       staticDependencyAtomsByEntry[entryIndex] =
         staticDependencyAtomsByEntry[entryIndex]! | atomMask;
     }
@@ -162,7 +166,7 @@ function normalizeAtomOwners(
 ): ChunkAtom[] {
   const normalizedOwnersByModule = new Map<GraphModule, BitSet>();
   for (const [atomIndex, atom] of rawAtoms.entries()) {
-    let owners = atom.dependentEntries;
+    let owners = atom.ownerEntries;
     for (const entryIndex of bitIndices(owners)) {
       if ((guaranteedLoadedAtomsByEntry[entryIndex]! & (1n << BigInt(atomIndex))) !== 0n) {
         owners &= ~(1n << BigInt(entryIndex));

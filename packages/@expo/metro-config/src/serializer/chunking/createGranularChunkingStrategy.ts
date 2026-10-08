@@ -174,7 +174,7 @@ function materializeChunkPlan(
   entryChunk.preModules = new Set(preModules);
   const chunksByAtom = new Map<ChunkAtom, Chunk>();
   for (const atom of plan.chunks) {
-    const entryIndices = [...bitIndices(atom.dependentEntries)];
+    const entryIndices = [...bitIndices(atom.ownerEntries)];
     let ownerChunk: Chunk;
     if (entryIndices.length === 1) {
       ownerChunk = facadesByEntryPath.get(plan.entryPoints[entryIndices[0]!]!.module.path)!;
