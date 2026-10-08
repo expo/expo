@@ -48,10 +48,10 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
       const plan = computeBitSetChunkPlan([entryModule], graph, {
         isLazyBundle: options.includeAsyncPaths,
       });
-      const pageChunks = createPageChunks(context, strategy, plan);
-      const { chunks, entryChunk } = pageChunks;
-      entryPathsByChunk = pageChunks.entryPathsByChunk;
-      requiredChunksByEntryPath = assignEntryChunkRequirements(plan, pageChunks);
+      const materializedPlan = materializeChunkPlan(context, strategy, plan);
+      const { chunks, entryChunk } = materializedPlan;
+      entryPathsByChunk = materializedPlan.entryPathsByChunk;
+      requiredChunksByEntryPath = assignEntryChunkRequirements(plan, materializedPlan);
       const workers = collectWorkerChunks(context, strategy, plan.workerEntries);
       workerChunksByEntryPath = workers.chunksByEntryPath;
       for (const workerChunk of workers.chunks) chunks.add(workerChunk);
@@ -137,7 +137,7 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
   return strategy;
 }
 
-type PageChunks = {
+type MaterializedChunkPlan = {
   chunks: Set<Chunk>;
   entryChunk: Chunk;
   entryPathsByChunk: Map<Chunk, string[]>;
@@ -146,11 +146,11 @@ type PageChunks = {
 };
 
 /** Assign each ownership group to one file while retaining the logical entry identities. */
-function createPageChunks(
+function materializeChunkPlan(
   { entryFile, preModules, graph, options }: ChunkingContext,
   strategy: ChunkingImplementation,
   plan: BitSetChunkPlan
-): PageChunks {
+): MaterializedChunkPlan {
   const chunks = new Set<Chunk>();
   const entryPathsByChunk = new Map<Chunk, string[]>();
   const facadesByEntryPath = new Map<string, Chunk>();
@@ -209,7 +209,7 @@ function createPageChunks(
  */
 function assignEntryChunkRequirements(
   plan: BitSetChunkPlan,
-  { chunks, entryChunk, entryPathsByChunk, facadesByEntryPath, chunksByAtom }: PageChunks
+  { chunks, entryChunk, entryPathsByChunk, facadesByEntryPath, chunksByAtom }: MaterializedChunkPlan
 ): Map<string, readonly Chunk[]> {
   const requiredChunksByEntryPath = new Map<string, readonly Chunk[]>();
   for (const [entryPath, atoms] of plan.requiredChunksByEntryPath) {
