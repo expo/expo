@@ -1,16 +1,14 @@
 import CoreLocation
 
 final class PositionUpdatesCompatibilitySource: NSObject, CLLocationManagerDelegate {
-  private lazy var manager = CLLocationManager()
+  var makeManager: () -> CLLocationManager = { CLLocationManager() }
+  var isLocationServicesEnabled: () -> Bool = CLLocationManager.locationServicesEnabled
+  private lazy var manager = makeManager()
   private var continuation: AsyncThrowingStream<CLLocation?, Error>.Continuation?
 
   func updates(for profile: Profile, allowsBackgroundUpdates: Bool = false) -> PositionUpdatesSource {
     let (stream, continuation) = AsyncThrowingStream.makeStream(of: CLLocation?.self)
     self.continuation = continuation
-    guard CLLocationManager.locationServicesEnabled() else {
-      continuation.finish(throwing: LocationServicesDisabledGlobally())
-      return PositionUpdatesSource(stream: stream, continuation: continuation) {}
-    }
     DispatchQueue.main.async {
       self.manager.delegate = self
       self.manager.activityType = profile.clActivityType()
@@ -38,9 +36,11 @@ final class PositionUpdatesCompatibilitySource: NSObject, CLLocationManagerDeleg
     switch error {
     case CLError.locationUnknown:
       return
+    case CLError.denied where !isLocationServicesEnabled():
+      continuation?.finish(throwing: LocationServicesDisabledGlobally())
     case CLError.denied where manager.authorizationStatus == .authorizedWhenInUse:
-      // iOS sends this to a whenInUse app while it is in the background. The permission is intact and
-      // updates resume on their own once the app is back in the foreground.
+      // The system sends CLError.denied when an app with whenInUse permission moves to the background.
+      // Updates resume on their own once the app returns to the foreground, so this error is ignored.
       return
     case CLError.denied:
       continuation?.finish(throwing: LocationAuthorizationDenied())
