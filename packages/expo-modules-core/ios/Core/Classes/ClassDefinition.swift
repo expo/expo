@@ -70,6 +70,11 @@ public final class ClassDefinition: ObjectDefinition {
         if let sharedObject = result as? SharedObject {
           appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject())
         }
+      } else if sharedObjectType != nil {
+        // Nothing built a native instance, so the object would reach JavaScript with no backing
+        // state and fail at its first member access. Classes whose inputs only the native side can
+        // supply land here: they need a `@JS init` or a DSL `Constructor` to be constructible.
+        throw Exceptions.ConstructorUnavailable(name)
       }
       return this
     }

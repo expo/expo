@@ -63,6 +63,19 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
     let debugDescription = "\(name): \(reason) (at \(origin.file):\(origin.line))"
     return concatDescription(debugDescription, withCause: cause, debug: true)
   }
+
+  // MARK: - JavaScriptThrowable
+
+  /**
+   The message of the JavaScript error this exception is converted to. Defaults to `description`
+   (the reason and its cause chain), matching Android and what JavaScript received before the
+   JSI rewrite, instead of the protocol's default `debugDescription`, which also leaks the type
+   name and the native `file:line`. It is declared on the class, rather than inherited from the
+   protocol extension, so that subclasses can override it.
+   */
+  open var message: String {
+    description
+  }
 }
 
 /**

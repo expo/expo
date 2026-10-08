@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- [iOS] Add a `JavaScriptCodable` conformance for `Set`: it encodes to a JS `Set` and decodes from a JS `Set` or an array, collapsing duplicate elements. ([#50859](https://github.com/expo/expo/pull/50859) by [@tsapeta](https://github.com/tsapeta))
+- `JavaScriptRuntime.evalAsync` now evaluates on the JavaScript thread when called from another thread on a runtime with a scheduler, instead of on the calling thread. ([#51015](https://github.com/expo/expo/pull/51015) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Speed up `JavaScriptObject.defineProperty` by looking up `Object.defineProperty` once per runtime and building the descriptor in C++. ([#51004](https://github.com/expo/expo/pull/51004) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix the xcframework failing to build with Xcode 26 (Swift 6.2): `RuntimeScheduler` constructors annotated with `SWIFT_RETURNS_RETAINED` were rejected, and host function and host object getter callbacks failed with `sending '...' risks causing data races`. ([#51040](https://github.com/expo/expo/pull/51040) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Speed up integer arguments and results of native functions by running the integer conversions specialized inside `ExpoModulesJSI` instead of unspecialized in the calling module. A host function that adds two `Int`s runs about 7× faster. ([#51055](https://github.com/expo/expo/pull/51055) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.8
 
 ### Patch Changes

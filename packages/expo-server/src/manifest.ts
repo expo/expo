@@ -164,6 +164,10 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * When present, HTML routes are rendered at runtime instead of being served from pre-rendered files.
    */
   rendering?: RenderingConfiguration;
+  /**
+   * Set to `development` when the server was exported with `expo export --dev`.
+   */
+  mode?: 'development';
 }
 
 export type RawManifest = RoutesManifest<string>;

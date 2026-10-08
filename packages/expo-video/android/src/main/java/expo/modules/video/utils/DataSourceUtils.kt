@@ -173,15 +173,25 @@ private fun evictCacheEntry(url: String, storageKey: String) {
   }
 }
 
-fun buildMediaSourceFactory(context: Context, dataSourceFactory: DataSource.Factory): MediaSource.Factory {
+@OptIn(UnstableApi::class)
+fun buildMediaSourceFactory(
+  context: Context,
+  dataSourceFactory: DataSource.Factory,
+  fallbackOnTransportError: Boolean = false
+): MediaSource.Factory {
   val extractorsFactory = androidx.media3.extractor.DefaultExtractorsFactory()
     .setTsExtractorFlags(
       androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES or
       androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_IGNORE_SPLICE_INFO_STREAM or
       androidx.media3.extractor.ts.DefaultTsPayloadReaderFactory.FLAG_ENABLE_HDMV_DTS_AUDIO_STREAMS
     )
-  return DefaultMediaSourceFactory(context, extractorsFactory).setDataSourceFactory(dataSourceFactory)
+  val factory = DefaultMediaSourceFactory(context, extractorsFactory).setDataSourceFactory(dataSourceFactory)
+  if (fallbackOnTransportError) {
+    factory.setLoadErrorHandlingPolicy(TransportFallbackLoadErrorHandlingPolicy())
+  }
+  return factory
 }
+
 
 @OptIn(UnstableApi::class)
 fun buildExpoVideoMediaSource(
@@ -193,7 +203,13 @@ fun buildExpoVideoMediaSource(
   } else {
     buildBaseDataSourceFactory(context, videoSource)
   }
-  val mediaSourceFactory = buildMediaSourceFactory(context, dataSourceFactory)
+  // With caching on, some renditions may be servable from the cache while the network is gone.
+  // Let a rendition that cannot be reached fall back to another one instead of failing playback.
+  val mediaSourceFactory = buildMediaSourceFactory(
+    context,
+    dataSourceFactory,
+    fallbackOnTransportError = videoSource.useCaching
+  )
   val mediaItem = videoSource.toMediaItem(context)
   return mediaSourceFactory.createMediaSource(mediaItem)
 }

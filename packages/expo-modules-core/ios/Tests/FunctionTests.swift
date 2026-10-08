@@ -318,7 +318,7 @@ struct FunctionTests {
         guard let evalError = error as? ScriptEvaluationError else {
           return false
         }
-        return evalError.message.contains("FieldRequiredException: Value for field 'property' is required, got nil")
+        return evalError.message.contains("Value for field 'property' is required, got nil")
       }
     }
 

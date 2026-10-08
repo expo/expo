@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.1.1
+
+### Patch Changes
+
+- [Android] Add support for grouping notifications via `threadIdentifier`. ([#43388](https://github.com/expo/expo/pull/43388) by [@vonovak](https://github.com/vonovak))
+- [Android] Add `getExactAlarmPermissionsAsync` and `requestExactAlarmPermissionsAsync` to check and request the exact alarm permission. ([#50919](https://github.com/expo/expo/pull/50919) by [@vonovak](https://github.com/vonovak))
+- [Internal] [Android] Return notification permission responses as records instead of bundles. ([#51060](https://github.com/expo/expo/pull/51060) by [@vonovak](https://github.com/vonovak))
+- Updated dependencies. ([#51077](https://github.com/expo/expo/pull/51077))
+  - expo-application@58.0.4
+  - @expo/image-utils@0.12.4
+  - expo-constants@58.0.10
+
 ## 58.1.0
 
 ### Minor Changes

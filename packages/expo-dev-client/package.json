@@ -42,9 +42,9 @@
     "expo-updates-interface": "workspace:~"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
     "expo-test-runner": "workspace:*"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-autolinking",
-  "version": "58.0.8",
+  "version": "58.0.10",
   "description": "Scripts that autolink Expo modules.",
   "keywords": [
     "autolinking",
@@ -65,7 +65,7 @@
     "commander": "^7.2.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "memfs": "^3.6.0"
   }
 }

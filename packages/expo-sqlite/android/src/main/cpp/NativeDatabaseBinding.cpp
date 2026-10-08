@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #include "NativeDatabaseBinding.h"
+#include "SQLiteError.h"
 
 #include "Exceptions.h"
 
@@ -101,8 +102,15 @@ int NativeDatabaseBinding::sqlite3_prepare_v2(
     const std::string &source,
     jni::alias_ref<NativeStatementBinding::javaobject> statement) {
   NativeStatementBinding *cStatement = cthis(statement);
-  return ::exsqlite3_prepare_v2(db, source.c_str(), source.size(),
+  SQLiteDatabaseLock lock(db);
+  cStatement->db = db;
+  int ret = ::exsqlite3_prepare_v2(db, source.c_str(), source.size(),
                                 &cStatement->stmt, nullptr);
+  if (ret != SQLITE_OK) {
+    jni::throwNewJavaException(
+        SQLiteErrorException::create(sqliteErrorMessage(db, ret)).get());
+  }
+  return ret;
 }
 
 jni::local_ref<jni::JArrayByte>
@@ -173,13 +181,8 @@ int NativeDatabaseBinding::sqlite3_backup(
 }
 
 std::string NativeDatabaseBinding::convertSqlLiteErrorToSTLString() {
-  int code = exsqlite3_errcode(db);
-  const char *message = exsqlite3_errmsg(db);
-  std::string result("Error code ");
-  result += code;
-  result += ": ";
-  result += message;
-  return result;
+  SQLiteDatabaseLock lock(db);
+  return sqliteErrorMessage(db, exsqlite3_errcode(db));
 }
 
 jni::local_ref<jni::JString>

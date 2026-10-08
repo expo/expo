@@ -36,6 +36,13 @@ class DevMenuViewController: UIViewController {
     set {}
   }
 
+#if canImport(SwiftUICore, _version: 8.0.85) && os(iOS)
+  @available(iOS 27.1, *)
+  override var preferredVerticalBarBehavior: UIVerticalBarBehavior {
+    return .disabled
+  }
+#endif
+
   private func setupSwiftUIView() {
     let rootView = DevMenuRootView()
     let hostingController = UIHostingController(rootView: rootView)

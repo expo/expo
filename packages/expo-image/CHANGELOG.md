@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [Internal] Use `Image.resolveAssetSource` from `react-native` instead of the `Libraries/Image/resolveAssetSource` deep import. ([#51092](https://github.com/expo/expo/pull/51092) by [@huntie](https://github.com/huntie))
+- Fix blurry SVG images on Android 8.1 and older by drawing them in a software layer. ([#50916](https://github.com/expo/expo/pull/50916) by [@jackstudd](https://github.com/jackstudd))
+
+## 58.0.12
+
+### Patch Changes
+
+- Export `app.plugin.js` from `package.json:exports` so tools that resolve config plugins through Node's package exports, such as the config fallback in EAS CLI, find the config plugin again instead of failing with "Unable to resolve a valid config plugin". ([#51059](https://github.com/expo/expo/pull/51059) by [@huntie](https://github.com/huntie))
+
 ## 58.0.11
 
 ### Patch Changes

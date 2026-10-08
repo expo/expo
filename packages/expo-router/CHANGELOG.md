@@ -1,5 +1,29 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Remove `isInitial` from the `SitemapType` returned by `useSitemap`. ([#51115](https://github.com/expo/expo/pull/51115) by [@Ubax](https://github.com/Ubax))
+- Mark `Stack.Toolbar` as stable. ([#51084](https://github.com/expo/expo/pull/51084) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#50860](https://github.com/expo/expo/pull/50860))
+  - @expo/log-box@58.0.11
+  - @expo/metro-runtime@58.0.13
+
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50976](https://github.com/expo/expo/pull/50976))
+  - @expo/log-box@58.0.10
+  - @expo/metro-runtime@58.0.12
+
+## 58.0.14
+
+### Patch Changes
+
+- Export the `RouterBrowserHistoryAction` type. The public `Router` and `RouterActionResult` types reference it, so custom routers can now type the browser history instruction they return. ([#51053](https://github.com/expo/expo/pull/51053) by [@amandeepmittal](https://github.com/amandeepmittal))
+
 ## 58.0.13
 
 ### Patch Changes

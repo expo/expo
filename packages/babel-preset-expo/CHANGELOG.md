@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
+## 58.0.10
+
+No changes in this release.
+
 ## 58.0.9
 
 ### Patch Changes

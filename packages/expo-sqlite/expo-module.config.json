@@ -4,7 +4,6 @@
     "modules": ["SQLiteModule"]
   },
   "android": {
-    "modules": ["expo.modules.sqlite.SQLiteModule"],
     "shouldUsePublicationScriptPath": "android/shouldUsePublication.groovy",
     "publication": {
       "groupId": "host.exp.exponent",

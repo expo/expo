@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "@expo/json-file": "workspace:*",
     "@expo/package-manager": "workspace:*",
     "@expo/spawn-async": "^1.8.0",
@@ -56,7 +57,6 @@
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.6",
     "memfs": "^3.6.0",

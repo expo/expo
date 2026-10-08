@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Register inline modules declared with the `@ExpoModule` macro, and load the Expo Modules macro plugin in the app target so they compile. ([#51047](https://github.com/expo/expo/pull/51047) by [@mrevanzak](https://github.com/mrevanzak))
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
 ## 58.0.8
 
 ### Patch Changes

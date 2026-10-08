@@ -47,13 +47,17 @@ def reactNativeArchitectures() {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.9'
+version = '58.0.10'
+
+expoModule {
+  v2 true
+}
 
 android {
   namespace "expo.modules.sqlite"
   defaultConfig {
     versionCode 18
-    versionName "58.0.9"
+    versionName "58.0.10"
     buildConfigField "boolean", "WITH_SQLITE_VEC", project.ext.WITH_SQLITE_VEC.toString()
 
     externalNativeBuild {

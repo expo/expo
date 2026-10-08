@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "58.0.12",
+  "version": "58.0.14",
   "description": "The core of Expo Modules architecture",
   "keywords": [
     "expo",
@@ -83,11 +83,11 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/react-native": "^14.0.1",
     "@types/invariant": "^2.2.33",
     "@types/react": "~19.3.0",
     "@types/react-dom": "^19.1.7",
-    "expo-module-scripts": "workspace:*",
     "react-dom": "19.3.0"
   },
   "peerDependencies": {

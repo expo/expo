@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "58.0.11",
+  "version": "58.0.13",
   "description": "Tools for making advanced Metro bundler features work",
   "keywords": [],
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-runtime",
@@ -52,9 +52,9 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/react": "~19.3.0",
     "expo-constants": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "react-dom": "19.3.0"
   },
   "peerDependencies": {

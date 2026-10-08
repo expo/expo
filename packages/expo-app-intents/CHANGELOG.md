@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies. ([#50941](https://github.com/expo/expo/pull/50941), [#50860](https://github.com/expo/expo/pull/50860))
+  - @expo/ui@58.0.14
+
+## 0.5.2
+
+### Patch Changes
+
+- Ship an agent skill for App Intents setup, invocation handling, entity catalogs, donations, and Spotlight in the npm package. ([#51070](https://github.com/expo/expo/pull/51070) by [@behenate](https://github.com/behenate))
+- Add a `--donations` option and prompt to `npx expo-app-intents init` that scaffolds donation code for the selected examples. ([#50967](https://github.com/expo/expo/pull/50967) by [@behenate](https://github.com/behenate))
+- Updated dependencies. ([#50893](https://github.com/expo/expo/pull/50893), [#51116](https://github.com/expo/expo/pull/51116), [#51007](https://github.com/expo/expo/pull/51007), [#50910](https://github.com/expo/expo/pull/50910), [#50909](https://github.com/expo/expo/pull/50909), [#51108](https://github.com/expo/expo/pull/51108))
+  - @expo/ui@58.0.13
+
 ## 0.5.1
 
 ### Patch Changes

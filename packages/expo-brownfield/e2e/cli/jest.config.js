@@ -2,7 +2,7 @@ const path = require('node:path');
 
 /** @type {import('jest').Config} */
 module.exports = {
-  ...require('expo-module-scripts/jest-preset-cli'),
+  ...require('@expo/internal-scripts/jest-preset-cli'),
   displayName: require('../../package').name,
   rootDir: __dirname,
   roots: ['.'],

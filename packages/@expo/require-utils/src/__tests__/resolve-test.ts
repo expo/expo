@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import Module from 'node:module';
 import path from 'node:path';
 
-import { resolveFrom } from '../resolve';
+import { nativeResolveFrom, resolveFrom } from '../resolve';
 
 const toNativePath = (posixPath: string) => path.resolve(posixPath);
 
@@ -313,6 +313,30 @@ describe('native Node fallback', () => {
     try {
       expect(resolveFrom('/proj', 'pkg', { skipNodePath: true })).toBeNull();
       expect(spy).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+});
+
+describe('nativeResolveFrom', () => {
+  test('should return the path Node resolves', () => {
+    const spy = jest.spyOn(Module, '_resolveFilename').mockReturnValue('/native/pkg/app.plugin.js');
+    try {
+      expect(nativeResolveFrom('/proj', 'pkg/app.plugin.js')).toBe('/native/pkg/app.plugin.js');
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  test('should return null when Node refuses the path', () => {
+    const spy = jest.spyOn(Module, '_resolveFilename').mockImplementation(() => {
+      throw Object.assign(new Error('Package subpath is not defined by "exports"'), {
+        code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+      });
+    });
+    try {
+      expect(nativeResolveFrom('/proj', 'pkg/app.plugin.js')).toBeNull();
     } finally {
       spy.mockRestore();
     }

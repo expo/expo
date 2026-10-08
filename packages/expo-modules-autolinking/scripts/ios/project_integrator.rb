@@ -147,6 +147,12 @@ module Expo
           macro_flags = "-load-plugin-executable \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
         end
 
+        # Inline modules compile in the app target itself, so its xcconfigs need the plugin too.
+        target.user_build_configurations.each_key do |build_configuration_name|
+          xcconfig_path = target.xcconfig_path(build_configuration_name)
+          append_macro_flags(target.build_settings(build_configuration_name), xcconfig_path, macro_flags)
+        end
+
         target.pod_targets.each do |pod_target|
           is_core = pod_target.name == 'ExpoModulesCore'
           has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }

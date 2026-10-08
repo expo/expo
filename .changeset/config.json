@@ -11,7 +11,7 @@
   "fixed": [],
   "linked": [],
   "privatePackages": {
-    "version": false,
+    "version": true,
     "tag": false
   },
   "snapshot": {
