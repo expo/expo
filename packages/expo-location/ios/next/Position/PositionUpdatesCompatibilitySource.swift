@@ -7,6 +7,10 @@ final class PositionUpdatesCompatibilitySource: NSObject, CLLocationManagerDeleg
   func updates(for profile: Profile, allowsBackgroundUpdates: Bool = false) -> PositionUpdatesSource {
     let (stream, continuation) = AsyncThrowingStream.makeStream(of: CLLocation?.self)
     self.continuation = continuation
+    guard CLLocationManager.locationServicesEnabled() else {
+      continuation.finish(throwing: LocationServicesDisabledGlobally())
+      return PositionUpdatesSource(stream: stream, continuation: continuation) {}
+    }
     DispatchQueue.main.async {
       self.manager.delegate = self
       self.manager.activityType = profile.clActivityType()
