@@ -2,10 +2,15 @@
 
 import { act } from '@testing-library/react-native';
 import { Profiler } from 'react';
+import { hydrateRoot } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
+import { Text } from 'react-native';
 
+import { ExpoRoot } from '../ExpoRoot';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
-import { renderRouter, screen } from '../testing-library';
+import { getMockContext, renderRouter, screen } from '../testing-library';
+import type { FileStub } from '../testing-library/context-stubs';
 import { Slot } from '../views/Navigator';
 import { lazyModule } from './lazyModule';
 
@@ -76,5 +81,50 @@ it('waits for a deep-linked layout and mounts it once with its anchor', async ()
   } finally {
     await result.unmount();
     jest.useRealTimers();
+  }
+});
+
+it('keeps the server HTML while a deep-linked layout loads during hydration', async () => {
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+  const routes = (layout: FileStub) => ({
+    index: () => null,
+    'profile/_layout': layout,
+    'profile/index': () => null,
+    'profile/[id]': () => <Text testID="profile-id" />,
+  });
+  // Like `@expo/router-server`, the server renders the document element around the app.
+  const document_ = document.createElement('div');
+  document.body.appendChild(document_);
+  document_.innerHTML = renderToString(
+    <ExpoRoot
+      context={getMockContext(
+        routes({ unstable_settings: { anchor: 'index' }, default: () => <Slot /> })
+      )}
+      location="/profile/1"
+      wrapper={({ children }) => <div id="root">{children}</div>}
+    />
+  );
+  const container = document_.querySelector('#root')!;
+  const layout = lazyModule({ unstable_settings: { anchor: 'index' }, default: () => <Slot /> });
+  const onRecoverableError = jest.fn();
+
+  const root = await act(async () =>
+    hydrateRoot(
+      container,
+      <ExpoRoot context={getMockContext(routes(layout.load))} location="/profile/1" />,
+      { onRecoverableError }
+    )
+  );
+
+  try {
+    expect(container.querySelectorAll('[data-testid="profile-id"]')).toHaveLength(1);
+
+    await act(async () => layout.resolve());
+
+    expect(container.querySelectorAll('[data-testid="profile-id"]')).toHaveLength(1);
+    expect(onRecoverableError).not.toHaveBeenCalled();
+  } finally {
+    await act(async () => root.unmount());
+    document_.remove();
   }
 });
