@@ -27,6 +27,8 @@ minimumReleaseAgeExclude:
   - '@noxcturnal/*'
   - '@react-native/*'
   - 'react-native'
+  - babel-plugin-react-native-web
+  - react-native-web
   - expo-modules-macros
   - multitars
   - noxcturnal
