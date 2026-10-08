@@ -170,6 +170,7 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
     // this code
     #if !os(tvOS)
     playerViewController.beginAppearanceTransition(self.window != nil, animated: true)
+    playerViewController.endAppearanceTransition()
     #endif
   }
 
