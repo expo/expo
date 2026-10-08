@@ -4,10 +4,12 @@ import * as Log from '../../log';
 import { debugEvent, event } from '../events';
 import type { ResolvedOptions } from '../resolveOptions';
 import { resolveOptionsAsync } from './resolveOptions';
-import { buildAsync } from './xcodebuild';
+import { buildAsync, getAppPathAsync } from './xcodebuild';
 
 export async function compileIosAsync(projectRoot: string, options: ResolvedOptions) {
   assertPlatform();
+
+  const doneCompile = event.span();
 
   const props = await resolveOptionsAsync(projectRoot, options);
   debugEvent('ios:build_props', {
@@ -25,6 +27,16 @@ export async function compileIosAsync(projectRoot: string, options: ResolvedOpti
     throw error;
   }
   doneBuild('build:done', { platform: 'ios', mode: props.mode });
+
+  const binaryPath = await getAppPathAsync(props);
+  doneCompile('done', {
+    platform: 'ios',
+    mode: props.mode,
+    outputType: props.outputType,
+    outputPath: event.path(binaryPath),
+  });
+  Log.log(chalk`\n{green ✓} Build complete`);
+  Log.log(chalk`{bold Binary:} ${binaryPath}`);
 }
 
 function assertPlatform() {
