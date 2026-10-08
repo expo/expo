@@ -1,5 +1,5 @@
 ---
-'expo-router': patch
+'expo-router': minor
 ---
 
-[iOS] Stack headers without a background color no longer send the default theme's `card` color, so react-native-screens can use the system bar background (clear at the scroll edge, as in a plain `UINavigationController`). A custom theme's `card` color and any `headerStyle.backgroundColor` are still applied.
+[iOS] Stack headers that set no background now use the system bar background (clear at the scroll edge, as in a plain `UINavigationController`) instead of the built-in theme's `card` color. This changes the default iOS header appearance. The bar's interface style still follows the theme, so the title color stays readable in light and dark mode. `headerStyle.backgroundColor`, transparent and large-title headers, and a theme `card` color that differs from the built-in `DefaultTheme` / `DarkTheme` values are unchanged.

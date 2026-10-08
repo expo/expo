@@ -276,7 +276,9 @@ export function useHeaderConfigProps({
 
   // With no background set, iOS uses the system bar background, as a plain UINavigationController does: clear at the
   // scroll edge, the bar material once content scrolls under it. Sending the default theme's `card` color instead makes
-  // the bar opaque with a hairline at all times. A custom theme's `card` color is still applied.
+  // the bar opaque with a hairline at all times. A `card` color that differs from the built-in themes is still applied.
+  // The title stays readable because the bar's interface style follows the theme (`experimental_userInterfaceStyle`
+  // below), so the system background matches `colors.text` even when the device appearance differs from the theme.
   const nativeHeaderBackgroundColor =
     Platform.OS === 'ios' &&
     headerStyleFlattened.backgroundColor == null &&
