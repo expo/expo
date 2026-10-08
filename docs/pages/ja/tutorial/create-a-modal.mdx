@@ -1,17 +1,21 @@
 ---
 title: モーダルを作成する
-description: このチュートリアルでは、画像を選択するための React Native モーダルを作成する方法を学びます。
+description: このチュートリアルでは、Expo UI の BottomSheet コンポーネントで絵文字ピッカーを作成し、選択した絵文字を React Native アプリにステッカーとして表示する方法を学びます。
 hasVideoLink: true
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FileTree } from '~/ui/components/FileTree';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-React Native は、アプリの他のコンテンツの上にコンテンツを表示する [`<Modal>` コンポーネント](https://reactnative.dev/docs/modal) を提供します。一般的に、モーダルはユーザーの注意を重要な情報に向けたり、アクションを促したりするために使用されます。たとえば [第 3 章](/ja/tutorial/build-a-screen/#再利用可能なボタンコンポーネントを強化する) では、ボタンを押した後に `alert()` を使ってプレースホルダーのテキストを表示しました。これがモーダルコンポーネントがオーバーレイを表示する仕組みです。
+モーダルは、アプリの他のコンテンツの上にコンテンツを表示します。一般的に、モーダルはユーザーの注意を重要な情報に向けたり、アクションを促したりするために使用されます。ボトムシートは、画面下からスライドして表示されるモーダルの一種です。
 
-この章では、絵文字ピッカーのリストを表示するモーダルを作成します。
+この章では、Expo UI の [`BottomSheet`](/versions/latest/sdk/ui/universal/bottomsheet/) コンポーネントを使って絵文字ピッカーを作成します。Android と iOS では、プラットフォームのネイティブのボトムシートを表示します。web では、ページ下部にシートを表示します。
 
 <VideoBoxLink
   videoId="HRAMzrBwVeo"
@@ -25,19 +29,20 @@ React Native は、アプリの他のコンテンツの上にコンテンツを�
 
 ## ボタンを表示するための状態変数を宣言する
 
-モーダルを実装する前に、新しいボタンを 3 つ追加します。これらのボタンは、ユーザーがメディアライブラリから画像を選択したり、プレースホルダー画像を使ったりした後に表示されます。ボタンのうちの 1 つが絵文字ピッカーのモーダルを開きます。
+ボトムシートを実装する前に、新しいボタンを 3 つ追加します。これらのボタンは、ユーザーがメディアライブラリから画像を選択したり、プレースホルダー画像を使ったりした後に表示されます。ボタンのうちの 1 つが絵文字ピッカーを開きます。
 
 **src/app/(tabs)/index.tsx** で:
 
-1. モーダルを開くボタンや他のオプションの表示・非表示を切り替えるために、ブール値の状態変数 `showAppOptions` を宣言します。アプリ画面の読み込み時には `false` にして、画像を選択する前にはオプションを表示しないようにします。ユーザーが画像を選択したり、プレースホルダー画像を使ったりすると、`true` に設定します。
+1. 絵文字ピッカーを開くボタンや他のオプションの表示・非表示を切り替えるために、ブール値の状態変数 `showAppOptions` を宣言します。アプリ画面の読み込み時には `false` にして、画像を選択する前にはオプションを表示しないようにします。ユーザーが画像を選択したり、プレースホルダー画像を使ったりすると、`true` に設定します。
 2. `pickImageAsync()` 関数を更新して、ユーザーが画像を選択した後に `showAppOptions` の値を `true` に設定します。
-3. テーマが設定されていないボタンに、次の値を持つ `onPress` プロパティを追加して更新します。
+3. テーマが設定されていないボタンの `onPress` プロパティで、`alert()` を `showAppOptions` を `true` に設定する関数に置き換えます。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx
-import { View, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 
 import Button from '@/components/button';
 import ImageViewer from '@/components/image-viewer';
@@ -51,7 +56,7 @@ export default function Index() {
   /* @end */
 
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
@@ -68,7 +73,7 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
@@ -79,12 +84,12 @@ export default function Index() {
       ) : (
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
-          /* @tutinfo `alert()` を `onPress` に置き換えます。*/
+          /* @tutinfo `alert()` を、`showAppOptions` を `true` に設定する関数に置き換えます。 */
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
           /* @end */
         </View>
       /* @tutinfo */)}/* @end */
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -96,6 +101,7 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   footerContainer: {
     flex: 1 / 3,
@@ -105,13 +111,6 @@ const styles = StyleSheet.create({
 ```
 
 上記のスニペットでは、`showAppOptions` の値に応じて `Button` コンポーネントをレンダリングし、ボタンを三項演算子ブロックの中に移動しています。`showAppOptions` の値が `true` の場合は、空の `<View>` コンポーネントをレンダリングします。この状態については次のステップで対応します。
-
-次に、**src/components/button.tsx** で 2 つ目のボタンをレンダリングする際の `Button` コンポーネントから `alert` を削除し、`onPress` プロパティを更新します。
-
-{/* prettier-ignore */}
-```tsx src/components/button.tsx
-<Pressable style={styles.button} /* @tutinfo `alert()` を `onPress` に置き換えます。*/ onPress={onPress}/* @end */>
-```
 
 </Step>
 
@@ -127,13 +126,20 @@ const styles = StyleSheet.create({
   className="max-w-[480px]"
 />
 
-親の `<View>` の中に、横一列に並んだ 3 つのボタンが含まれています。中央のプラスアイコン (+) のボタンはモーダルを開くもので、他の 2 つとは異なるスタイルになっています。
+親の `<View>` の中に、横一列に並んだ 3 つのボタンが含まれています。中央のプラスアイコン (+) のボタンは絵文字ピッカーを開くもので、他の 2 つとは異なるスタイルになっています。
 
-**src/components** ディレクトリ内に、次のコードで新しい **circle-button.tsx** ファイルを作成します。
+[第 3 章](/ja/tutorial/build-a-screen/#expo-ui-でネイティブボタンを使用する) の `Button` コンポーネントと同様に、オプションボタンは Android と iOS では Expo UI を、web では React Native のコンポーネントを使用します。各ボタンには、プラットフォームごとに 1 つずつファイルがあります。
 
-```tsx src/components/circle-button.tsx
-import { View, Pressable, StyleSheet } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+**src/components** ディレクトリ内に、円形ボタン用の 3 つのファイルを作成します。
+
+<Tabs>
+
+<Tab label="Android">
+
+```tsx src/components/circle-button.android.tsx
+import { StyleSheet, View } from 'react-native';
+import { Host, FloatingActionButton, Icon } from '@expo/ui/jetpack-compose';
+import { clip, Shapes, size } from '@expo/ui/jetpack-compose/modifiers';
 
 type Props = {
   onPress: () => void;
@@ -142,47 +148,194 @@ type Props = {
 export default function CircleButton({ onPress }: Props) {
   return (
     <View style={styles.circleButtonContainer}>
-      <Pressable style={styles.circleButton} onPress={onPress}>
-        <MaterialIcons name="add" size={38} color="#25292e" />
-      </Pressable>
+      <Host matchContents>
+        <FloatingActionButton
+          containerColor="#ffd33d"
+          onClick={onPress}
+          modifiers={[size(84, 84), clip(Shapes.Circle)]}>
+          <FloatingActionButton.Icon>
+            <Icon source={require('@expo/material-symbols/add.xml')} size={38} tint="#25292e" />
+          </FloatingActionButton.Icon>
+        </FloatingActionButton>
+      </Host>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   circleButtonContainer: {
-    width: 84,
-    height: 84,
     marginHorizontal: 60,
-    borderWidth: 4,
-    borderColor: '#ffd33d',
-    borderRadius: 42,
-    padding: 3,
-  },
-  circleButton: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 42,
-    backgroundColor: '#fff',
   },
 });
 ```
 
-プラスアイコンを描画するために、このボタンは `@expo/vector-icons` ライブラリの `<MaterialIcons>` アイコンセットを使用します。
+</Tab>
 
-他の 2 つのボタンも `<MaterialIcons>` を使い、縦に並んだテキストラベルとアイコンを表示します。**src/components** ディレクトリ内に **icon-button.tsx** という名前のファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
+<Tab label="iOS">
 
-- `icon`: `MaterialIcons` ライブラリのアイコン名に対応します。
+```tsx src/components/circle-button.ios.tsx
+import { StyleSheet, View } from 'react-native';
+import { Host, Button, Image } from '@expo/ui/swift-ui';
+import { background, buttonStyle, frame, shapes } from '@expo/ui/swift-ui/modifiers';
+
+type Props = {
+  onPress: () => void;
+};
+
+export default function CircleButton({ onPress }: Props) {
+  return (
+    <View style={styles.circleButtonContainer}>
+      <Host matchContents>
+        <Button onPress={onPress} modifiers={[buttonStyle('plain')]}>
+          <Image
+            systemName="plus"
+            size={38}
+            color="#25292e"
+            modifiers={[frame({ width: 84, height: 84 }), background('#ffd33d', shapes.circle())]}
+          />
+        </Button>
+      </Host>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  circleButtonContainer: {
+    marginHorizontal: 60,
+  },
+});
+```
+
+</Tab>
+
+<Tab label="web">
+
+```tsx src/components/circle-button.tsx
+import { Pressable, StyleSheet } from 'react-native';
+import { SymbolView } from 'expo-symbols';
+
+type Props = {
+  onPress: () => void;
+};
+
+export default function CircleButton({ onPress }: Props) {
+  return (
+    <Pressable style={styles.circleButton} onPress={onPress}>
+      <SymbolView name={{ web: 'add' }} size={38} tintColor="#25292e" />
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  circleButton: {
+    width: 84,
+    height: 84,
+    marginHorizontal: 60,
+    borderRadius: 42,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffd33d',
+  },
+});
+```
+
+</Tab>
+
+</Tabs>
+
+上記のコードが何をしているのか確認しましょう。
+
+- Android では、`FloatingActionButton` が Material 3 のフローティングアクションボタンを表示します。`size` と `clip` モディファイアで 84 dp の円形にし、`Icon` が `@expo/material-symbols` の **add.xml** アイコンを表示します。
+- iOS では、`Button` は `plain` スタイルを使用し、そのラベルは SF Symbols の `Image` です。`frame` と `background` モディファイアで、アイコンの周りに 84 ポイントの黄色い円を描画します。
+- web では、第 3 章の **button.tsx** と同様に、**circle-button.tsx** は `Pressable` と `SymbolView` を使用します。
+
+他の 2 つのボタンは、テキストラベルの上にアイコンを表示します。**src/components** ディレクトリ内に、アイコンボタン用の 3 つのファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
+
+- `icon`: プラットフォームごとのアイコンです。Android は `@expo/material-symbols` の XML アイコン、iOS は SF Symbols の名前、web は Material Symbols の名前を使用します。
 - `label`: ボタンに表示されるテキストラベルです。
 - `onPress`: ユーザーがボタンを押したときに実行される関数です。
 
-```tsx src/components/icon-button.tsx
-import { Pressable, StyleSheet, Text } from 'react-native';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+<Tabs>
+
+<Tab label="Android">
+
+```tsx src/components/icon-button.android.tsx
+import type { ImageSourcePropType } from 'react-native';
+import { Host, TextButton, Column, Icon, Text } from '@expo/ui/jetpack-compose';
+import type { AndroidSymbol, SFSymbol } from 'expo-symbols';
 
 type Props = {
-  icon: keyof typeof MaterialIcons.glyphMap;
+  icon: {
+    android: ImageSourcePropType;
+    ios: SFSymbol;
+    web: AndroidSymbol;
+  };
+  label: string;
+  onPress: () => void;
+};
+
+export default function IconButton({ icon, label, onPress }: Props) {
+  return (
+    <Host matchContents>
+      <TextButton onClick={onPress} colors={{ contentColor: '#fff' }}>
+        <Column horizontalAlignment="center" verticalArrangement={{ spacedBy: 12 }}>
+          <Icon source={icon.android} size={24} tint="#fff" />
+          <Text color="#fff">{label}</Text>
+        </Column>
+      </TextButton>
+    </Host>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
+
+```tsx src/components/icon-button.ios.tsx
+import type { ImageSourcePropType } from 'react-native';
+import { Host, Button, Image, Text, VStack } from '@expo/ui/swift-ui';
+import { buttonStyle, font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import type { AndroidSymbol, SFSymbol } from 'expo-symbols';
+
+type Props = {
+  icon: {
+    android: ImageSourcePropType;
+    ios: SFSymbol;
+    web: AndroidSymbol;
+  };
+  label: string;
+  onPress: () => void;
+};
+
+export default function IconButton({ icon, label, onPress }: Props) {
+  return (
+    <Host matchContents>
+      <Button onPress={onPress} modifiers={[buttonStyle('plain'), foregroundStyle('#fff')]}>
+        <VStack spacing={12}>
+          <Image systemName={icon.ios} size={20} />
+          <Text modifiers={[font({ size: 14 })]}>{label}</Text>
+        </VStack>
+      </Button>
+    </Host>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="web">
+
+```tsx src/components/icon-button.tsx
+import { Pressable, StyleSheet, Text, type ImageSourcePropType } from 'react-native';
+import { SymbolView, type AndroidSymbol, type SFSymbol } from 'expo-symbols';
+
+type Props = {
+  icon: {
+    android: ImageSourcePropType;
+    ios: SFSymbol;
+    web: AndroidSymbol;
+  };
   label: string;
   onPress: () => void;
 };
@@ -190,7 +343,7 @@ type Props = {
 export default function IconButton({ icon, label, onPress }: Props) {
   return (
     <Pressable style={styles.iconButton} onPress={onPress}>
-      <MaterialIcons name={icon} size={24} color="#fff" />
+      <SymbolView name={{ web: icon.web }} size={24} tintColor="#fff" />
       <Text style={styles.iconButtonLabel}>{label}</Text>
     </Pressable>
   );
@@ -208,16 +361,41 @@ const styles = StyleSheet.create({
 });
 ```
 
+</Tab>
+
+</Tabs>
+
+Android では、`Column` が `Icon` を `Text` の上に配置します。iOS では、`VStack` が同じ役割を果たします。第 3 章の `Button` のファイルと同様に、3 つのファイルはすべて同じプロパティを受け付けます。
+
+**src/components** ディレクトリには、各ボタンに 3 つずつファイルが含まれるようになりました。
+
+<FileTree
+  files={[
+    ['src/components/button.android.tsx', 'Android で使用'],
+    ['src/components/button.ios.tsx', 'iOS で使用'],
+    ['src/components/button.tsx', 'web で使用'],
+    ['src/components/circle-button.android.tsx', 'Android で使用'],
+    ['src/components/circle-button.ios.tsx', 'iOS で使用'],
+    ['src/components/circle-button.tsx', 'web で使用'],
+    ['src/components/icon-button.android.tsx', 'Android で使用'],
+    ['src/components/icon-button.ios.tsx', 'iOS で使用'],
+    ['src/components/icon-button.tsx', 'web で使用'],
+    ['src/components/image-viewer.tsx'],
+  ]}
+/>
+
 **src/app/(tabs)/index.tsx** 内で:
 
 1. `CircleButton` と `IconButton` コンポーネントをインポートして表示できるようにします。
 2. これらのボタン用に 3 つのプレースホルダー関数を追加します。`onReset()` 関数はユーザーがリセットボタンを押したときに実行され、画像ピッカーのボタンが再度表示されるようにします。残りの 2 つの関数の機能は後で実装します。
+3. 各 `IconButton` の `icon` プロパティに、プラットフォームごとのアイコンを渡します。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx
-import { View, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 
 import Button from '@/components/button';
 import ImageViewer from '@/components/image-viewer';
@@ -233,7 +411,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
 
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
@@ -262,17 +440,33 @@ export default function Index() {
   /* @end */
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
       {showAppOptions ? (
-        /* @tutinfo App オプションボタンを表示するため、空の `View` コンポーネントをこのスニペットに置き換えます。 */
-        <View style={styles.optionsContainer}>
+        /* @tutinfo App オプションボタンを表示するため、空の `View` コンポーネントをこのスニペットに置き換えます。各 `IconButton` は、プラットフォームごとのアイコンを受け取ります。 */
+        <View style={styles.footerContainer}>
           <View style={styles.optionsRow}>
-            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/refresh.xml'),
+                ios: 'arrow.counterclockwise',
+                web: 'refresh',
+              }}
+              label="Reset"
+              onPress={onReset}
+            />
             <CircleButton onPress={onAddSticker} />
-            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/download.xml'),
+                ios: 'square.and.arrow.down',
+                web: 'download',
+              }}
+              label="Save"
+              onPress={onSaveImageAsync}
+            />
           </View>
         </View>
         /* @end */
@@ -282,7 +476,7 @@ export default function Index() {
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
         </View>
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -294,16 +488,13 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
   },
-  /* @tutinfo 新しい `View` コンポーネントのスタイルを追加します。 */
-  optionsContainer: {
-    position: 'absolute',
-    bottom: 80,
-  },
+  /* @tutinfo オプションボタンの行のスタイルを追加します。 */
   optionsRow: {
     alignItems: 'center',
     flexDirection: 'row',
@@ -311,6 +502,8 @@ const styles = StyleSheet.create({
   /* @end */
 });
 ```
+
+オプションボタンは、**Choose a photo** ボタンと **Use this photo** ボタンと同じ `footerContainer` スタイルを使用します。そのため、画面上の同じ位置、つまりタブバーの上に表示されます。
 
 Android、iOS、web でアプリを確認してみましょう。
 
@@ -324,19 +517,21 @@ Android、iOS、web でアプリを確認してみましょう。
 
 <Step label="3">
 
-## 絵文字ピッカーのモーダルを作成する
+## ボトムシートで絵文字ピッカーを作成する
 
-モーダルでは、利用可能な絵文字のリストからユーザーが絵文字を選択できます。**src/components** ディレクトリ内に **emoji-picker.tsx** ファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
+ボトムシートでは、利用可能な絵文字のリストからユーザーが絵文字を選択できます。**src/components** ディレクトリ内に **emoji-picker.tsx** ファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
 
-- `isVisible`: モーダルの表示状態を決定するブール値です。
-- `onClose`: モーダルを閉じる関数です。
+- `isVisible`: ボトムシートを表示するかどうかを決定するブール値です。
+- `onClose`: ボトムシートを閉じる関数です。
 - `children`: 後で絵文字のリストを表示するために使用します。
 
 {/* prettier-ignore */}
-```tsx src/components/emoji-picker.tsx|collapseHeight=430
-import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
+```tsx src/components/emoji-picker.tsx
 import { PropsWithChildren } from 'react';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { StyleSheet, Text, View } from 'react-native';
+/* @tutinfo Expo UI から `BottomSheet` と `RNHostView` をインポートします。 */
+import { BottomSheet, RNHostView } from '@expo/ui';
+/* @end */
 
 type Props = PropsWithChildren<{
   isVisible: boolean;
@@ -345,70 +540,61 @@ type Props = PropsWithChildren<{
 
 export default function EmojiPicker({ isVisible, children, onClose }: Props) {
   return (
-    <View>
-      <Modal animationType="slide" transparent={true} visible={isVisible}>
-        <View style={styles.modalContent}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>Choose a sticker</Text>
-            <Pressable onPress={onClose}>
-              <MaterialIcons name="close" color="#fff" size={22} />
-            </Pressable>
-          </View>
+    <BottomSheet
+      isPresented={isVisible}
+      onDismiss={onClose}
+      snapPoints={/* @tutinfo ボトムシートを画面の高さの約半分で開きます。 */['half']/* @end */}
+      containerColor="#25292e">
+      /* @tutinfo `RNHostView` は、ボトムシート内に React Native のビューを表示します。 */
+      <RNHostView>
+        <View>
+          <Text style={styles.title}>Choose a sticker</Text>
           {children}
         </View>
-      </Modal>
-    </View>
+      </RNHostView>
+      /* @end */
+    </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContent: {
-    height: '25%',
-    width: '100%',
-    backgroundColor: '#25292e',
-    borderTopRightRadius: 18,
-    borderTopLeftRadius: 18,
-    position: 'absolute',
-    bottom: 0,
-  },
-  titleContainer: {
-    height: '16%',
-    backgroundColor: '#464C55',
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
   title: {
     color: '#fff',
     fontSize: 16,
+    marginBottom: 20,
   },
 });
 ```
 
 上記のコードが何をしているのか確認しましょう。
 
-- `<Modal>` コンポーネントはタイトルと閉じるボタンを表示します。
-- `visible` プロパティは `isVisible` の値を受け取り、モーダルが開いているか閉じているかを制御します。
-- `transparent` プロパティはブール値で、モーダルがビュー全体を埋めるかどうかを決定します。
-- `animationType` プロパティは、モーダルが画面に表示されるときと消えるときの挙動を決定します。今回は、画面下からスライドして表示されます。
-- 最後に、`<EmojiPicker>` はユーザーが閉じる `<Pressable>` を押したときに `onClose` プロパティを実行します。
+- `BottomSheet` コンポーネントは、[第 3 章](/ja/tutorial/build-a-screen/#expo-ui-でネイティブボタンを使用する) でインストールした `@expo/ui` から提供されます。Android では Material 3 のボトムシートを表示します。iOS では SwiftUI のシートを表示します。web では、ページ下部にシートを表示します。
+- `isPresented` プロパティは `isVisible` の値を受け取り、ボトムシートが開いているか閉じているかを制御します。
+- `onDismiss` プロパティは、ユーザーがボトムシートを閉じたときに `onClose` を呼び出します。ユーザーは、ボトムシートを下にスワイプするか、ボトムシートの外側をタップして閉じることができます。Android では、戻るボタンでも閉じます。web では、<kbd>Esc</kbd> キーでも閉じます。
+- `snapPoints` プロパティは、ボトムシートが停止できる高さを設定します。`'half'` の値は、画面の高さの約半分でボトムシートを開きます。
+- `containerColor` プロパティは、アプリの背景に合わせてボトムシートの背景色を設定します。
+- `RNHostView` コンポーネントは、`<View>` や `<Text>` などの React Native のビューをボトムシート内に表示します。
+
+<Collapsible summary={<><CODE>RNHostView</CODE> とは何ですか？</>}>
+
+Android と iOS では、`BottomSheet` は Jetpack Compose と SwiftUI のネイティブビューです。その中に React Native のビューを表示するには、それらを `RNHostView` でラップします。これは `Host` と逆方向に機能します。`Host` は、[第 3 章](/ja/tutorial/build-a-screen/#expo-ui-でネイティブボタンを使用する) で React Native のビュー内に Expo UI コンポーネントを表示するために使用しました。`BottomSheet` は独自の `Host` を作成するため、`Host` でラップする必要はありません。詳細については、[`RNHostView`](/versions/latest/sdk/ui/universal/rnhostview/) を参照してください。
+
+</Collapsible>
 
 それでは、**src/app/(tabs)/index.tsx** を変更しましょう。
 
 1. `<EmojiPicker>` コンポーネントをインポートします。
-2. `useState` フックで `isModalVisible` 状態変数を作成します。デフォルト値は `false` で、ユーザーがボタンを押すまでモーダルは非表示のままです。
+2. `useState` フックで `isModalVisible` 状態変数を作成します。デフォルト値は `false` で、ユーザーがボタンを押すまでボトムシートは非表示のままです。
 3. `onAddSticker()` 関数内のコメントを置き換えて、ユーザーがボタンを押したときに `isModalVisible` 変数を `true` に更新します。これで絵文字ピッカーが開きます。
 4. `isModalVisible` 状態変数を更新する `onModalClose()` 関数を作成します。
 5. `Index` コンポーネントの末尾に `<EmojiPicker>` コンポーネントを配置します。
 
 {/* prettier-ignore */}
-```tsx src/app/(tabs)/index.tsx
-import { View, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
 import { useState } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
 
 import Button from '@/components/button';
 import ImageViewer from '@/components/image-viewer';
@@ -428,7 +614,7 @@ export default function Index() {
   /* @end */
 
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
@@ -446,7 +632,7 @@ export default function Index() {
     setShowAppOptions(false);
   };
 
-  /* @tutinfo モーダルの表示を制御するため、関数を更新します。*/
+  /* @tutinfo ボトムシートの表示を制御するため、関数を更新します。*/
   const onAddSticker = () => {
     setIsModalVisible(true);
   };
@@ -461,16 +647,32 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
       {showAppOptions ? (
-        <View style={styles.optionsContainer}>
+        <View style={styles.footerContainer}>
           <View style={styles.optionsRow}>
-            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/refresh.xml'),
+                ios: 'arrow.counterclockwise',
+                web: 'refresh',
+              }}
+              label="Reset"
+              onPress={onReset}
+            />
             <CircleButton onPress={onAddSticker} />
-            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/download.xml'),
+                ios: 'square.and.arrow.down',
+                web: 'download',
+              }}
+              label="Save"
+              onPress={onSaveImageAsync}
+            />
           </View>
         </View>
       ) : (
@@ -484,7 +686,7 @@ export default function Index() {
         {/* Emoji list component will go here */}
       </EmojiPicker>
       /* @end */
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -496,14 +698,11 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
-  },
-  optionsContainer: {
-    position: 'absolute',
-    bottom: 80,
   },
   optionsRow: {
     alignItems: 'center',
@@ -515,7 +714,7 @@ const styles = StyleSheet.create({
 このステップ完了後の結果は次のとおりです。
 
 <ContentSpotlight
-  alt="すべてのプラットフォームで動作するモーダル。"
+  alt="Android、iOS、web で表示された、タイトル付きのボトムシート。"
   src="/static/images/tutorial/create-a-modal-bottom-sheet.webp"
   className="max-w-[720px]"
 />
@@ -526,44 +725,44 @@ const styles = StyleSheet.create({
 
 ## 絵文字のリストを表示する
 
-モーダルのコンテンツ内に絵文字の横リストを追加しましょう。これには React Native の [`<FlatList>`](https://reactnative.dev/docs/flatlist) コンポーネントを使用します。
+ボトムシートのコンテンツに絵文字のグリッドを追加しましょう。これには React Native の [`<FlatList>`](https://reactnative.dev/docs/flatlist) コンポーネントを使用します。
 
 **src/components** ディレクトリ内に **emoji-list.tsx** ファイルを作成し、次のコードを追加します。
 
 {/* prettier-ignore */}
 ```tsx src/components/emoji-list.tsx
-import { useState } from 'react';
-import { ImageSourcePropType, StyleSheet, FlatList, Platform, Pressable } from 'react-native';
-import { Image } from 'expo-image';
+import { FlatList, Pressable, StyleSheet } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
 
 type Props = {
-  onSelect: (image: ImageSourcePropType) => void;
+  onSelect: (image: ImageSource) => void;
   onCloseModal: () => void;
 };
 
-export default function EmojiList({ onSelect, onCloseModal }: Props) {
-  const [emoji] = useState<ImageSourcePropType[]>([
-    require("@/assets/images/emoji1.png"),
-    require("@/assets/images/emoji2.png"),
-    require("@/assets/images/emoji3.png"),
-    require("@/assets/images/emoji4.png"),
-    require("@/assets/images/emoji5.png"),
-    require("@/assets/images/emoji6.png"),
-  ]);
+/* @tutinfo `assets/images` ディレクトリにある絵文字画像です。 */
+const emoji: ImageSource[] = [
+  require('@/assets/images/emoji1.png'),
+  require('@/assets/images/emoji2.png'),
+  require('@/assets/images/emoji3.png'),
+  require('@/assets/images/emoji4.png'),
+  require('@/assets/images/emoji5.png'),
+  require('@/assets/images/emoji6.png'),
+];
+/* @end */
 
+export default function EmojiList({ onSelect, onCloseModal }: Props) {
   return (
     <FlatList
-      horizontal
-      showsHorizontalScrollIndicator={Platform.OS === 'web'}
       data={emoji}
-      contentContainerStyle={styles.listContainer}
-      renderItem={({ item, index }) => (
+      numColumns={/* @tutinfo リストを 3 列のグリッドとして表示します。 */3/* @end */}
+      columnWrapperStyle={styles.row}
+      renderItem={({ item }) => (
         <Pressable
           onPress={() => {
             onSelect(item);
             onCloseModal();
           }}>
-          <Image source={item} key={index} style={styles.image} />
+          <Image source={item} style={styles.image} />
         </Pressable>
       )}
     />
@@ -571,35 +770,34 @@ export default function EmojiList({ onSelect, onCloseModal }: Props) {
 }
 
 const styles = StyleSheet.create({
-  listContainer: {
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  row: {
+    justifyContent: 'space-around',
+    marginBottom: 20,
   },
   image: {
     width: 100,
     height: 100,
-    marginRight: 20,
   },
 });
 ```
 
 上記のコードが何をしているのか確認しましょう。
 
-- 上記の `<FlatList>` コンポーネントは、`<Pressable>` でラップした `Image` コンポーネントを使ってすべての絵文字画像をレンダリングします。後ほど、画面上の絵文字をタップすると画像にステッカーとして表示されるよう改良します。
-- また、`data` プロパティの値として `emoji` 配列変数のアイテムの配列を受け取ります。`renderItem` プロパティは `data` から各アイテムを受け取り、リスト内のアイテムとして返します。最後に、このアイテムを表示するために `Image` と `<Pressable>` コンポーネントを追加しました。
-- `horizontal` プロパティは、リストを縦ではなく横方向にレンダリングします。`showsHorizontalScrollIndicator` は React Native の `Platform` モジュールで値を判定し、web では横スクロールバーを表示します。
+- `emoji` 配列は絵文字画像を保持します。値が変わることはないため、コンポーネントの外側に置いています。
+- `<FlatList>` コンポーネントは、`data` プロパティの値として `emoji` 配列を受け取ります。`renderItem` プロパティは `data` から各アイテムを受け取り、`<Pressable>` でラップした `Image` コンポーネントを返します。ユーザーが絵文字を押すと、`onSelect` がその絵文字を受け取り、`onCloseModal` がボトムシートを閉じます。
+- `numColumns` プロパティは、リストを 3 列のグリッドとして表示します。`columnWrapperStyle` プロパティは、グリッドの各行のスタイルを設定します。
 
 次に、**src/app/(tabs)/index.tsx** を更新して `<EmojiList>` コンポーネントをインポートし、`<EmojiPicker>` コンポーネント内のコメントを次のコードスニペットに置き換えます。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx|collapseHeight=440
-import { ImageSourcePropType, View, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+/* @tutinfo `ImageSource` 型をインポートします。 */
+import type { ImageSource } from 'expo-image';
+/* @end */
 
 import Button from '@/components/button';
 import ImageViewer from '@/components/image-viewer';
@@ -617,11 +815,11 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   /* @tutinfo state 変数を定義します。 */
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
   /* @end */
 
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
@@ -652,16 +850,32 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
       {showAppOptions ? (
-        <View style={styles.optionsContainer}>
+        <View style={styles.footerContainer}>
           <View style={styles.optionsRow}>
-            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/refresh.xml'),
+                ios: 'arrow.counterclockwise',
+                web: 'refresh',
+              }}
+              label="Reset"
+              onPress={onReset}
+            />
             <CircleButton onPress={onAddSticker} />
-            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/download.xml'),
+                ios: 'square.and.arrow.down',
+                web: 'download',
+              }}
+              label="Save"
+              onPress={onSaveImageAsync}
+            />
           </View>
         </View>
       ) : (
@@ -675,7 +889,7 @@ export default function Index() {
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
         /* @end */
       </EmojiPicker>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -687,14 +901,11 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
-  },
-  optionsContainer: {
-    position: 'absolute',
-    bottom: 80,
   },
   optionsRow: {
     alignItems: 'center',
@@ -703,7 +914,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-`EmojiList` コンポーネントでは、`onSelect` プロパティで絵文字を選択し、選択後に `onCloseModal` でモーダルを閉じます。
+`EmojiList` コンポーネントでは、`onSelect` プロパティで絵文字を選択し、選択後に `onCloseModal` でボトムシートを閉じます。
 
 Android、iOS、web でアプリを確認してみましょう。
 
@@ -722,12 +933,12 @@ Android、iOS、web でアプリを確認してみましょう。
 次に、画像の上に絵文字ステッカーを配置します。**src/components** ディレクトリに新しいファイルを作成し、**emoji-sticker.tsx** という名前にします。そして次のコードを追加します。
 
 ```tsx src/components/emoji-sticker.tsx|collapseHeight=300
-import { ImageSourcePropType, View } from 'react-native';
-import { Image } from 'expo-image';
+import { View } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
 
 type Props = {
   imageSize: number;
-  stickerSource: ImageSourcePropType;
+  stickerSource: ImageSource;
 };
 
 export default function EmojiSticker({ imageSize, stickerSource }: Props) {
@@ -747,10 +958,12 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 このコンポーネントを **src/app/(tabs)/index.tsx** ファイルでインポートし、`Index` コンポーネントを更新して画像上に絵文字ステッカーを表示します。`pickedEmoji` 状態が `undefined` でないかをチェックします。
 
 {/* prettier-ignore */}
-```tsx src/app/(tabs)/index.tsx
-import { ImageSourcePropType, View, StyleSheet } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
 import { useState } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import type { ImageSource } from 'expo-image';
 
 import Button from '@/components/button';
 import ImageViewer from '@/components/image-viewer';
@@ -766,11 +979,10 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
-
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
 
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
@@ -801,7 +1013,7 @@ export default function Index() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
         /* @tutinfo 画像に絵文字ステッカーを表示するため、この行を追加します。 */
@@ -809,11 +1021,27 @@ export default function Index() {
         /* @end */
       </View>
       {showAppOptions ? (
-        <View style={styles.optionsContainer}>
+        <View style={styles.footerContainer}>
           <View style={styles.optionsRow}>
-            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/refresh.xml'),
+                ios: 'arrow.counterclockwise',
+                web: 'refresh',
+              }}
+              label="Reset"
+              onPress={onReset}
+            />
             <CircleButton onPress={onAddSticker} />
-            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/download.xml'),
+                ios: 'square.and.arrow.down',
+                web: 'download',
+              }}
+              label="Save"
+              onPress={onSaveImageAsync}
+            />
           </View>
         </View>
       ) : (
@@ -825,7 +1053,7 @@ export default function Index() {
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
       </EmojiPicker>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -837,14 +1065,11 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
-  },
-  optionsContainer: {
-    position: 'absolute',
-    bottom: 80,
   },
   optionsRow: {
     alignItems: 'center',
