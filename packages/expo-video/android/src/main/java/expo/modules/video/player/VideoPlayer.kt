@@ -71,6 +71,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var currentVideoView by currentVideoViewRef
   val loadControl: VideoPlayerLoadControl = VideoPlayerLoadControl()
   val subtitles: VideoPlayerSubtitles = VideoPlayerSubtitles(this)
+  val audioTracks: VideoPlayerAudioTracks = VideoPlayerAudioTracks(this)
   val trackSelector = DefaultTrackSelector(context).apply {
     parameters = buildUponParameters()
       .setConstrainAudioChannelCountToDeviceCapabilities(true)
@@ -82,6 +83,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   val player = ExoPlayer
     .Builder(context, renderersFactory)
     .apply {
+      setTrackSelector(trackSelector)
       setLooper(context.mainLooper)
       setLoadControl(loadControl)
       playerBuilderOptions?.seekBackwardIncrement?.let {
