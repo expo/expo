@@ -33,6 +33,11 @@ describe('expo-module-template dependencies', () => {
     expect(devDependencies['@react-native/jest-preset']).toBe(bundledNativeModules['react-native']);
   });
 
+  // The example app is created from this app template, so it must use the same React Native.
+  it.each(['react', 'react-native'])('uses the example app version of %s', (name) => {
+    expect(devDependencies[name]).toBe(appTemplate.dependencies[name]);
+  });
+
   it.each(['@types/react', 'typescript'])('uses the app template version of %s', (name) => {
     expect(devDependencies[name]).toBe(appTemplate.devDependencies[name]);
   });
