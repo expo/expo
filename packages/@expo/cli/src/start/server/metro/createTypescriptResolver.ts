@@ -140,7 +140,7 @@ function setupTsConfigWatcher(
 const escapePrefix = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 function joinBaseUrl(baseUrl: string, lookup: string): string {
-  return path.join(baseUrl, lookup);
+  return path.resolve(baseUrl, lookup);
 }
 
 /** Attempts to resolve a target module given a pre-processed TypeScript configuration */
@@ -489,6 +489,6 @@ function resolveExtendsPath(
 /** TypeScript's `${configDir}` template prefix for the user config's path */
 function substituteConfigDir(value: string, configDir: string): string {
   return value.startsWith('${configDir}')
-    ? value.replace('${configDir}', configDir.endsWith(path.sep) ? '.' : './')
+    ? path.resolve(configDir, value.replace('${configDir}', './'))
     : value;
 }

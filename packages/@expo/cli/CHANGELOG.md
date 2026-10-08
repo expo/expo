@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed tsconfig path normalization, including absolute targets and `${configDir}` expansion in extended configs. ([#51027](https://github.com/expo/expo/pull/51027) by [@911RS](https://github.com/911RS))
+
 ### 💡 Others
 
 ## 57.0.28 — 2026-10-06
