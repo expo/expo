@@ -356,7 +356,17 @@ export interface DatePickerDialogProps {
   initialDate?: string | null;
   variant?: AndroidVariant;
   showVariantToggle?: boolean;
+  /**
+   * Whether the picker shows its title, such as "Select date". When `false`, Material 3's `title`
+   * slot is set to `null`.
+   * @default true
+   */
   showTitle?: boolean;
+  /**
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * Material 3's `headline` slot is set to `null`.
+   * @default true
+   */
   showHeadline?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;
