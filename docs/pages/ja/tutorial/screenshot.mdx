@@ -1,6 +1,6 @@
 ---
 title: スクリーンショットを撮影する
-description: このチュートリアルでは、サードパーティのライブラリと Expo Media Library を使ってスクリーンショットを撮影する方法を学びます。
+description: このチュートリアルでは、サードパーティのライブラリを使ってスクリーンショットを撮影し、Android と iOS では Expo Media Library で保存し、web ではダウンロードする方法を学びます。
 hasVideoLink: true
 ---
 
@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-この章では、サードパーティのライブラリを使ってスクリーンショットを撮影し、デバイスのメディアライブラリに保存する方法を学びます。スクリーンショットの撮影には [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) を、デバイスのメディアライブラリへの画像の保存には [`expo-media-library`](/versions/v57.0.0/sdk/media-library/) を使用します。
+この章では、サードパーティのライブラリを使ってスクリーンショットを撮影し、デバイスのメディアライブラリに保存する方法を学びます。スクリーンショットの撮影には [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) を、デバイスのメディアライブラリへの画像の保存には [`expo-media-library`](/versions/latest/sdk/media-library/) を使用します。web ブラウザーはアプリにメディアライブラリへのアクセスを提供しないため、web ではスクリーンショットを画像ファイルとしてダウンロードします。
 
 > **info** ここまで、`react-native-gesture-handler` や `react-native-reanimated` などのサードパーティのライブラリを使用してきました。用途に応じて、[React Native Directory](https://reactnative.directory/) で他にも数百のサードパーティのライブラリを見つけることができます。
 
@@ -43,21 +43,21 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## 権限を要求する
 
-デバイスのメディアライブラリへのアクセスのような機密性の高い情報を必要とするアプリでは、アクセスを許可または拒否するための権限を要求する必要があります。`expo-image-picker` の `useMediaLibraryPermissions()` フックを使うと、`permissionResponse` と `requestPermission()` メソッドを利用してアクセスを要求できます。このフックは読み取りと書き込みの両方の権限を要求するため、ライブラリからの画像選択とスクリーンショットの保存の両方に対応します。
+デバイスのメディアライブラリへのアクセスのような機密性の高い情報を必要とするアプリでは、アクセスを許可または拒否するための権限を要求する必要があります。`expo-media-library` の [`usePermissions()`](/versions/latest/sdk/media-library/#usepermissionsoptions) フックは、`permissionResponse` と、アクセスを要求するための `requestPermission()` メソッドを返します。このアプリはメディアライブラリに画像を保存するだけなので、`writeOnly: true` オプションを渡して、読み取りアクセスなしで書き込みアクセスを要求します。
 
-アプリが初めて起動され、権限のステータスが許可も拒否もされていない場合、`permissionResponse` の値は `null` になります。権限を要求されると、ユーザーは権限を許可するか拒否するかを選択できます。許可されていない場合に判定する条件を追加します。許可されていない場合は、`requestPermission()` メソッドを呼び出します。アクセスが得られると、`permissionResponse` の値は `granted` に変わります。
+アプリが初めて起動され、権限のステータスが許可も拒否もされていない場合、`permissionResponse` の値は `null` になります。権限を要求されると、ユーザーは権限を許可するか拒否するかを選択できます。許可されていない場合に判定する条件を追加します。許可されていない場合は、`requestPermission()` メソッドを呼び出します。アクセスが得られると、`permissionResponse.granted` の値は `true` に変わります。
 
 次のコードスニペットを **src/app/(tabs)/index.tsx** の中に追加します。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx
 import { /* @tutinfo */useEffect/* @end */, useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
+/* @tutinfo `expo-media-library` から `MediaLibrary` をインポートします。 */import * as MediaLibrary from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo フックから権限のレスポンスと `requestPermission()` メソッドをインポートするため、この文を追加します。 */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
+  /* @tutinfo フックから権限のレスポンスと `requestPermission()` メソッドを取得するため、この文を追加します。 */const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });/* @end */
   // ...rest of the code remains same
 
   /* @tutinfo 権限の状態を確認するため、if 文を追加します。requestPermission() メソッドは、ユーザーが権限を許可または拒否するためのダイアログを表示します。 */
@@ -80,30 +80,32 @@ export default function Index() {
 
 アプリ内でユーザーがスクリーンショットを撮影できるようにするため、`react-native-view-shot` を使用します。このライブラリは、`captureRef()` メソッドを使って `<View>` のスクリーンショットを画像として撮影します。撮影したスクリーンショット画像ファイルの URI が返されます。
 
-1. `react-native-view-shot` から `captureRef` を、React から `useRef` をインポートします。
-2. 撮影したスクリーンショット画像の参照を保持する `imageRef` 参照変数を作成します。
-3. `<ImageViewer>` と `<EmojiSticker>` コンポーネントを `<View>` で囲み、それに参照変数を渡します。
+前の章で、`<ImageViewer>` と `<EmojiSticker>` コンポーネントを `<View>` で囲みました。この `<View>` を撮影します。
+
+1. `react-native-view-shot` から `captureRef` を、React から `useRef` と `ComponentRef` 型をインポートします。
+2. `<View>` の参照を保持する `imageRef` 参照変数を作成します。
+3. `<ImageViewer>` と `<EmojiSticker>` コンポーネントを囲む `<View>` の `ref` プロパティに、参照変数を渡します。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx|collapseHeight=440
-import { useState, /* @tutinfo `react` から `useRef` フックをインポートします。 */useRef/* @end */ } from 'react';
+import { useEffect, /* @tutinfo `react` から `useRef` フックと `ComponentRef` 型をインポートします。 */useRef/* @end */, useState, /* @tutinfo */type ComponentRef/* @end */ } from 'react';
 /* @tutinfo `react-native-view-shot` から `captureRef` をインポートします。 */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
-  /* @tutinfo imageRef 変数を作成します。 */ const imageRef = useRef<View>(null);/* @end */
+  /* @tutinfo imageRef 変数を作成します。 */const imageRef = useRef<ComponentRef<typeof View>>(null);/* @end */
 
   // ...rest of the code remains same
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @tutinfo ImageViewer と EmojiSticker をラップする View コンポーネントを追加します。 */<View ref={imageRef} collapsable={false}>/* @end */
+        /* @tutinfo 参照変数を `ref` プロパティに渡し、`collapsable` を `false` に設定します。 */<View ref={imageRef} collapsable={false}>/* @end */
           <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
           {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
-        /* @tutinfo */</View>/* @end */
+        </View>
       </View>
       {/* ...rest of the code remains same */}
-    </GestureHandlerRootView>
+    </SafeAreaView>
   );
 }
 ```
@@ -118,41 +120,37 @@ export default function Index() {
 
 `onSaveImageAsync()` 関数の中で `react-native-view-shot` の `captureRef()` メソッドを呼び出すことで、ビューのスクリーンショットを撮影できます。このメソッドは省略可能な引数を受け取り、スクリーンショットを撮影する領域の `width` と `height` を渡せます。利用可能なオプションの詳細については、[ライブラリのドキュメント](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api) を参照してください。
 
-また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.saveToLibraryAsync()`](/versions/v57.0.0/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) のパラメータとして渡し、デバイスのメディアライブラリにスクリーンショットを保存します。
+また、`captureRef()` メソッドはスクリーンショットの URI で解決される Promise を返します。この URI を [`MediaLibrary.Asset.create()`](/versions/latest/sdk/media-library/#createfilepath-album) のパラメータとして渡すと、デバイスのメディアライブラリにスクリーンショットが保存されます。
 
 **src/app/(tabs)/index.tsx** の中で、`onSaveImageAsync()` 関数を次のコードに更新します。
 
 {/* prettier-ignore */}
 ```tsx src/app/(tabs)/index.tsx|collapseHeight=440
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
-/* @tutinfo `expo-media-library` から `MediaLibrary` をインポートします。 */import * as MediaLibrary from 'expo-media-library';/* @end */
-import { useEffect, useRef, useState } from 'react';
-import { ImageSourcePropType, StyleSheet, View } from 'react-native';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as MediaLibrary from 'expo-media-library';
 import { captureRef } from 'react-native-view-shot';
+import type { ImageSource } from 'expo-image';
 
 import Button from '@/components/button';
-import CircleButton from '@/components/circle-button';
-import EmojiList from '@/components/emoji-list';
-import EmojiPicker from '@/components/emoji-picker';
-import IconButton from '@/components/icon-button';
 import ImageViewer from '@/components/image-viewer';
-
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
+import EmojiPicker from '@/components/emoji-picker';
+import EmojiList from '@/components/emoji-list';
 import EmojiSticker from '@/components/emoji-sticker';
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
-  const [selectedImage, setSelectedImage] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [pickedEmoji, setPickedEmoji] = useState<
-    ImageSourcePropType | undefined
-  >(undefined);
-  const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();
-  const imageRef = useRef<View>(null);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const imageRef = useRef<ComponentRef<typeof View>>(null);
 
   useEffect(() => {
     if (!permissionResponse?.granted) {
@@ -161,7 +159,7 @@ export default function Index() {
   }, []);
 
   const pickImageAsync = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       quality: 1,
@@ -195,10 +193,8 @@ export default function Index() {
         quality: 1,
       });
 
-      await MediaLibrary.saveToLibraryAsync(localUri);
-      if (localUri) {
-        alert('Saved!');
-      }
+      await MediaLibrary.Asset.create(localUri);
+      alert('Saved!');
     } catch (e) {
       console.log(e);
     }
@@ -206,7 +202,7 @@ export default function Index() {
   /* @end */
 
   return (
-    <GestureHandlerRootView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.imageContainer}>
         <View ref={imageRef} collapsable={false}>
           <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
@@ -214,11 +210,27 @@ export default function Index() {
         </View>
       </View>
       {showAppOptions ? (
-        <View style={styles.optionsContainer}>
+        <View style={styles.footerContainer}>
           <View style={styles.optionsRow}>
-            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/refresh.xml'),
+                ios: 'arrow.counterclockwise',
+                web: 'refresh',
+              }}
+              label="Reset"
+              onPress={onReset}
+            />
             <CircleButton onPress={onAddSticker} />
-            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/download.xml'),
+                ios: 'square.and.arrow.down',
+                web: 'download',
+              }}
+              label="Save"
+              onPress={onSaveImageAsync}
+            />
           </View>
         </View>
       ) : (
@@ -230,7 +242,7 @@ export default function Index() {
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
       </EmojiPicker>
-    </GestureHandlerRootView>
+    </SafeAreaView>
   );
 }
 
@@ -242,14 +254,11 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
   },
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
-  },
-  optionsContainer: {
-    position: 'absolute',
-    bottom: 80,
   },
   optionsRow: {
     alignItems: 'center',
@@ -258,9 +267,192 @@ const styles = StyleSheet.create({
 });
 ```
 
-それでは、アプリで写真を選び、ステッカーを追加してから「Save」ボタンをタップしてみましょう。Android と iOS で次のような結果が表示されるはずです。
+それでは、アプリで写真を選び、ステッカーを追加してから **Save** ボタンをタップしてみましょう。Android と iOS で次のような結果が表示されるはずです。
 
 <ContentSpotlight file="tutorial/saving-screenshot.mp4" />
+
+</Step>
+
+<Step label="5">
+
+## web でスクリーンショットを保存する
+
+`react-native-view-shot` は web でもスクリーンショットを撮影できます。ただし、`expo-media-library` は Android と iOS でのみ動作します。web では、代わりにスクリーンショットを画像ファイルとしてダウンロードします。
+
+React Native の `Platform` モジュールを使うと、プラットフォーム固有の動作を実装できます。web では、`result` オプションを `'data-uri'` に設定すると、`captureRef()` はスクリーンショットを [データ URL](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data) として返します。このデータ URL をリンク要素に渡すと、画像をダウンロードできます。
+
+**src/app/(tabs)/index.tsx** の中で、`onSaveImageAsync()` 関数を更新し、`Platform.OS` プロパティを使って現在のプラットフォームが `'web'` かどうかを判定します。
+
+1. `'web'` でない場合は、Android と iOS 向けに追加したものと同じロジックを引き続き使用します。
+2. `'web'` の場合は、`captureRef()` メソッドを使って現在の `<View>` を JPEG 画像として撮影します。次に、データ URL を持つリンク要素を作成し、それをクリックして画像をダウンロードします。
+
+`imageContainer` スタイルで使用しているため、`Platform` モジュールはすでに `react-native` からインポートされています。
+
+{/* prettier-ignore */}
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { Platform, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import { captureRef } from 'react-native-view-shot';
+import type { ImageSource } from 'expo-image';
+
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
+import EmojiPicker from '@/components/emoji-picker';
+import EmojiList from '@/components/emoji-list';
+import EmojiSticker from '@/components/emoji-sticker';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSource | undefined>(undefined);
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions({ writeOnly: true });
+  const imageRef = useRef<ComponentRef<typeof View>>(null);
+
+  useEffect(() => {
+    if (!permissionResponse?.granted) {
+      requestPermission();
+    }
+  }, []);
+
+  const pickImageAsync = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const onSaveImageAsync = async () => {
+    /* @tutinfo 現在のプラットフォームが web かどうかを判定する if 条件をここに追加します。 */
+    if (Platform.OS !== 'web') {
+    /* @end */
+      try {
+        const localUri = await captureRef(imageRef, {
+          height: 440,
+          quality: 1,
+        });
+
+        await MediaLibrary.Asset.create(localUri);
+        alert('Saved!');
+      } catch (e) {
+        console.log(e);
+      }
+    /* @tutinfo 現在のプラットフォームが web の場合にロジックを実行する else 条件を追加します。 */
+    } else {
+      try {
+        const dataUrl = await captureRef(imageRef, {
+          format: 'jpg',
+          quality: 0.95,
+          result: 'data-uri',
+        });
+
+        const link = document.createElement('a');
+        link.download = 'sticker-smash.jpeg';
+        link.href = dataUrl;
+        link.click();
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    /* @end */
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.imageContainer}>
+        <View ref={imageRef} collapsable={false}>
+          <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+          {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
+        </View>
+      </View>
+      {showAppOptions ? (
+        <View style={styles.footerContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/refresh.xml'),
+                ios: 'arrow.counterclockwise',
+                web: 'refresh',
+              }}
+              label="Reset"
+              onPress={onReset}
+            />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton
+              icon={{
+                android: require('@expo/material-symbols/download.xml'),
+                ios: 'square.and.arrow.down',
+                web: 'download',
+              }}
+              label="Save"
+              onPress={onSaveImageAsync}
+            />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+    paddingTop: Platform.select({ web: 96, default: 20 }),
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
+```
+
+web ブラウザーでアプリを実行すると、スクリーンショットを保存できるようになります。
+
+<ContentSpotlight file="tutorial/web.mp4" />
 
 </Step>
 
