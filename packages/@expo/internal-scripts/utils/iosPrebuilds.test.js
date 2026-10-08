@@ -48,6 +48,12 @@ function stagedHeadersTarball(root) {
   return path.join(root, 'prebuilds/output/headers/xcframeworks/ExpoOneHeaders.tar.gz');
 }
 
+function tarListing(tarball) {
+  const listing = spawnSync('tar', ['-tzf', tarball], { encoding: 'utf8' });
+  assert.equal(listing.status, 0, listing.stderr);
+  return listing.stdout.split('\n').filter(Boolean);
+}
+
 test('raw validation rejects a missing flavor', () => {
   const root = fixture();
   framework(root, 'ExpoOne', 'debug');
@@ -124,11 +130,19 @@ test('raw validation rejects an incomplete or missing headers XCFramework', () =
   );
 });
 
-test('stages a headers tarball for a flagged product', () => {
+test('stages a headers tarball beside the flavored tarballs for a flagged product', () => {
   const root = flaggedFixture();
   assert.equal(stageIosPrebuilds(root), true);
-  const listing = spawnSync('tar', ['-tzf', stagedHeadersTarball(root)], { encoding: 'utf8' });
-  assert.match(listing.stdout, /^ExpoOneHeaders\.xcframework\/Info\.plist$/m);
+  assert.ok(
+    tarListing(stagedHeadersTarball(root)).includes('ExpoOneHeaders.xcframework/Info.plist')
+  );
+  for (const flavor of ['debug', 'release']) {
+    const entries = tarListing(
+      path.join(root, 'prebuilds/output', flavor, 'xcframeworks/ExpoOne.tar.gz')
+    );
+    assert.ok(entries.includes('ExpoOne.xcframework/Info.plist'));
+    assert.ok(entries.every((entry) => entry.startsWith('ExpoOne.xcframework')));
+  }
 });
 
 test('published validation rejects a missing or wrong headers tarball', () => {

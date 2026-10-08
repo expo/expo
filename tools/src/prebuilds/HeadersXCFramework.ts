@@ -166,7 +166,7 @@ export async function writeHeadersXCFrameworkAsync(
           LibraryPath: stub,
           SupportedArchitectures: library.SupportedArchitectures,
           SupportedPlatform: library.SupportedPlatform,
-          SupportedPlatformVariant: library.SupportedPlatformVariant,
+          SupportedPlatformVariant: library.SupportedPlatformVariant || undefined,
         })),
         CFBundlePackageType: 'XFWK',
         XCFrameworkFormatVersion: '1.0',
@@ -367,7 +367,11 @@ async function readSourceLibrariesAsync(xcframework: string): Promise<XCFramewor
         `xcframework first.`
     );
   }
-  return (await readPlistAsync(infoPlist)).AvailableLibraries as XCFrameworkLibrary[];
+  const { AvailableLibraries } = await readPlistAsync(infoPlist);
+  if (!Array.isArray(AvailableLibraries)) {
+    throw new Error(`${infoPlist} has no AvailableLibraries array; it is not a valid xcframework.`);
+  }
+  return AvailableLibraries as XCFrameworkLibrary[];
 }
 
 /** Reads XML and binary plists alike; xcodebuild writes framework Info.plists in binary form. */

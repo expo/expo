@@ -26,7 +26,7 @@ type FixtureSlice = {
   id: string;
   archs: string[];
   platform?: 'ios' | 'tvos';
-  variant?: 'simulator';
+  variant?: 'simulator' | '';
   /** `undefined` writes no framework Info.plist; `null` writes one without `MinimumOSVersion`. */
   minimumOSVersion?: string | null;
   /** A placeholder slice carries only a binary, like expo-modules-jsi's unbuilt platforms. */
@@ -204,7 +204,7 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('describes the source slices as library slices of the stub archive', async () => {
-    const destination = await writeFixtureAsync([SIMULATOR, DEVICE]);
+    const destination = await writeFixtureAsync([SIMULATOR, { ...DEVICE, variant: '' }]);
 
     assert.deepEqual(await readPlistAsync(path.join(destination, 'Info.plist')), {
       AvailableLibraries: [
@@ -265,18 +265,23 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
     );
   });
 
-  it('builds a non-iOS slice for the platform the source declares', async () => {
+  it('takes each slice platform from the source, including non-iOS platforms', async () => {
     const tv: FixtureSlice = {
       id: 'tvos-arm64',
       archs: ['arm64'],
       platform: 'tvos',
       minimumOSVersion: '15.0',
     };
-    const destination = await writeFixtureAsync([tv]);
+    const destination = await writeFixtureAsync([DEVICE, SIMULATOR, tv]);
     const stub = path.join(destination, tv.id, STUB);
 
-    const info = await readPlistAsync(path.join(destination, 'Info.plist'));
-    assert.equal(info.AvailableLibraries[0].SupportedPlatform, 'tvos');
+    const { AvailableLibraries } = await readPlistAsync(path.join(destination, 'Info.plist'));
+    assert.deepEqual(
+      AvailableLibraries.map((library: Record<string, string>) =>
+        [library.SupportedPlatform, library.SupportedPlatformVariant].filter(Boolean).join('-')
+      ),
+      ['ios', 'ios-simulator', 'tvos']
+    );
     assert.deepEqual(definedSymbols(await outputOfAsync('nm', ['-g', stub])), [
       `_${NAME}HeadersStub_appletvos`,
     ]);
@@ -366,6 +371,17 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
         return true;
       }
     );
+  });
+
+  it('rejects a source Info.plist without an AvailableLibraries array before writing', async () => {
+    const { source, destination } = await createFixtureAsync([DEVICE]);
+    const infoPlist = path.join(source, 'Info.plist');
+    await fs.writeFile(infoPlist, plist.build({ CFBundlePackageType: 'XFWK' }));
+
+    await assert.rejects(writeHeadersXCFrameworkAsync(source, product(), destination), {
+      message: `${infoPlist} has no AvailableLibraries array; it is not a valid xcframework.`,
+    });
+    assert.equal(await fs.pathExists(path.dirname(destination)), false);
   });
 });
 
