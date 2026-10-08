@@ -1,8 +1,3 @@
-/**
- * Tests for the compile-only headers xcframework written beside a product's flavored xcframework.
- * The fixture source xcframework is hand-built; the stub archives are real, so these tests need
- * Xcode's command line tools (clang, libtool, nm, otool, lipo, plutil).
- */
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
@@ -15,7 +10,6 @@ import path from 'path';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import {
-  composeHeadersXCFrameworkAsync,
   getHeadersXCFrameworkPath,
   shouldWriteHeadersXCFramework,
   writeHeadersXCFrameworkAsync,
@@ -31,10 +25,9 @@ const STUB = `lib${NAME}Headers.a`;
 type FixtureSlice = {
   id: string;
   archs: string[];
-  /** The source `SupportedPlatform`; `ios` when absent. */
   platform?: 'ios' | 'tvos';
   variant?: 'simulator';
-  /** `null` writes a framework Info.plist without `MinimumOSVersion`. */
+  /** `undefined` writes no framework Info.plist; `null` writes one without `MinimumOSVersion`. */
   minimumOSVersion?: string | null;
   /** A placeholder slice carries only a binary, like expo-modules-jsi's unbuilt platforms. */
   placeholder?: boolean;
@@ -55,9 +48,12 @@ const SOURCE_MODULE_MAP = `framework module ${NAME} {
     export *
     module * { export * }
 }
+
+framework module ${NAME}_Private {
+    header "${NAME}.h"
+}
 `;
 
-// The fixtures and the code under test call plutil and xcrun, which only Apple platforms provide.
 const appleToolsOnly = {
   skip: process.platform !== 'darwin' && 'needs plutil and xcrun, which only macOS provides',
 };
@@ -76,13 +72,6 @@ async function makeTempRootAsync(): Promise<string> {
   return root;
 }
 
-function swiftTriples(slice: FixtureSlice): string[] {
-  const os = slice.platform ?? 'ios';
-  return slice.archs.map(
-    (arch) => `${arch}-apple-${os}${slice.variant ? `-${slice.variant}` : ''}`
-  );
-}
-
 async function writeBinaryPlistAsync(file: string, contents: object): Promise<void> {
   await fs.outputFile(file, plist.build(contents));
   await spawnAsync('plutil', ['-convert', 'binary1', file]);
@@ -90,8 +79,7 @@ async function writeBinaryPlistAsync(file: string, contents: object): Promise<vo
 
 async function createSourceXCFrameworkAsync(
   xcframework: string,
-  slices: FixtureSlice[],
-  moduleMap: string = SOURCE_MODULE_MAP
+  slices: FixtureSlice[]
 ): Promise<void> {
   for (const slice of slices) {
     const framework = path.join(xcframework, slice.id, `${NAME}.framework`);
@@ -105,9 +93,10 @@ async function createSourceXCFrameworkAsync(
     );
     await fs.outputFile(path.join(framework, 'Headers', `${NAME}.h`), 'int fixture(void);\n');
     await fs.outputFile(path.join(framework, 'Headers', `${NAME}-Swift.h`), '// generated\n');
-    await fs.outputFile(path.join(framework, 'Modules', 'module.modulemap'), moduleMap);
+    await fs.outputFile(path.join(framework, 'Modules', 'module.modulemap'), SOURCE_MODULE_MAP);
     const swiftmodule = path.join(framework, 'Modules', `${NAME}.swiftmodule`);
-    for (const triple of swiftTriples(slice)) {
+    for (const arch of slice.archs) {
+      const triple = `${arch}-apple-${slice.platform ?? 'ios'}${slice.variant ? `-${slice.variant}` : ''}`;
       await fs.outputFile(path.join(swiftmodule, `${triple}.swiftinterface`), `// ${triple}\n`);
       await fs.outputFile(
         path.join(swiftmodule, `${triple}.private.swiftinterface`),
@@ -136,7 +125,7 @@ async function createSourceXCFrameworkAsync(
         LibraryPath: `${NAME}.framework`,
         SupportedArchitectures: slice.archs,
         SupportedPlatform: slice.platform ?? 'ios',
-        ...(slice.variant ? { SupportedPlatformVariant: slice.variant } : {}),
+        SupportedPlatformVariant: slice.variant,
       })),
       CFBundlePackageType: 'XFWK',
       XCFrameworkFormatVersion: '1.0',
@@ -144,16 +133,17 @@ async function createSourceXCFrameworkAsync(
   );
 }
 
-async function writeFixtureAsync(
-  slices: FixtureSlice[],
-  platforms?: ProductPlatform[]
-): Promise<{ root: string; destination: string }> {
+async function createFixtureAsync(slices: FixtureSlice[]) {
   const root = await makeTempRootAsync();
-  const source = path.join(root, 'source', `${NAME}.xcframework`);
-  const destination = path.join(root, 'headers', `${NAME}Headers.xcframework`);
+  const source = path.join(root, `${NAME}.xcframework`);
   await createSourceXCFrameworkAsync(source, slices);
+  return { source, destination: path.join(root, 'out', `${NAME}Headers.xcframework`) };
+}
+
+async function writeFixtureAsync(slices: FixtureSlice[], platforms?: ProductPlatform[]) {
+  const { source, destination } = await createFixtureAsync(slices);
   await writeHeadersXCFrameworkAsync(source, product(platforms), destination);
-  return { root, destination };
+  return destination;
 }
 
 async function listFilesAsync(dir: string): Promise<string[]> {
@@ -178,7 +168,7 @@ function definedSymbols(nmOutput: string): string[] {
 
 describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   it('lays out each slice as a stub archive, a headers directory and the text Swift interfaces', async () => {
-    const { destination } = await writeFixtureAsync([DEVICE, SIMULATOR]);
+    const destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
 
     assert.deepEqual(await listFilesAsync(destination), [
       'Info.plist',
@@ -201,23 +191,20 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
     ]);
   });
 
-  it('rewrites the framework module map into a plain module map', async () => {
-    const { destination } = await writeFixtureAsync([DEVICE, SIMULATOR]);
+  it('rewrites every framework module declaration into a plain module', async () => {
+    const destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
 
     for (const slice of [DEVICE, SIMULATOR]) {
       const moduleMap = await fs.readFile(
         path.join(destination, slice.id, 'Headers', NAME, 'module.modulemap'),
         'utf8'
       );
-      assert.equal(
-        moduleMap,
-        SOURCE_MODULE_MAP.replace(`framework module ${NAME}`, `module ${NAME}`)
-      );
+      assert.equal(moduleMap, SOURCE_MODULE_MAP.replaceAll('framework module ', 'module '));
     }
   });
 
   it('describes the source slices as library slices of the stub archive', async () => {
-    const { destination } = await writeFixtureAsync([SIMULATOR, DEVICE]);
+    const destination = await writeFixtureAsync([SIMULATOR, DEVICE]);
 
     assert.deepEqual(await readPlistAsync(path.join(destination, 'Info.plist')), {
       AvailableLibraries: [
@@ -245,7 +232,7 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('builds a stub archive per slice that defines one product-unique symbol', async () => {
-    const { destination } = await writeFixtureAsync([DEVICE, SIMULATOR]);
+    const destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
     const device = path.join(destination, DEVICE.id, STUB);
     const simulator = path.join(destination, SIMULATOR.id, STUB);
 
@@ -267,7 +254,7 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('takes the deployment target from the product platforms when the framework has none', async () => {
-    const { destination } = await writeFixtureAsync(
+    const destination = await writeFixtureAsync(
       [{ ...DEVICE, minimumOSVersion: null }],
       ['iOS(.v16)']
     );
@@ -278,23 +265,27 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
     );
   });
 
-  it('fails with the slice named when no deployment target is known', async () => {
-    const root = await makeTempRootAsync();
-    const source = path.join(root, `${NAME}.xcframework`);
-    await createSourceXCFrameworkAsync(source, [{ ...DEVICE, minimumOSVersion: undefined }]);
+  it('builds a non-iOS slice for the platform the source declares', async () => {
+    const tv: FixtureSlice = {
+      id: 'tvos-arm64',
+      archs: ['arm64'],
+      platform: 'tvos',
+      minimumOSVersion: '15.0',
+    };
+    const destination = await writeFixtureAsync([tv]);
+    const stub = path.join(destination, tv.id, STUB);
 
-    await assert.rejects(
-      writeHeadersXCFrameworkAsync(
-        source,
-        product(['macOS(.v11)']),
-        path.join(root, 'out.xcframework')
-      ),
-      /ios-arm64/
-    );
+    const info = await readPlistAsync(path.join(destination, 'Info.plist'));
+    assert.equal(info.AvailableLibraries[0].SupportedPlatform, 'tvos');
+    assert.deepEqual(definedSymbols(await outputOfAsync('nm', ['-g', stub])), [
+      `_${NAME}HeadersStub_appletvos`,
+    ]);
+    // LC_BUILD_VERSION platform 3 is tvOS.
+    assert.match(await outputOfAsync('otool', ['-l', stub]), /platform 3\n\s+minos 15\.0/);
   });
 
   it('leaves out placeholder slices that carry nothing to compile against', async () => {
-    const { destination } = await writeFixtureAsync([
+    const destination = await writeFixtureAsync([
       DEVICE,
       { id: 'tvos-arm64', archs: ['arm64'], placeholder: true },
     ]);
@@ -310,10 +301,7 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('replaces a previous output cleanly', async () => {
-    const root = await makeTempRootAsync();
-    const source = path.join(root, `${NAME}.xcframework`);
-    const destination = path.join(root, 'out', `${NAME}Headers.xcframework`);
-    await createSourceXCFrameworkAsync(source, [DEVICE, SIMULATOR]);
+    const { source, destination } = await createFixtureAsync([DEVICE, SIMULATOR]);
 
     await writeHeadersXCFrameworkAsync(source, product(), destination);
     const firstRun = await listFilesAsync(destination);
@@ -324,20 +312,15 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
     assert.deepEqual(await fs.readdir(path.dirname(destination)), [`${NAME}Headers.xcframework`]);
   });
 
-  it('keeps the previous output and leaves nothing behind when a write fails', async () => {
-    const root = await makeTempRootAsync();
-    const valid = path.join(root, 'valid', `${NAME}.xcframework`);
-    const broken = path.join(root, 'broken', `${NAME}.xcframework`);
-    const destination = path.join(root, 'out', `${NAME}Headers.xcframework`);
-    await createSourceXCFrameworkAsync(valid, [DEVICE, SIMULATOR]);
-    await createSourceXCFrameworkAsync(broken, [{ ...DEVICE, minimumOSVersion: undefined }]);
-    await writeHeadersXCFrameworkAsync(valid, product(), destination);
+  it('fails naming the slice with no known deployment target and keeps the previous output', async () => {
+    const destination = await writeFixtureAsync([DEVICE, SIMULATOR]);
     const files = await listFilesAsync(destination);
     const infoPlist = await fs.readFile(path.join(destination, 'Info.plist'), 'utf8');
+    const broken = await createFixtureAsync([{ ...DEVICE, minimumOSVersion: undefined }]);
 
     await assert.rejects(
-      writeHeadersXCFrameworkAsync(broken, product(['macOS(.v11)']), destination),
-      /no MinimumOSVersion/
+      writeHeadersXCFrameworkAsync(broken.source, product(['macOS(.v11)']), destination),
+      /slice ios-arm64: its framework declares no MinimumOSVersion/
     );
 
     assert.deepEqual(await listFilesAsync(destination), files);
@@ -346,10 +329,7 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('keeps the previous output when moving the new one into place fails', async (t) => {
-    const root = await makeTempRootAsync();
-    const source = path.join(root, `${NAME}.xcframework`);
-    const destination = path.join(root, 'out', `${NAME}Headers.xcframework`);
-    await createSourceXCFrameworkAsync(source, [DEVICE, SIMULATOR]);
+    const { source, destination } = await createFixtureAsync([DEVICE, SIMULATOR]);
     await writeHeadersXCFrameworkAsync(source, product(), destination);
     const files = await listFilesAsync(destination);
 
@@ -373,12 +353,10 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
   });
 
   it('names the product, SDK and xcrun output when building a stub fails', async () => {
-    const root = await makeTempRootAsync();
-    const source = path.join(root, `${NAME}.xcframework`);
-    await createSourceXCFrameworkAsync(source, [{ ...DEVICE, archs: ['bogus'] }]);
+    const { source, destination } = await createFixtureAsync([{ ...DEVICE, archs: ['bogus'] }]);
 
     await assert.rejects(
-      writeHeadersXCFrameworkAsync(source, product(), path.join(root, 'out.xcframework')),
+      writeHeadersXCFrameworkAsync(source, product(), destination),
       (error: Error) => {
         assert.match(error.message, new RegExp(`${NAME}Headers stub`));
         assert.match(error.message, /ios-arm64/);
@@ -389,93 +367,14 @@ describe('writeHeadersXCFrameworkAsync', appleToolsOnly, () => {
       }
     );
   });
-
-  it('takes each slice platform from the source, including non-iOS platforms', async () => {
-    const tv: FixtureSlice = {
-      id: 'tvos-arm64',
-      archs: ['arm64'],
-      platform: 'tvos',
-      minimumOSVersion: '15.0',
-    };
-    const { destination } = await writeFixtureAsync([DEVICE, SIMULATOR, tv]);
-
-    const info = await readPlistAsync(path.join(destination, 'Info.plist'));
-    assert.deepEqual(
-      info.AvailableLibraries.map(
-        (library: {
-          LibraryIdentifier: string;
-          SupportedPlatform: string;
-          SupportedPlatformVariant?: string;
-        }) => [
-          library.LibraryIdentifier,
-          library.SupportedPlatform,
-          library.SupportedPlatformVariant,
-        ]
-      ),
-      [
-        [DEVICE.id, 'ios', undefined],
-        [SIMULATOR.id, 'ios', 'simulator'],
-        [tv.id, 'tvos', undefined],
-      ]
-    );
-    const tvStub = path.join(destination, tv.id, STUB);
-    assert.deepEqual(definedSymbols(await outputOfAsync('nm', ['-g', tvStub])), [
-      `_${NAME}HeadersStub_appletvos`,
-    ]);
-    // LC_BUILD_VERSION platform 3 is tvOS.
-    assert.match(await outputOfAsync('otool', ['-l', tvStub]), /platform 3\n\s+minos 15\.0/);
-  });
-
-  it('rewrites every framework module declaration, not only one on the first line', async () => {
-    const moduleMap = `// Written by the fixture.
-framework module ${NAME} {
-    header "${NAME}.h"
-}
-
-framework module ${NAME}_Private {
-    header "${NAME}-Swift.h"
-}
-`;
-    const root = await makeTempRootAsync();
-    const source = path.join(root, `${NAME}.xcframework`);
-    const destination = path.join(root, 'out', `${NAME}Headers.xcframework`);
-    await createSourceXCFrameworkAsync(source, [DEVICE], moduleMap);
-
-    await writeHeadersXCFrameworkAsync(source, product(), destination);
-
-    assert.equal(
-      await fs.readFile(
-        path.join(destination, DEVICE.id, 'Headers', NAME, 'module.modulemap'),
-        'utf8'
-      ),
-      moduleMap.replaceAll('framework module ', 'module ')
-    );
-  });
 });
 
-describe('composeHeadersXCFrameworkAsync', () => {
-  it(
-    'writes the headers xcframework beside the flavor directories of the build output',
-    appleToolsOnly,
-    async () => {
-      const root = await makeTempRootAsync();
-      const buildPath = path.join(root, '.expo-prebuild');
-      await createSourceXCFrameworkAsync(
-        path.join(buildPath, 'output', 'debug', 'xcframeworks', `${NAME}.xcframework`),
-        [DEVICE]
-      );
-
-      const written = await composeHeadersXCFrameworkAsync({ buildPath }, product(), 'Debug');
-
-      assert.equal(
-        written,
-        path.join(buildPath, 'output', 'headers', 'xcframeworks', `${NAME}Headers.xcframework`)
-      );
-      assert.ok(await fs.pathExists(path.join(written, DEVICE.id, STUB)));
-    }
-  );
-
-  it('keeps the version prefix of versioned outputs', () => {
+describe('getHeadersXCFrameworkPath', () => {
+  it('places the headers xcframework beside the flavor directories, under any version prefix', () => {
+    assert.equal(
+      getHeadersXCFrameworkPath('/build', NAME),
+      path.join('/build/output/headers/xcframeworks', `${NAME}Headers.xcframework`)
+    );
     assert.equal(
       getHeadersXCFrameworkPath('/build', NAME, '1.0.0/0.85.0/1.0.0'),
       path.join(
@@ -490,12 +389,9 @@ describe('shouldWriteHeadersXCFramework', () => {
   const unflagged: SPMProduct = { ...product(), podName: NAME, targets: [] };
   const flagged: SPMProduct = { ...unflagged, headersXCFramework: true };
 
-  it('writes from the debug flavor when the run builds debug', () => {
+  it('writes from the debug flavor when the run builds debug, in either flavor order', () => {
     assert.equal(shouldWriteHeadersXCFramework(flagged, 'Debug', ['Debug', 'Release']), true);
     assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Debug', 'Release']), false);
-  });
-
-  it('prefers debug whatever order the run lists its flavors in', () => {
     assert.equal(shouldWriteHeadersXCFramework(flagged, 'Debug', ['Release', 'Debug']), true);
     assert.equal(shouldWriteHeadersXCFramework(flagged, 'Release', ['Release', 'Debug']), false);
   });
@@ -513,11 +409,7 @@ describe('shouldWriteHeadersXCFramework', () => {
 describe('composeStep', appleToolsOnly, () => {
   afterEach(() => mock.restoreAll());
 
-  /**
-   * Runs the compose step for one product in a Debug + Release run, at its Debug iteration. The
-   * SPM compose is stubbed to lay out the product's xcframework; a customBuild product goes
-   * through the real compose, which copies the script output from the package.
-   */
+  /** Runs the compose step for the Debug flavor of a Debug + Release run. */
   async function composeAsync(overrides: Partial<SPMProduct>) {
     const root = await makeTempRootAsync();
     const stepProduct: SPMProduct = { ...product(), podName: NAME, targets: [], ...overrides };
@@ -588,11 +480,7 @@ describe('composeStep', appleToolsOnly, () => {
 
 describe('spm.config.json schema', () => {
   it('accepts headersXCFramework as a boolean product option', () => {
-    const productSchema = schema.definitions.product;
-    assert.equal(productSchema.additionalProperties, false);
-    assert.equal(
-      (productSchema.properties as Record<string, { type?: string }>).headersXCFramework?.type,
-      'boolean'
-    );
+    assert.equal(schema.definitions.product.additionalProperties, false);
+    assert.equal(schema.definitions.product.properties.headersXCFramework.type, 'boolean');
   });
 });
