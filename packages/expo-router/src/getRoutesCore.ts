@@ -1,5 +1,4 @@
 import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
-import { getLayoutAnchor } from './layoutAnchor';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -10,6 +9,7 @@ import {
   removeSupportedExtensions,
   stripInvisibleSegmentsFromPath,
 } from './matchers';
+import { getValidInitialRoute } from './routeNode';
 import type { RequireContext } from './types';
 import { shouldLinkExternally } from './utils/url';
 
@@ -874,7 +874,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
     // An anchor can be a layout with its own anchor.
     // We may strip loadRoute during testing
     if (!options.internal_stripLoadRoute) {
-      for (let anchor = getAnchorRoute(node); anchor; anchor = getAnchorRoute(anchor)) {
+      for (let anchor = getValidInitialRoute(node); anchor; anchor = getValidInitialRoute(anchor)) {
         entryPoints.push(anchor.contextKey);
       }
     }
@@ -883,12 +883,6 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
       crawlAndAppendInitialRoutesAndEntryFiles(child, options, entryPoints);
     }
   }
-}
-
-// `getValidInitialRoute` is in a 'use client' module, so the server cannot call it.
-function getAnchorRoute(node: RouteNode) {
-  const anchor = getLayoutAnchor(node);
-  return node.children.find((child) => child.route === anchor);
 }
 
 function getMostSpecific(routes: RouteNode[]) {

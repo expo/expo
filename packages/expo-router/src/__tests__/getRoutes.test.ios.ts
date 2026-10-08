@@ -1,6 +1,6 @@
-import { getValidInitialRouteName } from '../Route';
 import { getRoutes } from '../getRoutes';
 import type { RedirectConfig } from '../getRoutesCore';
+import { getValidInitialRouteName } from '../routeNode';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 const originalEnv = process.env.NODE_ENV;

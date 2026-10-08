@@ -14,6 +14,7 @@ import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { getRootStackRouteNames } from './utils';
 
 type SeedState = NavigationState | PartialState<NavigationState>;
+type SeedRoute = SeedState['routes'][number];
 
 /**
  * Completes the partial state parsed from the initial URL by `getStateFromPath` with keys,
@@ -239,19 +240,12 @@ function createSeededState({
     targetRoutes = [];
   }
 
-  const anchorRoute =
-    initialRouteName &&
-    targetRoutes.length > 0 &&
-    !targetRoutes.some((route) => route.name === initialRouteName)
-      ? { name: initialRouteName, params: anchorParams }
-      : undefined;
-  const defaultRouteName = initialRouteName ?? routeNames[0];
-  const routesToCreate =
-    targetRoutes.length > 0
-      ? [...(anchorRoute ? [anchorRoute] : []), ...targetRoutes]
-      : defaultRouteName === undefined
-        ? []
-        : [{ name: defaultRouteName }];
+  const routesToCreate = getRoutesToCreate(
+    targetRoutes,
+    routeNames,
+    initialRouteName,
+    anchorParams
+  );
   const minter = createRouteKeyMinter(initialState);
   const routes = routesToCreate.map((targetRoute) => {
     const key = minter.mint(targetRoute.name);
@@ -275,15 +269,42 @@ function createSeededState({
     };
   });
 
-  const targetIndex =
-    targetRoutes.length > 0
-      ? (anchorRoute ? 1 : 0) + (targetState?.index ?? targetRoutes.length - 1)
-      : 0;
+  let index = -1;
+  if (targetRoutes.length > 0) {
+    // The anchor added in front of the target routes moves the focused route by one.
+    const addedAnchorCount = routes.length - targetRoutes.length;
+    index = addedAnchorCount + (targetState?.index ?? targetRoutes.length - 1);
+  } else if (routes.length > 0) {
+    index = 0;
+  }
   return {
     ...initialState,
     routeKeySeq: minter.routeKeySeq,
     routeNames,
-    index: routes.length === 0 ? -1 : targetIndex,
+    index,
     routes,
   };
+}
+
+/**
+ * Returns the target routes with the anchor in front of them, so Back can return to the anchor.
+ * Without target routes, returns only the anchor, or the first route when there is no anchor.
+ */
+function getRoutesToCreate(
+  targetRoutes: SeedRoute[],
+  routeNames: string[],
+  initialRouteName: string | undefined,
+  anchorParams: object | undefined
+): SeedRoute[] {
+  if (targetRoutes.length === 0) {
+    const defaultRouteName = initialRouteName ?? routeNames[0];
+    if (defaultRouteName === undefined) {
+      return [];
+    }
+    return [{ name: defaultRouteName }];
+  }
+  if (initialRouteName && !targetRoutes.some((route) => route.name === initialRouteName)) {
+    return [{ name: initialRouteName, params: anchorParams }, ...targetRoutes];
+  }
+  return targetRoutes;
 }

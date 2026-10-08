@@ -1,15 +1,15 @@
 import type { LoadedRoute, RouteNode } from './Route';
 
-// Both caches are keyed by `RouteNode`, so they reset when Fast Refresh builds a new route tree.
+// The caches are keyed by `RouteNode`, so they reset when Fast Refresh builds a new route tree.
 // Only read anchors are cached, so a layout that is still loading can be read again later.
 const anchors = new WeakMap<RouteNode, string | undefined>();
 // On native, `loadRoute` returns a promise on every call, so keep the module once it loads.
 const loadedLayouts = new WeakMap<RouteNode, LoadedRoute | undefined>();
-// The layouts that `getLayoutAnchor` could not read during the current `collectMissingLayouts` call.
-// `getLayoutAnchor` is called from deep inside seeding and the reducer, so this is a module variable
-// instead of a parameter passed through every function.
-let missingLayouts: Set<RouteNode> | undefined;
-let skippedLayouts: ReadonlySet<RouteNode> = new Set();
+// Shares one `loadRoute` call between all reads made while a layout is loading.
+const pendingLayouts = new WeakMap<RouteNode, Promise<LoadedRoute | undefined>>();
+// Set while `collectMissingLayouts` runs. `getLayoutAnchor` is called from deep inside seeding and
+// the reducer, so this is a module variable instead of a parameter passed through every function.
+let collector: { missing: Set<RouteNode>; skipped: ReadonlySet<RouteNode> } | undefined;
 
 /**
  * Returns the route name of the layout's anchor. In async import mode, a layout that is not
@@ -23,18 +23,12 @@ export function getLayoutAnchor(node: RouteNode): string | undefined {
     return anchors.get(node);
   }
   // A layout that failed to load keeps the anchor known without loading it.
-  if (skippedLayouts.has(node)) {
+  if (collector?.skipped.has(node)) {
     return getRouteNamedLikeGroup(node);
   }
-  const loaded = loadedLayouts.has(node) ? loadedLayouts.get(node) : node.loadRoute();
-  if (isThenable(loaded)) {
-    // Keep the module once it loads, so later reads find it even without `loadLayouts`.
-    loaded.then(
-      // In async import mode, `loadRoute` returns a thenable that resolves to the route module.
-      (module) => loadedLayouts.set(node, module as LoadedRoute | undefined),
-      () => {}
-    );
-    missingLayouts?.add(node);
+  const loaded = loadLayout(node);
+  if (loaded instanceof Promise) {
+    collector?.missing.add(node);
     return undefined;
   }
   const anchor = readAnchor(node, loaded?.unstable_settings);
@@ -56,14 +50,13 @@ export function collectMissingLayouts<T>(
   fn: () => T,
   skipped: ReadonlySet<RouteNode> = new Set()
 ): { value: T; missing: RouteNode[] } {
-  const previous = [missingLayouts, skippedLayouts] as const;
-  const current = new Set<RouteNode>();
-  missingLayouts = current;
-  skippedLayouts = skipped;
+  const outerCollector = collector;
+  const missing = new Set<RouteNode>();
+  collector = { missing, skipped };
   try {
-    return { value: fn(), missing: [...current] };
+    return { value: fn(), missing: [...missing] };
   } finally {
-    [missingLayouts, skippedLayouts] = previous;
+    collector = outerCollector;
   }
 }
 
@@ -76,7 +69,7 @@ export async function loadLayouts(nodes: RouteNode[]): Promise<RouteNode[]> {
 /** Loads the layout and returns whether it loaded. */
 async function loadSingleLayout(node: RouteNode): Promise<boolean> {
   try {
-    loadedLayouts.set(node, await node.loadRoute());
+    await loadLayout(node);
     return true;
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
@@ -87,6 +80,38 @@ async function loadSingleLayout(node: RouteNode): Promise<boolean> {
     }
     return false;
   }
+}
+
+/** Returns the layout module, or a promise for it while it is loading. */
+function loadLayout(node: RouteNode): LoadedRoute | undefined | Promise<LoadedRoute | undefined> {
+  if (loadedLayouts.has(node)) {
+    return loadedLayouts.get(node);
+  }
+  const pending = pendingLayouts.get(node);
+  if (pending) {
+    return pending;
+  }
+  const loaded = node.loadRoute();
+  if (!isThenable(loaded)) {
+    return loaded;
+  }
+  const promise = Promise.resolve(loaded).then(
+    (module) => {
+      // In async import mode, the thenable resolves to the route module.
+      loadedLayouts.set(node, module as LoadedRoute | undefined);
+      pendingLayouts.delete(node);
+      return module as LoadedRoute | undefined;
+    },
+    (error) => {
+      // Allow a later read to retry the load.
+      pendingLayouts.delete(node);
+      throw error;
+    }
+  );
+  // A read that is not followed by `loadLayouts` must not cause an unhandled rejection.
+  promise.catch(() => {});
+  pendingLayouts.set(node, promise);
+  return promise;
 }
 
 /** Runs `fn` again after each load until no layout it needs is missing. */
