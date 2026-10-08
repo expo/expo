@@ -64,6 +64,30 @@ describe('plist', function () {
       );
     });
 
+    it('should create a plist XML data from an ArrayBuffer', function () {
+      const xml = plist.build(new Uint8Array(Buffer.from('☃')).buffer);
+      assert.strictEqual(
+        xml,
+        `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <data>4piD</data>
+</plist>`
+      );
+    });
+
+    it('should create a plist XML data from only the bytes a typed array views', function () {
+      const xml = plist.build(new Uint8Array(Buffer.from('a☃b')).subarray(1, 4));
+      assert.strictEqual(
+        xml,
+        `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <data>4piD</data>
+</plist>`
+      );
+    });
+
     it('should create a plist XML true from a `true` Boolean', function () {
       const xml = plist.build(true);
       assert.strictEqual(
