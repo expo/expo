@@ -5,8 +5,9 @@ import { AppState } from 'react-native';
 import { NativeLocationModuleNext } from '../native';
 
 /**
- * Checks whether location services are turned on for the whole device. This is the system toggle, not the
- * app's permission: with services off, no app receives a position even when its permission is granted.
+ * Checks whether location services are turned on for the whole device. This is the system toggle,
+ * not the app's permission: with services off, no app receives a position even when its permission
+ * is granted.
  * See [Handle location services turned off](#handle-location-services-turned-off).
  */
 export function hasLocationServicesEnabled(): boolean {
@@ -14,9 +15,10 @@ export function hasLocationServicesEnabled(): boolean {
 }
 
 /**
- * Asks the user to turn location services on. With the GMS provider, this is an in-app dialog; with the
- * Android provider, it opens the system Settings and resolves when the user returns. Resolves with `true`
- * when services are already on. See [Handle location services turned off](#handle-location-services-turned-off).
+ * Asks the user to turn location services on. With the GMS provider, this is an in-app dialog; with
+ * the Android provider, it opens the system Settings and resolves when the user returns. Resolves
+ * with `true` when services are already on.
+ * See [Handle location services turned off](#handle-location-services-turned-off).
  *
  * @return A promise that resolves to `true` when services are on after the user answered.
  * @platform android

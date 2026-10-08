@@ -4,8 +4,9 @@ import { NativeLocationModuleNext, NativeLocationProvider } from '../native';
 import type { LocationProviderRefType } from '../types';
 
 /**
- * The backends that can serve positions on Android. The default tries Google Play services first and
- * falls back to the Android framework, so most apps never need this. Pass the result to `setLocationProvider`.
+ * The backends that can serve positions on Android. The default tries Google Play services first
+ * and falls back to the Android framework, so most apps never need this. Pass the result to
+ * `setLocationProvider`.
  *
  * @platform android
  */
@@ -52,8 +53,8 @@ export function setLocationProvider(provider: SharedRef<LocationProviderRefType>
 }
 
 /**
- * Gets the name of the provider currently serving positions: `GMS`, `Android`, or the chain of a fallback,
- * such as the default `Fallback: GMS -> Android`.
+ * Gets the name of the provider currently serving positions: `GMS`, `Android`, or the chain of a
+ * fallback, such as the default `Fallback: GMS -> Android`.
  *
  * @platform android
  */

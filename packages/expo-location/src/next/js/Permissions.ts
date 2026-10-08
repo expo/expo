@@ -14,8 +14,9 @@ export async function getForegroundPermissions(): Promise<LocationPermissionResp
 
 /**
  * Asks the user for permission to read the location while the app is in the foreground.
- * Shows the system dialog only while the permission is undetermined; afterwards it resolves with the
- * current state, so check `canAskAgain` to know whether the user has to go to the system settings.
+ * Shows the system dialog only while the permission is undetermined; afterwards it resolves with
+ * the current state, so check `canAskAgain` to know whether the user has to go to the system
+ * settings.
  *
  * See [Request the precise location](#request-the-precise-location) and
  * [Handle a denied permission](#handle-a-denied-permission).
@@ -32,7 +33,8 @@ export async function requestForegroundPermissions(
 /**
  * Checks the background location permission without asking the user.
  *
- * @return A promise that resolves to the current permission. `scope` is `always` when it is granted.
+ * @return A promise that resolves to the current permission. `scope` is `always` when it is
+ *   granted.
  */
 export async function getBackgroundPermissions(): Promise<LocationPermissionResponse> {
   return NativeLocationModuleNext.getBackgroundPermissions();
@@ -40,8 +42,8 @@ export async function getBackgroundPermissions(): Promise<LocationPermissionResp
 
 /**
  * Asks the user for permission to read the location while the app is in the background.
- * Requires the foreground permission first. On iOS, answering `Keep Only While Using` resolves with
- * `status` `denied` and `scope` `whenInUse`.
+ * On Android, it requires the foreground permission first. On iOS, answering
+ * **Keep Only While Using** resolves with `status` `denied` and `scope` `whenInUse`.
  *
  * See [Request the background permission](#request-the-background-permission).
  *

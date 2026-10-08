@@ -8,7 +8,8 @@ export enum LocationScope {
    */
   ALWAYS = 'always',
   /**
-   * On Android, `ACCESS_FINE_LOCATION` or `ACCESS_COARSE_LOCATION` is granted, but not `ACCESS_BACKGROUND_LOCATION`.
+   * On Android, `ACCESS_FINE_LOCATION` or `ACCESS_COARSE_LOCATION` is granted, but not
+   * `ACCESS_BACKGROUND_LOCATION`.
    *
    * On iOS, the authorization is `When In Use`.
    */
@@ -25,7 +26,7 @@ export enum LocationAccuracy {
    *
    * On Android, `ACCESS_FINE_LOCATION` is granted.
    *
-   * On iOS, `Precise Location` is turned on for the app.
+   * On iOS, **Precise Location** is turned on for the app.
    */
   FULL = 'full',
   /**
@@ -33,7 +34,7 @@ export enum LocationAccuracy {
    *
    * On Android, only `ACCESS_COARSE_LOCATION` is granted.
    *
-   * On iOS, `Precise Location` is turned off for the app.
+   * On iOS, **Precise Location** is turned off for the app.
    */
   REDUCED = 'reduced',
   /**
@@ -51,15 +52,16 @@ export enum RequestPermissionsAccuracyOption {
    *
    * On Android, requests `ACCESS_FINE_LOCATION` together with `ACCESS_COARSE_LOCATION`.
    *
-   * On iOS, when the app holds a reduced accuracy, shows the system prompt for temporary full accuracy
-   * after the permission is granted. The prompt needs the purpose string the config plugin writes by
-   * default; `locationFullAccuracyPermission: false` removes it and skips the prompt.
+   * On iOS, when the app holds a reduced accuracy, shows the system prompt for temporary full
+   * accuracy after the permission is granted. The prompt needs the purpose string the config plugin
+   * writes by default; `locationFullAccuracyPermission: false` removes it and skips the prompt.
    */
   FULL = 'full',
   /**
    * Asks for an approximate location only.
    *
-   * On Android, requests `ACCESS_COARSE_LOCATION` alone, so the system dialog does not offer the precise option.
+   * On Android, requests `ACCESS_COARSE_LOCATION` alone, so the system dialog does not offer the
+   * precise option.
    *
    * On iOS, never asks to raise a reduced accuracy.
    */

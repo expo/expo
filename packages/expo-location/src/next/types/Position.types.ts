@@ -1,10 +1,10 @@
 /**
- * A use case that each platform turns into an accuracy, an update interval and a power budget.
+ * A use case that each platform turns into an accuracy, an update interval, and a power budget.
  *
  * On Android it maps to a `LocationRequest` priority and interval.
  *
- * On iOS 17 and newer it maps to a `CLLocationUpdate.LiveConfiguration`; on older versions to a `CLLocationManager` activity type
- * with the best available accuracy.
+ * On iOS 17 and later it maps to a `CLLocationUpdate.LiveConfiguration`; on earlier versions to a
+ * `CLLocationManager` activity type with the best available accuracy.
  */
 export enum LocationProfile {
   /**
@@ -24,7 +24,7 @@ export enum LocationProfile {
    */
   AUTOMOTIVE_NAVIGATION = 'automotiveNavigation',
   /**
-   * Navigation on foot, by bike or on water.
+   * Navigation on foot, by bike, or on water.
    *
    * On Android, high accuracy with updates about every 2 seconds.
    *
@@ -50,7 +50,8 @@ export enum LocationProfile {
   /**
    * Coarse position at the lowest power use.
    *
-   * On Android, low-power priority with updates about every 60 seconds and cached fixes up to 5 minutes old.
+   * On Android, low-power priority with updates about every 60 seconds, which the provider can
+   * delay by up to 5 minutes and deliver in batches.
    *
    * On iOS, kilometer accuracy with a 3 km distance filter, on every iOS version.
    */
@@ -60,10 +61,12 @@ export enum LocationProfile {
 /**
  * A set of coordinates expressed in decimal degrees.
  * @example
+ * ```ts
  * {
  *  latitude: 40.7128,
  *  longitude: -74.0060
  * }
+ * ```
  */
 export type Coordinates = {
   latitude: number;
@@ -99,8 +102,8 @@ export type Position = {
    */
   horizontalAccuracy: number | null;
   /**
-   * When the fix was taken, in milliseconds since the Unix epoch. Check it when the position must be
-   * fresh, because a fix can be older than the moment it was delivered.
+   * When the fix was taken, in milliseconds since the Unix epoch. Check it when the position must
+   * be fresh, because a fix can be older than the moment it was delivered.
    */
   timestamp: number;
   /**
@@ -124,8 +127,9 @@ export type Position = {
   /**
    * Whether the fix comes from a simulated source, such as a simulator or a mock location app.
    *
-   * On Android it maps to `Location.isMock` on Android 12 and newer and to `Location.isFromMockProvider()` below;
-   * on iOS to `CLLocation.sourceInformation.isSimulatedBySoftware`.
+   * On Android it maps to `Location.isMock` on Android 12 and later and to
+   * `Location.isFromMockProvider()` on earlier versions; on iOS to
+   * `CLLocation.sourceInformation.isSimulatedBySoftware`.
    */
   mocked: boolean;
   /**
@@ -154,14 +158,15 @@ export type Position = {
 };
 
 /**
- * Options for [`getPosition`](#getpositionoptions).
+ * Options for [`getPosition`](#getpositiongetpositionoptions).
  */
 export type GetPositionOptions = {
   /**
    * The maximum age of a cached location that may be returned.
    * Expressed in seconds.
    *
-   * If a new location fix is not available within the timeout, the cached location will be returned regardless of its age.
+   * If no new fix arrives within the timeout, `getPosition` returns the cached location
+   * regardless of its age.
    * @default 0
    */
   maxCachedAge?: number;
@@ -169,15 +174,16 @@ export type GetPositionOptions = {
    * The maximum time to wait for a new location fix.
    * Expressed in seconds.
    *
-   * If the timeout is set to 0, it will return the last known location, if available.
+   * With a `timeout` of `0`, `getPosition` returns the last known location, if available.
    *
    * On Android, the providers cap it at 30 seconds.
    * @default 30
    */
   timeout?: number;
   /**
-   * The use case the fix is for. It changes the way the location is requested from the OS and can affect accuracy and power usage.
-   * On iOS, a reduced accuracy authorization limits the fix whatever the profile; see [Request an approximate location](#request-an-approximate-location).
+   * The use case the fix is for. It changes the way the location is requested from the OS and can
+   * affect accuracy and power usage. On iOS, a reduced accuracy authorization limits the fix
+   * whatever the profile; see [Request an approximate location](#request-an-approximate-location).
    * @default LocationProfile.DEFAULT
    */
   profile?: LocationProfile;
@@ -217,7 +223,8 @@ export type PositionWatchStatus = {
    */
   isHandleAlive: boolean;
   /**
-   * Whether delivery has been started. On Android, it is `true` while at least one listener is attached.
+   * Whether delivery has been started. On Android, it is `true` while at least one listener is
+   * attached.
    */
   isStarted: boolean;
   /**
@@ -225,8 +232,8 @@ export type PositionWatchStatus = {
    */
   isPaused: boolean;
   /**
-   * Whether the app is in the foreground. On Android, the watcher holds the system request only while
-   * it is `true`.
+   * Whether the app is in the foreground. On Android, the watcher holds the system request only
+   * while it is `true`.
    */
   isInForeground: boolean;
 };
