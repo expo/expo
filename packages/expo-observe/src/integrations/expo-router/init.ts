@@ -2,6 +2,7 @@ import AppMetrics from 'expo-app-metrics';
 
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
+import { recordNavigationMetric } from '../recordNavigationMetric';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
@@ -112,7 +113,7 @@ export function initListeners(
       e.pathname
     );
 
-    mainSession.addMetric({
+    recordNavigationMetric(mainSession, {
       timestamp,
       category: 'navigation',
       name,
