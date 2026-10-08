@@ -1,6 +1,6 @@
 {
   "name": "@expo/platforms",
-  "version": "0.1.0",
+  "version": "58.0.0",
   "description": "Platform identity metadata shared by Expo tooling: platform names, react-native host packages, and Metro extension fallback chains",
   "keywords": [
     "expo",
