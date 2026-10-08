@@ -273,6 +273,7 @@ export function withExtendedResolver(
     web: {
       'react-native': 'react-native-web',
       'react-native/index': 'react-native-web',
+      'react-native/asset-registry': 'react-native-web/asset-registry',
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
@@ -654,7 +655,10 @@ export function withExtendedResolver(
         /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName) ||
         /^react-native\/Libraries\/Image\/AssetRegistry(\.js)?$/.test(moduleName)
       ) {
-        return getStrictResolver(context, platform)('react-native/asset-registry');
+        return getStrictResolver(
+          context,
+          platform
+        )(platform === 'web' ? 'react-native-web/asset-registry' : 'react-native/asset-registry');
       }
 
       return null;
