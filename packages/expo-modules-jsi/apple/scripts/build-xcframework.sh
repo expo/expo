@@ -308,6 +308,11 @@ build_slice() {
   #   e.g. "extension Swift.Optional : where Wrapped : _Constraint... {}"
   # - @usableFromInline attributes preceding the _Constraint protocol definition
   #   e.g. "@usableFromInline\ninternal protocol _ConstraintThatIsNotPartOfTheAPIOfThisLibrary {}"
+  # - @available(*, unavailable) attributes that Swift 6.4 prints on their own line before
+  #   those conformances, which would otherwise attach to the next declaration
+  #   e.g. "@available(*, unavailable)\nextension Swift::Optional : P where Wrapped : _Constraint... {}"
+  #   The JSIRepresentable conformances that produce them are marked @_spi, so Swift doesn't print
+  #   them today. Stripping them is a fallback for conformances added without @_spi.
   # NOTE: If these patterns change in a future Swift version, the build will fail with
   # "expected declaration" or "expected type" errors in the .swiftinterface file.
   # Run plain `sed` to a temp file and move it back instead of `sed -i ''`:
@@ -316,7 +321,7 @@ build_slice() {
   # filename, failing with "can't read …: No such file or directory".
   while IFS= read -r swiftinterface; do
     local stripped_swiftinterface="${swiftinterface}.stripped"
-    sed -E '/^extension __ObjC(\.|::)/,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
+    sed -E '/^extension __ObjC(\.|::)/,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/^@available\(\*, unavailable\)$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
     mv "$stripped_swiftinterface" "$swiftinterface"
   done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 

@@ -89,6 +89,7 @@ extension JavaScriptRef: JavaScriptRepresentable where T: JavaScriptRepresentabl
   }
 }
 
+@_spi(Internal)
 extension JavaScriptRef: JSIRepresentable where T: JSIRepresentable & ~Copyable {
   static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptRef {
     FatalError.unimplemented()
