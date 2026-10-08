@@ -11,6 +11,7 @@
 - Fix `CorsMiddleware`'s local-hostname check to require a literal dot between IPv4 octets, instead of an unescaped regex wildcard that let non-loopback hostnames starting with `127` (e.g. `127a1b1c1`) bypass the dev server's cross-origin request guard. ([#49302](https://github.com/expo/expo/pull/49302) by [@Rakshit-gen](https://github.com/Rakshit-gen))
 - Prevent the internal `set()` object utility from writing to `Object.prototype` when a path contains `__proto__`, `constructor`, or `prototype`. ([#51066](https://github.com/expo/expo/pull/51066) by [@byCedric](https://github.com/byCedric))
 - Replace `resolve-from` with `@expo/require-utils` for `expo/template.tgz` resolution to allow for direct file resolution. ([#51125](https://github.com/expo/expo/pull/51125) by [@kitten](https://github.com/kitten))
+- Fixed tsconfig path normalization, including absolute targets and `${configDir}` expansion in extended configs. ([#51027](https://github.com/expo/expo/pull/51027) by [@911RS](https://github.com/911RS))
 
 ### 💡 Others
 
