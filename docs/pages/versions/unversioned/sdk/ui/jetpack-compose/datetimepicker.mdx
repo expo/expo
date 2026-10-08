@@ -135,6 +135,36 @@ export default function InputVariantExample() {
 
 </ComponentExample>
 
+### Without title and headline
+
+Set `showTitle={false}` and `showHeadline={false}` to hide the "Select date" title and the selected-date headline, for example when the picker sits in a screen or sheet that already has its own heading. The same props are available on `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog`.
+
+```tsx
+import { useState } from 'react';
+import { Host, DateTimePicker } from '@expo/ui/jetpack-compose';
+
+export default function CalendarOnlyExample() {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  return (
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <DateTimePicker
+        onDateSelected={date => {
+          setSelectedDate(date);
+        }}
+        displayedComponents="date"
+        initialDate={selectedDate.toISOString()}
+        showVariantToggle={false}
+        showTitle={false}
+        showHeadline={false}
+      />
+    </Host>
+  );
+}
+```
+
 ### Date range picker
 
 <ComponentExample

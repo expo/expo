@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 
-import { DateRangePicker, DateRangePickerDialog } from '..';
+import { DatePickerDialog, DateRangePicker, DateRangePickerDialog, DateTimePicker } from '..';
 
 const mockNativeViewFn = jest.fn();
 
@@ -116,5 +116,21 @@ describe('DateRangePickerDialog', () => {
       end: new Date(end),
     });
     expect(onDismissRequest).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('showTitle and showHeadline', () => {
+  it.each([
+    ['DateTimePicker', 'DateTimePickerView', DateTimePicker],
+    ['DatePickerDialog', 'DatePickerDialogView', DatePickerDialog],
+    ['DateRangePicker', 'DateRangePickerView', DateRangePicker],
+    ['DateRangePickerDialog', 'DateRangePickerDialogView', DateRangePickerDialog],
+  ] as const)('%s forwards them to the native view', async (_, viewName, Component) => {
+    const Picker = Component as React.ComponentType<any>;
+    await render(<Picker showTitle={false} showHeadline={false} onDismissRequest={() => {}} />);
+
+    expect(getNativeProps(viewName)).toEqual(
+      expect.objectContaining({ showTitle: false, showHeadline: false })
+    );
   });
 });
