@@ -1,6 +1,7 @@
 import {
   getValidInitialRoute,
   type DynamicConvention,
+  type LoadedRoute,
   type MiddlewareNode,
   type RouteNode,
 } from './Route';
@@ -61,6 +62,48 @@ type DirectoryNode = {
   files: Map<string, RouteNode[]>;
   subdirectories: Map<string, DirectoryNode>;
 };
+
+/**
+ * Route modules that have loaded in the `lazy` import mode, keyed by context module and route file.
+ *
+ * In the `lazy` import mode, calling the context module starts loading the route's split bundle.
+ * The cache lets `getRoutes` read a layout's `unstable_settings` once the layout has loaded,
+ * without starting a load for every layout in the app.
+ */
+const loadedLazyRoutes = new WeakMap<RequireContext, Map<string, LoadedRoute>>();
+
+export function isThenable(value: unknown): value is PromiseLike<unknown> {
+  return (
+    value != null &&
+    (typeof value === 'object' || typeof value === 'function') &&
+    typeof (value as { then?: unknown }).then === 'function'
+  );
+}
+
+function getLoadedLazyRoute(
+  contextModule: RequireContext,
+  filePath: string
+): LoadedRoute | undefined {
+  return loadedLazyRoutes.get(contextModule)?.get(filePath);
+}
+
+function rememberLazyRoute(contextModule: RequireContext, filePath: string, routeModule: unknown) {
+  const remember = (module: unknown) => {
+    let modules = loadedLazyRoutes.get(contextModule);
+    if (!modules) {
+      modules = new Map();
+      loadedLazyRoutes.set(contextModule, modules);
+    }
+    modules.set(filePath, module as LoadedRoute);
+  };
+  if (isThenable(routeModule)) {
+    // A failed load is not cached, so the next `loadRoute()` retries it. The failure itself
+    // surfaces where the route renders.
+    routeModule.then(remember, () => {});
+  } else if (routeModule != null) {
+    remember(routeModule);
+  }
+}
 
 export type RedirectConfig = {
   source: string;
@@ -349,6 +392,14 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
     let node: RouteNode = {
       type: meta.isApi ? 'api' : meta.isLayout ? 'layout' : 'route',
       loadRoute() {
+        const isLazy = importMode === 'lazy' || importMode === 'lazy-once';
+        if (isLazy) {
+          const loaded = getLoadedLazyRoute(contextModule, filePath);
+          if (loaded) {
+            return loaded;
+          }
+        }
+
         let routeModule: any;
 
         if (options.ignoreRequireErrors) {
@@ -364,11 +415,12 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         // See: expo/src/async-require/asyncRequireModule.ts
         // The "lazy" async require function returns  a thenable that may carry
         // a raw `_result` value that's either a promise or the synchronously resolved module
-        if (importMode === 'lazy' || importMode === 'lazy-once') {
+        if (isLazy) {
           routeModule =
             '_result' in routeModule && routeModule._result != null
               ? routeModule._result
               : routeModule;
+          rememberLazyRoute(contextModule, filePath, routeModule);
         }
 
         if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
@@ -505,7 +557,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
             );
           }
         } else {
-          node = getLayoutNode(node, options);
+          node = getLayoutNode(node, options, contextModule);
           directory.layout[meta.specificity] = node;
         }
       } else if (meta.isApi) {
@@ -848,7 +900,7 @@ function appendNotFoundRoute(directory: DirectoryNode, options: Options) {
   }
 }
 
-function getLayoutNode(node: RouteNode, options: Options) {
+function getLayoutNode(node: RouteNode, options: Options, contextModule: RequireContext) {
   /**
    * A file called `(a,b)/(c)/_layout.tsx` will generate two _layout routes: `(a)/(c)/_layout` and `(b)/(c)/_layout`.
    * Each of these layouts will have a different anchor based upon the first group name.
@@ -859,7 +911,14 @@ function getLayoutNode(node: RouteNode, options: Options) {
     return child.route.replace(/\/index$/, '') === groupName;
   });
   let anchor = childMatchingGroup?.route;
-  const loaded = node.loadRoute();
+  const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
+  // In the `lazy` import mode, loading the route here would start loading every layout in the
+  // app. Only read the settings of layouts that have already loaded; `useRouterConfig` loads the
+  // layouts on the initial URL before it builds the route tree.
+  const loaded =
+    importMode === 'lazy' || importMode === 'lazy-once'
+      ? getLoadedLazyRoute(contextModule, node.contextKey)
+      : node.loadRoute();
   if (loaded?.unstable_settings) {
     try {
       if (
