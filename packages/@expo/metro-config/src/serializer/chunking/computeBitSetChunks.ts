@@ -47,7 +47,7 @@ export interface ChunkAtom {
 export interface BitSetChunkPlan extends BitSetGraphAnalysis {
   readonly rawAtoms: readonly ChunkAtom[];
   /** Bits refer to rawAtoms, not entrypoints. */
-  readonly staticDependencyAtomsByEntry: readonly BitSet[];
+  readonly syncDependencyAtomsByEntry: readonly BitSet[];
   readonly guaranteedLoadedAtomsByEntry: readonly BitSet[];
   readonly chunks: readonly ChunkAtom[];
   /** All chunks needed by each entry, including ones already loaded. */
@@ -80,11 +80,11 @@ export function computeBitSetChunkPlan(
   const analysis = analyzeBitSetGraph(initialEntries, graph, options);
   const { entryPoints, dependentEntriesByModule, dynamicImportsByEntry } = analysis;
   const rawAtoms = groupModulesByOwners(dependentEntriesByModule);
-  const staticDependencyAtomsByEntry = getStaticDependencyAtomsByEntry(entryPoints, rawAtoms);
+  const syncDependencyAtomsByEntry = getSyncDependencyAtomsByEntry(entryPoints, rawAtoms);
   const guaranteedLoadedAtomsByEntry = computeGuaranteedLoadedAtoms(
     entryPoints,
     dynamicImportsByEntry,
-    staticDependencyAtomsByEntry,
+    syncDependencyAtomsByEntry,
     rawAtoms.length
   );
   const chunks = normalizeAtomOwners(rawAtoms, guaranteedLoadedAtomsByEntry);
@@ -96,7 +96,7 @@ export function computeBitSetChunkPlan(
   return {
     ...analysis,
     rawAtoms,
-    staticDependencyAtomsByEntry,
+    syncDependencyAtomsByEntry,
     guaranteedLoadedAtomsByEntry,
     chunks,
     requiredChunksByEntryPath,
@@ -104,27 +104,26 @@ export function computeBitSetChunkPlan(
 }
 
 /** Transpose atom owners into each entry's synchronous closure, including the entry itself. */
-function getStaticDependencyAtomsByEntry(
+function getSyncDependencyAtomsByEntry(
   entryPoints: readonly PlannerEntryPoint[],
   rawAtoms: readonly ChunkAtom[]
 ): BitSet[] {
-  const staticDependencyAtomsByEntry = entryPoints.map(() => 0n);
+  const syncDependencyAtomsByEntry = entryPoints.map(() => 0n);
   for (const [atomIndex, atom] of rawAtoms.entries()) {
     const atomMask = 1n << BigInt(atomIndex);
     for (const entryIndex of bitIndices(atom.ownerEntries)) {
-      staticDependencyAtomsByEntry[entryIndex] =
-        staticDependencyAtomsByEntry[entryIndex]! | atomMask;
+      syncDependencyAtomsByEntry[entryIndex] = syncDependencyAtomsByEntry[entryIndex]! | atomMask;
     }
   }
 
-  return staticDependencyAtomsByEntry;
+  return syncDependencyAtomsByEntry;
 }
 
 /** Find atoms guaranteed to be registered before each entry loads, across all importer paths. */
 function computeGuaranteedLoadedAtoms(
   entryPoints: readonly PlannerEntryPoint[],
   dynamicImportsByEntry: readonly BitSet[],
-  staticDependencyAtomsByEntry: readonly BitSet[],
+  syncDependencyAtomsByEntry: readonly BitSet[],
   atomCount: number
 ): BitSet[] {
   const allAtoms = (1n << BigInt(atomCount)) - 1n;
@@ -140,7 +139,7 @@ function computeGuaranteedLoadedAtoms(
   for (const entryIndex of pendingEntries) {
     pendingEntries.delete(entryIndex);
     const availableAtoms =
-      staticDependencyAtomsByEntry[entryIndex]! | guaranteedLoadedAtomsByEntry[entryIndex]!;
+      syncDependencyAtomsByEntry[entryIndex]! | guaranteedLoadedAtomsByEntry[entryIndex]!;
     for (const targetIndex of bitIndices(dynamicImportsByEntry[entryIndex]!)) {
       // An importer supplies its own closure plus what it inherited. Intersecting each
       // importer can only remove bits, so re-queuing changed targets also converges in cycles.
