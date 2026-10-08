@@ -265,7 +265,12 @@ class AndroidLocationTaskConsumer(
   override fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean): Boolean {
     val locationManager = locationManager ?: return false
     val provider = runCatching {
-      resolveProviderFrom(options.priority, getPermittedSystemProviders(context, locationManager, enabledOnly = false))
+      val systemProviders = getPermittedSystemProviders(
+        context,
+        locationManager,
+        enabledOnly = false
+      )
+      resolveProviderFrom(options.priority, systemProviders)
     }.getOrNull() ?: return false
 
     return runCatching {
@@ -294,16 +299,18 @@ class AndroidLocationTaskConsumer(
 
   @SuppressLint("MissingPermission")
   override fun stopLocationUpdates(pendingIntent: PendingIntent) {
-    runCatching {
+    try {
       locationManager?.removeUpdates(pendingIntent)
       pendingIntent.cancel()
-    }.onFailure {
-      Log.w("ExpoLocation", "Could not stop background location updates", it)
+    } catch (e: Exception) {
+      Log.w("ExpoLocation", "Could not stop background location updates", e)
     }
   }
 
   override fun decodeBatchedPositions(intent: Intent?): BatchedPositions {
-    intent ?: return BatchedPositions(null, "Received a location broadcast without an intent.")
+    if (intent == null) {
+      return BatchedPositions(null, "Received a location broadcast without an intent.")
+    }
     return runCatching { decodeIntent(intent) }.getOrElse {
       Log.w("ExpoLocation", "Could not decode a location broadcast", it)
       BatchedPositions(null, "Could not read the location update sent by the system.")

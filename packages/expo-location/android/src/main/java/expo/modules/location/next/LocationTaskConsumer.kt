@@ -65,7 +65,11 @@ abstract class LocationTaskConsumer(
     }
   }
 
-  abstract fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean = false): Boolean
+  abstract fun requestLocationUpdates(
+    pendingIntent: PendingIntent,
+    options: BackgroundUpdatesParameters,
+    updateExisting: Boolean = false
+  ): Boolean
 
   final override fun didUnregister() {
     task?.let { statuses.remove(it.name) }
@@ -135,7 +139,7 @@ abstract class LocationTaskConsumer(
   }
 }
 
-class BackgroundLocationHandle(
+class LocationUpdatesHandle(
   val taskName: String,
   @Volatile
   var profile: LocationProfile,
@@ -179,12 +183,12 @@ fun List<PersistableBundle>.toBatchedPositions(): BatchedPositions = if (isEmpty
   BatchedPositions(null, first().getString("error"))
 } else {
   BatchedPositions(
-    map { it.toPosition() },
+    mapNotNull { it.toPosition() }.takeIf { it.isNotEmpty() },
     null
   )
 }
 
-fun getExistingOrNewLocationTaskConsumer(handle: BackgroundLocationHandle, taskManager: TaskManagerInterface): ProviderResult<Class<out TaskConsumer>> {
+fun getExistingOrNewLocationTaskConsumer(handle: LocationUpdatesHandle, taskManager: TaskManagerInterface): ProviderResult<Class<out TaskConsumer>> {
   val existing = handle.locationProvider.getRegisteredTaskConsumerClass(taskManager, handle.taskName)
   if (existing is ProviderResult.Available) {
     return existing
