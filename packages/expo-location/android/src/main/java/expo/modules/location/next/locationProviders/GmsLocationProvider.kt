@@ -220,7 +220,7 @@ class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUti
 
   @SuppressLint("MissingPermission")
   override fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean): Boolean {
-    runCatching {
+    try {
       val request = LocationRequest.Builder(
         options.priority.toGmsPriority(),
         options.interval.inWholeMilliseconds
@@ -234,10 +234,10 @@ class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUti
           reportRequestFailed(it)
         }
       return true
-    }.onFailure {
-      reportRequestFailed(it)
+    } catch (e: Exception) {
+      reportRequestFailed(e)
+      return false
     }
-    return false
   }
 
   override fun stopLocationUpdates(pendingIntent: PendingIntent) {
