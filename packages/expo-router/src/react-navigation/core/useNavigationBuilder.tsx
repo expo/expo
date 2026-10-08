@@ -426,10 +426,6 @@ export function useNavigationBuilder<
 
   useFocusEvents({ state, emitter });
 
-  React.useEffect(() => {
-    emitter.emit({ type: 'state', data: { state } });
-  }, [emitter, state]);
-
   const { listeners: childListeners, addListener } = useChildListeners();
 
   // TODO(@ubax): Check whether this ref can be safely removed.
@@ -492,6 +488,11 @@ export function useNavigationBuilder<
     emitter,
     router,
   });
+
+  // Declared after `useNavigationHelpers`, so `navigation.getState()` returns this state in listeners.
+  React.useEffect(() => {
+    emitter.emit({ type: 'state', data: { state } });
+  }, [emitter, state]);
 
   useFocusedListenersChildrenAdapter({
     navigation,

@@ -1,9 +1,14 @@
 import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
+import { Text } from 'react-native';
 
+import { router } from '../../../exports';
+import { Stack } from '../../../layouts/Stack';
+import { renderRouter } from '../../../testing-library';
 import type { NavigationState, Router } from '../../routers';
 import { Screen } from '../Screen';
 import { useEventEmitter } from '../useEventEmitter';
+import { useNavigation } from '../useNavigation';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
@@ -883,4 +888,36 @@ test('removes only one listener when unsubscribe is called multiple times', asyn
 
   expect(firstCallback).toHaveBeenCalledTimes(0);
   expect(secondCallback).toHaveBeenCalledTimes(1);
+});
+
+test('getState returns the emitted state in a state listener', async () => {
+  const fromGetState: string[][] = [];
+  const fromEvent: string[][] = [];
+  const names = (state: NavigationState) => state.routes.map((route) => route.name);
+
+  function Sheet() {
+    const navigation = useNavigation();
+    React.useEffect(
+      () =>
+        navigation.addListener('state', (e) => {
+          fromGetState.push(names(navigation.getState()!));
+          fromEvent.push(names(e.data.state));
+        }),
+      [navigation]
+    );
+    return <Text>Sheet</Text>;
+  }
+
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text>Home</Text>,
+    sheet: Sheet,
+    detail: () => <Text>Detail</Text>,
+  });
+
+  await act(() => router.push('/sheet'));
+  await act(() => router.navigate('/detail'));
+
+  expect(fromEvent.at(-1)).toEqual(['index', 'sheet', 'detail']);
+  expect(fromGetState).toEqual(fromEvent);
 });
