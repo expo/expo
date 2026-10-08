@@ -55,8 +55,8 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
       const workers = collectWorkerChunks(context, strategy, plan.workerEntries);
       workerChunksByEntryPath = workers.chunksByEntryPath;
       for (const workerChunk of workers.chunks) chunks.add(workerChunk);
-      // Page chunks share one module registry. Extract its runtime so HTML can install it
-      // before registering route chunks; sealed workers already carry independent runtimes.
+      // Application chunks share one module registry. Extract its runtime so it can load
+      // before dependent chunks; sealed workers already carry independent runtimes.
       if ([...chunks].some((chunk) => chunk.isAsync && !chunk.sealed)) {
         createRuntimeChunk(
           entryChunk,
@@ -240,7 +240,7 @@ function collectWorkerChunks(
   const { preModules } = context;
   const workerChunksByEntryPath = new Map<string, Chunk>();
   // The eligibility scan excludes worker-local async imports before planning. Supported
-  // workers keep their own runtime and copies of dependencies shared with the page.
+  // workers keep their own runtime and copies of dependencies shared with the application.
   const workerChunks = new Set<Chunk>();
   const collectChunk = createChunkCollector(
     context,

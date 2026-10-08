@@ -367,7 +367,7 @@ function getDefaultSerializer(
       customTransformOptions?.dom == null &&
       !options.dev &&
       !isLazyBundle;
-    // Unsupported async imports inside a worker switch this entire graph, including page
+    // Unsupported async imports inside a worker switch this entire graph, including application
     // chunks, to legacy. Workers with synchronous dependency closures remain supported.
     // TODO: Support worker-local async loading with isolated registries and scalar worker
     // entry URLs before removing this fallback.
