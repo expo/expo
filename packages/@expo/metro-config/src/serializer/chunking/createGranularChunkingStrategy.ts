@@ -145,7 +145,10 @@ type MaterializedChunkPlan = {
   chunksByAtom: Map<ChunkAtom, Chunk>;
 };
 
-/** Assign each ownership group to one file while retaining the logical entry identities. */
+/**
+ * Create a chunk for each group of modules with the same owners, and track which entries
+ * each chunk represents.
+ */
 function materializeChunkPlan(
   { entryFile, preModules, graph, options }: ChunkingContext,
   strategy: ChunkingImplementation,
@@ -204,8 +207,8 @@ function materializeChunkPlan(
 }
 
 /**
- * Translate logical requirements into files. An entry's module may live entirely in other
- * chunks, so removing its empty facade must preserve the entry-to-files mapping.
+ * Map each entry to its required files. If its modules are all in other chunks,
+ * remove its empty entry chunk but keep that mapping.
  */
 function assignEntryChunkRequirements(
   plan: BitSetChunkPlan,
@@ -239,8 +242,8 @@ function collectWorkerChunks(
 ): { chunks: Set<Chunk>; chunksByEntryPath: Map<string, Chunk> } {
   const { preModules } = context;
   const workerChunksByEntryPath = new Map<string, Chunk>();
-  // The eligibility scan excludes worker-local async imports before planning. Supported
-  // workers keep their own runtime and copies of dependencies shared with the application.
+  // Graphs with async imports inside workers use legacy chunking before this planner runs.
+  // Supported workers keep their own runtime and copies of dependencies shared with the application.
   const workerChunks = new Set<Chunk>();
   const collectChunk = createChunkCollector(
     context,
@@ -267,7 +270,8 @@ function assignModuleIds(
   chunks: Iterable<Chunk>,
   createModuleId: ChunkingContext['options']['createModuleId']
 ): void {
-  // Preallocate IDs so per-chunk serialization order cannot choose them. Existing IDs survive.
+  // Assign module IDs before serialization so chunk order does not determine them.
+  // Keep previously assigned module IDs.
   const modulePaths = new Set<string>();
   for (const chunk of chunks) {
     for (const module of [...chunk.preModules, ...chunk.deps]) {

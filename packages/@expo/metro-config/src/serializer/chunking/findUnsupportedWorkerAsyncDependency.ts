@@ -14,7 +14,7 @@ export function findUnsupportedWorkerAsyncDependency(
       asyncType: 'async' | 'maybeSync' | 'prefetch';
     }
   | undefined {
-  // A module can run in both realms, so visit page and worker dependencies separately.
+  // A module can run in both the application and a worker, so track their dependencies separately.
   const pending: { modulePath: string; workerEntry?: string }[] = [{ modulePath: entryFile }];
   const visitedPages = new Set<string>();
   const visitedWorkers = new Set<string>();

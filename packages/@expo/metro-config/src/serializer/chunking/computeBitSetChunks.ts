@@ -4,13 +4,13 @@ import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency
 import type { AsyncDependencyType } from '../../transform-worker/collect-dependencies';
 
 /**
- * Plan application chunks in two bitset domains. Entry bits identify the initial or dynamic entries
- * that synchronously reach a module. Modules with identical entry sets form a raw atom.
- * Atom bits identify these raw groups within an entry's dependency or availability set.
+ * Some bitsets represent entries; others represent groups of modules called atoms.
+ * Entry bits record which entries need a module through synchronous dependencies.
+ * Modules needed by the same entries form a raw atom. Atom bits record which groups
+ * an entry needs or is guaranteed to have registered before it loads.
  *
- * Reachability says who needs a module; normalized ownership says which entries must supply
- * it. An entry can stop owning an atom only when every importer path already supplies it.
- * Availability is a build-time guarantee about which modules are registered before an entry loads.
+ * An entry can stop owning an atom when its modules are guaranteed to be registered
+ * before that entry loads. The planner checks this for every path to the entry.
  */
 export type BitSet = bigint;
 type GraphModule = Module<MixedOutput>;
@@ -37,8 +37,8 @@ export interface BitSetGraphAnalysis {
 /** Modules with the same entrypoint owners. */
 export interface ChunkAtom {
   /**
-   * Raw atoms start with all dependent entries as owners. Normalization removes entries
-   * that inherit these modules from every importer path.
+   * Raw atoms start with all dependent entries as owners. An owner is removed only when
+   * these modules are guaranteed to be registered before that entry loads on every import path.
    */
   readonly ownerEntries: BitSet;
   readonly modules: ReadonlySet<GraphModule>;
@@ -103,7 +103,10 @@ export function computeBitSetChunkPlan(
   };
 }
 
-/** Transpose atom owners into each entry's synchronous closure, including the entry itself. */
+/**
+ * For each entry, collect the atoms containing the entry and its direct or indirect
+ * synchronous dependencies.
+ */
 function getSyncDependencyAtomsByEntry(
   entryPoints: readonly PlannerEntryPoint[],
   rawAtoms: readonly ChunkAtom[]
@@ -127,8 +130,8 @@ function computeGuaranteedLoadedAtoms(
   atomCount: number
 ): BitSet[] {
   const allAtoms = (1n << BigInt(atomCount)) - 1n;
-  // Initial entries inherit nothing. Dynamic entries start with every atom as a candidate;
-  // propagation from the initial roots removes candidates not supplied on every path.
+  // Initial entries have no modules guaranteed to be registered beforehand. For dynamic
+  // entries, start with all atoms as candidates and remove those not provided on every import path.
   const guaranteedLoadedAtomsByEntry = entryPoints.map((entry) =>
     entry.kind === 'initial' ? 0n : allAtoms
   );
@@ -141,8 +144,9 @@ function computeGuaranteedLoadedAtoms(
     const availableAtoms =
       syncDependencyAtomsByEntry[entryIndex]! | guaranteedLoadedAtomsByEntry[entryIndex]!;
     for (const targetIndex of bitIndices(dynamicImportsByEntry[entryIndex]!)) {
-      // An importer supplies its own closure plus what it inherited. Intersecting each
-      // importer can only remove bits, so re-queuing changed targets also converges in cycles.
+      // An importer provides its synchronous dependencies plus modules already registered
+      // before it loads. Keep only atoms available through every importer. Each update only
+      // removes bits, so repeating the calculation eventually stops, even with circular imports.
       const updatedLoadedAtoms = guaranteedLoadedAtomsByEntry[targetIndex]! & availableAtoms;
       if (updatedLoadedAtoms === guaranteedLoadedAtomsByEntry[targetIndex]) continue;
       guaranteedLoadedAtomsByEntry[targetIndex] = updatedLoadedAtoms;
@@ -154,7 +158,8 @@ function computeGuaranteedLoadedAtoms(
 }
 
 /**
- * Remove owners that always inherit an atom, then merge groups whose remaining owners match.
+ * Remove owners when the atom's modules are guaranteed to be registered before the entry loads.
+ * Then merge groups with the same remaining owners.
  * For main => a => b, with a -> shared and b -> shared, only a needs to own shared.
  * Adding main => b prevents that removal: b can now load without a supplying shared.
  * Here => is a dynamic import and -> is a synchronous dependency.
@@ -171,8 +176,8 @@ function normalizeAtomOwners(
         owners &= ~(1n << BigInt(entryIndex));
       }
     }
-    // On a path from an initial entry, the first owner cannot inherit this atom from the
-    // preceding non-owners. Its bit must survive; losing every owner is an analysis bug.
+    // Along any path from an initial entry, the first entry that needs this atom must supply it.
+    // Earlier entries do not contain it, so at least one owner must remain.
     if (owners === 0n) {
       throw new Error(
         `BitSet atom containing ${[...atom.modules][0]!.path} lost every owner. ` +
@@ -185,7 +190,7 @@ function normalizeAtomOwners(
   return groupModulesByOwners(normalizedOwnersByModule);
 }
 
-/** Keep complete entry requirements even when normalization moves ownership to an importer. */
+/** Keep every chunk an entry needs, including chunks already loaded by its importers. */
 function getRequiredChunksByEntryPath(
   entryPoints: readonly PlannerEntryPoint[],
   chunks: readonly ChunkAtom[],
@@ -236,7 +241,7 @@ type DiscoveredEntryGraph = {
   workerEntries: readonly GraphModule[];
 };
 
-/** Discover from initial roots so disconnected dynamic cycles never enter availability analysis. */
+/** Start at the initial entries so unreachable modules, including circular imports, are excluded. */
 function discoverEntryGraph(
   initialEntries: readonly GraphModule[],
   graph: ReadOnlyGraph,
@@ -303,7 +308,10 @@ function discoverEntryGraph(
   };
 }
 
-/** Follow synchronous edges per entry; record dynamic targets without absorbing their closures. */
+/**
+ * Follow synchronous dependencies for each entry. Record dynamic import targets without
+ * following their dependencies during this traversal.
+ */
 function computeEntryReachability(
   entryPoints: readonly PlannerEntryPoint[],
   edgesByModule: ReadonlyMap<GraphModule, readonly ModuleEdge[]>
