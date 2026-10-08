@@ -1,6 +1,6 @@
 --- android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotModule.java
 +++ android/src/main/java/fr/greweb/reactnativeviewshot/RNViewShotModule.java
-@@ -34,12 +34,16 @@ import fr.greweb.reactnativeviewshot.ViewShot.Results;
+@@ -37,12 +37,16 @@ import fr.greweb.reactnativeviewshot.ViewShot.Results;
  public class RNViewShotModule extends NativeRNViewShotSpec {
  
      private final ReactApplicationContext reactContext;
@@ -18,7 +18,7 @@
      }
  
      @Override
-@@ -167,8 +171,6 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
+@@ -177,8 +181,6 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
       */
      @NonNull
      private File createTempFile(@NonNull final Context context, @NonNull final String ext, String fileName) throws IOException {

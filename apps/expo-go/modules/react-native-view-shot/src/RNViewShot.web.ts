@@ -1,6 +1,30 @@
-import html2canvas from 'html2canvas';
-
 import type { CaptureOptions } from './index';
+
+type Html2Canvas = typeof import('html2canvas-pro').default;
+
+let html2canvasPromise: Promise<Html2Canvas> | undefined;
+
+// html2canvas-pro is an optional peer dependency: only web users need it, so
+// it is loaded lazily on first capture (and code-split by bundlers). When it
+// is not installed, webpack/Metro fail at build time with
+// "Can't resolve 'html2canvas-pro'"; the rejection below is the fallback for
+// environments that resolve modules at runtime (native ESM, import maps...).
+function loadHtml2Canvas(): Promise<Html2Canvas> {
+  if (!html2canvasPromise) {
+    html2canvasPromise = import('html2canvas-pro').then(
+      (m) => m.default,
+      (e) => {
+        html2canvasPromise = undefined;
+        throw new Error(
+          'react-native-view-shot: html2canvas-pro is required on web. ' +
+            'Install it with `npm install html2canvas-pro`.\n' +
+            (e instanceof Error ? e.message : String(e))
+        );
+      }
+    );
+  }
+  return html2canvasPromise;
+}
 
 async function captureRef(view: HTMLElement, options: CaptureOptions): Promise<string> {
   if (options.result === 'tmpfile') {
@@ -12,6 +36,7 @@ async function captureRef(view: HTMLElement, options: CaptureOptions): Promise<s
 
   // TODO: implement snapshotContentContainer option
 
+  const html2canvas = await loadHtml2Canvas();
   const h2cOptions = {
     useCORS: true,
   };

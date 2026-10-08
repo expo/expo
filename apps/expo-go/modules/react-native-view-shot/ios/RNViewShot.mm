@@ -9,6 +9,9 @@
 #import <React/RCTUIManagerUtils.h>
 #endif
 #import <React/RCTBridge.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import <rnviewshot/rnviewshot.h>
@@ -35,13 +38,22 @@ RCT_EXPORT_METHOD(captureScreen: (NSDictionary *)options
 RCT_EXPORT_METHOD(releaseCapture:(nonnull NSString *)uri)
 {
   NSString *directory = [NSTemporaryDirectory() stringByAppendingPathComponent:@"ReactNative"];
-  // Ensure it's a valid file in the tmp directory
-  if ([uri hasPrefix:directory] && ![uri isEqualToString:directory]) {
-    NSFileManager *fileManager = [NSFileManager new];
-    if ([fileManager fileExistsAtPath:uri]) {
-      [fileManager removeItemAtPath:uri error:NULL];
-    }
+  NSString *prefix = [directory stringByAppendingString:@"/"];
+  if (![uri hasPrefix:prefix]) return;
+  NSString *name = [uri substringFromIndex:prefix.length];
+  if (name.length == 0 || [name isEqualToString:@"."] || [name isEqualToString:@".."] ||
+      [name containsString:@"/"] || [name containsString:@"\0"]) return;
+
+  // Captures are direct temporary-file children. Use file-only, descriptor-relative
+  // deletion so a changed leaf cannot redirect cleanup or become a recursive delete.
+  int directoryFD = open(directory.fileSystemRepresentation, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+  if (directoryFD < 0) return;
+  struct stat info;
+  const char *fileName = name.fileSystemRepresentation;
+  if (fileName && fstatat(directoryFD, fileName, &info, AT_SYMLINK_NOFOLLOW) == 0 && S_ISREG(info.st_mode)) {
+    unlinkat(directoryFD, fileName, 0);
   }
+  close(directoryFD);
 }
 
 RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
