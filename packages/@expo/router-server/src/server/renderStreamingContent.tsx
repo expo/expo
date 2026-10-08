@@ -12,7 +12,11 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { ServerDocument } from 'expo-router/internal/server';
-import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import {
+  getRouteInfoForLocation,
+  InnerRoot,
+  registerStaticRootComponent,
+} from 'expo-router/internal/static';
 import { normalizeCssAssets, type AssetInfo } from 'expo-server/private';
 import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -61,6 +65,7 @@ export type GetStreamingContentOptions = {
 function prepareRenderContext(location: URL, options?: GetStreamingContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
+  const { pathname, params } = getRouteInfoForLocation(ctx, location);
 
   const {
     // NOTE: The `element` that's returned adds two extra Views and
@@ -70,7 +75,7 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
   } = registerStaticRootComponent(ExpoRoot, {
     location,
     context: ctx,
-    wrapper: ({ children, pathname, params }) => (
+    wrapper: ({ children }: React.ComponentProps<any>) => (
       <Root pathname={pathname} params={params}>
         <div id="root">{children}</div>
       </Root>

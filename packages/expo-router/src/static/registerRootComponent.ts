@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import type { ComponentType, JSX, PropsWithChildren } from 'react';
 // @ts-expect-error: TODO(@kitten): Define this type (seems to differ from react-native)
 import { AppRegistry } from 'react-native-web';
 
@@ -8,7 +8,7 @@ import type { RequireContext } from '../types';
 type InitialProps = {
   location: URL;
   context: RequireContext;
-  wrapper: ExpoRootProps['wrapper'];
+  wrapper: ComponentType<PropsWithChildren>;
 };
 
 const APP_KEY = 'App';

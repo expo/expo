@@ -9,7 +9,11 @@ import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
-import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
+import {
+  getRouteInfoForLocation,
+  InnerRoot,
+  registerStaticRootComponent,
+} from 'expo-router/internal/static';
 import type { AssetInfo } from 'expo-server/private';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -52,6 +56,7 @@ export type GetStaticContentOptions = {
 function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
+  const { pathname, params } = getRouteInfoForLocation(ctx, location);
 
   const {
     // NOTE: The `element` that's returned adds two extra Views and
@@ -61,7 +66,7 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
   } = registerStaticRootComponent(ExpoRoot, {
     location,
     context: ctx,
-    wrapper: ({ children, pathname, params }) => (
+    wrapper: ({ children }: React.ComponentProps<any>) => (
       <Root pathname={pathname} params={params}>
         <div id="root">{children}</div>
       </Root>
