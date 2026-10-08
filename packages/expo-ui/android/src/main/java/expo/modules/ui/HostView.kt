@@ -120,6 +120,7 @@ internal class HostView(context: Context, appContext: AppContext) :
   override val props = HostProps()
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
+
   // The size a child fraction was resolved against, in dp.
   // matchContents would otherwise publish the percentage result and the next pass divides it again.
   private var percentageBaseWidthDp: Double? = null
