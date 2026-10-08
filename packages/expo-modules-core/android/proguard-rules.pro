@@ -9,9 +9,9 @@
   *;
 }
 
-# RecordTypeConverter reads `Field.key` to map JS keys to record properties. Without
-# this rule R8 can rename the annotation class and drop the default `key = ""`, so
-# `key` reads as null and every record argument fails with a NullPointerException.
+# RecordTypeConverter reads `Field.key` through reflection to map JS keys to record
+# properties. When R8 renames the annotation class, records without
+# `@OptimizedRecord` can fail to convert with a NullPointerException at that read.
 -keep @interface expo.modules.kotlin.records.Field { *; }
 
 -keep class * extends expo.modules.kotlin.sharedobjects.SharedObject
