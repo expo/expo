@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
@@ -310,6 +311,28 @@ internal fun detachForReuse(wrapper: View) {
 }
 
 /**
+ * React Native looks for touch targets from the last child to the first, and Compose appends helper
+ * views such as ripple containers to its owner view after the hosted views. Those helpers have no
+ * React tag, so a touch on them goes to the `Host` instead of the hosted view.
+ * This is a workaround: React Native has no way to let the `Host` choose the touch target.
+ * This causes https://github.com/expo/expo/issues/51159
+ */
+internal fun keepLastForTouchTargeting(composeOwnerView: ViewGroup, hostedViewsContainer: View) {
+  if (composeOwnerView.indexOfChild(hostedViewsContainer) != composeOwnerView.childCount - 1) {
+    composeOwnerView.bringChildToFront(hostedViewsContainer)
+  }
+  composeOwnerView.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
+    override fun onChildViewAdded(parent: View, child: View) {
+      if (child !== hostedViewsContainer) {
+        composeOwnerView.bringChildToFront(hostedViewsContainer)
+      }
+    }
+
+    override fun onChildViewRemoved(parent: View, child: View) = Unit
+  })
+}
+
+/**
  * A thin FrameLayout that intercepts touch events and dispatches them to JS via
  * JSTouchDispatcher/JSPointerDispatcher, replicating the pattern from React Native's
  * DialogRootViewGroup in ReactModalHostView.
@@ -377,6 +400,19 @@ private class TouchDispatchingRootViewGroup(
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     // No-op: don't re-layout children. Yoga calls child.layout() directly
     // and we must not override those values.
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    // Walk up until the parent is the ComposeView. That ancestor is the Compose owner view, and the
+    // child we came from is the container that Compose keeps all hosted views in.
+    var hostedViewsContainer: View = this
+    var composeOwnerView = parent as? ViewGroup
+    while (composeOwnerView != null && composeOwnerView.parent !is AbstractComposeView) {
+      hostedViewsContainer = composeOwnerView
+      composeOwnerView = composeOwnerView.parent as? ViewGroup
+    }
+    composeOwnerView?.let { keepLastForTouchTargeting(it, hostedViewsContainer) }
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
