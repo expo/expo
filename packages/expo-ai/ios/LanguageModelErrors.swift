@@ -2,16 +2,16 @@ import ExpoModulesCore
 
 internal final class LanguageModelException: Exception, @unchecked Sendable {
   private let errorCode: String
-  private let message: String
+  private let errorMessage: String
 
   init(_ code: String, _ message: String) {
     self.errorCode = code
-    self.message = message
+    self.errorMessage = message
     super.init()
   }
 
   override var code: String { errorCode }
-  override var reason: String { message }
+  override var reason: String { errorMessage }
 
   static func cancelled() -> LanguageModelException {
     LanguageModelException("ERR_REQUEST_CANCELLED", "The language model request was cancelled.")
