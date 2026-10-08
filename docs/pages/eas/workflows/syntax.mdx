@@ -711,19 +711,6 @@ concurrency:
 | `cancel_in_progress` | `boolean` or expression | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch. Can be a `${{ }}` expression. See the example below. |
 | `group`              | `string`                | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible.       |
 
-To cancel in-progress runs only for pull requests, use an expression. With this configuration, a new pull request run cancels the previous run for the same branch, but every run from a push to `main` completes:
-
-```yaml
-on:
-  push:
-    branches: [main]
-  pull_request: {}
-
-concurrency:
-  cancel_in_progress: ${{ github.event_name == 'pull_request' }}
-  group: ${{ workflow.filename }}-${{ github.ref }}
-```
-
 ## Control flow
 
 You can control when a job runs with the `needs` and `after` keywords. In addition, you can use the `if` keyword to control whether a job should run based on a condition.
