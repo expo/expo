@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import * as Log from '../../log';
+import { copyBinaryToOutputAsync } from '../copyBinaryToOutputAsync';
 import { debugEvent, event } from '../events';
 import type { ResolvedOptions } from '../resolveOptions';
 import { resolveOptionsAsync } from './resolveOptions';
@@ -28,7 +29,10 @@ export async function compileIosAsync(projectRoot: string, options: ResolvedOpti
   }
   doneBuild('build:done', { platform: 'ios', mode: props.mode });
 
-  const binaryPath = await getAppPathAsync(props);
+  let binaryPath = await getAppPathAsync(props);
+  if (props.outputDir) {
+    binaryPath = await copyBinaryToOutputAsync(binaryPath, props.outputDir);
+  }
   doneCompile('done', {
     platform: 'ios',
     mode: props.mode,
