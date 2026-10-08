@@ -23,7 +23,6 @@ struct LocalizationModuleTests {
     #expect(!LocalizationModule.uses24HourClock(locale: Locale(identifier: identifier)))
   }
 
-  // On iOS 27, the `j` template pattern of these locales is `Bh時`, `B h` and `Bh时`, without `a`.
   @Test(arguments: ["zh_Hant_TW", "hi_IN", "zh_Hans_SG"])
   func `returns false for a 12-hour locale that can mark the period with B`(identifier: String) {
     #expect(!LocalizationModule.uses24HourClock(locale: Locale(identifier: identifier)))
