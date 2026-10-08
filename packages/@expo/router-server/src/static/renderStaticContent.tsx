@@ -6,7 +6,7 @@
  */
 import '@expo/metro-runtime';
 import * as Font from 'expo-font/build/server';
-import { ExpoRoot } from 'expo-router';
+import { ExpoRoot, useGlobalSearchParams, usePathname } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
@@ -61,11 +61,13 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
   } = registerStaticRootComponent(ExpoRoot, {
     location,
     context: ctx,
-    wrapper: ({ children }: React.ComponentProps<any>) => (
-      <Root>
-        <div id="root">{children}</div>
-      </Root>
-    ),
+    wrapper: function Wrapper({ children }: React.ComponentProps<any>) {
+      return (
+        <Root pathname={usePathname()} params={useGlobalSearchParams()}>
+          <div id="root">{children}</div>
+        </Root>
+      );
+    },
   });
 
   // This MUST be run before `ReactDOMServer.renderToString` to prevent
