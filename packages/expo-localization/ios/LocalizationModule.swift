@@ -195,8 +195,8 @@ public class LocalizationModule: Module {
 
   // The `j` template pattern can mark the 12-hour period with `B` (flexible day period)
   // instead of `a`, for example `Bh時` for `zh_Hant_TW`, so it doesn't tell the hour cycle.
-  static func uses24HourClock() -> Bool {
-    let hourCycle = Locale.current.hourCycle
+  static func uses24HourClock(locale: Locale = .current) -> Bool {
+    let hourCycle = locale.hourCycle
     return hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour
   }
 
