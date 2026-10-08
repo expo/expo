@@ -147,8 +147,25 @@ describe('titleColor', () => {
 // ─── backgroundColor ────────────────────────────────────────────────────────────
 
 describe('backgroundColor', () => {
-  test('defaults to colors.card', async () => {
+  test('is undefined with the default theme, so the system bar background is used', async () => {
     const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current.backgroundColor).toBeUndefined();
+  });
+
+  test('uses colors.card from a custom theme', async () => {
+    mockedUseTheme.mockReturnValue({
+      dark: false,
+      colors: { ...DEFAULT_COLORS, card: 'rgb(10, 20, 30)' },
+      fonts: DEFAULT_FONTS,
+    } as any);
+    const { result } = await renderHook(() => useHeaderConfigProps(defaultProps()));
+    expect(result.current.backgroundColor).toBe('rgb(10, 20, 30)');
+  });
+
+  test('keeps an explicit headerStyle.backgroundColor that equals the default card color', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerStyle: { backgroundColor: DEFAULT_COLORS.card } }))
+    );
     expect(result.current.backgroundColor).toBe(DEFAULT_COLORS.card);
   });
 

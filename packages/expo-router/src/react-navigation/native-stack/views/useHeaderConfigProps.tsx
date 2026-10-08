@@ -18,6 +18,8 @@ import {
 import { isLight } from '../../../utils/color';
 import { getHeaderTitle, HeaderTitle } from '../../elements';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
+import { DarkTheme } from '../../native/theming/DarkTheme';
+import { DefaultTheme } from '../../native/theming/DefaultTheme';
 import type {
   NativeStackHeaderItem,
   NativeStackHeaderItemButton,
@@ -262,14 +264,26 @@ export function useHeaderConfigProps({
     headerTitleStyleSupported.fontWeight = titleFontWeight;
   }
 
-  const headerBackgroundColor =
-    headerStyleFlattened.backgroundColor ??
-    (headerBackground != null ||
+  const usesTransparentBackground =
+    headerBackground != null ||
     headerTransparent ||
     // The title becomes invisible if background color is set with large title on iOS 26
-    (Platform.OS === 'ios' && headerLargeTitleEnabled)
-      ? 'transparent'
-      : colors.card);
+    (Platform.OS === 'ios' && headerLargeTitleEnabled);
+
+  const headerBackgroundColor =
+    headerStyleFlattened.backgroundColor ??
+    (usesTransparentBackground ? 'transparent' : colors.card);
+
+  // With no background set, iOS uses the system bar background, as a plain UINavigationController does: clear at the
+  // scroll edge, the bar material once content scrolls under it. Sending the default theme's `card` color instead makes
+  // the bar opaque with a hairline at all times. A custom theme's `card` color is still applied.
+  const nativeHeaderBackgroundColor =
+    Platform.OS === 'ios' &&
+    headerStyleFlattened.backgroundColor == null &&
+    !usesTransparentBackground &&
+    (colors.card === DefaultTheme.colors.card || colors.card === DarkTheme.colors.card)
+      ? undefined
+      : headerBackgroundColor;
 
   const canGoBack = headerBack != null;
 
@@ -440,7 +454,7 @@ export function useHeaderConfigProps({
 
   return {
     backButtonInCustomView,
-    backgroundColor: headerBackgroundColor,
+    backgroundColor: nativeHeaderBackgroundColor,
     backTitle: headerBackTitle,
     backTitleVisible: isBackButtonDisplayModeAvailable
       ? undefined
