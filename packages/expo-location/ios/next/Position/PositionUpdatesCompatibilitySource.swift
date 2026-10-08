@@ -34,6 +34,10 @@ final class PositionUpdatesCompatibilitySource: NSObject, CLLocationManagerDeleg
     switch error {
     case CLError.locationUnknown:
       return
+    case CLError.denied where manager.authorizationStatus == .authorizedWhenInUse:
+      // iOS sends this to a whenInUse app while it is in the background. The permission is intact and
+      // updates resume on their own once the app is back in the foreground.
+      return
     case CLError.denied:
       continuation?.finish(throwing: LocationAuthorizationDenied())
     default:
