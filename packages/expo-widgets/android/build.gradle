@@ -145,4 +145,8 @@ dependencies {
   implementation expoModule.getExpoDependency("expo-ui")
   api 'io.github.expo.peek:peek-emittables:0.3.2'
   implementation "androidx.glance:glance:1.2.0"
+  // Glance requests work-runtime-ktx 2.7.1, which still bundles the Kotlin extensions WorkManager 2.8+
+  // moved into work-runtime, so any 2.8+ in the graph duplicates those classes in release builds.
+  // 2.9.1, the version expo-background-task and expo-observe use, is the empty shim.
+  implementation 'androidx.work:work-runtime-ktx:2.9.1'
 }
