@@ -29,6 +29,7 @@ const subscribers: {
 
 // Navigation events used by Expo Router itself. They fire whether or not
 // the performance integration is enabled.
+// TODO(ENG-27842): Unify with the other Expo Router event listeners.
 export const internalNavigationEvents = {
   addListener<Name extends EventName>(
     name: Name,
