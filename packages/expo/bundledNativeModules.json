@@ -103,7 +103,7 @@
   "react": "19.3.0",
   "react-dom": "19.3.0",
   "react-native": "0.88.0-rc.4",
-  "react-native-web": "~0.21.3",
+  "react-native-web": "~0.21.4",
   "react-native-gesture-handler": "~3.2.1",
   "react-native-keyboard-controller": "1.22.4",
   "react-native-maps": "1.29.0",
