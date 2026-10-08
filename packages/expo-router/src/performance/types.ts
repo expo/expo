@@ -33,10 +33,10 @@ export interface RouterActionMarkDetail {
 }
 
 /**
- * A performance mark recorded by Expo Router. Observers receive it as a standard `PerformanceEntry`.
+ * A performance mark recorded by Expo Router.
  * Check its `name` and cast it to this type to read `detail`.
  */
-export interface RouterPerformanceEntry<Name extends string, Detail> extends PerformanceMark {
+export interface BaseRouterPerformanceMark<Name extends string, Detail> extends PerformanceMark {
   readonly entryType: 'mark';
   /**
    * The name of the mark, which also determines the shape of `detail`.
@@ -52,7 +52,7 @@ export interface RouterPerformanceEntry<Name extends string, Detail> extends Per
  * A screen that rendered as part of a preload (for example, `router.prefetch()`) and is not
  * focused. If the user later navigates to it, `expo-router:page-focused` is marked then.
  */
-export type RouterPagePreloadedMark = RouterPerformanceEntry<
+export type RouterPagePreloadedMark = BaseRouterPerformanceMark<
   'expo-router:page-preloaded',
   RouterPageMarkDetail
 >;
@@ -60,7 +60,7 @@ export type RouterPagePreloadedMark = RouterPerformanceEntry<
 /**
  * A screen became focused, after its content committed.
  */
-export type RouterPageFocusedMark = RouterPerformanceEntry<
+export type RouterPageFocusedMark = BaseRouterPerformanceMark<
   'expo-router:page-focused',
   RouterPageMarkDetail
 >;
@@ -68,7 +68,7 @@ export type RouterPageFocusedMark = RouterPerformanceEntry<
 /**
  * A focused screen lost focus.
  */
-export type RouterPageBlurredMark = RouterPerformanceEntry<
+export type RouterPageBlurredMark = BaseRouterPerformanceMark<
   'expo-router:page-blurred',
   RouterPageMarkDetail
 >;
@@ -76,7 +76,7 @@ export type RouterPageBlurredMark = RouterPerformanceEntry<
 /**
  * A screen unmounted, or its route info changed.
  */
-export type RouterPageRemovedMark = RouterPerformanceEntry<
+export type RouterPageRemovedMark = BaseRouterPerformanceMark<
   'expo-router:page-removed',
   RouterPageMarkDetail
 >;
@@ -84,7 +84,7 @@ export type RouterPageRemovedMark = RouterPerformanceEntry<
 /**
  * A navigation action changed the navigation state.
  */
-export type RouterActionDispatchedMark = RouterPerformanceEntry<
+export type RouterActionDispatchedMark = BaseRouterPerformanceMark<
   'expo-router:action-dispatched',
   RouterActionMarkDetail
 >;

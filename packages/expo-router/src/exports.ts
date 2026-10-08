@@ -146,7 +146,7 @@ export type {
   RouterActionDispatchedMark,
   RouterPerformanceMark,
   RouterPerformanceMarkByName,
-  RouterPerformanceEntry,
+  BaseRouterPerformanceMark,
 } from './performance';
 
 /**
