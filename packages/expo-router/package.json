@@ -333,7 +333,7 @@
     "react-native-reanimated": "4.7.0",
     "react-native-safe-area-context": "~5.9.1",
     "react-native-tab-view": "^4.3.0",
-    "react-native-web": "~0.21.3",
+    "react-native-web": "~0.21.4",
     "react-native-worklets": "0.13.0",
     "react-server-dom-webpack": "~19.0.8"
   },
