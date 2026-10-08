@@ -4,7 +4,7 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
+import { ScreenErrorBoundaryContext, useRouteNode } from '../Route';
 import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
@@ -14,6 +14,7 @@ import {
   type NavigationState,
   type RouterFactory,
 } from '../react-navigation/native';
+import { getValidInitialRouteName } from '../routeNode';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,

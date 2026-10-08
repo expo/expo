@@ -1,9 +1,4 @@
-import {
-  findRouteNodeByName,
-  getValidInitialRouteName,
-  sortRoutesWithInitial,
-  type RouteNode,
-} from '../Route';
+import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { createInitialState } from '../react-navigation/core/createInitialState';
@@ -14,6 +9,7 @@ import {
   getChainFromRouteKey,
   ROOT_CHAIN,
 } from '../react-navigation/routers/stateKeys';
+import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { getRootStackRouteNames } from './utils';
 
 type SeedState = NavigationState | PartialState<NavigationState>;

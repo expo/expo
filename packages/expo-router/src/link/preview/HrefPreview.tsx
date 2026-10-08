@@ -3,7 +3,7 @@
 import { use, useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import { findRouteNodeAndParamsForState, type RouteNode } from '../../Route';
+import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
@@ -18,6 +18,7 @@ import {
   type NavigationProp,
   type ParamListBase,
 } from '../../react-navigation/native';
+import { findRouteNodeAndParamsForState } from '../../routeNode';
 import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';

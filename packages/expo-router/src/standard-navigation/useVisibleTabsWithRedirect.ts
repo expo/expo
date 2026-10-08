@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
+import { useRouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { useRouterActions } from '../global-state/useRouterActions';
 import { useGuardRedirect } from '../layouts/GuardContext';
@@ -11,6 +11,7 @@ import {
   type RouteProp,
   useIsFocused,
 } from '../react-navigation/native';
+import { getValidInitialRouteName } from '../routeNode';
 import { orderRoutesByRouteNames } from '../utils/orderRoutesByRouteNames';
 import type { StandardNavigatorDescriptor } from './types';
 import { useBuildHref } from './useBuildHref';
