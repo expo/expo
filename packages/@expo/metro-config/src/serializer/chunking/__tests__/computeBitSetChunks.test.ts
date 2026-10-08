@@ -98,7 +98,7 @@ describe('atoms and already-loaded ownership', () => {
       [0b010n, ['/app/b.js']],
       [0b100n, ['/app/expo-mock/async-require', '/app/index.js']],
     ]);
-    // Canonical requirements use original reachability, not the reduced owner bits.
+    // Each entry still requires all its dependencies, even when another entry owns them.
     expect(
       plan.requiredChunksByEntryPath.get('/app/b.js')!.map((chunk) => chunk.ownerEntries)
     ).toEqual([1n, 2n]);

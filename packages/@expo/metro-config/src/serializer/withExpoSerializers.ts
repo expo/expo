@@ -368,9 +368,9 @@ function getDefaultSerializer(
       !options.dev &&
       !isLazyBundle;
     // Unsupported async imports inside a worker switch this entire graph, including application
-    // chunks, to legacy. Workers with synchronous dependency closures remain supported.
-    // TODO: Support worker-local async loading with isolated registries and scalar worker
-    // entry URLs before removing this fallback.
+    // chunks, to legacy. Workers with only synchronous dependencies remain supported.
+    // TODO: Support async imports inside workers, with separate module registries and one URL
+    // per worker entry, before removing this fallback.
     const chunkingStrategy: ChunkingStrategy =
       isGranularEligible && !findUnsupportedWorkerAsyncDependency(entryPoint, graph)
         ? 'granular'

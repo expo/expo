@@ -180,7 +180,7 @@ export function baseJSBundleWithDependencies(
   }) as Module[];
 
   if (options.includeChunkCompletion && options.platform === 'web' && !options.dev) {
-    // Use currentScript to avoid embedding the filename that this code helps hash.
+    // Read the URL from currentScript because this footer contributes to the chunk's filename hash.
     const key = JSON.stringify(`${options.globalPrefix ?? ''}__expo_chunk_completion__`);
     const code = `(function(){var s=typeof document!=="undefined"&&document.currentScript;if(s&&s.namespaceURI==="http://www.w3.org/1999/xhtml"&&s.tagName==="SCRIPT"&&typeof s.src==="string"&&s.src){var k=${key};(globalThis[k]||(globalThis[k]=new Set())).add(s.src);}})();`;
     modulesWithAnnotations.unshift({
