@@ -208,7 +208,7 @@ export default function Root({ children }: PropsWithChildren) {
 ```
 
 - The `children` prop comes with the root `<div id="root" />` tag included inside.
-- The `pathname` and `params` props contain the rendered route's pathname and URL parameters (same as [`usePathname`](/versions/latest/sdk/router/#usepathname) and [`useGlobalSearchParams`](/versions/latest/sdk/router/#useglobalsearchparams)). Available in **SDK 59 and later**.
+- The `pathname` and `params` props contain the rendered route's pathname and URL parameters. Available in **SDK 58 and later**.
 - The JavaScript scripts are appended after the static render.
 - React Native web styles are statically injected automatically.
 - Global CSS should not be imported into this file. Instead, use the [Root Layout](/router/basics/navigation-layouts/#root-layout). Expo Router traverses the dependency graph starting from the root layout, so importing CSS elsewhere can cause unexpected loading order where **node_modules** CSS takes precedence over your custom styles.
