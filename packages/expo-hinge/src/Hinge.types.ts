@@ -1,6 +1,6 @@
 /**
- * Status of the device hinge, as reported by UIKit's `UIHinge.Status` on iOS and by the state of
- * Jetpack WindowManager's `FoldingFeature` on Android. Android has no public API for a closed hinge,
+ * Status of the device hinge, as reported by the state of Jetpack WindowManager's `FoldingFeature`
+ * on Android and by UIKit's `UIHinge.Status` on iOS. Android has no public API for a closed hinge,
  * so it never reports `closed`. It reports `unknown` while the app's window does not span the fold,
  * such as on the outer screen of a closed device. To detect a closed device on Android, check for an
  * `angle` near `0` with a threshold that suits your app.
@@ -15,7 +15,8 @@ export type Hinge = {
    * The current angle of the hinge in degrees, where `0` is closed and `180` is flat. The rate and
    * granularity of angle updates are system policy, so do not depend on a particular update
    * frequency or precision. Prefer `status` when you only need to know whether the hinge is closed,
-   * partially open or fully open. On Android, the angle comes from the hinge angle sensor.
+   * partially open, or fully open, except on Android, where `status` is never `closed`. On Android,
+   * the angle comes from the hinge angle sensor.
    */
   angle: number;
   /**
