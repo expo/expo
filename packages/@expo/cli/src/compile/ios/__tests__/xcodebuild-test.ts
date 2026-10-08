@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 
-import { buildAsync, getXcodeBuildArgs } from '../xcodebuild';
+import { buildAsync, getAppPathAsync, getXcodeBuildArgs } from '../xcodebuild';
 
 const props = {
   configuration: 'Debug' as const,
@@ -43,6 +43,46 @@ describe(buildAsync, () => {
 
     await expect(buildAsync(props)).rejects.toThrow(
       'Failed to build iOS project. "xcodebuild" exited with error code 65.'
+    );
+  });
+});
+
+describe(getAppPathAsync, () => {
+  it(`returns the built app path`, async () => {
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
+      stdout: JSON.stringify([
+        {
+          target: 'other-app',
+          buildSettings: {
+            TARGET_BUILD_DIR: '/DerivedData/Build/Products/Debug-iphonesimulator',
+            WRAPPER_NAME: 'other-app.app',
+          },
+        },
+        {
+          target: 'my-app',
+          buildSettings: {
+            TARGET_BUILD_DIR: '/DerivedData/Build/Products/Debug-iphonesimulator',
+            WRAPPER_NAME: 'my-app.app',
+          },
+        },
+      ]),
+    } as any);
+
+    await expect(getAppPathAsync(props)).resolves.toBe(
+      '/DerivedData/Build/Products/Debug-iphonesimulator/my-app.app'
+    );
+    expect(spawnAsync).toHaveBeenCalledWith('xcodebuild', [
+      ...getXcodeBuildArgs(props),
+      '-showBuildSettings',
+      '-json',
+    ]);
+  });
+
+  it(`throws when xcodebuild returns malformed JSON`, async () => {
+    jest.mocked(spawnAsync).mockResolvedValueOnce({ stdout: 'not json' } as any);
+
+    await expect(getAppPathAsync(props)).rejects.toThrow(
+      /Could not parse JSON returned from "xcodebuild -showBuildSettings -json"\.\n\nnot json\n\nError: /
     );
   });
 });

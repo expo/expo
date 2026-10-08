@@ -4,7 +4,7 @@ import type { ResolvedOptions } from '../../resolveOptions';
 import { compileIosAsync } from '../compileIosAsync';
 import type { BuildProps } from '../resolveOptions';
 import { resolveOptionsAsync } from '../resolveOptions';
-import { buildAsync } from '../xcodebuild';
+import { buildAsync, getAppPathAsync } from '../xcodebuild';
 
 jest.mock('../../../log');
 jest.mock('../resolveOptions');
@@ -55,6 +55,7 @@ describe(compileIosAsync, () => {
   it(`builds the app`, async () => {
     mockPlatform('darwin');
     jest.mocked(resolveOptionsAsync).mockResolvedValueOnce(props);
+    jest.mocked(getAppPathAsync).mockResolvedValueOnce('/DerivedData/app.app');
     await compileIosAsync('/app', options);
     expect(resolveOptionsAsync).toHaveBeenCalledWith('/app', options);
     expect(buildAsync).toHaveBeenCalledWith(props);
@@ -66,6 +67,14 @@ describe(compileIosAsync, () => {
     });
     const done = jest.mocked(event.span).mock.results[0]?.value;
     expect(done).toHaveBeenCalledWith('build:done', { platform: 'ios', mode: 'development' });
+    expect(done).toHaveBeenCalledWith('done', {
+      platform: 'ios',
+      mode: 'development',
+      outputType: 'app',
+      outputPath: '/DerivedData/app.app',
+    });
+    expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Build complete'));
+    expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Binary: /DerivedData/app.app'));
   });
 
   it(`reports a failed build`, async () => {
