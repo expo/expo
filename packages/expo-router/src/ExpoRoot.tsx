@@ -1,6 +1,6 @@
 'use client';
 
-import { type PropsWithChildren, Fragment, type ComponentType, useEffect, useMemo } from 'react';
+import { type PropsWithChildren, type ComponentType, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -12,6 +12,7 @@ import { navigationRef } from './global-state/navigationRef';
 import { RemovalPreventionProvider } from './global-state/removalPrevention';
 import { RouterConfigContext } from './global-state/routerConfigContext';
 import { RoutingQueueProvider } from './global-state/routingQueueContext';
+import { useRouteInfo } from './global-state/useRouteInfo';
 import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
@@ -19,7 +20,7 @@ import { Screen } from './primitives';
 import type { LinkingOptions } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
-import type { RequireContext } from './types';
+import type { RequireContext, UnknownOutputParams } from './types';
 import { maybeHideSplashScreen } from './utils/splash';
 import { parseUrlUsingCustomBase } from './utils/url';
 import { RootUnmatched } from './views/RootUnmatched';
@@ -29,7 +30,7 @@ import * as SplashScreen from './views/Splash';
 export type ExpoRootProps = {
   context: RequireContext;
   location?: URL | string;
-  wrapper?: ComponentType<PropsWithChildren>;
+  wrapper?: ComponentType<PropsWithChildren<{ pathname: string; params: UnknownOutputParams }>>;
   linking?: Partial<ExpoLinkingOptions>;
 };
 
@@ -50,10 +51,27 @@ const INITIAL_METRICS =
       }
     : undefined;
 
+function DefaultWrapper({ children }: PropsWithChildren) {
+  return children;
+}
+
+// Subscribes to route info here so navigation re-renders only the parent wrapper, not the providers below it.
+function RouteInfoWrapper({
+  wrapper: ParentWrapper,
+  children,
+}: PropsWithChildren<{ wrapper: NonNullable<ExpoRootProps['wrapper']> }>) {
+  const { pathname, params } = useRouteInfo();
+  return (
+    <ParentWrapper pathname={pathname} params={params}>
+      {children}
+    </ParentWrapper>
+  );
+}
+
 /**
  * @hidden
  */
-export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
+export function ExpoRoot({ wrapper: ParentWrapper = DefaultWrapper, ...props }: ExpoRootProps) {
   initScreensFeatureFlags();
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
@@ -64,7 +82,7 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
     () =>
       ({ children }: PropsWithChildren) => {
         return (
-          <ParentWrapper>
+          <RouteInfoWrapper wrapper={ParentWrapper}>
             <LinkPreviewContextProvider>
               <SafeAreaProvider
                 // SSR support
@@ -72,7 +90,7 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
                 {children}
               </SafeAreaProvider>
             </LinkPreviewContextProvider>
-          </ParentWrapper>
+          </RouteInfoWrapper>
         );
       },
     [ParentWrapper]
@@ -93,9 +111,9 @@ const initialUrl =
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
-  wrapper: WrapperComponent = Fragment,
+  wrapper: WrapperComponent,
   linking = {},
-}: ExpoRootProps) {
+}: Omit<ExpoRootProps, 'wrapper'> & { wrapper: ComponentType<PropsWithChildren> }) {
   // location and linking.getInitialURL are both used to initialize the router state
   //  - location is used on web and during static rendering
   //  - linking.getInitialURL is used on native
