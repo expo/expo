@@ -110,7 +110,7 @@ struct PositionWatcherTests {
     watcher.start()
     _ = await source.nextProfile()
 
-    watcher.withInterval(2)
+    try watcher.withInterval(2)
     let restarted = watcher.restart()
 
     #expect(restarted)
@@ -213,7 +213,7 @@ struct PositionWatcherTests {
     watcher.makeSource = source.updates
     let payloads = PayloadRecorder()
     watcher.send = payloads.record
-    watcher.withInterval(1)
+    try watcher.withInterval(1)
     _ = watcher.restart()
     watcher.start()
     _ = await source.nextProfile()
@@ -233,7 +233,7 @@ struct PositionWatcherTests {
     watcher.makeSource = source.updates
     let payloads = PayloadRecorder()
     watcher.send = payloads.record
-    watcher.withInterval(1)
+    try watcher.withInterval(1)
     _ = watcher.restart()
     watcher.start()
     _ = await source.nextProfile()

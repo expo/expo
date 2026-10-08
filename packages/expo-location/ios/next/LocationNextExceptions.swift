@@ -12,6 +12,12 @@ final class InvalidMaxCachedAgeException: Exception, @unchecked Sendable {
   }
 }
 
+final class InvalidWatchIntervalException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Location update interval must be a finite, non-negative number of seconds"
+  }
+}
+
 final class LocationAuthorizationDenied: Exception, @unchecked Sendable {
   override var reason: String {
     "Location access for this app has been turned off, so the updates stopped. The user changed it " +

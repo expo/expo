@@ -63,8 +63,8 @@ public final class LocationModuleNext: Module {
         return watcher
       }
 
-      Function("withInterval") { (watcher: PositionWatcher, intervalSeconds: Double) -> PositionWatcher in
-        watcher.withInterval(intervalSeconds)
+      Function("withInterval") { (watcher: PositionWatcher, intervalSeconds: Double) throws -> PositionWatcher in
+        try watcher.withInterval(intervalSeconds)
         return watcher
       }
 

@@ -60,7 +60,10 @@ final class PositionWatcher: SharedObject {
     }
   }
 
-  func withInterval(_ seconds: TimeInterval) {
+  func withInterval(_ seconds: TimeInterval) throws {
+    guard seconds >= 0, seconds.isFinite else {
+      throw InvalidWatchIntervalException()
+    }
     lock.withLock {
       stagedInterval = seconds
     }
