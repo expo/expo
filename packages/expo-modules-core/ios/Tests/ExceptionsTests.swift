@@ -165,7 +165,7 @@ struct ExceptionsTests {
 
   @Test
   func `async function reject exposes the description as the message to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
@@ -179,7 +179,7 @@ struct ExceptionsTests {
 
   @Test
   func `exception subclass can override the message exposed to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
