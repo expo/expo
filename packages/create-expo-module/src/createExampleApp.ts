@@ -177,9 +177,13 @@ async function moveFiles(fromPath: string, toPath: string): Promise<void> {
 }
 
 /**
- * Adds missing configuration that are required to run `npx expo prebuild`.
+ * Adds the app config that the example app needs: the app IDs required to run `npx expo prebuild`,
+ * and module resolution that keeps a single copy of each package in the bundle.
  */
-async function addMissingAppConfigFields(appPath: string, data: SubstitutionData): Promise<void> {
+export async function addMissingAppConfigFields(
+  appPath: string,
+  data: SubstitutionData
+): Promise<void> {
   const appConfigPath = path.join(appPath, 'app.json');
   const appConfigContent = await fs.promises.readFile(appConfigPath, 'utf8');
   const appConfig = JSON.parse(appConfigContent);
@@ -196,6 +200,11 @@ async function addMissingAppConfigFields(appPath: string, data: SubstitutionData
     appConfig.expo.ios = {};
   }
   appConfig.expo.ios.bundleIdentifier = appId;
+
+  // The module's devDependencies install a second copy of react-native, expo and other packages
+  // in its node_modules. Make Metro resolve them to the copies that autolinking uses for the
+  // example app, so that the bundle includes only one copy of each package.
+  appConfig.expo.experiments = { ...appConfig.expo.experiments, autolinkingModuleResolution: true };
 
   await fs.promises.writeFile(appConfigPath, JSON.stringify(appConfig, null, 2), 'utf8');
 }
