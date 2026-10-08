@@ -725,6 +725,7 @@ struct JavaScriptValueTests {
     let pointee2 = value.withUnsafePointee { return $0 }
     #expect(pointee1 == pointee2)
   }
+
   @Test
   func `isThenable is true for a promise or an object with a callable then`() throws {
     #expect(try runtime.eval("Promise.resolve(1)").isThenable())
@@ -758,5 +759,4 @@ struct JavaScriptValueRuntimeLifetimeTests {
     #expect(bool.copy().getBool() == true)
     #expect(bool.isEqual(to: .true()))
   }
-
 }

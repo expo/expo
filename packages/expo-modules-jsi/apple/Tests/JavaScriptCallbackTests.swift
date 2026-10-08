@@ -242,7 +242,6 @@ struct JavaScriptCallbackThreadingTests {
   @Test
   func `invokeAsync decodes a resolved promise on the JavaScript thread`() async throws {
     let testRuntime = await TestRuntimeScheduler().makeRuntime()
-    let flag = ThreadFlag()
     do {
       let callback = try await testRuntime.scheduler.runIsolated {
         let runtime = testRuntime.runtime
@@ -256,6 +255,47 @@ struct JavaScriptCallbackThreadingTests {
     }
     await drain(testRuntime)
   }
+
+  @Test
+  func `invokeAsync doesn't keep the runtime alive while it awaits a promise`() async throws {
+    let scheduler = TestRuntimeScheduler()
+    let runtimes = RuntimesBox()
+    let callback = try await scheduler.runIsolated {
+      let owningRuntime = JavaScriptRuntime()
+      let runtime = owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+      runtimes.owningRuntime = owningRuntime
+      runtimes.runtime = runtime
+      runtimes.weakRuntime = runtime
+      return try runtime.eval("() => new Promise(() => {})").withUnownedValue(in: runtime) { unownedValue in
+        try JavaScriptCallback.decode(unownedValue, in: runtime)
+      }
+    }
+    // The promise never settles, so this call stays suspended for good.
+    _ = Task {
+      try await callback.invokeAsync()
+    }
+    try await Task.sleep(for: .milliseconds(200))
+    // Drops the test's references and destroys the runtime, as a reload does.
+    await scheduler.run {
+      runtimes.runtime = nil
+      runtimes.owningRuntime = nil
+    }
+    #expect(runtimes.weakRuntime == nil)
+  }
+}
+
+/// Holds the runtimes that a test creates on the scheduler's thread, and a weak reference to watch
+/// the non-owning one.
+private final class RuntimesBox: @unchecked Sendable {
+  var owningRuntime: JavaScriptRuntime?
+  var runtime: JavaScriptRuntime?
+  weak var weakRuntime: JavaScriptRuntime?
 }
 
 /// An `Int` that records whether it was decoded on the JavaScript thread.

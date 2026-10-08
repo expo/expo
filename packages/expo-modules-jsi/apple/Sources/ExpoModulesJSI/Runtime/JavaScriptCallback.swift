@@ -90,7 +90,7 @@ public final class JavaScriptCallback: Sendable {
   // call doesn't.
 
   /// Calls the function with `arguments` without waiting for it. A JavaScript error is reported with
-  /// ``reportError(_:)``.
+  /// ``reportError(_:)``. On the JavaScript thread, the function runs before this method returns.
   @inlinable
   public func invokeDetached<each A: JavaScriptEncodable>(_ arguments: repeat each A) {
     let box = UncheckedSendableBox((repeat each arguments))
@@ -103,6 +103,9 @@ public final class JavaScriptCallback: Sendable {
   }
 
   /// Calls the function with `arguments` and blocks the calling thread until it returns.
+  /// Not available in async contexts to prevent blocking the cooperative thread pool. Use
+  /// ``invokeAsync(_:)`` there.
+  @available(*, noasync)
   @inlinable
   public func invokeBlocking<each A: JavaScriptEncodable>(_ arguments: repeat each A) throws {
     let box = UncheckedSendableBox((repeat each arguments))
@@ -117,7 +120,9 @@ public final class JavaScriptCallback: Sendable {
   }
 
   /// Calls the function with `arguments`, blocks the calling thread until it returns, and decodes
-  /// its result.
+  /// its result. Not available in async contexts to prevent blocking the cooperative thread pool.
+  /// Use ``invokeAsync(_:returning:)`` there.
+  @available(*, noasync)
   @inlinable
   public func invokeBlocking<each A: JavaScriptEncodable, R: JavaScriptDecodable>(
     _ arguments: repeat each A,
@@ -218,24 +223,36 @@ public final class JavaScriptCallback: Sendable {
     encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
     decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
   ) async throws -> R {
-    let runtime = try liveRuntime()
-    let outcome = try await runtime.execute { () throws -> UncheckedSendableBox<AsyncOutcome<R>> in
-      let result = try self.call(encodeArguments, in: runtime)
-      guard result.isThenable() else {
-        return UncheckedSendableBox(.value(try decodeResult(result, runtime)))
-      }
-      return UncheckedSendableBox(.promise(JavaScriptPromise.Ref(try JavaScriptPromise(runtime, result.getObject()))))
-    }
+    let outcome = try await callForAsync(encodeArguments: encodeArguments, decodeResult: decodeResult)
     switch outcome.value {
     case .value(let value):
       return value
     case .promise(let promiseRef):
       let promise: JavaScriptPromise = try promiseRef.take()
       let settled = UncheckedSendableBox(try await promise.await())
-      // The await may resume on another thread, so decode back on the JavaScript thread.
+      // The runtime is looked up again instead of being held across the await, which may never
+      // resume if the promise is pending when the runtime goes away. The await may also resume on
+      // another thread, so decode back on the JavaScript thread.
+      let runtime = try liveRuntime()
       return try await runtime.execute {
         try decodeResult(settled.value, runtime)
       }
+    }
+  }
+
+  /// Calls the function and decodes a result that isn't a promise. Holds the runtime only for the
+  /// duration of the call.
+  private func callForAsync<R: Sendable>(
+    encodeArguments: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> ContiguousArray<JavaScriptValue>,
+    decodeResult: @escaping @JavaScriptActor (JavaScriptValue, JavaScriptRuntime) throws -> R
+  ) async throws -> UncheckedSendableBox<AsyncOutcome<R>> {
+    let runtime = try liveRuntime()
+    return try await runtime.execute { () throws -> UncheckedSendableBox<AsyncOutcome<R>> in
+      let result = try self.call(encodeArguments, in: runtime)
+      guard result.isThenable() else {
+        return UncheckedSendableBox(.value(try decodeResult(result, runtime)))
+      }
+      return UncheckedSendableBox(.promise(JavaScriptPromise.Ref(try JavaScriptPromise(runtime, result.getObject()))))
     }
   }
 
