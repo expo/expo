@@ -1,4 +1,5 @@
 import { Log } from '../../../log';
+import { copyBinaryToOutputAsync } from '../../copyBinaryToOutputAsync';
 import { debugEvent, event } from '../../events';
 import type { ResolvedOptions } from '../../resolveOptions';
 import { compileIosAsync } from '../compileIosAsync';
@@ -7,6 +8,7 @@ import { resolveOptionsAsync } from '../resolveOptions';
 import { buildAsync, getAppPathAsync } from '../xcodebuild';
 
 jest.mock('../../../log');
+jest.mock('../../copyBinaryToOutputAsync');
 jest.mock('../resolveOptions');
 jest.mock('../xcodebuild');
 jest.mock('../../events', () => {
@@ -75,6 +77,20 @@ describe(compileIosAsync, () => {
     });
     expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Build complete'));
     expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Binary: /DerivedData/app.app'));
+  });
+
+  it(`copies the app to the output directory`, async () => {
+    mockPlatform('darwin');
+    jest.mocked(resolveOptionsAsync).mockResolvedValueOnce({ ...props, outputDir: '/app/build' });
+    jest.mocked(getAppPathAsync).mockResolvedValueOnce('/DerivedData/app.app');
+    jest.mocked(copyBinaryToOutputAsync).mockResolvedValueOnce('/app/build/app.app');
+    await compileIosAsync('/app', options);
+    expect(copyBinaryToOutputAsync).toHaveBeenCalledWith('/DerivedData/app.app', '/app/build');
+    expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Binary: /app/build/app.app'));
+    expect(jest.mocked(event.span).mock.results[0]?.value).toHaveBeenCalledWith(
+      'done',
+      expect.objectContaining({ outputPath: '/app/build/app.app' })
+    );
   });
 
   it(`reports a failed build`, async () => {
