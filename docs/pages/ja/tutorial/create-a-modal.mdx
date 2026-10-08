@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
 
 上記のコードが何をしているのか確認しましょう。
 
-- `BottomSheet` コンポーネントは、[第 3 章](/ja/tutorial/build-a-screen/#expo-ui-でネイティブボタンを使用する) でインストールした `@expo/ui` から提供されます。Android では Material 3 のボトムシートを表示します。iOS では SwiftUI のシートを表示します。web では、ページ下部にシートを表示します。
+- `BottomSheet` コンポーネントは、デフォルトテンプレートにすでに含まれている `@expo/ui` から提供されます。Android では Material 3 のボトムシートを表示します。iOS では SwiftUI のシートを表示します。web では、ページ下部にシートを表示します。
 - `isPresented` プロパティは `isVisible` の値を受け取り、ボトムシートが開いているか閉じているかを制御します。
 - `onDismiss` プロパティは、ユーザーがボトムシートを閉じたときに `onClose` を呼び出します。ユーザーは、ボトムシートを下にスワイプするか、ボトムシートの外側をタップして閉じることができます。Android では、戻るボタンでも閉じます。web では、<kbd>Esc</kbd> キーでも閉じます。
 - `snapPoints` プロパティは、ボトムシートが停止できる高さを設定します。`'half'` の値は、画面の高さの約半分でボトムシートを開きます。

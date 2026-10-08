@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
 
 Let's learn what the above code does:
 
-- The `BottomSheet` component comes from `@expo/ui`, which we installed in the [third chapter](/tutorial/build-a-screen/#use-native-buttons-with-expo-ui). On Android, it displays a Material 3 bottom sheet. On iOS, it displays a SwiftUI sheet. On web, it displays a sheet at the bottom of the page.
+- The `BottomSheet` component comes from `@expo/ui`, which the default template already includes. On Android, it displays a Material 3 bottom sheet. On iOS, it displays a SwiftUI sheet. On web, it displays a sheet at the bottom of the page.
 - Its `isPresented` prop takes the value of `isVisible` and controls whether the bottom sheet is open or closed.
 - Its `onDismiss` prop calls `onClose` when the user closes the bottom sheet. The user can swipe the bottom sheet down or tap outside it. On Android, the back button also closes it. On web, the <kbd>Esc</kbd> key also closes it.
 - Its `snapPoints` prop sets the heights where the bottom sheet can rest. The `'half'` value opens it at about half of the screen height.
