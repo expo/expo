@@ -1,6 +1,11 @@
 import isEqual from 'react-fast-compare';
 
-import { findRouteNodeByName, getValidInitialRouteName, type RouteNode } from '../Route';
+import {
+  findRouteNodeByName,
+  getValidInitialRouteName,
+  isLayoutRouteNode,
+  type RouteNode,
+} from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
@@ -241,7 +246,8 @@ function createDestinationState(
   const initialRouteName = getValidInitialRouteName(routeNode);
   // Sort like a mounted navigator does, so the route names match on mount and no
   // ROUTE_NAMES_CHANGED action is queued.
-  const routeNames = [...routeNode.children]
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
+  const routeNames = [...(isLayoutRouteNode(routeNode) ? routeNode.children : [])]
     .sort(sortRoutesWithInitial(initialRouteName))
     .map((child) => child.route);
   if (!targetRoute) {

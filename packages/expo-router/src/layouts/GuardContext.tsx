@@ -3,7 +3,12 @@
 import { createContext, use, useMemo, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
-import { getValidInitialRoute, LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
+import {
+  getValidInitialRoute,
+  isLayoutRouteNode,
+  LocalRouteParamsContext,
+  sortRoutesWithInitial,
+} from '../Route';
 import { getContextKey } from '../matchers';
 import type { Href } from '../types';
 
@@ -28,13 +33,15 @@ export function GuardContextProvider({
   const parentFallbacks = use(GuardRedirectFallbackContext);
   const params = use(LocalRouteParamsContext);
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
+  const nodeChildren = isLayoutRouteNode(node) ? node.children : undefined;
+  const nodeInitialRouteName = isLayoutRouteNode(node) ? node.initialRouteName : undefined;
   const { fallbacks, resolvedGuards } = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
     [
       node,
-      node?.children,
+      nodeChildren,
       node?.contextKey,
-      node?.initialRouteName,
+      nodeInitialRouteName,
       params,
       parentFallbacks,
       guardConfigurationKey,
@@ -123,7 +130,10 @@ function findDefaultRedirectRouteInNavigator(
   guardedRedirects: GuardedRedirects
 ): RouteNode | undefined {
   const anchor = getValidInitialRoute(node);
-  const children = [...node.children].sort(sortRoutesWithInitial(anchor?.route));
+  // TODO(@ubax): Extract layout child sorting into a shared helper.
+  const children = [...(isLayoutRouteNode(node) ? node.children : [])].sort(
+    sortRoutesWithInitial(anchor?.route)
+  );
 
   if (anchor && !isRouteGuarded(anchor.route, guardedRedirects)) {
     return anchor;

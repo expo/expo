@@ -2,9 +2,10 @@ import { getReactNavigationScreensConfig } from '../getReactNavigationConfig';
 
 const mockRoutes = [
   {
+    type: 'layout',
     children: [
       {
-        children: [],
+        type: 'route',
         dynamic: null,
         route: 'people',
         contextKey: './(second-group)/people.tsx',
@@ -15,9 +16,10 @@ const mockRoutes = [
     contextKey: './(second-group)/_layout.tsx',
   },
   {
+    type: 'layout',
     children: [
       {
-        children: [],
+        type: 'route',
         dynamic: [
           {
             name: 'deep',
@@ -28,7 +30,7 @@ const mockRoutes = [
         contextKey: './(group)/[...deep].tsx',
       },
       {
-        children: [],
+        type: 'route',
         dynamic: [
           {
             name: 'dynamic',
@@ -39,7 +41,7 @@ const mockRoutes = [
         contextKey: './(group)/[dynamic].tsx',
       },
       {
-        children: [],
+        type: 'route',
         dynamic: null,
         route: 'index',
         contextKey: './(group)/index.tsx',
@@ -50,7 +52,7 @@ const mockRoutes = [
     contextKey: './(group)/_layout.tsx',
   },
   {
-    children: [],
+    type: 'route',
     dynamic: [
       {
         name: 'screen',
@@ -61,7 +63,7 @@ const mockRoutes = [
     contextKey: './other/nested/[...screen].js',
   },
   {
-    children: [],
+    type: 'route',
     dynamic: null,
     route: '_sitemap',
     contextKey: './_sitemap.tsx',

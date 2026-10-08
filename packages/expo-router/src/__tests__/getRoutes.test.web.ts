@@ -3,6 +3,23 @@ import type { RewriteConfig } from '../getRoutesCore';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 describe('rewrites', () => {
+  it('throws when a rewrite source is a layout', () => {
+    expect(() =>
+      getRoutes(
+        inMemoryContext({
+          './_layout': () => null,
+          './other': () => null,
+        }),
+        {
+          rewrites: [{ source: '/_layout', destination: '/other' } as RewriteConfig],
+          preserveRedirectAndRewrites: true,
+        }
+      )
+    ).toThrow(
+      'The rewrite source "_layout" is a layout. Layouts can\'t be rewrite sources. Use a route as the source instead.'
+    );
+  });
+
   it('can handle rewrites', () => {
     expect(
       getRoutes(
@@ -19,7 +36,6 @@ describe('rewrites', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './old.js',
           destinationContextKey: './(app)/index.js',
           dynamic: null,
@@ -28,7 +44,6 @@ describe('rewrites', () => {
           type: 'rewrite',
         },
         {
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -65,7 +80,6 @@ describe('rewrites', () => {
     expect(routes).toEqual({
       children: [
         {
-          children: [],
           contextKey: './index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './index.js'],
@@ -73,7 +87,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './about.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './about.js'],
@@ -81,7 +94,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './contact.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './contact.js'],
@@ -89,7 +101,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './info.js',
           destinationContextKey: './about.js',
           dynamic: null,
@@ -98,7 +109,6 @@ describe('rewrites', () => {
           type: 'rewrite',
         },
         {
-          children: [],
           contextKey: './reach-us.js',
           destinationContextKey: './contact.js',
           dynamic: null,
@@ -134,7 +144,6 @@ describe('rewrites', () => {
     expect(routes).toEqual({
       children: [
         {
-          children: [],
           contextKey: './info.js',
           destinationContextKey: './(app)/index.js',
           dynamic: null,
@@ -143,7 +152,6 @@ describe('rewrites', () => {
           type: 'rewrite',
         },
         {
-          children: [],
           contextKey: './news.js',
           destinationContextKey: './(app)/index.js',
           dynamic: null,
@@ -152,7 +160,6 @@ describe('rewrites', () => {
           type: 'rewrite',
         },
         {
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -185,7 +192,6 @@ describe('rewrites', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -193,7 +199,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(app)/[slug].js',
           dynamic: [
             {
@@ -206,7 +211,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './old/[slug].js',
           destinationContextKey: './(app)/[slug].js',
           dynamic: [
@@ -246,7 +250,6 @@ describe('rewrites', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './(app)/index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -254,7 +257,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './(app)/[slug].js',
           dynamic: [
             {
@@ -267,7 +269,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './old/[slug].js',
           dynamic: [
             {
@@ -305,7 +306,6 @@ describe('rewrites', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './+not-found.js',
           dynamic: [
             {
@@ -319,7 +319,6 @@ describe('rewrites', () => {
           type: 'route',
         },
         {
-          children: [],
           contextKey: './404.js',
           destinationContextKey: './+not-found.js',
           dynamic: null,
@@ -354,7 +353,6 @@ describe('middleware', () => {
     ).toEqual({
       children: [
         {
-          children: [],
           contextKey: './index.js',
           dynamic: null,
           entryPoints: ['expo-router/build/views/Navigator.js', './index.js'],

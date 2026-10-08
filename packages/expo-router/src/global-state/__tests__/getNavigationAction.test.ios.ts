@@ -30,7 +30,7 @@ const getStateFromPath = jest.fn((_path: string) => ({
 const config: NavigateActionConfig = {
   registry: new Map(),
   routeNode: {
-    type: 'route' as const,
+    type: 'layout' as const,
     route: 'root',
     contextKey: 'root',
     children: [],

@@ -56,6 +56,7 @@ describe(serialAssetsToStaticContentAssets, () => {
       }),
     ];
     const route = {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any;
@@ -100,6 +101,16 @@ describe(serialAssetsToStaticContentAssets, () => {
 
     expect(assets.css).toEqual([{ type: 'inline', source: '.a{}', hmrId: 'a' }]);
     expect(assets.js).toEqual(['/index.bundle?platform=web']);
+  });
+
+  it('loads without the optional expo-router peer', () => {
+    jest.isolateModules(() => {
+      jest.doMock('expo-router/build/Route', () => {
+        throw new Error("Cannot find module 'expo-router/build/Route'");
+      });
+      expect(() => require('../serializeHtml')).not.toThrow();
+    });
+    jest.dontMock('expo-router/build/Route');
   });
 });
 
@@ -241,6 +252,7 @@ it('serializes HTML with async chunks in correct order for dynamic routes', () =
     isExporting: true,
     template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
     route: {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any,
@@ -287,6 +299,7 @@ it('places sync entry scripts after async chunks so preloaded chunks resolve syn
     isExporting: true,
     template: '<!DOCTYPE html><html><head></head><body><div id="root"></div></body></html>',
     route: {
+      type: 'route',
       contextKey: './[slug].tsx',
       entryPoints: ['/app/_layout.tsx', '/app/[slug].tsx'],
     } as any,

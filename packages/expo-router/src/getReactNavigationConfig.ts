@@ -1,4 +1,4 @@
-import type { RouteNode } from './Route';
+import { isLayoutRouteNode, type RouteNode } from './Route';
 import { matchDynamicName } from './matchers';
 
 export type Screen =
@@ -48,7 +48,8 @@ export function parseRouteSegments(segments: string): string {
 
 function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
   const path = parseRouteSegments(node.route);
-  if (!node.children.length) {
+  const children = isLayoutRouteNode(node) ? node.children : [];
+  if (!children.length) {
     if (!metaOnly) {
       return {
         path,
@@ -58,19 +59,20 @@ function convertRouteNodeToScreen(node: RouteNode, metaOnly: boolean): Screen {
     }
     return path;
   }
-  const screens = getReactNavigationScreensConfig(node.children, metaOnly);
+  const screens = getReactNavigationScreensConfig(children, metaOnly);
 
   const screen: Screen = {
     path,
     screens,
   };
 
-  if (node.initialRouteName) {
+  const initialRouteName = isLayoutRouteNode(node) ? node.initialRouteName : undefined;
+  if (initialRouteName) {
     // NOTE(EvanBacon): This is bad because it forces all Layout Routes
     // to be loaded into memory. We should move towards a system where
     // the initial route name is either loaded asynchronously in the Layout Route
     // or defined via a file system convention.
-    screen.initialRouteName = node.initialRouteName;
+    screen.initialRouteName = initialRouteName;
   }
 
   if (!metaOnly) {
@@ -92,13 +94,17 @@ export function getReactNavigationScreensConfig(
 export function getReactNavigationConfig(routeTree: RouteNode | null, metaOnly: boolean) {
   const config = {
     initialRouteName: undefined,
-    screens: routeTree ? getReactNavigationScreensConfig(routeTree.children, metaOnly) : {},
+    screens: isLayoutRouteNode(routeTree)
+      ? getReactNavigationScreensConfig(routeTree.children, metaOnly)
+      : {},
   };
 
-  if (routeTree?.initialRouteName) {
+  // TODO(@ubax): Build this config from a narrowed layout node.
+  const initialRouteName = isLayoutRouteNode(routeTree) ? routeTree.initialRouteName : undefined;
+  if (initialRouteName) {
     // We're using LinkingOptions the generic type is `object` instead of a proper ParamList.
     // So we need to cast the initialRouteName to `any` to avoid type errors.
-    config.initialRouteName = routeTree.initialRouteName as any;
+    config.initialRouteName = initialRouteName as any;
   }
 
   return config;

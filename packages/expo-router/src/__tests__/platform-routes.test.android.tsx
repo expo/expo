@@ -24,7 +24,6 @@ it(`should only load android and native routes`, () => {
   ).toEqual({
     children: [
       {
-        children: [],
         contextKey: './(app)/index.js',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/index.js'],
@@ -32,7 +31,6 @@ it(`should only load android and native routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page.ts'],
@@ -40,7 +38,6 @@ it(`should only load android and native routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page2.native.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page2.native.ts'],
@@ -48,7 +45,6 @@ it(`should only load android and native routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page3.android.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page3.android.ts'],
@@ -56,7 +52,6 @@ it(`should only load android and native routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(app)/page4.ts',
         dynamic: null,
         entryPoints: ['expo-router/build/views/Navigator.js', './(app)/page4.ts'],
@@ -87,7 +82,6 @@ it(`should work with layout routes`, () => {
       {
         children: [
           {
-            children: [],
             contextKey: './(app)/index.tsx',
             dynamic: null,
             entryPoints: [
