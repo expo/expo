@@ -1,6 +1,6 @@
 ---
 title: ステッカーを追加する
-description: この章では、AI エージェントに指示して絵文字ピッカーのモーダルを追加し、ドラッグとタップのジェスチャーでステッカーを操作できるようにします。
+description: この章では、AI エージェントに指示してボトムシートに絵文字ピッカーを追加し、ドラッグとタップのジェスチャーでステッカーを操作できるようにします。
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -17,22 +17,22 @@ import { Step } from '~/ui/components/Step';
 写真が選ばれたら、アプリは「写真を選ぶ」モードから「写真を装飾する」モードに切り替わるべきです。次のプロンプトをエージェントに貼り付けてください。
 
 ```text プロンプト|wrap
-写真が選ばれたら（ライブラリから選んだ場合でも、"Use this photo" をタップした場合でも）、2 つのボタンをオプションの行に置き換えて。左側には元のボタンに戻す "Reset" オプション、中央には丸い "+" ボタンを置いて。"+" をタップすると、画面下から "Choose a sticker" というタイトルのモーダルがスライドして表示され、assets/images フォルダ内の絵文字画像を横スクロールのリストで表示して。絵文字をタップしたらモーダルを閉じて、その絵文字を写真の上にステッカーとして配置して。
+写真が選ばれたら（ライブラリから選んだ場合でも、"Use this photo" をタップした場合でも）、2 つのボタンをオプションの行に置き換えて。左側には元のボタンに戻す "Reset" オプション、中央には丸い "+" ボタンを置いて。"+" をタップすると、Expo UI（@expo/ui）の BottomSheet コンポーネントを使って、"Choose a sticker" というタイトルのボトムシートを開いて。シートには assets/images フォルダ内の絵文字画像を 3 列のグリッドで表示して。絵文字をタップしたらシートを閉じて、その絵文字を写真の上にステッカーとして配置して。
 ```
 
 <Collapsible summary="英語の原文プロンプト">
 
 ```text Prompt|wrap
-When a photo has been chosen (either picked from the library or by tapping "Use this photo"), replace the two buttons with a row of options: a "Reset" option on the left that brings back the original buttons, and a circular "+" button in the middle. Tapping "+" should slide up a modal from the bottom titled "Choose a sticker" that shows the emoji images from the assets/images folder in a horizontally scrolling list. When I tap an emoji, close the modal and place that emoji on top of the photo as a sticker.
+When a photo has been chosen (either picked from the library or by tapping "Use this photo"), replace the two buttons with a row of options: a "Reset" option on the left that brings back the original buttons, and a circular "+" button in the middle. Tapping "+" should open a bottom sheet titled "Choose a sticker", using the BottomSheet component from Expo UI (@expo/ui). The sheet shows the emoji images from the assets/images folder in a grid with three columns. When I tap an emoji, close the sheet and place that emoji on top of the photo as a sticker.
 ```
 
 </Collapsible>
 
-**表示されるもの**: 写真を選ぶと、ボタンが新しいオプションの行に変わります。**+** をタップすると絵文字のパネルがスライドして表示され、リストを横にスクロールできます。いずれかをタップするとパネルが閉じて、写真の上に絵文字が表示されます。
+**表示されるもの**: 写真を選ぶと、ボタンが新しいオプションの行に変わります。**+** をタップすると、絵文字のグリッドを含むボトムシートがスライドして表示されます。いずれかをタップするとシートが閉じて、写真の上に絵文字が表示されます。
 
 <ContentSpotlight
-  alt="画面下からスライドして表示される絵文字ピッカーのモーダル"
-  src="/static/images/tutorial/emoji-picker.webp"
+  alt="Android、iOS、web で絵文字のグリッドを表示するボトムシート"
+  src="/static/images/tutorial/create-a-modal-emoji-list.webp"
   className="max-w-[720px]"
 />
 
