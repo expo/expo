@@ -58,50 +58,7 @@ After upgrading or changing `asyncRoutes`, clear the Metro cache with `expo star
 
 ### Move navigation hooks out of the root HTML
 
-In SDK 58, the [root HTML](/router/web/static-rendering/#root-html) component in **app/+html.tsx** renders outside the navigation tree. Navigation hooks, such as `usePathname`, `useSegments`, `useLocalSearchParams`, and `useRouter`, no longer work inside it.
-
-Move code that uses these hooks into the [root layout](/router/basics/navigation-layouts/#root-layout) in **app/\_layout.tsx**:
-
-<DiffBlock
-  raw={`diff --git a/app/+html.tsx b/app/+html.tsx
---- a/app/+html.tsx
-+++ b/app/+html.tsx
-@@ -1,14 +1,11 @@
--import { usePathname } from 'expo-router';
- import { ScrollViewStyleReset } from 'expo-router/html';
- import { type PropsWithChildren } from 'react';
- 
- export default function Root({ children }: PropsWithChildren) {
--  const pathname = usePathname();
-   return (
-     <html lang="en">
-       <head>
-         <meta charSet="utf-8" />
--        <link rel="canonical" href={\`https://example.com\${pathname}\`} />
-         <ScrollViewStyleReset />
-       </head>
-       <body>{children}</body>
-diff --git a/app/_layout.tsx b/app/_layout.tsx
---- a/app/_layout.tsx
-+++ b/app/_layout.tsx
-@@ -1,5 +1,13 @@
--import { Stack } from 'expo-router';
-+import { Stack, usePathname } from 'expo-router';
-+import Head from 'expo-router/head';
- 
- export default function RootLayout() {
--  return <Stack />;
-+  const pathname = usePathname();
-+  return (
-+    <>
-+      <Head>
-+        <link rel="canonical" href={\`https://example.com\${pathname}\`} />
-+      </Head>
-+      <Stack />
-+    </>
-+  );
- }`}
-/>
+In SDK 58, navigation hooks, such as `usePathname`, `useSegments`, `useLocalSearchParams`, and `useRouter`, no longer work in the [root HTML](/router/web/static-rendering/#root-html) component in **app/+html.tsx**. Use them in the [root layout](/router/basics/navigation-layouts/#root-layout) in **app/\_layout.tsx** instead.
 
 ### Prefer `useRouter` in components
 
