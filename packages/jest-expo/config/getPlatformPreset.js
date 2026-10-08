@@ -53,7 +53,7 @@ function getPlatformPreset(displayOptions, extensions, platform, { isServer, isR
         {
           caller: {
             name: 'metro',
-            bundler: 'metro',
+            bundler: 'jest',
             // Add support for the `platform` babel transforms and inlines such as
             // Platform.OS and `process.env.EXPO_OS`.
             platform,

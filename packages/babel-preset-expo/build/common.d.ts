@@ -1,6 +1,6 @@
 import type { NodePath, types as t } from '@babel/core';
 /** Determine which bundler is being used. */
-export declare function getBundler(caller?: any): "metro" | "webpack" | null;
+export declare function getBundler(caller?: any): 'metro' | 'webpack' | 'jest' | null;
 export declare function getPlatform(caller?: any): string | null;
 export declare function getEngine(caller?: any): 'hermes' | 'default' | (string & {});
 export declare function getPossibleProjectRoot(caller?: any): string | null | undefined;
