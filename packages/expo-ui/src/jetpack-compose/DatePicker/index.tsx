@@ -132,14 +132,14 @@ export interface DateTimePickerProps {
    */
   showVariantToggle?: boolean;
   /**
-   * Show the picker's title (for example, "Select date"). When `false`, Material 3's `title` slot
-   * is set to `null`.
+   * Whether the picker shows its title, such as "Select date". When `false`, Material 3's `title`
+   * slot is set to `null`.
    * @default true
    */
   showTitle?: boolean;
   /**
-   * Show the picker's headline, which displays the current selection. When `false`, Material 3's
-   * `headline` slot is set to `null`.
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * Material 3's `headline` slot is set to `null`.
    * @default true
    */
   showHeadline?: boolean;
@@ -265,14 +265,14 @@ export interface DateRangePickerProps {
    */
   showVariantToggle?: boolean;
   /**
-   * Show the picker's title (for example, "Select date"). When `false`, Material 3's `title` slot
-   * is set to `null`.
+   * Whether the picker shows its title, such as "Select date". When `false`, Material 3's `title`
+   * slot is set to `null`.
    * @default true
    */
   showTitle?: boolean;
   /**
-   * Show the picker's headline, which displays the current selection. When `false`, Material 3's
-   * `headline` slot is set to `null`.
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * Material 3's `headline` slot is set to `null`.
    * @default true
    */
   showHeadline?: boolean;
