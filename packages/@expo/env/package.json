@@ -37,10 +37,10 @@
     "getenv": "^2.0.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/debug": "^4.1.7",
-    "@types/getenv": "^1.0.0",
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "@types/getenv": "^1.0.3",
+    "memfs": "^3.6.0"
   },
   "engines": {
     "node": ">=20.12.0"

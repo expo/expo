@@ -21,6 +21,14 @@ const HomeIndex = () => {
         <Text>Params</Text>
         <Text>Current Path: {pathname}</Text>
       </View>
+      <CaseLink
+        href="/params/query-serialization?space=start%20end&plus=a%2Bb&array=first%20value&array=second%2Bvalue&unicode=caf%C3%A9%20%F0%9F%98%80&symbols=*%7E%26%3D%23%2F%3F#section"
+        text="Query serialization (%20 spaces)"
+      />
+      <CaseLink
+        href="/params/query-serialization?space=start+end&plus=a%2Bb&array=first+value&array=second%2Bvalue&unicode=caf%C3%A9+%F0%9F%98%80&symbols=*%7E%26%3D%23%2F%3F#section"
+        text="Query serialization (+ spaces)"
+      />
       <CaseLink href="/params/123" text="/params/123" />
       <CaseLink href="/params/123?a=x&b=0" text="/params/123?a=x&b=0" />
       <CaseLink

@@ -1,5 +1,54 @@
 # expo-template-default
 
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50941](https://github.com/expo/expo/pull/50941), [#50863](https://github.com/expo/expo/pull/50863), [#51092](https://github.com/expo/expo/pull/51092), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#50916](https://github.com/expo/expo/pull/50916), [#51115](https://github.com/expo/expo/pull/51115), [#51084](https://github.com/expo/expo/pull/51084))
+  - @expo/ui@58.0.14
+  - expo@58.0.6
+  - expo-image@58.0.13
+  - expo-router@58.0.16
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51138](https://github.com/expo/expo/pull/51138))
+  - expo-font@58.0.7
+  - expo@58.0.5
+  - expo-router@58.0.15
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51059](https://github.com/expo/expo/pull/51059), [#50997](https://github.com/expo/expo/pull/50997), [#50988](https://github.com/expo/expo/pull/50988), [#50893](https://github.com/expo/expo/pull/50893), [#51116](https://github.com/expo/expo/pull/51116), [#51007](https://github.com/expo/expo/pull/51007), [#51053](https://github.com/expo/expo/pull/51053), [#50910](https://github.com/expo/expo/pull/50910), [#50909](https://github.com/expo/expo/pull/50909), [#51108](https://github.com/expo/expo/pull/51108))
+  - expo-image@58.0.12
+  - expo-web-browser@58.0.6
+  - expo@58.0.4
+  - @expo/ui@58.0.13
+  - expo-router@58.0.14
+  - expo-splash-screen@58.0.6
+  - expo-constants@58.0.10
+  - expo-linking@58.0.11
+
+## 58.0.12
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+- Fix the directory names in the README's `reset-project` section. ([#50443](https://github.com/expo/expo/pull/50443) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50984](https://github.com/expo/expo/pull/50984), [#50927](https://github.com/expo/expo/pull/50927), [#50458](https://github.com/expo/expo/pull/50458), [#50965](https://github.com/expo/expo/pull/50965), [#49035](https://github.com/expo/expo/pull/49035), [#50725](https://github.com/expo/expo/pull/50725), [#50853](https://github.com/expo/expo/pull/50853), [#50959](https://github.com/expo/expo/pull/50959), [#50687](https://github.com/expo/expo/pull/50687), [#50442](https://github.com/expo/expo/pull/50442))
+  - @expo/ui@58.0.12
+  - expo@58.0.3
+  - expo-router@58.0.13
+  - expo-font@58.0.6
+  - expo-image@58.0.11
+  - expo-web-browser@58.0.5
+  - expo-symbols@58.0.4
+  - expo-splash-screen@58.0.5
+
 ## 58.0.11
 
 ### Patch Changes

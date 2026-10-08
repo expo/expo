@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- Warn when a package's `app.plugin.js` is missing from its `package.json:exports`, since tools that resolve the config plugin through Node can't find it. ([#51080](https://github.com/expo/expo/pull/51080) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump `@expo/sdk-runtime-versions` to `^1.0.1`. ([#50955](https://github.com/expo/expo/pull/50955) by [@kitten](https://github.com/kitten))
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.4
 
 ### Patch Changes

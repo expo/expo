@@ -109,6 +109,8 @@ Important flags:
 | `--package-version`         | Controller package version. Defaults to the service's latest version                                                                                                           |
 | `--max-duration-minutes`    | Automatic session stop time. Custom values are available on paid plans; otherwise the default depends on job priority                                                          |
 | `--max-idle-time-minutes`   | Stop after this many minutes without session activity. When omitted, the session has no idle timeout and runs until its maximum duration                                       |
+| `--network-capture`         | Record HTTP(S) traffic from apps on an iOS device. See [Record network traffic](/preview/eas-simulator/run-and-control/#record-network-traffic)                                |
+| `--network-capture-field`   | What a recording also keeps: `header`, `query`, `request-body`, or `response-body`. Repeat or comma-separate. Requires `--network-capture`                                     |
 | `--out-config-type`         | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                                                      |
 | `--[no-]force`              | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                                                        |
 | `--non-interactive`         | Return after the session is ready instead of staying attached                                                                                                                  |

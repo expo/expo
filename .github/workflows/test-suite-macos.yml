@@ -2,8 +2,9 @@ name: Test Suite macOS
 
 on:
   workflow_dispatch: {}
-  pull_request:
-    paths:
+  push:
+    branches: [main]
+    paths: &trigger_paths
       - .github/workflows/test-suite-macos.yml
       - apps/bare-expo/macos/**
       - apps/bare-expo/scripts/setup-macos-project.sh
@@ -50,6 +51,8 @@ on:
       - '!**/.fingerprintignore'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+  pull_request:
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

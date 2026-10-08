@@ -460,6 +460,32 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
     return result
   }
 
+  /// Transforms each element like `map(_:)`, but lends each element to `transform` as a
+  /// `JavaScriptUnownedValue` instead of wrapping it in a new `JavaScriptValue`. An element is valid only
+  /// for the duration of its `transform` call and must not be stored or escaped.
+  public func mapUnowned<T>(_ transform: (borrowing JavaScriptUnownedValue) throws -> T) rethrows -> [T] {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let count = self.length
+    var result: [T] = []
+    result.reserveCapacity(count)
+    for index in 0..<count {
+      let element = pointee.getValueAtIndex(jsiRuntime, index)
+      // `withUnsafeBytes(of:)` rather than `withUnsafePointer(to:)`; see `JavaScriptValue.withUnsafePointee(_:)`.
+      try withUnsafeBytes(of: element) { bytes in
+        guard let baseAddress = bytes.baseAddress else {
+          preconditionFailure(
+            "withUnsafeBytes(of:) gave an empty buffer for a jsi::Value, which can't happen for a non-zero-sized type"
+          )
+        }
+        let pointer = baseAddress.assumingMemoryBound(to: facebook.jsi.Value.self)
+        result.append(try transform(JavaScriptUnownedValue(jsiRuntime, pointer)))
+      }
+    }
+    return result
+  }
+
   /// Converts the JavaScript array to a `JavaScriptValue`.
   ///
   /// - Returns: A `JavaScriptValue` representing this array

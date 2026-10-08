@@ -6,6 +6,9 @@ interface DynamicNameMatch {
   deep: boolean;
 }
 
+// NOTE(@hassankhan): Should we retrieve these from a more central location?
+export const VALID_PLATFORMS = new Set(['android', 'ios', 'native', 'web']);
+
 /** Match `[page]` -> `page` */
 export function matchDynamicName(name: string): DynamicNameMatch | undefined {
   const paramName = name.match(dynamicNameRe)?.[1];
@@ -42,10 +45,27 @@ export function getNameFromFilePath(name: string): string {
   return removeSupportedExtensions(removeFileSystemDots(name));
 }
 
+export function getPlatformFromFilePath(filePath: string): string | undefined {
+  const filename = getNameFromFilePath(filePath).split('/').pop()!;
+  const extensionIndex = filename.lastIndexOf('.');
+
+  if (extensionIndex < 0) {
+    return undefined;
+  }
+
+  const platform = filename.slice(extensionIndex + 1);
+  return VALID_PLATFORMS.has(platform) ? platform : undefined;
+}
+
 export function getContextKey(name: string): string {
   // The root path is `` (empty string) so always prepend `/` to ensure
   // there is some value.
-  const normal = '/' + getNameFromFilePath(name);
+  const contextKey = getNameFromFilePath(name);
+  const platform = getPlatformFromFilePath(name);
+  const contextKeyWithoutPlatform = platform
+    ? contextKey.slice(0, -(platform.length + 1))
+    : contextKey;
+  const normal = '/' + contextKeyWithoutPlatform;
   if (!normal.endsWith('_layout')) {
     return normal;
   }

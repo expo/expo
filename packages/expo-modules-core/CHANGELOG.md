@@ -1,5 +1,36 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fixed a data race on the Fabric view state-prop map when Expo registers its view components while React Native builds a component descriptor registry on another thread. ([#51044](https://github.com/expo/expo/pull/51044) by [@hirvesh](https://github.com/hirvesh))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+
+## 58.0.13
+
+### Patch Changes
+
+- [macOS] Attach SwiftUI hosting views even when no `NSViewController` is in the responder chain, such as a React root view set directly as `NSWindow.contentView`. Previously, `@expo/ui` content in such windows rendered nothing. ([#50995](https://github.com/expo/expo/pull/50995) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Update `expo-modules-macros` to 0.15.0, which generates only the unowned decode for `@Union` and skips cases whose `decodableKinds` can't match. ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+- [Internal] Make `AppContext` non-final, so that `TestAppContext` from `expo-modules-test-core` can subclass it. ([#51015](https://github.com/expo/expo/pull/51015) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed a race where a promise resolved and rejected from different threads at the same time could settle twice and throw on the JavaScript thread. ([#51052](https://github.com/expo/expo/pull/51052) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] An Expo Modules API 2.0 module that throws a `CodedException` now reports its `code` to JavaScript. ([#51036](https://github.com/expo/expo/pull/51036) by [@lukmccall](https://github.com/lukmccall))
+- Updated dependencies. ([#50859](https://github.com/expo/expo/pull/50859), [#51015](https://github.com/expo/expo/pull/51015), [#51004](https://github.com/expo/expo/pull/51004), [#51040](https://github.com/expo/expo/pull/51040), [#51055](https://github.com/expo/expo/pull/51055))
+  - expo-modules-jsi@58.0.9
+
+## 58.0.12
+
+### Patch Changes
+
+- [Internal][Android] `expoPublish` now formats the updated `expo-module.config.json` with `oxfmt` instead of `prettier`. ([#47438](https://github.com/expo/expo/pull/47438) by [@hassankhan](https://github.com/hassankhan))
+- [iOS] Add `decodableKinds` to `JavaScriptDecodable`: the kinds of JavaScript value (`JavaScriptValueKinds`) that `decode` can accept, so code that picks between several types can skip the ones that can't match. ([#50905](https://github.com/expo/expo/pull/50905) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `JavaScriptValue.withUnownedValue(in:_:)`, and give the owning `JavaScriptDecodable.decode` a default that borrows the value and decodes it through the `JavaScriptUnownedValue` overload, so a conformer can implement only that one. Arrays, dictionaries, dates, records and enums now decode unowned values without copying them first. ([#50960](https://github.com/expo/expo/pull/50960) by [@tsapeta](https://github.com/tsapeta))
+- Fixed native views ignoring `aria-*`, `id` and `tabIndex` props such as `aria-hidden` and `aria-label` ([#50782](https://github.com/expo/expo/issues/50782)). ([#50959](https://github.com/expo/expo/pull/50959) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed `release()` throwing on a shared object whose JS object is frozen, for example an `ImageRef` passed as a view prop in development ([#50962](https://github.com/expo/expo/issues/50962)). ([#50970](https://github.com/expo/expo/pull/50970) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#50905](https://github.com/expo/expo/pull/50905), [#50698](https://github.com/expo/expo/pull/50698), [#50937](https://github.com/expo/expo/pull/50937), [#50888](https://github.com/expo/expo/pull/50888), [#50960](https://github.com/expo/expo/pull/50960), [#50980](https://github.com/expo/expo/pull/50980), [#50354](https://github.com/expo/expo/pull/50354))
+  - expo-modules-jsi@58.0.8
+
 ## 58.0.11
 
 ### Patch Changes

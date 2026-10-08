@@ -87,6 +87,7 @@ export async function test(t: any) {
       const albumName = createAlbumName('stress test moving directories');
       const album = await Album.create(albumName, createdAssets);
       albumsContainer.push(album);
+      t.expect((await album.getAssets()).length).toBe(createdAssets.length);
     });
   });
   t.describe('Album creation', () => {

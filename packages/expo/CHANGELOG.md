@@ -1,5 +1,70 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047), [#51179](https://github.com/expo/expo/pull/51179), [#51044](https://github.com/expo/expo/pull/51044), [#50863](https://github.com/expo/expo/pull/50863), [#51092](https://github.com/expo/expo/pull/51092), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#50543](https://github.com/expo/expo/pull/50543), [#50696](https://github.com/expo/expo/pull/50696), [#51177](https://github.com/expo/expo/pull/51177))
+  - expo-modules-autolinking@58.0.10
+  - @expo/cli@58.1.5
+  - expo-modules-core@58.0.14
+  - @expo/metro-config@58.0.10
+  - babel-preset-expo@58.0.11
+  - expo-asset@58.0.13
+  - @expo/log-box@58.0.11
+  - expo-file-system@58.0.7
+
+## 58.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51138](https://github.com/expo/expo/pull/51138), [#50976](https://github.com/expo/expo/pull/50976))
+  - expo-file-system@58.0.6
+  - expo-font@58.0.7
+  - @expo/log-box@58.0.10
+  - @expo/cli@58.1.4
+
+## 58.0.4
+
+### Patch Changes
+
+- [iOS] Add an overridable `initialProperties` to `ExpoAppSceneDelegate`, restoring the root properties apps could pass through `RCTAppDelegate.initialProps` before React Native moved its startup into `scene(_:willConnectTo:)`. ([#50997](https://github.com/expo/expo/pull/50997) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add `./template.tgz` to the `exports` map so `expo/template.tgz` resolves again. Before, the `./*` wildcard mapped it to the nonexistent `template.tgz.js`, so `expo prebuild` couldn't use the template bundled with `expo` and fell back to downloading one from npm. ([#50988](https://github.com/expo/expo/pull/50988) by [@huytdps13400](https://github.com/huytdps13400))
+- Updated dependencies. ([#51066](https://github.com/expo/expo/pull/51066), [#51080](https://github.com/expo/expo/pull/51080), [#50995](https://github.com/expo/expo/pull/50995), [#50894](https://github.com/expo/expo/pull/50894), [#51015](https://github.com/expo/expo/pull/51015), [#51052](https://github.com/expo/expo/pull/51052), [#50989](https://github.com/expo/expo/pull/50989), [#51036](https://github.com/expo/expo/pull/51036), [#51089](https://github.com/expo/expo/pull/51089), [#51125](https://github.com/expo/expo/pull/51125), [#51085](https://github.com/expo/expo/pull/51085))
+  - @expo/cli@58.1.3
+  - @expo/config-plugins@58.0.6
+  - expo-modules-core@58.0.13
+  - @expo/metro-config@58.0.9
+  - @expo/config@58.0.3
+  - expo-constants@58.0.10
+  - expo-modules-autolinking@58.0.9
+  - babel-preset-expo@58.0.10
+  - @expo/local-build-cache-provider@58.0.3
+  - expo-asset@58.0.12
+
+## 58.0.3
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.3`. ([#50458](https://github.com/expo/expo/pull/50458) by [@hassankhan](https://github.com/hassankhan))
+- Use [the `TextDecoder` implementation](https://github.com/facebook/hermes/pull/1855) provided by Hermes in React Native 0.88. In addition to UTF-8, this new implementation supports more character encodings including UTF-16 LE and BE, Latin-1, and Windows-1252. Custom JavaScript runtimes must provide `TextDecoder` before initializing Expo. ([#50853](https://github.com/expo/expo/pull/50853) by [@savv](https://github.com/savv))
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50975](https://github.com/expo/expo/pull/50975), [#50974](https://github.com/expo/expo/pull/50974), [#47438](https://github.com/expo/expo/pull/47438), [#50016](https://github.com/expo/expo/pull/50016), [#50458](https://github.com/expo/expo/pull/50458), [#49305](https://github.com/expo/expo/pull/49305), [#50905](https://github.com/expo/expo/pull/50905), [#50960](https://github.com/expo/expo/pull/50960), [#50973](https://github.com/expo/expo/pull/50973), [#50959](https://github.com/expo/expo/pull/50959), [#50946](https://github.com/expo/expo/pull/50946), [#50965](https://github.com/expo/expo/pull/50965), [#50970](https://github.com/expo/expo/pull/50970), [#50354](https://github.com/expo/expo/pull/50354), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/cli@58.1.2
+  - @expo/config-plugins@58.0.5
+  - expo-modules-core@58.0.12
+  - @expo/metro-config@58.0.8
+  - babel-preset-expo@58.0.9
+  - @expo/log-box@58.0.9
+  - expo-modules-autolinking@58.0.8
+  - expo-font@58.0.6
+  - @expo/config@58.0.2
+  - @expo/fingerprint@0.21.3
+  - @expo/local-build-cache-provider@58.0.2
+  - expo-asset@58.0.11
+
 ## 58.0.2
 
 ### Patch Changes

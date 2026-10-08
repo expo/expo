@@ -1,6 +1,6 @@
 {
   "name": "expo-print",
-  "version": "58.0.4",
+  "version": "58.0.5",
   "description": "Provides an API for Android and iOS (AirPrint) printing functionality.",
   "keywords": [
     "airprint",
@@ -39,14 +39,14 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

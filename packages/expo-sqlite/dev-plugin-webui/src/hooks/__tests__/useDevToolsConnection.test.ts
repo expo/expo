@@ -90,7 +90,7 @@ describe('useDevToolsConnection - listDatabases', () => {
     });
 
     // Wait a tick to ensure the listener is registered
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise<void>((resolve) => setImmediate(() => resolve()));
 
     // Capture the method and params from sendMessage
     const sendMessageCall = mockClient.sendMessage.mock.calls[0];
@@ -123,7 +123,7 @@ describe('useDevToolsConnection - listDatabases', () => {
     });
 
     // Wait a tick to ensure the listener is registered
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise<void>((resolve) => setImmediate(() => resolve()));
 
     // Capture the requestId from sendMessage
     const sendMessageCall = mockClient.sendMessage.mock.calls[0];
@@ -164,7 +164,7 @@ describe('useDevToolsConnection - getDatabase', () => {
     });
 
     // Wait a tick to ensure the listener is registered
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise<void>((resolve) => setImmediate(() => resolve()));
 
     // Capture the method and params from sendMessage
     const sendMessageCall = mockClient.sendMessage.mock.calls[0];
@@ -197,7 +197,7 @@ describe('useDevToolsConnection - getDatabase', () => {
     });
 
     // Wait a tick to ensure the listener is registered
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise<void>((resolve) => setImmediate(() => resolve()));
 
     // Capture the requestId from sendMessage
     const sendMessageCall = mockClient.sendMessage.mock.calls[0];
@@ -285,7 +285,7 @@ describe('useDevToolsConnection - Response callback management', () => {
     });
 
     // Wait a tick to ensure listeners are registered
-    await new Promise((resolve) => setImmediate(resolve));
+    await new Promise<void>((resolve) => setImmediate(() => resolve()));
 
     // Capture requests' params
     const params1 = mockClient.sendMessage.mock.calls[0][1];

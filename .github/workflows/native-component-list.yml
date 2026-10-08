@@ -3,7 +3,7 @@ name: Native Component List app
 on:
   workflow_dispatch: {}
   pull_request:
-    paths:
+    paths: &trigger_paths
       - .github/workflows/native-component-list.yml
       - apps/native-component-list/**
       - packages/**
@@ -11,12 +11,7 @@ on:
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
-    paths:
-      - .github/workflows/native-component-list.yml
-      - apps/native-component-list/**
-      - packages/**
-      - pnpm-lock.yaml
-      - '!packages/@expo/cli/**'
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

@@ -1,5 +1,6 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system/legacy';
+import type { SharedObject } from 'expo-modules-core';
 import * as SQLite from 'expo-sqlite';
 import { SQLiteStorage } from 'expo-sqlite/kv-store';
 import path from 'path';
@@ -517,6 +518,117 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       }
       expect(String(error)).toMatch(/(Access to closed resource|Statement not found)/);
       await db.closeAsync();
+    });
+
+    nativeIt(
+      'rejects a statement after finalization reports its earlier execution error',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', {
+          useNewConnection: true,
+        });
+        try {
+          await db.execAsync(
+            'CREATE TABLE finalize_test (id INTEGER PRIMARY KEY); INSERT INTO finalize_test VALUES (1)'
+          );
+          const statement = await db.prepareAsync('INSERT INTO finalize_test VALUES (1)');
+          let executionError = null;
+          try {
+            await statement.executeAsync();
+          } catch (error) {
+            executionError = error;
+          }
+          expect(String(executionError)).toMatch(/UNIQUE constraint failed/);
+
+          // Finalize frees the native statement but returns the preceding constraint error.
+          let finalizeError = null;
+          try {
+            await statement.finalizeAsync();
+          } catch (error) {
+            finalizeError = error;
+          }
+          expect(String(finalizeError)).toMatch(/UNIQUE constraint failed/);
+
+          // Calling execute or finalize again must reject before touching the freed pointer.
+          let reuseError = null;
+          try {
+            await statement.executeAsync();
+          } catch (error) {
+            reuseError = error;
+          }
+          expect(String(reuseError)).toMatch(/Access to closed resource/);
+          expect(() => statement.finalizeSync()).toThrow();
+          expect(await db.getFirstAsync('SELECT count(*) AS count FROM finalize_test')).toEqual({
+            count: 1,
+          });
+        } finally {
+          await db.closeAsync();
+        }
+      }
+    );
+
+    nativeIt('rejects a statement after synchronous finalization reports an error', () => {
+      const db = SQLite.openDatabaseSync(':memory:', {
+        useNewConnection: true,
+      });
+      try {
+        db.execSync(
+          'CREATE TABLE finalize_test (id INTEGER PRIMARY KEY); INSERT INTO finalize_test VALUES (1)'
+        );
+        const statement = db.prepareSync('INSERT INTO finalize_test VALUES (1)');
+        expect(() => statement.executeSync()).toThrow();
+        expect(() => statement.finalizeSync()).toThrow();
+        expect(() => statement.executeSync()).toThrowError(/Access to closed resource/);
+        expect(() => statement.finalizeSync()).toThrowError(/Access to closed resource/);
+        expect(db.getFirstSync('SELECT count(*) AS count FROM finalize_test')).toEqual({
+          count: 1,
+        });
+      } finally {
+        db.closeSync();
+      }
+    });
+
+    nativeIt('preserves constraint codes and details while other statements run', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', {
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      try {
+        await db.execAsync(
+          'CREATE TABLE error_test(id INTEGER PRIMARY KEY); INSERT INTO error_test VALUES (1)'
+        );
+        const readers = await Promise.all(
+          Array.from({ length: 16 }, () => db.prepareAsync('SELECT 1 UNION ALL SELECT 2'))
+        );
+        try {
+          for (let attempt = 0; attempt < 200; attempt++) {
+            const statement = await db.prepareAsync('INSERT INTO error_test VALUES (1)');
+            let executionError: unknown;
+            try {
+              await statement.executeAsync();
+            } catch (error) {
+              executionError = error;
+            }
+            expect(String(executionError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+            // These native calls can replace the connection error between finalize() and error reporting.
+            const reading = Promise.all(readers.map((reader) => reader.executeAsync()));
+            let finalizeError: unknown;
+            try {
+              await statement.finalizeAsync();
+            } catch (error) {
+              finalizeError = error;
+            }
+            await reading;
+            expect(String(finalizeError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+          }
+        } finally {
+          for (const reader of readers) await reader.finalizeAsync();
+        }
+      } finally {
+        await db.closeAsync();
+      }
     });
 
     it('should throw from getFirstAsync()/getAllAsync() if the cursor is not at the beginning', async () => {
@@ -1060,6 +1172,64 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
   });
 
   describe('Error handling', () => {
+    nativeIt(
+      'automatic cleanup invalidates statement wrappers, including column metadata',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        const statement = await db.prepareAsync('SELECT 42 AS value');
+        await db.closeAsync();
+
+        // Column metadata has no database argument; the statement itself must reject access.
+        expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
+        const results = await Promise.allSettled([
+          statement.getColumnNamesAsync(),
+          statement.executeAsync(),
+          statement.finalizeAsync(),
+        ]);
+        for (const result of results) {
+          expect(result.status).toBe('rejected');
+          if (result.status === 'rejected') {
+            expect(String(result.reason)).toMatch(/Access to closed resource/);
+          }
+        }
+      }
+    );
+
+    nativeIt(
+      'automatic cleanup closes a database after JavaScript releases a statement',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        const statement = await db.prepareAsync('SELECT 1');
+        const retainedStatement = await db.prepareAsync('SELECT 2');
+
+        // Explicit release invokes sharedObjectDidRelease, just like collection of the JS wrapper.
+        // SQLiteStatement hides the native SharedObject, so access it directly for this regression.
+        (statement['nativeStatement'] as unknown as InstanceType<typeof SharedObject>).release();
+        await db.closeAsync();
+
+        expect(() => db.execSync('SELECT 1')).toThrowError(/Access to closed resource/);
+        expect(() => retainedStatement.getColumnNamesSync()).toThrowError(
+          /Access to closed resource/
+        );
+      }
+    );
+
+    nativeIt('concurrent finalization rejects the second call safely', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        const statement = await db.prepareAsync('SELECT 1');
+        const results = await Promise.allSettled([
+          statement.finalizeAsync(),
+          statement.finalizeAsync(),
+        ]);
+        expect(results.filter((result) => result.status === 'fulfilled').length).toBe(1);
+        expect(results.filter((result) => result.status === 'rejected').length).toBe(1);
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
     it('finalizeUnusedStatementsBeforeClosing should close all unclosed statements', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.prepareAsync('SELECT sqlite_version()');
@@ -1077,16 +1247,118 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       const db = await SQLite.openDatabaseAsync(':memory:', {
         finalizeUnusedStatementsBeforeClosing: false,
       });
-      await db.prepareAsync('SELECT sqlite_version()');
-
-      let error = null;
+      const statement = await db.prepareAsync('SELECT sqlite_version()');
       try {
+        let error = null;
+        try {
+          await db.closeAsync();
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
+      } finally {
+        await statement.finalizeAsync();
         await db.closeAsync();
-      } catch (e) {
-        error = e;
       }
-      expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
     });
+
+    for (const useNewConnection of [false, true]) {
+      nativeIt(
+        'can clean up and retry a failed close (useNewConnection=' + useNewConnection + ')',
+        async () => {
+          const options = {
+            useNewConnection,
+            finalizeUnusedStatementsBeforeClosing: false,
+          };
+          const databaseName = ':memory:';
+          const db = await SQLite.openDatabaseAsync(databaseName, options);
+          await db.execAsync(
+            'DROP TABLE IF EXISTS close_test; CREATE TABLE close_test (value); INSERT INTO close_test VALUES (42)'
+          );
+          const statement = await db.prepareAsync('SELECT * FROM close_test');
+          try {
+            // A failed close must neither consume a reference nor silently succeed on retry.
+            for (let attempt = 0; attempt < 2; attempt++) {
+              let error = null;
+              try {
+                await db.closeAsync();
+              } catch (e) {
+                error = e;
+              }
+              expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
+            }
+            expect(await db.getFirstAsync('SELECT * FROM close_test')).toEqual({
+              value: 42,
+            });
+
+            if (!useNewConnection) {
+              const sharedDb = await SQLite.openDatabaseAsync(databaseName, options);
+              try {
+                // Reopening must reuse the still-open database, not create an empty one.
+                expect(await sharedDb.getFirstAsync('SELECT * FROM close_test')).toEqual({
+                  value: 42,
+                });
+              } finally {
+                await sharedDb.closeAsync();
+              }
+            }
+          } finally {
+            await statement.finalizeAsync();
+            await db.closeAsync();
+          }
+          // Android used to remove the cache entry on failure, making the retry a no-op.
+          expect(() => db.execSync('SELECT 1')).toThrow();
+        }
+      );
+    }
+
+    nativeIt('can clean up and retry a failed synchronous close', () => {
+      const db = SQLite.openDatabaseSync(':memory:', {
+        useNewConnection: true,
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      const statement = db.prepareSync('SELECT 1');
+      try {
+        expect(() => db.closeSync()).toThrow();
+        expect(db.getFirstSync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        statement.finalizeSync();
+        db.closeSync();
+      }
+      expect(() => db.execSync('SELECT 1')).toThrow();
+    });
+  });
+
+  describe('Virtual tables', () => {
+    for (const moduleName of ['fts5', 'fts4']) {
+      nativeIt(`should close a ${moduleName} database after the query is finalized`, async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        await db.execAsync(`
+          CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
+          INSERT INTO fts_probe(body) VALUES ('hello world');
+        `);
+        expect(
+          await db.getFirstAsync("SELECT rowid AS id FROM fts_probe WHERE fts_probe MATCH 'hello'")
+        ).toEqual({ id: 1 });
+        await db.closeAsync();
+      });
+
+      nativeIt(
+        `should close a ${moduleName} database while a query statement is still open`,
+        async () => {
+          const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+          await db.execAsync(`
+            CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
+            INSERT INTO fts_probe(body) VALUES ('hello world');
+          `);
+          const statement = await db.prepareAsync(
+            "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
+          );
+          await db.closeAsync();
+          expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
+        }
+      );
+    }
   });
 
   describe('Database - serialize / deserialize', () => {

@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Fix assets moved with `Album.create` (with `moveAssets` set to `true`) or `album.add` sometimes disappearing from the media library. The file was moved, but its MediaStore entry was deleted, so it only showed up again after a rescan, with a new ID. ([#50817](https://github.com/expo/expo/pull/50817) by [@devonik](https://github.com/devonik))
+
 ## 58.0.5
 
 ### Patch Changes

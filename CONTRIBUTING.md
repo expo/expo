@@ -154,7 +154,7 @@ All modules should adhere to the style guides which can be found here:
 
 - The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (this will only enable the shake gesture, CMD+R won't work yet).
 - We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
-- We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
+- We use a unified set of basic Bash scripts and configs called `@expo/internal-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
 
 ## 🦋 Recording Package Changes
 

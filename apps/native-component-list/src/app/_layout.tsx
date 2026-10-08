@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppIntentsNavigationHandler } from '../screens/AppIntents/AppIntentsNavigationHandler';
 import { getSearchScreenOptions } from '../screens/SearchScreen';
 import loadAssetsAsync from '../utilities/loadAssetsAsync';
+import '../screens/Location@Next/locationTask';
 
 SplashScreen.preventAutoHideAsync();
 

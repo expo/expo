@@ -62,6 +62,12 @@ describe(fetchLoader, () => {
     expect(headers.get('X-Test')).toBe('yes');
   });
 
+  it('preserves route groups and query parameters in loader URLs', async () => {
+    await fetchLoader('/(website)/blog/index?preview=true');
+
+    expect(fetchedUrl()).toBe('/_expo/loaders/(website)/blog/index?preview=true');
+  });
+
   it('appends a cache-busting revision to loader URLs after a dev invalidation', async () => {
     bumpDevLoaderRevision();
 

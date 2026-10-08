@@ -8,12 +8,9 @@ final class AppIntentsSetup: Module {
     Name("AppIntentsSetup")
 
     OnCreate {
-      AppIntentDonationRegistry.shared.register("donationProbe", as: DonationProbeIntent.self)
+      AppIntentDonationRegistry.shared.register("increaseCounter", as: IncreaseCounterIntent.self)
       AppIntentDonationRegistry.shared.register("orderFood", as: OrderFoodIntent.self)
-      AppIntentDonationRegistry.shared.register("addToCounter", as: AddToCounterIntent.self)
-
       if #available(iOS 18.0, macOS 15.0, *) {
-        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
         AppIntentDonationRegistry.shared.register("createMailDraft", as: CreateDraftIntent.self)
       }
       #if compiler(>=6.4)
@@ -21,6 +18,10 @@ final class AppIntentsSetup: Module {
         AppIntentDonationRegistry.shared.register("openMailDraft", as: OpenMailDraftIntent.self)
       }
       #endif
+
+      if #available(iOS 18.0, macOS 15.0, *) {
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
+      }
 
       Task {
         await AppIntentDispatcher.shared.setShortcutsRefreshHandler {

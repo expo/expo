@@ -1,5 +1,5 @@
 {
-  "extends": "expo-module-scripts/tsconfig.plugin",
+  "extends": "@expo/internal-scripts/tsconfig.plugin",
   "compilerOptions": {
     "rootDir": "./src",
     "noEmit": true,

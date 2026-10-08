@@ -208,6 +208,18 @@ build_slice() {
   # `___profc_*` symbols and `__llvm_prf_*` sections) plus ~40% extra binary size. Setting
   # CLANG_COVERAGE_MAPPING=NO is what removes the flags; CLANG_ENABLE_CODE_COVERAGE=NO alone
   # does not, and `-enableCodeCoverage NO` is rejected outside of `test`.
+  #
+  # With a dSYM, Xcode's default STRIP_SWIFT_SYMBOLS=YES runs `strip -T`, which removes or renames to
+  # `<redacted>` every Swift symbol that isn't exported. Crash reports symbolicated on the device then
+  # show no function name for any frame in this framework. Keeping the symbols adds about 250 KB of
+  # symbol table to the device slice; the code itself doesn't change.
+  #
+  # The binary .swiftmodule must not embed this checkout's absolute paths: consumers key
+  # the Xcode compilation cache on its content, so any PACKAGE_DIR or PODS_ROOT path inside
+  # it makes every module that imports ExpoModulesJSI a cache miss in another checkout or
+  # worktree. SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO drops the serialized search paths and
+  # SWIFT_ENABLE_EXPLICIT_MODULES=NO the explicit-module cache directories under
+  # .DerivedData. The .swiftinterface and the dSYM are unaffected.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
     xcodebuild \
     build \
@@ -226,10 +238,13 @@ build_slice() {
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO \
     DEBUG_INFORMATION_FORMAT=dwarf-with-dsym \
+    STRIP_SWIFT_SYMBOLS=NO \
     COMPILER_INDEX_STORE_ENABLE=NO \
     SWIFT_COMPILATION_MODE=wholemodule \
     CLANG_ENABLE_CODE_COVERAGE=NO \
     CLANG_COVERAGE_MAPPING=NO \
+    SWIFT_SERIALIZE_DEBUGGING_OPTIONS=NO \
+    SWIFT_ENABLE_EXPLICIT_MODULES=NO \
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
@@ -293,6 +308,11 @@ build_slice() {
   #   e.g. "extension Swift.Optional : where Wrapped : _Constraint... {}"
   # - @usableFromInline attributes preceding the _Constraint protocol definition
   #   e.g. "@usableFromInline\ninternal protocol _ConstraintThatIsNotPartOfTheAPIOfThisLibrary {}"
+  # - @available(*, unavailable) attributes that Swift 6.4 prints on their own line before
+  #   those conformances, which would otherwise attach to the next declaration
+  #   e.g. "@available(*, unavailable)\nextension Swift::Optional : P where Wrapped : _Constraint... {}"
+  #   The JSIRepresentable conformances that produce them are marked @_spi, so Swift doesn't print
+  #   them today. Stripping them is a fallback for conformances added without @_spi.
   # NOTE: If these patterns change in a future Swift version, the build will fail with
   # "expected declaration" or "expected type" errors in the .swiftinterface file.
   # Run plain `sed` to a temp file and move it back instead of `sed -i ''`:
@@ -301,7 +321,7 @@ build_slice() {
   # filename, failing with "can't read …: No such file or directory".
   while IFS= read -r swiftinterface; do
     local stripped_swiftinterface="${swiftinterface}.stripped"
-    sed -E '/^extension __ObjC(\.|::)/,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
+    sed -E '/^extension __ObjC(\.|::)/,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/^@available\(\*, unavailable\)$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' "$swiftinterface" > "$stripped_swiftinterface"
     mv "$stripped_swiftinterface" "$swiftinterface"
   done < <(find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface')
 

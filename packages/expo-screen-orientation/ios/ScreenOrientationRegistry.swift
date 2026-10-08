@@ -20,8 +20,12 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
   private let queue = DispatchQueue(label: "expo.screenorientationregistry", attributes: .concurrent)
   private let notificationQueue = DispatchQueue(label: "expo.screenorientationregistry.notifications")
+  private var _currentTraitCollection: UITraitCollection?
   @objc
-  public var currentTraitCollection: UITraitCollection?
+  public var currentTraitCollection: UITraitCollection? {
+    get { queue.sync { _currentTraitCollection } }
+    set { queue.async(flags: .barrier) { self._currentTraitCollection = newValue } }
+  }
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
     return SceneGeometry.keyWindow()?.rootViewController
@@ -38,7 +42,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
   private override init() {
     self.currentScreenOrientation = .unknown
-    self.currentTraitCollection = nil
+    self._currentTraitCollection = nil
     self.lastOrientationMask = []
 
     super.init()

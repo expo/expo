@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- Export `app.plugin.js` from `package.json:exports` so tools that resolve config plugins through Node's package exports, such as the config fallback in EAS CLI, find the config plugin again instead of failing with "Unable to resolve a valid config plugin". ([#51059](https://github.com/expo/expo/pull/51059) by [@huntie](https://github.com/huntie))
+
+## 58.0.5
+
+### Patch Changes
+
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+
 ## 58.0.4
 
 ### Patch Changes

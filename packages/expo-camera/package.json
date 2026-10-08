@@ -1,6 +1,6 @@
 {
   "name": "expo-camera",
-  "version": "58.0.7",
+  "version": "58.0.9",
   "description": "A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.",
   "keywords": [
     "camera",
@@ -40,11 +40,12 @@
     "barcode-detector": "^3.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@expo/internal-scripts": "workspace:*",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
@@ -58,6 +59,6 @@
     }
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

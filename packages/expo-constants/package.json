@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "58.0.9",
+  "version": "58.0.10",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "keywords": [
     "constants",
@@ -63,9 +63,9 @@
     "@expo/require-utils": "workspace:^"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/node": "^22.14.0",
     "expo-manifests": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "expo-updates": "workspace:*"
   },
   "peerDependencies": {
