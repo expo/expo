@@ -131,6 +131,25 @@ describe('Watcher.crawl ignoreForCrawl composition', () => {
     expect(sorted(changedFiles.keys())).toEqual(['other.js']);
   });
 
+  test('recrawls a subtree into the files it changed or lost, and nothing outside it', async () => {
+    vol.fromJSON({
+      '/project/dist/a.js': 'changed',
+      '/project/src/c.js': 'changed',
+    });
+    const fileSystem = makeTreeFS(
+      new Map([
+        ['dist/a.js', [1, 1, 0, null, 0]],
+        ['dist/b.js', [1, 1, 0, null, 0]],
+        ['src/c.js', [1, 1, 0, null, 0]],
+      ])
+    );
+
+    const { changedFiles, removedFiles } = await makeWatcher().recrawl('dist', fileSystem);
+
+    expect(sorted(changedFiles.keys())).toEqual(['dist/a.js']);
+    expect(sorted(removedFiles.values())).toEqual(['dist/b.js']);
+  });
+
   test('user ignoreForCrawl alone suffices when prefix is null', async () => {
     vol.fromJSON({
       '/project/keep.js': 'k',
