@@ -40,7 +40,17 @@ export function ScrollView({
 
   // SwiftUI ScrollView centers content by default. Stretch content to fill
   // the scroll area to match Android/web behavior.
-  const innerModifiers: ModifierConfig[] = [frame({ maxWidth: Infinity, alignment: 'topLeading' })];
+  // maxWidth keeps the viewport width stable, so a width percentage is measured once.
+  // A horizontal scroll needs the same pin on height. Without it, the frame
+  // proposes the child's own height on the next pass, and 50% becomes 25%.
+  // The scroll axis stays unbounded.
+  const innerModifiers: ModifierConfig[] = [
+    frame(
+      direction === 'horizontal'
+        ? { maxWidth: Infinity, maxHeight: Infinity, alignment: 'topLeading' }
+        : { maxWidth: Infinity, alignment: 'topLeading' }
+    ),
+  ];
 
   const hasPadding =
     paddingAll != null ||
