@@ -6,7 +6,7 @@ export async function getLastKnownPositionAsync(requirements: any): Promise<any>
 
 export async function watchPositionImplAsync(watchId: number, options: any): Promise<any> {}
 
-export async function watchDeviceHeading(watchId: number): Promise<any> {}
+export async function watchDeviceHeading(watchId: number, options?: any): Promise<any> {}
 
 export async function removeWatchAsync(watchId: number): Promise<any> {}
 
