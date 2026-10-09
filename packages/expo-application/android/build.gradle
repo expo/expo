@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.4'
+version = '58.1.0'
 
 expoModule {
   v2 true
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.application"
   defaultConfig {
     versionCode 12
-    versionName '58.0.4'
+    versionName '58.1.0'
   }
 }
 

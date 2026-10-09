@@ -1,6 +1,6 @@
 {
   "name": "@expo/internal-scripts",
-  "version": "58.0.0",
+  "version": "58.0.1",
   "private": true,
   "description": "An internal package for internal expo/expo monorepo scripts",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/internal-scripts#readme",

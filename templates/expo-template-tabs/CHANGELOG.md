@@ -1,5 +1,15 @@
 # expo-template-tabs
 
+## 58.0.16
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Updated dependencies. ([#51260](https://github.com/expo/expo/pull/51260), [#51185](https://github.com/expo/expo/pull/51185), [#50610](https://github.com/expo/expo/pull/50610))
+  - expo-router@58.0.17
+  - expo@58.0.7
+  - expo-splash-screen@58.0.7
+
 ## 58.0.15
 
 ### Patch Changes

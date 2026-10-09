@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.9
+
+### Patch Changes
+
+- Remove the internal-only `expo-source` export condition. ([#51215](https://github.com/expo/expo/pull/51215) by [@kitten](https://github.com/kitten))
+- Remapped `import.meta.url` under Jest to the module's `file://` URL. `jest-expo` now reports `bundler: 'jest'` to Babel. ([#51110](https://github.com/expo/expo/pull/51110) by [@abappi19](https://github.com/abappi19))
+
 ## 58.0.8
 
 ### Patch Changes

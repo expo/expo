@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- `expo serve` now refuses to start on development exports that include server code. ([#50522](https://github.com/expo/expo/pull/50522) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 58.0.3
 
 ### Patch Changes

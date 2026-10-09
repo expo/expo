@@ -1,6 +1,6 @@
 {
   "name": "native-component-list",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "description": "A list of the various APIs you can use with the Expo Go",
   "author": "Expo",
