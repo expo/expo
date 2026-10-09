@@ -47,13 +47,29 @@ export async function resolveExpoSession(selector?: string): Promise<ListedSessi
       `No Expo CLI sessions found${match}. Run \`npx expo command:ps --json\` to list sessions.`
     );
   }
+  const candidates = active.length ? active : sessions;
+  const omitted = sessions.length - candidates.length;
   throw new Error(
     `Ambiguous Expo CLI session${match}; specify a session ID or PID:\n` +
-      sessions
-        .map(
-          (session) =>
-            `  ${session.id} (PID ${session.pid}, ${session.command}, ${JSON.stringify(session.cwd)})`
-        )
-        .join('\n')
+      candidates.map(formatSessionCandidate).join('\n') +
+      (omitted
+        ? `\n\n${omitted} matching stopped session${omitted === 1 ? '' : 's'} omitted.`
+        : '') +
+      '\nRun `npx expo command:ps --json` to list all sessions.'
   );
+}
+
+function formatSessionCandidate(session: ListedSession): string {
+  const { metadata } = session;
+  const details = [
+    `PID ${session.pid}`,
+    session.alive ? 'alive' : 'exited',
+    session.command.slice('expo '.length),
+    !session.alive && `started ${new Date(session.startedAt).toISOString()}`,
+    metadata.ready === true &&
+      typeof metadata.port === 'number' &&
+      `${session.alive ? 'port' : 'last port'} ${metadata.port}`,
+    JSON.stringify(typeof metadata.projectRoot === 'string' ? metadata.projectRoot : session.cwd),
+  ];
+  return `  ${session.id} (${details.filter(Boolean).join(', ')})`;
 }
