@@ -228,10 +228,10 @@ resolve to `false` and `File.preview()` reject.
 For a single file, `mimeType` defaults to the file's `type`. Pass it explicitly
 if the extension does not identify the type, particularly on Android.
 
-`File.canPreview()` resolves to `false` when previewing is unsupported or a checked
-file is missing or unsupported. It rejects if it encounters an invalid or
-unreadable file. `File.preview()` rejects if any file cannot be previewed or
-`initialIndex` is invalid. Both methods reject empty arrays.
+`File.canPreview()` resolves to `false` when the platform cannot preview, or when
+a checked file is missing or has an unsupported type. It rejects if it encounters
+an invalid or unreadable file. `File.preview()` rejects if any file cannot be
+previewed or `initialIndex` is invalid. Both methods reject empty arrays.
 
 Keep files available until the viewer closes. `File.preview()` resolves when the
 preview is presented or handed off to another app.
