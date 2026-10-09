@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Fix Android resource qualifiers for Hebrew, Indonesian and Yiddish locales, which Android only resolves under their legacy codes (`iw`, `in`, `ji`), and keep the `zh-rCN`, `zh-rTW` and `zh-rHK` library translations when `supportedLocales` lists `zh-Hans` or `zh-Hant`. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.6
+
+### Patch Changes
+
+- Warn when a package's `app.plugin.js` is missing from its `package.json:exports`, since tools that resolve the config plugin through Node can't find it. ([#51080](https://github.com/expo/expo/pull/51080) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
 ## 58.0.5
 
 ### Patch Changes

@@ -42,6 +42,14 @@ export const AIScreens = [
       return optionalRequire(() => require('./StreamingScreen'));
     },
   },
+  {
+    name: 'Reminders',
+    route: 'ai/reminders',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./Reminders/RemindersScreen'));
+    },
+  },
 ];
 
 export default function AIScreen() {

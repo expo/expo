@@ -22,7 +22,7 @@ end
 prepare_react_native_project!
 
 abstract_target 'BareExpoMain' do
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests']
 
   use_expo_modules!(
     includeTests: true,
@@ -97,6 +97,6 @@ abstract_target 'BareExpoMain' do
       :app_path => "#{Pod::Config.instance.installation_root}/..",
     )
 
-    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
+    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios", :testspecs => ['Tests']
   end
 end

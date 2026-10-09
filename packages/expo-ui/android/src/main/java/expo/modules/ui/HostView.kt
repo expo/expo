@@ -4,6 +4,7 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MotionEvent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -119,6 +120,26 @@ internal class HostView(context: Context, appContext: AppContext) :
   override val props = HostProps()
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
+
+  /**
+   * True while this view passes down an `ACTION_CANCEL` that came from its React Native parent,
+   * not from a Compose gesture detector. React Native already owns that gesture: the usual cause is
+   * the JS responder's view intercepting the stream, which cancels its native children.
+   */
+  internal var isDispatchingCancelFromParent = false
+    private set
+
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
+      return super.dispatchTouchEvent(ev)
+    }
+    isDispatchingCancelFromParent = true
+    try {
+      return super.dispatchTouchEvent(ev)
+    } finally {
+      isDispatchingCancelFromParent = false
+    }
+  }
 
   @Composable
   override fun ComposableScope.Content() {

@@ -1,5 +1,40 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Fix the dev server error page for routes that throw during server rendering, which showed an "Internal Error" instead of the error overlay. ([#51185](https://github.com/expo/expo/pull/51185) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Updated dependencies. ([#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522))
+  - @expo/log-box@58.0.12
+  - expo-server@58.0.4
+  - @expo/metro-runtime@58.0.14
+
+## 58.0.16
+
+### Patch Changes
+
+- Remove `isInitial` from the `SitemapType` returned by `useSitemap`. ([#51115](https://github.com/expo/expo/pull/51115) by [@Ubax](https://github.com/Ubax))
+- Mark `Stack.Toolbar` as stable. ([#51084](https://github.com/expo/expo/pull/51084) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#50860](https://github.com/expo/expo/pull/50860))
+  - @expo/log-box@58.0.11
+  - @expo/metro-runtime@58.0.13
+
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50976](https://github.com/expo/expo/pull/50976))
+  - @expo/log-box@58.0.10
+  - @expo/metro-runtime@58.0.12
+
+## 58.0.14
+
+### Patch Changes
+
+- Export the `RouterBrowserHistoryAction` type. The public `Router` and `RouterActionResult` types reference it, so custom routers can now type the browser history instruction they return. ([#51053](https://github.com/expo/expo/pull/51053) by [@amandeepmittal](https://github.com/amandeepmittal))
+
 ## 58.0.13
 
 ### Patch Changes

@@ -1,0 +1,141 @@
+---
+title: NavigationSplitView
+description: A SwiftUI NavigationSplitView component that presents two or three columns side by side.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI NavigationSplitView matches the official SwiftUI [NavigationSplitView API](https://developer.apple.com/documentation/swiftui/navigationsplitview) and shows two or three columns side by side. The columns collapse into one when there is not enough room.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/navigationsplitview/ios-light.webp"
+  darkSrc="/static/images/expo-ui/navigationsplitview/ios-dark.webp"
+  alt="A Notes sidebar next to the detail of the selected note"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Two columns
+
+Provide `NavigationSplitView.Sidebar` and `NavigationSplitView.Detail`. Set the title of each column with the [`navigationTitle`](modifiers/#navigationtitletitle) modifier.
+
+On iPhone, only the sidebar shows. On iOS 17 and later, set `preferredCompactColumn` to `'detail'` to open the detail on tap. Pass the value from `onPreferredCompactColumnChange` back in so the back button works.
+
+<ComponentExample
+  title="NavigationSplitViewExample.tsx"
+  src="/static/images/expo-ui/examples/navigationsplitview-two-columns-duo-light.webp"
+  darkSrc="/static/images/expo-ui/examples/navigationsplitview-two-columns-duo-dark.webp"
+  alt="A Notes sidebar next to the detail of the selected Coral reef note">
+
+```tsx
+import {
+  Button,
+  Host,
+  List,
+  NavigationSplitView,
+  type NavigationSplitViewColumn,
+  Text,
+} from '@expo/ui/swift-ui';
+import {
+  buttonStyle,
+  frame,
+  navigationTitle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+import { useState } from 'react';
+
+const NOTES = [
+  {
+    id: 'reef',
+    title: 'Coral reef',
+    body: 'The reef is loudest an hour after sunrise.',
+  },
+  {
+    id: 'forest',
+    title: 'Cloud forest',
+    body: 'Mist arrives every afternoon, like clockwork.',
+  },
+  {
+    id: 'dunes',
+    title: 'Sand dunes',
+    body: 'The ridge moves about four metres a year.',
+  },
+];
+
+export default function NavigationSplitViewExample() {
+  const [selectedId, setSelectedId] = useState(NOTES[0].id);
+  const [compactColumn, setCompactColumn] =
+    useState<NavigationSplitViewColumn>('sidebar');
+  const selected =
+    NOTES.find(note => note.id === selectedId) ?? NOTES[0];
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <NavigationSplitView
+        preferredCompactColumn={compactColumn}
+        onPreferredCompactColumnChange={setCompactColumn}>
+        <NavigationSplitView.Sidebar>
+          <List modifiers={[navigationTitle('Notes')]}>
+            {NOTES.map(note => (
+              <Button
+                key={note.id}
+                modifiers={[buttonStyle('plain')]}
+                onPress={() => {
+                  setSelectedId(note.id);
+                  setCompactColumn('detail');
+                }}>
+                <Text>{note.title}</Text>
+              </Button>
+            ))}
+          </List>
+        </NavigationSplitView.Sidebar>
+        <NavigationSplitView.Detail>
+          <Text
+            modifiers={[
+              padding({ all: 24 }),
+              frame({
+                maxWidth: Infinity,
+                maxHeight: Infinity,
+                alignment: 'topLeading',
+              }),
+              navigationTitle(selected.title),
+            ]}>
+            {selected.body}
+          </Text>
+        </NavigationSplitView.Detail>
+      </NavigationSplitView>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Three columns
+
+Add `NavigationSplitView.Content` between the sidebar and the detail. Set the width of a column with the [`navigationSplitViewColumnWidth`](modifiers/#navigationsplitviewcolumnwidthwidth) modifier. Set how the columns share the space with the [`navigationSplitViewStyle`](modifiers/#navigationsplitviewstylestyle) modifier.
+
+The split view picks the visible columns by default. Set `columnVisibility` to `'all'` to show every column, or `'detailOnly'` to show only the detail. When there is not enough room, it shows fewer columns. Pass the value from `onColumnVisibilityChange` back in. Otherwise, dragging the divider has no effect.
+
+## API
+
+```tsx
+import { NavigationSplitView } from '@expo/ui/swift-ui';
+```
+
+<APISection
+  packageName="expo-ui/swift-ui/navigationsplitview"
+  apiName="NavigationSplitView"
+/>

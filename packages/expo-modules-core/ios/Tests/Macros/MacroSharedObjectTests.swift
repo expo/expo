@@ -79,7 +79,18 @@ private final class MacroNamedCounter: SharedObject {
   }
 }
 
-@ExpoModule(classes: [MacroCounter.self, MacroNamedCounter.self])
+/// Exposes `@JS` members but no `@JS init`, and the module registers it with no DSL
+/// `Constructor`, so nothing can build its native instance from JavaScript.
+@SharedObject
+private final class MacroUnconstructableCounter: SharedObject {
+  @JS
+  func ping() -> String {
+    return "pong"
+  }
+}
+
+@ExpoModule(
+  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self])
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
@@ -117,6 +128,25 @@ private struct MacroSharedObjectTests {
   }
 
   // MARK: - Construction
+
+  @Test
+  func `constructing a class that cannot build its native instance throws`() throws {
+    // Both construction paths are skipped for such a class, so without the throw JavaScript would
+    // get an object with no native instance and fail later, at the first member access.
+    register(MacroSharedObjectModule(appContext: appContext))
+    let threw = try runtime.eval(
+      """
+      (() => {
+        try {
+          new expo.modules.MacroSharedObjectModule.MacroUnconstructableCounter()
+          return false
+        } catch (error) {
+          return String(error).includes('MacroUnconstructableCounter')
+        }
+      })()
+      """)
+    #expect(try threw.asBool())
+  }
 
   @Test
   func `@JS init constructs the instance from JS arguments`() throws {

@@ -1,13 +1,13 @@
 {
   "name": "expo-apps-common",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
     "@expo/styleguide-base": "^1.0.1",
     "@expo/vector-icons": "^15.0.2",
     "expo-router": "workspace:*",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.3"
+    "react-native": "0.88.0-rc.4"
   },
   "devDependencies": {
     "@types/react": "~19.3.0"

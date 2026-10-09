@@ -371,9 +371,12 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   }
 
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
+    val duration = config?.duration ?: Int.MAX_VALUE
+    require(duration >= 0) { "duration must be nonnegative" }
     require(config?.tilt?.isFinite() != false && config?.bearing?.isFinite() != false) {
       "tilt and bearing must be finite"
     }
+
     // Stop following location, preserving the existing no-location call behavior.
     manualCameraControl = true
     // Merge partial orientation requests with the latest target, not an intermediate frame.
@@ -394,8 +397,13 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       .build()
     pendingCameraPosition = targetCamera
     try {
+      val cameraUpdate = CameraUpdateFactory.newCameraPosition(targetCamera)
       // When Int.MAX_VALUE is provided as durationMs, the default animation duration will be used.
-      cameraState.animate(CameraUpdateFactory.newCameraPosition(targetCamera), config?.duration ?: Int.MAX_VALUE)
+      if (duration == 0) {
+        cameraState.move(cameraUpdate)
+      } else {
+        cameraState.animate(cameraUpdate, duration)
+      }
       if (centerOnUser && pendingCameraPosition === targetCamera) {
         manualCameraControl = false
       }

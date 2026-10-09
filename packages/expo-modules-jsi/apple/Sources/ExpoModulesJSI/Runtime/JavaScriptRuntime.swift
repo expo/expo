@@ -3,6 +3,7 @@
 internal import ExpoModulesJSI_Cxx
 import Foundation
 internal import jsi
+import os
 
 /// A Swift wrapper around a JavaScript runtime. Provides access to a JavaScript execution environment, allowing you to evaluate
 /// JavaScript code, create and manipulate JavaScript objects, functions, and values, and bridge between Swift and JavaScript.
@@ -509,7 +510,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     }
 
     var result: Result<R, any Error>!
-    nonisolated(unsafe) let callerRunLoop = CFRunLoopGetCurrent()
+    let waiter = ThreadWaiter()
 
     scheduler.scheduleTask(.ImmediatePriority) {
       do {
@@ -517,24 +518,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       } catch {
         result = .failure(error)
       }
-      // Wake the caller's run loop so its `CFRunLoopRunInMode(...)` returns immediately
-      // instead of waiting out the timeout backstop.
-      CFRunLoopPerformBlock(callerRunLoop, CFRunLoopMode.commonModes.rawValue) {}
-      CFRunLoopWakeUp(callerRunLoop)
+      waiter.wake()
     }
 
-    // Pump the caller's run loop until the task finishes. As opposed to DispatchSemaphore
-    // or DispatchGroup, this lets the run loop continue to process other events in the meantime,
-    // and the spin is also faster than a real kernel-mediated context switch when the JS work
-    // is short (the common case). The 100ms timeout is a backstop in case the wakeup is missed;
-    // the common path is woken by `CFRunLoopWakeUp` from the scheduled block above.
-    //
-    // `CFRunLoopRunInMode` is the C API rather than `RunLoop.current.run(mode:before:)` to
-    // avoid the per-iteration `+[NSRunLoop currentRunLoop]` autorelease push and `Date()`
-    // allocation that dominated the caller-thread profile otherwise.
-    while result == nil {
-      CFRunLoopRunInMode(.commonModes, 0.1, false)
-    }
+    waiter.wait(until: {
+      result != nil
+    })
     return try result.get()
   }
 
@@ -547,9 +536,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ) throws -> sending R {
     let result = NonisolatedUnsafeVar<Result<R, any Error>>()
     let runInline = isOnJavaScriptThread()
-    // Wrapped in `NonisolatedUnsafeVar` instead of `nonisolated(unsafe) let`
-    // to work around a Swift 6.2.3 compiler bug.
-    let callerRunLoop = NonisolatedUnsafeVar(CFRunLoopGetCurrent())
+    let waiter = ThreadWaiter()
 
     func body() {
       Task.immediate_polyfill(priority: .high) {
@@ -558,10 +545,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         } catch {
           result.value = .failure(error)
         }
-        // Wake the caller's run loop so its `CFRunLoopRunInMode(...)` returns immediately
-        // instead of waiting out the timeout backstop.
-        CFRunLoopPerformBlock(callerRunLoop.value, CFRunLoopMode.commonModes.rawValue) {}
-        CFRunLoopWakeUp(callerRunLoop.value)
+        waiter.wake()
       }
     }
     if runInline {
@@ -570,12 +554,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
       scheduler.scheduleTask(.ImmediatePriority, body)
     }
 
-    // Pump the caller's run loop until the task finishes. See the sync overload above for
-    // the rationale on `CFRunLoopRunInMode` vs. `RunLoop.current.run(...)` and on pumping
-    // the run loop instead of blocking on a semaphore.
-    while result.value == nil {
-      CFRunLoopRunInMode(.commonModes, 0.1, false)
-    }
+    waiter.wait(until: {
+      result.value != nil
+    })
     return try result.value.get()
   }
 
@@ -962,6 +943,73 @@ extension JavaScriptRuntime {
 
     public var description: String {
       return "'\(identifier)' is not a valid JavaScript identifier"
+    }
+  }
+}
+
+/// Blocks the thread that creates it in ``wait(until:)`` until another thread calls ``wake()``.
+private final class ThreadWaiter: @unchecked Sendable {
+  private enum Sleep {
+    case runLoop(CFRunLoop, CFRunLoopSource, CFRunLoopMode)
+    case semaphore(DispatchSemaphore)
+  }
+
+  private static let spinNanoseconds: UInt64 = 20_000
+
+  private let isWoken = OSAllocatedUnfairLock(initialState: false)
+  private let sleep: Sleep
+
+  init() {
+    // A thread inside its run loop, such as the main thread or the JavaScript thread, keeps running
+    // it during the wait, in the same mode: the work the caller waits for may be delivered through
+    // it. A source signaled by `wake()` makes the run loop return when the task is done. Other
+    // threads, such as dispatch workers, have nothing to run, so they wait on a semaphore.
+    let runLoop: CFRunLoop = CFRunLoopGetCurrent()
+    guard let mode = CFRunLoopCopyCurrentMode(runLoop) else {
+      sleep = .semaphore(DispatchSemaphore(value: 0))
+      return
+    }
+    var context = CFRunLoopSourceContext()
+    context.perform = { _ in }
+    let source: CFRunLoopSource = CFRunLoopSourceCreate(nil, 0, &context)
+    CFRunLoopAddSource(runLoop, source, mode)
+    sleep = .runLoop(runLoop, source, mode)
+  }
+
+  func wake() {
+    isWoken.withLock { isWoken in
+      isWoken = true
+    }
+    switch sleep {
+    case .runLoop(let runLoop, let source, _):
+      CFRunLoopSourceSignal(source)
+      CFRunLoopWakeUp(runLoop)
+    case .semaphore(let semaphore):
+      // Makes a system call only when the caller already sleeps in `wait`.
+      semaphore.signal()
+    }
+  }
+
+  func wait(until isFinished: () -> Bool) {
+    let spinDeadline = clock_gettime_nsec_np(CLOCK_UPTIME_RAW) + Self.spinNanoseconds
+    while !isWoken.withLock({ $0 }) && clock_gettime_nsec_np(CLOCK_UPTIME_RAW) < spinDeadline {
+      // Spins on purpose: short tasks finish within a few microseconds, sooner than a sleeping
+      // thread wakes up. After the deadline, the thread sleeps below.
+    }
+    switch sleep {
+    case .runLoop(_, let source, let mode):
+      defer {
+        // Also removes the source from the run loop. A later `wake()` does nothing.
+        CFRunLoopSourceInvalidate(source)
+      }
+      // The timeout is a backstop for a missed wake-up.
+      while !isFinished() {
+        CFRunLoopRunInMode(mode, 0.1, true)
+      }
+    case .semaphore(let semaphore):
+      if !isFinished() {
+        semaphore.wait()
+      }
     }
   }
 }

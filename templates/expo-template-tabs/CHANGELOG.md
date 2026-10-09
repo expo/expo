@@ -1,5 +1,44 @@
 # expo-template-tabs
 
+## 58.0.16
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Updated dependencies. ([#51260](https://github.com/expo/expo/pull/51260), [#51185](https://github.com/expo/expo/pull/51185), [#50610](https://github.com/expo/expo/pull/50610))
+  - expo-router@58.0.17
+  - expo@58.0.7
+  - expo-splash-screen@58.0.7
+
+## 58.0.15
+
+### Patch Changes
+
+- Updated dependencies. ([#50863](https://github.com/expo/expo/pull/50863), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#51115](https://github.com/expo/expo/pull/51115), [#51084](https://github.com/expo/expo/pull/51084))
+  - expo@58.0.6
+  - expo-router@58.0.16
+
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51138](https://github.com/expo/expo/pull/51138))
+  - expo-font@58.0.7
+  - expo@58.0.5
+  - expo-router@58.0.15
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51059](https://github.com/expo/expo/pull/51059), [#50997](https://github.com/expo/expo/pull/50997), [#50988](https://github.com/expo/expo/pull/50988), [#51053](https://github.com/expo/expo/pull/51053))
+  - expo-web-browser@58.0.6
+  - expo@58.0.4
+  - expo-router@58.0.14
+  - expo-splash-screen@58.0.6
+  - expo-constants@58.0.10
+  - expo-linking@58.0.11
+
 ## 58.0.12
 
 ### Patch Changes

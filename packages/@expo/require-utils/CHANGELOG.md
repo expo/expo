@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.3
+
+### Patch Changes
+
+- Support TypeScript 7.1 for transpiling TS modules. ([#51076](https://github.com/expo/expo/pull/51076) by [@kitten](https://github.com/kitten))
+- Export `nativeResolveFrom`, which resolves a module with Node's own resolution, including `package.json:exports`, and returns `null` when Node can't resolve it. ([#51080](https://github.com/expo/expo/pull/51080) by [@huntie](https://github.com/huntie))
+- Fix `expo start` exiting on Node before v22.14.0 when an API route calls `console.log`. Stack frames whose source map fails to load are printed without source mapping instead of throwing. ([#51089](https://github.com/expo/expo/pull/51089) by [@robhogan](https://github.com/robhogan))
+- Switch TypeScript 7.0 fallback transpilation (stripTypeScriptTypes) to `importInterop: 'babel'` ([#51076](https://github.com/expo/expo/pull/51076) by [@kitten](https://github.com/kitten))
+
 ## 58.0.2
 
 ### Patch Changes

@@ -660,6 +660,7 @@ When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcre
 - [`eas/configure_eas_update`](#easconfigure_eas_update)
 - [`eas/run_gradle`](#easrun_gradle)
 - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+- [`eas/upload_embedded_bundle`](#easupload_embedded_bundle), when the [embedded bundle upload](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle) is enabled
 
 When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
 
@@ -673,6 +674,7 @@ When a build configuration uses credentials (for both `internal` and `store` [di
 - [`eas/configure_android_version`](#easconfigure_android_version)
 - [`eas/run_gradle`](#easrun_gradle)
 - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+- [`eas/upload_embedded_bundle`](#easupload_embedded_bundle), when the [embedded bundle upload](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle) is enabled
 
 ##### iOS
 
@@ -704,6 +706,7 @@ When a build configuration uses credentials (for both `internal` and `store` [di
 - [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
 - [`eas/run_fastlane`](#easrun_fastlane)
 - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+- [`eas/upload_embedded_bundle`](#easupload_embedded_bundle), when the [embedded bundle upload](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle) is enabled
 
 You can replace the `eas/build` command call by using these steps in your YAML configuration file:
 
@@ -1693,6 +1696,65 @@ build:
   description="View the source code for the eas/find_and_upload_build_artifacts function on GitHub."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/findAndUploadBuildArtifacts.ts"
+/>
+
+#### `eas/upload_embedded_bundle`
+
+Uploads the embedded bundle from the app that the build produced. EAS Update can then serve updates that you publish later to the same channel as [patches against it](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle).
+
+`eas/build` runs this step for you when the upload is enabled. Add it yourself when your config builds the app with separate steps instead of `eas/build`. Run it after the step that builds the app, such as `eas/run_gradle` or `eas/run_fastlane`.
+
+```yaml example.yml
+build:
+  name: Build Android app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/inject_android_credentials
+    - eas/run_gradle
+    - eas/find_and_upload_build_artifacts
+    # @info #
+    - eas/upload_embedded_bundle
+    # @end #
+```
+
+Unlike `eas/build`, the step does not check the SDK version or the `EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE` and `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variables. It skips the upload in these cases:
+
+- EAS Update is not configured in your project.
+- The build is a development build.
+- The build is an iOS Simulator build.
+
+The step finds the app at the `applicationArchivePath` set in your build profile. Without that property, the step looks in the default build output directory. The step uploads the bundle to the [`channel`](/eas/json/#channel) set in the same profile, not to the `channel` input of `eas/configure_eas_update`.
+
+The step fails the build when the upload fails. For example, it fails when the build profile has no `channel` or when the step cannot find the app. When `eas/build` runs the step, an upload failure only logs a warning. To log the failure and continue the build in your own config, set `ignore_error` to `true`:
+
+```yaml example.yml
+build:
+  name: Build Android app
+  steps:
+    # ...
+    - eas/find_and_upload_build_artifacts
+    # @info #
+    - eas/upload_embedded_bundle:
+        inputs:
+          ignore_error: true
+    # @end #
+```
+
+> **warning** Don't add this step to a config that uses `eas/build` while the upload is enabled. `eas/build` already uploads the bundle. A second upload of the same bundle fails the step.
+
+| Property              | Type      | Required   | Description                                                                                                       |
+| --------------------- | --------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| `name`                | -         | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Upload embedded bundle`. |
+| `inputs.ignore_error` | `boolean` | <NoIcon /> | When `true`, the step logs an upload failure and does not fail the build. Defaults to `false`.                    |
+
+<BoxLink
+  title="eas/upload_embedded_bundle source code"
+  description="View the source code for the eas/upload_embedded_bundle function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadEmbeddedBundle.ts"
 />
 
 #### `eas/upload_artifact`

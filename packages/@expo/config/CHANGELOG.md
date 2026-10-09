@@ -1,5 +1,22 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/config-plugins@58.0.7
+  - @expo/platforms@58.0.1
+
+## 58.0.3
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080), [#51076](https://github.com/expo/expo/pull/51076), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/config-plugins@58.0.6
+  - @expo/require-utils@58.0.3
+
 ## 58.0.2
 
 ### Patch Changes

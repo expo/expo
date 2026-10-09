@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "58.0.12",
+  "version": "58.0.15",
   "description": "A collection of UI components",
   "keywords": [
     "Jetpack Compose",
@@ -158,6 +158,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
+    "@expo/internal-scripts": "workspace:*",
     "@playwright/test": "^1.59.0",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^14.0.1",
@@ -165,7 +166,6 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
-    "expo-module-scripts": "workspace:*",
     "react-native-reanimated": "4.7.0",
     "react-native-worklets": "0.13.0"
   },

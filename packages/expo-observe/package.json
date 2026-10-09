@@ -60,11 +60,11 @@
     "expo-eas-client": "workspace:~"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@react-navigation/native": "^7.1.33",
     "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "@react-navigation/native": "^7.0.0",

@@ -1,6 +1,6 @@
 {
   "name": "router-tester",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -26,7 +26,7 @@
     "expo-system-ui": "workspace:*",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.3",
+    "react-native": "0.88.0-rc.4",
     "react-native-gesture-handler": "~3.2.1",
     "react-native-pager-view": "^8.0.2",
     "react-native-reanimated": "4.7.0",

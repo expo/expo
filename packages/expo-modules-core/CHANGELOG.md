@@ -1,5 +1,38 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [Android] Fix record arguments without `@OptimizedRecord` (such as `ImagePickerOptions` in older `expo-image-picker` versions) failing to convert in minified release builds with `The 1st argument cannot be cast to type ...` caused by a `NullPointerException`. Keep the `@Field` annotation class from being renamed by R8. ([#51206](https://github.com/expo/expo/pull/51206) by [@SoSerious194](https://github.com/SoSerious194))
+- [Android] Fix release builds crashing at launch when the app uses an Expo Modules API 2.0 module, such as `expo-crypto`. R8 removed classes and members that the v2 runtime reaches through reflection and JNI. ([#51204](https://github.com/expo/expo/pull/51204) by [@Kudo](https://github.com/Kudo))
+- [Android] Fixed Expo modules not receiving `OnCreate` when JavaScript reaches the JSI `NativeModulesProxy` before the legacy one, for example with lazy imports, which made modules like `expo-web-browser` fail on first use. Its constants are read lazily again, as before #46964. ([#51310](https://github.com/expo/expo/pull/51310) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed JavaScript errors created from native `Exception`s using the exception's debug description as their `message`, which prefixed it with the Swift type name and appended the native `file:line` (e.g. `MyException: reason (at MyModule.swift:42)`). The message is the exception's `description` again, as before the JSI rewrite and as on Android. `Exception.message` can now be overridden by subclasses; subclasses that already declare a `message` property need to mark it as `override`. ([#51210](https://github.com/expo/expo/pull/51210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix views sized by Jetpack Compose, such as `RNHostView` in a `ModalBottomSheet`, that kept their old size until the keyboard animation ended when the keyboard was dismissed with the predictive back gesture. ([#51083](https://github.com/expo/expo/pull/51083) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Throw when JavaScript constructs a shared object class that has no way to build its native instance, instead of returning an object that fails at its first member access. ([#51171](https://github.com/expo/expo/pull/51171) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Warn instead of failing silently when `installModules()` gives up waiting for an active `ReactInstance`. Previously JSI interop was installed into a context with no active instance and the method still returned `true`, so the first visible symptom was `globalThis.expo` being undefined in JS. ([#49801](https://github.com/expo/expo/pull/49801) by [@JeffreyKlug](https://github.com/JeffreyKlug))
+- Updated dependencies. ([#51129](https://github.com/expo/expo/pull/51129), [#51234](https://github.com/expo/expo/pull/51234))
+  - expo-modules-jsi@58.0.10
+
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fixed a data race on the Fabric view state-prop map when Expo registers its view components while React Native builds a component descriptor registry on another thread. ([#51044](https://github.com/expo/expo/pull/51044) by [@hirvesh](https://github.com/hirvesh))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+
+## 58.0.13
+
+### Patch Changes
+
+- [macOS] Attach SwiftUI hosting views even when no `NSViewController` is in the responder chain, such as a React root view set directly as `NSWindow.contentView`. Previously, `@expo/ui` content in such windows rendered nothing. ([#50995](https://github.com/expo/expo/pull/50995) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Update `expo-modules-macros` to 0.15.0, which generates only the unowned decode for `@Union` and skips cases whose `decodableKinds` can't match. ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+- [Internal] Make `AppContext` non-final, so that `TestAppContext` from `expo-modules-test-core` can subclass it. ([#51015](https://github.com/expo/expo/pull/51015) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fixed a race where a promise resolved and rejected from different threads at the same time could settle twice and throw on the JavaScript thread. ([#51052](https://github.com/expo/expo/pull/51052) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] An Expo Modules API 2.0 module that throws a `CodedException` now reports its `code` to JavaScript. ([#51036](https://github.com/expo/expo/pull/51036) by [@lukmccall](https://github.com/lukmccall))
+- Updated dependencies. ([#50859](https://github.com/expo/expo/pull/50859), [#51015](https://github.com/expo/expo/pull/51015), [#51004](https://github.com/expo/expo/pull/51004), [#51040](https://github.com/expo/expo/pull/51040), [#51055](https://github.com/expo/expo/pull/51055))
+  - expo-modules-jsi@58.0.9
+
 ## 58.0.12
 
 ### Patch Changes

@@ -42,6 +42,7 @@
   "devDependencies": {
     "@expo/config": "workspace:*",
     "@expo/env": "workspace:*",
+    "@expo/internal-scripts": "workspace:*",
     "@expo/json-file": "workspace:*",
     "@expo/schemer": "workspace:*",
     "@expo/sdk-compatibility": "workspace:*",
@@ -53,7 +54,6 @@
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
     "expo-modules-autolinking": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.6",

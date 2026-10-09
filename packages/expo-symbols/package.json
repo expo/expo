@@ -57,10 +57,10 @@
     "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/react-native": "^14.0.1",
     "@types/react": "~19.3.0",
-    "expo-font": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-font": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
@@ -69,6 +69,6 @@
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

@@ -2,6 +2,7 @@
 title: Using e2e by TesterArmy
 sidebar_title: Using e2e
 description: Learn how to test your Expo app with e2e, TesterArmy's open source end-to-end testing framework, on an Android Emulator or iOS Simulator.
+hasVideoLink: true
 ---
 
 import { Globe01Icon } from '@expo/styleguide-icons/outline/Globe01Icon';
@@ -12,6 +13,7 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 [e2e](https://e2e.tester.army/docs) is TesterArmy's open source end-to-end (E2E) testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
 
@@ -19,6 +21,14 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 - **Agent steps** to describe a goal in plain language and an AI model decides what to tap. e2e records the actions and replays them on later runs without a model call.
 
 This guide shows how to set up e2e in an Expo project and run it on your computer. e2e does not need a TesterArmy account. To run tests on TesterArmy's hosted platform instead, see [Using TesterArmy](/guides/using-testerarmy/).
+
+<VideoBoxLink
+  videoId="2OFB4B7Vy10"
+  title="Introduction to Verification Engineering"
+  description="Set up e2e on your computer, then run it on each pull request with EAS Workflows and EAS Simulator."
+/>
+
+---
 
 <Prerequisites>
   <Requirement title="Node.js 22.12 or later">

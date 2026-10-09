@@ -24,21 +24,21 @@ Run:
 
 # The Standard Configuration
 
-We use a shared set of configuration files and tools like TypeScript across modules. The `expo-module-scripts` package is the source of truth for much of the configuration. With pnpm workspaces, all modules use the in-repo version of `expo-module-scripts`, helping us structurally ensure we use the same configuration across modules and uniformly use the same versions of Babel, TypeScript, Jest, and other tools.
+We use a shared set of configuration files and tools like TypeScript across modules. The `@expo/internal-scripts` package is the source of truth for much of the configuration. With pnpm workspaces, all modules use the in-repo version of `@expo/internal-scripts`, helping us structurally ensure we use the same configuration across modules and uniformly use the same versions of Babel, TypeScript, Jest, and other tools.
 
-In a module, include `expo-module-scripts` as a development dependency in package.json:
+In a module, include `@expo/internal-scripts` as a development dependency in package.json:
 
 ```json
 {
   "devDependencies": {
-    "expo-module-scripts": "^<latest version>"
+    "@expo/internal-scripts": "workspace:*"
   }
 }
 ```
 
 ## npm Scripts
 
-`expo-module-scripts` also defines several scripts that are useful during development or should run during the [npm lifecycle](https://docs.npmjs.com/misc/scripts). Define these common scripts in package.json:
+`@expo/internal-scripts` also defines several scripts that are useful during development or should run during the [npm lifecycle](https://docs.npmjs.com/misc/scripts). Define these common scripts in package.json:
 
 ```json
 {
@@ -55,7 +55,7 @@ In a module, include `expo-module-scripts` as a development dependency in packag
 }
 ```
 
-The `expo-module` program is provided by `expo-module-scripts`. You can run `pnpm expo-module --help` to see all of the commands. Several of the scripts are interactive and start file watchers as they are intended for human developers rather than CI. To run the commands in non-interactive mode, set the environment variable `EXPO_NONINTERACTIVE=1`.
+The `expo-module` program is provided by `@expo/internal-scripts`. You can run `pnpm expo-module --help` to see all of the commands. Several of the scripts are interactive and start file watchers as they are intended for human developers rather than CI. To run the commands in non-interactive mode, set the environment variable `EXPO_NONINTERACTIVE=1`.
 
 ## Auto-generated Configuration Files
 
@@ -63,7 +63,7 @@ The `postinstall` script auto-generates configuration files in the package when 
 
 ## Directory Structure
 
-`expo-module-scripts` expects modules to be written in TypeScript under a directory named `src` and will compile the modules to a directory named `build`. **The `build` directory is not committed to Git** — it is in `.gitignore`. [Turborepo](https://turborepo.com/) compiles packages on demand and caches the output (locally and via a shared remote cache), so contributors don't need to rebuild every package whenever their local Git repository changes.
+`@expo/internal-scripts` expects modules to be written in TypeScript under a directory named `src` and will compile the modules to a directory named `build`. **The `build` directory is not committed to Git** — it is in `.gitignore`. [Turborepo](https://turborepo.com/) compiles packages on demand and caches the output (locally and via a shared remote cache), so contributors don't need to rebuild every package whenever their local Git repository changes.
 
 In package.json, define the main module of the package to be the compiled entry point under `build`:
 
@@ -79,16 +79,16 @@ Running `pnpm clean` will delete the `build` directory.
 
 Run `pnpm build` to compile the source code from `src` to `build`. Run `pnpm typecheck` to type-check the package with `tsc` without emitting output. When working across the monorepo, prefer running these through Turborepo from the repo root (`pnpm build`, `pnpm typecheck`) so only affected packages are rebuilt and results are cached.
 
-The `postinstall` script generates a small tsconfig.json file that extends the main configuration file inside of `expo-module-scripts`.
+The `postinstall` script generates a small tsconfig.json file that extends the main configuration file inside of `@expo/internal-scripts`.
 
 ## Fast Unit Tests
 
-`expo-module-scripts` also defines a Jest preset. Add a Jest configuration section to package.json:
+`@expo/internal-scripts` also defines a Jest preset. Add a Jest configuration section to package.json:
 
 ```json
 {
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }
 ```

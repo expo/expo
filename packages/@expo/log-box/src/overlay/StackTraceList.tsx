@@ -180,7 +180,7 @@ export function StackTraceList({
   stack: MetroStackFrame[] | null;
   symbolicationStatus: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING';
 }) {
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(() => stack?.some(({ collapse }) => !collapse));
 
   const stackCount = stack?.length;
 

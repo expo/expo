@@ -1,5 +1,69 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Stop overriding web style types that React Native already declares. ([#50610](https://github.com/expo/expo/pull/50610) by [@Maher-Reven](https://github.com/Maher-Reven))
+- Updated dependencies. ([#51206](https://github.com/expo/expo/pull/51206), [`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#51204](https://github.com/expo/expo/pull/51204), [#51310](https://github.com/expo/expo/pull/51310), [#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522), [#51227](https://github.com/expo/expo/pull/51227), [#51027](https://github.com/expo/expo/pull/51027), [#51210](https://github.com/expo/expo/pull/51210), [#51083](https://github.com/expo/expo/pull/51083), [#49418](https://github.com/expo/expo/pull/49418), [#51169](https://github.com/expo/expo/pull/51169), [#51168](https://github.com/expo/expo/pull/51168), [#51185](https://github.com/expo/expo/pull/51185), [#51110](https://github.com/expo/expo/pull/51110), [#50956](https://github.com/expo/expo/pull/50956), [#51171](https://github.com/expo/expo/pull/51171), [#51247](https://github.com/expo/expo/pull/51247), [#49801](https://github.com/expo/expo/pull/49801))
+  - expo-modules-core@58.0.15
+  - @expo/config-plugins@58.0.7
+  - babel-preset-expo@58.0.12
+  - @expo/log-box@58.0.12
+  - @expo/cli@58.1.6
+  - @expo/config@58.0.4
+  - @expo/metro-config@58.0.11
+  - expo-modules-autolinking@58.0.11
+  - expo-file-system@58.0.8
+  - @expo/fingerprint@0.21.4
+  - @expo/log-box-utils@58.0.2
+  - @expo/local-build-cache-provider@58.0.4
+
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import `LogBox`, `DevSettings`, and `NativeComponentRegistry` from the `react-native` public API. ([#50862](https://github.com/expo/expo/pull/50862) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047), [#51179](https://github.com/expo/expo/pull/51179), [#51044](https://github.com/expo/expo/pull/51044), [#50863](https://github.com/expo/expo/pull/50863), [#51092](https://github.com/expo/expo/pull/51092), [#50862](https://github.com/expo/expo/pull/50862), [#50860](https://github.com/expo/expo/pull/50860), [#50543](https://github.com/expo/expo/pull/50543), [#50696](https://github.com/expo/expo/pull/50696), [#51177](https://github.com/expo/expo/pull/51177))
+  - expo-modules-autolinking@58.0.10
+  - @expo/cli@58.1.5
+  - expo-modules-core@58.0.14
+  - @expo/metro-config@58.0.10
+  - babel-preset-expo@58.0.11
+  - expo-asset@58.0.13
+  - @expo/log-box@58.0.11
+  - expo-file-system@58.0.7
+
+## 58.0.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51138](https://github.com/expo/expo/pull/51138), [#50976](https://github.com/expo/expo/pull/50976))
+  - expo-file-system@58.0.6
+  - expo-font@58.0.7
+  - @expo/log-box@58.0.10
+  - @expo/cli@58.1.4
+
+## 58.0.4
+
+### Patch Changes
+
+- [iOS] Add an overridable `initialProperties` to `ExpoAppSceneDelegate`, restoring the root properties apps could pass through `RCTAppDelegate.initialProps` before React Native moved its startup into `scene(_:willConnectTo:)`. ([#50997](https://github.com/expo/expo/pull/50997) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Add `./template.tgz` to the `exports` map so `expo/template.tgz` resolves again. Before, the `./*` wildcard mapped it to the nonexistent `template.tgz.js`, so `expo prebuild` couldn't use the template bundled with `expo` and fell back to downloading one from npm. ([#50988](https://github.com/expo/expo/pull/50988) by [@huytdps13400](https://github.com/huytdps13400))
+- Updated dependencies. ([#51066](https://github.com/expo/expo/pull/51066), [#51080](https://github.com/expo/expo/pull/51080), [#50995](https://github.com/expo/expo/pull/50995), [#50894](https://github.com/expo/expo/pull/50894), [#51015](https://github.com/expo/expo/pull/51015), [#51052](https://github.com/expo/expo/pull/51052), [#50989](https://github.com/expo/expo/pull/50989), [#51036](https://github.com/expo/expo/pull/51036), [#51089](https://github.com/expo/expo/pull/51089), [#51125](https://github.com/expo/expo/pull/51125), [#51085](https://github.com/expo/expo/pull/51085))
+  - @expo/cli@58.1.3
+  - @expo/config-plugins@58.0.6
+  - expo-modules-core@58.0.13
+  - @expo/metro-config@58.0.9
+  - @expo/config@58.0.3
+  - expo-constants@58.0.10
+  - expo-modules-autolinking@58.0.9
+  - babel-preset-expo@58.0.10
+  - @expo/local-build-cache-provider@58.0.3
+  - expo-asset@58.0.12
+
 ## 58.0.3
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4))
+  - @expo/config-plugins@58.0.7
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+
 ## 0.2.2
 
 ### Patch Changes

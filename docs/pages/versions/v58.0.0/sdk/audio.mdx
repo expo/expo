@@ -406,6 +406,8 @@ await recorder.record();
 
 On Android, background recording requires a foreground service, which displays a persistent notification with the text "Recording audio" and a stop button. This notification cannot be dismissed while recording is active and automatically disappears when recording stops.
 
+Background recording does not require the notification permission. If the user has not granted it, recording still works and the notification appears only in the Task Manager instead of the notification drawer.
+
 <PlatformTags platforms={['ios']} />
 
 On iOS, background recording continues seamlessly when the app is in the background or the screen locks. No additional notifications or indicators are shown to the app user beyond the system status bar.

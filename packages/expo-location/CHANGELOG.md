@@ -1,5 +1,24 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Report `mocked` on `LocationObject` using `CLLocationSourceInformation.isSimulatedBySoftware`. ([#50683](https://github.com/expo/expo/pull/50683) by [@JagjeevanAK](https://github.com/JagjeevanAK))
+- [iOS] Add `getPosition` to `expo-location/next`. ([#50198](https://github.com/expo/expo/pull/50198) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `LocationUpdatesHandle` to `expo-location/next`. ([#50263](https://github.com/expo/expo/pull/50263) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add permissions to `expo-location/next`. ([#49972](https://github.com/expo/expo/pull/49972) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `PositionWatchHandle` to `expo-location/next`. ([#50262](https://github.com/expo/expo/pull/50262) by [@Wenszel](https://github.com/Wenszel))
+- Add the TypeScript API layer for `expo-location/next`. ([#49849](https://github.com/expo/expo/pull/49849) by [@Wenszel](https://github.com/Wenszel))
+
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Change the requestBackgroundPermissions and emitted errors to match the TypeScript API defined in PR https://github.com/expo/expo/pull/49849. ([#51067](https://github.com/expo/expo/pull/51067) by [@HubertBer](https://github.com/HubertBer))
+- Updated dependencies.
+  - @expo/image-utils@0.12.4
+
 ## 58.0.11
 
 ### Patch Changes

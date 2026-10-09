@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "58.0.8",
+  "version": "58.0.10",
   "description": "Expo module for browser-based authentication",
   "keywords": [
     "auth",
@@ -102,15 +102,15 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/invariant": "^2.2.33",
-    "@types/react": "~19.3.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/react": "~19.3.0"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

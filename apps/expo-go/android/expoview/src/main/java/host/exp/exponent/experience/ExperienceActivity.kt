@@ -29,6 +29,7 @@ import com.facebook.soloader.SoLoader
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
+import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.api.DevMenuApi
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuState
@@ -334,6 +335,10 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           reactHostHolder = reactHost.weak(),
           goToHomeAction = {
             kernel.openHomeActivity()
+            if (VRUtilities.isQuest()) {
+              // On Quest we want to kill the activity, because in a multi windowed setup it looks as if "Go Home" button did nothing
+              kernel.killActivityStack(this@ExperienceActivity)
+            }
           },
           reloadAction = {
             VersionedUtils.reloadExpoApp()

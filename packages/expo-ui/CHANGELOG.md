@@ -1,5 +1,33 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix `Chart` ignoring `lineStyle.width` on line charts. The line mark applied `.lineStyle` twice (once for the dash pattern, once for the width), and the first one wins, so lines always rendered at 1 pt. The width and the dash pattern are now set in one `StrokeStyle`. ([#51283](https://github.com/expo/expo/pull/51283) by [@brentvatne](https://github.com/brentvatne))
+- [Android] Add `showTitle` and `showHeadline` to the Jetpack Compose `DateTimePicker`, `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog` to hide Material 3's title and headline. The community `DateTimePicker` with `presentation="inline"` now hides both on Android, matching iOS. To keep the title and headline, use `DateTimePicker` from `@expo/ui/jetpack-compose` instead. ([#51274](https://github.com/expo/expo/pull/51274) by [@IGx89](https://github.com/IGx89))
+- [Android] Fix a `Pressable` (or any JS responder) being cancelled when a `MaskedView`, or any other component that renders a `Host`, is laid over it. Once React Native grants the JS responder, the responder's view intercepts the touch stream and sends `ACTION_CANCEL` to its native children, including that `Host`. The `Host` reported this cancel as Compose claiming the gesture, which cancelled the press it belonged to. Holds longer than about 30 ms never fired `onPress`. ([#51163](https://github.com/expo/expo/pull/51163) by [@1kuko3](https://github.com/1kuko3))
+- Fix iOS `Picker` not reporting a selection that equals the last `selection` prop when the user changes it again before the prop updates. ([#51196](https://github.com/expo/expo/pull/51196) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Add `searchable` and `searchToolbarBehavior` SwiftUI modifiers. ([#50369](https://github.com/expo/expo/pull/50369) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fix the community `DateTimePicker` reading `value` as a UTC day while `minimumDate`/`maximumDate` use the device-local day. In non-UTC timezones the picker could select and return the wrong day — one before `minimumDate`. `value`'s local calendar day is now sent to Material3 as a UTC day, and the picked day is returned as a local date that keeps `value`'s time of day. ([#50941](https://github.com/expo/expo/pull/50941) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Add `ArrangementView` component and `arrangementViewStyle`, `splitArrangementLayoutRatio`, `splitArrangementLayoutSize`, `splitArrangementFixedLayoutSize`, and `overlayArrangementEdge` modifiers. ([#50893](https://github.com/expo/expo/pull/50893) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix `TimePickerDialog` ignoring `elementColors.containerColor`. ([#51116](https://github.com/expo/expo/pull/51116) by [@expo-bot](https://github.com/expo-bot))
+- [iOS][tvOS] Fix the tvOS build failing to compile with `'inlineLarge' is unavailable in tvOS` when `@expo/ui` is linked. `ToolbarTitleDisplayMode.inlineLarge` is unavailable on tvOS, but the `inlineLarge` case of the `toolbarTitleDisplayMode` modifier was only gated behind an OS version check that listed `tvOS 18.0`, so it was compiled into the tvOS slice. It is now guarded by platform and returns `nil` on tvOS. The same check also required iOS 18.0 / macOS 15.0, so `inlineLarge` silently fell back to `automatic` on iOS 17 and macOS 14 even though it is available there; it now applies on those versions. ([#51007](https://github.com/expo/expo/pull/51007) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] `onHingeChange` also accepts a callback from `useWorkletCallback`, which runs on the UI thread to track the hinge angle without a JS-thread round trip. ([#50910](https://github.com/expo/expo/pull/50910) by [@huntie](https://github.com/huntie))
+- [iOS] Added the `onHingeChange` modifier, which reports the device hinge angle and status on iPhone Duo (iOS 27.1+). ([#50909](https://github.com/expo/expo/pull/50909) by [@huntie](https://github.com/huntie))
+- Added the `useWorkletCallback` hook, which wraps a worklet function so a modifier that accepts one can run it synchronously on the UI thread. ([#51108](https://github.com/expo/expo/pull/51108) by [@huntie](https://github.com/huntie))
+
 ## 58.0.12
 
 ### Patch Changes

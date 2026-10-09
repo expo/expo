@@ -104,8 +104,9 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
       try ensureNotFinalized()
       try database.ensureOpen()
 
-      if exsqlite3_reset(pointer) != SQLITE_OK {
-        throw SQLiteErrorException(database.lastErrorMessage())
+      let result = sqliteResult(for: database.pointer) { exsqlite3_reset(pointer) }
+      if let message = result.message {
+        throw SQLiteErrorException(message)
       }
     }
   }
@@ -129,13 +130,13 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
       try ensureNotFinalized()
       try database.ensureOpen()
 
-      let ret = exsqlite3_finalize(pointer)
+      let result = sqliteResult(for: database.pointer) { exsqlite3_finalize(pointer) }
       // SQLite destroys the statement even when returning an earlier execution error.
       isFinalized = true
       pointer = nil
       database.statements.removeAll { $0 === self }
-      if ret != SQLITE_OK {
-        throw SQLiteErrorException(database.lastErrorMessage())
+      if let message = result.message {
+        throw SQLiteErrorException(message)
       }
     }
   }
@@ -170,9 +171,10 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
         }
       }
 
-      let ret = exsqlite3_step(pointer)
-      if ret != SQLITE_ROW && ret != SQLITE_DONE {
-        throw SQLiteErrorException(database.lastErrorMessage())
+      let result = sqliteResult(for: database.pointer) { exsqlite3_step(pointer) }
+      let ret = result.code
+      if let message = result.message {
+        throw SQLiteErrorException(message)
       }
       return SQLiteRunResult(
         lastInsertRowId: Double(exsqlite3_last_insert_rowid(database.pointer)),
@@ -187,12 +189,13 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
       try ensureNotFinalized()
       try database.ensureOpen()
 
-      let ret = exsqlite3_step(pointer)
+      let result = sqliteResult(for: database.pointer) { exsqlite3_step(pointer) }
+      let ret = result.code
       if ret == SQLITE_ROW {
         return try columnValues()
       }
-      if ret != SQLITE_DONE {
-        throw SQLiteErrorException(database.lastErrorMessage())
+      if let message = result.message {
+        throw SQLiteErrorException(message)
       }
       return nil
     }
@@ -205,7 +208,8 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
 
       var rows: [[SQLiteColumnValue?]] = []
       while true {
-        let ret = exsqlite3_step(pointer)
+        let result = sqliteResult(for: database.pointer) { exsqlite3_step(pointer) }
+        let ret = result.code
         if ret == SQLITE_ROW {
           rows.append(try columnValues())
           continue
@@ -213,7 +217,10 @@ final class NativeStatement: SharedObject, @unchecked Sendable {
         if ret == SQLITE_DONE {
           break
         }
-        throw SQLiteErrorException(database.lastErrorMessage())
+        if let message = result.message {
+          throw SQLiteErrorException(message)
+        }
+        throw SQLiteErrorException("Error code \(result.code)")
       }
       return rows
     }

@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Removed a reflective write to an `AppearanceModule` field that no longer exists, which logged a warning every time an app was loaded. ([#51131](https://github.com/expo/expo/pull/51131) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#51130](https://github.com/expo/expo/pull/51130))
+  - expo-dev-menu@58.0.11
+
 ## 58.0.11
 
 ### Patch Changes
