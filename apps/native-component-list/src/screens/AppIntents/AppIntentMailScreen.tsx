@@ -1,4 +1,5 @@
 import { Column, Host, Text as ExpoUIText } from '@expo/ui';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { useTheme } from 'ThemeProvider';
 import * as AppIntents from 'expo-app-intents';
@@ -53,7 +54,6 @@ function MailDraft({
     borderWidth: StyleSheet.hairlineWidth,
     gap: 6,
     padding: 12,
-    width: '100%' as const,
   };
   const subjectTextStyle = { color: theme.text.default, fontSize: 18, fontWeight: '700' as const };
   const bodyTextStyle = { color: theme.text.default };
@@ -90,7 +90,7 @@ function MailDraft({
       renderedDraft = (
         <Host matchContents={{ vertical: true }} seedColor="#805ad5" style={styles.draftHost}>
           <Column
-            modifiers={[AppIntents.appEntityIdentifier('mailDraft', draft.id)]}
+            modifiers={[AppIntents.appEntityIdentifier('mailDraft', draft.id), fillMaxWidth()]}
             spacing={6}
             style={draftStyle}>
             <ExpoUIText textStyle={subjectTextStyle}>{draft.subject}</ExpoUIText>

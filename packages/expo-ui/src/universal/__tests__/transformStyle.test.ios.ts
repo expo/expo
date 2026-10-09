@@ -59,4 +59,32 @@ describe('transformToModifiers (iOS)', () => {
       disabled(false),
     ]);
   });
+
+  // String dimensions are not accepted — warn in dev, emit no frame modifier.
+  it('warns and emits no modifier for a string width on iOS', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
+    warn.mockRestore();
+  });
+
+  it('warns and emits no modifier for a non-percentage string width on iOS', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ width: 'auto' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('width does not accept string values')
+    );
+    warn.mockRestore();
+  });
+
+  it('warns and emits no modifier for a string height on iOS', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    expect(transformToModifiers({ height: '100%' as any }, {})).toEqual([]);
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringContaining('height does not accept string values')
+    );
+    warn.mockRestore();
+  });
 });
