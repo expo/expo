@@ -1,0 +1,183 @@
+name: Windows tester
+
+# Builds `apps/windows-tester`, a react-native-windows app that installs functions written in
+# Swift with `ExpoModulesJSI`, then starts it and checks the results that the app reports.
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - .github/workflows/windows-tester.yml
+      - apps/windows-tester/**
+      - packages/expo-modules-jsi/apple/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # The `Microsoft.JavaScript.Hermes` version that react-native-windows 0.84.0 uses.
+  HERMES_VERSION: '0.0.0-2605.6002-2279da22'
+
+jobs:
+  run:
+    name: Build and run (Windows x64)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: apps/windows-tester
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: |
+            .github/workflows
+            apps/windows-tester
+            packages/expo-modules-jsi
+
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: 🐦 Install Swift
+        uses: compnerd/gha-setup-swift@bbae8ce86bac5a3449f3992b3d88bc4ca25f2057 # v0.5.0
+        with:
+          swift-version: swift-6.4.0-release
+          swift-build: 6.4.0-RELEASE
+          build_arch: amd64
+
+      - name: 📦 Install npm dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: 📦 Stage the JSI headers for ExpoModulesJSI
+        # The same staging as the `expo-modules-jsi (Windows)` workflow, but the JSI headers and
+        # sources come from the app's `react-native-windows` package, so the Swift DLL and the app
+        # compile against the same files.
+        shell: pwsh
+        run: |
+          $cxx = Resolve-Path "node_modules/react-native-windows/Microsoft.ReactNative.Cxx"
+          $archive = Join-Path $env:RUNNER_TEMP "hermes.zip"
+          Invoke-WebRequest -Uri "https://api.nuget.org/v3-flatcontainer/microsoft.javascript.hermes/$env:HERMES_VERSION/microsoft.javascript.hermes.$env:HERMES_VERSION.nupkg" -OutFile $archive
+          $hermesRoot = Join-Path $env:RUNNER_TEMP "hermes"
+          New-Item -ItemType Directory -Force $hermesRoot | Out-Null
+          tar -xf $archive -C $hermesRoot "build/native/include"
+          if ($LASTEXITCODE -ne 0) { throw "Could not extract Hermes $env:HERMES_VERSION" }
+          $hermes = Join-Path $hermesRoot "build/native"
+
+          $include = Join-Path $env:RUNNER_TEMP "jsi-include"
+          $jsi = Join-Path $include "jsi"
+          New-Item -ItemType Directory -Force $jsi | Out-Null
+          Copy-Item (Join-Path $cxx "JSI/*.h") $jsi
+          Copy-Item (Join-Path $cxx "ApiLoaders") $include -Recurse
+          Copy-Item (Join-Path $cxx "NodeApiJsiRuntime.h") $include
+          Copy-Item (Join-Path $hermes "include/hermes/*.h") $include
+          Copy-Item (Join-Path $hermes "include/node-api/*.h") $include
+
+          $swiftRoot = Join-Path $env:LOCALAPPDATA "Programs/Swift"
+          $bridging = Get-ChildItem -Recurse $swiftRoot -Filter bridging -File | Where-Object { $_.Directory.Name -eq "swift" } | Select-Object -First 1
+          if (-not $bridging) { throw "Could not find swift/bridging in $swiftRoot" }
+          Copy-Item $bridging.Directory.FullName (Join-Path $include "swift") -Recurse
+
+          $package = Resolve-Path "../../packages/expo-modules-jsi/apple"
+          $sources = Join-Path $package "Sources/ExpoModulesJSI-Cxx/react-native-windows"
+          New-Item -ItemType Directory -Force (Join-Path $sources "ApiLoaders") | Out-Null
+          Copy-Item (Join-Path $cxx "JSI/jsi.cpp") $sources
+          Copy-Item (Join-Path $cxx "NodeApiJsiRuntime.cpp") $sources
+          Copy-Item (Join-Path $cxx "ApiLoaders/*") (Join-Path $sources "ApiLoaders") -Exclude "NodeApi_posix.cpp"
+
+          $jsiPath = ($jsi -replace '\\', '/')
+          New-Item -ItemType Directory -Force (Join-Path $package ".generated") | Out-Null
+          @"
+          module jsi {
+            header "$jsiPath/jsi.h"
+            header "$jsiPath/instrumentation.h"
+
+            export *
+          }
+          "@ | Set-Content -Path (Join-Path $package ".generated/module.modulemap") -Encoding utf8
+          "JSI_INCLUDE_DIR=$include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: 🔨 Build the app
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio/Installer/vswhere.exe"
+          $msbuild = & $vswhere -latest -requires Microsoft.Component.MSBuild -find "MSBuild\**\Bin\MSBuild.exe" | Select-Object -First 1
+          Write-Host "Using $msbuild"
+          # react-native-windows asks for Windows SDK 10.0.22621.0, which the runner doesn't have, so
+          # build with the newest installed SDK.
+          $sdk = Get-ChildItem "${env:ProgramFiles(x86)}/Windows Kits/10/Include" -Directory | Where-Object { $_.Name -like "10.*" } | Sort-Object { [version]$_.Name } | Select-Object -Last 1
+          Write-Host "Using Windows SDK $($sdk.Name)"
+          # react-native-windows projects must be built through the solution. The app runs without its
+          # MSIX package, so it carries the Windows App SDK with it (self-contained) and initializes it
+          # on start.
+          & $msbuild windows/WindowsTester.sln /t:WindowsTester /restore /m `
+            /p:Configuration=Release /p:Platform=x64 `
+            "/p:WindowsTargetPlatformVersion=$($sdk.Name)" `
+            /p:WindowsPackageType=None /p:WindowsAppSDKSelfContained=true /p:WindowsAppSdkAutoInitialize=true `
+            /p:RestorePackagesConfig=true /bl:$env:RUNNER_TEMP/msbuild.binlog
+          if ($LASTEXITCODE -ne 0) { throw "MSBuild failed with exit code $LASTEXITCODE" }
+
+      - name: 🧪 Run the app and check the results
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Recurse windows -Filter WindowsTester.exe | Select-Object -First 1
+          if (-not $exe) { throw "Could not find WindowsTester.exe" }
+          Write-Host "Starting $($exe.FullName)"
+          Get-ChildItem $exe.Directory -Filter *.dll | ForEach-Object { Write-Host "  $($_.Name)" }
+
+          $result = Join-Path $env:RUNNER_TEMP "windows-tester-result.json"
+          $env:EXPO_WINDOWS_TESTER_RESULT = $result
+          $log = Join-Path $env:RUNNER_TEMP "windows-tester.log"
+          $env:EXPO_WINDOWS_TESTER_LOG = $log
+          $process = Start-Process -FilePath $exe.FullName -WorkingDirectory $exe.Directory -PassThru
+          $deadline = (Get-Date).AddMinutes(3)
+          while (-not (Test-Path $result) -and -not $process.HasExited -and (Get-Date) -lt $deadline) {
+            Start-Sleep -Seconds 1
+          }
+          Write-Host "--- App log"
+          if (Test-Path $log) { Get-Content $log | ForEach-Object { Write-Host "  $_" } } else { Write-Host "  (empty)" }
+          $cdb = Get-ChildItem "${env:ProgramFiles(x86)}/Windows Kits/10/Debuggers/x64/cdb.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          $env:_NT_SYMBOL_PATH = "$($exe.Directory);srv*$env:RUNNER_TEMP\symbols*https://msdl.microsoft.com/download/symbols"
+          if (-not (Test-Path $result)) {
+            if (-not $process.HasExited) {
+              Write-Host "::error::The app didn't report results within 3 minutes"
+              # Shows what every thread is doing, then stops the app.
+              if ($cdb) { & $cdb.FullName -p $process.Id -c ".lines; ~*kn 30; q" }
+              Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+              exit 1
+            }
+            Write-Host "::error::The app exited with code $($process.ExitCode) ($('0x{0:X8}' -f $process.ExitCode)) before it reported results"
+            # Shows where it crashed: the Windows error report, then a run under the console debugger.
+            Get-WinEvent -FilterHashtable @{ LogName = 'Application'; StartTime = (Get-Date).AddMinutes(-10) } -ErrorAction SilentlyContinue |
+              Where-Object { $_.ProviderName -in 'Application Error', 'Windows Error Reporting', '.NET Runtime' } |
+              ForEach-Object { Write-Host "--- $($_.ProviderName)"; Write-Host $_.Message }
+            if ($cdb) {
+              & $cdb.FullName -g -G -c ".lines; .exr -1; kn 60; q" $exe.FullName
+            } else {
+              Write-Host "cdb.exe isn't installed"
+            }
+            exit 1
+          }
+
+          $json = Get-Content $result -Raw
+          Write-Host $json
+          $results = $json | ConvertFrom-Json
+          $expected = @{ install = $true; add = 5; multiplyAsync = 42; scheduleFromBackgroundThread = $true }
+          $failed = $false
+          foreach ($name in $expected.Keys) {
+            if ($results.$name -ne $expected[$name]) {
+              Write-Host "::error::$name returned $($results.$name | ConvertTo-Json -Compress), expected $($expected[$name])"
+              $failed = $true
+            }
+          }
+          if ($failed) { exit 1 }
+
+      - name: 📤 Upload the MSBuild log
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: windows-tester-msbuild-log
+          path: ${{ runner.temp }}/msbuild.binlog
+          if-no-files-found: ignore
