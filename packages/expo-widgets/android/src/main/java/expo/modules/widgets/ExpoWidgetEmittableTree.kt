@@ -65,7 +65,9 @@ import androidx.glance.EmittableImage
 import androidx.glance.ImageProvider
 import androidx.glance.TintColorFilterParams
 import androidx.glance.GlanceModifier
+import androidx.glance.action.Action
 import androidx.glance.action.clickable
+import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.CheckboxDefaults
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.EmittableCheckBox
@@ -295,8 +297,11 @@ private fun ImageContentScale.toGlanceContentScale(): ContentScale {
 private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, source: String): Emittable {
   val props = props<WidgetButtonProps>(converterContext)
   val children = children()
-  val action =
+  val action = if (props.openApp) {
+    openAppAction(converterContext.applicationContext)
+  } else {
     props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
+  }
   val modifier = props.buttonModifier(converterContext)
   val contentColor = props.contentColorProvider()
   val textContent = children.textContent(converterContext) ?: props.label
@@ -318,6 +323,11 @@ private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, s
     it.contentAlignment = Alignment.Center
     it.children += children.flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
+}
+
+private fun openAppAction(context: Context): Action? {
+  val intent = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return null
+  return actionStartActivity(intent)
 }
 
 private fun ReadableMap.toPeekCheckBox(converterContext: ConverterContext): EmittableCheckBox {
@@ -680,6 +690,7 @@ internal data class WidgetButtonProps(
   val enabled: Boolean = true,
   val label: String? = null,
   val modifiers: ModifierList = emptyList(),
+  val openApp: Boolean = false,
   val target: String? = null
 ) : ComposeProps
 
