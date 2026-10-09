@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Updated dependencies. ([#51260](https://github.com/expo/expo/pull/51260))
+  - @expo/log-box@58.0.12
+
 ## 58.0.13
 
 ### Patch Changes

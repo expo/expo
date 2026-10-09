@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix `Chart` ignoring `lineStyle.width` on line charts. The line mark applied `.lineStyle` twice (once for the dash pattern, once for the width), and the first one wins, so lines always rendered at 1 pt. The width and the dash pattern are now set in one `StrokeStyle`. ([#51283](https://github.com/expo/expo/pull/51283) by [@brentvatne](https://github.com/brentvatne))
+- [Android] Add `showTitle` and `showHeadline` to the Jetpack Compose `DateTimePicker`, `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog` to hide Material 3's title and headline. The community `DateTimePicker` with `presentation="inline"` now hides both on Android, matching iOS. To keep the title and headline, use `DateTimePicker` from `@expo/ui/jetpack-compose` instead. ([#51274](https://github.com/expo/expo/pull/51274) by [@IGx89](https://github.com/IGx89))
+- [Android] Fix a `Pressable` (or any JS responder) being cancelled when a `MaskedView`, or any other component that renders a `Host`, is laid over it. Once React Native grants the JS responder, the responder's view intercepts the touch stream and sends `ACTION_CANCEL` to its native children, including that `Host`. The `Host` reported this cancel as Compose claiming the gesture, which cancelled the press it belonged to. Holds longer than about 30 ms never fired `onPress`. ([#51163](https://github.com/expo/expo/pull/51163) by [@1kuko3](https://github.com/1kuko3))
+- Fix iOS `Picker` not reporting a selection that equals the last `selection` prop when the user changes it again before the prop updates. ([#51196](https://github.com/expo/expo/pull/51196) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Add `searchable` and `searchToolbarBehavior` SwiftUI modifiers. ([#50369](https://github.com/expo/expo/pull/50369) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.14
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fixed `pod install` failing with precompiled modules and `useFrameworks: "dynamic"` when a pod depends on React only through `React`, `ReactCommon`, or another pod that depends on them ([#50640](https://github.com/expo/expo/issues/50640)). ([#50956](https://github.com/expo/expo/pull/50956) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/platforms@58.0.1
+
 ## 58.0.10
 
 ### Patch Changes

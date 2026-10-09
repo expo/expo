@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- [Internal] Bump `react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Preserve statement error codes and messages when queries run concurrently on Android and iOS, and format Android SQLite error codes as numbers. ([#51082](https://github.com/expo/expo/pull/51082) by [@savv](https://github.com/savv))
+- [Android] Migrate to the Expo Modules API 2.0. Reloading the app now closes the databases that are still open, and `lastInsertRowId` is no longer truncated to 32 bits. ([#51208](https://github.com/expo/expo/pull/51208) by [@lukmccall](https://github.com/lukmccall))
+
 ## 58.0.10
 
 ### Patch Changes

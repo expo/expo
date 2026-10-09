@@ -1,6 +1,6 @@
 {
   "name": "@expo/sandbox",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",

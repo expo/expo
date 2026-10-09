@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Request audio focus when playback is started from the notification, the lock screen or a media button, so it pauses for an incoming call like playback started from JS. ([#50745](https://github.com/expo/expo/pull/50745) by [@enavermate](https://github.com/enavermate))
+
 ## 58.0.7
 
 ### Patch Changes

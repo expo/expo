@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- [iOS] Reject abandoned file preview presentations and allow subsequent previews to open. ([#51169](https://github.com/expo/expo/pull/51169) by [@eliotgevers](https://github.com/eliotgevers))
+
 ## 58.0.7
 
 ### Patch Changes

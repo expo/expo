@@ -1,5 +1,26 @@
 # Changelog
 
+## 58.1.6
+
+### Patch Changes
+
+- `expo serve` now refuses to start on development exports that include server code. ([#50522](https://github.com/expo/expo/pull/50522) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Load `.env` files in the bundle's mode in `expo export:embed` instead of keeping values loaded by a parent Expo process. ([#51227](https://github.com/expo/expo/pull/51227) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fixed tsconfig path normalization, including absolute targets and `${configDir}` expansion in extended configs. ([#51027](https://github.com/expo/expo/pull/51027) by [@911RS](https://github.com/911RS))
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- Remove legacy `AssetRegistry` virtual module in favor of public `AssetRegistry` API from React Native 0.87+. ([#51247](https://github.com/expo/expo/pull/51247) by [@byCedric](https://github.com/byCedric))
+- Updated dependencies. ([`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522), [#49418](https://github.com/expo/expo/pull/49418), [#51185](https://github.com/expo/expo/pull/51185))
+  - @expo/config-plugins@58.0.7
+  - @expo/log-box@58.0.12
+  - expo-server@58.0.4
+  - @expo/platforms@58.0.1
+  - @expo/config@58.0.4
+  - @expo/metro-config@58.0.11
+  - @expo/prebuild-config@58.0.11
+  - @expo/log-box-utils@58.0.2
+  - @expo/inline-modules@0.2.4
+  - @expo/router-server@58.0.11
+
 ## 58.1.5
 
 ### Patch Changes

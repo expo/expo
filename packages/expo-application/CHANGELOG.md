@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- [iOS] Add `getAppleStoreEnvironmentAsync()`, which returns StoreKit's App Store environment for the running build (`'production'`, `'sandbox'` or `'xcode'`), so apps can tell TestFlight, App Review and development builds apart from App Store releases. ([#51209](https://github.com/expo/expo/pull/51209) by [@huntie](https://github.com/huntie))
+
 ## 58.0.4
 
 ### Patch Changes

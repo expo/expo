@@ -1,5 +1,24 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Stop overriding web style types that React Native already declares. ([#50610](https://github.com/expo/expo/pull/50610) by [@Maher-Reven](https://github.com/Maher-Reven))
+- Updated dependencies. ([#51206](https://github.com/expo/expo/pull/51206), [`0bf5424`](https://github.com/expo/expo/commit/0bf54244ba22f2953bd6e187e39b8d7206f10eb4), [#51204](https://github.com/expo/expo/pull/51204), [#51310](https://github.com/expo/expo/pull/51310), [#51260](https://github.com/expo/expo/pull/51260), [#50522](https://github.com/expo/expo/pull/50522), [#51227](https://github.com/expo/expo/pull/51227), [#51027](https://github.com/expo/expo/pull/51027), [#51210](https://github.com/expo/expo/pull/51210), [#51083](https://github.com/expo/expo/pull/51083), [#49418](https://github.com/expo/expo/pull/49418), [#51169](https://github.com/expo/expo/pull/51169), [#51168](https://github.com/expo/expo/pull/51168), [#51185](https://github.com/expo/expo/pull/51185), [#51110](https://github.com/expo/expo/pull/51110), [#50956](https://github.com/expo/expo/pull/50956), [#51171](https://github.com/expo/expo/pull/51171), [#51247](https://github.com/expo/expo/pull/51247), [#49801](https://github.com/expo/expo/pull/49801))
+  - expo-modules-core@58.0.15
+  - @expo/config-plugins@58.0.7
+  - babel-preset-expo@58.0.12
+  - @expo/log-box@58.0.12
+  - @expo/cli@58.1.6
+  - @expo/config@58.0.4
+  - @expo/metro-config@58.0.11
+  - expo-modules-autolinking@58.0.11
+  - expo-file-system@58.0.8
+  - @expo/fingerprint@0.21.4
+  - @expo/log-box-utils@58.0.2
+  - @expo/local-build-cache-provider@58.0.4
+
 ## 58.0.6
 
 ### Patch Changes
