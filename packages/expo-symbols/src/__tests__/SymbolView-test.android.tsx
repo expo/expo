@@ -1,10 +1,12 @@
-import { isHiddenFromAccessibility, render, screen } from '@testing-library/react-native';
+import { isHiddenFromAccessibility, render, screen, waitFor } from '@testing-library/react-native';
+import { isLoaded, loadAsync } from 'expo-font';
 
 import { SymbolView } from '../SymbolView';
 import { androidSymbolToString } from '../android';
 
 jest.mock('expo-font', () => ({
   loadAsync: jest.fn(() => Promise.resolve()),
+  isLoaded: jest.fn(() => false),
 }));
 
 const glyph = androidSymbolToString('chevron_right')!;
@@ -58,5 +60,22 @@ describe('SymbolView', () => {
     );
 
     expect(screen.getByTestId('symbol').props.collapsable).toBe(false);
+  });
+
+  it('draws the glyph when loading rejects but the font face is registered', async () => {
+    jest.mocked(loadAsync).mockRejectedValueOnce(new Error('timed out'));
+    jest.mocked(isLoaded).mockReturnValueOnce(true);
+    await render(<SymbolView name={{ android: 'chevron_right' }} />);
+
+    expect(await screen.findByText(glyph, { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('draws nothing when loading rejects and the font face is not registered', async () => {
+    jest.mocked(loadAsync).mockRejectedValueOnce(new Error('invalid source'));
+    jest.mocked(isLoaded).mockClear();
+    await render(<SymbolView name={{ android: 'chevron_right' }} />);
+
+    await waitFor(() => expect(isLoaded).toHaveBeenCalled());
+    expect(screen.queryByText(glyph, { includeHiddenElements: true })).toBeNull();
   });
 });
