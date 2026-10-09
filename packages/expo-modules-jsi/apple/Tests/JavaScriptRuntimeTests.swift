@@ -264,7 +264,7 @@ struct JavaScriptRuntimeTests {
     let cpuTime = try await onSyncOffThread {
       try measureThreadCPUTime {
         try runtime.execute { @JavaScriptActor in
-          Thread.sleep(forTimeInterval: 0.2)
+          blockCurrentThread(milliseconds: 200)
         }
       }
     }
@@ -278,7 +278,7 @@ struct JavaScriptRuntimeTests {
     let cpuTime = try await onSyncOffThread {
       try measureThreadCPUTime {
         try runtime.execute { @JavaScriptActor () async in
-          Thread.sleep(forTimeInterval: 0.2)
+          blockCurrentThread(milliseconds: 200)
         }
       }
     }
@@ -1226,6 +1226,15 @@ struct JavaScriptRuntimeTests {
     let survives = weakObject.lock()?.getProperty("survives").getBool()
     #expect(survives == true)
   }
+}
+
+/// Blocks the calling thread without using CPU time. `Thread.sleep` isn't available in async contexts.
+private func blockCurrentThread(milliseconds: UInt32) {
+  #if os(Windows)
+  Sleep(milliseconds)
+  #else
+  _ = usleep(milliseconds * 1000)
+  #endif
 }
 
 /// Returns the CPU time the calling thread spent in `body`, in seconds.
