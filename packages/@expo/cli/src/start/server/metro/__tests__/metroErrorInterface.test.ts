@@ -324,6 +324,7 @@ describe('logMetroError', () => {
       start('third');
       reporter.update({ type: 'bundle_build_failed', buildID: 'third' });
       reporter.update({ type: 'bundling_error', error });
+      reporter.update({ type: 'bundling_error', error: new Error('HMR failed') });
 
       expect(
         jest.mocked(event).mock.calls.map(([name, data]) => [name, 'id' in data && data.id])
@@ -335,6 +336,7 @@ describe('logMetroError', () => {
         ['bundling:done', 'second'],
         ['bundling:start', 'third'],
         ['bundling:failed', 'third'],
+        ['bundling:failed', null],
       ]);
       expect(event).toHaveBeenCalledWith(
         'bundling:done',
