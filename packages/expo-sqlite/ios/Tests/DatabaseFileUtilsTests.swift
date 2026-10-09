@@ -136,11 +136,51 @@ final class DatabaseFileUtilsTests {
   @Test
   func `does not migrate when the resolved database already exists`() throws {
     let legacyPath = createFile("legacy.db")
+    let legacyWalPath = createFile("legacy.db-wal")
     let path = createFile("resolved.db")
 
     try DatabaseFileUtils.migrateLegacyDatabaseFiles(fromPath: legacyPath, toPath: path)
 
     #expect(FileManager.default.fileExists(atPath: legacyPath))
+    #expect(FileManager.default.fileExists(atPath: legacyWalPath))
+    #expect(!FileManager.default.fileExists(atPath: path + "-wal"))
     #expect(String(data: FileManager.default.contents(atPath: path) ?? Data(), encoding: .utf8) == "data")
+  }
+
+  @Test
+  func `replaces an orphan resolved wal when the database has not moved yet`() throws {
+    let legacyPath = createFile("legacy.db")
+    let legacyWalPath = tempDir.appendingPathComponent("legacy.db-wal").path
+    FileManager.default.createFile(atPath: legacyWalPath, contents: Data("current".utf8))
+    let path = tempDir.appendingPathComponent("resolved.db").path
+    FileManager.default.createFile(atPath: path + "-wal", contents: Data("orphan".utf8))
+    let shmPath = createFile("resolved.db-shm")
+
+    try DatabaseFileUtils.migrateLegacyDatabaseFiles(fromPath: legacyPath, toPath: path)
+
+    #expect(FileManager.default.fileExists(atPath: path))
+    #expect(String(data: FileManager.default.contents(atPath: path + "-wal") ?? Data(), encoding: .utf8) == "current")
+    #expect(!FileManager.default.fileExists(atPath: legacyPath))
+    #expect(!FileManager.default.fileExists(atPath: legacyWalPath))
+    #expect(!FileManager.default.fileExists(atPath: shmPath))
+  }
+
+  @Test
+  func `moves only the legacy sidecars the moved database is missing`() throws {
+    let legacyPath = tempDir.appendingPathComponent("legacy.db").path
+    let legacyWalPath = createFile("legacy.db-wal")
+    let legacyShmPath = createFile("legacy.db-shm")
+    let legacyJournalPath = tempDir.appendingPathComponent("legacy.db-journal").path
+    FileManager.default.createFile(atPath: legacyJournalPath, contents: Data("stale".utf8))
+    let path = createFile("resolved.db")
+    FileManager.default.createFile(atPath: path + "-journal", contents: Data("current".utf8))
+
+    try DatabaseFileUtils.migrateLegacyDatabaseFiles(fromPath: legacyPath, toPath: path)
+
+    #expect(FileManager.default.fileExists(atPath: path + "-wal"))
+    #expect(!FileManager.default.fileExists(atPath: legacyWalPath))
+    #expect(!FileManager.default.fileExists(atPath: legacyShmPath))
+    #expect(String(data: FileManager.default.contents(atPath: path + "-journal") ?? Data(), encoding: .utf8) == "current")
+    #expect(FileManager.default.fileExists(atPath: legacyJournalPath))
   }
 }

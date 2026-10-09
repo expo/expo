@@ -6,6 +6,8 @@ internal enum DatabaseFileUtils {
   /// Files SQLite keeps next to the main database and that must travel with it.
   static let sidecarSuffixes = ["-journal", "-wal", "-shm"]
 
+  private static let migrationLock = NSLock()
+
   /**
    Resolves the database path JavaScript sends into a `URL`. A `file:` URI is percent-encoded before
    `URL(string:)` so spaces, non-ASCII characters, `#` and `?` survive on every supported OS, and
@@ -48,24 +50,42 @@ internal enum DatabaseFileUtils {
 
   /**
    Moves a database left under its legacy percent-encoded name, with its sidecar files, to `path`.
-   Does nothing when `path` already exists or no legacy file is present.
+   Sidecars move first so a crash leaves the database with its journal and the next open retries.
    */
   static func migrateLegacyDatabaseFiles(fromPath legacyPath: String, toPath path: String) throws {
+    migrationLock.lock()
+    defer { migrationLock.unlock() }
+
     let fileManager = FileManager.default
-    guard !fileManager.fileExists(atPath: path), fileManager.fileExists(atPath: legacyPath) else {
+    let databaseExists = fileManager.fileExists(atPath: path)
+    let legacyDatabaseExists = fileManager.fileExists(atPath: legacyPath)
+    // With both databases present the legacy sidecars belong to the other one.
+    guard databaseExists != legacyDatabaseExists else {
       return
     }
-    do {
-      try fileManager.moveItem(atPath: legacyPath, toPath: path)
-    } catch {
-      // A concurrent caller may have finished the same move first.
-      if !fileManager.fileExists(atPath: path) {
-        throw error
+
+    for suffix in ["-journal", "-wal"] {
+      let legacySidecar = legacyPath + suffix
+      guard fileManager.fileExists(atPath: legacySidecar) else {
+        continue
       }
+      let sidecar = path + suffix
+      if fileManager.fileExists(atPath: sidecar) {
+        // The moved database already wrote its own; the stale legacy one is kept, not deleted.
+        if databaseExists {
+          continue
+        }
+        try fileManager.removeItem(atPath: sidecar)
+      }
+      try fileManager.moveItem(atPath: legacySidecar, toPath: sidecar)
     }
-    for suffix in sidecarSuffixes where fileManager.fileExists(atPath: legacyPath + suffix) {
-      try? fileManager.moveItem(atPath: legacyPath + suffix, toPath: path + suffix)
+
+    try? fileManager.removeItem(atPath: legacyPath + "-shm")
+    if databaseExists {
+      return
     }
+    try? fileManager.removeItem(atPath: path + "-shm")
+    try fileManager.moveItem(atPath: legacyPath, toPath: path)
   }
 
   /**
@@ -87,10 +107,7 @@ internal enum DatabaseFileUtils {
     removeSidecarFiles(atPath: path)
   }
 
-  /**
-   Removes the database file and its sidecar files when present. Missing files are not an error, so
-   this is safe to call before the first asset import.
-   */
+  /// Removes the database file and its sidecar files when present. Missing files are not an error.
   static func removeDatabaseFiles(atPath path: String) {
     if FileManager.default.fileExists(atPath: path) {
       try? FileManager.default.removeItem(atPath: path)

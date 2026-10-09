@@ -399,7 +399,6 @@ public final class SQLiteModule: Module, @unchecked Sendable {
       fileManager.fileExists(atPath: assetPath) else {
       throw DatabaseNotFoundException(assetDatabasePath)
     }
-    // A leftover `-wal` would be replayed over the fresh copy, bringing the old tables back.
     DatabaseFileUtils.removeDatabaseFiles(atPath: path.toFilePath())
     try fileManager.copyItem(atPath: assetPath, toPath: path.toFilePath())
   }
