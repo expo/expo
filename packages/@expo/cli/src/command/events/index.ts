@@ -1,10 +1,11 @@
 import { parseArgs } from 'node:util';
 
 import type { Command } from '../../index';
-import { reportError } from '../utils';
+import { installOutputErrorHandler, reportError } from '../utils';
 import { getHelp } from './help';
 
 export const expoCommandEvents: Command = async (argv = []) => {
+  installOutputErrorHandler();
   try {
     const { values, positionals } = parseArgs({
       args: argv,

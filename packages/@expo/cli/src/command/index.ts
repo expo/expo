@@ -3,12 +3,13 @@ import chalk from 'chalk';
 import type { Command } from '../index';
 import { getHelp as getEventsHelp } from './events/help';
 import { getHelp as getPsHelp } from './ps/help';
-import { reportError } from './utils';
+import { installOutputErrorHandler, reportError } from './utils';
 
 export const expoCommand: Command = async (argv = []) => {
   const [command, ...args] = argv;
 
   if (!command || command === '--help' || command === '-h') {
+    installOutputErrorHandler();
     process.stdout.write(
       [
         '',

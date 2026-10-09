@@ -1,5 +1,15 @@
 import chalk from 'chalk';
 
+export function installOutputErrorHandler() {
+  process.stdout.on('error', handleOutputError);
+}
+
+export function handleOutputError(error: NodeJS.ErrnoException) {
+  // Exit also closes a live event subscription when its output reader closes.
+  if (error.code === 'EPIPE') process.exit(0);
+  throw error;
+}
+
 /** Keep stdout machine-readable and errors concise, like 2g's commands. */
 export function reportError(error: unknown) {
   process.stderr.write(`${chalk.red(error instanceof Error ? error.message : String(error))}\n`);
