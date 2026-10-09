@@ -97,6 +97,69 @@ function createDevServerForStaticPageTests() {
 }
 
 describe('Metro error reporting', () => {
+  it.each([true, false])(
+    'reports only the final outcome after validating serializer output (valid: %s)',
+    async (valid) => {
+      const devServer = createDevServerForStaticPageTests();
+      const update = jest.fn();
+      const revision = {
+        id: 'revision',
+        date: new Date(),
+        prepend: [],
+        graph: { dependencies: new Map() },
+      };
+      devServer['metro'] = {
+        _config: {
+          transformer: { asyncRequireModulePath: 'asyncRequire' },
+          serializer: { getModulesRunBeforeMainModule: () => [] },
+          server: {},
+        },
+        _reporter: { update },
+        _shouldAddModuleToIgnoreList: () => false,
+        _resolveRelativePath: async () => '/app/asyncRequire.js',
+        getNewBuildNumber: () => 1,
+        getBundler: () => ({
+          updateGraph: async () => ({ revision, delta: { reset: true, added: new Map() } }),
+        }),
+      } as any;
+      devServer['getMetroRevision'] = jest.fn().mockResolvedValue(revision);
+      devServer['getMetroSerializer'] = jest
+        .fn()
+        .mockReturnValue(async () =>
+          valid ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] } : {}
+        );
+      const result = devServer['_bundleDirectAsync']('/app/index.js', {
+        transformOptions: {
+          dev: true,
+          minify: false,
+          platform: 'web',
+          type: 'module',
+          unstable_transformProfile: 'default',
+        },
+        resolverOptions: { customResolverOptions: {}, dev: true },
+        graphOptions: { lazy: false, shallow: false },
+        serializerOptions: { output: 'static' } as any,
+      });
+      if (valid) {
+        await expect(result).resolves.toMatchObject({ bundle: 'code' });
+        expect(update.mock.calls.map(([event]) => event.type)).toEqual([
+          'bundle_build_started',
+          'bundle_build_done',
+        ]);
+      } else {
+        await expect(result).rejects.toMatchObject({
+          message: expect.stringContaining('Serializer did not return expected format'),
+          [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+        });
+        expect(update.mock.calls.map(([event]) => event.type)).toEqual([
+          'bundle_build_started',
+          'bundle_build_failed',
+          'bundling_error',
+        ]);
+      }
+    }
+  );
+
   it.each(['bundleApiRoute', 'bundleLoader'] as const)(
     '%s preserves reporting flags when wrapping an error',
     async (method) => {
