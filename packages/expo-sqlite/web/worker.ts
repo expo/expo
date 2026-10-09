@@ -119,7 +119,7 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
     }
 
     case 'finalize': {
-      await finalize(data.nativeDatabaseId, data.nativeStatementId);
+      await finalize(data.nativeStatementId);
       break;
     }
 
@@ -295,10 +295,9 @@ async function exec(nativeDatabaseId: number, source: string) {
   await sqlite3.exec(dbEntity.pointer, source);
 }
 
-async function finalize(nativeDatabaseId: number, nativeStatementId: number): Promise<void> {
+// A closed handle to a shared connection may still own statements, so don't require its id here.
+async function finalize(nativeStatementId: number): Promise<void> {
   const { sqlite3 } = await maybeInitAsync();
-  const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
   const stmt = statementIdMap.get(nativeStatementId);
   if (!stmt) throw new Error(`Statement not found - nativeStatementId[${nativeStatementId}]`);
 
