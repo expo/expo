@@ -18,6 +18,8 @@ concurrency:
 env:
   # The `Microsoft.JavaScript.Hermes` version that react-native-windows 0.84.0 uses.
   HERMES_VERSION: '0.0.0-2605.6002-2279da22'
+  # The `expo-modules-macros` branch that builds the macro plugin on Windows.
+  EXPO_MODULES_MACROS_REF: 'tsapeta/windows-ci'
 
 jobs:
   run:
@@ -47,6 +49,22 @@ jobs:
           swift-version: swift-6.4.0-release
           swift-build: 6.4.0-RELEASE
           build_arch: amd64
+
+      - name: 👀 Checkout expo-modules-macros
+        # The Windows build of the macro plugin isn't published yet (expo/expo-modules-macros#69).
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: expo/expo-modules-macros
+          ref: ${{ env.EXPO_MODULES_MACROS_REF }}
+          path: expo-modules-macros
+
+      - name: 🔨 Build the macro plugin
+        working-directory: expo-modules-macros
+        shell: pwsh
+        run: |
+          npm run build
+          if ($LASTEXITCODE -ne 0) { throw "The macro plugin build failed" }
+          "EXPO_MODULES_MACROS_PLUGIN=$(Resolve-Path apple/ExpoModulesMacros-x64.exe)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: 📦 Install npm dependencies
         run: npm ci --no-audit --no-fund
@@ -164,7 +182,10 @@ jobs:
           $json = Get-Content $result -Raw
           Write-Host $json
           $results = $json | ConvertFrom-Json
-          $expected = @{ install = $true; add = 5; multiplyAsync = 42; scheduleFromBackgroundThread = $true }
+          $expected = @{
+            install = $true; add = 5; multiplyAsync = 42; scheduleFromBackgroundThread = $true
+            moduleGreet = 'Hello, Windows!'; moduleAdd = 5; moduleMultiplyAsync = 42; moduleArgumentsMismatch = $true
+          }
           $failed = $false
           foreach ($name in $expected.Keys) {
             if ($results.$name -ne $expected[$name]) {

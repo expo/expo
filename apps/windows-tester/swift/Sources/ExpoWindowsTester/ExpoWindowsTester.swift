@@ -1,6 +1,5 @@
 import Dispatch
-import ExpoModulesJSI
-import Foundation
+import ExpoModulesCore
 
 /// A C function from the host that runs `task(taskContext)` later on the JavaScript thread.
 public typealias PostToJavaScriptThread =
@@ -13,9 +12,12 @@ public typealias PostToJavaScriptThread =
 /// The runtime that `expo_windows_tester_install` installed the functions into. It lives as long as
 /// the process.
 nonisolated(unsafe) private var installedRuntime: JavaScriptRuntime?
+nonisolated(unsafe) private var installedAppContext: AppContext?
+nonisolated(unsafe) private var installedModule: WindowsTesterModule?
 
-/// Installs `globalThis.expoTester` into the runtime of a react-native-windows app. Call it on the
-/// JavaScript thread.
+/// Installs `globalThis.expoTester`, written with `ExpoModulesJSI` directly, and
+/// `globalThis.windowsTesterModule`, written with the `@ExpoModule` macros, into the runtime of a
+/// react-native-windows app. Call it on the JavaScript thread.
 ///
 /// - `runtime`: a `facebook::jsi::Runtime *` from react-native-windows.
 /// - `hostContext`, `post`: schedule work on the JavaScript thread. MSVC can't call the Clang block
@@ -33,8 +35,11 @@ public func install(
     dispatch: unsafeBitCast(dispatchToHost, to: UnsafeRawPointer.self)
   )
   installedRuntime = runtime
+  let appContext = AppContext(runtime: runtime)
+  installedModule = WindowsTesterModule(appContext: appContext)
+  installedAppContext = appContext
 
-  JavaScriptActor.assumeIsolated {
+  return JavaScriptActor.assumeIsolated {
     let tester = runtime.createObject()
 
     // A synchronous function: `add(a, b)`.
@@ -73,8 +78,18 @@ public func install(
     )
 
     runtime.global().setProperty("expoTester", tester)
+
+    // Decorates a JS object with the module's functions, like `expo-modules-core` does.
+    let moduleObject = runtime.createObject()
+    do {
+      try installedModule?._decorateModule(object: moduleObject, in: runtime)
+    } catch {
+      print("Could not decorate \(WindowsTesterModule._jsName): \(error)")
+      return false
+    }
+    runtime.global().setProperty("windowsTesterModule", moduleObject)
+    return true
   }
-  return true
 }
 
 /// The host's scheduling function and its context. `ExpoModulesJSI` passes a pointer to it to

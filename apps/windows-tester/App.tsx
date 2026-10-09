@@ -7,8 +7,15 @@ type ExpoTester = {
   scheduleFromBackgroundThread(): Promise<boolean>;
 };
 
+type WindowsTesterModule = {
+  greet(name: string): string;
+  add(a: number, b: number): number;
+  multiplyAsync(a: number, b: number): Promise<number>;
+};
+
 declare global {
   var expoTester: ExpoTester | undefined;
+  var windowsTesterModule: WindowsTesterModule | undefined;
 }
 
 type Results = Record<string, unknown>;
@@ -46,6 +53,20 @@ async function runTests(): Promise<Results> {
   await check('scheduleFromBackgroundThread', () =>
     globalThis.expoTester?.scheduleFromBackgroundThread()
   );
+
+  // The module written with `@ExpoModule` and `@JS`.
+  const module = globalThis.windowsTesterModule;
+  await check('moduleGreet', () => module?.greet('Windows'));
+  await check('moduleAdd', () => module?.add(2, 3));
+  await check('moduleMultiplyAsync', () => module?.multiplyAsync(6, 7));
+  await check('moduleArgumentsMismatch', () => {
+    try {
+      (module?.add as any)(1);
+      return 'no error';
+    } catch (error: any) {
+      return String(error?.message).includes("'add' takes 2 argument(s), but received 1") || String(error);
+    }
+  });
   return results;
 }
 
