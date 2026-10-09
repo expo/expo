@@ -1,7 +1,6 @@
 import { Platform } from 'expo-modules-core';
 import { getBundleOrigin } from 'expo/internal/bundle-origin';
-import { PixelRatio, NativeModules } from 'react-native';
-import type { PackagerAsset } from 'react-native';
+import { PixelRatio, NativeModules, type PackagerAsset } from 'react-native';
 
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest2, manifestBaseUrl } from './PlatformUtils';
