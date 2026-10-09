@@ -18,6 +18,7 @@ if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   sdkmanager "cmdline-tools;latest"
   sdkmanager "cmake;3.30.5"
 elif [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
+  df -h /
   HOMEBREW_NO_AUTO_UPDATE=1 brew install cmake
 fi
 

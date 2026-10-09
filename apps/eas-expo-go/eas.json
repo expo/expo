@@ -26,7 +26,7 @@
       "ios": {
         "image": "macos-tahoe-26.6-xcode-27.1",
         "cocoapods": "1.16.2",
-        "resourceClass": "large",
+        "resourceClass": "medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
@@ -61,7 +61,8 @@
     "unversioned-client": {
       "extends": "base",
       "env": {
-        "EAS_BUILD_PROFILE": "unversioned-client"
+        "EAS_BUILD_PROFILE": "unversioned-client",
+        "XCODE_XCCONFIG_FILE": "/Users/expo/workingdir/build/apps/eas-expo-go/ci-simulator.xcconfig"
       },
       "android": {
         "gradleCommand": ":app:assembleMobileDebug -PreactNativeArchitectures=arm64-v8a -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false",
