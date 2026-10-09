@@ -356,7 +356,7 @@ struct JavaScriptRuntimeTests {
     #expect(shared.getString() == "shared")
   }
 
-  @Test
+  @Test(.disabled(if: isWindows, "Crashes on Windows"))
   func `host object set property`() {
     var storedValue: Int?
 

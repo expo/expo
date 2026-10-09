@@ -28,6 +28,7 @@ jobs:
   build:
     name: Build (Windows ${{ matrix.arch }})
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
