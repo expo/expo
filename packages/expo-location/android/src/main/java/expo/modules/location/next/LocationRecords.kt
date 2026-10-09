@@ -2,15 +2,21 @@ package expo.modules.location.next
 
 import android.location.Location
 import android.os.Build
+import android.os.BaseBundle
+import android.os.Bundle
+import android.os.PersistableBundle
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.location.next.locationProviders.BackgroundUpdatesParameters
 import expo.modules.location.next.locationProviders.GetCurrentPositionOptions
 import expo.modules.location.next.locationProviders.LocationPriority
 import expo.modules.location.next.locationProviders.WatchPositionParameters
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 enum class LocationPermissionStatus(val value: String) : Enumerable {
   GRANTED("granted"),
@@ -95,6 +101,15 @@ enum class LocationProfile(val value: String) : Enumerable {
       LOW_POWER -> WatchPositionParameters(LocationPriority.LOW_POWER, 60.seconds, 300.seconds)
     }
   }
+
+  fun toBackgroundUpdatesParameters() = when (this) {
+    DEFAULT -> BackgroundUpdatesParameters(LocationPriority.BALANCED_POWER_ACCURACY, 1.minutes, 5.minutes, 100f)
+    AUTOMOTIVE_NAVIGATION -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO, 0f)
+    OTHER_NAVIGATION -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 5.seconds, 30.seconds, 10f)
+    FITNESS -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 10.seconds, 2.minutes, 25f)
+    AIRBORNE -> BackgroundUpdatesParameters(LocationPriority.HIGH_ACCURACY, 1.seconds, Duration.ZERO, 0f)
+    LOW_POWER -> BackgroundUpdatesParameters(LocationPriority.LOW_POWER, 15.minutes, 1.hours, 500f)
+  }
 }
 
 class GetPositionOptions(
@@ -113,7 +128,21 @@ class GetPositionOptions(
 class Coordinates(
   @Field val latitude: Double,
   @Field val longitude: Double
-) : Record
+) : Record {
+  private fun BaseBundle.putCoordinateFields() {
+    putDouble("latitude", latitude)
+    putDouble("longitude", longitude)
+  }
+
+  fun toPersistableBundle() = PersistableBundle().apply { putCoordinateFields() }
+
+  fun toBundle() = Bundle().apply { putCoordinateFields() }
+}
+
+fun PersistableBundle.toCoordinates(): Coordinates = Coordinates(
+  getDouble("latitude"),
+  getDouble("longitude")
+)
 
 @OptimizedRecord
 class Position(
@@ -130,7 +159,57 @@ class Position(
   @Field val verticalAccuracy: Double? = null,
   @Field val speedAccuracy: Double? = null,
   @Field val headingAccuracy: Double? = null
-) : Record
+) : Record {
+  private fun BaseBundle.putPositionFields() {
+    putDouble("timestamp", timestamp)
+    putBoolean("mocked", mocked)
+    mslAltitude?.let { putDouble("mslAltitude", it) }
+    altitude?.let { putDouble("altitude", it) }
+    speed?.let { putDouble("speed", it) }
+    heading?.let { putDouble("heading", it) }
+    horizontalAccuracy?.let { putDouble("horizontalAccuracy", it) }
+    verticalAccuracy?.let { putDouble("verticalAccuracy", it) }
+    speedAccuracy?.let { putDouble("speedAccuracy", it) }
+    headingAccuracy?.let { putDouble("headingAccuracy", it) }
+  }
+
+  fun toPersistableBundle() = PersistableBundle().apply {
+    putPersistableBundle("coordinates", coordinates.toPersistableBundle())
+    putPositionFields()
+  }
+
+  fun toBundle() = Bundle().apply {
+    putBundle("coordinates", coordinates.toBundle())
+    putPositionFields()
+  }
+}
+
+private fun PersistableBundle.getDoubleOrNull(key: String): Double? =
+  if (containsKey(key)) {
+    getDouble(key)
+  } else {
+    null
+  }
+
+fun PersistableBundle.toPosition(): Position? {
+  val coordinates = getPersistableBundle("coordinates")?.toCoordinates() ?: return null
+  if (!containsKey("timestamp")) {
+    return null
+  }
+  return Position(
+    coordinates = coordinates,
+    timestamp = getDouble("timestamp"),
+    mocked = getBoolean("mocked"),
+    mslAltitude = getDoubleOrNull("mslAltitude"),
+    altitude = getDoubleOrNull("altitude"),
+    speed = getDoubleOrNull("speed"),
+    heading = getDoubleOrNull("heading"),
+    horizontalAccuracy = getDoubleOrNull("horizontalAccuracy"),
+    verticalAccuracy = getDoubleOrNull("verticalAccuracy"),
+    speedAccuracy = getDoubleOrNull("speedAccuracy"),
+    headingAccuracy = getDoubleOrNull("headingAccuracy")
+  )
+}
 
 fun Location.mslAltitude(): Double? {
   return if (Build.VERSION.SDK_INT >= 34 && hasMslAltitude()) {
