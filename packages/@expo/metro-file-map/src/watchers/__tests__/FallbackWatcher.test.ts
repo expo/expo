@@ -235,3 +235,233 @@ describe('FallbackWatcher', () => {
     );
   });
 });
+
+describe('FallbackWatcher, when a watched directory is deleted', () => {
+  // `dist` carries a nested subtree; `dist-cache` shares its prefix without being inside it.
+  const TREE = ['src', 'dist/static/chunk-a', 'dist/static/chunk-b', 'dist-cache'];
+  const EVERY_DIRECTORY = [
+    '',
+    'dist',
+    'dist-cache',
+    'dist/static',
+    'dist/static/chunk-a',
+    'dist/static/chunk-b',
+    'src',
+  ];
+
+  type Report = (event: string, filename: string) => void;
+
+  type Watch = {
+    directory: string;
+    handle: fs.FSWatcher;
+    report: Report;
+  };
+
+  let root: string;
+  let quietDir: string;
+  let watches: Watch[];
+  let closedHandles: Set<fs.FSWatcher>;
+  let events: WatcherBackendChangeEvent[];
+  let errors: Error[];
+  let watcher: FallbackWatcher;
+
+  const isReport = (value: unknown): value is Report => typeof value === 'function';
+
+  const resolveDirectory = (relativeDir: string): string =>
+    relativeDir === '' ? root : path.join(root, ...relativeDir.split('/'));
+
+  const directoriesOf = (relativeDirs: string[]): string[] =>
+    relativeDirs.map(resolveDirectory).sort();
+
+  const openDirectories = (): string[] =>
+    watches
+      .filter(({ handle }) => !closedHandles.has(handle))
+      .map(({ directory }) => directory)
+      .sort();
+
+  const watchOf = (relativeDir: string): Watch => {
+    const watch = watches.find(({ directory }) => directory === resolveDirectory(relativeDir));
+    if (watch == null) {
+      throw new Error(`The watcher never watched '${relativeDir}'`);
+    }
+    return watch;
+  };
+
+  // libuv on Windows reports a deleted watched directory to its own handle as a `rename`
+  // whose filename is the directory's absolute path.
+  const reportOwnDeletion = (watch: Watch): void => {
+    watch.report('rename', path.toNamespacedPath(watch.directory));
+  };
+
+  const hasEvent = (event: string, relativePath: string): boolean =>
+    events.some(
+      (change) => change.event === event && change.relativePath === path.normalize(relativePath)
+    );
+
+  beforeEach(async () => {
+    jest.useRealTimers();
+    tornDown = false;
+    root = fs.mkdtempSync(path.join(TMP_DIR, 'expo-fallback-watcher-tree-'));
+    quietDir = fs.mkdtempSync(path.join(TMP_DIR, 'expo-fallback-watcher-quiet-'));
+    for (const relativeDir of TREE) {
+      fs.mkdirSync(resolveDirectory(relativeDir), { recursive: true });
+      fs.writeFileSync(
+        path.join(resolveDirectory(relativeDir), 'entry.js'),
+        'module.exports = 1;\n'
+      );
+    }
+    watches = [];
+    closedHandles = new Set();
+    events = [];
+    errors = [];
+
+    // Every handle watches a quiet directory, so a test decides which report reaches which listener.
+    const realWatch = fs.watch;
+    jest.spyOn(fs, 'watch').mockImplementation(((dir: fs.PathLike, ...rest: unknown[]) => {
+      const report = rest[rest.length - 1];
+      if (!isReport(report)) {
+        throw new TypeError(`fs.watch(${String(dir)}) was called without a listener`);
+      }
+      const handle = realWatch(quietDir);
+      const realClose = handle.close.bind(handle);
+      handle.close = () => {
+        closedHandles.add(handle);
+        realClose();
+      };
+      watches.push({ directory: String(dir), handle, report });
+      return handle;
+    }) as typeof fs.watch);
+
+    watcher = new FallbackWatcher(root, { dot: false, globs: ['**/*.js'], ignored: null });
+    watcher.onFileEvent((event) => {
+      events.push(event);
+    });
+    watcher.onError((error) => {
+      errors.push(error);
+    });
+    await watcher.startWatching();
+  });
+
+  afterEach(async () => {
+    tornDown = true;
+    await watcher.stopWatching();
+    for (const { handle } of watches) {
+      handle.close();
+    }
+    jest.restoreAllMocks();
+    fs.rmSync(root, { recursive: true, force: true });
+    fs.rmSync(quietDir, { recursive: true, force: true });
+    jest.useFakeTimers();
+  });
+
+  test('watches the starting tree directory by directory', () => {
+    expect(openDirectories()).toEqual(directoriesOf(EVERY_DIRECTORY));
+  });
+
+  test('closes the handle of a directory that reports its own deletion, and every handle beneath it', async () => {
+    const dist = watchOf('dist');
+    fs.rmSync(resolveDirectory('dist'), { recursive: true, force: true });
+
+    reportOwnDeletion(dist);
+
+    await waitFor(
+      () => hasEvent('delete', 'dist/static/chunk-a/entry.js'),
+      'a delete event under dist'
+    );
+    expect(openDirectories()).toEqual(directoriesOf(['', 'dist-cache', 'src']));
+  });
+
+  test('watches a directory recreated before its old handle reports afresh, and ignores a repeated stale report', async () => {
+    const dist = watchOf('dist');
+    fs.rmSync(resolveDirectory('dist'), { recursive: true, force: true });
+    fs.mkdirSync(resolveDirectory('dist/static/chunk-c'), { recursive: true });
+    fs.writeFileSync(
+      path.join(resolveDirectory('dist/static/chunk-c'), 'fresh.js'),
+      'module.exports = 1;\n'
+    );
+
+    reportOwnDeletion(dist);
+
+    await waitFor(
+      () => hasEvent('touch', 'dist/static/chunk-c/fresh.js'),
+      'a touch event for the recreated file'
+    );
+    const rewatched = directoriesOf([
+      '',
+      'dist',
+      'dist-cache',
+      'dist/static',
+      'dist/static/chunk-c',
+      'src',
+    ]);
+    expect(openDirectories()).toEqual(rewatched);
+
+    reportOwnDeletion(dist);
+
+    expect(openDirectories()).toEqual(rewatched);
+  });
+
+  test('asks the file map to recrawl a directory recreated before its old handle reports', async () => {
+    const dist = watchOf('dist');
+    fs.rmSync(resolveDirectory('dist'), { recursive: true, force: true });
+    fs.mkdirSync(resolveDirectory('dist'));
+    fs.writeFileSync(path.join(resolveDirectory('dist'), 'entry.js'), 'module.exports = 2;\n');
+
+    reportOwnDeletion(dist);
+
+    await waitFor(() => hasEvent('recrawl', 'dist'), 'a recrawl of the recreated directory');
+    expect(errors).toEqual([]);
+  });
+
+  test('asks the file map to recrawl a directory its parent reports replaced', async () => {
+    fs.rmSync(resolveDirectory('dist'), { recursive: true, force: true });
+    fs.mkdirSync(resolveDirectory('dist'));
+
+    watchOf('').report('rename', 'dist');
+
+    await waitFor(() => hasEvent('recrawl', 'dist'), 'a recrawl of the replaced directory');
+  });
+
+  test('does not ask for a recrawl of a directory it has not seen before', async () => {
+    fs.mkdirSync(resolveDirectory('assets'));
+    fs.writeFileSync(path.join(resolveDirectory('assets'), 'entry.js'), 'module.exports = 1;\n');
+
+    watchOf('').report('rename', 'assets');
+
+    await waitFor(() => hasEvent('touch', 'assets/entry.js'), 'a touch event for the new file');
+    expect(hasEvent('recrawl', 'assets')).toBe(false);
+  });
+
+  test('closes only its own handle when the root reports its own deletion', async () => {
+    const rootWatch = watchOf('');
+
+    reportOwnDeletion(rootWatch);
+
+    await waitFor(() => closedHandles.has(rootWatch.handle), 'the root handle to close');
+    expect(openDirectories()).toEqual(
+      directoriesOf(EVERY_DIRECTORY.filter((relativeDir) => relativeDir !== ''))
+    );
+    expect(errors).toEqual([]);
+  });
+
+  test('closes every handle beneath a deleted directory when its parent reports the deletion', async () => {
+    fs.rmSync(resolveDirectory('dist'), { recursive: true, force: true });
+
+    watchOf('').report('rename', 'dist');
+
+    await waitFor(
+      () => hasEvent('delete', 'dist/static/chunk-a/entry.js'),
+      'a delete event under dist'
+    );
+    expect(openDirectories()).toEqual(directoriesOf(['', 'dist-cache', 'src']));
+  });
+
+  test('closes no handle when a file is deleted', async () => {
+    fs.rmSync(path.join(resolveDirectory('src'), 'entry.js'));
+
+    watchOf('src').report('rename', 'entry.js');
+
+    await waitFor(() => hasEvent('delete', 'src/entry.js'), 'a delete event for src/entry.js');
+    expect(openDirectories()).toEqual(directoriesOf(EVERY_DIRECTORY));
+  });
+});
