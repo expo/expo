@@ -1,12 +1,12 @@
 import { events } from '2g';
-import type { SpanEnd } from '2g';
+import type { SerializedError, SpanEnd } from '2g';
 import type { ExpoCustomTransformOptions } from '@expo/metro-config';
 import type { Terminal } from '@expo/metro/metro-core';
+import { calculateBundleProgressRatio } from '@expo/metro/metro/lib/bundleProgressUtils';
 import chalk from 'chalk';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
 
-import { stripAnsi } from '../../../utils/ansi';
 import { env } from '../../../utils/env';
 import { isInteractive, shouldReduceLogs } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
@@ -24,7 +24,11 @@ import type {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
-import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
+import {
+  attachImportStackToRootMessage,
+  HAS_LOGGED_SYMBOL,
+  nearestImportStack,
+} from './metroErrorInterface';
 
 type ClientLogLevel =
   | 'trace'
@@ -58,7 +62,9 @@ declare module '2g' {
     'metro:bundling:failed': {
       id: string | null;
       filename: string | null;
-      message: string | null;
+      error: SerializedError;
+      lineNumber: number | null;
+      column: number | null;
       importStack: string | null;
       targetModuleName: string | null;
       originModulePath: string | null;
@@ -73,18 +79,23 @@ declare module '2g' {
       level: 'info' | 'warn' | 'error' | null;
       data: string | unknown[] | null;
     };
+    'metro:worker_log': {
+      stream: 'stdout' | 'stderr';
+      data: string;
+    };
     'metro:client_log': {
       level: ClientLogLevel | null;
+      mode: string | null;
       data: unknown[] | null;
     };
     'metro:hmr_client_error': {
-      message: string;
+      error: SerializedError;
     };
     'metro:cache_write_error': {
-      message: string;
+      error: SerializedError;
     };
     'metro:cache_read_error': {
-      message: string;
+      error: SerializedError;
     };
   }
 }
@@ -104,6 +115,8 @@ export class MetroTerminalReporter extends TerminalReporter {
     string,
     {
       end: SpanEnd<'metro'>;
+      total: number;
+      ratio: number;
       start: { id: string; platform: null | string; environment: null | string; entry: string };
     }
   >();
@@ -214,20 +227,6 @@ export class MetroTerminalReporter extends TerminalReporter {
         }
       }
 
-      if (phase === 'done') {
-        const buildID = progress.bundleDetails.buildID;
-        const span = buildID != null ? this.#bundleSpans.get(buildID) : undefined;
-        if (span) {
-          this.#bundleSpans.delete(buildID!);
-          span.end('bundling:done', { ...span.start, total: progress.totalFileCount });
-        } else {
-          event('bundling:done', {
-            id: buildID ?? null,
-            total: progress.totalFileCount,
-          });
-        }
-      }
-
       // iOS Bundled 150ms
       const plural = progress.totalFileCount === 1 ? '' : 's';
       return (
@@ -237,12 +236,6 @@ export class MetroTerminalReporter extends TerminalReporter {
       );
     }
 
-    event('bundling:progress', {
-      id: progress.bundleDetails.buildID ?? null,
-      progress: progress.ratio,
-      total: progress.totalFileCount,
-      current: progress.transformedFileCount,
-    });
     if (shouldReduceLogs()) {
       return '';
     }
@@ -317,15 +310,20 @@ export class MetroTerminalReporter extends TerminalReporter {
     super._logBundleBuildFailed(buildID);
   }
 
-  _logBundlingError(error: SnippetError): void {
+  _logBundlingError(error: SnippetError & { [HAS_LOGGED_SYMBOL]?: boolean }): void {
+    const buildID = this.#lastFailedBuildID ?? null;
+    this.#lastFailedBuildID = undefined;
+    error[HAS_LOGGED_SYMBOL] = true;
     const importStack = nearestImportStack(error);
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.serverRoot, error);
 
     if (moduleResolutionError) {
       const message = maybeAppendCodeFrame(moduleResolutionError, error.message);
       event('bundling:failed', {
-        id: this.#lastFailedBuildID ?? null,
-        message: stripAnsi(message) ?? null,
+        id: buildID,
+        error: event.error(error),
+        lineNumber: error.lineNumber ?? null,
+        column: error.column ?? null,
         importStack: importStack ?? null,
         filename: error.filename ?? null,
         targetModuleName: this.#normalizePath(error.targetModuleName),
@@ -335,8 +333,10 @@ export class MetroTerminalReporter extends TerminalReporter {
       return this.terminal.log(importStack ? `${message}\n\n${importStack}` : message);
     } else {
       event('bundling:failed', {
-        id: this.#lastFailedBuildID ?? null,
-        message: stripAnsi(error.message) ?? null,
+        id: buildID,
+        error: event.error(error),
+        lineNumber: error.lineNumber ?? null,
+        column: error.column ?? null,
         importStack: importStack ?? null,
         filename: error.filename ?? null,
         targetModuleName: error.targetModuleName ?? null,
@@ -432,14 +432,14 @@ export class MetroTerminalReporter extends TerminalReporter {
               ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
               : symbolicated;
 
-          event('client_log', { level, data: symbolicated });
+          event('client_log', { level, mode: evt.mode ?? null, data: symbolicated });
           logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...filtered);
         })();
         return;
       }
     }
 
-    event('client_log', { level, data });
+    event('client_log', { level, mode: evt.mode ?? null, data });
     // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
     logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...data);
   }
@@ -457,6 +457,8 @@ export class MetroTerminalReporter extends TerminalReporter {
             : this.#normalizePath(evt.bundleDetails.entryFile);
         this.#bundleSpans.set(evt.buildID, {
           end: event.span(),
+          total: 1,
+          ratio: 0,
           start: {
             id: evt.buildID,
             platform: evt.bundleDetails.platform ?? null,
@@ -475,6 +477,40 @@ export class MetroTerminalReporter extends TerminalReporter {
         });
         return;
       }
+      case 'bundle_transform_progressed_throttled': {
+        const span = this.#bundleSpans.get(evt.buildID);
+        if (span) {
+          span.total = evt.totalFileCount;
+          span.ratio = calculateBundleProgressRatio(
+            evt.transformedFileCount,
+            evt.totalFileCount,
+            span.ratio
+          );
+          event('bundling:progress', {
+            id: evt.buildID,
+            progress: span.ratio,
+            total: evt.totalFileCount,
+            current: evt.transformedFileCount,
+          });
+        }
+        return;
+      }
+      case 'bundle_build_done': {
+        const span = this.#bundleSpans.get(evt.buildID);
+        if (span) {
+          this.#bundleSpans.delete(evt.buildID);
+          span.end('bundling:done', { ...span.start, total: span.total });
+        }
+        return;
+      }
+      case 'resolver_warning':
+        return event('server_log', { level: 'warn', data: evt.message });
+      case 'worker_stdout_chunk':
+      case 'worker_stderr_chunk':
+        return event('worker_log', {
+          stream: evt.type === 'worker_stdout_chunk' ? 'stdout' : 'stderr',
+          data: evt.chunk,
+        });
       case 'unstable_server_log':
         return event('server_log', {
           level: evt.level ?? null,
@@ -487,7 +523,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       case 'cache_write_error':
       case 'cache_read_error':
         return event(evt.type, {
-          message: evt.error.message,
+          error: event.error(evt.error),
         });
     }
   }

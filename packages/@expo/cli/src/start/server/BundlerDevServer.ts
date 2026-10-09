@@ -126,6 +126,7 @@ export abstract class BundlerDevServer {
   protected bonjour: Bonjour | null = null;
   /** Http server and related info. */
   protected instance: DevServerInstance | null = null;
+  private isHeadless = false;
   /** Native platform interfaces for opening projects.  */
   private platformManagers: { [K in keyof PlatformManagers]?: PlatformManagers[K] | undefined } =
     {};
@@ -192,6 +193,7 @@ export abstract class BundlerDevServer {
       instance = await this.startImplementationAsync(options);
     }
 
+    this.isHeadless = !!options.headless;
     this.setInstance(instance);
     await this.postStartAsync(options);
     const url =
@@ -376,6 +378,7 @@ export abstract class BundlerDevServer {
   /** Stop the running dev server instance. */
   async stopAsync() {
     const stoppedAt = Date.now();
+    const hadOwnedInstance = this.instance != null && !this.isHeadless;
     // Reset url creator
     this.urlCreator = undefined;
     // Keep `resolvedPort`: the manifest middleware still builds URLs until the server closes below.
@@ -425,7 +428,9 @@ export abstract class BundlerDevServer {
       }
     );
 
-    event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
+    if (hadOwnedInstance) {
+      event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
+    }
   }
 
   // TODO(@kitten): This should be created top-down rather than bottom up from implementors
