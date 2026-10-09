@@ -26,7 +26,7 @@
       "ios": {
         "image": "macos-tahoe-26.6-xcode-27.1",
         "cocoapods": "1.16.2",
-        "resourceClass": "medium",
+        "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
