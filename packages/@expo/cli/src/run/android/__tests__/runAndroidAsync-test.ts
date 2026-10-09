@@ -92,23 +92,29 @@ describe(runAndroidAsync, () => {
     expect(startBundlerAsync).toHaveBeenCalledWith('/', expect.objectContaining({ mode }));
   });
 
-  it('uses development mode for a variant in the app debuggableVariants', async () => {
-    vol.fromJSON(
-      {
-        ...rnFixture,
-        'android/app/build.gradle': 'react {\n    debuggableVariants = ["freeDebug"]\n}\n',
-        '/package.json': JSON.stringify({}),
-        'node_modules/expo/package.json': JSON.stringify({
-          version: '53.0.0',
-        }),
-      },
-      '/'
-    );
+  it.each([
+    { debuggableVariants: '["freeDebug"]', variant: 'freeDebug', mode: 'development' },
+    { debuggableVariants: '[]', variant: 'debug', mode: 'production' },
+  ])(
+    'uses $mode mode for $variant with debuggableVariants = $debuggableVariants',
+    async ({ debuggableVariants, variant, mode }) => {
+      vol.fromJSON(
+        {
+          ...rnFixture,
+          'android/app/build.gradle': `react {\n    debuggableVariants = ${debuggableVariants}\n}\n`,
+          '/package.json': JSON.stringify({}),
+          'node_modules/expo/package.json': JSON.stringify({
+            version: '53.0.0',
+          }),
+        },
+        '/'
+      );
 
-    await runAndroidAsync('/', { variant: 'freeDebug' });
+      await runAndroidAsync('/', { variant });
 
-    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode: 'development' });
-  });
+      expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode });
+    }
+  );
 
   it(`runs android`, async () => {
     vol.fromJSON(
