@@ -49,7 +49,7 @@ export type HingeChangeHandler = (oldContext: HingeContext, newContext: HingeCon
  * state for interactions and effects, not for layout.
  *
  * Pass a plain function to run it on the JS thread, or a callback from
- * [`useWorkletCallback`](../usenativestate/#useworkletcallback) to run it synchronously on the UI
+ * [`useWorkletCallback`](./usenativestate/#useworkletcallbackcallback) to run it synchronously on the UI
  * thread, which suits driving a native state value from the continuous `angle`.
  *
  * The first call happens when the view appears, and its old context has a `null` hinge. On devices
