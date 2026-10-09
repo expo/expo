@@ -2021,8 +2021,8 @@ importers:
   packages/@expo/cli:
     dependencies:
       2g:
-        specifier: ^0.4.3
-        version: 0.4.3(typescript@6.0.3)
+        specifier: ^1.0.0
+        version: 1.0.0(typescript@6.0.3)
       '@expo/code-signing-certificates':
         specifier: ^0.0.7
         version: 0.0.7
@@ -2865,8 +2865,8 @@ importers:
   packages/@expo/metro-config:
     dependencies:
       2g:
-        specifier: ^0.4.3
-        version: 0.4.3(typescript@6.0.3)
+        specifier: ^1.0.0
+        version: 1.0.0(typescript@6.0.3)
       '@babel/code-frame':
         specifier: ^7.20.0
         version: 7.29.7
@@ -2995,8 +2995,8 @@ importers:
   packages/@expo/metro-file-map:
     dependencies:
       2g:
-        specifier: ^0.4.3
-        version: 0.4.3(typescript@6.0.3)
+        specifier: ^1.0.0
+        version: 1.0.0(typescript@6.0.3)
       debug:
         specifier: ^4.3.4
         version: 4.4.3
@@ -7312,8 +7312,8 @@ importers:
 
 packages:
 
-  2g@0.4.3:
-    resolution: {integrity: sha512-aGeKeZycrF3KxgN/1ReXA8gfAh0vDNfAlu7WJhesqKEtPVaLyhmvqrBGZbNfJflqZTSQSNEc8xxSM8I48Lu5UQ==}
+  2g@1.0.0:
+    resolution: {integrity: sha512-H/xC1krmP7XLozCYRzPwmB4pKb+DAD3OSiUzXE+wHyphdteOjhjfNF5iWkSq7qF+DAKNNWQjbQasjMPOKkoquA==}
     hasBin: true
     peerDependencies:
       typescript: '>=5.8.0'
@@ -16304,7 +16304,7 @@ packages:
 
 snapshots:
 
-  2g@0.4.3(typescript@6.0.3):
+  2g@1.0.0(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
 
