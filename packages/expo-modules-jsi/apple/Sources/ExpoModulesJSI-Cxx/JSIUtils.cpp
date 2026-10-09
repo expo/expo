@@ -79,6 +79,12 @@ public:
 private:
   void collectGarbage(std::string cause) override {
     currentApi_.before();
+    Microsoft::NodeApiJsi::NodeApiEnvScope envScope(env_);
+    {
+      // The wrapped runtime drops the Node-API references of released values only when a scope
+      // ends. Ending one here lets the collection free the objects that nothing else references.
+      jsi::Scope scope(plain());
+    }
     currentApi_.api->jsr_collect_garbage(env_);
   }
 
