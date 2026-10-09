@@ -14,7 +14,7 @@ export const name = 'SQLite';
 // The default web build has no FTS. This one is expo/wa-sqlite@c4d107f built with
 // `make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"`.
 if (process.env.EXPO_OS === 'web') {
-  SQLite.setWebAssemblyUrl(require('../assets/wa-sqlite-fts.wasm'));
+  SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
 }
 
 interface UserEntity {

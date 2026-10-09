@@ -254,7 +254,7 @@ type SessionInvertChangesetMessage = BaseWorkerMessage & {
 export interface ConfigureWorkerMessage {
   type: 'configure';
   data: {
-    webAssemblyUrl: string | null;
+    wasmURL: string | null;
   };
 }
 

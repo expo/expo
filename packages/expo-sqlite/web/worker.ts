@@ -56,7 +56,7 @@ const MIN_INT32 = -0x80000000;
 let _sqlite3: SQLiteAPI | null = null;
 let _vfs: AccessHandlePoolVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
-let _customWebAssemblyUrl: string | null = null;
+let _customWasmURL: string | null = null;
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
@@ -66,7 +66,7 @@ class SQLiteErrorException extends Error {}
 
 self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage | ConfigureWorkerMessage>) => {
   if (event.data.type === 'configure') {
-    _customWebAssemblyUrl = event.data.data.webAssemblyUrl;
+    _customWasmURL = event.data.data.wasmURL;
     return;
   }
 
@@ -806,7 +806,7 @@ async function maybeInitAsync(): Promise<{
 }
 
 async function loadWaSQLiteModuleAsync(): Promise<any> {
-  const customUrl = _customWebAssemblyUrl;
+  const customUrl = _customWasmURL;
   if (customUrl == null) {
     return await WaSQLiteFactory({ locateFile: () => wasmModule });
   }
@@ -816,7 +816,7 @@ async function loadWaSQLiteModuleAsync(): Promise<any> {
   } catch (e) {
     throw new Error(
       `Failed to load the custom SQLite WebAssembly module from "${customUrl}". ` +
-        'Check that the URL is reachable and served as `application/wasm`, and that the build comes from the same `expo/wa-sqlite` revision that this version of `expo-sqlite` uses. ' +
+        'Check that the `wasmURL` passed to `configureWeb()` is reachable and served as `application/wasm`, and that the build comes from the same `expo/wa-sqlite` revision that this version of `expo-sqlite` uses. ' +
         `Cause: ${e instanceof Error ? e.message : String(e)}`
     );
   }

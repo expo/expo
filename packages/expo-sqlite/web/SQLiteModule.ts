@@ -11,11 +11,12 @@ import {
   type SQLiteColumnValues,
   type SQLiteRunResult,
 } from '../src/NativeStatement';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
 import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
 import { type ConfigureWorkerMessage } from './web.types';
 
 let worker: Worker | null = null;
-let webAssemblyUrl: string | null = null;
+let webOptions: SQLiteWebOptions = {};
 let nextNativeDatabaseId = 0;
 let nextNativeStatementId = 0;
 let nextNativeSessionId = 0;
@@ -33,7 +34,7 @@ function getWorker(): Worker {
     });
     const configureMessage: ConfigureWorkerMessage = {
       type: 'configure',
-      data: { webAssemblyUrl },
+      data: { wasmURL: webOptions.wasmURL ?? null },
     };
     worker.postMessage(configureMessage);
   }
@@ -434,14 +435,14 @@ export class SQLiteModule extends NativeModule {
     });
   }
 
-  setWebAssemblyUrl(url: string): void {
+  configureWeb(options: SQLiteWebOptions): void {
     if (worker != null) {
       throw new Error(
-        'Cannot set the SQLite WebAssembly URL because a database has already been opened. ' +
-          'Call `setWebAssemblyUrl()` before opening any database, for example at the top of your app entry file.'
+        'Cannot configure SQLite for web because a database has already been opened, and the web worker loads SQLite only once. ' +
+          'Call `configureWeb()` before opening any database, for example at the top of your app entry file.'
       );
     }
-    webAssemblyUrl = url;
+    webOptions = { ...options };
   }
 
   async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {
