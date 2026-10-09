@@ -65,6 +65,22 @@ let apiNotesPath = "\(packageDir)/APINotes"
 let cxxIncludeFlags = headerSearchPaths.map({ "-I\($0)" })
 let swiftIncludeFlags = headerSearchPaths.flatMap({ ["-Xcc", "-I\($0)"] })
 
+// Outside Apple platforms ExpoModulesJSI is built without library evolution, so a module that
+// imports it also loads its C++ dependencies. The test targets then need C++ interoperability and
+// the same Clang flags.
+let nonApplePlatforms: [Platform] = [.windows, .linux]
+let testSwiftSettings: [SwiftSetting] = [
+  .interoperabilityMode(.Cxx, .when(platforms: nonApplePlatforms)),
+  .unsafeFlags(
+    [
+      "-Xcc", "-fmodule-map-file=\(generatedModuleMap)",
+      "-Xcc", "-iapinotes-modules",
+      "-Xcc", apiNotesPath,
+    ] + swiftIncludeFlags,
+    .when(platforms: nonApplePlatforms)
+  ),
+]
+
 let testFrameworks = resolveTestFrameworks()
 
 let package = Package(
@@ -155,6 +171,9 @@ let package = Package(
         // matches how external consumers import them via `<ExpoModulesJSI/NativeState.h>`.
         .headerSearchPath("include/Public"),
         .unsafeFlags(cxxIncludeFlags),
+        // The react-native-windows API loaders that the Windows workflow stages into this target
+        // use `offsetof` on their API tables, which Clang warns about once per function.
+        .unsafeFlags(["-Wno-invalid-offsetof"], .when(platforms: [.windows])),
       ],
     ),
 
@@ -163,6 +182,7 @@ let package = Package(
       name: "Tests",
       dependencies: testFrameworks.dependencies,
       path: "Tests",
+      swiftSettings: testSwiftSettings,
     ),
 
     // Benchmarks are opt-in: their suites are gated on the `EXPO_BENCHMARK` environment
@@ -172,6 +192,7 @@ let package = Package(
       name: "Benchmarks",
       dependencies: testFrameworks.dependencies,
       path: "Benchmarks",
+      swiftSettings: testSwiftSettings,
     ),
   ] + testFrameworks.binaryTargets,
   swiftLanguageModes: [.v6],
