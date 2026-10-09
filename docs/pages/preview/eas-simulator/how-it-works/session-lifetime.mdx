@@ -26,12 +26,12 @@ The session timer starts when the session is ready. The job that runs the sessio
 
 Pass `--max-idle-time-minutes` to stop the session after that many minutes without controller activity. Without this flag, the session has no idle timeout.
 
-| Rule                                   | Detail                                                                                                      |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium                                                    |
-| Activity that does not reset the timer | Use of the browser preview                                                                                  |
-| Session types without idle timeout     | `web-preview-only`                                                                                          |
-| Allowed values                         | A positive number less than 115. If you also set a maximum duration, the idle timeout must be less than it. |
+| Rule                                   | Detail                                                                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Activity that resets the timer         | Controller activity from agent-device, Argent, or Appium                                                                                         |
+| Activity that does not reset the timer | Use of the browser preview                                                                                                                       |
+| Session types without idle timeout     | `web-preview-only`                                                                                                                               |
+| Allowed values                         | A positive number smaller than the session's maximum duration: the value of `--max-duration-minutes`, or the plan limit when you do not set one. |
 
 For a session that a person uses in the browser preview, limit the session with the maximum duration. The idle timeout can stop the session while the person uses it.
 

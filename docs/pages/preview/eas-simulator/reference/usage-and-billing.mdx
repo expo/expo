@@ -41,12 +41,12 @@ Sessions run as EAS jobs and use your account's job concurrency. When the accoun
 
 Use these methods to keep usage low:
 
-| Method                            | Command or field                                                 |
-| --------------------------------- | ---------------------------------------------------------------- |
-| Stop each session when you finish | `eas simulator:stop`, or `POST /v2/device-run-sessions/:id/stop` |
-| Set a maximum duration            | `--max-duration-minutes`, or `maxDurationMinutes`                |
-| Stop idle sessions                | `--max-idle-time-minutes`, or `maxIdleTimeMinutes`               |
-| Find sessions that still run      | `eas simulator:list --status new --status in-progress`           |
+| Method                            | Command or field                                                                         |
+| --------------------------------- | ---------------------------------------------------------------------------------------- |
+| Stop each session when you finish | `eas simulator:stop`, or `POST /v2/device-run-sessions/:id/stop`                         |
+| Set a maximum duration            | `--max-duration-minutes`, or `maxDurationMinutes`                                        |
+| Stop idle sessions                | `--max-idle-time-minutes`, or `maxIdleTimeMinutes`                                       |
+| Find sessions that still run      | `eas simulator:list --status new --status queued --status starting --status in-progress` |
 
 Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
 

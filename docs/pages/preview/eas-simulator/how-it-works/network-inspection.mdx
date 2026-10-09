@@ -88,7 +88,7 @@ On iOS, a session can record the HTTP and HTTPS requests that apps on the device
 
 While the session runs, the browser preview lists each request under **Network requests** in its **Tools** panel.
 
-> **warning** Network capture decrypts HTTPS. It does not redact the bodies and query values that you keep, so they can contain credentials in cleartext. Keep only the fields you need, and treat the preview link and the downloaded file as secret.
+> **warning** Network capture decrypts HTTPS. It does not redact the bodies and query values that you keep, so they can contain credentials in cleartext. Keep only the fields you need, and treat the preview link and the downloaded file as secret. Apps that pin certificates fail to connect while capture is active.
 
 ### What gets recorded
 
