@@ -34,15 +34,31 @@ export type ChunkSerializationOptions = Partial<
   Parameters<typeof import('../fork/baseJSBundle').baseJSBundleWithDependencies>[3]
 >;
 
+type ChunkStrategySerializationOptions = Pick<
+  ChunkSerializationOptions,
+  | 'computedAsyncModulePaths'
+  | 'includeAsyncPaths'
+  | 'includeChunkCompletion'
+  | 'unstable_getAsyncDependencyPath'
+>;
+
 export type ChunkingImplementation = {
   serializeAsync(): Promise<SerialAsset[]>;
+  /**
+   * Chunks referenced by emitted async URLs, used to calculate filename hashes.
+   * Must match the targets used by getSerializationOptions.
+   */
   getAsyncChunkTargets(chunk: Chunk, chunksByPath: Map<string, Chunk>): Set<Chunk>;
-  getStableSerializationOptions(chunk: Chunk): ChunkSerializationOptions;
+  /**
+   * Options used before dependency filenames are known, including for filename hashing.
+   * Final serialization also uses these as defaults.
+   */
+  getStableSerializationOptions(chunk: Chunk): ChunkStrategySerializationOptions;
   getSerializationOptions(
     chunk: Chunk,
     chunksByPath: Map<string, Chunk>,
     filenamesByChunk: Map<Chunk, string>
-  ): ChunkSerializationOptions;
+  ): ChunkStrategySerializationOptions;
   getMetadata(
     chunk: Chunk,
     filenamesByChunk: Map<Chunk, string>

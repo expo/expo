@@ -38,6 +38,8 @@ export function createGranularChunkingStrategy(context: ChunkingContext): Chunki
     }
     const targets = requiredChunksByEntryPath.get(dependency.absolutePath);
     assert(targets, `Granular async entry not found: ${dependency.absolutePath}`);
+    // The importing chunk is already loaded. Return the other chunks needed by
+    // the imported entry; the loader skips files it has already loaded.
     return targets.filter((target) => target !== chunk);
   }
 
@@ -209,6 +211,7 @@ function materializeChunkPlan(
 /**
  * Map each entry to its required files. If its modules are all in other chunks,
  * remove its empty entry chunk but keep that mapping.
+ * The returned map includes the entry's own file when emitted, and excludes the initial chunk.
  */
 function assignEntryChunkRequirements(
   plan: BitSetChunkPlan,
@@ -226,6 +229,7 @@ function assignEntryChunkRequirements(
       // An entry supplied entirely by the initial bundle has no additional files to request.
       if (requiredChunks.size === 0) entryPathsByChunk.get(entryChunk)!.push(entryPath);
     }
+    // Asset ordering needs the dependencies before the entry's file, excluding the file itself.
     for (const ownerChunk of requiredChunks) {
       if (ownerChunk !== facade) facade.requiredChunks.add(ownerChunk);
     }
