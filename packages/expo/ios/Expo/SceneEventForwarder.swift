@@ -36,7 +36,7 @@ struct SceneEventForwarder {
 #endif
 
     notifyLinkingManagerUnlessAlreadyNotified(of: url) {
-      _ = delegate?.application(application, open: url, options: options)
+      delegate?.application(application, open: url, options: options) ?? false
     } notify: {
       if let notifyReactNative {
         notifyReactNative()
@@ -53,7 +53,7 @@ struct SceneEventForwarder {
     // `RCTLinkingManager` only announces browsing-web activities, so there is nothing to dedupe
     // against for the other activity types.
     notifyLinkingManagerUnlessAlreadyNotified(of: userActivity.webpageURL) {
-      _ = delegate?.application(application, continue: userActivity, restorationHandler: { _ in })
+      delegate?.application(application, continue: userActivity, restorationHandler: { _ in }) ?? false
     } notify: {
       if let notifyReactNative {
         notifyReactNative()
@@ -126,16 +126,16 @@ struct SceneEventForwarder {
   /// tell such an override apart — so listen for what `RCTLinkingManager` announces instead.
   private func notifyLinkingManagerUnlessAlreadyNotified(
     of url: URL?,
-    during body: () -> Void,
+    during body: () -> Bool,
     notify: () -> Void
   ) {
     guard let url else {
-      body()
+      guard !body() else { return }
       notify()
       return
     }
     let observer = LinkingManagerObserver(url: url)
-    body()
+    guard !body() else { return }
     if !observer.wasNotified {
       notify()
     }
