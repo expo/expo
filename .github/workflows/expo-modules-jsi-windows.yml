@@ -67,6 +67,14 @@ jobs:
           New-Item -ItemType Directory -Force $jsi | Out-Null
           Copy-Item (Join-Path $extracted "tools/Microsoft.ReactNative.Cxx/JSI/*.h") $jsi
 
+          # SwiftPM on Windows doesn't put the toolchain's `usr/include` on the C++ include path, so
+          # `<swift/bridging>` is copied next to the JSI headers.
+          $swiftRoot = Join-Path $env:LOCALAPPDATA "Programs/Swift"
+          $bridging = Get-ChildItem -Recurse $swiftRoot -Filter bridging -File | Where-Object { $_.Directory.Name -eq "swift" } | Select-Object -First 1
+          if (-not $bridging) { throw "Could not find swift/bridging in $swiftRoot" }
+          Write-Host "Using $($bridging.FullName)"
+          Copy-Item $bridging.Directory.FullName (Join-Path $include "swift") -Recurse
+
           $jsiPath = ($jsi -replace '\\', '/')
           New-Item -ItemType Directory -Force .generated | Out-Null
           @"
