@@ -281,7 +281,7 @@ Controller connection variables depend on the selected type:
 | Argent       | `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN`       |
 | Appium       | `APPIUM_URL`, `APPIUM_CAPS`                                      |
 
-A session started with `--egress local` also adds `EAS_SIMULATOR_EGRESS_URL`, `EAS_SIMULATOR_EGRESS_TOKEN`, `EAS_SIMULATOR_EGRESS_FINGERPRINT`, `EAS_SIMULATOR_EGRESS_PORT`, and `EAS_SIMULATOR_EGRESS_ALLOW`.
+A session started with `--egress local` also adds `EAS_SIMULATOR_EGRESS_URL`, `EAS_SIMULATOR_EGRESS_TOKEN`, `EAS_SIMULATOR_EGRESS_FINGERPRINT`, `EAS_SIMULATOR_EGRESS_PORT`, `EAS_SIMULATOR_EGRESS_PLATFORM`, and `EAS_SIMULATOR_EGRESS_ALLOW`.
 
 When the file contains a session ID, its values replace the same variables in your shell environment for `simulator:start`, `simulator:exec`, `simulator:get`, `simulator:stop`, `simulator:events`, and `simulator:egress`. The only exception is `simulator:egress --config-type env`, which does not read the file. When the file has no session ID and you do not pass `--id`, `simulator:get`, `simulator:stop`, and `simulator:events` use `EAS_SIMULATOR_SESSION_ID` from your shell environment.
 
