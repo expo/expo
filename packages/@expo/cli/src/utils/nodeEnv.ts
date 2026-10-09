@@ -5,6 +5,7 @@ import path from 'node:path';
 import { env as cliEnv } from './env';
 import { CommandError } from './errors';
 import { shouldReduceLogs } from './interactive';
+import { updateProjectRootMetadata } from './metadata';
 
 type EnvOutput = Record<string, string | undefined>;
 
@@ -72,6 +73,7 @@ let prevEnvKeys: Set<string> | undefined;
 
 /** Set the mode before loading env files. */
 export function loadEnvFiles(projectRoot: string, options: LoadEnvFilesOptions) {
+  updateProjectRootMetadata(projectRoot);
   setNodeEnv(options.mode);
 
   const params = {
