@@ -46,23 +46,45 @@ jsi::Runtime* createHermesRuntime() {
 
 namespace {
 
+using Microsoft::NodeApiJsi::JSRuntimeApi;
+
 /**
- Owns a runtime and forwards to it, except that `instrumentation().collectGarbage(_:)` runs a
- collection. The runtime that `makeNodeApiJsiRuntime` returns keeps the default instrumentation,
- which does nothing.
+ Makes `api` the current `JSRuntimeApi` of the calling thread. The runtime that
+ `makeNodeApiJsiRuntime` returns reaches Hermes through the thread's current API, which
+ react-native-windows sets only on its JavaScript thread.
  */
-class GarbageCollectingRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
+struct CurrentJSRuntimeApi {
+  JSRuntimeApi *api;
+
+  void before() {
+    JSRuntimeApi::setCurrent(api);
+  }
+};
+
+/**
+ Owns a runtime from `makeNodeApiJsiRuntime` and forwards to it, setting the current `JSRuntimeApi`
+ first, so it works from any thread. `instrumentation().collectGarbage(_:)` runs a collection: the
+ wrapped runtime keeps the default instrumentation, which does nothing.
+ */
+class HermesRuntime : public jsi::WithRuntimeDecorator<CurrentJSRuntimeApi> {
 public:
-  GarbageCollectingRuntime(std::unique_ptr<jsi::Runtime> runtime, std::function<void()> collectGarbage)
-      : RuntimeDecorator(*runtime), runtime_(std::move(runtime)), collectGarbage_(std::move(collectGarbage)) {}
+  HermesRuntime(std::unique_ptr<jsi::Runtime> runtime, JSRuntimeApi *api, napi_env env)
+      : WithRuntimeDecorator(*runtime, currentApi_), runtime_(std::move(runtime)), currentApi_{api}, env_(env) {}
+
+  ~HermesRuntime() override {
+    // Deleting the wrapped runtime, after this body, calls into Hermes too.
+    currentApi_.before();
+  }
 
 private:
   void collectGarbage(std::string cause) override {
-    collectGarbage_();
+    currentApi_.before();
+    currentApi_.api->jsr_collect_garbage(env_);
   }
 
   std::unique_ptr<jsi::Runtime> runtime_;
-  std::function<void()> collectGarbage_;
+  CurrentJSRuntimeApi currentApi_;
+  napi_env env_;
 };
 
 } // namespace
@@ -89,12 +111,7 @@ jsi::Runtime* createHermesRuntime() {
   std::unique_ptr<jsi::Runtime> nodeApiRuntime = makeNodeApiJsiRuntime(env, api, [jsrRuntime]() {
     api->jsr_delete_runtime(jsrRuntime);
   });
-  // `JSRuntimeApi` loads each function on its first call through the API set for the calling thread,
-  // and garbage collection can be requested from any thread.
-  jsi::Runtime *runtime = new GarbageCollectingRuntime(std::move(nodeApiRuntime), [env]() {
-    JSRuntimeApi::Scope scope(api);
-    api->jsr_collect_garbage(env);
-  });
+  jsi::Runtime *runtime = new HermesRuntime(std::move(nodeApiRuntime), api, env);
   installSetImmediate(*runtime);
   return runtime;
 }
