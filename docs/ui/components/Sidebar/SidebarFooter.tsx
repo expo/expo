@@ -35,7 +35,7 @@ export const SidebarFooter = ({ isMobileMenuVisible }: SideBarFooterProps) => {
       <SidebarSingleEntry
         secondary
         href="https://chat.expo.dev"
-        title="Discord and Forums"
+        title="Discord and forums"
         Icon={DiscordIcon}
         isExternal
         shouldLeakReferrer

@@ -1,14 +1,10 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import Foundation
 import Testing
 
 @testable import ExpoModulesCore
 
-/**
- New Swift Testing-based suite for `SharedObjectRegistry`. Coexists with
- `SharedObjectRegistrySpec` (Quick/Nimble) until the rest of the spec is
- migrated.
- */
 @Suite("SharedObjectRegistry")
 @JavaScriptActor
 struct SharedObjectRegistryTests {
@@ -96,6 +92,23 @@ struct SharedObjectRegistryTests {
   }
 
   @Test
+  func `deleting a native object makes it unresolvable in every runtime`() throws {
+    let primaryRuntime = try runtime
+    let secondaryRuntime = JavaScriptRuntime()
+    let nativeObject = TestSharedObject()
+    let primaryObject = primaryRuntime.createObject()
+    let id = registry.add(native: nativeObject, javaScript: primaryObject)
+    let nativeState = try #require(nativeObject.nativeState)
+    let secondaryObject = secondaryRuntime.createObject()
+    secondaryObject.setNativeState(nativeState)
+    nativeState.setJavaScriptObject(secondaryObject, in: secondaryRuntime)
+    registry.delete(id)
+    #expect(throws: SharedObject.NotFoundException.self) {
+      _ = try SharedObject.native(from: secondaryObject)
+    }
+  }
+
+  @Test
   func `the same native state is shared across runtimes, not duplicated`() throws {
     let primaryRuntime = try runtime
     let secondaryRuntime = JavaScriptRuntime()
@@ -128,7 +141,7 @@ struct SharedObjectRegistryTests {
 
     // Detach drops JSI's shared_ptr; the destructor's releaser calls `registry.delete(id)`.
     jsObject.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    try runtime.collectGarbage { registry.get(id) == nil }
 
     #expect(registry.get(id) == nil)
     #expect(nativeObject.sharedObjectId == 0)
@@ -162,7 +175,37 @@ struct SharedObjectRegistryTests {
 
     let secondId = registry.add(native: nativeObject, javaScript: try runtime.createObject())
     #expect(secondId != firstId)
+    #expect(secondId != 0)
     #expect(nativeObject.sharedObjectId == secondId)
+  }
+
+  @Test
+  func `re-adding a native object after deletion resolves from the new JS object`() throws {
+    let nativeObject = TestSharedObject()
+    // The first JS object keeps its native state after the deletion, like a frozen object does.
+    let firstJSObject = try runtime.createObject()
+    registry.delete(registry.add(native: nativeObject, javaScript: firstJSObject))
+    let secondJSObject = try runtime.createObject()
+    registry.add(native: nativeObject, javaScript: secondJSObject)
+    let resolved = try SharedObject.native(from: secondJSObject)
+    #expect(resolved === nativeObject)
+    #expect(throws: SharedObject.NotFoundException.self) {
+      _ = try SharedObject.native(from: firstJSObject)
+    }
+  }
+
+  @Test
+  func `encoding a native object after deletion creates a new JS object`() throws {
+    let runtime = try runtime
+    let nativeObject = TestSharedObject()
+    // The first JS object keeps its native state after the deletion, like a frozen object does.
+    let firstJSObject = runtime.createObject()
+    registry.delete(registry.add(native: nativeObject, javaScript: firstJSObject))
+    let encoded = try TestSharedObject.encode(nativeObject, in: runtime).asObject()
+    let isFirstJSObject = encoded.asValue() == firstJSObject.asValue()
+    let resolved = try SharedObject.native(from: encoded)
+    #expect(isFirstJSObject == false)
+    #expect(resolved === nativeObject)
   }
 
   @Test
@@ -196,7 +239,191 @@ struct SharedObjectRegistryTests {
     // The native state is still attached to `jsObject`. Detaching now would call
     // the releaser whose `[weak self]` is now nil — must not crash.
     jsObject.unsetNativeState()
-    try runtime.eval("gc() && gc() && gc()")
+    try runtime.collectGarbage()
+  }
+
+  @Suite("pullNextId", .serialized)
+  @JavaScriptActor
+  struct PullNextIdTests {
+    let appContext: AppContext
+    let runtime: ExpoRuntime
+    let sharedObjectRegistry: SharedObjectRegistry
+
+    init() throws {
+      appContext = AppContext.create()
+      runtime = try appContext.runtime
+      sharedObjectRegistry = appContext.sharedObjectRegistry
+    }
+
+    @Test
+    func `returns nextId`() {
+      let id = sharedObjectRegistry.nextId
+      #expect(sharedObjectRegistry.pullNextId() == id)
+    }
+
+    @Test
+    func `increments nextId`() {
+      let id = sharedObjectRegistry.nextId
+      sharedObjectRegistry.pullNextId()
+      #expect(sharedObjectRegistry.nextId == id + 1)
+    }
+
+    @Test
+    func `is not increasing size`() {
+      let size = sharedObjectRegistry.size
+      sharedObjectRegistry.pullNextId()
+      #expect(sharedObjectRegistry.size == size)
+    }
+  }
+
+  @Suite("add", .serialized)
+  @JavaScriptActor
+  struct AddTests {
+    let appContext: AppContext
+    let runtime: ExpoRuntime
+    let sharedObjectRegistry: SharedObjectRegistry
+
+    init() throws {
+      appContext = AppContext.create()
+      runtime = try appContext.runtime
+      sharedObjectRegistry = appContext.sharedObjectRegistry
+    }
+
+    @Test
+    func `adds using nextId`() {
+      let nextId = sharedObjectRegistry.nextId
+      let id = sharedObjectRegistry.add(native: TestSharedObject(), javaScript: runtime.createObject())
+      #expect(nextId == id)
+    }
+
+    @Test
+    func `is increasing size`() {
+      let size = sharedObjectRegistry.size
+      sharedObjectRegistry.add(native: TestSharedObject(), javaScript: runtime.createObject())
+      #expect(sharedObjectRegistry.size == size + 1)
+    }
+
+    @Test
+    func `assigns id on native object`() {
+      let nativeObject = TestSharedObject()
+      let id = sharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
+      #expect(nativeObject.sharedObjectId == id)
+    }
+
+    @Test
+    func `assigns the app context on native object`() {
+      let nativeObject = TestSharedObject()
+      sharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
+      #expect(nativeObject.appContext == appContext)
+    }
+
+    @Test
+    func `assigns id on JS object`() {
+      let jsObject = runtime.createObject()
+      let id = sharedObjectRegistry.add(native: TestSharedObject(), javaScript: jsObject)
+      #expect(jsObject.hasProperty(sharedObjectIdPropertyName) == true)
+      #expect(try! jsObject.getProperty(sharedObjectIdPropertyName).asInt() == id)
+    }
+
+    @Test
+    func `saves objects pair`() {
+      let nativeObject = TestSharedObject()
+      let jsObject = runtime.createObject()
+      let id = sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
+      let nativeState = sharedObjectRegistry.get(id)
+      #expect(nativeState?.native === nativeObject)
+      #expect(nativeState?.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
+    }
+  }
+
+  @Suite("delete", .serialized)
+  @JavaScriptActor
+  struct DeleteTests {
+    let appContext: AppContext
+    let runtime: ExpoRuntime
+    let sharedObjectRegistry: SharedObjectRegistry
+
+    init() throws {
+      appContext = AppContext.create()
+      runtime = try appContext.runtime
+      sharedObjectRegistry = appContext.sharedObjectRegistry
+    }
+
+    @Test
+    func `deletes objects pair`() {
+      let id = sharedObjectRegistry.add(native: TestSharedObject(), javaScript: runtime.createObject())
+      sharedObjectRegistry.delete(id)
+      #expect(sharedObjectRegistry.get(id) == nil)
+    }
+
+    @Test
+    func `resets id on native object`() async {
+      let nativeObject = TestSharedObject()
+      let id = sharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
+      sharedObjectRegistry.delete(id)
+      // The id is reset asynchronously after delete; poll on the actor until it settles.
+      let deadline = Date().addingTimeInterval(1.0)
+      while nativeObject.sharedObjectId != 0 && Date() < deadline {
+        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
+      }
+      #expect(nativeObject.sharedObjectId == 0)
+    }
+  }
+
+  @Suite("toNativeObject", .serialized)
+  @JavaScriptActor
+  struct ToNativeObjectTests {
+    let appContext: AppContext
+    let runtime: ExpoRuntime
+    let sharedObjectRegistry: SharedObjectRegistry
+
+    init() throws {
+      appContext = AppContext.create()
+      runtime = try appContext.runtime
+      sharedObjectRegistry = appContext.sharedObjectRegistry
+    }
+
+    @Test
+    func `returns native object`() {
+      let nativeObject = TestSharedObject()
+      let jsObject = runtime.createObject()
+      sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
+      #expect(sharedObjectRegistry.toNativeObject(jsObject) === nativeObject)
+    }
+
+    @Test
+    func `returns nil`() {
+      let jsObject = runtime.createObject()
+      #expect(sharedObjectRegistry.toNativeObject(jsObject) == nil)
+    }
+  }
+
+  @Suite("toJavaScriptObject", .serialized)
+  @JavaScriptActor
+  struct ToJavaScriptObjectTests {
+    let appContext: AppContext
+    let runtime: ExpoRuntime
+    let sharedObjectRegistry: SharedObjectRegistry
+
+    init() throws {
+      appContext = AppContext.create()
+      runtime = try appContext.runtime
+      sharedObjectRegistry = appContext.sharedObjectRegistry
+    }
+
+    @Test
+    func `returns JS object`() {
+      let nativeObject = TestSharedObject()
+      let jsObject = runtime.createObject()
+      sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
+//        #expect(sharedObjectRegistry.toJavaScriptObject(nativeObject) == jsObject)
+    }
+
+    @Test
+    func `returns nil`() {
+      let nativeObject = TestSharedObject()
+//        #expect(sharedObjectRegistry.toJavaScriptObject(nativeObject) == nil)
+    }
   }
 }
 

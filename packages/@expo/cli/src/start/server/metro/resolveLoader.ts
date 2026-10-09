@@ -2,6 +2,13 @@ import type { RouteNode } from 'expo-router/build/Route';
 import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 /**
+ * An allowlist of loader `Response` headers that are written to the export
+ * manifest as `pageHeaders` rules during `expo export`. In development, they
+ * are forwarded on the loader response, matching static exports.
+ */
+export const SSG_LOADER_HEADER_ALLOWLIST = ['Cache-Control'];
+
+/**
  * Unified route information needed for loader execution
  */
 export interface ResolvedLoaderRoute {
@@ -22,6 +29,17 @@ type FromRuntimeManifestRouteOptions = {
 };
 
 /**
+ * For static routes that were generated from dynamic routes, we need to use the parent's
+ * context key to find the loader.
+ * @see expo-router/src/loadStaticParamsAsync.ts
+ */
+export function getLoaderRouteContextKey(route: RouteNode): string {
+  return route.dynamic === null && route.parentContextKey
+    ? route.parentContextKey
+    : route.contextKey;
+}
+
+/**
  * Converts a `RouteNode` to a `ResolvedLoaderRoute` object using runtime manifest lookup
  */
 export function fromRuntimeManifestRoute(
@@ -34,11 +52,7 @@ export function fromRuntimeManifestRoute(
     return null;
   }
 
-  // For static routes that were generated from dynamic routes, we need to use the parent's
-  // context key to find the loader
-  // @see expo-router/src/loadStaticParamsAsync.ts
-  const contextKey =
-    route.dynamic === null && route.parentContextKey ? route.parentContextKey : route.contextKey;
+  const contextKey = getLoaderRouteContextKey(route);
 
   if (!contextKey) {
     return null;

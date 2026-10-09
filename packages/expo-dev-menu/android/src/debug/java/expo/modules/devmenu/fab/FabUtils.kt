@@ -11,7 +11,7 @@ import expo.modules.devmenu.fab.ExpoVelocityTracker.PointF
 import kotlin.math.roundToInt
 
 /**
- * Finds an appropriate resting position for the fab based on it's position velocity and size.
+ * Finds an appropriate resting position for the fab based on its position velocity and size.
  */
 internal fun calculateTargetPosition(
   currentPosition: Offset,

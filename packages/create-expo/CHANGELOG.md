@@ -1,6 +1,30 @@
 # Changelog
 
-## Unpublished
+## 5.1.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 5.1.3 — 2026-09-25
+
+### 💡 Others
+
+- Stop generating `CLAUDE.md` for new projects. Claude Code now reads `AGENTS.md` directly. ([#50400](https://github.com/expo/expo/pull/50400) by [@davidmokos](https://github.com/davidmokos))
+
+## 5.1.2 — 2026-09-15
+
+### 🐛 Bug fixes
+
+- Derive project names from the app name the same way as `@expo/config-plugins`, keeping accented characters ('Árbók' now becomes 'Arbok', not 'rbk'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+
+## 5.1.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 5.1.0 — 2026-09-10
 
 ### 🛠 Breaking changes
 
@@ -8,12 +32,23 @@
 
 ### 🎉 New features
 
+- Detect and support the nub package manager ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
 - Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
 - Improved monorepo support ([#46434](https://github.com/expo/expo/pull/46434) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
+- Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
+- Print the "make sure you have modules installed" warning when the dependency install fails ([#48929](https://github.com/expo/expo/issues/48929)) ([#48946](https://github.com/expo/expo/pull/48946) by [@expo-bot](https://github.com/expo-bot))
+- [Internal] Fix sporadic `ncc` build failures ([#49615](https://github.com/expo/expo/pull/49615) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Bump to `multitars@1.0.2` to address symlink and unicode bugs ([#48833](https://github.com/expo/expo/pull/48833) by [@kitten](https://github.com/kitten))
+
+## 5.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.2 — 2026-05-20
 

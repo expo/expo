@@ -4,6 +4,13 @@
     "modules": ["WidgetsModule"]
   },
   "android": {
-    "modules": ["expo.modules.widgets.WidgetsModule"]
+    "modules": ["expo.modules.widgets.WidgetsModule"],
+    "gradlePlugins": [
+      {
+        "id": "io.github.expo.peek.glance-fork",
+        "group": "io.github.expo.peek",
+        "version": "0.3.2"
+      }
+    ]
   }
 }

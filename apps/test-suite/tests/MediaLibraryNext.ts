@@ -6,6 +6,8 @@ import {
   Query,
   MediaType,
   AssetField,
+  AlbumType,
+  AssetUriVersion,
   addListener,
   removeAllListeners,
 } from 'expo-media-library';
@@ -18,6 +20,7 @@ const mp4Path = require('../assets/big_buck_bunny.mp4');
 const exifJpgPath = require('../assets/exif_data_image.jpg');
 const pngPath = require('../assets/icons/app.png');
 const jpgPath = require('../assets/qrcode_expo.jpg');
+const rotatedJpgPath = require('../assets/rotated_image.jpg');
 
 export async function test(t: any) {
   let localUris: string[];
@@ -26,6 +29,7 @@ export async function test(t: any) {
   let jpgFileLocalUri: string;
   let mp4FileLocalUri: string;
   let exifJpgFileLocalUri: string;
+  let rotatedImageLocalUri: string;
 
   t.beforeAll(async () => {
     const permissionResponse = await requestPermissionsAsync();
@@ -45,6 +49,7 @@ export async function test(t: any) {
     jpgFileLocalUri = await loadAssetLocalUri(jpgPath, 'JPG');
     mp4FileLocalUri = await loadAssetLocalUri(mp4Path, 'MP4');
     exifJpgFileLocalUri = await loadAssetLocalUri(exifJpgPath, 'EXIF JPG');
+    rotatedImageLocalUri = await loadAssetLocalUri(rotatedJpgPath, 'Rotated Image');
     localUris = [pngFileLocalUri, jpgFileLocalUri, mp4FileLocalUri];
   });
 
@@ -82,6 +87,7 @@ export async function test(t: any) {
       const albumName = createAlbumName('stress test moving directories');
       const album = await Album.create(albumName, createdAssets);
       albumsContainer.push(album);
+      t.expect((await album.getAssets()).length).toBe(createdAssets.length);
     });
   });
   t.describe('Album creation', () => {
@@ -270,6 +276,70 @@ export async function test(t: any) {
     });
   });
 
+  t.describe('Album getAlbumsMetadata', () => {
+    t.it('includes metadata for a newly created album', async () => {
+      // given
+      const albumName = createAlbumName('getAlbumsMetadata includes new album');
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
+      albumsContainer.push(album);
+
+      // when
+      const metadata = await Album.getAlbumsMetadata();
+
+      // then
+      const entry = metadata.find((m) => m.id === album.id);
+      t.expect(entry).toBeDefined();
+      t.expect(entry?.title).toBe(albumName);
+      t.expect(entry?.type).toBe(Platform.OS === 'ios' ? AlbumType.ALBUM : null);
+    });
+  });
+
+  t.describe('Album getAssetCount', () => {
+    t.it('returns the number of assets in the album', async () => {
+      // given
+      const albumName = createAlbumName('getAssetCount');
+      const album = await Album.create(albumName, [jpgFileLocalUri, pngFileLocalUri], true);
+      albumsContainer.push(album);
+
+      // when
+      const count = await album.getAssetCount();
+
+      // then
+      t.expect(count).toBe(2);
+    });
+  });
+
+  if (Platform.OS === 'ios') {
+    t.describe('Album getType', () => {
+      t.it('returns ALBUM for a user album', async () => {
+        // given
+        const albumName = createAlbumName('getType album');
+        const album = await Album.create(albumName, [jpgFileLocalUri], true);
+        albumsContainer.push(album);
+
+        // then
+        t.expect(await album.getType()).toBe(AlbumType.ALBUM);
+      });
+    });
+
+    t.describe('Album getSmartAlbums', () => {
+      t.it('returns system smart albums', async () => {
+        // given
+        const asset = await Asset.create(pngFileLocalUri);
+        assetsContainer.push(asset);
+
+        // when
+        const smartAlbums = await Album.getSmartAlbums();
+
+        // then
+        t.expect(smartAlbums.length).toBeGreaterThan(0);
+        for (const album of smartAlbums) {
+          t.expect(await album.getType()).toBe(AlbumType.SMART_ALBUM);
+        }
+      });
+    });
+  }
+
   t.describe('Album deletion', () => {
     t.it('deletes an album', async () => {
       const albumName = createAlbumName('album deletion');
@@ -431,34 +501,38 @@ export async function test(t: any) {
   }
 
   t.describe('Image asset properties', () => {
-    let asset: Asset;
-
-    t.beforeEach(async () => {
-      asset = await Asset.create(pngFileLocalUri);
-      assetsContainer.push(asset);
-    });
+    const createImageAsset = async (uri: string): Promise<Asset> => {
+      const newAsset = await Asset.create(uri);
+      assetsContainer.push(newAsset);
+      return newAsset;
+    };
 
     t.it('returns a creation time', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const creationTime = await asset.getCreationTime();
       t.expect(creationTime).toBeDefined();
     });
 
     t.it('returns a duration of null for images', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const duration = await asset.getDuration();
       t.expect(duration).toBe(null);
     });
 
     t.it('returns a filename ending with .png', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const filename = await asset.getFilename();
       t.expect(filename.toLowerCase()).toMatch(/\.png/);
     });
 
     t.it('returns positive height', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const height = await asset.getHeight();
       t.expect(height).toBeGreaterThan(0);
     });
 
     t.it('returns a shape', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const shape = await asset.getShape();
       t.expect(shape).toBeDefined();
       t.expect(shape?.width).toBeGreaterThan(0);
@@ -466,11 +540,13 @@ export async function test(t: any) {
     });
 
     t.it('returns a media type', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const mediaType = await asset.getMediaType();
       t.expect(mediaType).toBeDefined();
     });
 
     t.it('returns correct modification time', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const modificationTime = await asset.getModificationTime();
       if (modificationTime === null) {
         return t.fail('Modification time should not be null for an asset');
@@ -480,16 +556,29 @@ export async function test(t: any) {
     });
 
     t.it('returns a uri ending with .png', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const uri = await asset.getUri();
       t.expect(uri.toLowerCase()).toMatch(/\.png/);
     });
 
+    // the fixture has no edits, so both renditions exist. Their paths are not compared:
+    // PhotoKit may back identical content with different files.
+    t.it('resolves both uri versions', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
+      const current = await asset.getUri({ version: AssetUriVersion.CURRENT });
+      const original = await asset.getUri({ version: AssetUriVersion.ORIGINAL });
+      t.expect(current.toLowerCase()).toMatch(/\.png/);
+      t.expect(original.toLowerCase()).toMatch(/\.png/);
+    });
+
     t.it('returns positive width', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const width = await asset.getWidth();
       t.expect(width).toBeGreaterThan(0);
     });
 
     t.it('sets and gets favorite status', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       if (Platform.OS === 'android' && Platform.Version < 29) {
         t.expect(await asset.getFavorite()).toBe(false);
         await asset.setFavorite(true);
@@ -504,6 +593,7 @@ export async function test(t: any) {
     });
 
     t.it('returns an asset info object', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const info = await asset.getInfo();
       t.expect(info).toBeDefined();
       t.expect(info.id).toBe(asset.id);
@@ -516,6 +606,17 @@ export async function test(t: any) {
       t.expect(info.creationTime).toBe(await asset.getCreationTime());
       t.expect(info.modificationTime).toBe(await asset.getModificationTime());
       t.expect(info.isFavorite).toBe(await asset.getFavorite());
+    });
+
+    t.it('returns correctly oriented shape for rotated image', async () => {
+      const rotatedAsset = await createImageAsset(rotatedImageLocalUri);
+      const shape = await rotatedAsset.getShape();
+
+      if (shape === null) {
+        return t.fail('Shape should not be null for a rotated image asset');
+      }
+      const isCorrectlyOriented = shape.height > shape.width;
+      t.expect(isCorrectlyOriented).toBe(true);
     });
   });
 
@@ -564,6 +665,15 @@ export async function test(t: any) {
     t.it('returns a uri ending with .mp4', async () => {
       const uri = await videoAsset.getUri();
       t.expect(uri.toLowerCase()).toMatch(/\.mp4/);
+    });
+
+    // an unedited video resolves to the same file either way. Whether an edited one resolves
+    // to its edited render can only be checked by hand, since a test cannot edit in Photos.
+    t.it('resolves both uri versions', async () => {
+      const current = await videoAsset.getUri({ version: AssetUriVersion.CURRENT });
+      const original = await videoAsset.getUri({ version: AssetUriVersion.ORIGINAL });
+      t.expect(current.toLowerCase()).toMatch(/\.mp4/);
+      t.expect(original.toLowerCase()).toMatch(/\.mp4/);
     });
 
     t.it('returns positive width', async () => {

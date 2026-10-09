@@ -1,6 +1,8 @@
 import type * as React from 'react';
 import type { Animated, ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type { NavigatorDescriptor } from 'standard-navigation';
 
+import type { StandardNavigatorEmit } from '../../standard-navigation';
 import type {
   HeaderBackButton,
   HeaderBackButtonDisplayMode,
@@ -11,6 +13,7 @@ import type {
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   LocaleDirection,
   NavigationHelpers,
   NavigationProp,
@@ -46,6 +49,10 @@ export type StackNavigationEventMap = {
   gestureCancel: { data: undefined };
 };
 
+export type StackViewEmit = StandardNavigatorEmit<StackNavigationEventMap>;
+
+export type StackViewState = Pick<StackNavigationState<ParamListBase>, 'index' | 'routes'>;
+
 export type StackNavigationHelpers = NavigationHelpers<ParamListBase, StackNavigationEventMap> &
   StackActionHelpers<ParamListBase>;
 
@@ -76,7 +83,8 @@ export type StackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = StackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<StackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -115,8 +123,9 @@ export type Scene = {
   /**
    * Descriptor object for the screen.
    */
-  descriptor: Omit<StackDescriptor, 'options'> & {
-    options: Omit<StackDescriptor['options'], keyof SceneOptionsDefaults> & SceneOptionsDefaults;
+  descriptor: Omit<StackViewDescriptor, 'options'> & {
+    options: Omit<StackViewDescriptor['options'], keyof SceneOptionsDefaults> &
+      SceneOptionsDefaults;
   };
   /**
    * Animated nodes representing the progress of the animation.
@@ -287,6 +296,12 @@ export type StackDescriptor = Descriptor<
 
 export type StackDescriptorMap = Record<string, StackDescriptor>;
 
+export type StackViewDescriptor = NavigatorDescriptor<StackNavigationOptions> & {
+  navigation?: StackNavigationProp<ParamListBase>;
+};
+
+export type StackViewDescriptorMap = Record<string, StackViewDescriptor>;
+
 export type StackNavigationOptions = StackHeaderOptions &
   Partial<TransitionPreset> & {
     /**
@@ -401,12 +416,9 @@ export type StackNavigationOptions = StackHeaderOptions &
      * Defaults to `true`.
      */
     keyboardHandlingEnabled?: boolean;
+    // TODO(@ubax): Remove this prop
     /**
-     * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-     * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-     * Requires `react-native-screens` version >=3.16.0.
-     *
-     * Only supported on iOS and Android.
+     * @deprecated This option has no effect in Expo Router.
      */
     freezeOnBlur?: boolean;
     /**

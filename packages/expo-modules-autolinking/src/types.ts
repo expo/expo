@@ -1,3 +1,5 @@
+import type { PlatformName } from '@expo/platforms';
+
 import type { ExpoModuleConfig } from './ExpoModuleConfig';
 
 type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
@@ -5,15 +7,7 @@ type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
 
 // NOTE(@kitten): Our code has never guaranteed this to be exhaustive, hence the `| (string & {})` addition
-export type SupportedPlatform =
-  | 'apple'
-  | 'ios'
-  | 'android'
-  | 'web'
-  | 'macos'
-  | 'tvos'
-  | 'devtools'
-  | (string & {});
+export type SupportedPlatform = PlatformName | 'apple' | 'devtools' | (string & {});
 
 export type PackageRevision = {
   name: string;
@@ -33,7 +27,7 @@ export interface ModuleAndroidProjectInfo {
   modules: ModuleAndroidModuleInfo[];
   services: string[];
   packages: string[];
-  publication?: AndroidPublication;
+  publication?: WithRequired<AndroidPublication, 'version'>;
   aarProjects?: AndroidGradleAarProjectDescriptor[];
   shouldUsePublicationScriptPath?: string;
 }
@@ -45,7 +39,10 @@ export interface ModuleAndroidModuleInfo {
 
 export interface ModuleAndroidPluginInfo {
   id: string;
-  sourceDir: string;
+  group: string;
+  sourceDir?: string;
+  version?: string;
+  applyToRootProject?: boolean;
 }
 
 export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDescriptor {
@@ -127,7 +124,13 @@ export interface AndroidGradlePluginDescriptor {
   /**
    * Relative path to the gradle plugin directory
    */
-  sourceDir: string;
+  sourceDir?: string;
+
+  /**
+   * Version of a published gradle plugin.
+   * Ignored when `sourceDir` is declared.
+   */
+  version?: string;
 
   /**
    * Whether to apply the plugin to the root project
@@ -155,15 +158,15 @@ export interface AndroidPublication {
   /**
    * The Maven artifact ID.
    */
-  id: string;
+  artifactId: string;
   /**
    * The Maven group ID.
    */
-  group: string;
+  groupId: string;
   /**
-   * The Maven version.
+   * The Maven version. Defaults to the package version when omitted from module config.
    */
-  version: string;
+  version?: string;
   /**
    * The Maven repository.
    */

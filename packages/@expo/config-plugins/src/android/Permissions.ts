@@ -1,9 +1,9 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import type { AndroidManifest, ManifestUsesPermission } from './Manifest';
-import { ensureToolsAvailable } from './Manifest';
 import type { ConfigPlugin } from '../Plugin.types';
 import { withAndroidManifest } from '../plugins/android-plugins';
+import type { AndroidManifest, ManifestUsesPermission } from './Manifest';
+import { ensureToolsAvailable } from './Manifest';
 
 const USES_PERMISSION = 'uses-permission';
 

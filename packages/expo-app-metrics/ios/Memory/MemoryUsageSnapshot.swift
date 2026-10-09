@@ -57,10 +57,12 @@ struct MemoryUsageSnapshot: Metrics, CustomStringConvertible, Sendable {
   private static func getMemoryFootprint() -> UInt {
     // swift-format-ignore: AlwaysUseLowerCamelCase
     let TASK_VM_INFO_COUNT = mach_msg_type_number_t(
-      MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+      MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size
+    )
     // swift-format-ignore: AlwaysUseLowerCamelCase
     let TASK_VM_INFO_REV1_COUNT = mach_msg_type_number_t(
-      MemoryLayout.offset(of: \task_vm_info_data_t.min_address)! / MemoryLayout<integer_t>.size)
+      MemoryLayout.offset(of: \task_vm_info_data_t.min_address)! / MemoryLayout<integer_t>.size
+    )
     var info = task_vm_info_data_t()
     var count = TASK_VM_INFO_COUNT
     let kerr = withUnsafeMutablePointer(to: &info) { infoPtr in

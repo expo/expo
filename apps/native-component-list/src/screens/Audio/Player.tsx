@@ -1,6 +1,6 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { AudioMetadata } from 'expo-audio';
 import React from 'react';
 import {

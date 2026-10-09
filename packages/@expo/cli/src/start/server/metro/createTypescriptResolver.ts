@@ -13,7 +13,11 @@ import type Bundler from '@expo/metro/metro/Bundler';
 import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
 import path from 'path';
 
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  isFailedToResolveNameError,
+  isFailedToResolvePathError,
+  isFailedToResolveUnsupportedError,
+} from './metroErrors';
 import { event } from './resolveEvents';
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
@@ -139,7 +143,7 @@ function setupTsConfigWatcher(
 const escapePrefix = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 function joinBaseUrl(baseUrl: string, lookup: string): string {
-  return path.join(baseUrl, lookup);
+  return path.resolve(baseUrl, lookup);
 }
 
 /** Attempts to resolve a target module given a pre-processed TypeScript configuration */
@@ -160,7 +164,7 @@ export function _resolveWithTsConfigPaths(
     return null;
   }
 
-  // Widlcard matches contain '*' and we first match the preceding string before it with a regex
+  // Wildcard matches contain '*' and we first match the preceding string before it with a regex
   if (config.prefixRe != null) {
     const match = config.prefixRe.exec(moduleName);
     if (match != null) {
@@ -236,7 +240,9 @@ function getOptionalResolve(
       // If the error is directly related to a resolver not being able to resolve a module, then
       // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
       const isResolutionError =
-        isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+        isFailedToResolveNameError(error) ||
+        isFailedToResolvePathError(error) ||
+        isFailedToResolveUnsupportedError(error);
       if (!isResolutionError) {
         throw error;
       }
@@ -484,6 +490,6 @@ function resolveExtendsPath(
 /** TypeScript's `${configDir}` template prefix for the user config's path */
 function substituteConfigDir(value: string, configDir: string): string {
   return value.startsWith('${configDir}')
-    ? value.replace('${configDir}', configDir.endsWith(path.sep) ? '.' : './')
+    ? path.resolve(configDir, value.replace('${configDir}', './'))
     : value;
 }

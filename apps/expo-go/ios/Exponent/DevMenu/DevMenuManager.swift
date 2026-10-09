@@ -14,6 +14,11 @@ public class DevMenuManager: NSObject {
     menuWillShowSubject.eraseToAnyPublisher()
   }
 
+  private let sourceExplorerPresentationSubject = CurrentValueSubject<Bool, Never>(false)
+  var sourceExplorerPresentationPublisher: AnyPublisher<Bool, Never> {
+    sourceExplorerPresentationSubject.eraseToAnyPublisher()
+  }
+
   private let manifestSubject = PassthroughSubject<Void, Never>()
   var manifestPublisher: AnyPublisher<Void, Never> {
     manifestSubject.eraseToAnyPublisher()
@@ -21,6 +26,7 @@ public class DevMenuManager: NSObject {
 
   var window: DevMenuWindow?
   var fabWindow: DevMenuFABWindow?
+  private(set) var onboardingContentHeight: CGFloat?
   private var isNavigatingHome = false
   private var didHandleInitialContentAppear = false
 
@@ -28,11 +34,31 @@ public class DevMenuManager: NSObject {
   /// Forces the FAB to stay visible even if the user disabled the preference.
   @objc var isLessonLikeSession: Bool = false
 
+  @objc var canLaunchDevMenuOnStart = true
+  @objc var canShowFloatingActionButton = true
+
+  @objc(applyLaunchParamsFromURL:)
+  @discardableResult
+  func applyLaunchParams(from url: URL) -> URL {
+    let launch = ExpoLauncherURL(url)
+    if launch.disablesOnboarding {
+      DevMenuPreferences.isOnboardingFinished = true
+    }
+    if launch.disablesFab {
+      canShowFloatingActionButton = false
+      updateFABVisibility()
+    }
+    if launch.disablesAutoLaunch {
+      canLaunchDevMenuOnStart = false
+    }
+    return launch.targetURL ?? launch.strippedURL
+  }
+
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
     DevMenuPreferences.setup()
-    
+
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(handleContentDidAppear),
@@ -55,7 +81,7 @@ public class DevMenuManager: NSObject {
 
   var currentBundleURL: URL? {
     guard let manifest = currentManifest else { return nil }
-    return ApiUtil.bundleUrlFromManifest(manifest)
+    return ApiUtil.bundleUrlFromManifest(manifest, relativeTo: currentManifestURL)
   }
 
   var hasActiveApp: Bool {
@@ -75,6 +101,19 @@ public class DevMenuManager: NSObject {
   @discardableResult
   func openMenu() -> Bool {
     return setVisibility(true)
+  }
+
+  @discardableResult
+  func openSourceExplorer() -> Bool {
+    guard openMenu() else { return false }
+    DispatchQueue.main.async {
+      self.sourceExplorerPresentationSubject.send(true)
+    }
+    return true
+  }
+
+  func sourceExplorerDidPresent() {
+    sourceExplorerPresentationSubject.send(false)
   }
 
   @objc
@@ -104,14 +143,13 @@ public class DevMenuManager: NSObject {
     if visible && !hasActiveApp { return false }
 
     if visible {
+      sourceExplorerPresentationSubject.send(false)
       menuWillShowSubject.send()
       DispatchQueue.main.async {
         self.updateFABVisibility()
 
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-          self.window?.windowScene = windowScene
+          self.window?.windowScene = SceneGeometry.foregroundActiveScene()
         }
         self.window?.makeKeyAndVisible()
       }
@@ -131,6 +169,7 @@ public class DevMenuManager: NSObject {
   @objc func goHome() {
     isNavigatingHome = true
     isLessonLikeSession = false
+    ProjectSourceSession.end()
     fabWindow?.setVisible(false, animated: false)
     EXKernel.sharedInstance().switchTasks()
   }
@@ -149,13 +188,21 @@ public class DevMenuManager: NSObject {
   }
 
   func openJSInspector() {
-    guard let manifestURL = currentManifestURL else {
+    // The bundle URL is the address this device reached the development server on, unlike the
+    // manifest URL, which carries the `exp` scheme and may omit the port the bundle was served on.
+    guard let bundleURL = currentBundleURL else {
       return
     }
-    let port = manifestURL.port ?? 8081
-    let host = manifestURL.host ?? "localhost"
-    let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
-    guard let url = URL(string: openURL) else { return }
+    let isServed = bundleURL.scheme == "http" || bundleURL.scheme == "https" || bundleURL.scheme == "exps" || bundleURL.scheme == "exp"
+    var components = URLComponents()
+    components.scheme = bundleURL.scheme == "https" || bundleURL.scheme == "exps" ? "https" : "http"
+    components.host = isServed ? bundleURL.host : "localhost"
+    components.port = isServed ? bundleURL.port : 8081
+    components.path = "/_expo/debugger"
+    components.queryItems = [
+      URLQueryItem(name: "applicationId", value: Bundle.main.bundleIdentifier ?? "")
+    ]
+    guard let url = components.url else { return }
     let request = NSMutableURLRequest(url: url)
     request.httpMethod = "PUT"
     URLSession.shared.dataTask(with: request as URLRequest).resume()
@@ -206,13 +253,13 @@ public class DevMenuManager: NSObject {
       guard let self else { return }
 
       if self.fabWindow == nil {
-        if let windowScene = UIApplication.shared.connectedScenes
-          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+        if let windowScene = SceneGeometry.foregroundActiveScene() {
           self.setupFABWindowIfNeeded(for: windowScene)
         }
       }
 
       let shouldShow = (DevMenuPreferences.showFloatingActionButton || self.isLessonLikeSession)
+        && self.canShowFloatingActionButton
         && !self.isVisible
         && self.hasActiveApp
         && !self.isNavigatingHome
@@ -257,6 +304,14 @@ public class DevMenuManager: NSObject {
     DevMenuPreferences.isOnboardingFinished = finished
   }
 
+  func setOnboardingContentHeight(_ height: CGFloat?) {
+    guard onboardingContentHeight != height else {
+      return
+    }
+    onboardingContentHeight = height
+    window?.invalidateSheetDetents()
+  }
+
   @objc func getMotionGestureEnabled() -> Bool {
     return DevMenuPreferences.motionGestureEnabled
   }
@@ -284,7 +339,7 @@ public class DevMenuManager: NSObject {
     // (e.g. switching between lessons).
     if !didHandleInitialContentAppear {
       didHandleInitialContentAppear = true
-      if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
+      if canLaunchDevMenuOnStart && (shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch) {
         openMenu()
         return
       }

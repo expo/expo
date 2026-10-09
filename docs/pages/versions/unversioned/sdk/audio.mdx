@@ -58,7 +58,7 @@ You can configure `expo-audio` using its built-in [config plugin](/config-plugin
       name: 'microphonePermission',
       platform: 'ios',
       description:
-        'A string to set the `NSMicrophoneUsageDescription` permission message. Setting it to `false` will disable the permission.',
+        'A string to set the `NSMicrophoneUsageDescription` permission message. Setting it to `false` will disable the permission, in which case recording is unavailable and `getRecordingPermissionsAsync()` resolves with a `denied` status.',
       default: '"Allow $(PRODUCT_NAME) to access your microphone"',
     },
     {
@@ -106,9 +106,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Button title="Play Sound" onPress={() => player.play()} />
+      <Button title="Play sound" onPress={() => player.play()} />
       <Button
-        title="Replay Sound"
+        title="Replay sound"
         onPress={() => {
           player.seekTo(0);
           player.play();
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
 
 ```jsx
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Button } from 'react-native';
+import { View, StyleSheet, Button, Alert } from 'react-native';
 import {
   useAudioRecorder,
   AudioModule,
@@ -169,6 +169,8 @@ export default function App() {
       setAudioModeAsync({
         playsInSilentMode: true,
         allowsRecording: true,
+        // To record in the background, also set allowsBackgroundRecording: true
+        // and enable the enableBackgroundRecording config plugin option.
       });
     })();
   }, []);
@@ -176,7 +178,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button
-        title={recorderState.isRecording ? 'Stop Recording' : 'Start Recording'}
+        title={recorderState.isRecording ? 'Stop recording' : 'Start recording'}
         onPress={recorderState.isRecording ? stopRecording : record}
       />
     </View>
@@ -403,6 +405,8 @@ await recorder.record();
 <PlatformTags platforms={['android']} />
 
 On Android, background recording requires a foreground service, which displays a persistent notification with the text "Recording audio" and a stop button. This notification cannot be dismissed while recording is active and automatically disappears when recording stops.
+
+Background recording does not require the notification permission. If the user has not granted it, recording still works and the notification appears only in the Task Manager instead of the notification drawer.
 
 <PlatformTags platforms={['ios']} />
 

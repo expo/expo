@@ -15,14 +15,33 @@ const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications.
 
 export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
   config,
-  { mode = 'development', sounds = [], enableBackgroundRemoteNotifications }
+  {
+    mode = 'development',
+    sounds = [],
+    enableRemoteNotifications = true,
+    enableBackgroundRemoteNotifications,
+  }
 ) => {
-  config = withEntitlementsPlist(config, (config) => {
-    if (!config.modResults['aps-environment']) {
-      config.modResults['aps-environment'] = mode;
-    }
-    return config;
-  });
+  if (typeof enableRemoteNotifications !== 'boolean') {
+    throw new Error(
+      ERROR_MSG_PREFIX +
+        `"enableRemoteNotifications" has an invalid value: ${enableRemoteNotifications}. Expected a boolean.`
+    );
+  }
+  if (!enableRemoteNotifications && enableBackgroundRemoteNotifications) {
+    throw new Error(
+      ERROR_MSG_PREFIX +
+        `"enableBackgroundRemoteNotifications" requires "enableRemoteNotifications" to be true, because background remote notifications are delivered through APNs. Set "enableRemoteNotifications" to true, or remove "enableBackgroundRemoteNotifications" from the expo-notifications plugin options.`
+    );
+  }
+  if (enableRemoteNotifications) {
+    config = withEntitlementsPlist(config, (config) => {
+      if (!config.modResults['aps-environment']) {
+        config.modResults['aps-environment'] = mode;
+      }
+      return config;
+    });
+  }
   config = withNotificationSounds(config, { sounds });
   config = withBackgroundRemoteNotifications(config, enableBackgroundRemoteNotifications);
 
@@ -97,7 +116,7 @@ export function setNotificationSounds(
     const destinationFilepath = resolve(sourceRoot, fileName);
 
     // Since it's possible that the filename is the same, but the
-    // file itself id different, let's copy it regardless
+    // file itself is different, let's copy it regardless
     copyFileSync(sourceFilepath, destinationFilepath);
     if (!project.hasFile(`${projectName}/${fileName}`)) {
       project = IOSConfig.XcodeUtils.addResourceFileToGroup({

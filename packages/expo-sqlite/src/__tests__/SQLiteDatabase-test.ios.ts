@@ -175,6 +175,41 @@ describe('Database', () => {
     expect(results.length).toBe(0);
   });
 
+  it.each(['async', 'exclusive', 'sync'] as const)(
+    '%s transactions preserve the original error after SQLite rolls back automatically',
+    async (mode) => {
+      // Exclusive transactions open a separate connection, so use a file database.
+      const database = await openDatabaseAsync('test.db');
+      db = database;
+      await database.execAsync(`
+        DROP TABLE IF EXISTS rollback_test;
+        CREATE TABLE rollback_test (value INTEGER UNIQUE ON CONFLICT ROLLBACK);
+        INSERT INTO rollback_test VALUES (1);
+      `);
+      const write = 'INSERT INTO rollback_test VALUES (2); INSERT INTO rollback_test VALUES (1)';
+
+      if (mode === 'sync') {
+        expect(() => database.withTransactionSync(() => database.execSync(write))).toThrow(
+          /UNIQUE constraint failed/
+        );
+      } else {
+        const result =
+          mode === 'exclusive'
+            ? database.withExclusiveTransactionAsync((txn) => txn.execAsync(write))
+            : database.withTransactionAsync(() => database.execAsync(write));
+        await expect(result).rejects.toThrow(/UNIQUE constraint failed/);
+      }
+
+      expect(await database.isInTransactionAsync()).toBe(false);
+      expect(await database.getAllAsync('SELECT value FROM rollback_test')).toEqual([{ value: 1 }]);
+      await database.execAsync('INSERT INTO rollback_test VALUES (3)');
+      expect(await database.getAllAsync('SELECT value FROM rollback_test ORDER BY value')).toEqual([
+        { value: 1 },
+        { value: 3 },
+      ]);
+    }
+  );
+
   it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
@@ -253,6 +288,65 @@ INSERT INTO users (name) VALUES ('aaa');
     // We still need to wait for promise1 to finish for promise1 to finalize the transaction.
     await promise1;
   }, 10000);
+
+  it('concurrent statement shorthands should each return their own rows', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(`
+CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+INSERT INTO test (id, value) VALUES (1, 'one');
+INSERT INTO test (id, value) VALUES (2, 'two');
+INSERT INTO test (id, value) VALUES (3, 'three');
+`);
+    // Each shorthand prepares its own statement, so concurrent callers must not share a cursor.
+    const rows = await Promise.all([
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 1),
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 2),
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 3),
+      db.getAllAsync<{ value: string }>('SELECT value FROM test WHERE id = ?', 1),
+    ]);
+    expect(rows.map((result) => result.map((row) => row.value))).toEqual([
+      ['one'],
+      ['two'],
+      ['three'],
+      ['one'],
+    ]);
+  });
+
+  it('concurrent writes and reads through the shorthands should all apply', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync('CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL)');
+    await Promise.all([
+      db.runAsync('INSERT INTO test (value) VALUES (?)', ['a']),
+      db.runAsync('INSERT INTO test (value) VALUES (?)', ['b']),
+      db.runAsync('INSERT INTO test (value) VALUES (?)', ['c']),
+    ]);
+    const values = await db.getAllAsync<{ value: string }>('SELECT value FROM test ORDER BY id');
+    expect(values.map((row) => row.value).sort()).toEqual(['a', 'b', 'c']);
+  });
+
+  it('getEachAsync should yield every row when abandoned partway and re-run', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(`
+CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, value TEXT NOT NULL);
+INSERT INTO test (id, value) VALUES (1, 'one');
+INSERT INTO test (id, value) VALUES (2, 'two');
+INSERT INTO test (id, value) VALUES (3, 'three');
+`);
+    // Breaking out of the loop finalizes the statement mid-cursor.
+    for await (const row of db.getEachAsync<{ value: string }>(
+      'SELECT value FROM test ORDER BY id'
+    )) {
+      expect(row.value).toBe('one');
+      break;
+    }
+    const all: string[] = [];
+    for await (const row of db.getEachAsync<{ value: string }>(
+      'SELECT value FROM test ORDER BY id'
+    )) {
+      all.push(row.value);
+    }
+    expect(all).toEqual(['one', 'two', 'three']);
+  });
 });
 
 describe('Database - Synchronous calls', () => {
@@ -371,3 +465,42 @@ function supportsSerialize(): boolean {
 async function delayAsync(timeMs: number) {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
+
+describe('Database - serialize result', () => {
+  // Android hands the serialized bytes over as an ArrayBuffer and iOS as a Uint8Array; both
+  // reach the caller as a Uint8Array over the same bytes.
+  it('serializeAsync turns an ArrayBuffer from the native database into a Uint8Array', async () => {
+    const db = await openDatabaseAsync(':memory:');
+    const bytes = new Uint8Array([1, 2, 3]);
+    jest.spyOn(db.nativeDatabase, 'serializeAsync').mockResolvedValueOnce(bytes.buffer);
+
+    const serialized = await db.serializeAsync();
+    await db.closeAsync();
+
+    expect(serialized).toBeInstanceOf(Uint8Array);
+    expect(Array.from(serialized)).toEqual([1, 2, 3]);
+  });
+
+  it('serializeSync turns an ArrayBuffer from the native database into a Uint8Array', () => {
+    const db = openDatabaseSync(':memory:');
+    const bytes = new Uint8Array([4, 5]);
+    jest.spyOn(db.nativeDatabase, 'serializeSync').mockReturnValueOnce(bytes.buffer);
+
+    const serialized = db.serializeSync();
+    db.closeSync();
+
+    expect(serialized).toBeInstanceOf(Uint8Array);
+    expect(Array.from(serialized)).toEqual([4, 5]);
+  });
+
+  it('serializeSync passes a Uint8Array from the native database through', () => {
+    const db = openDatabaseSync(':memory:');
+    const bytes = new Uint8Array([6]);
+    jest.spyOn(db.nativeDatabase, 'serializeSync').mockReturnValueOnce(bytes);
+
+    const serialized = db.serializeSync();
+    db.closeSync();
+
+    expect(serialized).toBe(bytes);
+  });
+});

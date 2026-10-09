@@ -1,5 +1,22 @@
 import ExpoModulesJSI
+import Foundation
 import Testing
+
+/// Carries a single answer out of a host function back to the test body. Written on the runtime's
+/// JavaScript thread and read after the `await()` that triggered the write has resumed, so the two
+/// accesses are already ordered.
+private final class ThreadFlag: @unchecked Sendable {
+  var value: Bool?
+}
+
+/// A `JavaScriptEncodable` whose `encode` always throws, for exercising the encodable `resolve`'s
+/// encode-failure path.
+private struct FailingEncodable: JavaScriptEncodable {
+  struct EncodingError: Error {}
+  static func encode(_ value: FailingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    throw EncodingError()
+  }
+}
 
 @Suite
 @JavaScriptActor
@@ -10,6 +27,62 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
 
     #expect(promise.isDeferred == true)
+  }
+
+  @Test
+  func `deferred promises from separate runtimes settle independently`() async throws {
+    let first = JavaScriptRuntime()
+    let second = JavaScriptRuntime()
+    let firstPromise = try JavaScriptPromise(first)
+    let secondPromise = try JavaScriptPromise(second)
+    firstPromise.resolve(1.0)
+    secondPromise.resolve(2.0)
+    #expect(try await firstPromise.await().getDouble() == 1.0)
+    #expect(try await secondPromise.await().getDouble() == 2.0)
+  }
+
+  @Test
+  func `creating many deferred promises reuses one runtime-level helper`() throws {
+    let runtime = JavaScriptRuntime()
+    for _ in 0..<1_000 {
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(42.0)
+    }
+    // The only object the wrapper may leave on `globalThis` is the long-lived-objects anchor; a
+    // per-promise helper leaking into the global scope would show up as extra own properties.
+    let ownGlobals = try runtime.eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    let freshGlobals = try JavaScriptRuntime().eval("Object.getOwnPropertyNames(globalThis).length").getInt()
+    #expect(ownGlobals - freshGlobals <= 1)
+  }
+
+  @Test
+  func `creating and settling a deferred promise installs no then handlers until awaited`() async throws {
+    let runtime = JavaScriptRuntime()
+    try runtime.eval(
+      """
+      globalThis.thenCalls = 0;
+      const originalThen = Promise.prototype.then;
+      Promise.prototype.then = function (...args) {
+        globalThis.thenCalls++;
+        return originalThen.apply(this, args);
+      };
+      """
+    )
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(42.0)
+    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 0)
+    #expect(try await promise.await().getInt() == 42)
+    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 1)
+  }
+
+  @Test
+  func `awaiting a deferred promise that settled long before delivers the value`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve("late")
+    // Let the settle run and the engine drain its reactions before anything is awaited.
+    try runtime.eval("for (let i = 0; i < 10; i++) {}")
+    #expect(try await promise.await().getString() == "late")
   }
 
   @Test
@@ -31,6 +104,45 @@ struct JavaScriptPromiseTests {
 
     let result = try await promise.await()
     #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `resolve with a both-conforming value keeps its representable type`() async throws {
+    // A 64-bit integer conforms to both `JavaScriptRepresentable` and `JavaScriptEncodable`. The
+    // encodable overload is disfavored, so it resolves through the representable path and stays a JS
+    // `number`, rather than encoding to a `bigint` (`Int64.encode`) or rejecting for exceeding the
+    // safe-integer range (`Int.encode`).
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(Int64(42))
+    let result = try await promise.await()
+    #expect(result.isNumber())
+    #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `resolve promise with an encodable-only value`() async throws {
+    // `Date` is `JavaScriptEncodable` but not `JavaScriptRepresentable`, so it can only settle the
+    // promise through the encodable overload. It encodes to a JS `Date`.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    let date = Date(timeIntervalSince1970: 1000)
+    promise.resolve(date)
+    let result = try await promise.await()
+    let milliseconds = try result.getObject().callFunction("getTime").asDouble()
+    #expect(milliseconds == 1_000_000)
+  }
+
+  @Test
+  func `resolve rejects the promise when encoding throws`() async throws {
+    // The encodable `resolve` encodes on the JavaScript thread; if that throws, the promise must
+    // reject with the thrown error rather than fulfill.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(FailingEncodable())
+    await #expect(throws: Error.self) {
+      try await promise.await()
+    }
   }
 
   @Test
@@ -101,7 +213,8 @@ struct JavaScriptPromiseTests {
       const promise = Promise.resolve(42);
       promise.then = undefined;
       promise;
-      """)
+      """
+    )
 
     #expect(throws: Error.self) {
       _ = try promiseValue.getPromise()
@@ -274,7 +387,7 @@ struct JavaScriptPromiseTests {
 
     // Resolve from a task
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.resolve(JavaScriptValue(runtime, 99))
     }
 
@@ -292,13 +405,42 @@ struct JavaScriptPromiseTests {
     // Reject after the await has already suspended on the pending promise. This must throw, not
     // resume the awaiting caller with the rejection value as if it were fulfilled.
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.reject(TestError())
     }
 
     await #expect(throws: Error.self) {
       try await promise.await()
     }
+  }
+
+  @Test
+  func `awaiting off the JavaScript thread installs the then callbacks on it`() async throws {
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let installedOnJavaScriptThread = ThreadFlag()
+
+    let promise = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      // A thenable whose `then` records where the engine called it from, then fulfills right away
+      // so the `await()` below completes and the recorded answer can be read.
+      let thenable = runtime.createObject()
+      let then = runtime.createFunction("then") { _, arguments in
+        installedOnJavaScriptThread.value = runtime.isOnJavaScriptThread()
+        return try arguments[0].getFunction().call(arguments: 42)
+      }
+      thenable.setProperty("then", value: then.asValue())
+      return UncheckedSendable(value: try JavaScriptPromise(runtime, thenable))
+    }
+
+    // The test body runs on the cooperative pool, never on the runtime's dedicated thread, so this
+    // `await()` is the off-thread case. Installing the callbacks calls `then`, which is JavaScript,
+    // and JavaScript for this runtime may only run on the thread that owns it.
+    #expect(testRuntime.runtime.isOnJavaScriptThread() == false)
+
+    let result = try await promise.value.await()
+
+    #expect(result.getInt() == 42)
+    #expect(installedOnJavaScriptThread.value == true)
   }
 
   @Test

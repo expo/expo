@@ -64,6 +64,8 @@ export default function remarkLinkRewrite(options) {
           newUrl = newUrl.replace(ignoredIndex, '');
         }
 
+        newUrl = newUrl.replace(/(^|\/)index(#|$)/, '$1$2');
+
         // force forward slash on non-posix systems
         node.url = `/${newUrl.replace(/\\/g, '/')}`;
       }

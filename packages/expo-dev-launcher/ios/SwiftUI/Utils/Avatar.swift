@@ -3,7 +3,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-// [alan] Gravatar urls do not work with AsyncImage. We need to download the image ourseleves
+// [alan] Gravatar urls do not work with AsyncImage. We need to download the image ourselves
 struct Avatar<Content: View, Placeholder: View>: View {
   let url: URL
   let content: (Image) -> Content

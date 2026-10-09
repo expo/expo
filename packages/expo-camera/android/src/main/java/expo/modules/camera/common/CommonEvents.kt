@@ -26,3 +26,10 @@ class PictureSavedEvent(
   @Field val id: Int,
   @Field val data: Bundle
 ) : Record
+
+@OptimizedRecord
+class RecordingProgressEvent(
+  @Field val duration: Double,
+  @Field val fileSize: Long,
+  @Field val maxDuration: Double?
+) : Record

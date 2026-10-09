@@ -104,6 +104,15 @@ if (oxfmtChangedFiles !== null && oxfmtChangedFiles.length === 0) {
   oxfmtResult = { status: 0, output: 'No formattable files changed.' };
 } else if (oxfmtChangedFiles !== null) {
   oxfmtResult = await runAsync('oxfmt', ['--check', ...oxfmtChangedFiles]);
+  if (
+    oxfmtResult.status !== 0 &&
+    oxfmtResult.output.includes('Expected at least one target file')
+  ) {
+    oxfmtResult = {
+      status: 0,
+      output: 'No formattable files changed (all changed files are in ignorePatterns).',
+    };
+  }
 } else {
   const mdxFiles = globSync('**/*.mdx', { cwd: process.cwd() });
   oxfmtResult = await runAsync('oxfmt', ['--check', process.cwd(), ...mdxFiles]);

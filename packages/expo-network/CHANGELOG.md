@@ -1,19 +1,41 @@
 # Changelog
 
-## Unpublished
+## 58.0.3
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
 
-- [macOS] Add support for the macOS platform. ([#46535](https://github.com/expo/expo/pull/46535) by [@tsapeta](https://github.com/tsapeta))
+## 58.0.2
 
-### 🐛 Bug fixes
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
 
 ### 💡 Others
 
 - [Android] Remove legacy `fetchNetworkState` path. ([#47007](https://github.com/expo/expo/pull/47007) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Use `LinkProperties` in `getIpAddressAsync`. ([#47028](https://github.com/expo/expo/pull/47028) by [@Wenszel](https://github.com/Wenszel))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 - 2026-06-05
+
+### 🎉 New features
+
+- [macOS] Add support for the macOS platform. ([#46535](https://github.com/expo/expo/pull/46535) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.4 — 2026-05-19
 

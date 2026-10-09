@@ -1,11 +1,24 @@
+import { events, SerializedError } from '2g';
 import { parse } from 'node:url';
 import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
-import { event } from '../hmrEvents';
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap, type SocketId } from './utils/createSocketMap';
 import { parseRawMessage, serializeMessage } from './utils/socketMessages';
+
+declare module '2g' {
+  interface EventRegistry {
+    'command_socket:connected': {
+      clientId: string;
+      host?: string;
+    };
+    'command_socket:disconnected': {
+      clientId: string;
+      error?: SerializedError;
+    };
+  }
+}
 
 type MessageSocketOptions = {
   logger: {
@@ -15,6 +28,8 @@ type MessageSocketOptions = {
 };
 
 const CLIENT_BROADCAST_ALLOWED_METHODS = new Set(['reload', 'devMenu']);
+
+const event = events.debug('command_socket');
 
 /**
  * Client "command" server that dispatches basic commands to connected clients.
@@ -39,9 +54,22 @@ export function createMessagesSocket(options: MessageSocketOptions) {
       });
     }
 
+    event('connected', {
+      clientId: client.id,
+      host: req.headers.host,
+    });
+
     // Register disconnect handlers
-    socket.on('close', client.terminate);
-    socket.on('error', client.terminate);
+    socket.on('close', () => {
+      client.terminate();
+      event('disconnected', { clientId: client.id });
+    });
+
+    socket.on('error', (error) => {
+      client.terminate();
+      event('disconnected', { clientId: client.id, error: event.error(error as Error) });
+    });
+
     // Register message handler
     socket.on(
       'message',
@@ -61,6 +89,7 @@ export function createMessagesSocket(options: MessageSocketOptions) {
 
       broadcast(null, serializeMessage({ method, params }));
     },
+    getClientCount: () => clients.map.size,
   };
 }
 
@@ -97,7 +126,6 @@ function createClientMessageHandler(
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
       if (!isTrustedClient || !CLIENT_BROADCAST_ALLOWED_METHODS.has(message.method)) {
-        event('untrusted_broadcast_refused', { method: message.method });
         return;
       }
       return broadcast(null, data.toString());

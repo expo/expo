@@ -1,19 +1,102 @@
 # Changelog
 
-## Unpublished
+## 58.0.10
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- [iOS] Speed up binding parameters and reading rows by converting them through typed values instead of `Any`. Reading rows is up to about 3.3 times faster and inserts up to about 2.8 times faster in the native benchmarks.
+
+  A `bigint` bind parameter now binds as a 64-bit integer instead of `NULL`. It still reads back as a number, with the same precision loss above 2^53 as other integer columns.
+
+  `onDatabaseChange` no longer drops the event for a row id above 2^53.
+
+  ([#50894](https://github.com/expo/expo/pull/50894) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Android][iOS] Fixed database closing failure with FTS ([#38168](https://github.com/expo/expo/issues/38168)). ([#50121](https://github.com/expo/expo/pull/50121) by [@savv](https://github.com/savv))
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.7
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.6 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-23
 
 ### 🎉 New features
 
+- [Android][iOS][macOS][tvOS] Add `interruptSync()` to cancel running operations on a database connection. ([#50123](https://github.com/expo/expo/pull/50123) by [@savv](https://github.com/savv))
+
+## 58.0.4 — 2026-09-21
+
+### 💡 Others
+
+- [iOS] Migrate the shared objects and the module's constants, event and lifecycle to the Expo Modules API 2.0 macros. ([#50278](https://github.com/expo/expo/pull/50278) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add native benchmarks for the statement API, run with `et native-unit-tests -p ios --packages expo-sqlite --benchmarks`. ([#50303](https://github.com/expo/expo/pull/50303) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.3 — 2026-09-15
+
+### 🎉 New features
+
+- Ship an agent skill for SQLite queries, migrations, storage, and platform configuration in the npm package. ([#49867](https://github.com/expo/expo/pull/49867) by [@Kudo](https://github.com/Kudo))
+
+## 58.0.2 — 2026-09-14
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Built the vendored SQLite with `SQLITE_ENABLE_API_ARMOR` so misuse returns `SQLITE_MISUSE` instead of crashing. ([#49068](https://github.com/expo/expo/pull/49068) by [@kudo](https://github.com/kudo))
+
+## 58.0.0 — 2026-09-10
+
+### 🛠 Breaking changes
+
+- Removed libSQL support. `syncLibSQL()` and the `libSQLOptions` open option are gone, and the `useLibSQL` config plugin property is deprecated: it warns during prebuild and no longer has any effect. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
-- Fixed a fatal JNI crash on Android when using `useLibSQL: true`, caused by the libSQL session bindings still declaring `byte[]` signatures after [#42638](https://github.com/expo/expo/pull/42638) switched Kotlin and the default native bindings to `ByteBuffer`. ([#46651](https://github.com/expo/expo/pull/46651) by [@zoontek](https://github.com/zoontek))
+- [Android][iOS] Fix `deleteDatabaseAsync` and `deleteDatabaseSync` leaving `-journal`, `-wal` and `-shm` sidecar files behind. ([#49125](https://github.com/expo/expo/pull/49125) by [@sbaiahmed1](https://github.com/sbaiahmed1))
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
+- Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
+- Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
+- Fixed reading a prepared statement result after the same statement ran again returning the later run's rows instead of throwing. Also guarded `step`, `getAll`, `reset` and `finalize` with the same per-statement lock that `run` takes. ([#49796](https://github.com/expo/expo/pull/49796) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
 - Changed native implementation to use the unified `ArrayBuffer` type. ([#47168](https://github.com/expo/expo/pull/47168) by [@barthap](https://github.com/barthap))
+- Build the devtools plugin web UI from the monorepo workspace instead of a standalone project. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
+- Updated SQLite to 3.53.3 and SQLCipher to 4.17.0 on all platforms, including the web WebAssembly build. ([#48544](https://github.com/expo/expo/pull/48544) by [@kudo](https://github.com/kudo))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Fixed a fatal JNI crash on Android when using `useLibSQL: true`, caused by the libSQL session bindings still declaring `byte[]` signatures after [#42638](https://github.com/expo/expo/pull/42638) switched Kotlin and the default native bindings to `ByteBuffer`. ([#46651](https://github.com/expo/expo/pull/46651) by [@zoontek](https://github.com/zoontek)) ([#42638](https://github.com/expo/expo/pull/42638), [#46651](https://github.com/expo/expo/pull/46651) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.4 — 2026-05-21
 

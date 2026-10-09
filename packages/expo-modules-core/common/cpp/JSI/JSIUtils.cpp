@@ -14,7 +14,7 @@ jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstruc
   source << "(function " << name << "(...args) { return this." << nativeConstructorKey << "(...args); })";
   std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(source.str());
 
-  // Evaluate the code and obtain returned value (the constructor function).
+  // Evaluate the code and obtain the returned value (the constructor function).
   jsi::Object klass = runtime.evaluateJavaScript(sourceBuffer, "").asObject(runtime);
 
   // Set the native constructor in the prototype.

@@ -25,6 +25,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+  var onRelease: (() -> Void)?
 
   var isLooping = false {
     didSet {
@@ -74,7 +75,10 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   var currentOffsetFromLive: Double? {
-    guard let currentDate = ref.currentItem?.currentDate() else {
+    // currentDate() blocks until the item has loaded, and a still-loading item looks live too.
+    guard let item = ref.currentItem, item.status == .readyToPlay, item.duration.isIndefinite,
+      let currentDate = item.currentDate()
+    else {
       return nil
     }
     return Date().timeIntervalSince1970 - currentDate.timeIntervalSince1970
@@ -135,12 +139,12 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
-  func currentStatus() -> [String: Any?] {
+  func currentStatus(knownCurrentTime: Double? = nil) -> [String: Any?] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
     let rate = isPlaying ? ref.rate : currentRate
     return [
       "id": id,
-      "currentTime": currentTime,
+      "currentTime": knownCurrentTime ?? currentTime,
       "playbackState": statusToString(status: ref.status),
       "timeControlStatus": timeControlStatusString(status: ref.timeControlStatus),
       "reasonForWaitingToPlay": reasonForWaitingToPlayString(status: ref.reasonForWaitingToPlay),
@@ -171,7 +175,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func updateStatus(with dict: [String: Any]) {
-    var arguments = currentStatus()
+    // Reading currentTime waits on the player's lock while a source swap pauses it.
+    var arguments = currentStatus(knownCurrentTime: dict["currentTime"] as? Double)
     arguments.merge(dict) { _, new in
       new
     }
@@ -266,7 +271,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
-  func replaceCurrentSource(source: AudioSource) {
+  func replaceCurrentSource(source: AudioSource?) {
     self.source = source
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
@@ -510,6 +515,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   public override func sharedObjectWillRelease() {
+    onRelease?()
+    onRelease = nil
     ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
 

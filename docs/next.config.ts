@@ -15,14 +15,17 @@ import semver from 'semver';
 
 import packageJson from '~/package.json';
 
+import remarkApiSectionData from './mdx-plugins/remark-api-section-data.js';
 import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
+import remarkImageSize from './mdx-plugins/remark-image-size.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
 import remarkSDKCompatibility from './mdx-plugins/remark-sdk-compatibility.js';
 import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
+import createUrlRecoveryIndex from './scripts/create-url-recovery-index.js';
 
 const packageJsonObject: Record<string, unknown> = packageJson;
 const betaVersion =
@@ -46,7 +49,7 @@ const removeConsoleConfig =
 const nextConfig: NextConfig = {
   outputFileTracingRoot: join(__dirname),
   transpilePackages: [
-    '@expo/*',
+    '@expo/styleguide',
     '@radix-ui/react-dropdown-menu',
     '@radix-ui/react-select',
     'framer-motion',
@@ -56,8 +59,9 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: 'bottom-right',
   },
+  agentRules: false,
   experimental: {
-    optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
+    optimizePackageImports: ['cmdk', 'framer-motion', 'prismjs'],
     parallelServerCompiles: true,
     parallelServerBuildTraces: true,
     esmExternals: true,
@@ -84,25 +88,6 @@ const nextConfig: NextConfig = {
           join(__dirname, 'empty-polyfill.js')
         )
       );
-
-      // APISection pulls versioned API reference data (public/static/data/<version>/*.json) through a
-      // dynamic `require.context`, so webpack otherwise bundles every SDK version into a single chunk.
-      // That chunk exceeds Cloudflare Pages' 25 MiB per-file limit once enough versions exist.
-      const splitChunks = config.optimization?.splitChunks;
-      if (splitChunks && typeof splitChunks === 'object') {
-        splitChunks.cacheGroups = {
-          ...splitChunks.cacheGroups,
-          apiData: {
-            test: /[/\\]public[/\\]static[/\\]data[/\\]/,
-            name(module: { identifier: () => string }) {
-              const match = module.identifier().match(/static[/\\]data[/\\]([^/\\]+)[/\\]/);
-              return `api-data-${match ? match[1] : 'misc'}`;
-            },
-            chunks: 'all',
-            enforce: true,
-          },
-        };
-      }
     }
 
     // Add support for MDX with our custom loader
@@ -124,7 +109,9 @@ const nextConfig: NextConfig = {
               remarkCodeTitle,
               remarkExportHeadings,
               remarkLinkRewrite,
+              remarkImageSize,
               remarkSDKCompatibility,
+              remarkApiSectionData,
               [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],
             ],
             rehypePlugins: [rehypeSlug],
@@ -222,6 +209,12 @@ const nextConfig: NextConfig = {
       modificationDates,
     });
     event(`Generated sitemap with ${sitemapEntries.length} entries`);
+
+    createUrlRecoveryIndex({
+      urls: sitemapEntries,
+      pagesDirectory: pagesDir,
+      output: join(outDir, '_url-recovery.json'),
+    });
 
     return pathMap;
   },

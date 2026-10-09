@@ -77,7 +77,7 @@ function findDuplicatedSourceIndex(
     if (isDescendant(source, existingSource, projectRoot)) {
       return [index, shouldSwapSource];
     }
-    // If the new source is ancestor of existing source, replace swap the existing source with the new source
+    // If the new source is ancestor of existing source, swap the existing source with the new source
     if (isDescendant(existingSource, source, projectRoot)) {
       shouldSwapSource = true;
       return [index, shouldSwapSource];

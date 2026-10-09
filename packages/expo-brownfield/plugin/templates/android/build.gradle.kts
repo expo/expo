@@ -13,7 +13,7 @@ react { autolinkLibrariesWithApp() }
 
 android {
   namespace = "${{packageId}}"
-  compileSdk = 36
+  compileSdk = rootProject.extra["compileSdkVersion"] as Int
 
   buildFeatures { buildConfig = true }
 

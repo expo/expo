@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import { normalizeCssAssets, type AssetInfo } from 'expo-server/private';
+
 // See: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/packages/next-urql/src/htmlescape.ts#L10
 // License: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/LICENSE
 
@@ -113,6 +115,67 @@ export function getLoaderDataScriptContents(data: Record<string, unknown>): stri
  */
 export function createLoaderDataScriptAsString(data: Record<string, unknown>): string {
   return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
+}
+
+export function createExternalCssLinkAsString({
+  href,
+  media,
+}: {
+  href: string;
+  media?: string;
+}): string {
+  let link = `<link rel="stylesheet" href="${escapeHtmlAttribute(href)}"`;
+  if (media) {
+    link += ` media="${escapeHtmlAttribute(media)}"`;
+  }
+  return link + '>';
+}
+
+/**
+ * Injects favicon, hydration flag, and CSS (in that order) before `</head>`, and deferred scripts
+ * before `</body>`.
+ */
+export function injectAssetsIntoHtml(
+  html: string,
+  { assets, hydrate }: { assets?: AssetInfo; hydrate?: boolean }
+): string {
+  if (assets?.favicon) {
+    html = html.replace('</head>', `${createFaviconAsString(assets.favicon)}</head>`);
+  }
+
+  if (hydrate) {
+    html = html.replace('</head>', `${getHydrationFlagScriptAsString()}</head>`);
+  }
+
+  if (assets) {
+    const styleString = normalizeCssAssets(assets)
+      .map((entry) => {
+        switch (entry.type) {
+          case 'css':
+            return createInjectedCssAsString([entry.href]);
+          case 'inline': {
+            const hmrAttribute =
+              entry.hmrId === undefined
+                ? ''
+                : ` data-expo-css-hmr="${escapeHtmlAttribute(entry.hmrId)}"`;
+            return `<style${hmrAttribute}>${entry.source}\n</style>`;
+          }
+          case 'external':
+            return createExternalCssLinkAsString(entry);
+        }
+      })
+      .join('');
+    if (styleString) {
+      html = html.replace('</head>', `${styleString}</head>`);
+    }
+
+    const scripts = assets.js.map((src) => createInjectedScriptsAsString([src])).join('');
+    if (scripts) {
+      html = html.replace('</body>', `${scripts}\n</body>`);
+    }
+  }
+
+  return html;
 }
 
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;

@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI BadgedBox matches the official Jetpack Compose [`BadgedBox`](https://developer.android.com/develop/ui/compose/components/badges) API. It overlays a badge on top of content such as an icon.
@@ -28,8 +29,20 @@ Expo UI BadgedBox matches the official Jetpack Compose [`BadgedBox`](https://dev
 
 ### Icon with badge count
 
-```tsx IconWithBadge.tsx
-import { Host, Badge, BadgedBox, Icon, Text } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="IconWithBadge.tsx"
+  src="/static/images/expo-ui/examples/badgedbox-icon-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/badgedbox-icon-android-dark.webp"
+  alt="A mail icon with a red badge showing the count 5 on its top right corner">
+
+```tsx
+import {
+  Host,
+  Badge,
+  BadgedBox,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 // Replace with your own vector drawable asset
 const mailIcon = require('./assets/mail.xml');
@@ -50,11 +63,27 @@ export default function IconWithBadge() {
 }
 ```
 
+</ComponentExample>
+
 ### Interactive counter
 
-```tsx InteractiveBadge.tsx
+<ComponentExample
+  title="InteractiveBadge.tsx"
+  src="/static/images/expo-ui/examples/badgedbox-interactive-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/badgedbox-interactive-android-dark.webp"
+  alt="A cart icon badged with the count 3 above an Add item button">
+
+```tsx
 import { useState } from 'react';
-import { Host, Badge, BadgedBox, Icon, Button, Text, Column } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Badge,
+  BadgedBox,
+  Icon,
+  Button,
+  Text,
+  Column,
+} from '@expo/ui/jetpack-compose';
 
 // Replace with your own vector drawable asset
 const cartIcon = require('./assets/cart.xml');
@@ -84,10 +113,15 @@ export default function InteractiveBadge() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { BadgedBox } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/badgedbox" apiName="BadgedBox" />
+<APISection
+  packageName="expo-ui/jetpack-compose/badgedbox"
+  apiName="BadgedBox"
+/>

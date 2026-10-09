@@ -41,7 +41,9 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     }
     return try capturingCppErrors {
       return JavaScriptValue(
-        runtime, expo.callFunction(runtime.pointee, pointee, arguments?.baseAddress, arguments?.count ?? 0))
+        runtime,
+        expo.callFunction(runtime.pointee, pointee, arguments?.baseAddress, arguments?.count ?? 0)
+      )
     }
   }
 
@@ -90,10 +92,10 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
   // MARK: - Conversions
 
   public func asValue() -> JavaScriptValue {
-    guard let jsiRuntime = runtime?.pointee else {
+    guard let runtime else {
       FatalError.runtimeLost()
     }
-    return JavaScriptValue(runtime, expo.valueFromFunction(jsiRuntime, pointee))
+    return JavaScriptValue(runtime, expo.valueFromFunction(runtime.pointee, pointee))
   }
 
   /// Returns the function as a `facebook.jsi.Value` instance.

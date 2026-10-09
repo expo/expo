@@ -1,16 +1,16 @@
 import { render } from '@testing-library/react-native';
 
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigation } from '../useNavigation';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
 });
 
-test('gets navigation prop from context', () => {
+test('gets navigation prop from context', async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -31,7 +31,7 @@ test('gets navigation prop from context', () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="foo" component={Test} />
@@ -40,7 +40,7 @@ test('gets navigation prop from context', () => {
   );
 });
 
-test("gets navigation's parent from context", () => {
+test("gets navigation's parent from context", async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -61,7 +61,7 @@ test("gets navigation's parent from context", () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="foo">
@@ -76,7 +76,7 @@ test("gets navigation's parent from context", () => {
   );
 });
 
-test("gets navigation's parent's parent from context", () => {
+test("gets navigation's parent's parent from context", async () => {
   expect.assertions(2);
 
   const TestNavigator = (props: any): any => {
@@ -99,7 +99,7 @@ test("gets navigation's parent's parent from context", () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <TestNavigator>
         <Screen name="foo">
@@ -120,7 +120,7 @@ test("gets navigation's parent's parent from context", () => {
   );
 });
 
-test('gets navigation from container from context', () => {
+test('throws when inside a container but outside any navigator', async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -134,14 +134,15 @@ test('gets navigation from container from context', () => {
   };
 
   const Test = () => {
-    const navigation = useNavigation();
-
-    expect(navigation.navigate).toBeDefined();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    expect(() => useNavigation()).toThrow(
+      "Couldn't find a navigation object. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
+    );
 
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer>
       <Test />
       <TestNavigator>
@@ -151,17 +152,17 @@ test('gets navigation from container from context', () => {
   );
 });
 
-test('throws if called outside a navigation context', () => {
+test('throws when outside the navigation container', async () => {
   expect.assertions(1);
 
   const Test = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     expect(() => useNavigation()).toThrow(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+      "Couldn't find a navigation object. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
     );
 
     return null;
   };
 
-  render(<Test />);
+  await render(<Test />);
 });

@@ -39,6 +39,15 @@ class AppLauncherWithDatabaseMock: AppLauncherWithDatabase {
   }
 }
 
+// Overrides only the update selection so ensureAllAssetsExist runs for real.
+class AppLauncherRealAssetsMock: AppLauncherWithDatabase {
+  static var updateToLaunch: Update?
+
+  override func launchableUpdate(selectionPolicy: SelectionPolicy, completion: @escaping AppLauncherUpdateCompletionBlock) {
+    completion(nil, AppLauncherRealAssetsMock.updateToLaunch)
+  }
+}
+
 @Suite("AppLauncherWithDatabase", .serialized)
 @MainActor
 class AppLauncherWithDatabaseTests {
@@ -100,6 +109,7 @@ class AppLauncherWithDatabaseTests {
       logger: UpdatesLogger()
     )
 
+    let beforeLaunch = Date(timeIntervalSince1970: floor(Date().timeIntervalSince1970 * 1000) / 1000)
     let success = await withCheckedContinuation { continuation in
       launcher.launchUpdate(withSelectionPolicy: SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: "1", config: config)) { error, success in
         continuation.resume(returning: success)
@@ -110,10 +120,155 @@ class AppLauncherWithDatabaseTests {
 
     db.databaseQueue.sync {
       let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config)
-      #expect(yesterday != sameUpdate?.lastAccessed)
-      // `lastAccessed` should have been bumped to roughly "now". Use a generous tolerance
-      // so the assertion doesn't flake on slow CI runners where `launchUpdate` takes longer.
-      #expect(abs(sameUpdate!.lastAccessed.timeIntervalSinceNow) < 60)
+      // `lastAccessed` should have been bumped from yesterday to launch time. Bounding from
+      // `beforeLaunch` keeps the assertion valid however long the launch takes on CI.
+      #expect(sameUpdate!.lastAccessed >= beforeLaunch)
+    }
+  }
+
+  // MARK: - missing launch asset
+
+  private func makeConfig() throws -> UpdatesConfig {
+    try UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://example.com",
+      UpdatesConfig.EXUpdatesConfigScopeKeyKey: "dummyScope",
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+      UpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: false,
+    ])
+  }
+
+  private func makeUpdate(config: UpdatesConfig, status: UpdateStatus = .StatusPending) -> Update {
+    Update(
+      manifest: ManifestFactory.manifest(forManifestJSON: [:]),
+      config: config,
+      database: db,
+      updateId: UUID(),
+      scopeKey: "dummyScope",
+      commitTime: Date(timeIntervalSince1970: 1608667851),
+      runtimeVersion: "1",
+      keep: true,
+      status: status,
+      isDevelopmentMode: false,
+      assetsFromManifest: nil,
+      url: URL(string: "https://example.com"),
+      requestHeaders: [:]
+    )
+  }
+
+  // resolves nil if the launcher never calls its completion within the timeout
+  private func launchOutcome(launcher: AppLauncherWithDatabase, config: UpdatesConfig) async -> (error: UpdatesError?, success: Bool)? {
+    final class Once: @unchecked Sendable {
+      private var done = false
+      private let lock = NSLock()
+      func run(_ block: () -> Void) {
+        lock.lock()
+        defer { lock.unlock() }
+        if !done {
+          done = true
+          block()
+        }
+      }
+    }
+
+    let once = Once()
+    return await withCheckedContinuation { continuation in
+      launcher.launchUpdate(withSelectionPolicy: SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: "1", config: config)) { error, success in
+        once.run { continuation.resume(returning: (error, success)) }
+      }
+      DispatchQueue.global().asyncAfter(deadline: .now() + 10.0) {
+        once.run { continuation.resume(returning: nil) }
+      }
+    }
+  }
+
+  @Test
+  func `fails with launch asset not found when the update has no assets`() async throws {
+    let config = try makeConfig()
+    let update = makeUpdate(config: config)
+
+    db.databaseQueue.sync {
+      try! db.addUpdate(update, config: config)
+      try! db.markUpdateFinished(update)
+    }
+
+    AppLauncherRealAssetsMock.updateToLaunch = update
+    let launcher = AppLauncherRealAssetsMock(
+      config: config,
+      database: db,
+      directory: testDatabaseDir,
+      completionQueue: DispatchQueue.global(qos: .default),
+      logger: UpdatesLogger()
+    )
+
+    let outcome = await launchOutcome(launcher: launcher, config: config)
+
+    #expect(outcome != nil, "the launcher never invoked its completion")
+    #expect(outcome?.success == false)
+    if case .appLauncherLaunchAssetNotFound = outcome?.error {
+    } else {
+      Issue.record("Expected appLauncherLaunchAssetNotFound but got \(String(describing: outcome?.error))")
+    }
+  }
+
+  @Test
+  func `fails with launch asset not found when the launch asset is not linked`() async throws {
+    let config = try makeConfig()
+    let update = makeUpdate(config: config)
+
+    let imageAsset = UpdateAsset(key: "image-1", type: "png")
+    imageAsset.isLaunchAsset = false
+    imageAsset.downloadTime = Date()
+    imageAsset.contentHash = "imagehash"
+    imageAsset.filename = "image-1.png"
+    try Data("fake image".utf8).write(to: testDatabaseDir.appendingPathComponent("image-1.png"))
+
+    db.databaseQueue.sync {
+      try! db.addUpdate(update, config: config)
+      try! db.addNewAssets([imageAsset], toUpdateWithId: update.updateId)
+      try! db.markUpdateFinished(update)
+    }
+
+    AppLauncherRealAssetsMock.updateToLaunch = update
+    let launcher = AppLauncherRealAssetsMock(
+      config: config,
+      database: db,
+      directory: testDatabaseDir,
+      completionQueue: DispatchQueue.global(qos: .default),
+      logger: UpdatesLogger()
+    )
+
+    let outcome = await launchOutcome(launcher: launcher, config: config)
+
+    #expect(outcome != nil, "the launcher never invoked its completion")
+    #expect(outcome?.success == false)
+    if case .appLauncherLaunchAssetNotFound = outcome?.error {
+    } else {
+      Issue.record("Expected appLauncherLaunchAssetNotFound but got \(String(describing: outcome?.error))")
+    }
+  }
+
+  @Test
+  func `fails with launch asset not found when the embedded bundle is missing`() async throws {
+    let config = try makeConfig()
+    // the test bundle contains no embedded bundle resource, so the lookup returns nil
+    let update = makeUpdate(config: config, status: .StatusEmbedded)
+
+    AppLauncherRealAssetsMock.updateToLaunch = update
+    let launcher = AppLauncherRealAssetsMock(
+      config: config,
+      database: db,
+      directory: testDatabaseDir,
+      completionQueue: DispatchQueue.global(qos: .default),
+      logger: UpdatesLogger()
+    )
+
+    let outcome = await launchOutcome(launcher: launcher, config: config)
+
+    #expect(outcome != nil, "the launcher never invoked its completion")
+    #expect(outcome?.success == false)
+    if case .appLauncherLaunchAssetNotFound = outcome?.error {
+    } else {
+      Issue.record("Expected appLauncherLaunchAssetNotFound but got \(String(describing: outcome?.error))")
     }
   }
 }

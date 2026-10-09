@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { GradleProps } from './resolveGradlePropsAsync';
 import type { Device } from '../../start/platforms/android/adb';
 import { DeviceABI, getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { debugEvent } from '../events';
+import type { GradleProps } from './resolveGradlePropsAsync';
 
 type OutputMetadataElement = {
   filters?: { filterType: string; value: string }[];
@@ -44,7 +44,10 @@ function resolveApkFromOutputMetadata(
         e?.filters?.some((f) => f.filterType === 'ABI' && f.value === cpu)
       );
       const outputFile = match?.outputFile;
-      if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
+      if (
+        typeof outputFile === 'string' &&
+        fs.existsSync(path.join(apkVariantDirectory, outputFile))
+      ) {
         debugEvent('android:apk_resolved_abi_split', { outputFile });
         return outputFile;
       }
@@ -54,7 +57,10 @@ function resolveApkFromOutputMetadata(
 
   if (elements.length === 1) {
     const outputFile = elements[0]?.outputFile;
-    if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
+    if (
+      typeof outputFile === 'string' &&
+      fs.existsSync(path.join(apkVariantDirectory, outputFile))
+    ) {
       debugEvent('android:apk_resolved', { outputFile });
       return outputFile;
     }

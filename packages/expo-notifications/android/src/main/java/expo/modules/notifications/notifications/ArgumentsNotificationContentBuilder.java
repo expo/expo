@@ -29,6 +29,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   private static final String AUTO_DISMISS_KEY = "autoDismiss";
   private static final String CATEGORY_IDENTIFIER_KEY = "categoryIdentifier";
   private static final String STICKY_KEY = "sticky";
+  private static final String THREAD_IDENTIFIER_KEY = "threadIdentifier";
 
   private SoundResolver mSoundResolver;
 
@@ -46,7 +47,8 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
       .setColor(getColor(payload))
       .setAutoDismiss(getAutoDismiss(payload))
       .setCategoryId(getCategoryId(payload))
-      .setSticky(getSticky(payload));
+      .setSticky(getSticky(payload))
+      .setGroup(getGroup(payload));
 
     if (shouldPlayDefaultSound(payload)) {
       useDefaultSound();
@@ -70,7 +72,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
     try {
       return payload.containsKey(COLOR_KEY) ? Color.parseColor(payload.getString(COLOR_KEY)) : null;
     } catch (IllegalArgumentException e) {
-      Log.e("expo-notifications", "Could not have parsed color passed in notification.");
+      Log.e("expo-notifications", "Could not parse color passed in notification.");
       return null;
     }
   }
@@ -145,5 +147,10 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
   protected boolean getSticky(ReadableArguments payload) {
     // TODO: the default value should be determined by NotificationContent.Builder
     return payload.getBoolean(STICKY_KEY, false);
+  }
+
+  @Nullable
+  protected String getGroup(ReadableArguments payload) {
+    return payload.getString(THREAD_IDENTIFIER_KEY, null);
   }
 }

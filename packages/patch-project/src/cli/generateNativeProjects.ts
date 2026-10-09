@@ -49,7 +49,7 @@ export async function generateNativeProjectsAsync(
     exp,
   });
 
-  // Install CocoaPods is a must on ios because some changes are happening in the `pod install` stage.
+  // Installing CocoaPods is a must on ios because some changes are happening in the `pod install` stage.
   // That would minimize the diff between the native projects.
   if (options.platforms.includes('ios')) {
     const { installCocoaPodsAsync } = require(

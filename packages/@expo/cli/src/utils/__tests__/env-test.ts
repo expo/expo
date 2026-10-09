@@ -1,8 +1,43 @@
 import * as process from 'node:process';
 
-import { envIsWebcontainer } from '../env';
+import { env, envIsWebcontainer } from '../env';
 
 jest.mock('node:process', () => jest.requireActual('node:process'));
+
+describe('REACT_NATIVE_PACKAGER_HOSTNAME', () => {
+  beforeEach(() => {
+    delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
+  });
+
+  it('returns null when unset', () => {
+    expect(env.REACT_NATIVE_PACKAGER_HOSTNAME).toBe(null);
+  });
+
+  it('returns null when only whitespace', () => {
+    process.env.REACT_NATIVE_PACKAGER_HOSTNAME = ' \t ';
+    expect(env.REACT_NATIVE_PACKAGER_HOSTNAME).toBe(null);
+  });
+
+  it('trims the hostname', () => {
+    process.env.REACT_NATIVE_PACKAGER_HOSTNAME = '  foobar.dev  ';
+    expect(env.REACT_NATIVE_PACKAGER_HOSTNAME).toBe('foobar.dev');
+  });
+});
+
+describe('EXPO_NO_DEV_MENU', () => {
+  beforeEach(() => {
+    delete process.env.EXPO_NO_DEV_MENU;
+  });
+
+  it('returns false when unset', () => {
+    expect(env.EXPO_NO_DEV_MENU).toBe(false);
+  });
+
+  it('returns true when set', () => {
+    process.env.EXPO_NO_DEV_MENU = '1';
+    expect(env.EXPO_NO_DEV_MENU).toBe(true);
+  });
+});
 
 describe(envIsWebcontainer, () => {
   it('returns false without running in stackblitz', () => {

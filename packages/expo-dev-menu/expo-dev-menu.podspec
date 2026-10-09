@@ -109,13 +109,17 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.requires_app_host = false
     test_spec.source_files = 'ios/Tests/**/*'
-    test_spec.dependency 'Quick'
-    test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+    }
     test_spec.platforms = {
       :ios => '16.4'
+    }
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
     }
   end
 
@@ -127,8 +131,14 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React'
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+    }
     test_spec.platforms = {
       :ios => '16.4'
+    }
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
     }
   end
 

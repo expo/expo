@@ -79,11 +79,32 @@ public struct Exceptions {
   }
 
   /**
+   An exception to throw when a value does not match any case of a `@Union` enum. The synthesized
+   `decode` throws it when no case decodes the JavaScript value (`received` is the JS kind, such as
+   `number`). The synthesized `as(_:)` throws it when the union holds a different case (`received` is
+   that case's payload type).
+   */
+  public final class UnionCaseMismatch: GenericException<(unionName: String, received: String, expected: [String])> {
+    override public var reason: String {
+      "'\(param.unionName)' expected \(param.expected.joined(separator: " or ")), but received \(param.received)"
+    }
+  }
+
+  /**
    An exception to throw when there is no module implementing the `EXFileSystemInterface` interface.
    */
   public final class FileSystemModuleNotFound: Exception {
     override public var reason: String {
       "FileSystem module not found, make sure 'expo-file-system' is linked correctly"
+    }
+  }
+
+  /// An exception thrown when JavaScript calls `new` on a class whose native instance only the
+  /// native side can build. The class exposes no `@JS init` and no DSL `Constructor`, so there is
+  /// nothing to construct it with.
+  public final class ConstructorUnavailable: GenericException<String> {
+    override public var reason: String {
+      "'\(param)' cannot be constructed from JavaScript because its native instance is created by the module that owns it. Get an instance from that module's API instead of calling `new \(param)()`."
     }
   }
 

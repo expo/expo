@@ -1,0 +1,338 @@
+---
+title: Distribute an iOS app with TestFlight
+sidebar_title: TestFlight
+description: Learn how to get an iOS build onto testers' devices with TestFlight, and when to use internal versus external TestFlight testing.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { NoIcon } from '~/ui/components/DocIcons';
+import { FAQ } from '~/ui/components/FAQ';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+**TestFlight** is Apple's internal and beta app distribution service. After you create an iOS production build, your app can reach testers' devices through TestFlight before the app is released publicly on the App Store.
+
+There are two kinds of testing and the difference decides how quickly your build reaches your app users. **Internal testing** goes to your own App Store Connect team and is available as soon as the build finishes processing. **External testing** reaches anyone else. However, you have to add the build to a group in App Store Connect, and the group's first build must clear Apple's Beta App Review process.
+
+<Prerequisites>
+  <Requirement title="Paid Apple Developer account">
+    A paid Apple Developer account is required to submit apps to the Apple App Store. Sign up on the
+    [Apple Developer Portal](https://developer.apple.com/account/).
+  </Requirement>
+  <Requirement title="An app record in App Store Connect">
+    `eas submit` creates an app record automatically on App Store Connect when you submit your first
+    build. Create an app by clicking **Create app** in [App Store
+    Connect](https://appstoreconnect.apple.com/). Alternatively, use the [App Store Connect
+    API](https://developer.apple.com/documentation/appstoreconnectapi) to create an app record
+    programmatically or set `ascAppId` in your `submit` profile in **eas.json** to skip creating an
+    app record.
+  </Requirement>
+  <Requirement title="Production build">
+    TestFlight only accepts builds with `"distribution": "store"` set in **eas.json**, which is
+    default for an [EAS Build](/build/introduction/) `production` profile. See [Build a production
+    app](/submit/ios/#build-a-production-app) for instructions.
+  </Requirement>
+  <Requirement title="TestFlight app">
+    Testers need the [TestFlight app](https://apps.apple.com/us/app/testflight/id899247664)
+    installed on their iOS device to install and test your app.
+  </Requirement>
+</Prerequisites>
+
+## Quick start
+
+If you have an Apple Developer account and nothing else set up yet, you can create an app record on App Store Connect, build a production **.ipa**, and submit it to TestFlight with a single command:
+
+<Tabs>
+
+<Tab label="npx testflight">
+
+<Terminal
+  cmd={{
+    npm: ['$ npx testflight'],
+    yarn: ['$ yarn dlx testflight'],
+    pnpm: ['$ pnpm dlx testflight'],
+    bun: ['$ bunx testflight'],
+  }}
+/>
+
+The above command creates your credentials, runs a production build on EAS Build, and submits it for internal testing via TestFlight. It is a shorthand for building and submitting in one step with EAS CLI.
+
+</Tab>
+
+<Tab label="EAS CLI">
+
+<Terminal cmd={['$ eas build --platform ios --auto-submit']} />
+
+The [`--auto-submit`](/build/automate-submissions/) flag hands the finished build off to EAS Submit automatically. You can also build and submit as separate steps. If you already have a production build, a rebuild isn't necessary. Submit the existing build directly:
+
+<Terminal cmd={['$ eas submit --platform ios']} />
+
+</Tab>
+
+</Tabs>
+
+The rest of the guide covers internal and external testing in more detail.
+
+## Internal versus external testing
+
+Before you can publicly release your app on the Apple App Store, you can distribute it to testers through TestFlight in two ways: **Internal testing** and **External testing**. The difference is how quickly your build reaches your testers:
+
+| Purpose                 | Internal testing                     | External testing                                                                       |
+| ----------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
+| Who can test your app   | Users on your App Store Connect team | Anyone. Testers do not need an App Store Connect account.                              |
+| Maximum testers allowed | 100                                  | 10,000 per app                                                                         |
+| Beta App Review         | <NoIcon />                           | **Required** on the first build of every app version                                   |
+| How testers are invited | Email only                           | Email, CSV import, or a shareable public link                                          |
+| Beta app description    | <NoIcon />                           | **Required** for external testing. This is the description that appears in TestFlight. |
+| Feedback email          | <NoIcon />                           | **Required** for external testing. This is the email that appears in TestFlight.       |
+| Time to reach testers   | Immediately after processing         | After Beta App Review approves the build                                               |
+| Build expiry            | 90 days from upload                  | 90 days from upload                                                                    |
+| Devices per tester      | 30                                   | 30                                                                                     |
+
+> **warning** **Internal distribution is not internal testing**. Both of these terms sound identical. **EAS** [internal distribution](/build/internal-distribution/) produces an [ad hoc or enterprise-signed build](/build/internal-distribution/#overview-of-distribution-mechanisms), which is installed from a URL and are limited to registered unique device identifiers (UDIDs). TestFlight internal testing needs `"distribution": "store"` and goes through Apple.
+
+## Set up internal testing
+
+Internal testing goes to your own App Store Connect team and is available as soon as the build finishes processing.
+
+<Step label="1">
+
+### Build and submit
+
+To upload a build to App Store Connect for internal testing, ensure you have a production build created. After that, run the following command to submit it to TestFlight:
+
+<Terminal cmd={['$ eas submit --platform ios']} />
+
+</Step>
+
+<Step label="2">
+
+### Wait for processing
+
+Apple processes the build before it can be distributed. This usually takes 5 to 10 minutes, though there is no guaranteed time. After processing, Apple notifies you by email.
+
+After your app is processed, log in to [App Store Connect](https://appstoreconnect.apple.com/), select your app, and go to **TestFlight**. You should see the build listed under **iOS Builds**.
+
+<ContentSpotlight
+  alt="iOS Builds list in App Store Connect showing a processed build that is ready to submit"
+  src="/static/images/submit/testflight/01-ios-builds.webp"
+/>
+
+</Step>
+
+<Step label="3">
+
+### Create an internal testing group
+
+> **info** Skip this step if you already have an internal testing group. You can add testers to an existing group instead.
+
+In App Store Connect, go to **TestFlight** > click the plus (`+`) icon next to **Internal Testing** > enter the name of the **Internal Group** > click **Create**.
+
+<ContentSpotlight
+  alt="Create New Internal Group dialog in App Store Connect with a group name entered"
+  src="/static/images/submit/testflight/02-create-internal-group.webp"
+/>
+
+Then, click the plus (`+`) icon next to **Testers** to add testers to the group. You can add testers from your App Store Connect team by selecting their emails and clicking **Add**. Testers will receive an email invitation to test your app.
+
+<ContentSpotlight
+  alt="New internal testing group with the plus icon to add testers and no testers added yet"
+  src="/static/images/submit/testflight/03-internal-group-testers.webp"
+  className="max-w-[480px]"
+/>
+
+<ContentSpotlight
+  alt="Add Testers dialog listing App Store Connect team members available to add to the group"
+  src="/static/images/submit/testflight/04-add-testers.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="4">
+
+### Invite testers
+
+On the tester's device, tap the link in the invitation email. The app will appear in TestFlight, from where the tester can install it.
+
+</Step>
+
+> **info** **Tip**: You can also target internal groups directly from the EAS CLI if you have pre-existing internal testing groups. For example, the command `eas submit --platform ios --groups "QA Team" --what-to-test "New onboarding flow"` targets the internal testing group named "QA Team" and sets the "What to Test" description for the build.
+
+## Set up external testing
+
+External testing reaches people outside your App Store Connect team.
+
+> **warning** You must create an **internal** group before App Store Connect will let you create an **external** group.
+
+<Step label="1">
+
+### Create an external group
+
+In **App Store Connect** > **TestFlight** > click the plus (`+`) icon next to **External Testing** > enter the name of the **External Group** > click **Create**.
+
+<ContentSpotlight
+  alt="Create a New Group dialog for creating an external testing group in App Store Connect"
+  src="/static/images/submit/testflight/05-create-external-group.webp"
+/>
+
+</Step>
+
+<Step label="2">
+
+### Use an existing internal build
+
+You can use an existing internal build for external testing. Click **Add Builds** > under **Select a Build to Test**, select the build you want to use > click **Next**.
+
+<ContentSpotlight
+  alt="New external testing group showing the Add Builds and Invite Testers steps"
+  src="/static/images/submit/testflight/06-external-group-setup.webp"
+/>
+
+<ContentSpotlight
+  alt="Select a Build to Test dialog listing an uploaded build that is ready to submit"
+  src="/static/images/submit/testflight/07-select-build.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+### Fill in test information
+
+External testing requires a beta app description and a feedback email before Apple accepts the build for review. If your app has a login, enable **Sign-in Information** and provide a test account for Apple to use. Click **Next**.
+
+<ContentSpotlight
+  alt="Test Information form with a beta app description, feedback email, and contact information filled in"
+  src="/static/images/submit/testflight/08-test-information.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="4">
+
+### Submit for Beta App Review
+
+Provide the information requested under **What to Test** and click **Submit for Review**. Apple reviews the build and notifies you by email when it is approved.
+
+<ContentSpotlight
+  alt="What to Test step with the option to automatically notify testers before submitting for review"
+  src="/static/images/submit/testflight/09-what-to-test.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="5">
+
+### Invite testers
+
+Once approved, invite by email, import a CSV, or turn on a public link. A public link can be open to anyone or filtered by device and OS version.
+
+<ContentSpotlight
+  alt="External testing group with the option to create a public link and add testers"
+  src="/static/images/submit/testflight/10-public-link.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+## FAQs
+
+<FAQ>
+
+<Collapsible summary="Do I need a Mac to distribute an app with TestFlight?">
+
+No. Both `eas build` and `eas submit` run on macOS, Linux, and Windows. The build runs on EAS Build infrastructure and EAS Submit uploads the **.ipa** to App Store Connect for you.
+
+</Collapsible>
+
+<Collapsible summary="Do I need a new build to move from internal to external testing?">
+
+No. Add the build that is already in App Store Connect to an external group and submit it for Beta App Review. You only need a new build when the app itself changes.
+
+</Collapsible>
+
+<Collapsible summary="Why can't a teammate add a build to an external group?">
+
+Their App Store Connect role does not allow it. A **Developer** or **Marketing** role can manage internal testing but not external testing, which requires **Account Holder**, **Admin**, or **App Manager**.
+
+The same restriction applies to credentials. Only an **Account Holder** or **Admin** can create the App Store Connect API key that EAS Submit uses. See [Apple Developer Program roles and permissions](/app-signing/apple-developer-program-roles-and-permissions/) for the complete matrix.
+
+</Collapsible>
+
+<Collapsible summary="Does a TestFlight build get released on the App Store?">
+
+No. Releasing to the App Store is a separate submission that you start manually in App Store Connect. A build in TestFlight stays in TestFlight.
+
+Testing also does not stop when you release. If you do not expire a build before it goes live on the App Store, testers who already have an invitation can keep testing it. To stop them, go to **TestFlight** > select the build > **Expire Build**.
+
+</Collapsible>
+
+<Collapsible summary="Why is my build stuck on Missing Compliance?">
+
+App Store Connect is waiting for an answer to the export compliance question and cannot distribute the build to testers until you answer it. Instead of answering it on every upload, answer it once in your app config:
+
+```json app.json
+{
+  "ios": {
+    "config": {
+      "usesNonExemptEncryption": false
+    }
+  }
+}
+```
+
+Set [`usesNonExemptEncryption`](/versions/latest/config/app/#usesnonexemptencryption) to `false` only when your app uses no encryption beyond what Apple exempts, such as HTTPS through the operating system. The declaration also covers third-party libraries your app links against, and it applies to TestFlight builds, not only App Store releases.
+
+</Collapsible>
+
+<Collapsible summary="Can I add a build to a TestFlight group from the command line?">
+
+Yes, for internal groups. Pass `--groups` with the name of an existing internal group and use `--what-to-test` to set the test notes:
+
+<Terminal
+  cmd={['$ eas submit --platform ios --groups "QA Team" --what-to-test "New onboarding flow"']}
+/>
+
+`--groups` accepts **internal** group names only. To add a build to an external group, use EAS Workflows.
+
+</Collapsible>
+
+<Collapsible summary="Can I automate distributing a build to external groups?">
+
+Yes, with the pre-packaged [`testflight` job](/eas/workflows/pre-packaged-jobs/#testflight) in EAS Workflows. It adds a build to internal and external groups, sets the "What to Test" notes, and submits for Beta App Review:
+
+```yaml .eas/workflows/testflight.yml
+jobs:
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  testflight:
+    name: Distribute to TestFlight
+    type: testflight
+    needs: [build_ios]
+    params:
+      build_id: ${{ needs.build_ios.outputs.build_id }}
+      internal_groups: ['QA Team']
+      external_groups: ['Public Beta']
+      changelog: |
+        What's new in this release:
+        - New features
+        - Bug fixes
+```
+
+`submit_beta_review` defaults to `true` when `external_groups` is provided. Complete the TestFlight test information in App Store Connect before you run the job with external groups.
+
+</Collapsible>
+
+</FAQ>

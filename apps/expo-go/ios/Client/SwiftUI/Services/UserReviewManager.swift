@@ -3,6 +3,7 @@
 import Foundation
 import StoreKit
 import UIKit
+import ExpoModulesCore
 
 @MainActor
 final class UserReviewManager: ObservableObject {
@@ -82,9 +83,7 @@ final class UserReviewManager: ObservableObject {
   }
 
   private func requestStoreReview() {
-    if let scene = UIApplication.shared.connectedScenes
-      .compactMap({ $0 as? UIWindowScene })
-      .first(where: { $0.activationState == .foregroundActive }) {
+    if let scene = SceneGeometry.foregroundActiveScene() {
       SKStoreReviewController.requestReview(in: scene)
     } else {
       SKStoreReviewController.requestReview()

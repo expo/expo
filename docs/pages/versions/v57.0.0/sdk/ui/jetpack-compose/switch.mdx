@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Switch`](../universal/switch) — it renders the appropriate native component per platform.
@@ -30,7 +31,13 @@ Expo UI Switch matches the official Jetpack Compose [Switch](https://developer.a
 
 ### Toggle switch
 
-```tsx ToggleSwitchExample.tsx
+<ComponentExample
+  title="ToggleSwitchExample.tsx"
+  src="/static/images/expo-ui/examples/switch-toggle-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/switch-toggle-android-dark.webp"
+  alt="A Material 3 switch in its unchecked state">
+
+```tsx
 import { useState } from 'react';
 import { Host, Switch } from '@expo/ui/jetpack-compose';
 
@@ -45,9 +52,17 @@ export default function ToggleSwitchExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom colors
 
-```tsx CustomColorsExample.tsx
+<ComponentExample
+  title="CustomColorsExample.tsx"
+  src="/static/images/expo-ui/examples/switch-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/switch-colors-android-dark.webp"
+  alt="A checked switch with a purple thumb on a pale lavender track">
+
+```tsx
 import { useState } from 'react';
 import { Host, Switch } from '@expo/ui/jetpack-compose';
 
@@ -72,14 +87,27 @@ export default function CustomColorsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom thumb content
 
 Use `Switch.ThumbContent` to render a custom element inside the thumb. `Switch.DefaultIconSize` gives you the M3 default icon size so your content fits perfectly.
 
-```tsx ThumbContentExample.tsx
+<ComponentExample
+  title="ThumbContentExample.tsx"
+  src="/static/images/expo-ui/examples/switch-thumb-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/switch-thumb-android-dark.webp"
+  alt="A checked switch whose purple thumb contains a white circle, reading as a ring">
+
+```tsx
 import { useState } from 'react';
 import { Host, Switch, Box } from '@expo/ui/jetpack-compose';
-import { size, clip, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  size,
+  clip,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function ThumbContentExample() {
   const [checked, setChecked] = useState(false);
@@ -113,10 +141,15 @@ export default function ThumbContentExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Switch } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/switch" apiName="Switch" />
+<APISection
+  packageName="expo-ui/jetpack-compose/switch"
+  apiName="Switch"
+/>

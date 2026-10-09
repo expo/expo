@@ -10,6 +10,7 @@ import { addPlatformSupport } from './addPlatformSupport';
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
 import { ALL_FEATURES, filterFeaturesByPlatforms, resolveFeatures } from './features';
+import { assertSupportedLocalSdk, getLocalSdkMajorVersion } from './localSdk';
 import {
   PACKAGE_MANAGERS,
   installDependencies,
@@ -33,19 +34,29 @@ import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './tele
 import {
   buildAugmentedData,
   copyTemplateFiles,
-  downloadPackageAsync,
   handleSuffix,
   slugToAndroidPackage,
+  withTemplateAsync,
 } from './templateUtils';
 import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
 import { buildDefaultsWarning } from './utils/defaults';
 import { isInteractive } from './utils/env';
+import { UserError } from './utils/errors';
+import { withFileRollback, type WriteFile } from './utils/files';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 import { newStep } from './utils/ora';
 
+const PACKAGE_NAME = 'create-expo-module';
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
-const packageJson = require('../package.json');
+
+const getPackageJson = () => {
+  try {
+    return require('create-expo-module/package.json');
+  } catch {
+    return null;
+  }
+};
 
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -277,6 +288,9 @@ function resolveModuleName(rawName: string): string {
  * @param options An options object for `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
+  const sdkVersion = options.local ? getLocalSdkMajorVersion(CWD) : null;
+  assertSupportedLocalSdk(sdkVersion, options.ignoreCompatibilityCheck, true);
+
   const interactive = isInteractive();
   if (!interactive) {
     debug('Running in non-interactive mode');
@@ -285,7 +299,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   const slug = await askForPackageSlugAsync(target, options.local, options);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
-    : path.join(CWD, target || slug);
+    : path.resolve(CWD, target || slug);
 
   if (!targetDir) {
     return;
@@ -303,7 +317,6 @@ async function main(target: string | undefined, options: CommandOptions) {
     console.log();
   }
 
-  await fs.promises.mkdir(targetDir, { recursive: true });
   await confirmTargetDirAsync(targetDir, options);
 
   options.target = targetDir;
@@ -314,22 +327,30 @@ async function main(target: string | undefined, options: CommandOptions) {
   // Make one line break between prompts and progress logs
   console.log();
 
-  const packagePath = options.source
-    ? path.resolve(CWD, options.source)
-    : await downloadPackageAsync(targetDir, options.local);
+  await withTemplateAsync(
+    {
+      source: options.source ? path.resolve(CWD, options.source) : undefined,
+      isLocal: options.local,
+      sdkVersion,
+    },
+    async (templatePath) => {
+      await logEventAsync(eventCreateExpoModule(packageManager, options));
 
-  await logEventAsync(eventCreateExpoModule(packageManager, options));
-
-  await newStep('Creating the module from template files', async (step) => {
-    await createModuleFromTemplate(packagePath, targetDir, data);
-    step.succeed('Created the module from template files');
-  });
-  if (options.local && options.barrel) {
-    await newStep('Generating barrel file', async (step) => {
-      await generateBarrelFileAsync(targetDir, data as LocalSubstitutionData);
-      step.succeed('Generated barrel file (index.ts)');
-    });
-  } else if (!options.local && options.barrel) {
+      await withFileRollback(async (writeFile) => {
+        await newStep('Creating the module from template files', async (step) => {
+          await createModuleFromTemplate(templatePath, targetDir, data, writeFile);
+          step.succeed('Created the module from template files');
+        });
+        if (options.local && options.barrel) {
+          await newStep('Generating barrel file', async (step) => {
+            await generateBarrelFileAsync(targetDir, data as LocalSubstitutionData, writeFile);
+            step.succeed('Generated barrel file (index.ts)');
+          });
+        }
+      });
+    }
+  );
+  if (!options.local && options.barrel) {
     console.warn(
       chalk.yellow(
         'Warning: The --barrel flag only applies to local modules (--local). It will be ignored.'
@@ -350,11 +371,6 @@ async function main(target: string | undefined, options: CommandOptions) {
     });
   }
 
-  if (!options.source) {
-    // Files in the downloaded tarball are wrapped in `package` dir.
-    // We should remove it after all.
-    await fs.promises.rm(packagePath, { recursive: true, force: true });
-  }
   if (!options.local && data.type !== 'local') {
     if (!options.withReadme) {
       await fs.promises.rm(path.join(targetDir, 'README.md'), { force: true });
@@ -430,16 +446,23 @@ async function resolvePackageManagerAsync(
 async function createModuleFromTemplate(
   templatePath: string,
   targetPath: string,
-  data: SubstitutionData | LocalSubstitutionData
+  data: SubstitutionData | LocalSubstitutionData,
+  writeFile: WriteFile
 ) {
   const snippetsDir = path.join(templatePath, 'snippets');
   const augmentedData = await buildAugmentedData(snippetsDir, data);
-  await copyTemplateFiles(templatePath, targetPath, augmentedData, {
-    platforms: data.project.platforms,
-    platformsOnly: false,
-    moduleType: data.type,
-  });
-  await copyFileSnippets(snippetsDir, data.project.features, data, targetPath);
+  await copyTemplateFiles(
+    templatePath,
+    targetPath,
+    augmentedData,
+    {
+      platforms: data.project.platforms,
+      platformsOnly: false,
+      moduleType: data.type,
+    },
+    writeFile
+  );
+  await copyFileSnippets(snippetsDir, data.project.features, data, targetPath, writeFile);
 }
 
 async function createGitRepositoryAsync(targetDir: string) {
@@ -462,7 +485,8 @@ async function createGitRepositoryAsync(targetDir: string) {
   await spawnAsync('git', ['init'], { stdio: 'ignore', cwd: targetDir });
   await spawnAsync('git', ['add', '-A'], { stdio: 'ignore', cwd: targetDir });
 
-  const commitMsg = `Initial commit\n\nGenerated by ${packageJson.name} ${packageJson.version}.`;
+  const pkg = getPackageJson();
+  const commitMsg = `Initial commit\n\nGenerated by ${pkg?.name ?? PACKAGE_NAME} ${pkg?.version ?? '0.0.0'}.`;
   await spawnAsync('git', ['commit', '-m', commitMsg], {
     stdio: 'ignore',
     cwd: targetDir,
@@ -734,7 +758,10 @@ async function getSubstitutionDataFromOptions(
  * In non-interactive mode, automatically continues (assumes intent to overwrite).
  */
 async function confirmTargetDirAsync(targetDir: string, options: CommandOptions): Promise<void> {
-  const files = await fs.promises.readdir(targetDir);
+  const files = await fs.promises.readdir(targetDir).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === 'ENOENT') return [];
+    throw error;
+  });
   if (files.length === 0) {
     return;
   }
@@ -773,7 +800,8 @@ async function confirmTargetDirAsync(targetDir: string, options: CommandOptions)
  */
 async function generateBarrelFileAsync(
   targetPath: string,
-  data: LocalSubstitutionData
+  data: LocalSubstitutionData,
+  writeFile: WriteFile
 ): Promise<void> {
   const {
     moduleName,
@@ -812,7 +840,7 @@ async function generateBarrelFileAsync(
     );
   }
   lines.push(`export * from './src/${name}.types';`, '');
-  await fs.promises.writeFile(path.join(targetPath, 'index.ts'), lines.join('\n'), 'utf8');
+  await writeFile(path.join(targetPath, 'index.ts'), lines.join('\n'));
 }
 
 /**
@@ -875,9 +903,9 @@ const program = new Command();
 program.enablePositionalOptions();
 
 program
-  .name(packageJson.name)
-  .version(packageJson.version)
-  .description(packageJson.description)
+  .name(getPackageJson()?.name ?? PACKAGE_NAME)
+  .version(getPackageJson()?.version ?? '0.0.0')
+  .description(getPackageJson()?.description ?? '')
   .arguments('[path]')
   .option(
     '-s, --source <source_dir>',
@@ -921,6 +949,11 @@ program
       `Package manager to use. Available values: ${PACKAGE_MANAGERS.join(', ')}.`
     ).choices([...PACKAGE_MANAGERS])
   )
+  .option(
+    '--ignore-compatibility-check',
+    "Create a local module even if the project's Expo SDK is older than the template supports.",
+    false
+  )
   .action(main);
 
 program
@@ -942,6 +975,11 @@ program
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'
   )
+  .option(
+    '--ignore-compatibility-check',
+    "Add platforms to a local module even if the project's Expo SDK is older than the template supports.",
+    false
+  )
   .action(addPlatformSupport);
 
 program.hook('postAction', async () => {
@@ -951,5 +989,8 @@ program.hook('postAction', async () => {
 const isInProcessUnitTest =
   !!process.env.JEST_WORKER_ID && !process.argv[1]?.includes('create-expo-module');
 if (!isInProcessUnitTest) {
-  program.parse(process.argv);
+  program.parseAsync(process.argv).catch((error) => {
+    console.error(error instanceof UserError ? chalk.red(error.message) : error);
+    process.exit(1);
+  });
 }

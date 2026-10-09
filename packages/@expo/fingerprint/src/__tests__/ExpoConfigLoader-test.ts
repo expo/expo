@@ -9,6 +9,18 @@ import {
   type CapturedModule,
 } from '../ExpoConfigLoader';
 
+const minimatchConstructorSpy = jest.fn();
+jest.mock('minimatch', () => {
+  const actual = jest.requireActual('minimatch');
+  class SpyMinimatch extends actual.Minimatch {
+    constructor(...args: ConstructorParameters<typeof actual.Minimatch>) {
+      minimatchConstructorSpy(...args);
+      super(...args);
+    }
+  }
+  return { ...actual, Minimatch: SpyMinimatch };
+});
+
 describe('installModuleCaptureHook', () => {
   let tmpDir: string;
   let hook: ReturnType<typeof installModuleCaptureHook> | null = null;
@@ -45,6 +57,29 @@ describe('installModuleCaptureHook', () => {
     const captured = hook.getCapturedModules();
     expect(captured.some((m) => m.filename === tsFilename)).toBe(true);
     expect(captured.every((m) => !m.filename.endsWith('with-local-plugin.js'))).toBe(true);
+  });
+
+  it('should forward extra _compile arguments', () => {
+    const moduleProto = (
+      require('module') as { prototype: { _compile: (...args: unknown[]) => unknown } }
+    ).prototype;
+    const originalCompile = moduleProto._compile;
+    const compileSpy = jest.fn();
+    moduleProto._compile = compileSpy;
+    try {
+      hook = installModuleCaptureHook();
+      const filename = path.join(tmpDir, 'typed.ts');
+      moduleProto._compile.call({}, 'module.exports = 1;', filename, 'commonjs-typescript');
+      expect(compileSpy).toHaveBeenCalledWith(
+        'module.exports = 1;',
+        filename,
+        'commonjs-typescript'
+      );
+    } finally {
+      hook?.uninstall();
+      hook = null;
+      moduleProto._compile = originalCompile;
+    }
   });
 
   it('should stop capturing after uninstall', () => {
@@ -94,9 +129,7 @@ describe('resolveLoadedModuleSourcesAsync', () => {
     const ignoredFile = path.join(nodeModDir, 'index.js');
     fs.writeFileSync(ignoredFile, 'x');
 
-    const captured: CapturedModule[] = [
-      { id: ignoredFile, filename: ignoredFile, content: 'x' },
-    ];
+    const captured: CapturedModule[] = [{ id: ignoredFile, filename: ignoredFile, content: 'x' }];
     const sources = await resolveLoadedModuleSourcesAsync(captured, tmpDir, [
       '**/node_modules/chalk/**/*',
     ]);
@@ -115,5 +148,19 @@ describe('resolveLoadedModuleSourcesAsync', () => {
     const sources = await resolveLoadedModuleSourcesAsync(captured, tmpDir, []);
 
     expect(sources).toEqual([{ type: 'file', path: 'plugin.ts' }]);
+  });
+
+  it('should build Minimatch objects once per call, not once per module', async () => {
+    const ignoredPaths = Array.from({ length: 8 }, (_, i) => `**/ignored-${i}/**/*`);
+    const captured: CapturedModule[] = Array.from({ length: 20 }, (_, i) => {
+      const filePath = path.join(tmpDir, `plugin-${i}.ts`);
+      fs.writeFileSync(filePath, 'export default {};');
+      return { id: filePath, filename: filePath, content: 'x' };
+    });
+
+    minimatchConstructorSpy.mockClear();
+    await resolveLoadedModuleSourcesAsync(captured, tmpDir, ignoredPaths);
+
+    expect(minimatchConstructorSpy).toHaveBeenCalledTimes(ignoredPaths.length);
   });
 });

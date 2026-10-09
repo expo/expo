@@ -160,7 +160,7 @@ struct JavaScriptCodableArrayBufferTests {
   @Test
   func `decodes the raw bytes of a wide-element typed array buffer`() throws {
     // `ArrayBuffer` is byte-oriented; a `Float64Array.buffer` is 8 bytes per element, so `byteLength`
-    // must reflect bytes (16), not element count (2) — a element-vs-byte confusion would fail here.
+    // must reflect bytes (16), not element count (2) — an element-vs-byte confusion would fail here.
     let runtime = try runtime
     let decoded = try ArrayBuffer.decode(runtime.eval("new Float64Array([1.5, -2.5]).buffer"), in: runtime)
     #expect(decoded.byteLength == 16)

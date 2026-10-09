@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 enum SnappedEdge {
   case left, right
@@ -13,7 +14,6 @@ enum FABConstants {
   static let verticalPadding: CGFloat = 0
   static let dragThreshold: CGFloat = 10
   static let momentumFactor: CGFloat = 0.35
-  static let labelDismissDelay: TimeInterval = 10
   static let idleTimeout: UInt64 = 5_000_000_000
   static let imageSize: CGFloat = 26
 
@@ -24,11 +24,20 @@ enum FABConstants {
   )
 }
 
+struct FABPillHeightKey: PreferenceKey {
+  static let defaultValue: CGFloat = FABConstants.iconSize
+
+  static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+    value = nextValue()
+  }
+}
+
 struct FabPill: View {
   @Binding var isPressed: Bool
   @Binding var isDragging: Bool
   let showsPanel: Bool
-  @State private var showLabel = true
+  let canEdit: Bool
+  let onOpenSourceExplorer: () -> Void
   @State private var isIdle = false
   @State private var idleTask: Task<Void, Never>?
 
@@ -55,27 +64,25 @@ struct FabPill: View {
           startIdleTimer()
         }
 
-      if showLabel && !showsPanel {
-        Text("Tools")
-          .font(.system(size: 11, weight: .medium))
-          .foregroundStyle(.secondary)
-          .fixedSize()
-          .padding(.horizontal, 8)
-          .padding(.vertical, 3)
-          .background(.regularMaterial, in: Capsule())
-          .transition(.opacity.combined(with: .scale(scale: 0.8)))
-      }
-    }
-    .task {
-      // [Alan] This is poor practice but without it, the label is not included in the drag gesture
-      // and remains in it's original posistion.
-      try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * FABConstants.labelDismissDelay))
-      await MainActor.run {
-        withAnimation(.easeOut(duration: 0.3)) {
-          showLabel = false
+      if !showsPanel && canEdit {
+        Button(action: onOpenSourceExplorer) {
+          Label("Edit code", systemImage: "curlybraces")
+            .font(.system(size: 11, weight: .medium))
+            .foregroundStyle(.primary)
+            .fixedSize()
+            .padding(.horizontal, 9)
+            .padding(.vertical, 5)
+            .background(.regularMaterial, in: Capsule())
         }
+        .buttonStyle(.plain)
+        .accessibilityHint("Opens the source code editor")
       }
     }
+    .background(
+      GeometryReader { proxy in
+        Color.clear.preference(key: FABPillHeightKey.self, value: proxy.size.height)
+      }
+    )
   }
 
   @ViewBuilder
@@ -136,6 +143,7 @@ struct FabPill: View {
 /// This replaces reactive session observation with a read-once approach.
 struct FABConfiguration {
   let showPanel: Bool
+  let canEdit: Bool
   let snackName: String
   let snackDescription: String
   let isLesson: Bool
@@ -144,10 +152,22 @@ struct FABConfiguration {
 
 struct DevMenuFABView: View {
   let onOpenMenu: () -> Void
+  let onOpenSourceExplorer: () -> Void
   let onFrameChange: (CGRect) -> Void
 
   private let fabSize = CGSize(width: FABConstants.touchTargetSize, height: FABConstants.touchTargetSize + 50)
-  private let panelHeight: CGFloat = 140  // Height of the larger panel
+
+  /// Top-aligned in the touch frame, so its height grows downwards with the edit button.
+  private var drawnFrame: CGRect {
+    let ring = FABPlacement.ringOverhang
+    let width = FABConstants.iconSize + ring * 2
+    return CGRect(
+      x: (fabSize.width - width) / 2,
+      y: -ring,
+      width: width,
+      height: pillHeight + ring * 2
+    )
+  }
   private let panelVerticalOffset: CGFloat = 10  // How much panel is shifted down from gear
   private let screenEdgeMargin: CGFloat = 12
 
@@ -176,19 +196,27 @@ struct DevMenuFABView: View {
   @State private var position: CGPoint = .zero
   @State private var isDragging = false
   @State private var isDraggingPanel = false
+  @State private var pillHeight: CGFloat = FABConstants.iconSize
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
   @State private var screenWidth: CGFloat = 0
   @State private var screenHeight: CGFloat = 0
   @State private var currentEdge: SnappedEdge = .right
   @State private var isPositioned = false  // Hide until initial position is set
-  @State private var hasBeenEdited = false  // Updated via notification since sessionClient isn't observable
+  @ObservedObject private var editingSession = SnackEditingSession.shared
   @State private var isLessonCompleted = false  // Updated manually since UserDefaults isn't observable
+
+  private var hasBeenEdited: Bool { editingSession.hasBeenEdited }
 
   // Convenience accessors from config
   private var snackName: String { config?.snackName ?? "" }
   private var snackDescription: String { config?.snackDescription ?? "Learn to code on mobile" }
   private var isLesson: Bool { config?.isLesson ?? false }
+  private var canEdit: Bool { config?.canEdit ?? false }
+
+  private var panelHeight: CGFloat {
+    canEdit ? 176 : 140
+  }
 
   /// Whether the panel is visible (for lessons and lesson-like snacks)
   private var showsPanel: Bool { config?.showPanel ?? false }
@@ -219,7 +247,9 @@ struct DevMenuFABView: View {
         width: panelWidth,
         height: panelHeight
       )
-    } else {
+    }
+
+    guard canEdit else {
       return CGRect(
         x: position.x,
         y: touchTargetTop,
@@ -227,15 +257,19 @@ struct DevMenuFABView: View {
         height: touchTargetSize
       )
     }
+
+    let codeActionWidth: CGFloat = 100
+    return CGRect(
+      x: position.x + (touchTargetSize - codeActionWidth) / 2,
+      y: touchTargetTop,
+      width: codeActionWidth,
+      height: fabSize.height
+    )
   }
 
   // Get safe area from window since .ignoresSafeArea() or initial render may zero out geometry values
   private var windowSafeArea: UIEdgeInsets {
-    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-          let window = windowScene.windows.first else {
-      return .zero
-    }
-    return window.safeAreaInsets
+    return SceneGeometry.keyWindow()?.safeAreaInsets ?? .zero
   }
 
   var body: some View {
@@ -262,6 +296,8 @@ struct DevMenuFABView: View {
               isLesson: isLesson,
               isLessonCompleted: isLessonCompleted,
               hasBeenEdited: hasBeenEdited,
+              canEdit: canEdit,
+              onEditCode: onOpenSourceExplorer,
               // onSave: handleSave,  // TODO: Add back when save functionality is implemented
               onComplete: handleComplete,
               onGoBack: handleGoBack
@@ -279,14 +315,35 @@ struct DevMenuFABView: View {
             .zIndex(2)
             .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
 
-          FabPill(isPressed: $isPressed, isDragging: $isDragging, showsPanel: showsPanel)
+          FabPill(
+            isPressed: $isPressed,
+            isDragging: $isDragging,
+            showsPanel: showsPanel,
+            canEdit: canEdit,
+            onOpenSourceExplorer: onOpenSourceExplorer
+          )
             .frame(width: FABConstants.touchTargetSize, height: fabSize.height, alignment: .top)
+            .onPreferenceChange(FABPillHeightKey.self) { height in
+              pillHeight = height
+              guard isPositioned else { return }
+              let ranges = placementRanges(bounds: geometry.size, safeArea: safeArea)
+              let clamped = CGPoint(
+                x: position.x.clamped(to: ranges.x),
+                y: position.y.clamped(to: ranges.y)
+              )
+              guard clamped != position else { return }
+              var transaction = Transaction()
+              transaction.disablesAnimations = true
+              withTransaction(transaction) {
+                position = clamped
+              }
+              onFrameChange(hitTestFrame(edge: currentEdge))
+            }
             .position(
               x: buttonCenterX,
               y: position.y + fabSize.height / 2
             )
             .zIndex(1)
-            .allowsHitTesting(false)
         }
       }
       .onAppear {
@@ -299,9 +356,11 @@ struct DevMenuFABView: View {
 
         // Read session state ONCE - DevMenuManager ensures session is ready before showing FAB
         let session = SnackEditingSession.shared
+        let canEdit = ProjectSourceSession.current?.canEdit == true
         if session.isLessonLikeSession {
           config = FABConfiguration(
             showPanel: true,
+            canEdit: canEdit,
             snackName: session.displayName,
             snackDescription: session.lessonDescription ?? "Your own space to explore and learn",
             isLesson: session.isLesson,
@@ -310,6 +369,7 @@ struct DevMenuFABView: View {
         } else {
           config = FABConfiguration(
             showPanel: false,
+            canEdit: canEdit,
             snackName: "",
             snackDescription: "",
             isLesson: false,
@@ -318,23 +378,16 @@ struct DevMenuFABView: View {
         }
 
         // Initialize non-observable state
-        hasBeenEdited = session.hasBeenEdited
         updateLessonCompletedState()
 
         let initialPos: CGPoint
         if showsPanel {
           initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
         } else if let storedPos = Self.loadStoredPosition() {
-          // Clamp stored position to valid bounds
-          let margin = FABConstants.margin
-          let minX = margin / 2
-          let maxX = geometry.size.width - fabSize.width - margin / 2
-          let minY = safeArea.top + FABConstants.verticalPadding
-          let maxY = geometry.size.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-
+          let ranges = placementRanges(bounds: geometry.size, safeArea: safeArea)
           initialPos = CGPoint(
-            x: storedPos.x.clamped(to: minX...maxX),
-            y: storedPos.y.clamped(to: minY...maxY)
+            x: storedPos.x.clamped(to: ranges.x),
+            y: storedPos.y.clamped(to: ranges.y)
           )
         } else {
           initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
@@ -375,12 +428,6 @@ struct DevMenuFABView: View {
         currentEdge = newPos.x < screenWidth / 2 ? .left : .right
       }
       .animation(isDragging ? dragSpring : FABConstants.snapAnimation, value: position)
-      // Listen for code changes since sessionClient.hasBeenEdited isn't directly observable
-      .onReceive(NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)) { _ in
-        Task { @MainActor in
-          hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
-        }
-      }
     }
     .ignoresSafeArea()
   }
@@ -441,9 +488,8 @@ struct DevMenuFABView: View {
           let rawY = dragStartPosition.y + value.translation.height
 
           position = CGPoint(x: rawX, y: rawY)
-          let touchTargetSize = FABConstants.touchTargetSize
-          let buttonCenterY = position.y + FABConstants.iconSize / 2
-          onFrameChange(CGRect(x: position.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
+          let edge: SnappedEdge = position.x < screenWidth / 2 ? .left : .right
+          onFrameChange(hitTestFrame(edge: edge))
         }
       }
       .onEnded { value in
@@ -473,9 +519,8 @@ struct DevMenuFABView: View {
             if !showsPanel {
               Self.savePosition(newPos)
             }
-            let touchTargetSize = FABConstants.touchTargetSize
-            let buttonCenterY = newPos.y + FABConstants.iconSize / 2
-            onFrameChange(CGRect(x: newPos.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
+            let edge: SnappedEdge = newPos.x < screenWidth / 2 ? .left : .right
+            onFrameChange(hitTestFrame(edge: edge))
           }
         }
       }
@@ -491,9 +536,7 @@ struct DevMenuFABView: View {
         }
         let rawY = dragStartPosition.y + value.translation.height
         position = CGPoint(x: position.x, y: rawY)
-        let touchTargetSize = FABConstants.touchTargetSize
-        let buttonCenterY = position.y + FABConstants.iconSize / 2
-        onFrameChange(CGRect(x: position.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
+        onFrameChange(hitTestFrame(edge: currentEdge))
       }
       .onEnded { value in
         let velocity = CGPoint(
@@ -512,18 +555,33 @@ struct DevMenuFABView: View {
           isDragging = false
           isDraggingPanel = false
           position = newPos
-          let touchTargetSize = FABConstants.touchTargetSize
-          let buttonCenterY = newPos.y + FABConstants.iconSize / 2
-          onFrameChange(CGRect(x: newPos.x, y: buttonCenterY - touchTargetSize / 2, width: touchTargetSize, height: touchTargetSize))
+          let edge: SnappedEdge = newPos.x < screenWidth / 2 ? .left : .right
+          onFrameChange(hitTestFrame(edge: edge))
         }
       }
   }
 
-  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
-    return CGPoint(
-      x: bounds.width - fabSize.width - FABConstants.margin / 2,
-      y: safeArea.top + FABConstants.verticalPadding
+  private func placementRanges(
+    bounds: CGSize,
+    safeArea: EdgeInsets
+  ) -> (x: ClosedRange<CGFloat>, y: ClosedRange<CGFloat>) {
+    let ranges = FABPlacement.ranges(
+      bounds: bounds,
+      safeArea: FABInsets(
+        top: safeArea.top,
+        leading: safeArea.leading,
+        bottom: safeArea.bottom,
+        trailing: safeArea.trailing
+      ),
+      drawnFrame: drawnFrame,
+      inset: FABConstants.margin
     )
+    return (ranges.x, ranges.y)
+  }
+
+  private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {
+    let ranges = placementRanges(bounds: bounds, safeArea: safeArea)
+    return CGPoint(x: ranges.x.upperBound, y: ranges.y.lowerBound)
   }
 
   private func snapToEdge(
@@ -532,25 +590,18 @@ struct DevMenuFABView: View {
     bounds: CGSize,
     safeArea: EdgeInsets
   ) -> CGPoint {
-    let margin = FABConstants.margin
-    let edgeMargin = margin / 2  // Closer to screen edge when snapped
     let momentumX = velocity.x * FABConstants.momentumFactor
     let momentumY = velocity.y * FABConstants.momentumFactor
+    let ranges = placementRanges(bounds: bounds, safeArea: safeArea)
 
     let estimatedCenterX = point.x + self.fabSize.width / 2 + momentumX
-    let targetX: CGFloat = estimatedCenterX < bounds.width / 2
-      ? edgeMargin
-    : bounds.width - self.fabSize.width - edgeMargin
+    let targetX = estimatedCenterX < bounds.width / 2 ? ranges.x.lowerBound : ranges.x.upperBound
 
-    let minY = safeArea.top + FABConstants.verticalPadding
-    let maxY: CGFloat
-    if showsPanel {
-      // Panel bottom should sit just above the safe area
-      maxY = bounds.height - safeArea.bottom - panelHeight - panelVerticalOffset
-    } else {
-      maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-    }
-    let targetY = (point.y + momentumY).clamped(to: minY...maxY)
+    // The panel hangs below the gear, so it sets the lower limit when shown.
+    let maxY = showsPanel
+      ? bounds.height - max(safeArea.bottom, FABConstants.margin) - panelHeight - panelVerticalOffset
+      : ranges.y.upperBound
+    let targetY = (point.y + momentumY).clamped(to: min(ranges.y.lowerBound, maxY)...maxY)
 
     return CGPoint(x: targetX, y: targetY)
   }

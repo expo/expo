@@ -109,14 +109,17 @@ describe(FileStore, () => {
     expect(vol.existsSync(`${ROOT}/${shard}/${file}`)).toBe(false);
   });
 
-  it('skips writes flagged with css.skipCache', async () => {
-    const store = new FileStore<unknown>({ root: ROOT });
-    const key = makeKey(0x77);
+  it.each([{ skipCache: true }, { css: { skipCache: true } }])(
+    'skips writes flagged with %p',
+    async (data) => {
+      const store = new FileStore<unknown>({ root: ROOT });
+      const key = makeKey(0x77);
 
-    await store.set(key, { output: [{ data: { css: { skipCache: true } } }] });
+      await store.set(key, { output: [{ data }] });
 
-    await expect(store.get(key)).resolves.toBeNull();
-  });
+      await expect(store.get(key)).resolves.toBeNull();
+    }
+  );
 
   it('recovers when the cache root disappears between writes', async () => {
     const store = new FileStore<unknown>({ root: ROOT });

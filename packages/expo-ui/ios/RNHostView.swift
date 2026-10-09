@@ -4,38 +4,86 @@ import SwiftUI
 import ExpoModulesCore
 
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
-  @Field var matchContents: Bool = false
+  @Field var matchContentsHorizontal: Bool = false
+  @Field var matchContentsVertical: Bool = false
+  /**
+   Adds LeafNode and MeasurableYogaNode trait in Shadow node
+   */
+  @Field var expoInternalSizeFromChildren: Bool = false
+  /**
+   Whether this view owns its subtree's touches and is the origin its content is measured from. Set
+   by the JavaScript side for content presented in its own view controller — see `RNHostView.tsx`,
+   which reads it from the sheet or popover presenting the content.
+
+   Also read by `ExpoViewShadowNode` in C++, which turns it into the `RootNodeKind` trait so
+   `measure()` stops its ancestor walk here.
+   */
+  @Field var layoutRoot: Bool = false
 }
 
+// Touches and `measure()` must agree on a coordinate space. Which space depends on where the
+// content sits:
+//  Normal tree:
+//    The surface root above us already dispatches, in surface coordinates. We attach
+//    nothing and publish a content origin, so `measure()` matches those touches.
+//  Sheet, popover:  
+//    Presented in its own view controller, so nothing above dispatches and the
+//    content would get no touches at all. We attach our own handler, and
+//   `layoutRoot` measures from this view — the space those touches arrive in.
+//
+// Attaching a handler in the normal tree would give the subtree two streams in two spaces: UIKit
+// delivers a touch to the hit view and every ancestor, and the root's cannot be suppressed from
+// below, so presses would cancel on any movement.
 struct RNHostView: ExpoSwiftUI.View {
 
   @ObservedObject var props: RNHostViewProps
-  // Owns the RCTSurfaceTouchHandler we attach to the hosted RN view so it is detached again when
-  // this host disappears.
   @StateObject private var touchHandler = RNHostTouchHandler()
 
   var body: some View {
-    if props.matchContents, let childUIView = firstChildUIView {
-      ApplySizeFromYogaNode(childUIView: childUIView) {
+    hostedContent
+      .modifier(
+        PublishContentOriginModifier(
+          shadowNodeProxy: props.shadowNodeProxy,
+          isEnabled: !props.layoutRoot
+        )
+      )
+  }
+
+  @ViewBuilder
+  private var hostedContent: some View {
+    if matchesContents, let childUIView = firstChildUIView {
+      ApplySizeFromYogaNode(
+        childUIView: childUIView,
+        horizontal: props.matchContentsHorizontal,
+        vertical: props.matchContentsVertical,
+        shadowNodeProxy: props.shadowNodeProxy
+      ) {
         Children()
       }
       .onAppear {
-        touchHandler.attach(to: childUIView)
+        if props.layoutRoot {
+          touchHandler.attach(to: childUIView)
+        }
       }
       .onDisappear {
         touchHandler.detach()
       }
-    } else if props.matchContents {
+    } else if matchesContents {
       // No hosted UIView (a pure SwiftUI child, e.g. Text/Image). Render it at its
       // natural size instead of falling into the fill branch below, which would
       // stretch a self-sizing SwiftUI view to fill its container.
       Children()
+    } else if props.children?.isEmpty ?? true {
+      // Nothing is mounted yet (e.g. a hosted RN `Modal` renders null until `visible` is true).
+      // Render nothing instead of an empty fill frame, which would take up space in the
+      // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
+      EmptyView()
     } else {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
-          if let view = firstChildUIView {
+          if props.layoutRoot, let view = firstChildUIView {
             touchHandler.attach(to: view)
           }
         }
@@ -45,8 +93,35 @@ struct RNHostView: ExpoSwiftUI.View {
     }
   }
 
+  private var matchesContents: Bool {
+    props.matchContentsHorizontal || props.matchContentsVertical
+  }
+
   private var firstChildUIView: UIView? {
     props.children?.first?.uiView
+  }
+}
+
+// Publishes where SwiftUI placed this view inside its `Host`, so `measure()` reports the position
+// the hosted content actually occupies.
+private struct PublishContentOriginModifier: ViewModifier {
+  let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  let isEnabled: Bool
+
+  func body(content: Content) -> some View {
+    if isEnabled {
+      content
+        .onGeometryChange(for: CGRect.self) { proxy in
+          proxy.frame(in: .named(expoHostCoordinateSpace))
+        } action: { frame in
+          shadowNodeProxy.setContentOrigin?(frame.origin)
+        }
+        .onDisappear {
+          shadowNodeProxy.clearContentOrigin?()
+        }
+    } else {
+      content
+    }
   }
 }
 
@@ -78,20 +153,52 @@ private final class RNHostTouchHandler: ObservableObject {
   }
 }
 
-// Sets SwiftUI view size from Yoga node size
+// Sets SwiftUI view size from Yoga node size on the matched axes
 // Listens to Yoga node size changes and updates the SwiftUI view size
+// An axis that is not matched fills the parent and reports its size to the Yoga node instead
 private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
   @StateObject private var observer: Observer
+  let horizontal: Bool
+  let vertical: Bool
+  let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
   let content: Content
 
-  init(childUIView: UIView, @ViewBuilder content: () -> Content) {
+  init(
+    childUIView: UIView,
+    horizontal: Bool,
+    vertical: Bool,
+    shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy,
+    @ViewBuilder content: () -> Content
+  ) {
     _observer = StateObject(wrappedValue: Observer(view: childUIView))
+    self.horizontal = horizontal
+    self.vertical = vertical
+    self.shadowNodeProxy = shadowNodeProxy
     self.content = content()
   }
 
   var body: some SwiftUI.View {
-    content
-      .frame(width: observer.size.width, height: observer.size.height)
+    if horizontal && vertical {
+      content
+        .frame(width: observer.size.width, height: observer.size.height)
+    } else {
+      content
+        .frame(
+          width: horizontal ? observer.size.width : nil,
+          height: vertical ? observer.size.height : nil
+        )
+        .frame(
+          maxWidth: horizontal ? nil : .infinity,
+          maxHeight: vertical ? nil : .infinity
+        )
+        .modifier(
+          ReportSizeToYogaNodeModifier(
+            shadowNodeProxy: shadowNodeProxy,
+            reportWidth: !horizontal,
+            reportHeight: !vertical
+          )
+        )
+    }
   }
 
   @MainActor
@@ -118,9 +225,13 @@ private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
 // Listens to SwiftUI view size changes and updates the Yoga node size
 private struct ReportSizeToYogaNodeModifier: ViewModifier {
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  var reportWidth = true
+  var reportHeight = true
 
   private func handleSizeChange(_ size: CGSize) {
-    shadowNodeProxy.setViewSize?(size)
+    shadowNodeProxy.setViewSize?(
+      CGSize(width: reportWidth ? size.width : .nan, height: reportHeight ? size.height : .nan)
+    )
   }
 
   func body(content: Content) -> some View {

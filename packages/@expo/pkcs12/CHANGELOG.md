@@ -1,14 +1,24 @@
 # Changelog
 
-## Unpublished
+## 0.7.2
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Bump `node-forge` to `^1.4.0`. ([#51085](https://github.com/expo/expo/pull/51085) by [@kitten](https://github.com/kitten))
 
-### 🐛 Bug fixes
+## 0.7.1
 
-### 💡 Others
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 0.7.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 0.5.1 — 2026-05-06
 

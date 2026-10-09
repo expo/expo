@@ -6,7 +6,7 @@ plugins {
 apply from: "../scripts/get-app-config-android.gradle"
 
 group = 'host.exp.exponent'
-version = '56.0.16'
+version = '58.0.10'
 
 expoModule {
   // We can't prebuild the module because we need to apply `get-app-config-android.gradle` script.
@@ -17,6 +17,13 @@ android {
   namespace "expo.modules.constants"
   defaultConfig {
     versionCode 33
-    versionName "56.0.16"
+    versionName "58.0.10"
+  }
+
+  buildTypes {
+    create("debugOptimized") {
+      initWith(buildTypes.debug)
+      matchingFallbacks += ["release"]
+    }
   }
 }

@@ -34,14 +34,12 @@ suspend fun ContentResolver.queryAssetDateModified(contentUri: Uri): Long? =
 suspend fun ContentResolver.queryAssetDuration(contentUri: Uri): Long? =
   queryOne(contentUri, MediaStore.MediaColumns.DURATION, Cursor::getNullableLong)
 
-suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.WIDTH, Cursor::getNullableInt)
-
-suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.HEIGHT, Cursor::getNullableInt)
-
 suspend fun ContentResolver.queryAssetData(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.MediaColumns.DATA, Cursor::getNullableString)
+
+@RequiresApi(Build.VERSION_CODES.Q)
+suspend fun ContentResolver.queryAssetOwnerPackageName(contentUri: Uri): String? =
+  queryOne(contentUri, MediaStore.MediaColumns.OWNER_PACKAGE_NAME, Cursor::getNullableString)
 
 suspend fun ContentResolver.queryAssetBucketId(contentUri: Uri): Int? =
   queryOne(contentUri, MediaStore.MediaColumns.BUCKET_ID, Cursor::getNullableInt)

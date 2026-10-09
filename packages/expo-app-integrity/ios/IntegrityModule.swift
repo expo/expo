@@ -1,6 +1,6 @@
-import ExpoModulesCore
-import DeviceCheck
 import CryptoKit
+import DeviceCheck
+import ExpoModulesCore
 
 public class IntegrityModule: Module {
   private let service = DCAppAttestService.shared
@@ -49,7 +49,10 @@ public class IntegrityModule: Module {
     if let error = error as? DCError {
       switch error.code {
       case .featureUnsupported:
-        return IntegrityException("This feature is not supported on this device", code: IntegrityErrorCodes.featureUnsupported)
+        return IntegrityException(
+          "This feature is not supported on this device",
+          code: IntegrityErrorCodes.featureUnsupported
+        )
       case .invalidInput:
         return IntegrityException("Invalid input provided", code: IntegrityErrorCodes.invalidInput)
       case .invalidKey:

@@ -1,5 +1,7 @@
 import { CodedError } from 'expo';
 
+import type { ImageLoadOptions } from '../ImageManipulator.types';
+
 export function getContext(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
   const ctx = canvas.getContext('2d');
   if (!ctx) {
@@ -19,21 +21,69 @@ export async function blobToBase64String(blob: Blob): Promise<string> {
   return dataURL.replace(/^data:image\/\w+;base64,/, '');
 }
 
-export function loadImageAsync(uri: string): Promise<HTMLCanvasElement> {
+export function releaseCanvas(canvas: HTMLCanvasElement): void {
+  canvas.width = 0;
+  canvas.height = 0;
+}
+
+export function loadImageAsync(
+  uri: string,
+  options?: ImageLoadOptions
+): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const imageSource = new Image();
     imageSource.crossOrigin = 'anonymous';
     const canvas = document.createElement('canvas');
     imageSource.onload = () => {
-      canvas.width = imageSource.naturalWidth;
-      canvas.height = imageSource.naturalHeight;
+      const { width, height } = boundedSize(
+        imageSource.naturalWidth,
+        imageSource.naturalHeight,
+        options?.maxWidth,
+        options?.maxHeight
+      );
+      canvas.width = width;
+      canvas.height = height;
 
       const context = getContext(canvas);
-      context.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
+      context.drawImage(imageSource, 0, 0, width, height);
 
       resolve(canvas);
     };
-    imageSource.onerror = () => reject(canvas);
+    imageSource.onerror = () => {
+      releaseCanvas(canvas);
+      reject(
+        new CodedError(
+          'ERR_IMAGE_MANIPULATOR_LOAD',
+          'Failed to load the image. Make sure the source URI is accessible and has not been revoked or released.'
+        )
+      );
+    };
     imageSource.src = uri;
   });
+}
+
+/**
+ * Computes the size that bounds an image of the given dimensions to `maxWidth`/`maxHeight`,
+ * preserving the aspect ratio. Images that already fit within the bounds keep their size.
+ */
+export function boundedSize(
+  width: number,
+  height: number,
+  maxWidth: number | undefined,
+  maxHeight: number | undefined
+): { width: number; height: number } {
+  let scale = 1;
+  if (maxWidth && maxWidth > 0) {
+    scale = Math.min(scale, maxWidth / width);
+  }
+  if (maxHeight && maxHeight > 0) {
+    scale = Math.min(scale, maxHeight / height);
+  }
+  if (scale >= 1) {
+    return { width, height };
+  }
+  return {
+    width: Math.max(1, Math.round(width * scale)),
+    height: Math.max(1, Math.round(height * scale)),
+  };
 }

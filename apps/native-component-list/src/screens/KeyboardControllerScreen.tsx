@@ -1,4 +1,3 @@
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import {
   StyleSheet,
   Platform,
@@ -13,6 +12,8 @@ import {
 } from 'react-native';
 import { KeyboardProvider, useKeyboardHandler } from 'react-native-keyboard-controller';
 import Animated, { useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
+
+import useOptionalBottomTabBarHeight from '../utilities/useOptionalBottomTabBarHeight';
 
 interface Message {
   author: 'Keith' | 'Beto';
@@ -89,8 +90,8 @@ const useGradualAnimation = () => {
 
 function KeyboardControllerExample() {
   const { height } = useGradualAnimation();
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const bottomTabBarHeight = Platform.OS === 'ios' ? useBottomTabBarHeight() : 0;
+  const tabBarHeight = useOptionalBottomTabBarHeight();
+  const bottomTabBarHeight = Platform.OS === 'ios' ? tabBarHeight : 0;
 
   const fakeView = useAnimatedStyle(() => {
     return {

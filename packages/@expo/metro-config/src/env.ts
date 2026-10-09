@@ -1,6 +1,16 @@
-import { boolish, int } from 'getenv';
+import { boolish, int, string } from 'getenv';
 
 class Env {
+  /** Directory containing transforms restored from a previous build. Used when EXPO_METRO_CACHE_OUTPUT_DIR is also set. */
+  get EXPO_METRO_CACHE_RESTORE_DIR(): string {
+    return string('EXPO_METRO_CACHE_RESTORE_DIR', '');
+  }
+
+  /** Directory for Metro transform cache reads and writes. With EXPO_METRO_CACHE_RESTORE_DIR, collects transforms used by this build. */
+  get EXPO_METRO_CACHE_OUTPUT_DIR(): string {
+    return string('EXPO_METRO_CACHE_OUTPUT_DIR', '');
+  }
+
   /** Enable debug logging */
   get EXPO_DEBUG() {
     return boolish('EXPO_DEBUG', false);

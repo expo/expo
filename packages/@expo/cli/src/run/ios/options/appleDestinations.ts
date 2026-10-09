@@ -2,9 +2,9 @@ import spawnAsync from '@expo/spawn-async';
 
 import { Log } from '../../../log';
 import type { OSType, Device } from '../../../start/platforms/ios/simctl';
+import { debugEvent } from '../../events';
 import type { BuildProps } from '../XcodeBuild.types';
 import type { ConnectedDevice } from '../appleDevice/AppleDevice';
-import { debugEvent } from '../../events';
 
 interface Destination {
   // 'visionOS'

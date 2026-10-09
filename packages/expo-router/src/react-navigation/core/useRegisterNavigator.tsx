@@ -26,6 +26,4 @@ export function useRegisterNavigator() {
 
     return () => unregister(key);
   }, [container, key]);
-
-  return key;
 }

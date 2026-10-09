@@ -29,8 +29,6 @@ test.describe('server-loader HMR in streaming SSR', () => {
       NODE_ENV: 'development',
       EXPO_USE_STATIC: 'server',
       E2E_ROUTER_SRC: 'server-loader',
-      E2E_ROUTER_SERVER_LOADERS: 'true',
-      E2E_ROUTER_SERVER_RENDERING: 'true',
 
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',

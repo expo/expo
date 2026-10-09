@@ -8,6 +8,7 @@ import expo.modules.medialibrary.next.exceptions.AlbumPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumAssetsContentUris
+import expo.modules.medialibrary.next.extensions.resolver.queryAlbumAssetsCount
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumFilepath
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumRelativePath
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
@@ -51,7 +52,7 @@ class Album(
 
   private fun createRelativePathFrom(filePath: String): RelativePath {
     val albumDir = File(filePath).parent
-      ?: throw AlbumPropertyNotFoundException("Could get a relative path for the album")
+      ?: throw AlbumPropertyNotFoundException("Could not get a relative path for the album")
     val externalRoot = Environment.getExternalStorageDirectory().absolutePath
     val relative = albumDir.removePrefix(externalRoot).trimStart('/').plus('/')
     return RelativePath(relative)
@@ -61,6 +62,9 @@ class Album(
     contentResolver
       .queryAlbumAssetsContentUris(id)
       .map { assetFactory.create(it) }
+
+  suspend fun getAssetCount(): Int =
+    contentResolver.queryAlbumAssetsCount(id)
 
   suspend fun delete() =
     assetDeleter.delete(

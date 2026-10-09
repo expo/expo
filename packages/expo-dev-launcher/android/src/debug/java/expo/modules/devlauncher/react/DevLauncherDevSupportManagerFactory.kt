@@ -28,7 +28,7 @@ class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
     devLoadingViewManager: DevLoadingViewManager?,
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
-    throw IllegalStateException("Legacy architecture is not longer supported.")
+    throw IllegalStateException("Legacy architecture is no longer supported.")
   }
 
   override fun create(

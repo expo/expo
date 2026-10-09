@@ -1,6 +1,6 @@
 import { ActionSheetOptions } from '@expo/react-native-action-sheet';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { Text, TextStyle, View } from 'react-native';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
+import { Pressable, StyleSheet, Text, TextStyle, View } from 'react-native';
 
 const icon = (name: string) => <MaterialCommunityIcons key={name} name={name as any} size={24} />;
 
@@ -77,18 +77,26 @@ export default function ShowActionSheetButton({
 
   return (
     <View style={{ margin: 6 }}>
-      <MaterialCommunityIcons.Button
-        name="code-tags"
-        backgroundColor="#3e3e3e"
-        onPress={showActionSheet}>
-        <Text
-          style={{
-            fontSize: 15,
-            color: '#fff',
-          }}>
-          {title}
-        </Text>
-      </MaterialCommunityIcons.Button>
+      <Pressable style={styles.button} onPress={showActionSheet}>
+        <MaterialCommunityIcons name="code-tags" size={20} color="#fff" />
+        <Text style={styles.label}>{title}</Text>
+      </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3e3e3e',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 4,
+    gap: 8,
+  },
+  label: {
+    fontSize: 15,
+    color: '#fff',
+  },
+});

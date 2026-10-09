@@ -83,6 +83,10 @@ export default function DocumentationPage({
     version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
       ? RoutesUtils.getCanonicalUrl(pathname)
       : undefined;
+  const latestVersionPath =
+    version === 'unversioned'
+      ? RoutesUtils.getLatestVersionPath(RoutesUtils.getRoutes(pathname, 'latest'), pathname)
+      : undefined;
   const techArticleSchema =
     title && canonicalUrl
       ? buildTechArticleSchema({ title, description, modificationDate, url: canonicalUrl })
@@ -380,9 +384,14 @@ export default function DocumentationPage({
           </p>
           {version && version === 'unversioned' && (
             <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
-              This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
-              <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
-              {versionToText(LATEST_VERSION)}).
+              This is documentation for the next SDK version.
+              {latestVersionPath && (
+                <>
+                  {' '}
+                  For up-to-date documentation, see the{' '}
+                  <A href={latestVersionPath}>latest version</A> ({versionToText(LATEST_VERSION)}).
+                </>
+              )}
             </InlineHelp>
           )}
           {title && (

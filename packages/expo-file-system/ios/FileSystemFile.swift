@@ -52,20 +52,45 @@ internal final class FileSystemFile: FileSystemPath {
 
   var md5: String {
     get throws {
-      return try withCorrectTypeAndScopedAccess(permission: .read) {
-        let bufferSize = 65536
+      return try digest(algorithm: "MD5")
+    }
+  }
 
-        let handle = try FileHandle(forReadingFrom: url)
-        defer { try? handle.close() }
+  func digest(algorithm: String) throws -> String {
+    switch algorithm {
+    case "MD5":
+      return try calculateDigest(using: Insecure.MD5())
+    case "SHA-1":
+      return try calculateDigest(using: Insecure.SHA1())
+    case "SHA-256":
+      return try calculateDigest(using: SHA256())
+    case "SHA-384":
+      return try calculateDigest(using: SHA384())
+    case "SHA-512":
+      return try calculateDigest(using: SHA512())
+    default:
+      throw Exception(
+        name: "UnsupportedDigestAlgorithm",
+        description: "Unsupported digest algorithm: \(algorithm)"
+      )
+    }
+  }
 
-        var hasher = Insecure.MD5()
-        while let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty {
-          hasher.update(data: chunk)
-        }
+  // Keep the hasher generic so the streaming loop can be specialized for each hasher type
+  private func calculateDigest<H: HashFunction>(using hasher: H) throws -> String {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
+      let bufferSize = 65536
 
-        let hash = hasher.finalize()
-        return hash.map { String(format: "%02hhx", $0) }.joined()
+      let handle = try FileHandle(forReadingFrom: url)
+      defer { try? handle.close() }
+
+      var mutableHasher = hasher
+      while let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty {
+        mutableHasher.update(data: chunk)
       }
+
+      let hash = mutableHasher.finalize()
+      return hash.map { String(format: "%02hhx", $0) }.joined()
     }
   }
 
@@ -132,13 +157,13 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   func text() throws -> String {
-    return try withCorrectTypeAndScopedAccess(permission: .write) {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
       return try String(contentsOf: url)
     }
   }
 
   func bytes() throws -> Data {
-    return try withCorrectTypeAndScopedAccess(permission: .write) {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
       return try Data(contentsOf: url)
     }
   }

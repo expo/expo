@@ -143,7 +143,14 @@ module Expo
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
-          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+          # Swift driver resolves the plugin path so it stays out of the compilation cache key.
+          macro_flags = "-load-plugin-executable \"#{macros_plugin_dir}/ExpoModulesMacros#ExpoModulesMacros\""
+        end
+
+        # Inline modules compile in the app target itself, so its xcconfigs need the plugin too.
+        target.user_build_configurations.each_key do |build_configuration_name|
+          xcconfig_path = target.xcconfig_path(build_configuration_name)
+          append_macro_flags(target.build_settings(build_configuration_name), xcconfig_path, macro_flags)
         end
 
         target.pod_targets.each do |pod_target|
@@ -173,8 +180,12 @@ module Expo
 
     # Appends the macro plugin flags to the target's `OTHER_SWIFT_FLAGS` and saves the xcconfig,
     # skipping it when the flags are already present.
+    #
+    # Read the file from disk rather than `build_settings.xcconfig`. Earlier `post_install`
+    # hooks write to it too — React Native's puts its module map flags there — and rebuilding
+    # it from CocoaPods' in-memory settings would throw those away.
     def self.append_macro_flags(build_settings, xcconfig_path, macro_flags)
-      xcconfig = build_settings.xcconfig
+      xcconfig = File.exist?(xcconfig_path) ? Xcodeproj::Config.new(xcconfig_path) : build_settings.xcconfig
       swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
       return if swift_flags.include?(macro_flags)
 
@@ -183,13 +194,15 @@ module Expo
     end
 
     def self.resolve_macros_plugin_dir(core_src_root)
-      js = "require.resolve('@expo/expo-modules-macros-plugin/package.json', { paths: #{[core_src_root].to_json} })"
+      js = "require.resolve('expo-modules-macros/package.json', { paths: #{[core_src_root].to_json} })"
       stdout, stderr, status = Open3.capture3('node', '--print', js)
       pkg_json_path = stdout.strip
 
       if !status.success? || pkg_json_path.empty?
         node_error = stderr.lines.find { |line| line.start_with?('Error:') }&.strip
-        raise "[Expo] Could not resolve `@expo/expo-modules-macros-plugin` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} Reinstall your JavaScript dependencies and rerun `pod install`."
+        raise "[Expo] Could not resolve `expo-modules-macros` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} " \
+          "`expo-modules-core` must be a version that depends on `expo-modules-macros`, the new name of `@expo/expo-modules-macros-plugin`. " \
+          "Run `npx expo install --fix` to align the Expo package versions, then rerun `pod install`."
       end
 
       File.join(File.dirname(pkg_json_path), 'apple')

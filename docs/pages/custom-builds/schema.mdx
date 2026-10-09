@@ -660,6 +660,7 @@ When a build configuration is using [`withoutCredentials`](/eas/json/#withoutcre
 - [`eas/configure_eas_update`](#easconfigure_eas_update)
 - [`eas/run_gradle`](#easrun_gradle)
 - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+- [`eas/upload_embedded_bundle`](#easupload_embedded_bundle), when the [embedded bundle upload](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle) is enabled
 
 When a build configuration uses credentials (for both `internal` and `store` [distribution](/eas/json/#distribution) builds):
 
@@ -673,6 +674,7 @@ When a build configuration uses credentials (for both `internal` and `store` [di
 - [`eas/configure_android_version`](#easconfigure_android_version)
 - [`eas/run_gradle`](#easrun_gradle)
 - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+- [`eas/upload_embedded_bundle`](#easupload_embedded_bundle), when the [embedded bundle upload](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle) is enabled
 
 ##### iOS
 
@@ -704,6 +706,7 @@ When a build configuration uses credentials (for both `internal` and `store` [di
 - [`eas/generate_gymfile_from_template`](#easgenerate_gymfile_from_template)
 - [`eas/run_fastlane`](#easrun_fastlane)
 - [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts)
+- [`eas/upload_embedded_bundle`](#easupload_embedded_bundle), when the [embedded bundle upload](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle) is enabled
 
 You can replace the `eas/build` command call by using these steps in your YAML configuration file:
 
@@ -741,7 +744,7 @@ You can replace the `eas/build` command call by using these steps in your YAML c
 
 All-in-one function that installs Maestro, prepares a testing environment (Android Emulator or iOS Simulator), and tests the app.
 
-> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024/08-29-c3d-default) for more information.
+> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024-08-29-c3d-default) for more information.
 
 | Input       | Type     | Required    | Description                                                                                                                                                                                                                        |
 | ----------- | -------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -918,6 +921,28 @@ build:
         name: List assets
         run: ls assets
 ```
+
+For builds with Git-based project sources, the step uses the build's recorded commit by default. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml example.yml
+build:
+  name: Check out a specific ref
+  steps:
+    # @info #
+    - eas/checkout:
+        inputs:
+          ref: feature/add-icon
+    # @end #
+    - eas/build
+```
+
+`ref` accepts:
+
+- A branch, as a bare name such as `feature/add-icon` or a qualified ref such as `refs/heads/feature/add-icon`. The repository ends up on that branch.
+- A tag, as a qualified ref such as `refs/tags/v1.2.3`. The repository ends up on a detached `HEAD`.
+- A full commit SHA. The repository ends up on a detached `HEAD`.
+
+The `ref` input only works when your project sources come from a Git repository, for example, a build triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Place the step before [`eas/build`](#easbuild), which checks out the project internally.
 
 <EASFunctionDescription name="checkout" />
 
@@ -1457,7 +1482,7 @@ disable_xcpretty(true)
 buildlog_path("<%- LOGS_DIRECTORY %>")
 ```
 
-`CLEAN`, `SCHEME`, `BUILD_CONFIGURATION`, `EXPORT_METHOD`, `PROFILES`, `ICLOUD_CONTAINER_ENVIRONMENT`, `KEYCHAIN_PATH`, `LOGS_DIRECTORY`, `OUTPUT_DIRECTORY`, `DERIVED_DATA_PATH`and `SCHEME_SIMULATOR_DESTINATION` values are provided to the template based on the inputs and default internal configuration of EAS Build.
+`CLEAN`, `SCHEME`, `BUILD_CONFIGURATION`, `EXPORT_METHOD`, `PROFILES`, `ICLOUD_CONTAINER_ENVIRONMENT`, `KEYCHAIN_PATH`, `LOGS_DIRECTORY`, `OUTPUT_DIRECTORY`, `DERIVED_DATA_PATH` and `SCHEME_SIMULATOR_DESTINATION` values are provided to the template based on the inputs and default internal configuration of EAS Build.
 
 ```yaml example.yml
 build:
@@ -1673,6 +1698,65 @@ build:
   href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/findAndUploadBuildArtifacts.ts"
 />
 
+#### `eas/upload_embedded_bundle`
+
+Uploads the embedded bundle from the app that the build produced. EAS Update can then serve updates that you publish later to the same channel as [patches against it](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle).
+
+`eas/build` runs this step for you when the upload is enabled. Add it yourself when your config builds the app with separate steps instead of `eas/build`. Run it after the step that builds the app, such as `eas/run_gradle` or `eas/run_fastlane`.
+
+```yaml example.yml
+build:
+  name: Build Android app
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - eas/prebuild
+    - eas/configure_eas_update
+    - eas/inject_android_credentials
+    - eas/run_gradle
+    - eas/find_and_upload_build_artifacts
+    # @info #
+    - eas/upload_embedded_bundle
+    # @end #
+```
+
+Unlike `eas/build`, the step does not check the SDK version or the `EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE` and `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variables. It skips the upload in these cases:
+
+- EAS Update is not configured in your project.
+- The build is a development build.
+- The build is an iOS Simulator build.
+
+The step finds the app at the `applicationArchivePath` set in your build profile. Without that property, the step looks in the default build output directory. The step uploads the bundle to the [`channel`](/eas/json/#channel) set in the same profile, not to the `channel` input of `eas/configure_eas_update`.
+
+The step fails the build when the upload fails. For example, it fails when the build profile has no `channel` or when the step cannot find the app. When `eas/build` runs the step, an upload failure only logs a warning. To log the failure and continue the build in your own config, set `ignore_error` to `true`:
+
+```yaml example.yml
+build:
+  name: Build Android app
+  steps:
+    # ...
+    - eas/find_and_upload_build_artifacts
+    # @info #
+    - eas/upload_embedded_bundle:
+        inputs:
+          ignore_error: true
+    # @end #
+```
+
+> **warning** Don't add this step to a config that uses `eas/build` while the upload is enabled. `eas/build` already uploads the bundle. A second upload of the same bundle fails the step.
+
+| Property              | Type      | Required   | Description                                                                                                       |
+| --------------------- | --------- | ---------- | ----------------------------------------------------------------------------------------------------------------- |
+| `name`                | -         | <NoIcon /> | The name of the step in the reusable function that shows in the build logs. Defaults to `Upload embedded bundle`. |
+| `inputs.ignore_error` | `boolean` | <NoIcon /> | When `true`, the step logs an upload failure and does not fail the build. Defaults to `false`.                    |
+
+<BoxLink
+  title="eas/upload_embedded_bundle source code"
+  description="View the source code for the eas/upload_embedded_bundle function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadEmbeddedBundle.ts"
+/>
+
 #### `eas/upload_artifact`
 
 Uploads files from the job's workspace as an artifact attached to the run. Uploaded artifacts appear in the run's **Artifacts** section and can be retrieved in a later job with [`eas/download_artifact`](/eas/workflows/syntax/#easdownload_artifact).
@@ -1741,7 +1825,7 @@ build:
 
 Starts an Android Emulator you can use to test your apps on. Only available when running a build for Android.
 
-> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024/08-29-c3d-default) for more information.
+> **warning** Your project must be configured to use the old Build Infrastructure to start Android Emulator. Go to [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) to configure. See [this changelog post](https://expo.dev/changelog/2024-08-29-c3d-default) for more information.
 
 ```yaml build-and-test.yml
 build:

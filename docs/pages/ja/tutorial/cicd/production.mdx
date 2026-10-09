@@ -1,0 +1,281 @@
+---
+title: 'EAS Workflows で本番デプロイを自動化する'
+sidebar_title: 本番デプロイ
+description: EAS Workflows を使って、リリースブランチから Android と iOS の本番ビルドと無線経由のアップデートを自動化する方法を学びます。
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { BuildOrUpdate } from '~/ui/components/FlowDiagram/Diagrams/BuildOrUpdate';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+本番向けの変更の多くが TypeScript/JavaScript のみであることを考えると、変更のたびにアプリを再ビルドするのは無駄が多いやり方です。
+
+## この章で学べること
+
+- `main` へのプッシュのたびではなく、`release/*` ブランチから本番デプロイをトリガーする
+- プロジェクトのフィンガープリントに応じて、ネイティブビルドと [OTA アップデート](/deploy/send-over-the-air-updates/)を使い分ける
+- 本番ワークフローの後続ステップとして、アプリストアへの提出を自動化する
+
+<Prerequisites>
+
+<Requirement title="production プロファイル向けの EAS Build の設定">
+
+[EAS CLI](/eas/cli/) は、あるプロファイルで初めてビルドをトリガーしたときに認証情報の生成を促します。ワークフローが走る前に認証情報が用意されているよう、Android と iOS の両方で本番ビルドを手動でトリガーしておきます。
+
+<Terminal cmd={['$ eas build --profile production --platform all']} />
+
+</Requirement>
+
+</Prerequisites>
+
+## リリースブランチを使う
+
+開発ビルドの章では、`on.push.branches` トリガーを使うと、指定した `main` ブランチへのプッシュのたびにワークフローが実行されることを見てきました。本番デプロイの場合、`main` ブランチへのプッシュのたびにワークフローをトリガーするということは、マージされた変更がすべて新しいリリースになるということです。多くのチームは意図的なリリースプロセスを求めるため、代わりにリリースブランチやタグを使います。
+
+リリースブランチ戦略では、通常 `release/*` のようなパターンでブランチを指定します。`*` の部分は機能名やバージョン名です。これが継続的インテグレーション（CI）と継続的デリバリー（CD）を分ける境目になります。CI は `main` ブランチへのプッシュのたびに実行され、CD はチームが本番へデプロイする準備が整ったときにリリースブランチで実行されます。
+
+次の表は、各ワークフローのトリガーがその役割をどう定めているかを示しています。
+
+| ワークフローファイル              | トリガー                          | ビルドプロファイル | 役割                                                                                                                                        |
+| --------------------------------- | --------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **.eas/workflows/build.yml**      | `on.push.branches: ['main']`      | `development`      | `main` ブランチへのプッシュのたびに実行される CI ワークフローです。ユニットテストの実行や開発ビルドの作成を行えます。                       |
+| **.eas/workflows/preview.yml**    | `on.push.branches: ['main']`      | `preview`          | `main` ブランチへのプッシュのたびに実行されるプレビューワークフローです。内部テストや関係者への共有のためのプレビュービルドを作成できます。 |
+| **.eas/workflows/production.yml** | `on.push.branches: ['release/*']` | `production`       | リリースブランチへのプッシュのたびに実行される CD ワークフローです。                                                                        |
+
+これらのファイルは、プロジェクトの GitHub リポジトリ内で衝突することなく共存できます。それぞれが異なるビルドプロファイルとトリガーを使っているためです。
+
+<BuildOrUpdate />
+
+## 本番ビルド向けの `build` ジョブタイプ
+
+まずは本番ワークフローを作成することから始めましょう。EAS Workflows の[事前パッケージ済み](/ja/tutorial/cicd/first-workflow/#eas-workflows-のジョブの種類)の `build` ジョブタイプを使い、Android と iOS の両方で実行します。
+
+<Step label="1">
+
+### production.yml を追加する
+
+**.eas/workflows/** の中に、**eas.json** の `production` ビルドプロファイルを使う **production.yml** という新しいファイルを作成します。
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['release/*']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+これにより、`release/*` のパターンに一致するブランチへプッシュしたときに、Android 向けの **.aab** アーティファクトと iOS 向けの **.ipa** アーティファクトが作成されます。
+
+</Step>
+
+<Step label="2">
+
+### ワークフローにフィンガープリントを追加する
+
+ネイティブコードに変更があるかどうかを確認するために、ワークフローに [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) ジョブを追加し、それに応じて既存の `build_android` と `build_ios` のジョブを更新しましょう。あわせて、Android と iOS の既存のビルドを探すための [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) ジョブも追加します。
+
+**production.yml** ファイルを次のコードで更新します。
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['release/*']
+
+jobs:
+  # @info #
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: production
+  # @end #
+  # @info #
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: production
+  # @end #
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    # @info #
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    # @info #
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+上のワークフローでは、まず `fingerprint` ジョブが実行され、コードベースの変更に基づいたハッシュを生成します。続いて `get-build` ジョブが、同じフィンガープリントのハッシュを持つ Android と iOS の既存のビルドがあるかどうかを確認します。既存のビルドがなければ、`build` ジョブが実行されて本番向けの新しいビルドを作成します。
+
+`fingerprint` ジョブの [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) フィールドは、フィンガープリントを計算するときにどの環境変数を読み込むかを EAS に伝えます。本番環境では `API_URL` や機能フラグといった変数の値が異なることがあります。EAS がそれらの値をビルドに埋め込むと、ネイティブの層にも影響が及びます。`environment: production` を指定しておけば、フィンガープリントが実際に出荷される内容を反映できます。
+
+`build_android` と `build_ios` のジョブで使っている [`if`](/eas/workflows/syntax/#jobsjob_idif) フィールドは、真偽値の式です。`false` と評価された場合、ビルドジョブはスキップされます。`!` 演算子によって、`get-build` が一致するビルドを見つけられなかったときにだけビルドジョブが実行されます。
+
+</Step>
+
+<Step label="3">
+
+### アップデート用のジョブを追加する
+
+現時点のワークフローは、ネイティブコードに変更があったときにのみ本番ビルドを作成します。TypeScript/JavaScript のファイルだけが変更された場合は、ネイティブビルドの代わりに OTA アップデートをトリガーしたいところです。
+
+ネイティブコードに変更がないときに実行され、`update` ジョブタイプで OTA アップデートをトリガーする `update_android` と `update_ios` の 2 つのジョブを追加しましょう。
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['release/*']
+
+jobs:
+  fingerprint:
+    # ...
+  get_android_build:
+    # ...
+  get_ios_build:
+    # ...
+  build_android:
+    # ...
+  build_ios:
+    # ...
+  update_android:
+    name: Publish Android update
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: android
+  update_ios:
+    name: Publish iOS update
+    needs: [get_ios_build]
+    if: ${{ needs.get_ios_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: ios
+```
+
+このワークフローが行うのは、本番向けのアプリバイナリの作成か、OTA アップデートの公開だけです。ストアへの提出の自動化は、この次によく行われるステップで、下の[アプリストアへの提出を自動化する](#アプリストアへの提出を自動化する)セクションで説明します。
+
+</Step>
+
+<Step label="4">
+
+### リリースブランチを作成して変更をプッシュする
+
+> **info** **注：** この時点で、ワークフローファイルがすでに GitHub リポジトリに含まれていて `main` ブランチから参照できることを確認してください。
+
+ワークフローをテストするために、リリースブランチを作成してターミナルウィンドウから GitHub リポジトリへプッシュしましょう。
+
+<Terminal
+  cmd={['$ git checkout -b release/1.0.0', '', '$ git push origin release/1.0.0']}
+  cmdCopy="git checkout -b release/1.0.0 && git push origin release/1.0.0"
+/>
+
+EAS ダッシュボードを開いて、このワークフローの実行を探します。このフィンガープリントに対応するビルドはまだ存在しないので、`build` ジョブが実行され、`update` ジョブはグレーアウトされているはずです。
+
+<ContentSpotlight
+  alt="リリースブランチによる本番実行で、fingerprint、get-build、そして Android と iOS のビルドジョブを表示している EAS Workflows ダッシュボード。"
+  src="/static/images/tutorial/cicd/eas-workflows-production-build-jobs.png"
+  className="max-w-160"
+/>
+
+Android と iOS のビルドは並列に実行されます。各ジョブが完了すると、Android と iOS の新しいアーティファクトが手に入ります。
+
+次に、同じリリースブランチでサンプルプロジェクトに TypeScript/JavaScript のみの変更を加えて、次のコマンドで再度プッシュしてみましょう。
+
+<Terminal
+  cmd={['$ git add .', '$ git commit -m "Update welcome text"', '$ git push origin release/1.0.0']}
+  cmdCopy="git add . && git commit -m 'Update welcome text' && git push origin release/1.0.0"
+/>
+
+ワークフローが実行されたら、EAS ダッシュボードで、フィンガープリントが前回のプッシュのビルドと一致していることを確認しましょう。`build` ジョブは完全にスキップされ、`update` ジョブが OTA アップデートを公開します。
+
+<ContentSpotlight
+  alt="フィンガープリントの一致によって既存のネイティブビルドを再利用し、Android と iOS の無線経由のアップデートを公開している EAS Workflows の本番実行。"
+  src="/static/images/tutorial/cicd/eas-workflows-production-update-jobs.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## アプリストアへの提出を自動化する
+
+この章で作ってきたワークフローは、本番向けのアプリバイナリを作成するか、既存の本番アプリへ OTA アップデートを公開するだけのものです。[ストアへの提出の自動化](/build/automate-submissions/)は、本番リリースのワークフローでこの次によく行われるステップです。
+
+EAS Workflows は、アプリストアへの提出を自動化するための事前パッケージ済み `submit` ジョブを提供しています。使用するには、アプリストアの認証情報を EAS CLI で管理する必要があります。また、最初の Android リリース（**.aab**）を Google Play Store に手動でアップロードするなど、アプリストア側の要件も満たしておく必要があります。iOS には、Apple Developer Program への登録と署名用の認証情報の設定という、iOS 独自の準備があります。
+
+アプリストア側の要件が整ったら、`build` ジョブのあとに実行される `submit_android` と `submit_ios` の 2 つのジョブをワークフローに追加できます。
+
+```yaml .eas/workflows/production.yml
+# rest of the workflow file
+
+submit_android:
+  name: Submit Android
+  needs: [build_android]
+  type: submit
+  params:
+    build_id: ${{ needs.build_android.outputs.build_id }}
+submit_ios:
+  name: Submit iOS
+  needs: [build_ios]
+  type: submit
+  params:
+    build_id: ${{ needs.build_ios.outputs.build_id }}
+```
+
+上の `submit_android` と `submit_ios` のジョブは、どのビルドをアプリストアに提出するかを知るために `build_id` パラメーターを必要とします。これらは `build_android` と `build_ios` のジョブが実行されたとき、つまり新しい本番ビルドが作成されたときにのみ実行されます。TypeScript/JavaScript のファイルだけが変更された場合は新しいビルドが作成されないため、`submit` ジョブも同様にスキップされます。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/cicd/production"
+  name="CICD_TUTORIAL"
+  chapterTitle="第 5 章：本番デプロイ"
+  summary="リリースブランチへのプッシュでトリガーされる Android と iOS の本番ワークフローを作成し、フィンガープリントでネイティブビルドと OTA アップデートを使い分け、EAS Submit がアプリストアへの提出をどう自動化するかを確認しました。"
+  nextChapterDescription="次の章では、本番デプロイをリリースブランチからバージョンタグへ切り替える方法を学びます。"
+  nextChapterTitle="タグベースのリリース"
+  nextChapterLink="/ja/tutorial/cicd/tag-based-releases"
+/>

@@ -1,18 +1,137 @@
 # Changelog
 
-## Unpublished
+## 58.0.10
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047))
+  - expo-modules-autolinking@58.0.10
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+  - @expo/config@58.0.3
+  - @expo/image-utils@0.12.4
+  - expo-modules-autolinking@58.0.9
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50946](https://github.com/expo/expo/pull/50946), [#50354](https://github.com/expo/expo/pull/50354), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - expo-modules-autolinking@58.0.8
+  - @expo/config@58.0.2
+  - @expo/image-utils@0.12.3
+
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#50549](https://github.com/expo/expo/pull/50549))
+  - expo-modules-autolinking@58.0.7
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Point the `ios.backgroundColor` prebuild warning at the `expo-system-ui` reference instead of the removed `build-reference/migrating` page, which returns a 404. ([#49791](https://github.com/expo/expo/pull/49791) by [@dennytosp](https://github.com/dennytosp))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964), [#50680](https://github.com/expo/expo/pull/50680))
+  - @expo/config@58.0.1
+  - @expo/config-plugins@58.0.4
+  - @expo/config-types@58.0.2
+  - @expo/image-utils@0.12.2
+  - @expo/json-file@11.2.1
+  - expo-modules-autolinking@58.0.6
+
+## 58.0.5 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.2 — 2026-09-15
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-14
+
+### 💡 Others
+
+- Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.0 — 2026-09-10
+
+### 🐛 Bug fixes
+
+- Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Write the `RCTMetroPort` Info.plist key so bare dev builds resolve their own Metro port instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Keep the Xcode project in sync when the app icon switches between a Liquid Glass `.icon` package and a PNG icon. ([#46070](https://github.com/expo/expo/pull/46070) by [@debugtheworldbot](https://github.com/debugtheworldbot))
+
+## 57.0.10 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.9 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.8 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.7 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-06-15
 
 ### 🎉 New features
 
 - Add option to specify targets to use with inline modules, add new option to podfile.properties ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 
-### 🐛 Bug fixes
+## 56.0.15 - 2026-06-05
 
-- Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))
+_This version does not introduce any user-facing changes._
 
-### 💡 Others
+## 56.0.14 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.13 — 2026-05-26
 

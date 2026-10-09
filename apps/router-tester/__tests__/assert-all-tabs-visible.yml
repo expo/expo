@@ -1,0 +1,7 @@
+appId: dev.expo.routertester
+---
+- assertVisible: "applewatch.side.right"
+- assertVisible: "Index tab"
+- assertVisible: "lock.applewatch"
+- assertVisible: "figure.disc.sports"
+- assertVisible: "Dynamic"

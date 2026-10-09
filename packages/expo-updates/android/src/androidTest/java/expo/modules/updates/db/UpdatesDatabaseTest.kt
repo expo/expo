@@ -184,4 +184,50 @@ class UpdatesDatabaseTest {
     Assert.assertNotNull(assetDao.loadAssetWithKey("asset2"))
     Assert.assertNotNull(assetDao.loadAssetWithKey("asset3"))
   }
+
+  @Test
+  fun testInsertAssets_KeyConflict_AdoptsExistingAssetRow() {
+    val update1 = insertedUpdate(Date(1000))
+    assetDao.insertAssets(listOf(asset("shared-bundle", isLaunchAsset = true)), update1)
+    updateDao.markUpdateFinished(update1)
+
+    // a second update registers the same key as a new asset, as happens when
+    // two loaders classify it before either has inserted it
+    val update2 = insertedUpdate(Date(2000))
+    assetDao.insertAssets(listOf(asset("shared-bundle", isLaunchAsset = true)), update2)
+
+    Assert.assertNotNull(updateDao.loadUpdateWithId(update1.id))
+    Assert.assertNotNull(updateDao.loadLaunchAssetForUpdate(update1.id))
+    Assert.assertNotNull(updateDao.loadLaunchAssetForUpdate(update2.id))
+    Assert.assertEquals(1, assetDao.loadAllAssets().size)
+  }
+
+  @Test
+  fun testInsertAssets_KeyConflict_KeepsOtherUpdatesLinked() {
+    val update1 = insertedUpdate(Date(1000))
+    assetDao.insertAssets(listOf(asset("bundle-1", isLaunchAsset = true), asset("shared-image")), update1)
+    updateDao.markUpdateFinished(update1)
+
+    val update2 = insertedUpdate(Date(2000))
+    assetDao.insertAssets(listOf(asset("shared-image")), update2)
+
+    Assert.assertEquals(2, assetDao.loadAssetsForUpdate(update1.id).size)
+    Assert.assertEquals(1, assetDao.loadAssetsForUpdate(update2.id).size)
+    Assert.assertEquals(2, assetDao.loadAllAssets().size)
+  }
+
+  private fun insertedUpdate(commitTime: Date) = UpdateEntity(
+    UUID.randomUUID(),
+    commitTime,
+    "1.0",
+    "https://exp.host/@esamelson/test-project",
+    JSONObject("{}"),
+    null,
+    null
+  ).also { updateDao.insertUpdate(it) }
+
+  private fun asset(key: String, isLaunchAsset: Boolean = false) = AssetEntity(key, "js").apply {
+    relativePath = "$key.js"
+    this.isLaunchAsset = isLaunchAsset
+  }
 }

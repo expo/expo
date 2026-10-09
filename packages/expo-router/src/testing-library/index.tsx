@@ -4,8 +4,9 @@ import type { RenderResult } from '@testing-library/react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
-import type { ReactNavigationState } from '../global-state/router-store';
-import { store } from '../global-state/router-store';
+import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
+import { navigationRef } from '../global-state/navigationRef';
+import type { ReactNavigationState } from '../global-state/types';
 import { router } from '../imperative-api';
 import { type MockContextConfig, getMockContext } from './mock-config';
 
@@ -60,7 +61,7 @@ export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] 
   linking?: Partial<ExpoLinkingOptions>;
 };
 
-type Result = ReturnType<typeof rnTestingLibrary.render> & {
+export type RenderRouterResult = RenderResult & {
   getPathname(): string;
   getPathnameWithParams(): string;
   getSegments(): string[];
@@ -68,10 +69,10 @@ type Result = ReturnType<typeof rnTestingLibrary.render> & {
   getRouterState(): ReactNavigationState | undefined;
 };
 
-export function renderRouter(
+export async function renderRouter(
   context: MockContextConfig = './app',
   { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
-): Result {
+): Promise<RenderRouterResult> {
   // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
   const systemTime = Date.now();
   jest.useFakeTimers();
@@ -86,55 +87,50 @@ export function renderRouter(
   // Force the render to be synchronous
   process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
 
-  const result = rnTestingLibrary.render(
+  const result = await rnTestingLibrary.render(
     <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
     options
   );
 
-  /**
-   * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
-   * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
-   * (that the app will briefly be in the right state, but then update to an invalid state)
-   */
   return Object.assign(result, {
     getPathname(this: RenderResult): string {
-      return store.getRouteInfo().pathname;
+      return getRouteInfoFromState(navigationRef.getRootState()).pathname;
     },
     getSegments(this: RenderResult): string[] {
-      return store.getRouteInfo().segments;
+      return getRouteInfoFromState(navigationRef.getRootState()).segments;
     },
     getSearchParams(this: RenderResult): Record<string, string | string[]> {
-      return store.getRouteInfo().params;
+      return getRouteInfoFromState(navigationRef.getRootState()).params;
     },
     getPathnameWithParams(this: RenderResult): string {
-      return store.getRouteInfo().pathnameWithParams;
+      return getRouteInfoFromState(navigationRef.getRootState()).pathnameWithParams;
     },
     getRouterState(this: RenderResult) {
-      return store.state;
+      return navigationRef.getRootState();
     },
   });
 }
 
 export const testRouter = {
   /** Navigate to the provided pathname and assert the pathname */
-  navigate(path: string) {
-    rnTestingLibrary.act(() => router.navigate(path));
+  async navigate(path: string) {
+    await rnTestingLibrary.act(() => router.navigate(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
   /** Push the provided pathname and assert the pathname */
-  push(path: string) {
-    rnTestingLibrary.act(() => router.push(path));
+  async push(path: string) {
+    await rnTestingLibrary.act(() => router.push(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
   /** Replace with provided pathname and assert the pathname */
-  replace(path: string) {
-    rnTestingLibrary.act(() => router.replace(path));
+  async replace(path: string) {
+    await rnTestingLibrary.act(() => router.replace(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
   /** Go back in history and assert the new pathname */
-  back(path?: string) {
+  async back(path?: string) {
     expect(router.canGoBack()).toBe(true);
-    rnTestingLibrary.act(() => router.back());
+    await rnTestingLibrary.act(() => router.back());
     if (path) {
       expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
     }
@@ -144,14 +140,14 @@ export const testRouter = {
     return router.canGoBack();
   },
   /** Update the current route query params and assert the new pathname */
-  setParams(params: Record<string, string>, path?: string) {
-    router.setParams(params);
+  async setParams(params: Record<string, string>, path?: string) {
+    await rnTestingLibrary.act(() => router.setParams(params));
     if (path) {
       expect(screen).toHavePathnameWithParams(path);
     }
   },
-  /** If there's history that supports invoking the `back` function. */
-  dismissAll() {
-    rnTestingLibrary.act(() => router.dismissAll());
+  /** Dismiss every screen in the current stack. */
+  async dismissAll() {
+    await rnTestingLibrary.act(() => router.dismissAll());
   },
 };

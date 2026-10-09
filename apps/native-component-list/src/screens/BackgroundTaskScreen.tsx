@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import format from 'date-format';
+import { format } from 'date-fns';
 import * as BackgroundTask from 'expo-background-task';
+import { useFocusEffect } from 'expo-router';
 import * as TaskManager from 'expo-task-manager';
 import React, { useEffect } from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
@@ -85,7 +85,7 @@ export default function BackgroundTaskScreen() {
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
         <BodyText>Last background task was invoked at:</BodyText>
         <BodyText style={styles.boldText}>
-          {format('yyyy-MM-dd hh:mm:ss:SSS', lastRunDate)}
+          {format(lastRunDate, 'yyyy-MM-dd hh:mm:ss:SSS')}
         </BodyText>
       </View>
     );
@@ -136,7 +136,7 @@ export default function BackgroundTaskScreen() {
           <BodyText style={{ textAlign: 'center' }}>Expiry was last trigger at:</BodyText>
           {expiryWasTriggered ? (
             <BodyText style={{ textAlign: 'center', fontWeight: 'bold' }}>
-              {format('yyyy-MM-dd hh:mm:ss:SSS', new Date(+expiryWasTriggered))}
+              {format(new Date(+expiryWasTriggered), 'yyyy-MM-dd hh:mm:ss:SSS')}
             </BodyText>
           ) : (
             <BodyText style={{ textAlign: 'center' }}>Never</BodyText>

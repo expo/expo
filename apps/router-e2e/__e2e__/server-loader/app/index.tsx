@@ -41,6 +41,7 @@ const IndexScreen = () => {
 
       <SiteLinks>
         <SiteLink href="/second">Go to Second</SiteLink>
+        <SiteLink href="/slow">Go to Slow</SiteLink>
         <SiteLink href="/env">Go to Env</SiteLink>
         <SiteLink href="/request">Go to Request</SiteLink>
         <SiteLink href="/response">Go to Response</SiteLink>
@@ -49,6 +50,7 @@ const IndexScreen = () => {
         <SiteLink href="/posts/static-post-2">Go to static Post 2</SiteLink>
         <SiteLink href="/error">Go to Error</SiteLink>
         <SiteLink href="/(group)">Go to Grouped Index</SiteLink>
+        <SiteLink href="/platform/alpha/beta">Go to Platform Catch-all</SiteLink>
         <SiteLink href="/static-helper">Go to Static Helper</SiteLink>
         <SiteLink href="/server-helper">Go to Server Helper</SiteLink>
       </SiteLinks>

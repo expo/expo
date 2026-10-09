@@ -40,6 +40,40 @@ struct NewUpdateTests {
   }
 
   @Test
+  func `relative asset urls`() {
+    let manifest = ExpoUpdatesManifest(
+      rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": "0eef8214-4833-4089-9dff-b4138a14f196",
+        "createdAt": "2020-11-11T00:17:54.797Z",
+        "launchAsset": [
+          "key": "bundle",
+          "url": "index.bundle?platform=ios",
+          "contentType": "application/javascript"
+        ],
+        "assets": [
+          [
+            "key": "asset",
+            "url": "assets/icon.png",
+            "fileExtension": ".png"
+          ]
+        ]
+      ]
+    )
+
+    let update = ExpoUpdatesUpdate.update(
+      withExpoUpdatesManifest: manifest,
+      extensions: [:],
+      config: config,
+      database: database
+    )
+
+    #expect(update.assets()?[0].url?.absoluteString == "https://u.expo.dev/index.bundle?platform=ios")
+    #expect(update.assets()?[1].url?.absoluteString == "https://u.expo.dev/assets/icon.png")
+    #expect(update.manifest.bundleUrl() == "https://u.expo.dev/index.bundle?platform=ios")
+  }
+
+  @Test
   func `throws no runtime version`() {
     let manifest = ExpoUpdatesManifest(
       rawManifestJSON: [

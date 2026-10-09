@@ -96,7 +96,8 @@ struct JavaScriptCodableDateTests {
     // Compare at whole-millisecond granularity (JS `Date`'s resolution); the original is already an
     // exact number of milliseconds, so nothing is lost, but the comparison avoids float-equality ULP noise.
     #expect(
-      (roundTripped.timeIntervalSince1970 * 1000.0).rounded() == (original.timeIntervalSince1970 * 1000.0).rounded())
+      (roundTripped.timeIntervalSince1970 * 1000.0).rounded() == (original.timeIntervalSince1970 * 1000.0).rounded()
+    )
   }
 
   @Test

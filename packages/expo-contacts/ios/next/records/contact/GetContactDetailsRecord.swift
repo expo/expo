@@ -82,6 +82,9 @@ struct GetContactDetailsRecord: Record {
     self.phoneticCompanyName = phoneticCompanyName
     self.note = note
     self.image = image
+    self.thumbnail = thumbnail
+    self.birthday = birthday
+    self.nonGregorianBirthday = nonGregorianBirthday
     self.emails = emails
     self.dates = dates
     self.phones = phones

@@ -29,7 +29,9 @@ import { Host, Button } from '@expo/ui/jetpack-compose';
 export default function MatchContents() {
   return (
     <Host matchContents>
-      <Button onClick={() => console.log('Pressed')}>Sized to content</Button>
+      <Button onClick={() => console.log('Pressed')}>
+        Sized to content
+      </Button>
     </Host>
   );
 }
@@ -62,7 +64,9 @@ import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
 
 export default function MatchContentsFix() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <LazyRow>
         {Array.from({ length: 5 }).map((_, i) => (
           <Text key={i}>Item {i}</Text>
@@ -82,8 +86,15 @@ import { Host, Button } from '@expo/ui/jetpack-compose';
 
 export default function HostWithStyle() {
   return (
-    <Host style={{ padding: 16, backgroundColor: '#f0f0f0', borderRadius: 8 }}>
-      <Button onClick={() => console.log('Pressed')}>Styled host</Button>
+    <Host
+      style={{
+        padding: 16,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 8,
+      }}>
+      <Button onClick={() => console.log('Pressed')}>
+        Styled host
+      </Button>
     </Host>
   );
 }
@@ -95,4 +106,7 @@ export default function HostWithStyle() {
 import { Host } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/host" apiName="Host" />
+<APISection
+  packageName="expo-ui/jetpack-compose/host"
+  apiName="Host"
+/>

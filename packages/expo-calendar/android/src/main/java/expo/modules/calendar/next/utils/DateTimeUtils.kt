@@ -21,7 +21,9 @@ fun DateTimeInput.getTimeInMillis(): Long {
 }
 
 fun String?.toMilliseconds(): Long? {
-  if (this == null) return null
+  if (this == null) {
+    return null
+  }
   return try {
     sdf.parse(this)?.let { Calendar.getInstance().apply { time = it }.timeInMillis }
       ?: throw DateParseException("Date '$this' could not be parsed")

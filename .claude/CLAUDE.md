@@ -32,11 +32,44 @@ Swift/Kotlin unit tests live in `packages/<pkg>/ios/Tests/` and `android/`, and 
 On iOS/macOS (Android needs no pod step), install pods before running native tests or building,
 and again after adding or changing an iOS `test_spec`. Run `pod install` directly in the relevant
 `apps/*/ios` or `apps/*/macos` directory rather than `et pod-install` — running it directly is
-faster and avoids installing for apps you aren't working on, like Expo Go.
+faster and avoids installing for apps you aren't working on, like Expo Go. iOS unit tests run
+against bare-expo, so install pods in `apps/bare-expo/ios`.
 
 Running native tests:
 `et native-unit-tests` — run native unit tests for all packages that provide them. Scope to
 one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packages @expo/ui`).
+
+## Verification: running the app
+
+Passing tests and `et check-packages` are not enough for changes that have to be seen running:
+UI, native module behavior at runtime, the dev menu, dev launcher, and error overlays. For these,
+run the change in `apps/bare-expo` on a simulator or emulator before calling it done. Pure JS,
+tooling, and config changes that unit tests cover do not need this.
+
+Build, install, and launch from `apps/bare-expo` (this also starts Metro):
+
+- iOS: `npx expo run:ios` (run `pod install` in `apps/bare-expo/ios` first if native code or
+  dependencies changed)
+- Android: `npx expo run:android`
+
+Check that Metro is up with `curl http://localhost:8081/status` (expect `packager-status:running`).
+The app IDs are `dev.expo.Payments` (iOS) and `dev.expo.payments` (Android); the URL scheme is
+`bareexpo`.
+
+Drive the app and collect evidence from the command line:
+
+- Android: `adb devices` to confirm an emulator; `adb shell input keyevent <code>` or
+  `adb shell input tap <x> <y>` to interact; `adb exec-out screencap -p > shot.png` to capture;
+  `adb logcat` for native logs.
+- iOS: `xcrun simctl list devices booted` to confirm a simulator; `xcrun simctl openurl booted
+  bareexpo://<path>` to deep link; `xcrun simctl io booted screenshot shot.png` to capture.
+
+Reproduce the bug first, then run the same steps with the fix, and keep the before and after
+output or screenshots for the Test Plan. Test the platform the change affects; if it touches
+both, test both. If no simulator or emulator is available, or a platform could not be run, say
+so in the Test Plan instead of claiming the change is verified.
+
+`expo-router` has its own flow on `apps/router-e2e` — see `packages/expo-router/AGENTS.md`.
 
 ## Committing
 
@@ -56,9 +89,15 @@ Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTI
 - **How:** how you built the feature or fixed the bug, and why you took that approach.
 - **Test Plan:** how you tested the change and how a reviewer can reproduce it — include terminal
   output or screenshots when there are no automated tests.
-- **Checklist:** added a `CHANGELOG.md` entry and verified the change builds, type-checks, lints,
+- **Checklist:** added a changeset and verified the change builds, type-checks, lints,
   and tests via `et check-packages`; confirmed the change works with `npx expo prebuild` & EAS Build
   if relevant; follows the documentation style guide.
+
+**Changeset:** changes to published packages need a `.changeset/*.md` file; see
+[`.changeset/README.md`](../.changeset/README.md). `pnpm changeset` is interactive, so write the
+file directly. Do not edit package `CHANGELOG.md` files or add a PR link or author; both are
+generated.
+
 **Before submitting:** run `et check-packages` (builds, type-checks, lints, and tests), remove stray
 `console.log`s or commented-out code, and do not stage the gitignored `build/` output.
 

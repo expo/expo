@@ -10,7 +10,10 @@ export function findNativeViewProps(viewName: string) {
   return call?.[1];
 }
 
-export const requireNativeModule = jest.fn(() => ({}));
+export const requireNativeModule = jest.fn(() => ({
+  // The Android `Host` reads the Material palette on render.
+  getMaterialColors: jest.fn(() => ({})),
+}));
 
 export const requireNativeView = jest.fn((moduleName: string, viewName: string) => {
   return function MockNativeView(props: Record<string, any>) {

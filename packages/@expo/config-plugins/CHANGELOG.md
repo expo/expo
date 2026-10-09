@@ -1,17 +1,95 @@
 # Changelog
 
-## Unpublished
+## 58.0.6
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Warn when a package's `app.plugin.js` is missing from its `package.json:exports`, since tools that resolve the config plugin through Node can't find it. ([#51080](https://github.com/expo/expo/pull/51080) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump `@expo/sdk-runtime-versions` to `^1.0.1`. ([#50955](https://github.com/expo/expo/pull/50955) by [@kitten](https://github.com/kitten))
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Added `updates.maxUpdatesToKeep` support for expo-updates native configuration. ([#45964](https://github.com/expo/expo/pull/45964) by [@Kudo](https://github.com/Kudo))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/config-types@58.0.2
+  - @expo/json-file@11.2.1
+  - @expo/plist@0.10.1
+  - @expo/require-utils@58.0.2
+
+## 58.0.3 — 2026-09-28
+
+### 🐛 Bug fixes
+
+- Replace, instead of duplicate, the generated section in files with CRLF line endings. ([#50381](https://github.com/expo/expo/pull/50381) by [@tahakocal](https://github.com/tahakocal))
+
+## 58.0.2 — 2026-09-16
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.1 — 2026-09-15
+
+### 🐛 Bug fixes
+
+- Keep accented and compatibility characters when deriving iOS project names from the app name ('Árbók' now becomes 'Arbok', not 'rbk'; 'ﬁre' becomes 'fire'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+- Escape `?` and `\` in `XML.escapeAndroidString`, so values are not compiled as attribute references or escape sequences. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
+
+- [iOS] Add `IOSConfig.DevServer.withMetroPort` to write the `RCTMetroPort` Info.plist key from the `RCT_METRO_PORT` build setting. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
+- [iOS] Quote and escape keys and values written to `.strings` files. ([#49605](https://github.com/expo/expo/pull/49605) by [@jakex7](https://github.com/jakex7))
+- [iOS] Keep writing `locales` after one that has no `Info.plist` keys. ([#49777](https://github.com/expo/expo/pull/49777) by [@giaBaoJS](https://github.com/giaBaoJS))
+
+### 💡 Others
+
+- [iOS] Documented that `UIRequiresFullScreen` no longer opts an app out of resizing as of iOS 27, and noted it in the iPad multitasking warning. ([#48175](https://github.com/expo/expo/pull/48175) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-07
 
 ### 🐛 Bug fixes
 
 - Skip non-string values in `locales` JSON files instead of writing `[object Object]` into `InfoPlist.strings` and `strings.xml`, and warn with the offending keys. ([#47993](https://github.com/expo/expo/pull/47993) by [@soreavis](https://github.com/soreavis))
 - Honor `ios.version` and `android.version` in `Updates.getAppVersion`, `Updates.getNativeVersion`, and the `appVersion` runtime version policy. Previously the platform-specific overrides were ignored, so projects that used only `ios.version`/`android.version` (with no top-level `version` in `app.json`) received the `package.json` fallback (or `"1.0.0"`) wherever these helpers were consumed. `Updates.getAppVersion` gains an optional `platform` argument; passing it prefers the platform-specific override, and calls without a platform keep the previous behavior. Also fixes `Updates.getNativeVersion` on Android, which previously used the iOS version for the `${version}` component. ([#47416](https://github.com/expo/expo/pull/47416) by [@tlenahan](https://github.com/tlenahan))
 
-### 💡 Others
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.8 — 2026-05-23
 

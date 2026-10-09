@@ -1,22 +1,36 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import * as SQLite from 'expo-sqlite';
 import fs from 'fs';
-
-import { useSQLiteDatabase } from '../useSQLiteDatabase';
+import { act as reactAct } from 'react';
 
 import * as sqliteDump from '@/lib/sqliteDump';
 
+import { useSQLiteDatabase } from '../useSQLiteDatabase';
+
 // Mock expo-sqlite
-jest.mock(
-  '../../../../src/ExpoSQLite',
-  () =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock('../../../../src/ExpoSQLite', () =>
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('../../../../src/__mocks__/ExpoSQLite')
 );
 
 // Mock sqliteDump
 jest.mock('@/lib/sqliteDump');
+
+// `openDatabaseAsync` registers the database with devtools without awaiting it.
+// Left unmocked, that opens a real WebSocket whose retry timers outlive the test.
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
 
 const mockImportDatabase = sqliteDump.importDatabase as jest.MockedFunction<
   typeof sqliteDump.importDatabase
@@ -46,7 +60,7 @@ afterAll(() => {
 
 describe('useSQLiteDatabase - Format Detection', () => {
   it('should detect binary SQLite format by header', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     // Create a real binary SQLite database
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
@@ -71,7 +85,7 @@ describe('useSQLiteDatabase - Format Detection', () => {
   it('should detect SQL dump format and use importDatabase', async () => {
     mockImportDatabase.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sqlDump = 'CREATE TABLE test (id INTEGER);';
     const encoder = new TextEncoder();
@@ -94,7 +108,7 @@ describe('useSQLiteDatabase - Format Detection', () => {
   it('should strip file extension when creating database from SQL dump', async () => {
     mockImportDatabase.mockResolvedValue(undefined);
 
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sqlData = new TextEncoder().encode('CREATE TABLE test (id INTEGER);');
 
@@ -113,7 +127,7 @@ describe('useSQLiteDatabase - Format Detection', () => {
 
 describe('useSQLiteDatabase - KV Store Detection', () => {
   it('should detect KV store when storage table has key and value columns', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     // Create database with storage table
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
@@ -134,7 +148,7 @@ describe('useSQLiteDatabase - KV Store Detection', () => {
   });
 
   it('should not detect KV store when storage table does not exist', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
     await sourceDb.execAsync('CREATE TABLE users (id INTEGER)');
@@ -154,7 +168,7 @@ describe('useSQLiteDatabase - KV Store Detection', () => {
   });
 
   it('should not detect KV store when storage table lacks key or value columns', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
     await sourceDb.execAsync('CREATE TABLE storage (id INTEGER, data TEXT)');
@@ -176,14 +190,14 @@ describe('useSQLiteDatabase - KV Store Detection', () => {
 
 describe('useSQLiteDatabase - State Management', () => {
   it('should set loading state during database open', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
     const binaryData = await sourceDb.serializeAsync();
     await sourceDb.closeAsync();
 
-    act(() => {
-      result.current.openDatabaseFromData(binaryData, 'test.db', 'file');
+    reactAct(() => {
+      void result.current.openDatabaseFromData(binaryData, 'test.db', 'file');
     });
 
     // Should be loading immediately
@@ -199,12 +213,12 @@ describe('useSQLiteDatabase - State Management', () => {
     });
   });
 
-  test.skip('should set error state on database open failure', async () => {
+  it.skip('should set error state on database open failure', async () => {
     // Note: better-sqlite3 (the mock) is quite lenient and accepts various data formats.
     // In a real environment with native SQLite, corrupted data would throw an error.
     // This test is skipped as we can't easily create data that the mock will reject.
 
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     // Invalid binary data that will cause deserialization to fail
     const invalidData = new Uint8Array([0x00, 0x01, 0x02]); // Not SQLite data
@@ -218,10 +232,10 @@ describe('useSQLiteDatabase - State Management', () => {
   });
 
   it('should clear error state on successful operation', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     // Set initial error
-    act(() => {
+    await act(() => {
       result.current.setError('Previous error');
     });
 
@@ -246,7 +260,7 @@ describe('useSQLiteDatabase - State Management', () => {
   it('should set error state on SQL import failure', async () => {
     mockImportDatabase.mockRejectedValue(new Error('Invalid SQL syntax'));
 
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sqlData = new TextEncoder().encode('INVALID SQL');
 
@@ -261,7 +275,7 @@ describe('useSQLiteDatabase - State Management', () => {
 
 describe('useSQLiteDatabase - SQL Query Building', () => {
   it('insertRow should build correct INSERT query', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     // Create database with table
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
@@ -296,7 +310,7 @@ describe('useSQLiteDatabase - SQL Query Building', () => {
   });
 
   it('updateRow should build correct UPDATE query', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
     await sourceDb.execAsync('CREATE TABLE users (id INTEGER, name TEXT, age INTEGER)');
@@ -331,7 +345,7 @@ describe('useSQLiteDatabase - SQL Query Building', () => {
   });
 
   it('deleteRow should build correct DELETE query', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
     await sourceDb.execAsync('CREATE TABLE users (id INTEGER, name TEXT)');
@@ -363,19 +377,19 @@ describe('useSQLiteDatabase - SQL Query Building', () => {
 
 describe('useSQLiteDatabase - Error Guards', () => {
   it('should throw error when calling listTables without database', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     await expect(result.current.listTables()).rejects.toThrow('No database open');
   });
 
   it('should throw error when calling getTableSchema without database', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     await expect(result.current.getTableSchema('users')).rejects.toThrow('No database open');
   });
 
   it('should throw error when calling executeQuery without database', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     await expect(result.current.executeQuery('SELECT * FROM users')).rejects.toThrow(
       'No database open'
@@ -383,7 +397,7 @@ describe('useSQLiteDatabase - Error Guards', () => {
   });
 
   it('should throw error when calling insertRow without database', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     await expect(result.current.insertRow('users', { name: 'Alice' })).rejects.toThrow(
       'No database open'
@@ -391,7 +405,7 @@ describe('useSQLiteDatabase - Error Guards', () => {
   });
 
   it('should throw error when calling exportDatabase without database', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     await expect(result.current.exportDatabase()).rejects.toThrow('No database open');
   });
@@ -399,7 +413,7 @@ describe('useSQLiteDatabase - Error Guards', () => {
 
 describe('useSQLiteDatabase - closeDatabase', () => {
   it('should close database and clear state', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');
     const binaryData = await sourceDb.serializeAsync();
@@ -425,7 +439,7 @@ describe('useSQLiteDatabase - closeDatabase', () => {
   });
 
   it('should handle closeDatabase when no database is open', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     // Should not throw
     await act(async () => {
@@ -438,7 +452,7 @@ describe('useSQLiteDatabase - closeDatabase', () => {
 
 describe('useSQLiteDatabase - openDatabase from File', () => {
   it('should read File and call openDatabaseFromData', async () => {
-    const { result } = renderHook(() => useSQLiteDatabase());
+    const { result } = await renderHook(() => useSQLiteDatabase());
 
     // Create binary data
     const sourceDb = await SQLite.openDatabaseAsync(':memory:');

@@ -1,49 +1,21 @@
-declare module 'react-native/Libraries/Image/AssetSourceResolver' {
-  import type { PackagerAsset } from '@react-native/assets/registry';
+// The `react-native/asset-registry` build entry point ships untyped. Its exports are the
+// `AssetRegistry` API from `react-native`, which Expo's Metro resolver serves on every platform.
+declare module 'react-native/asset-registry' {
+  export type AssetDestPathResolver = 'android' | 'generic';
 
-  export type ResolvedAssetSource = {
-    __packager_asset: boolean;
-    width?: number | null;
-    height?: number | null;
-    uri: string;
-    scale: number;
-  };
+  export type PackagerAsset = Readonly<{
+    fileSystemLocation: string;
+    httpServerLocation: string;
+    width: number | undefined;
+    height: number | undefined;
+    scales: number[];
+    hash: string;
+    name: string;
+    type: string;
+    resolver?: AssetDestPathResolver | undefined;
+  }>;
 
-  export default class AssetSourceResolver {
-    serverUrl: string | null;
-    jsbundleUrl: string | null;
-    asset: PackagerAsset & { fileHashes?: string[] };
-
-    constructor(serverUrl: string | null, jsbundleUrl: string | null, asset: PackagerAsset);
-
-    isLoadedFromServer(): boolean;
-    isLoadedFromFileSystem(): boolean;
-    defaultAsset(): ResolvedAssetSource;
-    assetServerURL(): ResolvedAssetSource;
-    scaledAssetPath(): ResolvedAssetSource;
-    scaledAssetURLNearBundle(): ResolvedAssetSource;
-    resourceIdentifierWithoutScale(): ResolvedAssetSource;
-    drawableFolderInBundle(): ResolvedAssetSource;
-    fromSource(source: string): ResolvedAssetSource;
-
-    static pickScale(scales: number[], deviceScale: number): number;
-  }
-}
-
-declare module 'react-native/Libraries/Image/resolveAssetSource' {
-  import type { ResolvedAssetSource } from 'react-native/Libraries/Image/AssetSourceResolver';
-  import type AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
-
-  export default function resolveAssetSource(source: any): ResolvedAssetSource | null;
-
-  export function setCustomSourceTransformer(
-    transformer: (resolver: AssetSourceResolver) => ResolvedAssetSource
-  ): void;
-}
-
-declare module '@react-native/assets-registry/registry' {
-  import type { PackagerAsset } from '@react-native/assets/registry';
-  export * from '@react-native/assets/registry';
+  export function registerAsset(asset: PackagerAsset): number;
 
   // NOTE(@kitten): Custom override supported in Expo only
   interface VirtualAssetModule {

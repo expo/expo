@@ -115,9 +115,9 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             <SidebarTitle Icon={Icon} sectionName={title}>
               {title}
             </SidebarTitle>
-            <div className="flex flex-row items-center pb-1">
+            <div className="flex shrink-0 flex-row items-center pb-1">
               <CircularProgressBar progress={progressPercentage} />{' '}
-              <p className="ml-2 text-sm text-tertiary">
+              <p className="ml-2 text-sm whitespace-nowrap text-tertiary">
                 {intl.formatMessage(
                   { id: 'sidebarTutorialProgress' },
                   { completed: completedChaptersCount, total: totalChapters }

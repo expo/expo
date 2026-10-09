@@ -16,7 +16,8 @@ struct RouterFontUtils {
         weight: fontWeight,
         style: nil,
         variant: nil,
-        scaleMultiplier: 1.0)
+        scaleMultiplier: 1.0
+      )
     }
     return UIFont.systemFont(ofSize: resolvedFontSize)
   }
@@ -50,9 +51,9 @@ struct RouterFontUtils {
       return CGFloat(fontSize)
     }
     #if os(tvOS)
-      return 17.0
+    return 17.0
     #else
-      return UIFont.labelFontSize
+    return UIFont.labelFontSize
     #endif
   }
 }

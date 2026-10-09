@@ -23,7 +23,7 @@ export const expoStart: Command = async (argv) => {
       '--ios': Boolean,
       '--web': Boolean,
       '--host': String,
-      '--tunnel': Boolean,
+      '--tunnel': String,
       '--lan': Boolean,
       '--localhost': Boolean,
       '--offline': Boolean,
@@ -41,7 +41,7 @@ export const expoStart: Command = async (argv) => {
       // Alias for adding interop with the Metro docs and RedBox errors.
       '--reset-cache': '--clear',
     },
-    argv
+    normalizeTunnelArgs(argv)
   );
 
   if (args['--help']) {
@@ -64,19 +64,30 @@ export const expoStart: Command = async (argv) => {
         ``,
         chalk`-m, --host <string>             Dev server hosting type. {dim Default: lan}`,
         chalk`                                {bold lan}: Use the local network`,
-        chalk`                                {bold tunnel}: Use any network by tunnel through ngrok`,
+        chalk`                                {bold tunnel}: Use any network through an Expo tunnel`,
         chalk`                                {bold localhost}: Connect to the dev server over localhost`,
-        `--tunnel                        Same as --host tunnel`,
+        `--tunnel [provider]             Use a tunnel. Default: expo (Legacy option: ngrok)`,
         `--lan                           Same as --host lan`,
         `--localhost                     Same as --host localhost`,
         ``,
         `--offline                       Skip network requests and use anonymous manifest signatures`,
         chalk`--https                         Start the dev server with https protocol. {bold Deprecated in favor of --tunnel}`,
         `--scheme <scheme>               Custom URI protocol to use when launching an app`,
-        chalk`-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
+        chalk`-p, --port <number>             Port to start the dev server on (does not apply to web). {dim Default: 8081}`,
         ``,
-        chalk`--private-key-path <path>       Path to private key for code signing. {dim Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.}`,
+        chalk`--private-key-path <path>       Path to private key for code signing. {dim Required to sign development manifests when the project is configured with an expo-updates code signing certificate.}`,
         `-h, --help                      Usage info`,
+      ].join('\n'),
+      [
+        '',
+        chalk`  {bold AGENTS:}`,
+        '',
+        chalk`  Setting {bold CI=1} turns off file watching and Fast Refresh, so code changes won't reach`,
+        chalk`  the app until the dev server restarts. Don't set it for local development.`,
+        '',
+        chalk`  Run without the interactive UI and keep Fast Refresh by redirecting output:`,
+        chalk`    {dim $} npx expo start > expo.log 2>&1`,
+        '',
       ].join('\n')
     );
   }
@@ -84,9 +95,10 @@ export const expoStart: Command = async (argv) => {
   const projectRoot = getProjectRoot(args);
 
   // NOTE(cedric): `./resolveOptions` loads the expo config when using dev clients, this needs to be initialized before that
-  const { setNodeEnv, loadEnvFiles } = await import('../utils/nodeEnv.js');
-  setNodeEnv(!args['--no-dev'] ? 'development' : 'production');
-  loadEnvFiles(projectRoot);
+  const { loadEnvFiles } = await import('../utils/nodeEnv.js');
+  loadEnvFiles(projectRoot, {
+    mode: !args['--no-dev'] ? 'development' : 'production',
+  });
 
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);
@@ -99,3 +111,26 @@ export const expoStart: Command = async (argv) => {
   const { startAsync } = await import('./startAsync.js');
   return startAsync(projectRoot, options, { webOnly: false }).catch(logCmdError);
 };
+
+/** Preserve the optional project directory when --tunnel is used without a provider. */
+function normalizeTunnelArgs(argv: string[] = process.argv.slice(2)): string[] {
+  const normalized: string[] = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--') {
+      normalized.push(...argv.slice(i));
+      break;
+    }
+    if (argv[i] === '--tunnel') {
+      const provider = argv[i + 1];
+      if (provider === 'ngrok' || provider === 'expo') {
+        normalized.push(`--tunnel=${provider}`);
+        i++;
+      } else {
+        normalized.push('--tunnel=expo');
+      }
+    } else {
+      normalized.push(argv[i]!);
+    }
+  }
+  return normalized;
+}

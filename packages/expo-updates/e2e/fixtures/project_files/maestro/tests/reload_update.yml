@@ -1,0 +1,44 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# Download an update, then reload with the JS API and check that the running JS really is the new
+# bundle. `basic_reload.yml` reloads with no update available, so it passes whether or not the
+# bundle swaps. Asserting `updateString` matters too: the native update id changes on reload even
+# when the old bundle keeps running.
+#
+# The manifest is served only after the first launch, otherwise the app updates on startup and
+# never runs the embedded bundle.
+- launchApp
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script:  ${output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve a basic update
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- tapOn:
+    label: Tap on download update button
+    id: downloadUpdate
+- evalScript:
+    script: ${output.api.delay(5000)}
+    label: Delay for 5 seconds
+- tapOn: "reload"
+- evalScript:
+    script: ${output.api.delay(5000)}
+    label: Delay for 5 seconds
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test-update-1"}
+    label: Assert update string is from downloaded bundle
+- stopApp

@@ -4,6 +4,7 @@ import inquirer from 'inquirer';
 import * as jsondiffpatch from 'jsondiffpatch';
 
 import * as Versions from '../Versions';
+import { formatVersionsDelta } from '../VersionsDiff';
 
 async function action() {
   const versionsStaging = await Versions.getVersionsAsync(Versions.VersionsApiHost.STAGING);
@@ -16,7 +17,7 @@ async function action() {
   }
 
   console.log(`Here is the diff from ${chalk.green('staging')} -> ${chalk.green('production')}:`);
-  console.log(jsondiffpatch.formatters.console.format(delta, versionsProd));
+  console.log(formatVersionsDelta(delta, versionsProd));
 
   const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
     {

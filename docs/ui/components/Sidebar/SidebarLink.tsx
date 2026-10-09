@@ -91,7 +91,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isNew && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-blue10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-blue10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-blue10 text-palette-white dark:text-palette-black'
               : 'border-palette-blue10 bg-none text-palette-blue10 dark:border-palette-blue9 dark:text-palette-blue9'
@@ -102,7 +102,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isAlpha && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
               : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
@@ -113,7 +113,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isBeta && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
               : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'
@@ -124,7 +124,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       {info.isPreview && (
         <div
           className={mergeClasses(
-            '-mt-px ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
+            'ml-2 inline-flex h-4.25 items-center rounded-full border border-palette-purple10 px-1.25 text-[10px] leading-none font-semibold text-palette-white',
             isSelected
               ? 'bg-palette-purple10 text-palette-white dark:text-palette-black'
               : 'border-palette-purple10 bg-none text-palette-purple11 dark:border-palette-purple9 dark:text-palette-purple10'

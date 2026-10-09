@@ -1,5 +1,44 @@
 export const TALKS = [
   {
+    title: "Your Biggest User Isn't Human: Designing DevTools for AI Agents",
+    event: 'Agent Conf 2026',
+    description: 'David Mokos',
+    videoId: 'mkJlmG1rkBg',
+    uploadDate: '2026-09-21',
+  },
+  {
+    title: 'The future of mobile development with Expo',
+    event: 'Chain React 2026',
+    description: 'Charlie Cheever',
+    videoId: 'jTZWOS9-JTw',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'How is your app actually doing in production',
+    event: 'Chain React 2026',
+    description: 'Kadi Kraman',
+    videoId: 'G9RoD_QpJYQ',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'Go All The Way',
+    event: 'Chain React 2026',
+    description: 'Seth Webster',
+    videoId: 'SWQtWHsAMk0',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'Prompt Once: Scaling Expo Brownfield Across 100+ Apps',
+    event: 'Chain React 2026',
+    description: 'Gabriel Donadel',
+    videoId: 'Yk5KjVx6i54',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
     title: 'Expo keynote',
     event: 'App.js Conf 2026',
     description: 'Charlie Cheever',
@@ -37,7 +76,6 @@ export const TALKS = [
     description: 'Charlie Cheever, Jon Samp',
     videoId: 'lnxanzsP1rM',
     uploadDate: '2025-06-04',
-    home: true,
   },
   {
     title: 'Deploy Everywhere with Expo Router',
@@ -154,6 +192,12 @@ export const TALKS = [
 ] as Talk[];
 
 export const PODCASTS = [
+  {
+    title: 'State of React Native',
+    event: 'This Dot Media',
+    videoId: 'dx-5GCUX14o',
+    uploadDate: '2026-09-30',
+  },
   {
     title: 'Expo SDK 54, Expo Router v6 & Expo UI Beta for iOS with Beto Moedano',
     event: 'Rocket Ship #081',
@@ -308,6 +352,18 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'Agentic CI for Expo apps with TesterArmy',
+    event: 'Expo Live Stream',
+    videoId: 'yrtWWbhTsHE',
+    uploadDate: '2026-10-05',
+  },
+  {
+    title: 'How is your app actually doing in production? | Introducing Observe',
+    event: 'Expo Live Stream',
+    videoId: 'INfXyyspMWA',
+    uploadDate: '2026-08-28',
+  },
+  {
     title: 'Closing the loop: How to turn your website into a mobile app with AI',
     event: 'Expo Live Stream',
     videoId: '9Sl6VXrj224',
@@ -324,6 +380,12 @@ export const LIVE_STREAMS = [
     event: 'Expo Live Stream',
     videoId: 'KnZ3LWkXzSk',
     uploadDate: '2025-11-21',
+  },
+  {
+    title: 'Introducing Expo Router v6: link previews, native tabs, and more for modern apps',
+    event: 'Expo Live Stream',
+    videoId: 'bO7ZoQWa9ic',
+    uploadDate: '2025-09-24',
   },
   {
     title: "What's new in Expo SDK 54?",
@@ -479,7 +541,51 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
-    title: 'The 3 tools you need to build mobile apps with AI',
+    title: 'Introduction to Verification Engineering',
+    event: 'Expo Tutorials',
+    videoId: '2OFB4B7Vy10',
+    uploadDate: '2026-10-04',
+  },
+  {
+    title: 'What if your app could fix itself?',
+    event: 'Expo Tutorials',
+    videoId: 'MUFlnOXi-o4',
+    uploadDate: '2026-09-22',
+  },
+  {
+    title: 'What we learned using only Expo apps for 24 hours',
+    event: 'Expo Tutorials',
+    description: 'Jon Samp',
+    videoId: 'JRH6_rjCy_g',
+    uploadDate: '2026-09-10',
+  },
+  {
+    title: 'From React Web to React Native in 60 Seconds',
+    event: 'Expo Tutorials',
+    videoId: '8ExmJ7gqVaw',
+    uploadDate: '2026-08-08',
+  },
+  {
+    title: 'Fable 5 vs GPT 5.6: I spent $2,000 to find out',
+    event: 'Expo Tutorials',
+    description: 'Rami Maalouf',
+    videoId: 'SLWl53sizHs',
+    uploadDate: '2026-08-05',
+  },
+  {
+    title: 'Solo dev highlight: How to build and ship an app as a one person company',
+    event: 'Expo Tutorials',
+    videoId: 'NvCk0e89Hsc',
+    uploadDate: '2026-08-04',
+  },
+  {
+    title: 'How to build an iOS widget',
+    event: 'Expo Tutorials',
+    videoId: '3r_OHePTCcI',
+    uploadDate: '2026-07-27',
+  },
+  {
+    title: 'How to Build Real Mobile Apps with AI in 2026 (Not Another No-Code Toy)',
     event: 'Expo Tutorials',
     videoId: 'WLGAuwagI8o',
     uploadDate: '2026-07-13',

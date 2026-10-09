@@ -1,9 +1,14 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #pragma once
+
 #ifdef __cplusplus
 
+#include <new>
 #include <TargetConditionals.h>
+
+// `jsi.h` only forward-declares `jsi::Instrumentation`.
+#include <jsi/instrumentation.h>
 
 #include "HostFunctionClosure.h"
 #include "CppError.h"
@@ -36,11 +41,13 @@ inline jsi::Value valueFromFunction(jsi::IRuntime &runtime, const jsi::Function 
 }
 
 // `jsi::Object::setProperty` is a template function that Swift does not support. We need to provide specialized versions.
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const char *name, const jsi::Value value) {
+// They take a `jsi::PropNameID` rather than a `const char *`: JSI treats a `const char *` name as ASCII,
+// which mangles non-ASCII property names coming from Swift strings.
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Object &object, const jsi::PropNameID &name, const jsi::Value &value) {
   object.setProperty(runtime, name, value);
 }
 
-inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const char *name, const jsi::Value &value) {
+inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const jsi::PropNameID &name, const jsi::Value &value) {
   array.setProperty(runtime, name, value);
 }
 
@@ -97,12 +104,13 @@ inline std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::stri
 inline jsi::Function createHostFunction(jsi::IRuntime &runtime, const jsi::PropNameID &propName, HostFunctionClosure *closure) {
   auto closurePtr = std::shared_ptr<HostFunctionClosure>(closure);
   return jsi::Function::createFromHostFunction(runtime, propName, 0, [closurePtr](jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *_Nonnull args, size_t count) -> jsi::Value {
-    auto result = closurePtr->call(thisValue, args, count);
-
+    jsi::Value result;
     // If the Swift closure stored a pending error, rethrow its JSError directly
     // to preserve all properties (message, code, stack, etc.).
-    if (auto *error = CppError::getCurrent()) {
-      throw error->release();
+    if (closurePtr->call(thisValue, args, count, result)) {
+      if (auto *error = CppError::getCurrent()) {
+        throw error->release();
+      }
     }
     return result;
   });
@@ -136,27 +144,176 @@ inline void destroyRuntime(jsi::Runtime &runtime) {
 }
 
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
   });
 }
 
+// `jsi::Instrumentation` is not imported into Swift, so reach it from here.
+inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
+  runtime.instrumentation().collectGarbage(cause);
+}
+
+// MARK: - Result slots
+
+// Construct a host callback's result in place in the engine's result slot. `::new (slot) T(...)` is
+// placement new: it runs the constructor on existing memory and allocates nothing. These `jsi::Value`
+// constructors are inline, so each helper is two stores, whereas a move-assignment into the slot
+// calls `Value::~Value()` and `Value::Value(Value&&)`, both out-of-line in the engine library.
+//
+// Placement new does not destroy the slot's previous contents, so the slot must hold a value that
+// owns nothing; an object or string there would leak its engine handle. Both callers,
+// `createHostFunction` and `HostObject::get`, pass a default-constructed slot. The Swift side picks
+// the helper by kind in `JavaScriptValue.writeJSIValue(to:)` and moves everything else.
+// `JavaScriptValue.write(_:to:)` moves a uniquely referenced value's handle into the slot the same
+// way, through `emplaceMovedValue`.
+inline void emplaceUndefined(jsi::Value *_Nonnull slot) noexcept {
+  ::new (slot) jsi::Value();
+}
+
+inline void emplaceNull(jsi::Value *_Nonnull slot) noexcept {
+  ::new (slot) jsi::Value(nullptr);
+}
+
+inline void emplaceBool(jsi::Value *_Nonnull slot, bool value) noexcept {
+  ::new (slot) jsi::Value(value);
+}
+
+inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
+  ::new (slot) jsi::Value(value);
+}
+
+/**
+ Moves the value at `source` into the engine's result slot. Placement new, like the `emplace*`
+ helpers above: the slot must hold a value that owns nothing. `source` is left holding a null
+ pointer, so destroying it afterwards releases nothing.
+ */
+inline void emplaceMovedValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Creates a string value straight from UTF-8 bytes. The `jsi::String` returned by `createFromUtf8`
+ is moved into the value, so the engine allocates one handle. Going through `jsi::Value(runtime,
+ const jsi::String &)` from Swift instead clones the handle and then releases the original.
+ */
+inline jsi::Value createStringValueFromUtf8(jsi::IRuntime &runtime, const uint8_t *_Nonnull utf8, size_t length) {
+  return jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
+}
+
+/**
+ Same as `createStringValueFromUtf8`, for bytes the caller knows to be ASCII.
+ */
+inline jsi::Value createStringValueFromAscii(jsi::IRuntime &runtime, const char *_Nonnull ascii, size_t length) {
+  return jsi::Value(jsi::String::createFromAscii(runtime, ascii, length));
+}
+
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
   });
 }
 
 inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callWithThis(runtime, jsThis, args, count);
   });
 }
 
+/**
+ Calls `defineProperty`, the runtime's `Object.defineProperty`, on `object` with a new descriptor that holds
+ `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
+ JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
+ and building the descriptor and the arguments here avoids a round trip through Swift for each of them.
+ */
+inline void defineProperty(
+  jsi::IRuntime &runtime,
+  const jsi::Function &defineProperty,
+  const jsi::PropNameID &configurableKey,
+  const jsi::PropNameID &enumerableKey,
+  const jsi::PropNameID &writableKey,
+  const jsi::PropNameID &valueKey,
+  const jsi::Object &object,
+  const uint8_t *_Nonnull nameUtf8,
+  size_t nameLength,
+  const jsi::Value &value,
+  bool hasValue,
+  bool writable,
+  bool enumerable,
+  bool configurable
+) {
+  expo::CppError::tryCatch(runtime, [&] {
+    jsi::Object descriptor(runtime);
+    if (configurable) {
+      descriptor.setProperty(runtime, configurableKey, true);
+    }
+    if (enumerable) {
+      descriptor.setProperty(runtime, enumerableKey, true);
+    }
+    if (writable) {
+      descriptor.setProperty(runtime, writableKey, true);
+    }
+    if (hasValue) {
+      descriptor.setProperty(runtime, valueKey, value);
+    }
+    defineProperty.call(runtime, object, jsi::String::createFromUtf8(runtime, nameUtf8, nameLength), descriptor);
+    return jsi::Value::undefined();
+  });
+}
+
 inline jsi::Value callAsConstructor(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callAsConstructor(runtime, args, count);
   });
+}
+
+// MARK: - String
+
+/**
+ Invokes `callback` with the engine's internal representation of `string`, chunk by chunk
+ (see `jsi::Runtime::getStringData` docs). On RN 0.86+ the method is public on `IRuntime` and is
+ called directly. On older versions (e.g. react-native-macos 0.81) it is a protected member of
+ `jsi::Runtime`, which Swift cannot call, so this wrapper routes through the public
+ `jsi::String::getStringData` template helper instead. That adds one extra indirect call per chunk,
+ negligible next to the copy/transcode of the chunk itself.
+ The callback's pointer parameters mirror the unannotated `jsi.h` signature, so the same Swift
+ function can be passed to either.
+ */
+inline void getStringData(
+  jsi::IRuntime &runtime,
+  const jsi::String &string,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  runtime.getStringData(string, ctx, callback);
+#else
+  auto forward = [ctx, callback](bool ascii, const void *data, size_t num) {
+    callback(ctx, ascii, data, num);
+  };
+  string.getStringData(runtime, forward);
+#endif
+}
+
+/**
+ Same as `getStringData`, but for a `jsi::PropNameID`.
+ */
+inline void getPropNameIdData(
+  jsi::IRuntime &runtime,
+  const jsi::PropNameID &propNameId,
+  void *ctx,
+  void (*callback)(void *_Nullable ctx, bool ascii, const void *_Nullable data, size_t num)
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  runtime.getPropNameIdData(propNameId, ctx, callback);
+#else
+  auto forward = [ctx, callback](bool ascii, const void *data, size_t num) {
+    callback(ctx, ascii, data, num);
+  };
+  propNameId.getPropNameIdData(runtime, forward);
+#endif
 }
 
 // MARK: - ArrayBuffer

@@ -79,7 +79,18 @@ private final class MacroNamedCounter: SharedObject {
   }
 }
 
-@ExpoModule(classes: [MacroCounter.self, MacroNamedCounter.self])
+/// Exposes `@JS` members but no `@JS init`, and the module registers it with no DSL
+/// `Constructor`, so nothing can build its native instance from JavaScript.
+@SharedObject
+private final class MacroUnconstructableCounter: SharedObject {
+  @JS
+  func ping() -> String {
+    return "pong"
+  }
+}
+
+@ExpoModule(
+  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self])
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
@@ -117,6 +128,25 @@ private struct MacroSharedObjectTests {
   }
 
   // MARK: - Construction
+
+  @Test
+  func `constructing a class that cannot build its native instance throws`() throws {
+    // Both construction paths are skipped for such a class, so without the throw JavaScript would
+    // get an object with no native instance and fail later, at the first member access.
+    register(MacroSharedObjectModule(appContext: appContext))
+    let threw = try runtime.eval(
+      """
+      (() => {
+        try {
+          new expo.modules.MacroSharedObjectModule.MacroUnconstructableCounter()
+          return false
+        } catch (error) {
+          return String(error).includes('MacroUnconstructableCounter')
+        }
+      })()
+      """)
+    #expect(try threw.asBool())
+  }
 
   @Test
   func `@JS init constructs the instance from JS arguments`() throws {
@@ -243,6 +273,62 @@ private struct MacroSharedObjectTests {
       try { object.validate() } catch (error) { error.code }
       """)
     #expect(try code.asString() == "E_TEST_CODE")
+  }
+
+  // MARK: - Release
+
+  // React Native deep-freezes view props in development, so a shared object passed as a prop is
+  // frozen by the time its owner releases it.
+  @Test
+  func `release() releases the native object of a frozen JS object`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    let jsObject = try runtime.eval("object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)").asObject()
+    let nativeObject = try SharedObject.native(from: jsObject)
+    try runtime.eval("Object.freeze(object); object.release()")
+    #expect(nativeObject.sharedObjectId == 0)
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
+  func `release() can be called again on a frozen JS object`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    try runtime.eval(
+      """
+      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      Object.freeze(object)
+      object.release()
+      object.release()
+      """)
+  }
+
+  @Test
+  func `a released frozen JS object no longer resolves to the native object`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let code = try runtime.eval(
+      """
+      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      Object.freeze(object)
+      object.release()
+      try { object.increment(1); 'no error' } catch (error) { error.code }
+      """)
+    #expect(try code.asString() == "ERR_NATIVE_SHARED_OBJECT_NOT_FOUND")
+  }
+
+  @Test
+  func `a released frozen JS object no longer receives events`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let jsObject = try runtime.eval(
+      """
+      calls = 0
+      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      object.addListener('ping', () => { calls += 1 })
+      Object.freeze(object)
+      """).asObject()
+    let nativeObject = try SharedObject.native(from: jsObject)
+    try runtime.eval("object.release()")
+    nativeObject.emit(event: "ping")
+    #expect(try runtime.eval("calls").asInt() == 0)
   }
 
   // MARK: - Alternate-runtime prototype

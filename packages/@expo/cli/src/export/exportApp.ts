@@ -12,13 +12,15 @@ import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
+import {
+  getRouterDirectoryModuleIdWithManifest,
+  isApiRoutesEnabled,
+} from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
@@ -69,12 +71,6 @@ export async function exportAppAsync(
     | 'hostedNative'
   >
 ): Promise<void> {
-  // Force the environment during export and do not allow overriding it.
-  const environment = dev ? 'development' : 'production';
-  process.env.NODE_ENV = environment;
-  setNodeEnv(environment);
-  loadEnvFiles(projectRoot);
-
   const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
     // Web doesn't require validation.
@@ -87,8 +83,13 @@ export async function exportAppAsync(
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
-  if (skipSSG && exp.web?.output !== 'server') {
-    throw new CommandError('--no-ssg can only be used with `web.output: server`');
+  const exportServer =
+    exp.web?.output === 'server' || (exp.web?.output === 'static' && isApiRoutesEnabled(exp));
+
+  if (skipSSG && !exportServer) {
+    throw new CommandError(
+      '--no-ssg requires server output or static output with apiRoutes: true in the expo-router config plugin'
+    );
   }
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
@@ -360,8 +361,6 @@ export async function exportAppAsync(
     // Additional web-only steps...
 
     if (platforms.includes('web') && useServerRendering) {
-      const exportServer = exp.web?.output === 'server';
-
       if (exportServer) {
         // TODO: Remove when this is abstracted into the files map
         await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));

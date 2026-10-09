@@ -44,8 +44,6 @@ interface WatcherOptions {
   console: Console;
   enableSymlinks: boolean;
   extensions: readonly string[];
-  /** @deprecated */
-  forceNodeFilesystemAPI?: boolean;
   healthCheckFilePrefix: string | null;
   ignoreForCrawl: (filePath: string) => boolean;
   ignorePatternForWatch: RegExp | null;
@@ -150,7 +148,6 @@ export class Watcher extends EventEmitter {
       console: options.console,
       includeSymlinks: options.enableSymlinks,
       extensions: options.extensions,
-      forceNodeFilesystemAPI: options.forceNodeFilesystemAPI,
       ignore: ignoreForCrawl,
       onStatus: (status) => {
         this.emit('status', status);
@@ -227,15 +224,17 @@ export class Watcher extends EventEmitter {
 
     const createWatcherBackend = (root: Path): Promise<WatcherBackend> => {
       const watcherOptions: WatcherBackendOptions = {
-        dot: true,
-        globs: [
+        included: {
+          extensions: new Set(extensions),
           // Ensure we always include package.json files, which are crucial for
-          /// module resolution.
-          '**/package.json',
+          // module resolution.
+          basenames: new Set(['package.json']),
           // Ensure we always watch any health check files
-          '**/' + this.#options.healthCheckFilePrefix + '*',
-          ...extensions.map((extension) => '**/*.' + extension),
-        ],
+          basenamePrefixes:
+            this.#options.healthCheckFilePrefix != null
+              ? [this.#options.healthCheckFilePrefix]
+              : [],
+        },
         ignored: ignorePatternForWatch,
         watchmanDeferStates: this.#options.watchmanDeferStates,
       };

@@ -161,7 +161,11 @@ private fun Response.evictAfterClose(onClose: () -> Unit): Response {
 
 @OptIn(UnstableApi::class)
 private fun evictCacheEntry(url: String, storageKey: String) {
-  val cacheKey = if (storageKey.isEmpty()) url else "$url#$storageKey"
+  val cacheKey = if (storageKey.isEmpty()) {
+    url
+  } else {
+    "$url#$storageKey"
+  }
   try {
     VideoManager.cache.instance.removeResource(cacheKey)
   } catch (e: Exception) {
@@ -169,8 +173,17 @@ private fun evictCacheEntry(url: String, storageKey: String) {
   }
 }
 
-fun buildMediaSourceFactory(context: Context, dataSourceFactory: DataSource.Factory): MediaSource.Factory {
-  return DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory)
+@OptIn(UnstableApi::class)
+fun buildMediaSourceFactory(
+  context: Context,
+  dataSourceFactory: DataSource.Factory,
+  fallbackOnTransportError: Boolean = false
+): MediaSource.Factory {
+  val factory = DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory)
+  if (fallbackOnTransportError) {
+    factory.setLoadErrorHandlingPolicy(TransportFallbackLoadErrorHandlingPolicy())
+  }
+  return factory
 }
 
 @OptIn(UnstableApi::class)
@@ -183,7 +196,13 @@ fun buildExpoVideoMediaSource(
   } else {
     buildBaseDataSourceFactory(context, videoSource)
   }
-  val mediaSourceFactory = buildMediaSourceFactory(context, dataSourceFactory)
+  // With caching on, some renditions may be servable from the cache while the network is gone.
+  // Let a rendition that cannot be reached fall back to another one instead of failing playback.
+  val mediaSourceFactory = buildMediaSourceFactory(
+    context,
+    dataSourceFactory,
+    fallbackOnTransportError = videoSource.useCaching
+  )
   val mediaItem = videoSource.toMediaItem(context)
   return mediaSourceFactory.createMediaSource(mediaItem)
 }
@@ -191,5 +210,9 @@ fun buildExpoVideoMediaSource(
 private fun getApplicationName(context: Context): String {
   val applicationInfo: ApplicationInfo = context.applicationInfo
   val stringId = applicationInfo.labelRes
-  return if (stringId == 0) applicationInfo.nonLocalizedLabel.toString() else context.getString(stringId)
+  return if (stringId == 0) {
+    applicationInfo.nonLocalizedLabel.toString()
+  } else {
+    context.getString(stringId)
+  }
 }

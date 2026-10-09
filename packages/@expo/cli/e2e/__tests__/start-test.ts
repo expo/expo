@@ -2,13 +2,14 @@
 import fs from 'fs';
 import path from 'path';
 
+import { createExpoStart, executeExpoAsync } from '../utils/expo';
+import { expectSourceMapSection } from '../utils/sourceMap';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   getRouterE2ERoot,
 } from './utils';
-import { createExpoStart, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -60,19 +61,27 @@ it('runs `npx expo start --help`', async () => {
         
         -m, --host <string>             Dev server hosting type. Default: lan
                                         lan: Use the local network
-                                        tunnel: Use any network by tunnel through ngrok
+                                        tunnel: Use any network through an Expo tunnel
                                         localhost: Connect to the dev server over localhost
-        --tunnel                        Same as --host tunnel
+        --tunnel [provider]             Use a tunnel. Default: expo (Legacy option: ngrok)
         --lan                           Same as --host lan
         --localhost                     Same as --host localhost
         
         --offline                       Skip network requests and use anonymous manifest signatures
         --https                         Start the dev server with https protocol. Deprecated in favor of --tunnel
         --scheme <scheme>               Custom URI protocol to use when launching an app
-        -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
+        -p, --port <number>             Port to start the dev server on (does not apply to web). Default: 8081
         
-        --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
+        --private-key-path <path>       Path to private key for code signing. Required to sign development manifests when the project is configured with an expo-updates code signing certificate.
         -h, --help                      Usage info
+
+      AGENTS:
+
+      Setting CI=1 turns off file watching and Fast Refresh, so code changes won't reach
+      the app until the dev server restarts. Don't set it for local development.
+
+      Run without the interactive UI and keep Fast Refresh by redirecting output:
+        $ npx expo start > expo.log 2>&1
     "
   `);
 });
@@ -100,7 +109,10 @@ describeSkipWin('server', () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
       linkExpoPackages: ['expo', 'babel-preset-expo'],
     });
-    await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
+    await fs.promises.rm(path.join(projectRoot, '.expo'), {
+      force: true,
+      recursive: true,
+    });
     await expo.startAsync();
   });
   afterAll(async () => {
@@ -148,24 +160,27 @@ describeSkipWin('server', () => {
     const sourceMaps = await expo.fetchBundleAsync(sourceMapUrl!).then((res) => res.json());
     expect(sourceMaps).toMatchObject({
       version: 3,
-      sources: expect.arrayContaining([
-        '__prelude__',
+      sections: expect.arrayContaining([
+        expectSourceMapSection('__prelude__'),
         // NOTE(@kitten): We can slot in our own runtime here
-        expect.pathMatching(
-          new RegExp(
-            [
-              '/metro-runtime/src/polyfills/require.js',
-              '/@expo/cli/build/metro-require/require.js',
-            ].join('|')
+        expectSourceMapSection(
+          expect.pathMatching(
+            new RegExp(
+              [
+                '/metro-runtime/src/polyfills/require.js',
+                '/@expo/cli/build/metro-require/require.js',
+              ].join('|')
+            )
           )
         ),
-        expect.pathMatching(/@react-native\/js-polyfills\/console\.js$/),
-        expect.pathMatching(/@react-native\/js-polyfills\/error-guard\.js$/),
-        '\0polyfill:external-require',
+        expectSourceMapSection(expect.pathMatching(/@react-native\/js-polyfills\/console\.js$/)),
+        expectSourceMapSection(
+          expect.pathMatching(/@react-native\/js-polyfills\/error-guard\.js$/)
+        ),
+        expectSourceMapSection('\0polyfill:external-require'),
         // Ensure that the custom module from the serializer is included in dev, otherwise the sources will be thrown off.
-        '\0polyfill:environment-variables',
+        expectSourceMapSection('\0polyfill:environment-variables'),
       ]),
-      mappings: expect.any(String),
     });
   });
 });

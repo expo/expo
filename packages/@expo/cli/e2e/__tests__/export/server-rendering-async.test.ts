@@ -1,9 +1,7 @@
-/* eslint-env jest */
 import type { RoutesManifest } from 'expo-server/private';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -11,6 +9,7 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -23,8 +22,6 @@ describe('server rendering with async routes', () => {
       export: {
         env: {
           EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_ASYNC: 'true',
-          E2E_ROUTER_SERVER_RENDERING: 'true',
         },
       },
       serve: {

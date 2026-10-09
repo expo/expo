@@ -19,10 +19,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var currentState: RecordingState = .idle
   private var recordingSession = AVAudioSession.sharedInstance()
   var allowsRecording = false
+  private var isPausedBySystem = false
   weak var owningRegistry: AudioComponentRegistry?
   private var mediaServicesDidReset = false
   private var currentOptions: RecordingOptions?
   private var currentSessionOptions: AVAudioSession.CategoryOptions = []
+  private var durationLimitSeconds: TimeInterval?
 
   private var isPrepared: Bool {
     currentState == .prepared || currentState == .recording || currentState == .paused
@@ -76,11 +78,16 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
   }
 
-  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
+  func prepare(
+    options: RecordingOptions?,
+    sessionOptions: AVAudioSession.CategoryOptions = [],
+    deactivateSessionOnFailure: Bool = true
+  ) throws {
     if currentState == .recording {
       ref.stop()
     }
     resetDurationTracking()
+    durationLimitSeconds = nil
     mediaServicesDidReset = false
 
     let session = AVAudioSession.sharedInstance()
@@ -92,13 +99,15 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
     }
 
-    if let options {
+    if let options = options ?? currentOptions {
       let newRecorder: AVAudioRecorder
       do {
         newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
       } catch {
         currentState = .error
-        try? session.setActive(false)
+        if deactivateSessionOnFailure {
+          try? session.setActive(false)
+        }
         throw error
       }
 
@@ -121,9 +130,36 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private func resetDurationTracking() {
     startTimestamp = 0
     totalRecordedDuration = 0
+    // `durationLimitSeconds` is deliberately NOT cleared here. This helper runs
+    // from `updateStateForDirectRecording()`, which is called *after* a
+    // `record(forDuration:)` has already armed the limit, so clearing it here
+    // would discard the limit the caller just set. It is cleared at capture
+    // boundaries instead.
+  }
+
+  func recordForDuration(_ seconds: TimeInterval, atTime absoluteTime: TimeInterval? = nil) {
+    if currentState == .paused && ref.currentTime >= seconds {
+      stopRecording()
+      return
+    }
+
+    if let absoluteTime {
+      ref.record(atTime: absoluteTime, forDuration: seconds)
+    } else {
+      ref.record(forDuration: seconds)
+    }
+    updateStateForDirectRecording()
+    durationLimitSeconds = seconds
+  }
+
+  func record(atTime absoluteTime: TimeInterval) {
+    ref.record(atTime: absoluteTime)
+    updateStateForDirectRecording()
+    durationLimitSeconds = nil
   }
 
   func startRecording() throws -> [String: Any] {
+    isPausedBySystem = false
     guard allowsRecording else {
       throw RecordingDisabledException()
     }
@@ -136,7 +172,17 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       resetDurationTracking()
     }
 
-    ref.record()
+    // If the recording was armed with a duration, re-apply it.
+    if let limit = durationLimitSeconds {
+      if ref.currentTime >= limit {
+        // The allowance is already spent; stop rather than resume.
+        stopRecording()
+        return getRecordingStatus()
+      }
+      ref.record(forDuration: limit)
+    } else {
+      ref.record()
+    }
 
     startTimestamp = deviceCurrentTime
     currentState = .recording
@@ -145,6 +191,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
 
   // Public method to update state when calling native recording methods directly
   func updateStateForDirectRecording() {
+    isPausedBySystem = false
     if currentState != .paused {
       resetDurationTracking()
     }
@@ -160,9 +207,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ref.stop()
     currentState = .stopped
     resetDurationTracking()
+    durationLimitSeconds = nil
   }
 
   func pauseRecording() {
+    isPausedBySystem = false
     guard currentState == .recording else {
       return
     }
@@ -171,6 +220,19 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     totalRecordedDuration += currentSessionDuration
     startTimestamp = 0
     currentState = .paused
+  }
+
+  func pauseForSystem() {
+    if currentState == .recording {
+      pauseRecording()
+      isPausedBySystem = true
+    }
+  }
+
+  func resumeAfterSystemPause() throws {
+    if isPausedBySystem && currentState == .paused {
+      _ = try startRecording()
+    }
   }
 
   func getRecordingStatus() -> [String: Any] {
@@ -194,6 +256,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   func handleMediaServicesReset() {
     mediaServicesDidReset = true
     resetDurationTracking()
+    durationLimitSeconds = nil
 
     if let options = currentOptions {
       do {
@@ -225,6 +288,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     // Update internal state when recording finishes automatically (e.g., from recordForDuration)
     currentState = .stopped
     resetDurationTracking()
+    durationLimitSeconds = nil
 
     emit(event: recordingStatus, payload: [
       "id": id,
@@ -239,6 +303,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     // Update internal state on error
     currentState = .error
     resetDurationTracking()
+    durationLimitSeconds = nil
 
     emit(event: recordingStatus, payload: [
       "id": id,

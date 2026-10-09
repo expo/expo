@@ -2,6 +2,7 @@
 export {};
 
 const mockNativeTarget = {
+  clientId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
@@ -18,7 +19,11 @@ const mockAppMetrics = {
   markFirstRender: jest.fn(),
   markInteractive: jest.fn(),
   setGlobalAttributes: jest.fn(),
+  reportError: jest.fn(),
+  setNetworkTracesConfig: jest.fn(),
 };
+
+const mockSetErrorHandlerEnabled = jest.fn();
 
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
@@ -27,6 +32,7 @@ jest.mock('expo', () => ({
 jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
+  setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -59,7 +65,11 @@ beforeEach(() => {
   jest.resetModules();
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
-  jest.doMock('expo-app-metrics', () => ({ __esModule: true, default: mockAppMetrics }));
+  jest.doMock('expo-app-metrics', () => ({
+    __esModule: true,
+    default: mockAppMetrics,
+    setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
     optionalRouter: undefined,
@@ -145,6 +155,103 @@ describe('module Proxy', () => {
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
     expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('records no network traces when configure omits networkTraces', () => {
+    // Opt-in: recording is off unless asked for, so upgrading can't silently add to an app's
+    // event bill. `configure` is a full replacement, so an absent `networkTraces` resets to it.
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test' });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledTimes(1);
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({ enabled: false });
+  });
+
+  it('records by default once the object form is used', () => {
+    // Passing a filter means "record these", so `enabled` only has to be spelled out to turn
+    // recording off while keeping a filter configured.
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', networkTraces: {} });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({ enabled: true });
+  });
+
+  it('honors an explicit enabled: false alongside a filter', () => {
+    const Observe = loadModule();
+    Observe.configure({
+      environment: 'test',
+      networkTraces: { enabled: false, filter: { hosts: ['api.myapp.com'] } },
+    });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({
+      enabled: false,
+      filter: { hosts: ['api.myapp.com'] },
+    });
+  });
+
+  it.each([true, false])('maps networkTraces: %s to the native config', (enabled) => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', networkTraces: enabled });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({ enabled });
+  });
+
+  it('passes a capture filter down with the enabled flag', () => {
+    const Observe = loadModule();
+    Observe.configure({
+      environment: 'test',
+      networkTraces: { filter: { hosts: ['api.myapp.com'], methods: ['GET'] } },
+    });
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({
+      enabled: true,
+      filter: { hosts: ['api.myapp.com'], methods: ['GET'] },
+    });
+  });
+
+  it.each([
+    ['https://api.myapp.com', true],
+    ['api.myapp.com:8080', true],
+    ['api.myapp.com', false],
+  ])('warns in dev when a filter host is %s', (host, shouldWarn) => {
+    // A full URL or host:port matches no request, so the filter silently records nothing.
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', networkTraces: { filter: { hosts: [host] } } });
+    expect(warnSpy).toHaveBeenCalledTimes(shouldWarn ? 1 : 0);
+    expect(mockAppMetrics.setNetworkTracesConfig).toHaveBeenCalledWith({
+      enabled: true,
+      filter: { hosts: [host] },
+    });
+  });
+
+  it('leaves unhandled-error reporting enabled when errorHandlingEnabled is unset', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test' });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(true);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false])('applies errorHandlingEnabled: %s to the error handler', (enabled) => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', errorHandlingEnabled: enabled });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledTimes(1);
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(enabled);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('passes the config through to the native module unchanged', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', errorHandlingEnabled: false });
+    // The native `Config` record has no `errorHandlingEnabled` field, so decoding drops it. This
+    // asserts the JS layer doesn't strip or rewrite the object on its way out, not that native
+    // reads the flag: the gate lives entirely in JS.
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      errorHandlingEnabled: false,
+    });
+  });
+
+  it('applies the latest errorHandlingEnabled on a repeat configure call', () => {
+    const Observe = loadModule();
+    Observe.configure({ errorHandlingEnabled: false });
+    Observe.configure({ errorHandlingEnabled: true });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenNthCalledWith(1, false);
+    expect(mockSetErrorHandlerEnabled).toHaveBeenNthCalledWith(2, true);
   });
 
   it('skips initRouterIntegration by default', () => {
@@ -370,5 +477,92 @@ describe('module Proxy', () => {
     Observe.setGlobalAttributes({ tier: 'pro' });
     expect(mockAppMetrics.setGlobalAttributes).toHaveBeenCalledWith({ tier: 'pro' });
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('reports a caught Error as a non-fatal reportedByUser-source error', () => {
+    const Observe = loadModule();
+    const error = new Error('boom');
+    Observe.reportError(error);
+    expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
+      source: 'reportedByUser',
+      type: 'Error',
+      message: 'boom',
+      stacktrace: error.stack,
+      isFatal: false,
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('normalizes a non-Error thrown value with String() and no type or stacktrace', () => {
+    const Observe = loadModule();
+    Observe.reportError('just a string');
+    expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
+      source: 'reportedByUser',
+      message: 'just a string',
+      isFatal: false,
+    });
+  });
+
+  it('stringifies a plain object with Error-like keys instead of forwarding non-string fields', () => {
+    const Observe = loadModule();
+    // A plain object whose `message`/`name` are non-strings must not be forwarded into the native
+    // string fields (which would fail the record decode and drop the report).
+    Observe.reportError({ message: 404, name: 500, stack: {} });
+    expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
+      source: 'reportedByUser',
+      message: '[object Object]',
+      isFatal: false,
+    });
+  });
+
+  it('falls back to String() when an Error carries a non-string message', () => {
+    const Observe = loadModule();
+    const error = new Error('real');
+    // A caller can mutate an Error's fields to non-strings; those must not reach native as-is.
+    (error as { message: unknown }).message = 404;
+    Observe.reportError(error);
+    const [[payload]] = mockAppMetrics.reportError.mock.calls;
+    expect(typeof payload.message).toBe('string');
+    expect(payload.source).toBe('reportedByUser');
+    expect(payload.isFatal).toBe(false);
+  });
+
+  it('never throws when reading the thrown value throws (a getter that throws)', () => {
+    const Observe = loadModule();
+    const error = new Error('outer');
+    Object.defineProperty(error, 'message', {
+      get() {
+        throw new Error('getter blew up');
+      },
+    });
+    // reportError is called from a catch block, so it must never throw back into the caller.
+    expect(() => Observe.reportError(error)).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('never throws when String() on the thrown value throws (a throwing toString)', () => {
+    const Observe = loadModule();
+    const hostile = {
+      toString() {
+        throw new Error('toString blew up');
+      },
+    };
+    expect(() => Observe.reportError(hostile)).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('exposes the native EAS client id as clientId', () => {
+    const Observe = loadModule();
+    expect(Observe.clientId).toBe('aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee');
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('never throws when the native reportError call throws', () => {
+    const Observe = loadModule();
+    mockAppMetrics.reportError.mockImplementationOnce(() => {
+      throw new Error('native rejected the payload');
+    });
+    expect(() => Observe.reportError(new Error('boom'))).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
   });
 });

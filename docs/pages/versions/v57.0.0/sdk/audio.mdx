@@ -106,9 +106,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Button title="Play Sound" onPress={() => player.play()} />
+      <Button title="Play sound" onPress={() => player.play()} />
       <Button
-        title="Replay Sound"
+        title="Replay sound"
         onPress={() => {
           player.seekTo(0);
           player.play();
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
 
 ```jsx
 import { useState, useEffect } from 'react';
-import { View, StyleSheet, Button } from 'react-native';
+import { View, StyleSheet, Button, Alert } from 'react-native';
 import {
   useAudioRecorder,
   AudioModule,
@@ -176,7 +176,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Button
-        title={recorderState.isRecording ? 'Stop Recording' : 'Start Recording'}
+        title={recorderState.isRecording ? 'Stop recording' : 'Start recording'}
         onPress={recorderState.isRecording ? stopRecording : record}
       />
     </View>

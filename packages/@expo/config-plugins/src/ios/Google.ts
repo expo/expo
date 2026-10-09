@@ -5,12 +5,12 @@ import fs from 'fs';
 import path from 'path';
 import type { XcodeProject } from 'xcode';
 
+import type { ConfigPlugin, ModProps } from '../Plugin.types';
+import { withInfoPlist, withXcodeProject } from '../plugins/ios-plugins';
 import type { InfoPlist } from './IosConfig.types';
 import { getSourceRoot } from './Paths';
 import { appendScheme } from './Scheme';
-import type { ConfigPlugin, ModProps } from '../Plugin.types';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
-import { withInfoPlist, withXcodeProject } from '../plugins/ios-plugins';
 
 export const withGoogle: ConfigPlugin = (config) => {
   return withInfoPlist(config, (config) => {

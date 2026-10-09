@@ -7,12 +7,12 @@ it(`generates a valid URI scheme from slug`, () => {
 });
 
 it(`removes unallowed characters`, () => {
-  // scheme      = ALPHA *( ALPHA /` DIGIT / "+" / "-" / "." )
+  // scheme      = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
   expect(getDefaultScheme({ slug: 'miun äppi!1!!!!!@' })).toMatch(/^[A-Za-z][A-Za-z0-9+\-.]*/);
 });
 
 it(`doesn't start with a number or special character`, () => {
-  // scheme      = ALPHA *( ALPHA /` DIGIT / "+" / "-" / "." )
+  // scheme      = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
   expect(getDefaultScheme({ slug: '650-industries' })).toMatch(/^[A-Za-z][A-Za-z0-9+\-.]*/);
 });
 

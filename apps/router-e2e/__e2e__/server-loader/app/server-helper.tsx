@@ -16,7 +16,7 @@ const _serverLoader = createServerLoader(async (request, _params) => {
 
 // Only export the loader in SSR mode. In SSG mode, createServerLoader throws because there is no
 // request object at build time.
-export const loader = process.env.E2E_ROUTER_SERVER_RENDERING ? _serverLoader : undefined;
+export const loader = process.env.EXPO_USE_STATIC === 'server' ? _serverLoader : undefined;
 
 export default function ServerHelperRoute() {
   return (

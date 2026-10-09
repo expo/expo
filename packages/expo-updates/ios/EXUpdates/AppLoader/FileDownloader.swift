@@ -40,7 +40,21 @@ private extension String {
 
     return self
   }
+
+  /**
+   Truncates a response body for inclusion in an error message. The message reaches JavaScript and
+   crash reporters, so an unbounded body (typically an HTML error page) must not be embedded whole.
+   Mirrors `MAX_ERROR_BODY_LENGTH` in the Android `FileDownloader`.
+   */
+  func truncatedForErrorMessage() -> String {
+    if count <= maxErrorBodyLength {
+      return self
+    }
+    return "\(prefix(maxErrorBodyLength))… (truncated, \(count) characters total)"
+  }
 }
+
+private let maxErrorBodyLength = 512
 
 private extension Dictionary where Iterator.Element == (key: String, value: Any) {
   func stringValueForCaseInsensitiveKey(_ searchKey: Key) -> String? {
@@ -83,6 +97,12 @@ public final class FileDownloader {
   private var logger: UpdatesLogger!
   private let updatesDirectory: URL
   private let database: UpdatesDatabase
+
+  /// Overridable for testing, where the fixture is not in `updatesBundle`.
+  internal var embeddedLaunchAssetUrl: URL? = updatesBundle.url(
+    forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
+    withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
+  )
 
   public convenience init(
     config: UpdatesConfig,
@@ -135,6 +155,8 @@ public final class FileDownloader {
     errorBlock: @escaping ErrorBlock
   ) {
     let canAttemptPatch = allowPatch &&
+      expectedBase64URLEncodedSHA256Hash != nil &&
+      config.enableBsdiffPatchSupport &&
       asset.isLaunchAsset &&
       launchedUpdate != nil &&
       requestedUpdate != nil &&
@@ -558,8 +580,7 @@ public final class FileDownloader {
       throw DiffError.assetNotLaunch
     }
 
-    let baseAsset = try resolveLaunchAsset(launchedUpdate: launchedUpdate)
-    let baseFileUrl = try loadAndVerifyAsset(baseAsset)
+    let baseFileUrl = try resolveBaseFileUrl(launchedUpdate: launchedUpdate)
     let requestedUpdateId = requestedUpdate?.updateId.uuidString
 
     return try createPatchedAsset(
@@ -570,6 +591,19 @@ public final class FileDownloader {
       expectedBase64URLEncodedSHA256Hash: expectedBase64URLEncodedSHA256Hash,
       requestedUpdateId: requestedUpdateId
     )
+  }
+
+  private func resolveBaseFileUrl(launchedUpdate: Update) throws -> URL {
+    if launchedUpdate.status == UpdateStatus.StatusEmbedded {
+      // StatusEmbedded only launches for this binary's embedded update.
+      guard let embeddedLaunchAssetUrl else {
+        throw DiffError.embeddedBaseAssetMissing
+      }
+      return embeddedLaunchAssetUrl
+    }
+
+    let baseAsset = try resolveLaunchAsset(launchedUpdate: launchedUpdate)
+    return try loadAndVerifyAsset(baseAsset)
   }
 
   private func resolveLaunchAsset(launchedUpdate: Update) throws -> UpdateAsset {
@@ -1199,7 +1233,7 @@ public final class FileDownloader {
         httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
         let encoding = FileDownloader.encoding(fromResponse: httpResponse)
         let body = data.let { it in
-          String(data: it, encoding: encoding)
+          String(data: it, encoding: encoding)?.truncatedForErrorMessage()
         } ?? "Unknown body response"
         let cause = UpdatesError.fileDownloaderHTTPResponseError(statusCode: httpResponse.statusCode, body: body)
         self.logger.error(cause: cause, code: .unknown)
@@ -1239,6 +1273,7 @@ extension FileDownloader {
     case missingHeader(String)
     case invalidHeader(String)
     case launchAssetNotFound
+    case embeddedBaseAssetMissing
     case baseAssetMissing(path: String)
     case failedToReadBaseAsset(cause: Error)
     case failedToWritePatch(cause: Error, path: String)
@@ -1266,6 +1301,8 @@ extension FileDownloader.DiffError: CustomStringConvertible {
       return "Invalid \(header) header"
     case .launchAssetNotFound:
       return "Launch asset not found for current update"
+    case .embeddedBaseAssetMissing:
+      return "Embedded bundle not found in the app binary"
     case let .baseAssetMissing(path):
       return "Base asset is missing at path \(path)"
     case let .failedToReadBaseAsset(cause):

@@ -74,6 +74,29 @@ const LocalAuthenticationScreen = () => {
     }
   };
 
+  const doubleAuthenticate = async () => {
+    const fire = (label: string) =>
+      LocalAuthentication.authenticateAsync({
+        promptMessage: `Authenticate (${label})`,
+        cancelLabel: 'Cancel',
+        promptSubtitle: `Call ${label}`,
+        disableDeviceFallback: true,
+        biometricsSecurityLevel: securityLevels[securityLevelIndex],
+      }).then((result) => {
+        alert(
+          result.success
+            ? `Call ${label}: success`
+            : // @ts-ignore
+              `Call ${label}: error=${result.error}`
+        );
+      });
+
+    const first = fire('A');
+    await new Promise((r) => setTimeout(r, 2000));
+    const second = fire('B');
+    await Promise.all([first, second]);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.capabilitiesContainer}>
@@ -117,6 +140,11 @@ const LocalAuthenticationScreen = () => {
               style={styles.button}
               onPress={() => authenticate(false)}
               title="Authenticate without device fallback"
+            />
+            <Button
+              style={styles.button}
+              onPress={doubleAuthenticate}
+              title="Double authenticate (2s delay)"
             />
           </View>
         )}

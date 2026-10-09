@@ -10,6 +10,9 @@ public final class ExpoUIModule: Module {
     View(RNHostView.self)
 
     OnDestroy {
+      // Clear all registered content origins when the module is destroyed
+      ContentOriginRegistry.clearAll()
+
       Task { @MainActor in
         NamespaceRegistry.shared.removeAll()
       }
@@ -153,6 +156,12 @@ public final class ExpoUIModule: Module {
 
     ExpoUIView(MenuView.self)
 
+    ExpoUIView(NavigationStackView.self)
+    ExpoUIView(NavigationLinkView.self)
+    ExpoUIView(NavigationSplitViewView.self)
+    ExpoUIView(ArrangementViewView.self)
+    ExpoUIView(ToolbarView.self)
+
     ExpoUIView(FormView.self)
     ExpoUIView(GaugeView.self)
     ExpoUIView(GroupView.self)
@@ -162,6 +171,9 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
+    ExpoUIView(DataListForEachView.self)
+    View(DataListForEachItemView.self)
+    View(DataListForEachPoolView.self)
     ExpoUIView(ListForEachView.self)
 
     ExpoUIView(PickerView.self)
@@ -190,9 +202,9 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(OverlayView.self)
+    ExpoUIView(BackgroundView.self)
     ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
-    ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
     ExpoUIView(TabView.self)
     ExpoUIView(Tab.self)

@@ -2,6 +2,7 @@
  * A helper script to load the Expo config and loaded plugins from a project
  */
 
+import { consumeConfigEnvMode, loadProjectEnv } from '@expo/env';
 import fs from 'fs/promises';
 import module from 'module';
 import process from 'node:process';
@@ -9,11 +10,17 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
-import { isIgnoredPath, toPosixPath } from './utils/Path';
+import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } from './utils/Path';
+
+declare namespace globalThis {
+  let __DEV__: boolean | undefined;
+}
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
-    console.log(`Usage: ${programName} <projectRoot> [ignoredFile] [--skipPlugins]`);
+    console.log(
+      `Usage: ${programName} <projectRoot> [ignoredFile] --mode <development|production> [--skipPlugins]`
+    );
     return;
   }
 
@@ -22,8 +29,14 @@ async function runAsync(programName: string, args: string[] = []) {
   const ignoredFileArg = args[1] && !args[1].startsWith('--') ? args[1] : null;
   const ignoredFile = ignoredFileArg ? path.resolve(ignoredFileArg) : null;
 
-  setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  const modeFlagIndex = args.indexOf('--mode');
+  const mode = modeFlagIndex >= 0 ? args[modeFlagIndex + 1] : undefined;
+  if (mode !== 'development' && mode !== 'production') {
+    throw new Error(`Unsupported Expo config mode: ${mode}`);
+  }
+  consumeConfigEnvMode();
+  globalThis.__DEV__ = mode === 'development';
+  loadProjectEnv(projectRoot, { mode });
 
   const { getCapturedModules, uninstall } = installModuleCaptureHook();
   let config;
@@ -122,7 +135,8 @@ export type LoadedModuleSource =
 /**
  * Observe every CommonJS module compiled while the hook is installed.
  * We hook `Module.prototype._compile` to keep each module's authoritative filename and source
- * content.
+ * content. Every argument is forwarded: Node 22.18+ passes a `format` argument that tells it to
+ * strip types from a `.ts` file.
  */
 export function installModuleCaptureHook(): {
   getCapturedModules: () => CapturedModule[];
@@ -131,9 +145,14 @@ export function installModuleCaptureHook(): {
   const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
   const capturedModules: CapturedModule[] = [];
   const originalCompile = moduleProto._compile;
-  moduleProto._compile = function (this: { id?: string }, content: string, filename: string) {
+  moduleProto._compile = function (
+    this: { id?: string },
+    content: string,
+    filename: string,
+    ...rest: unknown[]
+  ) {
     capturedModules.push({ id: this.id ?? filename, filename, content });
-    return originalCompile.call(this, content, filename);
+    return originalCompile.call(this, content, filename, ...rest);
   };
   return {
     getCapturedModules: () => capturedModules,
@@ -144,7 +163,12 @@ export function installModuleCaptureHook(): {
 }
 
 interface ModuleCompilePrototype {
-  _compile: (this: { id?: string }, content: string, filename: string) => unknown;
+  _compile: (
+    this: { id?: string },
+    content: string,
+    filename: string,
+    ...rest: unknown[]
+  ) => unknown;
 }
 
 /**
@@ -159,6 +183,7 @@ export async function resolveLoadedModuleSourcesAsync(
   ignoredPaths: string[]
 ): Promise<LoadedModuleSource[]> {
   const seen = new Set<string>();
+  const ignoredPathMatchObjects = buildPathMatchObjects(ignoredPaths);
   const candidates = capturedModules
     .map(({ filename, content }) => ({
       relativePath: toPosixPath(path.relative(projectRoot, filename)),
@@ -166,7 +191,10 @@ export async function resolveLoadedModuleSourcesAsync(
       content,
     }))
     .filter(({ relativePath }) => {
-      if (seen.has(relativePath) || isIgnoredPath(relativePath, ignoredPaths)) {
+      if (
+        seen.has(relativePath) ||
+        isIgnoredPathWithMatchObjects(relativePath, ignoredPathMatchObjects)
+      ) {
         return false;
       }
       seen.add(relativePath);
@@ -197,18 +225,6 @@ export async function resolveLoadedModuleSourcesAsync(
  */
 export function getExpoConfigLoaderPath() {
   return path.join(__dirname, 'ExpoConfigLoader.js');
-}
-
-/**
- * Set the environment to production or development
- * Replicates the code from `@expo/cli` to ensure the same environment is set.
- */
-function setNodeEnv(mode: 'development' | 'production') {
-  process.env.NODE_ENV = process.env.NODE_ENV || mode;
-  process.env.BABEL_ENV = process.env.BABEL_ENV || process.env.NODE_ENV;
-
-  // @ts-expect-error: Add support for external React libraries being loaded in the same process.
-  globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
 }
 
 // Ignore known non-native packages loaded while applying config plugins, which the plugins-skipped

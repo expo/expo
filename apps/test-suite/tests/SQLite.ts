@@ -1,9 +1,13 @@
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system/legacy';
+import type { SharedObject } from 'expo-modules-core';
 import * as SQLite from 'expo-sqlite';
 import { SQLiteStorage } from 'expo-sqlite/kv-store';
 import path from 'path';
 import semver from 'semver';
+
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'SQLite';
 
@@ -13,7 +17,16 @@ interface UserEntity {
   j: number;
 }
 
-export function test({ describe, expect, it, beforeAll, beforeEach, afterAll, afterEach, ...t }) {
+export function test({
+  describe,
+  expect,
+  it,
+  beforeAll,
+  beforeEach,
+  afterAll,
+  afterEach,
+  ...t
+}: JasmineInterface) {
   const nativeDescribe = process.env.EXPO_OS !== 'web' ? describe : t.xdescribe;
   const nativeIt = process.env.EXPO_OS !== 'web' ? it : t.xit;
 
@@ -39,14 +52,14 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
     it(`should use newer SQLite version`, async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const row = await db.getFirstAsync<{ 'sqlite_version()': string }>('SELECT sqlite_version()');
-      expect(semver.gte(row['sqlite_version()'], '3.49.1')).toBe(true);
+      expect(semver.gte(requireNotNull(row)['sqlite_version()'], '3.53.3')).toBe(true);
       await db.closeAsync();
     });
 
     it('unixepoch() is supported', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       const row = await db.getFirstAsync<{ 'unixepoch()': number }>('SELECT unixepoch()');
-      expect(row['unixepoch()']).toBeTruthy();
+      expect(row?.['unixepoch()']).toBeTruthy();
       await db.closeAsync();
     });
 
@@ -54,11 +67,11 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       const db = await SQLite.openDatabaseAsync(':memory:');
       const value = 1700007974511;
       const row = await db.getFirstAsync<{ value: number }>(`SELECT ${value} as value`);
-      expect(row['value']).toBe(value);
+      expect(row?.['value']).toBe(value);
       const row2 = await db.getFirstAsync<{ value: number }>('SELECT $value as value', {
         $value: value,
       });
-      expect(row2['value']).toBe(value);
+      expect(row2?.['value']).toBe(value);
       await db.closeAsync();
     });
 
@@ -82,6 +95,13 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       const info = await db.getFirstAsync<any>('PRAGMA user_version');
       expect(info.user_version).toBe(123);
 
+      await db.closeAsync();
+    });
+
+    it('should enable SQLITE_ENABLE_API_ARMOR', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      const rows = await db.getAllAsync<{ compile_options: string }>('PRAGMA compile_options');
+      expect(rows.map((row) => row.compile_options)).toContain('ENABLE_API_ARMOR');
       await db.closeAsync();
     });
 
@@ -179,10 +199,10 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
     it('should support math functions', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       expect(
-        (await db.getFirstAsync<{ result: number }>('SELECT sqrt(2) as result')).result
+        (await db.getFirstAsync<{ result: number }>('SELECT sqrt(2) as result'))?.result
       ).toBeCloseTo(1.4142135623730951);
       expect(
-        (await db.getFirstAsync<{ result: number }>('SELECT pi() as result')).result
+        (await db.getFirstAsync<{ result: number }>('SELECT pi() as result'))?.result
       ).toBeCloseTo(3.141592653589793);
       await db.closeAsync();
     });
@@ -201,7 +221,7 @@ CREATE TABLE IF NOT EXISTS test (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(6
       async () => {
         const asset = await Asset.fromModule(require('../assets/asset-db.db')).downloadAsync();
         await FS.copyAsync({
-          from: asset.localUri,
+          from: requireNotNull(asset.localUri),
           to: `${FS.documentDirectory}SQLite/downloaded.db`,
         });
 
@@ -436,6 +456,51 @@ CREATE TABLE IF NOT EXISTS posts (post_id INTEGER PRIMARY KEY NOT NULL, content 
       await db.closeAsync();
     });
 
+    it('should run a whole script with comments via execAsync', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+-- set up the table
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+/* seed it */
+INSERT INTO users (user_id, name) VALUES (1, 'Tim Duncan');
+-- done
+`);
+      const rows = await db.getAllAsync('SELECT * FROM users');
+      expect(rows.length).toBe(1);
+      await db.closeAsync();
+    });
+
+    it('should prepare a statement that follows a comment', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+      const statement = await db.prepareAsync('-- pick everything\nSELECT * FROM users');
+      expect(await statement.getColumnNamesAsync()).toEqual(['user_id', 'name']);
+      await statement.finalizeAsync();
+      await db.closeAsync();
+    });
+
+    it('should keep the database usable after empty SQL', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+      // sqlite3_prepare_v2 returns SQLITE_OK with a null statement for these.
+      // Without SQLITE_ENABLE_API_ARMOR, run() SIGSEGVs in clear_bindings.
+      for (const source of ['\n', '   ', '-- nothing to run', ';']) {
+        try {
+          await db.runAsync(source);
+        } catch {}
+      }
+      await db.runAsync("INSERT INTO users (name) VALUES ('ok')");
+      expect((await db.getAllAsync('SELECT * FROM users')).length).toBe(1);
+      await db.closeAsync();
+    });
+
     it('should throw when accessing a finalized statement', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
@@ -451,8 +516,119 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       } catch (e) {
         error = e;
       }
-      expect(error.toString()).toMatch(/(Access to closed resource|Statement not found)/);
+      expect(String(error)).toMatch(/(Access to closed resource|Statement not found)/);
       await db.closeAsync();
+    });
+
+    nativeIt(
+      'rejects a statement after finalization reports its earlier execution error',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', {
+          useNewConnection: true,
+        });
+        try {
+          await db.execAsync(
+            'CREATE TABLE finalize_test (id INTEGER PRIMARY KEY); INSERT INTO finalize_test VALUES (1)'
+          );
+          const statement = await db.prepareAsync('INSERT INTO finalize_test VALUES (1)');
+          let executionError = null;
+          try {
+            await statement.executeAsync();
+          } catch (error) {
+            executionError = error;
+          }
+          expect(String(executionError)).toMatch(/UNIQUE constraint failed/);
+
+          // Finalize frees the native statement but returns the preceding constraint error.
+          let finalizeError = null;
+          try {
+            await statement.finalizeAsync();
+          } catch (error) {
+            finalizeError = error;
+          }
+          expect(String(finalizeError)).toMatch(/UNIQUE constraint failed/);
+
+          // Calling execute or finalize again must reject before touching the freed pointer.
+          let reuseError = null;
+          try {
+            await statement.executeAsync();
+          } catch (error) {
+            reuseError = error;
+          }
+          expect(String(reuseError)).toMatch(/Access to closed resource/);
+          expect(() => statement.finalizeSync()).toThrow();
+          expect(await db.getFirstAsync('SELECT count(*) AS count FROM finalize_test')).toEqual({
+            count: 1,
+          });
+        } finally {
+          await db.closeAsync();
+        }
+      }
+    );
+
+    nativeIt('rejects a statement after synchronous finalization reports an error', () => {
+      const db = SQLite.openDatabaseSync(':memory:', {
+        useNewConnection: true,
+      });
+      try {
+        db.execSync(
+          'CREATE TABLE finalize_test (id INTEGER PRIMARY KEY); INSERT INTO finalize_test VALUES (1)'
+        );
+        const statement = db.prepareSync('INSERT INTO finalize_test VALUES (1)');
+        expect(() => statement.executeSync()).toThrow();
+        expect(() => statement.finalizeSync()).toThrow();
+        expect(() => statement.executeSync()).toThrowError(/Access to closed resource/);
+        expect(() => statement.finalizeSync()).toThrowError(/Access to closed resource/);
+        expect(db.getFirstSync('SELECT count(*) AS count FROM finalize_test')).toEqual({
+          count: 1,
+        });
+      } finally {
+        db.closeSync();
+      }
+    });
+
+    nativeIt('preserves constraint codes and details while other statements run', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', {
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      try {
+        await db.execAsync(
+          'CREATE TABLE error_test(id INTEGER PRIMARY KEY); INSERT INTO error_test VALUES (1)'
+        );
+        const readers = await Promise.all(
+          Array.from({ length: 16 }, () => db.prepareAsync('SELECT 1 UNION ALL SELECT 2'))
+        );
+        try {
+          for (let attempt = 0; attempt < 200; attempt++) {
+            const statement = await db.prepareAsync('INSERT INTO error_test VALUES (1)');
+            let executionError: unknown;
+            try {
+              await statement.executeAsync();
+            } catch (error) {
+              executionError = error;
+            }
+            expect(String(executionError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+            // These native calls can replace the connection error between finalize() and error reporting.
+            const reading = Promise.all(readers.map((reader) => reader.executeAsync()));
+            let finalizeError: unknown;
+            try {
+              await statement.finalizeAsync();
+            } catch (error) {
+              finalizeError = error;
+            }
+            await reading;
+            expect(String(finalizeError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+          }
+        } finally {
+          for (const reader of readers) await reader.finalizeAsync();
+        }
+      } finally {
+        await db.closeAsync();
+      }
     });
 
     it('should throw from getFirstAsync()/getAllAsync() if the cursor is not at the beginning', async () => {
@@ -465,7 +641,7 @@ INSERT INTO users (user_id, name, k, j) VALUES (2, 'Manu Ginobili', 5, 72.8);
 INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.14);
 `);
 
-      for (const method of ['getFirstAsync', 'getAllAsync']) {
+      for (const method of ['getFirstAsync', 'getAllAsync'] as const) {
         const statement = await db.prepareAsync('SELECT * FROM users ORDER BY j ASC');
         let error = null;
         try {
@@ -477,7 +653,7 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
         } finally {
           await statement.finalizeAsync();
         }
-        expect(error.toString()).toMatch(/The SQLite cursor has been shifted/);
+        expect(String(error)).toMatch(/The SQLite cursor has been shifted/);
 
         const statement2 = await db.prepareAsync('SELECT * FROM users ORDER BY j ASC');
         error = null;
@@ -601,9 +777,9 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
       const statement = await db.prepareAsync('SELECT * FROM blobs');
       const row = await (await statement.executeAsync<{ data: Uint8Array }>()).getFirstAsync();
       await statement.finalizeAsync();
-      expect(row.data).toEqual(blob);
+      expect(row?.data).toEqual(blob);
       const row2 = db.getFirstSync<{ data: Uint8Array }>('SELECT * FROM blobs');
-      expect(row2.data).toEqual(blob);
+      expect(row2?.data).toEqual(blob);
     });
   });
 
@@ -621,7 +797,7 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
 `);
 
-      async function fakeUserFetcher(userID) {
+      async function fakeUserFetcher(userID: number) {
         switch (userID) {
           case 1: {
             return Promise.resolve('Tim Duncan');
@@ -642,7 +818,7 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       await db.withTransactionAsync(async () => {
         await db.runAsync('INSERT INTO users (name) VALUES (?)', [userName]);
         const result = await db.getFirstAsync<UserEntity>('SELECT * FROM users LIMIT 1');
-        expect(result.name).toEqual('Tim Duncan');
+        expect(result?.name).toEqual('Tim Duncan');
       });
     });
 
@@ -722,7 +898,7 @@ INSERT INTO users (name) VALUES ('aaa');
           }
           resolve(null);
         } catch (e) {
-          reject(new Error(`Exception from promise2: ${e.toString()}`));
+          reject(new Error(`Exception from promise2: ${String(e)}`));
         }
       });
 
@@ -730,7 +906,7 @@ INSERT INTO users (name) VALUES ('aaa');
       expect(result1.status).toBe('rejected');
       expect(result2.status).toBe('fulfilled');
       const error = (result1 as PromiseRejectedResult).reason;
-      expect(error.toString()).toMatch(/Exception from promise1: Expected aaa but received bbb/);
+      expect(String(error)).toMatch(/Exception from promise1: Expected aaa but received bbb/);
     });
 
     nativeIt(
@@ -768,7 +944,7 @@ INSERT INTO users (name) VALUES ('aaa');
             }
             resolve(null);
           } catch (e) {
-            reject(new Error(`Exception from promise2: ${e.toString()}`));
+            reject(new Error(`Exception from promise2: ${String(e)}`));
           }
         });
 
@@ -776,13 +952,14 @@ INSERT INTO users (name) VALUES ('aaa');
         expect(result1.status).toBe('fulfilled');
         expect(result2.status).toBe('rejected');
         const error = (result2 as PromiseRejectedResult).reason;
-        expect(error.toString()).toMatch(/Exception from promise2:[\s\S]*database is locked/);
+        expect(String(error)).toMatch(/Exception from promise2:[\s\S]*database is locked/);
       }
     );
   });
 
   describe('Synchronous calls', () => {
-    let db: SQLite.SQLiteDatabase | null = null;
+    // Opened in `beforeEach` before every spec in this suite.
+    let db!: SQLite.SQLiteDatabase;
 
     beforeEach(() => {
       db = SQLite.openDatabaseSync(':memory:');
@@ -796,7 +973,7 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
     });
 
     afterEach(() => {
-      db?.closeSync();
+      db.closeSync();
     });
 
     it('Basic CRUD', () => {
@@ -862,18 +1039,19 @@ DROP TABLE IF EXISTS foo;
 CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 `);
 
-      let databaseChangeListener: ReturnType<typeof SQLite.addDatabaseChangeListener> | null = null;
-      const waitChangePromise = new Promise((resolve) => {
-        databaseChangeListener = SQLite.addDatabaseChangeListener(
-          ({ databaseName, databaseFilePath, tableName, rowId }) => {
-            expect(databaseName).toEqual('main');
-            expect(path.basename(databaseFilePath)).toEqual('test.db');
-            expect(tableName).toEqual('foo');
-            expect(rowId).toBeDefined();
-            resolve(null);
-          }
-        );
+      let resolveChange!: () => void;
+      const waitChangePromise = new Promise<void>((resolve) => {
+        resolveChange = () => resolve();
       });
+      const databaseChangeListener = SQLite.addDatabaseChangeListener(
+        ({ databaseName, databaseFilePath, tableName, rowId }) => {
+          expect(databaseName).toEqual('main');
+          expect(path.basename(databaseFilePath)).toEqual('test.db');
+          expect(tableName).toEqual('foo');
+          expect(rowId).toBeDefined();
+          resolveChange();
+        }
+      );
 
       const delayedInsertPromise = new Promise((resolve) => setTimeout(resolve, 0)).then(() =>
         db.runAsync('INSERT INTO foo (a, b) VALUES (?, ?)', 1, 2)
@@ -882,11 +1060,176 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       await Promise.all([waitChangePromise, delayedInsertPromise]);
 
       await db.closeAsync();
-      databaseChangeListener?.remove();
+      databaseChangeListener.remove();
     }, 10000);
   });
 
+  nativeDescribe('Interrupt', () => {
+    const longQuery = `WITH RECURSIVE numbers(n) AS (
+      VALUES(1) UNION ALL SELECT n + 1 FROM numbers WHERE n < 10000000
+    ) SELECT sum(n) FROM numbers`;
+
+    it('interrupts a running query and leaves the connection usable', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        // Repeat until the operation settles so the test also covers a query queued by the bridge.
+        const timer = setInterval(() => db.interruptSync(), 10);
+        let error = null;
+        try {
+          await db.execAsync(longQuery);
+        } catch (e) {
+          error = e;
+        } finally {
+          clearInterval(timer);
+        }
+        expect(String(error)).toMatch(/interrupted/);
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
+    it('rolls back the entire transaction when a write is interrupted', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        await db.execAsync(
+          'CREATE TABLE interrupt_test (value); BEGIN; INSERT INTO interrupt_test VALUES (1)'
+        );
+        const timer = setInterval(() => db.interruptSync(), 10);
+        let error = null;
+        try {
+          await db.execAsync('INSERT INTO interrupt_test ' + longQuery);
+        } catch (e) {
+          error = e;
+        } finally {
+          clearInterval(timer);
+        }
+        expect(String(error)).toMatch(/interrupted/);
+        expect(await db.isInTransactionAsync()).toBe(false);
+        expect(await db.getFirstAsync('SELECT count(*) AS count FROM interrupt_test')).toEqual({
+          count: 0,
+        });
+        await db.execAsync('INSERT INTO interrupt_test VALUES (42)');
+        expect(await db.getFirstAsync('SELECT * FROM interrupt_test')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
+    for (const exclusive of [false, true]) {
+      it(`preserves interruption errors in ${exclusive ? 'exclusive' : 'regular'} transaction helpers`, async () => {
+        // The exclusive helper opens another connection, so both must use the same file.
+        const databaseName = `interrupt-transaction-${exclusive}.db`;
+        const db = await SQLite.openDatabaseAsync(databaseName, { useNewConnection: true });
+        try {
+          await db.execAsync(
+            'DROP TABLE IF EXISTS interrupt_test; CREATE TABLE interrupt_test (value)'
+          );
+          const write = async (txn: SQLite.SQLiteDatabase) => {
+            await txn.execAsync('INSERT INTO interrupt_test VALUES (1)');
+            const timer = setInterval(() => txn.interruptSync(), 10);
+            try {
+              await txn.execAsync('INSERT INTO interrupt_test ' + longQuery);
+            } finally {
+              // Stop interrupting before the helper rolls back or closes its connection.
+              clearInterval(timer);
+            }
+          };
+          let error = null;
+          try {
+            if (exclusive) {
+              await db.withExclusiveTransactionAsync(write);
+            } else {
+              await db.withTransactionAsync(() => write(db));
+            }
+          } catch (e) {
+            error = e;
+          }
+          expect(String(error)).toMatch(/interrupted/);
+          expect(await db.isInTransactionAsync()).toBe(false);
+          expect(await db.getFirstAsync('SELECT count(*) AS count FROM interrupt_test')).toEqual({
+            count: 0,
+          });
+          await db.execAsync('INSERT INTO interrupt_test VALUES (42)');
+          expect(await db.getFirstAsync('SELECT * FROM interrupt_test')).toEqual({ value: 42 });
+        } finally {
+          await db.closeAsync();
+          await SQLite.deleteDatabaseAsync(databaseName);
+        }
+      });
+    }
+
+    it('does nothing while idle and rejects a closed connection', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        db.interruptSync();
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+      expect(() => db.interruptSync()).toThrowError(/Access to closed resource/);
+    });
+  });
+
   describe('Error handling', () => {
+    nativeIt(
+      'automatic cleanup invalidates statement wrappers, including column metadata',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        const statement = await db.prepareAsync('SELECT 42 AS value');
+        await db.closeAsync();
+
+        // Column metadata has no database argument; the statement itself must reject access.
+        expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
+        const results = await Promise.allSettled([
+          statement.getColumnNamesAsync(),
+          statement.executeAsync(),
+          statement.finalizeAsync(),
+        ]);
+        for (const result of results) {
+          expect(result.status).toBe('rejected');
+          if (result.status === 'rejected') {
+            expect(String(result.reason)).toMatch(/Access to closed resource/);
+          }
+        }
+      }
+    );
+
+    nativeIt(
+      'automatic cleanup closes a database after JavaScript releases a statement',
+      async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        const statement = await db.prepareAsync('SELECT 1');
+        const retainedStatement = await db.prepareAsync('SELECT 2');
+
+        // Explicit release invokes sharedObjectDidRelease, just like collection of the JS wrapper.
+        // SQLiteStatement hides the native SharedObject, so access it directly for this regression.
+        (statement['nativeStatement'] as unknown as InstanceType<typeof SharedObject>).release();
+        await db.closeAsync();
+
+        expect(() => db.execSync('SELECT 1')).toThrowError(/Access to closed resource/);
+        expect(() => retainedStatement.getColumnNamesSync()).toThrowError(
+          /Access to closed resource/
+        );
+      }
+    );
+
+    nativeIt('concurrent finalization rejects the second call safely', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      try {
+        const statement = await db.prepareAsync('SELECT 1');
+        const results = await Promise.allSettled([
+          statement.finalizeAsync(),
+          statement.finalizeAsync(),
+        ]);
+        expect(results.filter((result) => result.status === 'fulfilled').length).toBe(1);
+        expect(results.filter((result) => result.status === 'rejected').length).toBe(1);
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
     it('finalizeUnusedStatementsBeforeClosing should close all unclosed statements', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.prepareAsync('SELECT sqlite_version()');
@@ -904,16 +1247,118 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       const db = await SQLite.openDatabaseAsync(':memory:', {
         finalizeUnusedStatementsBeforeClosing: false,
       });
-      await db.prepareAsync('SELECT sqlite_version()');
-
-      let error = null;
+      const statement = await db.prepareAsync('SELECT sqlite_version()');
       try {
+        let error = null;
+        try {
+          await db.closeAsync();
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
+      } finally {
+        await statement.finalizeAsync();
         await db.closeAsync();
-      } catch (e) {
-        error = e;
       }
-      expect(error.toString()).toMatch(/unable to close due to unfinalized statements/);
     });
+
+    for (const useNewConnection of [false, true]) {
+      nativeIt(
+        'can clean up and retry a failed close (useNewConnection=' + useNewConnection + ')',
+        async () => {
+          const options = {
+            useNewConnection,
+            finalizeUnusedStatementsBeforeClosing: false,
+          };
+          const databaseName = ':memory:';
+          const db = await SQLite.openDatabaseAsync(databaseName, options);
+          await db.execAsync(
+            'DROP TABLE IF EXISTS close_test; CREATE TABLE close_test (value); INSERT INTO close_test VALUES (42)'
+          );
+          const statement = await db.prepareAsync('SELECT * FROM close_test');
+          try {
+            // A failed close must neither consume a reference nor silently succeed on retry.
+            for (let attempt = 0; attempt < 2; attempt++) {
+              let error = null;
+              try {
+                await db.closeAsync();
+              } catch (e) {
+                error = e;
+              }
+              expect(String(error)).toMatch(/unable to close due to unfinalized statements/);
+            }
+            expect(await db.getFirstAsync('SELECT * FROM close_test')).toEqual({
+              value: 42,
+            });
+
+            if (!useNewConnection) {
+              const sharedDb = await SQLite.openDatabaseAsync(databaseName, options);
+              try {
+                // Reopening must reuse the still-open database, not create an empty one.
+                expect(await sharedDb.getFirstAsync('SELECT * FROM close_test')).toEqual({
+                  value: 42,
+                });
+              } finally {
+                await sharedDb.closeAsync();
+              }
+            }
+          } finally {
+            await statement.finalizeAsync();
+            await db.closeAsync();
+          }
+          // Android used to remove the cache entry on failure, making the retry a no-op.
+          expect(() => db.execSync('SELECT 1')).toThrow();
+        }
+      );
+    }
+
+    nativeIt('can clean up and retry a failed synchronous close', () => {
+      const db = SQLite.openDatabaseSync(':memory:', {
+        useNewConnection: true,
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      const statement = db.prepareSync('SELECT 1');
+      try {
+        expect(() => db.closeSync()).toThrow();
+        expect(db.getFirstSync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        statement.finalizeSync();
+        db.closeSync();
+      }
+      expect(() => db.execSync('SELECT 1')).toThrow();
+    });
+  });
+
+  describe('Virtual tables', () => {
+    for (const moduleName of ['fts5', 'fts4']) {
+      nativeIt(`should close a ${moduleName} database after the query is finalized`, async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        await db.execAsync(`
+          CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
+          INSERT INTO fts_probe(body) VALUES ('hello world');
+        `);
+        expect(
+          await db.getFirstAsync("SELECT rowid AS id FROM fts_probe WHERE fts_probe MATCH 'hello'")
+        ).toEqual({ id: 1 });
+        await db.closeAsync();
+      });
+
+      nativeIt(
+        `should close a ${moduleName} database while a query statement is still open`,
+        async () => {
+          const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+          await db.execAsync(`
+            CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
+            INSERT INTO fts_probe(body) VALUES ('hello world');
+          `);
+          const statement = await db.prepareAsync(
+            "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
+          );
+          await db.closeAsync();
+          expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
+        }
+      );
+    }
   });
 
   describe('Database - serialize / deserialize', () => {
@@ -1051,12 +1496,45 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
     });
   });
 
-  addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
-  addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
-  addExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t });
+  addSessionExtensionTestSuiteAsync({
+    describe,
+    expect,
+    it,
+    beforeAll,
+    beforeEach,
+    afterAll,
+    afterEach,
+    ...t,
+  });
+  addAppleAppGroupsTestSuiteAsync({
+    describe,
+    expect,
+    it,
+    beforeAll,
+    beforeEach,
+    afterAll,
+    afterEach,
+    ...t,
+  });
+  addExtensionTestSuiteAsync({
+    describe,
+    expect,
+    it,
+    beforeAll,
+    beforeEach,
+    afterAll,
+    afterEach,
+    ...t,
+  });
 }
 
-function addSessionExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+function addSessionExtensionTestSuiteAsync({
+  describe,
+  expect,
+  it,
+  beforeEach,
+  ...t
+}: JasmineInterface) {
   describe('Session Extension', () => {
     // Referenced from: https://github.com/livestorejs/wa-sqlite-build-env/blob/main/test/session-ext.ts
 
@@ -1239,7 +1717,13 @@ INSERT INTO todo (title, group_id, counter) VALUES ('initial todo', 1, 0);
   });
 }
 
-function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+function addAppleAppGroupsTestSuiteAsync({
+  describe,
+  expect,
+  it,
+  beforeEach,
+  ...t
+}: JasmineInterface) {
   let Paths: typeof import('expo-file-system').Paths | null = null;
   try {
     Paths = require('expo-file-system').Paths as typeof import('expo-file-system').Paths;
@@ -1259,9 +1743,10 @@ function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, beforeEach, ...
     });
 
     scopedIt('should create and delete a database in a shared container', async () => {
-      const dbUri = sharedContainerDir + '/test.db';
+      const containerDir = requireNotNull(sharedContainerDir);
+      const dbUri = containerDir + '/test.db';
 
-      const db = await SQLite.openDatabaseAsync('test.db', {}, sharedContainerDir);
+      const db = await SQLite.openDatabaseAsync('test.db', {}, containerDir);
       await db.execAsync(`
 DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
@@ -1274,7 +1759,7 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
       let fileInfo = await FS.getInfoAsync(dbUri);
       expect(fileInfo.exists).toBeTruthy();
 
-      await SQLite.deleteDatabaseAsync('test.db', sharedContainerDir);
+      await SQLite.deleteDatabaseAsync('test.db', containerDir);
       fileInfo = await FS.getInfoAsync(dbUri);
       expect(fileInfo.exists).toBeFalsy();
     });
@@ -1282,12 +1767,13 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
     scopedIt(
       'should support internal importDatabaseFromAssetAsync without using expo-file-system',
       async () => {
+        const containerDir = requireNotNull(sharedContainerDir);
         await SQLite.importDatabaseFromAssetAsync(
           'test.db',
           { assetId: require('../assets/asset-db.db') },
-          sharedContainerDir
+          containerDir
         );
-        const db = await SQLite.openDatabaseAsync('test.db', {}, sharedContainerDir);
+        const db = await SQLite.openDatabaseAsync('test.db', {}, containerDir);
         const results = await db.getAllAsync<UserEntity>('SELECT * FROM users');
         expect(results.length).toEqual(3);
         expect(results[0].j).toBeCloseTo(23.4);
@@ -1297,14 +1783,15 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
   });
 }
 
-function addExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }) {
+function addExtensionTestSuiteAsync({ describe, expect, it, beforeEach, ...t }: JasmineInterface) {
   const vecExt = SQLite.bundledExtensions['sqlite-vec'];
   const scopedIt = vecExt ? it : t.xit;
 
   describe('Extensions', () => {
     scopedIt('should load sqlite-vec extension', async () => {
+      const ext = requireNotNull(vecExt);
       const db = await SQLite.openDatabaseAsync(':memory:');
-      await db.loadExtensionAsync(vecExt.libPath, vecExt.entryPoint);
+      await db.loadExtensionAsync(ext.libPath, ext.entryPoint);
       // Example from https://github.com/asg017/sqlite-vec?#sample-usage
       await db.execAsync(`
 create virtual table vec_examples using vec0(

@@ -26,8 +26,15 @@ class DevelopmentServerService: ObservableObject {
   private var sessionSecret: String?
   private var remoteRefreshTask: Task<Void, Never>?
   private var browser: NWBrowser?
+  private var probeListener: NWListener?
+  private let probeServiceName = "expo-go-permission-probe"
   private var pingTask: Task<Void, Never>?
   private var isFetchingRemote = false
+  private let urlSession: URLSession
+
+  init(urlSession: URLSession = .shared) {
+    self.urlSession = urlSession
+  }
 
   var hasGrantedNetworkPermission: Bool {
     UserDefaults.standard.bool(forKey: Self.networkPermissionGrantedKey)
@@ -59,7 +66,20 @@ class DevelopmentServerService: ObservableObject {
     permissionStatus = .granted
   }
 
+  func markNetworkPermissionDenied() {
+    UserDefaults.standard.set(false, forKey: Self.networkPermissionGrantedKey)
+    permissionStatus = .denied
+  }
+
   func checkLocalNetworkAccess() async -> Bool {
+    let granted = await probeLocalNetworkAccess()
+    if granted {
+      markNetworkPermissionGranted()
+    }
+    return granted
+  }
+
+  private func probeLocalNetworkAccess() async -> Bool {
     let serviceType = bonjourType
     let queue = DispatchQueue(label: "expo.go.permissioncheck")
 
@@ -139,7 +159,7 @@ class DevelopmentServerService: ObservableObject {
     request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
 
     do {
-      let (data, response) = try await URLSession.shared.data(for: request)
+      let (data, response) = try await urlSession.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse,
             (200..<300).contains(httpResponse.statusCode) else {
         return nil
@@ -218,7 +238,7 @@ class DevelopmentServerService: ObservableObject {
     request.setValue(Versions.sharedInstance.sdkVersion, forHTTPHeaderField: "Expo-SDK-Version")
 
     do {
-      let (data, response) = try await URLSession.shared.data(for: request)
+      let (data, response) = try await urlSession.data(for: request)
       guard let httpResponse = response as? HTTPURLResponse,
             (200..<300).contains(httpResponse.statusCode) else {
         applyRemoteFailureBackoff()
@@ -251,7 +271,12 @@ class DevelopmentServerService: ObservableObject {
       cacheRemoteSessions(sessions)
       remoteFailureCount = 0
       nextRemoteFetchAllowedAt = .distantPast
-    } catch {}
+    } catch is CancellationError {
+    } catch let error as URLError where error.code == .cancelled {
+    } catch {
+      print("[DevelopmentServerService] Failed to fetch remote development sessions: \(error)")
+      applyRemoteFailureBackoff()
+    }
   }
 
   private func updateDevelopmentServers() {
@@ -326,11 +351,11 @@ class DevelopmentServerService: ObservableObject {
         switch state {
         case .waiting(let error):
           if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
-            self.permissionStatus = .denied
+            self.markNetworkPermissionDenied()
           }
         case .failed(let error):
           if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
-            self.permissionStatus = .denied
+            self.markNetworkPermissionDenied()
           }
         default:
           break
@@ -342,28 +367,48 @@ class DevelopmentServerService: ObservableObject {
       guard let self else { return }
       Task { @MainActor [weak self, results] in
         guard let self else { return }
+        // Results only flow once the permission is truly granted, so this is the reliable signal.
         self.markNetworkPermissionGranted()
+        self.probeListener?.cancel()
+        self.probeListener = nil
         self.pingTask?.cancel()
         self.pingTask = Task {
           defer { self.pingTask = nil }
-          await self.pingDiscoveryResults(results.map { result in
-            DiscoveryResult(
-              name: NetworkUtilities.getNWBrowserResultName(result),
-              endpoint: result.endpoint
-            )
+          await self.pingDiscoveryResults(results.compactMap { result in
+            let name = NetworkUtilities.getNWBrowserResultName(result)
+            if name?.hasPrefix(self.probeServiceName) == true {
+              return nil
+            }
+            return DiscoveryResult(name: name, endpoint: result.endpoint)
           })
         }
       }
     }
 
+    startProbeListener()
     browser?.start(queue: DispatchQueue(label: "expo.go.bonjour.discovery"))
+  }
+
+  // Advertise our own service so a granted permission always produces at least one browse
+  // result, even when no dev servers are running.
+  private func startProbeListener() {
+    guard let listener = try? NWListener(using: .tcp, on: .any) else {
+      return
+    }
+    listener.service = NWListener.Service(name: probeServiceName, type: bonjourType)
+    listener.stateUpdateHandler = { _ in }
+    listener.newConnectionHandler = { $0.cancel() }
+    listener.start(queue: DispatchQueue(label: "expo.go.bonjour.probe"))
+    probeListener = listener
   }
 
   private func stopBonjourBrowser() {
     pingTask?.cancel()
     browser?.cancel()
+    probeListener?.cancel()
     pingTask = nil
     browser = nil
+    probeListener = nil
   }
 
   private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {

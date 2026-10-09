@@ -80,7 +80,7 @@ class ViewDefinitionBuilder<T : View>(
   }
 
   /**
-   * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
+   * Creates view's lifecycle listener that is called right after the view is no longer used by React Native.
    */
   @Suppress("UNCHECKED_CAST")
   inline fun OnViewDestroys(crossinline body: (view: T) -> Unit) {
@@ -90,7 +90,7 @@ class ViewDefinitionBuilder<T : View>(
   }
 
   /**
-   * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
+   * Creates view's lifecycle listener that is called right after the view is no longer used by React Native.
    */
   @JvmName("OnViewDestroysGeneric")
   inline fun <reified ViewType : T> OnViewDestroys(noinline body: (view: ViewType) -> Unit) {

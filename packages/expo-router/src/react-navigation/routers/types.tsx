@@ -1,6 +1,8 @@
 import type * as CommonActions from './CommonActions';
 
-export type CommonNavigationAction = CommonActions.Action;
+export type CommonNavigationAction =
+  | CommonActions.Action
+  | CommonActions.InternalRouteNamesChangedAction;
 
 export type NavigationRoute<
   ParamList extends ParamListBase,
@@ -14,6 +16,10 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
    * Unique key for the navigation state.
    */
   key: string;
+  /**
+   * Sequence used to mint route keys in this navigation state.
+   */
+  routeKeySeq: number;
   /**
    * Index of the currently focused route.
    */
@@ -32,13 +38,11 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
   routes: NavigationRoute<ParamList, keyof ParamList>[];
   /**
    * Custom type for the state, whether it's for tab, stack, drawer etc.
-   * During rehydration, the state will be discarded if type doesn't match with router type.
+   * A navigator discards state whose type doesn't match its router type.
    * It can also be used to detect the type of the navigator we're dealing with.
    */
-  type: string;
-  /**
-   * Whether the navigation state has been rehydrated.
-   */
+  type?: string;
+  // TODO: Remove `stale` in a follow-up after partial navigation states are removed.
   stale: false;
 }>;
 
@@ -53,6 +57,7 @@ export type PartialRoute<R extends Route<string>> = Omit<R, 'key'> & {
   state?: PartialState<NavigationState>;
 };
 
+// TODO: Remove `PartialState` in a follow-up once all state producers return complete states.
 export type PartialState<State extends NavigationState> = Partial<Omit<State, 'stale' | 'routes'>> &
   Readonly<{
     stale?: true;
@@ -76,6 +81,10 @@ export type Route<
    * Usually present when the screen was opened from a deep link.
    */
   path?: string;
+  /**
+   * Set by the router while the route is rendered ahead of use and cleared when it becomes active.
+   */
+  isPreloaded?: true;
 }> &
   (undefined extends Params
     ? Readonly<{
@@ -124,6 +133,11 @@ export type DefaultRouterOptions<RouteName extends string = string> = {
   initialRouteName?: RouteName;
 };
 
+/**
+ * Two instantiations with different `State` types are not assignable to each other, because
+ * `Router` requires `type` conditionally on `State`. Annotate a factory that should accept any
+ * router as a function type instead, as `extendRouter` does.
+ */
 export type RouterFactory<
   State extends NavigationState,
   Action extends NavigationAction,
@@ -132,57 +146,40 @@ export type RouterFactory<
 
 export type RouterConfigOptions = {
   routeNames: string[];
-  routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,
     ((options: { params?: Record<string, any> }) => string | undefined) | undefined
   >;
 };
 
-export type Router<State extends NavigationState, Action extends NavigationAction> = {
-  /**
-   * Type of the router. Should match the `type` property in state.
-   * If the type doesn't match, the state will be discarded during rehydration.
-   */
-  type: State['type'];
+/**
+ * Type of the router. Should match the `type` property in state.
+ * If the type doesn't match, navigator-specific state will be discarded while preserving the
+ * focused route.
+ * Only routers whose state has no `type` may omit it, since a state without a `type`
+ * is accepted by every router.
+ */
+type RouterType<State extends NavigationState> = undefined extends State['type']
+  ? { type?: State['type'] }
+  : { type: State['type'] };
 
+export type Router<
+  State extends NavigationState,
+  Action extends NavigationAction,
+> = RouterType<State> & {
   /**
-   * Initialize the navigation state.
+   * Take the current state and the route names the navigator declares, and return the state to
+   * render until `ROUTE_NAMES_CHANGED` has been reconciled.
    *
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getInitialState(options: RouterConfigOptions): State;
-
-  /**
-   * Rehydrate the full navigation state from a given partial state.
+   * This is a render-phase fallback, not a state change. Return `state` when nothing was removed,
+   * and set `index` to `-1` when no declared route is left to focus.
    *
-   * @param partialState Navigation state to rehydrate from.
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getRehydratedState(
-    partialState: PartialState<State> | State,
-    options: RouterConfigOptions
-  ): State;
-
-  /**
-   * Take the current state and updated list of route names, and return a new state.
+   * This function will only be called in development, when route file is removed.
    *
-   * @param state State object to update.
-   * @param options.routeNames New list of route names.
-   * @param options.routeParamsList Object containing params for each route.
+   * @param state State object to filter.
+   * @param routeNames Route names currently declared by the navigator.
    */
-  getStateForRouteNamesChange(
-    state: State,
-    options: RouterConfigOptions & {
-      /**
-       * List of routes whose key has changed even if they still have the same name.
-       * This allows to remove screens declaratively.
-       */
-      routeKeyChanges: string[];
-    }
-  ): State;
+  getStateForDeclaredRoutes(state: State, routeNames: string[]): State;
 
   /**
    * Take the current state and key of a route, and return a new state with the route focused
@@ -193,19 +190,30 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   getStateForRouteFocus(state: State, key: string): State;
 
   /**
-   * Take the current state and action, and return a new state.
-   * If the action cannot be handled, return `null`.
+   * Adjusts browser history when navigation inside a child also changes its parent.
+   * For example, pushing Details inside an open drawer closes the drawer: return `replace`
+   * to reuse the drawer's browser entry for Details. Return `undefined` to keep the child's choice.
+   */
+  getBrowserHistoryForRouteFocus?(
+    previous: State,
+    next: State,
+    childAction?: RouterBrowserHistoryAction
+  ): RouterBrowserHistoryAction | undefined;
+
+  /**
+   * Take the current state and action, and return a new state and the affected route key.
+   * If the action cannot be handled, return `null`. Custom routers must explicitly handle
+   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
    */
   getStateForAction(
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): State | PartialState<State> | null;
+  ): RouterActionResult<State> | null;
 
   /**
    * Whether the action should also change focus in parent navigator
@@ -215,7 +223,61 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   shouldActionChangeFocus(action: NavigationAction): boolean;
 
   /**
+   * Restores router invariants, such as preload markers, on a returned state. `extendRouter`
+   * applies it to every state the router it creates returns; `useNavigationBuilder` does not
+   * call it. It must be idempotent and must not change the state's `type`.
+   *
+   * @param state State object to normalize.
+   */
+  normalizeState?(state: State): State;
+
+  /**
+   * Chooses how an accepted action changes browser history. For example, Stack PUSH returns
+   * `{ type: 'push' }`, so browser Back can return to the previous screen.
+   * `extendRouter` calls this after `normalizeState`. Its return value replaces any instruction
+   * from the base router; `undefined` updates the current browser entry without adding one.
+   */
+  getBrowserHistoryForAction?(
+    previous: State,
+    next: State,
+    action: Action
+  ): RouterBrowserHistoryAction | undefined;
+
+  /**
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;
+};
+
+/** A router's instruction for synchronizing an accepted action with browser history. */
+export type RouterBrowserHistoryAction =
+  | { type: 'push' }
+  | { type: 'replace' }
+  | {
+      type: 'pop';
+      /** Fallback count for destinations without a tracked browser entry (e.g. an initial anchor). */
+      count: number;
+      /** Find the destination among tracked entries, including entries made by nested navigators. */
+      target?: { navigatorKey: string; routeKey: string };
+    };
+
+/**
+ * The result of reducing a navigation action.
+ */
+export type RouterActionResult<State extends NavigationState> = {
+  /**
+   * The navigation state produced by the action.
+   */
+  state: State;
+  /**
+   * The key of the route affected by the action.
+   */
+  affectedRouteKey: string | undefined;
+  /**
+   * How this action changes browser history: `push` adds an entry, `pop` goes back,
+   * and `replace` (or omission) updates the current entry.
+   * For example, pushing Details returns `{ type: 'push' }`; Back returns `{ type: 'pop', count: 1 }`.
+   * Applied only if navigation succeeds. Restoring a browser entry does not add another entry.
+   */
+  browserHistory?: RouterBrowserHistoryAction;
 };

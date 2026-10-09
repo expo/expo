@@ -1,7 +1,9 @@
 package expo.modules.kotlin.views
 
 import android.view.ViewTreeObserver
+import androidx.annotation.UiThread
 import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
 class ShadowNodeProxy(expoView: ExpoView) {
@@ -10,22 +12,42 @@ class ShadowNodeProxy(expoView: ExpoView) {
 
   private var pendingFlush: ((stateWrapper: Any) -> Unit)? = null
   private var preDrawListener: ViewTreeObserver.OnPreDrawListener? = null
-  private val flushRunnable = Runnable { drainPendingFlush() }
+  private var flushPosted = false
+  private val flushRunnable = Runnable {
+    flushPosted = false
+    drainPendingFlush()
+  }
 
   // Schedule in predraw listener to avoid early return in re-entrancy
   // We have a proper fix [here](https://github.com/facebook/react-native/pull/56311)
   // but it needs to be merged in RN
   // TODO: Remove the workaround when RN PR gets merged.
+  @UiThread
   fun setViewSize(width: Double, height: Double) {
     scheduleFlush { stateWrapper ->
       stateUpdater.updateViewSizeImmediate(stateWrapper, width, height)
     }
   }
 
+  @UiThread
   fun setStyleSize(width: Double?, height: Double?) {
     scheduleFlush { stateWrapper ->
       stateUpdater.updateStyleSizeImmediate(stateWrapper, width ?: Double.NaN, height ?: Double.NaN)
     }
+  }
+
+  /**
+   * Reports where the native layout system drew this view inside its `Host`, in dp relative to the
+   * `Host`'s origin.
+   */
+  fun setContentOrigin(x: Double, y: Double) {
+    val view = weakExpoView.get() ?: return
+    stateUpdater.setContentOrigin(view.id, x, y)
+  }
+
+  fun clearContentOrigin() {
+    val view = weakExpoView.get() ?: return
+    stateUpdater.clearContentOrigin(view.id)
   }
 
   private fun scheduleFlush(flush: (stateWrapper: Any) -> Unit) {
@@ -54,8 +76,18 @@ class ShadowNodeProxy(expoView: ExpoView) {
 
     // Predraw listener do not get called for each keyboard transition event so we add a fallback flush to be called here
     // https://github.com/expo/expo/issues/47778
-    view.removeCallbacks(flushRunnable)
-    view.post(flushRunnable)
+    // Async and posted once, so it still runs during animations.
+    // `Dispatchers.Main` posts async messages, which skip the traversal sync barriers.
+    // https://github.com/expo/expo/issues/51034
+    if (!flushPosted) {
+      flushPosted = true
+      if (view.isAttachedToWindow) {
+        view.appContext.mainQueue.launch { flushRunnable.run() }
+      } else {
+        // `view.post` keeps the runnable until the view attaches.
+        view.post(flushRunnable)
+      }
+    }
   }
 
   private fun drainPendingFlush() {

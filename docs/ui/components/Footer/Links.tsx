@@ -65,12 +65,7 @@ export const EditPageLink = ({ pathname }: { pathname: string }) => {
   );
 };
 
-type LlmsTxtLinkProps = {
-  fullVersionHref: string;
-  fullVersionLabel: string;
-};
-
-export const LlmsTxtLink = ({ fullVersionHref, fullVersionLabel }: LlmsTxtLinkProps) => (
+export const LlmsTxtLink = () => (
   <LI className="flex items-center">
     <File02Icon aria-hidden="true" className={ICON_CLASSES} />
     <CALLOUT theme="secondary" tag="span">
@@ -82,12 +77,6 @@ export const LlmsTxtLink = ({ fullVersionHref, fullVersionLabel }: LlmsTxtLinkPr
               {chunks}
             </A>
           ),
-          fullLink: (chunks: ReactNode) => (
-            <A openInNewTab href={fullVersionHref} className="focus-visible:outline-offset-4">
-              {chunks}
-            </A>
-          ),
-          fullName: fullVersionLabel,
         }}
       />
     </CALLOUT>

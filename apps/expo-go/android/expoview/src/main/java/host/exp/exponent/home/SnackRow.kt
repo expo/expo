@@ -37,7 +37,7 @@ private fun isSupportedSdkVersion(sdkVersion: String): Boolean {
 }
 
 @Composable
-fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
+fun SnackRow(snack: Home_AccountSnacksQuery.Node) {
   val uriHandler = LocalUriHandler.current
   val isSupported = isSupportedSdkVersion(snack.commonSnackData.sdkVersion)
   var showUnsupportedDialog by remember { mutableStateOf(false) }
@@ -76,7 +76,13 @@ fun SnackRow(snack: Home_AccountSnacksQuery.Snack) {
     Column(
       modifier = Modifier
         .weight(1f)
-        .alpha(if (isSupported) 1f else 0.5f)
+        .alpha(
+          if (isSupported) {
+            1f
+          } else {
+            0.5f
+          }
+        )
     ) {
       Text(
         text = snack.commonSnackData.name,

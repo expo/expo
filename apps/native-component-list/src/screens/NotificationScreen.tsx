@@ -130,6 +130,10 @@ export default class NotificationScreen extends React.Component<
           title="Schedule notification for 10 seconds from now"
         />
         <ListButton
+          onPress={this._scheduleAlarmClockNotificationAsync}
+          title="Schedule alarm-clock notification for 60 seconds from now (Android)"
+        />
+        <ListButton
           onPress={this._scheduleLocalNotificationWithCustomSoundAsync}
           title="Schedule notification with custom sound in 1 second (not supported in Expo Go)"
         />
@@ -190,6 +194,14 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification Permissions</HeadingText>
         <ListButton onPress={this.getPermissionsAsync} title="Get permissions" />
         <ListButton onPress={this.requestPermissionsAsync} title="Request permissions" />
+        <ListButton
+          onPress={this.getExactAlarmPermissionsAsync}
+          title="Get exact alarm permissions"
+        />
+        <ListButton
+          onPress={this.requestExactAlarmPermissionsAsync}
+          title="Request exact alarm permissions"
+        />
 
         <HeadingText>Notification triggers debugging</HeadingText>
         <ListButton
@@ -265,6 +277,16 @@ export default class NotificationScreen extends React.Component<
     alert(`Status: ${permission.status}`);
   };
 
+  private getExactAlarmPermissionsAsync = async () => {
+    const permission = await Notifications.getExactAlarmPermissionsAsync();
+    alert(`Status: ${permission.status}`);
+  };
+
+  private requestExactAlarmPermissionsAsync = async () => {
+    const permission = await Notifications.requestExactAlarmPermissionsAsync();
+    alert(`Status: ${permission.status}`);
+  };
+
   _obtainUserFacingNotifPermissionsAsync = async () => {
     let permission = await Notifications.getPermissionsAsync();
     if (permission.status !== 'granted') {
@@ -322,6 +344,22 @@ export default class NotificationScreen extends React.Component<
     });
   };
 
+  _scheduleAlarmClockNotificationAsync = async () => {
+    await this._obtainUserFacingNotifPermissionsAsync();
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Alarm-clock notification',
+        body: "Scheduled with delivery: 'alarmClock'",
+        sound: true,
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: Date.now() + 60_000,
+        delivery: 'alarmClock',
+      },
+    });
+  };
+
   _scheduleLocalNotificationWithCustomSoundAsync = async () => {
     await this._obtainUserFacingNotifPermissionsAsync();
     // Prepare the notification channel
@@ -370,7 +408,7 @@ export default class NotificationScreen extends React.Component<
     const actualNumber = await Notifications.getBadgeCountAsync();
     const message = didIncrement
       ? `Incremented from ${previousNumber} to ${actualNumber} (expected: ${previousNumber + 1}).`
-      : "You don't have notification permissions.";
+      : 'Could not update the badge. The launcher may not support badge counts, or badge permissions may be disabled.';
     Alert.alert(message);
   };
 

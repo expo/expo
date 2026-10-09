@@ -76,11 +76,11 @@ export function DiscoverMore() {
             className="border-palette-pink10 bg-palette-pink10 dark:text-palette-pink2 hocus:bg-palette-pink9"
             href="/router/introduction/"
             size="sm"
-            aria-label="Learn more about Expo Router"
+            aria-label="Get started using Expo Router"
             rightSlot={
               <ArrowRightIcon aria-hidden="true" className="icon-md dark:text-palette-pink2" />
             }>
-            Learn more
+            Get started
           </HomeButton>
         </GridCell>
         <GridCell className="bg-linear-to-br from-subtle from-30% to-palette-orange3 selection:bg-palette-orange4 dark:selection:bg-palette-orange6">

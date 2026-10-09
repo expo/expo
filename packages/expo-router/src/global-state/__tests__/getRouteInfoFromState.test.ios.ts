@@ -1,4 +1,8 @@
-import { getRouteInfoFromState, defaultRouteInfo } from '../getRouteInfoFromState';
+import {
+  areUrlObjectsEqual,
+  getRouteInfoFromState,
+  defaultRouteInfo,
+} from '../getRouteInfoFromState';
 
 describe('getRouteInfoFromState', () => {
   it('returns defaultRouteInfo when state is undefined', () => {
@@ -262,7 +266,8 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathnameWithParams).toBe('/%E0%A4%A');
   });
 
-  it('handles incomplete state with screen/params nesting', () => {
+  it('keeps scalar screen and drops nested params objects from search params', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const result = getRouteInfoFromState({
       routes: [
         {
@@ -286,9 +291,80 @@ describe('getRouteInfoFromState', () => {
       index: 0,
     });
 
-    expect(result.segments).toEqual(['(tabs)', 'settings', 'profile']);
-    expect(result.pathname).toBe('/settings/profile');
-    expect(result.pathnameWithParams).toBe('/settings/profile');
+    expect(result.segments).toEqual(['(tabs)']);
+    expect(result.pathname).toBe('/');
+    expect(result.params).toEqual({
+      screen: 'settings',
+      params: { screen: 'profile' },
+    });
+    expect(result.searchParams.get('screen')).toBe('settings');
+    expect(result.searchParams.has('params')).toBe(false);
+    expect(result.pathnameWithParams).toBe('/?screen=settings');
+    expect(warn).toHaveBeenCalledWith(
+      'Navigating with nested object params is not supported. Expo Router URL params must be serializable as strings. Use flat params or serialize the object value.'
+    );
+    warn.mockRestore();
+  });
+
+  it('does not warn for screen params while reading route info', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const rootParams = { screen: 'root' };
+    const groupParams = { screen: 'group' };
+    const pageParams = { screen: 'page' };
+    const state = {
+      routes: [
+        {
+          name: '__root',
+          params: rootParams,
+          state: {
+            routes: [
+              {
+                name: '(group)',
+                params: groupParams,
+                state: { routes: [{ name: 'page', params: pageParams }] },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    getRouteInfoFromState(state);
+    getRouteInfoFromState(state);
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('warns once for each visited route params object containing an object value', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const nestedParams = { params: { id: 'one' } };
+    const objectValueParams = { x: { a: 1 } };
+    const state = {
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              {
+                name: 'layout',
+                params: nestedParams,
+                state: { routes: [{ name: 'page', params: objectValueParams }] },
+              },
+            ],
+          },
+        },
+      ],
+    };
+
+    getRouteInfoFromState(state);
+    getRouteInfoFromState(state);
+
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledWith(
+      'Navigating with nested object params is not supported. Expo Router URL params must be serializable as strings. Use flat params or serialize the object value.'
+    );
+    warn.mockRestore();
   });
 
   it('route name starting with / has leading slash stripped', () => {
@@ -357,5 +433,244 @@ describe('getRouteInfoFromState', () => {
 
     expect(result.segments).toEqual(['second']);
     expect(result.pathname).toBe('/second');
+  });
+
+  it('uses parameters from the selected child route', () => {
+    const result = getRouteInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: {
+            routes: [
+              { name: 'unused' },
+              {
+                name: 'post/[id]',
+                params: { id: '42', q: 'old' },
+                state: {
+                  routes: [{ name: 'unused' }, { name: 'index', params: { q: 'new' } }],
+                  index: 1,
+                },
+              },
+            ],
+            index: 1,
+          },
+        },
+      ],
+    });
+
+    expect(result.pathnameWithParams).toBe('/post/42?q=new');
+  });
+
+  it('puts the hash after query parameters', () => {
+    const result = getRouteInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: { routes: [{ name: 'post', params: { q: 'search', '#': 'section' } }] },
+        },
+      ],
+    });
+
+    expect(result.pathnameWithParams).toBe('/post?q=search#section');
+  });
+
+  it('removes a trailing index from a route name', () => {
+    const result = getRouteInfoFromState({
+      routes: [{ name: '__root', state: { routes: [{ name: 'settings/index' }] } }],
+    });
+
+    expect(result.pathname).toBe('/settings');
+  });
+
+  it.each([
+    { description: 'a missing not-found path', value: undefined, pathname: '/' },
+    { description: 'a null not-found path', value: null, pathname: '/null' },
+    { description: 'a list of not-found path parts', value: ['a', 2], pathname: '/a/2' },
+    { description: 'zero in a not-found path', value: 0, pathname: '/0' },
+    { description: 'false in a not-found path', value: false, pathname: '/false' },
+    {
+      description: 'a mixed not-found path',
+      value: ['a', null, false],
+      pathname: '/a/null/false',
+    },
+  ])('resolves $description', ({ value, pathname }) => {
+    const result = getRouteInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: { routes: [{ name: '+not-found', params: { 'not-found': value, q: 'search' } }] },
+        },
+      ],
+    });
+
+    expect(result.pathnameWithParams).toBe(`${pathname}?q=search`);
+  });
+
+  it.each([
+    { description: 'an empty dynamic value', name: '[id]', value: '', pathname: '/' },
+    { description: 'a null dynamic value', name: '[id]', value: null, pathname: '/' },
+    { description: 'a false dynamic value', name: '[id]', value: false, pathname: '/' },
+    { description: 'an empty catch-all value', name: '[...id]', value: '', pathname: '/' },
+    { description: 'a null catch-all value', name: '[...id]', value: null, pathname: '/' },
+    { description: 'a false catch-all value', name: '[...id]', value: false, pathname: '/' },
+    {
+      description: 'a mixed catch-all list',
+      name: '[...id]',
+      value: ['a', null, { ignored: true }, 0],
+      pathname: '/a/null/0',
+    },
+  ])('resolves $description', ({ name, value, pathname }) => {
+    const result = getRouteInfoFromState({
+      routes: [
+        { name: '__root', state: { routes: [{ name, params: { id: value, q: 'search' } }] } },
+      ],
+    });
+
+    expect(result.pathnameWithParams).toBe(`${pathname}?q=search`);
+  });
+
+  it.each([
+    {
+      description: 'a legacy optional catch-all',
+      name: '[...id?]',
+      params: { id: ['a', null, 0], 'id?': 'query' },
+      pathnameWithParams: '/a/null/0?id%3F=query',
+    },
+    {
+      description: 'an empty dynamic parameter name',
+      name: '[]',
+      params: { '': 'empty-key', q: 'search' },
+      pathnameWithParams: '/empty-key?q=search',
+    },
+    {
+      description: 'an empty catch-all parameter name',
+      name: '[...]',
+      params: { '': 0, q: 'search' },
+      pathnameWithParams: '/?q=search',
+    },
+    {
+      description: 'a repeated dynamic parameter',
+      name: '[id]/[id]',
+      params: { id: 'repeat', q: 'search' },
+      pathnameWithParams: '/repeat/repeat?q=search',
+    },
+  ])('resolves $description', ({ name, params, pathnameWithParams }) => {
+    const result = getRouteInfoFromState({
+      routes: [{ name: '__root', state: { routes: [{ name, params }] } }],
+    });
+
+    expect(result.pathnameWithParams).toBe(pathnameWithParams);
+  });
+
+  it('keeps a parameter named __proto__', () => {
+    const result = getRouteInfoFromState({
+      routes: [
+        {
+          name: '__root',
+          state: { routes: [{ name: 'post', params: JSON.parse('{"__proto__":"x"}') }] },
+        },
+      ],
+    });
+
+    expect(result.params['__proto__']).toBe('x');
+    expect(result.pathnameWithParams).toBe('/post?__proto__=x');
+  });
+
+  it('adds the base URL to route links', () => {
+    const previousBaseUrl = process.env.EXPO_BASE_URL;
+    process.env.EXPO_BASE_URL = 'base';
+    try {
+      const ordinary = getRouteInfoFromState({
+        routes: [{ name: '__root', state: { routes: [{ name: 'post' }] } }],
+      });
+      const sitemap = getRouteInfoFromState({ routes: [{ name: '_sitemap' }] });
+
+      expect(ordinary.unstable_globalHref).toBe('/base/post');
+      expect(sitemap.unstable_globalHref).toBe('/base/_sitemap');
+    } finally {
+      if (previousBaseUrl === undefined) {
+        delete process.env.EXPO_BASE_URL;
+      } else {
+        process.env.EXPO_BASE_URL = previousBaseUrl;
+      }
+    }
+  });
+
+  it.each([
+    { description: 'not-found routes', name: '+not-found' },
+    { description: 'sitemap routes', name: '_sitemap' },
+  ])('reuses default values for $description', ({ name }) => {
+    const result = getRouteInfoFromState({ routes: [{ name }] });
+
+    expect(result.params).toBe(defaultRouteInfo.params);
+    expect(result.searchParams).toBe(defaultRouteInfo.searchParams);
+  });
+
+  describe('warnings for object parameters', () => {
+    const nestedParamsWarning =
+      'Navigating with nested object params is not supported. Expo Router URL params must be serializable as strings. Use flat params or serialize the object value.';
+    let warn: jest.SpyInstance;
+
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it('warns once for root object parameters', () => {
+      const state = {
+        routes: [
+          {
+            name: '__root',
+            params: { nested: { id: 'root' } },
+            state: { routes: [{ name: 'post' }] },
+          },
+        ],
+      };
+      getRouteInfoFromState(state);
+      getRouteInfoFromState(state);
+
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(nestedParamsWarning);
+    });
+
+    it.each(['+not-found', '_sitemap'])('warns before returning %s', (name) => {
+      getRouteInfoFromState({ routes: [{ name, params: { nested: { id: 'special' } } }] });
+
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(nestedParamsWarning);
+    });
+
+    it('warns before rejecting an invalid root route', () => {
+      expect(() =>
+        getRouteInfoFromState({ routes: [{ name: 'invalid', params: { nested: {} } }] })
+      ).toThrow('Expected the first route to be __root, but got invalid');
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(nestedParamsWarning);
+    });
+  });
+});
+
+describe(areUrlObjectsEqual, () => {
+  it('compares route info semantics without comparing derived searchParams', () => {
+    const first = {
+      ...defaultRouteInfo,
+      params: { nested: ['one', 'two'] },
+      segments: ['(group)', 'page'],
+      searchParams: new URLSearchParams('first=one'),
+    };
+    const second = {
+      ...first,
+      params: { nested: ['one', 'two'] },
+      segments: ['(group)', 'page'],
+      searchParams: new URLSearchParams('second=two'),
+    };
+
+    expect(areUrlObjectsEqual(first, second)).toBe(true);
+    expect(areUrlObjectsEqual(first, { ...second, pathname: '/other' })).toBe(false);
+    expect(areUrlObjectsEqual(first, { ...second, segments: ['page'] })).toBe(false);
+    expect(areUrlObjectsEqual(first, { ...second, params: { nested: ['one'] } })).toBe(false);
   });
 });

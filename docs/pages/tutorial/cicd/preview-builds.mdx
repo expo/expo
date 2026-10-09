@@ -162,7 +162,7 @@ To send messages from EAS Workflows to our Slack channel, we need a webhook URL 
 
 <Terminal
   cmd={[
-    '$ eas env:create --name SLACK_WEBHOOK_URL --value https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX --environment preview --visibility secret',
+    '$ eas env:set --name SLACK_WEBHOOK_URL --value https://hooks.slack.com/services/TD000/B000/XXXXXXXXXX --environment preview --visibility secret',
   ]}
 />
 

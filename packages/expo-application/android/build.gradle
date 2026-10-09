@@ -4,13 +4,17 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.3'
+version = '58.0.4'
+
+expoModule {
+  v2 true
+}
 
 android {
   namespace "expo.modules.application"
   defaultConfig {
     versionCode 12
-    versionName '56.0.3'
+    versionName '58.0.4'
   }
 }
 
@@ -21,5 +25,6 @@ dependencies {
     testImplementation project(':expo-modules-test-core')
   }
   testImplementation "org.robolectric:robolectric:4.16"
+  testImplementation 'com.facebook.react:react-android'
   testImplementation 'junit:junit:4.13.2'
 }

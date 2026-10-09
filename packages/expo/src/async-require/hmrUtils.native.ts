@@ -1,32 +1,27 @@
 // Based on https://github.com/facebook/react-native/blob/9ab95dd2b5746e8323ad1d65591d5a4ec7718790/packages/react-native/Libraries/Utilities/HMRClient.js
 
-// @ts-expect-error missing types
-import getDevServer from 'react-native/Libraries/Core/Devtools/getDevServer';
-import LogBox from 'react-native/Libraries/LogBox/LogBox';
-// @ts-expect-error missing types
-import NativeRedBox from 'react-native/Libraries/NativeModules/specs/NativeRedBox';
-import DevSettings from 'react-native/Libraries/Utilities/DevSettings';
+import { DevSettings, LogBox } from 'react-native';
+import { NativeRedBox } from 'react-native/unstable-internals-do-not-use';
 
+import getDevServer from '../utils/getDevServer';
 import { HMRMetroBuildError } from './buildErrors';
 
 export function showLoading(message: string, type: 'load' | 'refresh') {
-  const DevLoadingView = require('react-native/Libraries/Utilities/DevLoadingView').default;
+  const { DevLoadingView } = require('react-native/unstable-internals-do-not-use');
   DevLoadingView.showMessage(message, type);
 }
 
 export function hideLoading() {
-  const DevLoadingView = require('react-native/Libraries/Utilities/DevLoadingView').default;
+  const { DevLoadingView } = require('react-native/unstable-internals-do-not-use');
   DevLoadingView.hide();
 }
 
 export function resetErrorOverlay() {
   dismissRedbox();
-  // @ts-expect-error clearAllLogs exists, but ts types are missing
   LogBox.clearAllLogs();
 }
 
 export function reload() {
-  // @ts-expect-error missing types
   DevSettings.reload('Bundle Splitting – Metro disconnected');
 }
 
@@ -71,8 +66,7 @@ function dismissRedbox() {
   if (process.env.EXPO_OS === 'ios' && NativeRedBox != null && NativeRedBox.dismiss != null) {
     NativeRedBox.dismiss();
   } else {
-    const NativeExceptionsManager =
-      require('react-native/Libraries/Core/NativeExceptionsManager').default;
+    const { NativeExceptionsManager } = require('react-native/unstable-internals-do-not-use');
     NativeExceptionsManager &&
       NativeExceptionsManager.dismissRedbox &&
       NativeExceptionsManager.dismissRedbox();
@@ -88,10 +82,10 @@ export function handleCompileError(cause: any) {
   // Otherwise you risk seeing a stale runtime error while a syntax error is more recent.
   dismissRedbox();
 
-  const LogBox = require('react-native/Libraries/LogBox/LogBox').default;
   // The error is passed thru LogBox APIs directly to the parsing function.
   // Won't log the error in devtools console
   // (using throw would mangle the error message and print with ANSI
   // because throw on native is processed as console.error)
+  // @ts-expect-error Metro build errors are parsed by LogBox, not RN ExceptionData
   LogBox.addException(new HMRMetroBuildError(cause.message, cause.type, cause.cause));
 }
