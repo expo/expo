@@ -6,6 +6,9 @@ interface Window {
 
   __sidebarScroll: number;
   sidebarState: Record<string, boolean>;
+
+  cometlyDomainOverrides?: string[];
+  cometToken?: () => string;
 }
 
 interface ImportMeta {
