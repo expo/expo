@@ -1,2 +1,2 @@
-// CI simulator builds don't need a dSYM, and writing one runs the current EAS image out of disk.
-DEBUG_INFORMATION_FORMAT = dwarf
+// Simulator builds don't need a dSYM, and writing one runs the current EAS image out of disk.
+DEBUG_INFORMATION_FORMAT[sdk=iphonesimulator*] = dwarf
