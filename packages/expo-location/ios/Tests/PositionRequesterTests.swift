@@ -301,11 +301,15 @@ struct PositionRequesterTests {
     #expect(position.horizontalAccuracy == 12.5)
   }
 
-  private static let unmeasuredLocation = CLLocation(
-    coordinate: CLLocationCoordinate2D(latitude: 9, longitude: 9),
-    altitude: 0,
-    horizontalAccuracy: -1,
-    verticalAccuracy: -1,
-    timestamp: Date()
-  )
+  // Computed so that every access gets a fresh timestamp. A stored `static let` would keep the
+  // timestamp of whichever test touched it first, making the location stale for the others.
+  private static var unmeasuredLocation: CLLocation {
+    CLLocation(
+      coordinate: CLLocationCoordinate2D(latitude: 9, longitude: 9),
+      altitude: 0,
+      horizontalAccuracy: -1,
+      verticalAccuracy: -1,
+      timestamp: Date()
+    )
+  }
 }

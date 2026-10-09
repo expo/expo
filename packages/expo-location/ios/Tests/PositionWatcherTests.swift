@@ -375,9 +375,20 @@ struct PositionWatcherTests {
   }
 }
 
-private func waitUntil(timeout: Duration = .seconds(2), _ condition: () -> Bool) async {
+// The subscription delivers on the main actor, which can be busy for seconds when many tests run
+// in parallel on CI. The timeout is long because it only bounds a hang; on timeout the test fails
+// here instead of asserting on a partial result.
+private func waitUntil(
+  timeout: Duration = .seconds(30),
+  sourceLocation: SourceLocation = #_sourceLocation,
+  _ condition: () -> Bool
+) async {
   let deadline = ContinuousClock.now + timeout
-  while !condition() && ContinuousClock.now < deadline {
+  while !condition() {
+    guard ContinuousClock.now < deadline else {
+      Issue.record("Condition was not met within \(timeout)", sourceLocation: sourceLocation)
+      return
+    }
     try? await Task.sleep(for: .milliseconds(10))
   }
 }
