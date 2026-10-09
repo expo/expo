@@ -67,6 +67,8 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.1 — 2026-09-14
 
+- [Web] Fixed sync worker result length encoding and made oversized results fail immediately instead of timing out. ([#44148](https://github.com/expo/expo/pull/44148) by [@silto](https://github.com/silto))
+
 ### 💡 Others
 
 - Upgrade React Native to 0.88.0-rc.0 ([#49910](https://github.com/expo/expo/pull/49910) by [@gabrieldonadel](https://github.com/gabrieldonadel))
