@@ -1,6 +1,11 @@
 import { PermissionStatus, UnavailabilityError, type PermissionResponse } from 'expo';
 
-import type { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
+import type {
+  LocationHeadingOptions,
+  LocationLastKnownOptions,
+  LocationObject,
+  LocationOptions,
+} from './Location.types';
 import { LocationAccuracy } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 
@@ -149,7 +154,7 @@ export default {
   async removeWatchAsync(watchId: number): Promise<void> {
     navigator.geolocation.clearWatch(watchId);
   },
-  async watchDeviceHeading(_headingId: number): Promise<void> {
+  async watchDeviceHeading(_headingId: number, _options?: LocationHeadingOptions): Promise<void> {
     console.warn('Location.watchDeviceHeading: is not supported on web');
   },
   async hasServicesEnabledAsync(): Promise<boolean> {
