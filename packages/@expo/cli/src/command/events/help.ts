@@ -19,7 +19,7 @@ export function getHelp(includeOptions = true): string {
           '    --filter <pattern>       Event-name prefixes on whole segments; * wildcards;',
           '                             comma-separated or repeated, e.g. metro:bundling',
           '    --spans                  Keep only span events (with a _d duration)',
-          '    --tail                   Follow live events after replay; runs until killed',
+          '    --tail                   Follow live events after replay until the session stops',
           '    --help, -h                Show this help',
           '',
         ]
