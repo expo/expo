@@ -1,5 +1,5 @@
-import { getStateId, type ObservableState } from '../../State';
 import { createModifier, createModifierWithEventListener } from './createModifier';
+import { getStateId, type ObservableState } from '../../State';
 
 /**
  * The placement of a search field in a view hierarchy.
