@@ -53,6 +53,8 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.7 — 2026-09-25
 
+- [iOS] Add `schedule` option to `LiveActivityFactory.start()` to start a Live Activity at a future date, and return scheduled Live Activities from `getInstances()`. ([#50248](https://github.com/expo/expo/pull/50248) by [@qamarq](https://github.com/qamarq))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
