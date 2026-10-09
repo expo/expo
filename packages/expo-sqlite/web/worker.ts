@@ -21,6 +21,7 @@ import WaSQLiteFactory from './wa-sqlite/wa-sqlite';
 // @ts-expect-error wasm module is not typed
 import wasmModule from './wa-sqlite/wa-sqlite.wasm';
 import {
+  type ConfigureWorkerMessage,
   type SQLiteWorkerMessage,
   type SQLiteWorkerMessageType,
   type MessageTypeMap,
@@ -55,6 +56,7 @@ const MIN_INT32 = -0x80000000;
 let _sqlite3: SQLiteAPI | null = null;
 let _vfs: AccessHandlePoolVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
+let _customWebAssemblyUrl: string | null = null;
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
@@ -62,7 +64,12 @@ const sessionIdMap = new Map<number, SessionEntity>();
 
 class SQLiteErrorException extends Error {}
 
-self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage>) => {
+self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage | ConfigureWorkerMessage>) => {
+  if (event.data.type === 'configure') {
+    _customWebAssemblyUrl = event.data.data.webAssemblyUrl;
+    return;
+  }
+
   let result: ResultType | null = null;
   let error: Error | null = null;
   try {
@@ -770,9 +777,7 @@ async function maybeInitAsync(): Promise<{
   vfsMemory: MemoryVFS;
 }> {
   if (!_sqlite3) {
-    const module = await WaSQLiteFactory({
-      locateFile: () => wasmModule,
-    });
+    const module = await loadWaSQLiteModuleAsync();
     _sqlite3 = SQLite.Factory(module) as SQLiteAPI;
     if (!_sqlite3) {
       throw new Error('Failed to initialize wa-sqlite');
@@ -798,6 +803,23 @@ async function maybeInitAsync(): Promise<{
     throw new Error('Invalid VFS state');
   }
   return { sqlite3: _sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
+}
+
+async function loadWaSQLiteModuleAsync(): Promise<any> {
+  const customUrl = _customWebAssemblyUrl;
+  if (customUrl == null) {
+    return await WaSQLiteFactory({ locateFile: () => wasmModule });
+  }
+
+  try {
+    return await WaSQLiteFactory({ locateFile: () => customUrl });
+  } catch (e) {
+    throw new Error(
+      `Failed to load the custom SQLite WebAssembly module from "${customUrl}". ` +
+        'Check that the URL is reachable and served as `application/wasm`, and that the build comes from the same `expo/wa-sqlite` revision that this version of `expo-sqlite` uses. ' +
+        `Cause: ${e instanceof Error ? e.message : String(e)}`
+    );
+  }
 }
 
 //#endregion Internal helpers
