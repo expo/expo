@@ -1,5 +1,6 @@
 import { use, useCallback, useState, useEffect, useRef } from 'react';
 
+import { isImperativeRouterBound } from '../global-state/routingQueueContext';
 import {
   NavigationContainerRefContext,
   type NavigationProp,
@@ -55,7 +56,15 @@ export function useLoadedNavigation() {
 }
 
 export function useOptionalNavigation(): GenericNavigation | null {
-  const [navigation, setNavigation] = useState<GenericNavigation | null>(null);
+  const currentNavigation = useNavigation();
+  const rootNavigation = use(NavigationContainerRefContext);
+  // After the first render, `useLoadedNavigation` flushes this same navigation right after mount,
+  // so seeding it avoids an extra render of the calling screen. During the first render the
+  // imperative router is not bound yet, so keep waiting for the effect there.
+  const [navigation, setNavigation] = useState<GenericNavigation | null>(() =>
+    // Same cast as the `flush` callback in `useLoadedNavigation`.
+    rootNavigation && isImperativeRouterBound() ? (currentNavigation as GenericNavigation) : null
+  );
   const loadNavigation = useLoadedNavigation();
 
   useEffect(() => {

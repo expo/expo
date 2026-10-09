@@ -70,6 +70,11 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
   );
 }
 
+/** Whether the imperative `router` is bound, which happens after the root's first commit. */
+export function isImperativeRouterBound() {
+  return boundBridges > 0;
+}
+
 export function useEnqueueRoutingIntent() {
   const api = use(RoutingQueueApiContext);
   if (api === undefined) {
