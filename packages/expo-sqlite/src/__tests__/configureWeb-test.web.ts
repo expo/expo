@@ -16,7 +16,7 @@ class MockWorker {
 // The Node project also runs `.web` tests to cover server rendering, where there is no worker.
 const isServer = typeof window === 'undefined';
 
-(isServer ? describe.skip : describe)('Setting the WebAssembly URL', () => {
+(isServer ? describe.skip : describe)('Configuring web', () => {
   let SQLite: typeof SQLiteModule;
 
   beforeEach(() => {
@@ -47,36 +47,45 @@ const isServer = typeof window === 'undefined';
     const worker = await startWorkerAsync();
     expect(worker.postMessage.mock.calls[0][0]).toEqual({
       type: 'configure',
-      data: { webAssemblyUrl: null },
+      data: { wasmURL: null },
     });
   });
 
-  it('should configure the worker with the custom url before any request', async () => {
-    SQLite.setWebAssemblyUrl('/sqlite/wa-sqlite-fts.wasm');
+  it('should configure the worker with the custom wasm url before any request', async () => {
+    SQLite.configureWeb({ wasmURL: '/sqlite/wa-sqlite-fts.wasm' });
     const worker = await startWorkerAsync();
     expect(worker.postMessage.mock.calls[0][0]).toEqual({
       type: 'configure',
-      data: { webAssemblyUrl: '/sqlite/wa-sqlite-fts.wasm' },
+      data: { wasmURL: '/sqlite/wa-sqlite-fts.wasm' },
     });
     expect(worker.postMessage.mock.calls[1][0].type).toBe('open');
   });
 
-  it('should use the last url when set more than once', async () => {
-    SQLite.setWebAssemblyUrl('/first.wasm');
-    SQLite.setWebAssemblyUrl('/second.wasm');
+  it('should use the options from the last call when called more than once', async () => {
+    SQLite.configureWeb({ wasmURL: '/first.wasm' });
+    SQLite.configureWeb({ wasmURL: '/second.wasm' });
     const worker = await startWorkerAsync();
-    expect(worker.postMessage.mock.calls[0][0].data.webAssemblyUrl).toBe('/second.wasm');
+    expect(worker.postMessage.mock.calls[0][0].data.wasmURL).toBe('/second.wasm');
   });
 
-  it('should throw when setting the url after a database is opened', async () => {
+  it('should fall back to the default wasm when wasmURL is omitted', async () => {
+    SQLite.configureWeb({ wasmURL: '/first.wasm' });
+    SQLite.configureWeb({});
+    const worker = await startWorkerAsync();
+    expect(worker.postMessage.mock.calls[0][0].data.wasmURL).toBeNull();
+  });
+
+  it('should throw when called after a database is opened', async () => {
     await startWorkerAsync();
-    expect(() => SQLite.setWebAssemblyUrl('/late.wasm')).toThrow(/before opening any database/);
+    expect(() => SQLite.configureWeb({ wasmURL: '/late.wasm' })).toThrow(
+      /before opening any database/
+    );
   });
 });
 
-(isServer ? describe : describe.skip)('Setting the WebAssembly URL on the server', () => {
+(isServer ? describe : describe.skip)('Configuring web on the server', () => {
   it('should do nothing when rendering on the server', () => {
     const SQLite: typeof SQLiteModule = require('../index');
-    expect(() => SQLite.setWebAssemblyUrl('/sqlite/wa-sqlite-fts.wasm')).not.toThrow();
+    expect(() => SQLite.configureWeb({ wasmURL: '/sqlite/wa-sqlite-fts.wasm' })).not.toThrow();
   });
 });

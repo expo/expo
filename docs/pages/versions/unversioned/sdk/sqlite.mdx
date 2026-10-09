@@ -123,13 +123,13 @@ cd wa-sqlite
 make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"
 ```
 
-Copy **dist/wa-sqlite.wasm** into your project, then pass its URL to [`setWebAssemblyUrl()`](#sqlitesetwebassemblyurlurl) before opening any database, for example, in your root layout:
+Copy **dist/wa-sqlite.wasm** into your project, then pass it to [`configureWeb()`](#sqliteconfigureweboptions) before opening any database, for example, in your root layout:
 
 ```js app/_layout.tsx
 import * as SQLite from 'expo-sqlite';
 
 if (process.env.EXPO_OS === 'web') {
-  SQLite.setWebAssemblyUrl(require('../assets/wa-sqlite-fts.wasm'));
+  SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
 }
 ```
 
