@@ -1,4 +1,9 @@
+#if canImport(CoreGraphics)
 import CoreGraphics
+#else
+// `CGFloat` is part of Foundation outside Apple platforms.
+import Foundation
+#endif
 internal import ExpoModulesJSI_Cxx
 internal import jsi
 

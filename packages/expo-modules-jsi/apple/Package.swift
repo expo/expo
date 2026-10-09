@@ -21,7 +21,11 @@ let reactNative =
   ProcessInfo.processInfo.environment["RN_ROOT"]
   ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
   ?? "\(podsRoot)/../../node_modules/react-native"
-let headerSearchPaths = [
+// Outside Apple platforms there are no Pods. `JSI_INCLUDE_DIR` names a directory with `jsi/jsi.h`
+// instead, such as `tools/Microsoft.ReactNative.Cxx` in react-native-windows' `Microsoft.ReactNative.Cxx`
+// NuGet package, and it's the only header root.
+let jsiIncludeDir = ProcessInfo.processInfo.environment["JSI_INCLUDE_DIR"]
+let headerSearchPaths = jsiIncludeDir.map({ [$0] }) ?? [
   publicHeaders,
   "\(publicHeaders)/React-jsi",
   "\(publicHeaders)/hermes-engine",
@@ -120,9 +124,12 @@ let package = Package(
         // React, ReactCommon, hermes, and JSI symbols are provided by the host
         // app at final link time. Defer their resolution so the xcframework
         // builds without those static libs being available here.
-        .unsafeFlags([
-          "-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup",
-        ])
+        .unsafeFlags(
+          [
+            "-Xlinker", "-undefined", "-Xlinker", "dynamic_lookup",
+          ],
+          .when(platforms: [.iOS, .tvOS, .macOS, .macCatalyst])
+        )
       ],
     ),
 

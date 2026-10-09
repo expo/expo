@@ -5,7 +5,9 @@
 #ifdef __cplusplus
 
 #include <new>
+#if __APPLE__
 #include <TargetConditionals.h>
+#endif
 
 // `jsi.h` only forward-declares `jsi::Instrumentation`.
 #include <jsi/instrumentation.h>
@@ -75,7 +77,7 @@ inline jsi::Value getProperty(jsi::IRuntime &runtime, const jsi::Array &array, c
   return array.getProperty(runtime, name);
 }
 
-#if TARGET_OS_OSX
+#if __APPLE__ && TARGET_OS_OSX
 // react-native-macos (RN 0.81) lacks `jsi::Object::getProperty(Runtime&, const Value&)`,
 // so Swift can't look up a property by a JS Value. Provide a `const char*`-keyed wrapper
 // to use when iterating own property names.

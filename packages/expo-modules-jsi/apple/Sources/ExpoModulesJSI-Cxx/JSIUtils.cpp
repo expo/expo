@@ -1,9 +1,12 @@
 #include "JSIUtils.h"
 
+#if __has_include(<hermes/hermes.h>)
 #include <hermes/hermes.h>
+#endif
 
 namespace expo {
 
+#if __has_include(<hermes/hermes.h>)
 jsi::Runtime* createHermesRuntime() {
   std::unique_ptr<facebook::hermes::HermesRuntime> runtimePtr = facebook::hermes::makeHermesRuntime();
   jsi::Runtime *runtime = runtimePtr.release();
@@ -23,5 +26,6 @@ jsi::Runtime* createHermesRuntime() {
 
   return runtime;
 }
+#endif
 
 } // namespace expo

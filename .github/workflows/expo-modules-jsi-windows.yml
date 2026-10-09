@@ -1,0 +1,84 @@
+name: expo-modules-jsi (Windows)
+
+# Builds ExpoModulesJSI with the Swift toolchain for Windows against the JSI headers that
+# react-native-windows ships, so the package keeps compiling outside Apple platforms.
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: &trigger_paths
+      - .github/workflows/expo-modules-jsi-windows.yml
+      - packages/expo-modules-jsi/apple/**
+  pull_request:
+    paths: *trigger_paths
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # react-native-windows version whose `Microsoft.ReactNative.Cxx` NuGet package provides the JSI headers.
+  RNW_VERSION: '0.84.0'
+
+jobs:
+  build:
+    name: Build (Windows ${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: windows-latest
+            build_arch: amd64
+    defaults:
+      run:
+        working-directory: packages/expo-modules-jsi/apple
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: |
+            .github/workflows
+            packages/expo-modules-jsi
+
+      - name: 🐦 Install Swift
+        uses: compnerd/gha-setup-swift@bbae8ce86bac5a3449f3992b3d88bc4ca25f2057 # v0.5.0
+        with:
+          swift-version: swift-6.4.0-release
+          swift-build: 6.4.0-RELEASE
+          build_arch: ${{ matrix.build_arch }}
+
+      - name: 📦 Get the JSI headers from react-native-windows
+        # The package ships them in `tools/Microsoft.ReactNative.Cxx/JSI`. They are copied to a
+        # `jsi` directory so that `#include <jsi/jsi.h>` matches the case on disk, and the module
+        # map for the `jsi` Clang module is written next to the package, where Package.swift reads it.
+        shell: pwsh
+        run: |
+          $nupkg = Join-Path $env:RUNNER_TEMP "microsoft.reactnative.cxx.zip"
+          $url = "https://api.nuget.org/v3-flatcontainer/microsoft.reactnative.cxx/$env:RNW_VERSION/microsoft.reactnative.cxx.$env:RNW_VERSION.nupkg"
+          Invoke-WebRequest -Uri $url -OutFile $nupkg
+          $extracted = Join-Path $env:RUNNER_TEMP "microsoft.reactnative.cxx"
+          Expand-Archive -Path $nupkg -DestinationPath $extracted -Force
+
+          $include = Join-Path $env:RUNNER_TEMP "jsi-include"
+          $jsi = Join-Path $include "jsi"
+          New-Item -ItemType Directory -Force $jsi | Out-Null
+          Copy-Item (Join-Path $extracted "tools/Microsoft.ReactNative.Cxx/JSI/*.h") $jsi
+
+          $jsiPath = ($jsi -replace '\\', '/')
+          New-Item -ItemType Directory -Force .generated | Out-Null
+          @"
+          module jsi {
+            header "$jsiPath/jsi.h"
+            header "$jsiPath/instrumentation.h"
+
+            export *
+          }
+          "@ | Set-Content -Path .generated/module.modulemap -Encoding utf8
+          Get-Content .generated/module.modulemap
+          "JSI_INCLUDE_DIR=$include" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+
+      - name: 🔨 Build ExpoModulesJSI
+        run: swift build --target ExpoModulesJSI
