@@ -6,6 +6,10 @@ import ExpoModulesJSI
  Represents a JavaScript class.
  */
 public final class ClassDefinition: ObjectDefinition {
+  public override var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.klass(self))
+  }
+
   /**
    Name of the class.
    */

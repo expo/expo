@@ -16,6 +16,10 @@ internal protocol AnyEventObservingDefinition: AnyDefinition, Sendable {
 }
 
 public final class EventObservingDefinition: AnyEventObservingDefinition, @unchecked Sendable {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.eventObserver(self))
+  }
+
   public typealias ClosureType = () -> Void
 
   let type: EventObservingType

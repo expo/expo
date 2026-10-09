@@ -34,6 +34,10 @@ internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition, ~Copyable {
  Represents a function that can only be called synchronously.
  */
 public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunctionDefinition, @unchecked Sendable {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.function(self))
+  }
+
   typealias ClosureType = (Args) throws -> ReturnType
 
   /**

@@ -21,6 +21,10 @@ protocol AnyConstantDefinition {
 }
 
 public final class ConstantDefinition<ReturnType: AnyArgument>: AnyDefinition, AnyConstantDefinition {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.constant(self))
+  }
+
   typealias ClosureType = () throws -> ReturnType
 
   /**

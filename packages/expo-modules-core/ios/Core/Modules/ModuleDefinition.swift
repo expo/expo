@@ -40,26 +40,52 @@ public final class ModuleDefinition: ObjectDefinition {
   override init(definitions: [AnyDefinition]) {
     self.rawDefinitions = definitions
 
-    self.name = definitions
-      .compactMap { $0 as? ModuleNameDefinition }
-      .last?
-      .name ?? ""
+    var name: String?
+    var eventListeners = [EventListener]()
+    var viewDefinitions = [AnyViewDefinition]()
+    var eventNames = [String]()
+    var eventObservers = [AnyEventObservingDefinition]()
 
-    self.eventListeners = definitions.compactMap { $0 as? EventListener }
+    for definition in definitions {
+      switch definition.definitionClassification.kind {
+      case .moduleName(let nameDefinition):
+        name = nameDefinition.name
+      case .eventListener(let listener):
+        eventListeners.append(listener)
+      case .view(let view):
+        viewDefinitions.append(view)
+      case .events(let events):
+        eventNames.append(contentsOf: events.names)
+      case .eventObserver(let observer):
+        eventObservers.append(observer)
+      case .unknown:
+        if let nameDefinition = definition as? ModuleNameDefinition {
+          name = nameDefinition.name
+        }
+        if let listener = definition as? EventListener {
+          eventListeners.append(listener)
+        }
+        if let view = definition as? AnyViewDefinition {
+          viewDefinitions.append(view)
+        }
+        if let events = definition as? EventsDefinition {
+          eventNames.append(contentsOf: events.names)
+        }
+        if let observer = definition as? AnyEventObservingDefinition {
+          eventObservers.append(observer)
+        }
+      default:
+        break
+      }
+    }
 
-    let viewDefinitions: [AnyViewDefinition] = definitions
-      .compactMap { $0 as? AnyViewDefinition }
+    self.name = name ?? ""
+    self.eventListeners = eventListeners
     var viewsDict = Dictionary(uniqueKeysWithValues: viewDefinitions.map { ($0.name, $0) })
     viewsDict[DEFAULT_MODULE_VIEW] = viewDefinitions.first
     self.views = viewsDict
-    self.eventNames = Array(
-      definitions
-        .compactMap { ($0 as? EventsDefinition)?.names }
-        .joined()
-    )
-
-    self.eventObservers = definitions
-      .compactMap { $0 as? AnyEventObservingDefinition }
+    self.eventNames = eventNames
+    self.eventObservers = eventObservers
 
     super.init(definitions: definitions)
   }
@@ -73,7 +99,7 @@ public final class ModuleDefinition: ObjectDefinition {
 
     // Use the type name if the name is not in the definition or was defined empty.
     if name.isEmpty {
-      name = String(describing: type)
+      name = _typeName(type, qualified: false)
     }
     return self
   }
@@ -109,6 +135,10 @@ public final class ModuleDefinition: ObjectDefinition {
  Module's name definition. Returned by `name()` in module's definition.
  */
 internal struct ModuleNameDefinition: AnyDefinition {
+  var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.moduleName(self))
+  }
+
   let name: String
 }
 
@@ -116,6 +146,10 @@ internal struct ModuleNameDefinition: AnyDefinition {
  A definition for module's constants. Returned by `constants(() -> SomeType)` in module's definition.
  */
 internal struct ConstantsDefinition: AnyDefinition {
+  var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.legacyConstants(self))
+  }
+
   let body: () -> [String: Any?]
 }
 
@@ -123,5 +157,9 @@ internal struct ConstantsDefinition: AnyDefinition {
  A definition for module's events that can be sent to JavaScript.
  */
 public struct EventsDefinition: AnyDefinition {
+  public var definitionClassification: DefinitionClassification {
+    return DefinitionClassification(.events(self))
+  }
+
   let names: [String]
 }
