@@ -2331,6 +2331,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         buildID: getBuildID(buildNumber),
         type: 'bundle_build_failed',
       });
+      this.metro._reporter.update({ type: 'bundling_error', error });
 
       throw error;
     }
