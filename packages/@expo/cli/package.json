@@ -53,7 +53,7 @@
     "test:playwright": "playwright test --config e2e/playwright.config.ts"
   },
   "dependencies": {
-    "2g": "^0.4.3",
+    "2g": "^1.0.0",
     "@expo/code-signing-certificates": "^0.0.7",
     "@expo/config": "workspace:~",
     "@expo/config-plugins": "workspace:~",
