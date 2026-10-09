@@ -9,7 +9,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
-import { isIgnoredPath } from './utils/Path';
+import { isIgnoredPath, toPosixPath } from './utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
@@ -70,7 +70,9 @@ async function runAsync(programName: string, args: string[] = []) {
   const existingLoadedModules = (
     await Promise.all(
       filteredLoadedModules.map(async (modulePath) => {
-        const relativePath = path.relative(projectRoot, modulePath);
+        // Use POSIX separators so that the `../` prefix of hoisted modules in a monorepo is stripped
+        // before matching the ignore paths, and so that the sources match across platforms.
+        const relativePath = toPosixPath(path.relative(projectRoot, modulePath));
         if (isIgnoredPath(relativePath, ignoredPaths)) {
           return null;
         }
