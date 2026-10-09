@@ -51,10 +51,6 @@ export type StrictResolverFactory = (
   platform: string | null
 ) => StrictResolver;
 
-// Serves both import shapes: Metro's generated asset modules call `registerAsset` on the module
-// itself, while react-native core destructures `{AssetRegistry}` from its internal registry module.
-const ASSET_REGISTRY_SRC = `const assets=[];const registry={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};module.exports={registerAsset:registry.registerAsset,getAssetByID:registry.getAssetByID,AssetRegistry:registry};`;
-
 interface PlatformExtensions {
   sourceExts: string[];
   unstable_conditionNames: string[];
@@ -248,8 +244,10 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
  * - Alias `react-native` to `react-native-web` on web.
- * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to the shared virtual asset registry module on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ * - Redirect legacy AssetRegistry imports to new public RN API (to remove in Expo SDK 59)
+ *   - `react-native/Libraries/Image/AssetRegistry` -> `react-native/asset-registry`
+ *   - `@react-native/assets-registry/registry` -> `react-native/asset-registry`
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -275,6 +273,7 @@ export function withExtendedResolver(
     web: {
       'react-native': 'react-native-web',
       'react-native/index': 'react-native-web',
+      'react-native/asset-registry': 'react-native-web/asset-registry',
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
@@ -369,18 +368,6 @@ export function withExtendedResolver(
     return _asyncRequireModuleResolvedPath
       ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
       : null;
-  };
-
-  const getAssetRegistryModule = () => {
-    const virtualModuleId = `\0polyfill:assets-registry`;
-    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
-      virtualModuleId,
-      ASSET_REGISTRY_SRC
-    );
-    return {
-      type: 'sourceFile',
-      filePath: virtualModuleId,
-    } as const;
   };
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
@@ -658,42 +645,20 @@ export function withExtendedResolver(
         return getAsyncRequireModule();
       }
 
-      // TODO(@kitten): Revisit the virtual registry approach after the React Native 0.87 upgrade
-      // lands. The virtual module predates the upgrade (introduced by @EvanBacon) and it needs
-      // some testing and sleuthing to establish why it exists instead of resolving react-native's
-      // real registry module, and whether the internal-import capture below can then be dropped.
-      // Redirect every asset registry request to the virtual registry module so all consumers
-      // share one instance: Metro's generated asset modules (`assetRegistryPath`), imports of
-      // `react-native/asset-registry`, and imports of the legacy `@react-native/assets-registry`
-      // package and `react-native/Libraries/Image/AssetRegistry` module, which no longer ship
-      // with react-native 0.87.
+      // TODO(@bycedric): React Native 0.87+ drops `react-native/Libraries/Image/AssetRegistry.js`,
+      // in favor of the public API alternative `import { AssetRegistry } from 'react-native'`.
+      // Some libraries have not moved over to `@react-native/assets-registry/registry` or the
+      // new public API, causing resolution or registry issues. This forces usage of the new API.
+      // `react-native-web@>=0.21.4` contains the `react-native-web/asset-registry` export too.
+      // TODO(@bycedric): Drop this in Expo SDK 59
       if (
-        moduleName === config.transformer.assetRegistryPath ||
-        moduleName === 'react-native/asset-registry' ||
         /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName) ||
         /^react-native\/Libraries\/Image\/AssetRegistry(\.js)?$/.test(moduleName)
       ) {
-        return getAssetRegistryModule();
-      }
-
-      // react-native core imports its registry singleton through relative paths (e.g.
-      // `../../src/private/assets/AssetRegistry` from `Libraries/Image/resolveAssetSource.js`),
-      // which the specifier checks above can never match. Capture those too, or React Native's
-      // `<Image>` would read a different registry instance than Metro's asset modules write to.
-      if (
-        moduleName.startsWith('.') &&
-        /[\\/]private[\\/]assets[\\/]AssetRegistry(\.js)?$/.test(moduleName) &&
-        /[\\/]react-native[\\/](src|Libraries)[\\/]/.test(context.originModulePath)
-      ) {
-        return getAssetRegistryModule();
-      }
-
-      if (
-        platform === 'web' &&
-        context.originModulePath.match(/node_modules[\\/]react-native-web[\\/]/) &&
-        moduleName.includes('/modules/AssetRegistry')
-      ) {
-        return getAssetRegistryModule();
+        return getStrictResolver(
+          context,
+          platform
+        )(platform === 'web' ? 'react-native-web/asset-registry' : 'react-native/asset-registry');
       }
 
       return null;
