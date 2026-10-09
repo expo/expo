@@ -1,12 +1,11 @@
 import { events } from '2g';
-import type { SpanEnd } from '2g';
+import type { SerializedError, SpanEnd } from '2g';
 import type { ExpoCustomTransformOptions } from '@expo/metro-config';
 import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
 
-import { stripAnsi } from '../../../utils/ansi';
 import { env } from '../../../utils/env';
 import { isInteractive, shouldReduceLogs } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
@@ -62,7 +61,9 @@ declare module '2g' {
     'metro:bundling:failed': {
       id: string | null;
       filename: string | null;
-      message: string | null;
+      error: SerializedError;
+      lineNumber: number | null;
+      column: number | null;
       importStack: string | null;
       targetModuleName: string | null;
       originModulePath: string | null;
@@ -330,7 +331,9 @@ export class MetroTerminalReporter extends TerminalReporter {
       const message = maybeAppendCodeFrame(moduleResolutionError, error.message);
       event('bundling:failed', {
         id: this.#lastFailedBuildID ?? null,
-        message: stripAnsi(message) ?? null,
+        error: event.error(error),
+        lineNumber: error.lineNumber ?? null,
+        column: error.column ?? null,
         importStack: importStack ?? null,
         filename: error.filename ?? null,
         targetModuleName: this.#normalizePath(error.targetModuleName),
@@ -341,7 +344,9 @@ export class MetroTerminalReporter extends TerminalReporter {
     } else {
       event('bundling:failed', {
         id: this.#lastFailedBuildID ?? null,
-        message: stripAnsi(error.message) ?? null,
+        error: event.error(error),
+        lineNumber: error.lineNumber ?? null,
+        column: error.column ?? null,
         importStack: importStack ?? null,
         filename: error.filename ?? null,
         targetModuleName: error.targetModuleName ?? null,
