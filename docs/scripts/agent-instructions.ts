@@ -3,7 +3,7 @@
  *
  * Each page's generated markdown includes an <AgentInstructions> block (placed
  * directly below the page's first H1) telling LLM-based agents how to submit
- * feedback with the Expo feedback CLI or direct HTTP fallback.
+ * feedback with the Expo feedback CLI or direct HTTP fallback, and how to get the docs as local files.
  *
  * Intentionally isolated in its own module so the experiment can be tweaked or
  * removed without touching the broader markdown generation utilities.
@@ -38,12 +38,18 @@ curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: applic
 Only submit when you have something specific and actionable to report. Try to give the most context.`;
 }
 
+export function buildLocalDocsSection(): string {
+  return `## Local Docs
+
+For the docs of the project's Expo SDK as local Markdown files that you can grep, run \`npx @expo/agent-cli docs:sync\`. It prints the directories to search. A link \`https://docs.expo.dev/<path>.md\` is the file \`<path>.md\` in that directory.`;
+}
+
 export function wrapAgentInstructions(sections: string[]): string {
   return `<AgentInstructions>\n\n${sections.join('\n\n')}\n\n</AgentInstructions>\n`;
 }
 
 export function buildAgentInstructions(pathname: string): string {
-  return wrapAgentInstructions([buildFeedbackSection(pathname)]);
+  return wrapAgentInstructions([buildLocalDocsSection(), buildFeedbackSection(pathname)]);
 }
 
 /**
