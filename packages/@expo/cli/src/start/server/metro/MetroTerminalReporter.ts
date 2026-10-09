@@ -83,13 +83,13 @@ declare module '2g' {
       data: unknown[] | null;
     };
     'metro:hmr_client_error': {
-      message: string;
+      error: SerializedError;
     };
     'metro:cache_write_error': {
-      message: string;
+      error: SerializedError;
     };
     'metro:cache_read_error': {
-      message: string;
+      error: SerializedError;
     };
   }
 }
@@ -497,7 +497,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       case 'cache_write_error':
       case 'cache_read_error':
         return event(evt.type, {
-          message: evt.error.message,
+          error: event.error(evt.error),
         });
     }
   }
