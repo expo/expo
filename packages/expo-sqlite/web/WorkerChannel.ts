@@ -37,7 +37,7 @@ export function sendWorkerResult({
     const { lockBuffer, resultBuffer } = syncTrait;
     const lock = new Int32Array(lockBuffer);
     const resultArray = new Uint8Array(resultBuffer);
-    const resultJson = error != null ? serialize({ error }) : serialize({ result });
+    const resultJson = error != null ? serialize({ error: error.message }) : serialize({ result });
     const resultBytes = new TextEncoder().encode(resultJson);
     const length = resultBytes.length;
     resultArray.set(new Uint32Array([length]), 0);
