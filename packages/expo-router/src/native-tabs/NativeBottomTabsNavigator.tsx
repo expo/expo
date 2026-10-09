@@ -52,7 +52,7 @@ export function NativeTabsNavigator({
     );
   }
 
-  const routeNode = useRouteNode();
+  const node = useRouteNode();
   const processedLabelStyle = convertLabelStylePropToObject(labelStyle);
   const processedIconColor = convertIconColorPropToObject(iconColor);
 
@@ -75,7 +75,7 @@ export function NativeTabsNavigator({
     children,
     backBehavior,
     screenListeners,
-    initialRouteName: getInitialTriggerName(children, routeNode?.initialRouteName),
+    initialRouteName: node?.initialRouteName,
     screenOptions: {
       disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
       labelStyle: processedLabelStyle.default,
@@ -191,16 +191,6 @@ export function NativeTabsNavigator({
       </NativeTabsContext>
     </NavigationContent>
   );
-}
-
-// Resolve the layout anchor to a Trigger screen name. A directory route `events/index` is
-// registered as `events/index`. An anchor without a matching Trigger is ignored.
-function getInitialTriggerName(children: React.ReactNode, anchor: string | undefined) {
-  if (!anchor) return undefined;
-  const names = React.Children.toArray(children).map((child) =>
-    React.isValidElement<{ name?: string }>(child) ? child.props.name : undefined
-  );
-  return names.find((name) => name === anchor || name === `${anchor}/index`);
 }
 
 const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);

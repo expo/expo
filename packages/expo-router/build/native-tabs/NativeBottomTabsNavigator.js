@@ -56,7 +56,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     if ((0, react_2.use)(exports.NativeTabsContext)) {
         throw new Error('Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.');
     }
-    const routeNode = (0, Route_1.useRouteNode)();
+    const node = (0, Route_1.useRouteNode)();
     const processedLabelStyle = (0, utils_1.convertLabelStylePropToObject)(labelStyle);
     const processedIconColor = (0, utils_1.convertIconColorPropToObject)(iconColor);
     const selectedLabelStyle = processedLabelStyle.selected
@@ -71,7 +71,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
         children,
         backBehavior,
         screenListeners,
-        initialRouteName: getInitialTriggerName(children, routeNode?.initialRouteName),
+        initialRouteName: node?.initialRouteName,
         screenOptions: {
             disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
             labelStyle: processedLabelStyle.default,
@@ -151,14 +151,6 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
                 // on JS side are only triggered by rerender, so passing ref
                 // here is ok.
                 provenance: provenanceRef.current, tabs: visibleTabs, onTabChange: onTabChange }) }) }));
-}
-// Resolve the layout anchor to a Trigger screen name. A directory route `events/index` is
-// registered as `events/index`. An anchor without a matching Trigger is ignored.
-function getInitialTriggerName(children, anchor) {
-    if (!anchor)
-        return undefined;
-    const names = react_2.default.Children.toArray(children).map((child) => react_2.default.isValidElement(child) ? child.props.name : undefined);
-    return names.find((name) => name === anchor || name === `${anchor}/index`);
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
 const NativeTabsNavigatorWithContext = (0, withLayoutContext_1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
