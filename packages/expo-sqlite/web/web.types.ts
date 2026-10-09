@@ -250,6 +250,14 @@ type SessionInvertChangesetMessage = BaseWorkerMessage & {
   };
 };
 
+// Fire-and-forget message posted once right after the worker starts, before any request.
+export interface ConfigureWorkerMessage {
+  type: 'configure';
+  data: {
+    webAssemblyUrl: string | null;
+  };
+}
+
 //#endregion Request messages
 
 //#region Response messages

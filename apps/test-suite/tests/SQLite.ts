@@ -11,6 +11,12 @@ import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'SQLite';
 
+// The default web build has no FTS. This one is expo/wa-sqlite@c4d107f built with
+// `make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"`.
+if (process.env.EXPO_OS === 'web') {
+  SQLite.setWebAssemblyUrl(require('../assets/wa-sqlite-fts.wasm'));
+}
+
 interface UserEntity {
   name: string;
   k: number;
@@ -1341,7 +1347,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 
   describe('Virtual tables', () => {
     for (const moduleName of ['fts5', 'fts4']) {
-      nativeIt(`should close a ${moduleName} database after the query is finalized`, async () => {
+      it(`should close a ${moduleName} database after the query is finalized`, async () => {
         const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
         await db.execAsync(`
           CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
@@ -1353,21 +1359,23 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
         await db.closeAsync();
       });
 
-      nativeIt(
-        `should close a ${moduleName} database while a query statement is still open`,
-        async () => {
-          const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
-          await db.execAsync(`
+      it(`should close a ${moduleName} database while a query statement is still open`, async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        await db.execAsync(`
             CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
             INSERT INTO fts_probe(body) VALUES ('hello world');
           `);
-          const statement = await db.prepareAsync(
-            "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
-          );
-          await db.closeAsync();
+        const statement = await db.prepareAsync(
+          "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
+        );
+        await db.closeAsync();
+        if (process.env.EXPO_OS === 'web') {
+          // TODO(kudo,20261009): Check the message once web sync calls keep the error message.
+          expect(() => statement.getColumnNamesSync()).toThrow();
+        } else {
           expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
         }
-      );
+      });
     }
   });
 

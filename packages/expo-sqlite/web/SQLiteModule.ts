@@ -12,8 +12,10 @@ import {
   type SQLiteRunResult,
 } from '../src/NativeStatement';
 import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
+import { type ConfigureWorkerMessage } from './web.types';
 
 let worker: Worker | null = null;
+let webAssemblyUrl: string | null = null;
 let nextNativeDatabaseId = 0;
 let nextNativeStatementId = 0;
 let nextNativeSessionId = 0;
@@ -29,6 +31,11 @@ function getWorker(): Worker {
       }
       workerMessageHandler(event);
     });
+    const configureMessage: ConfigureWorkerMessage = {
+      type: 'configure',
+      data: { webAssemblyUrl },
+    };
+    worker.postMessage(configureMessage);
   }
   return worker;
 }
@@ -425,6 +432,16 @@ export class SQLiteModule extends NativeModule {
     invokeWorkerSync(getWorker(), 'deleteDatabase', {
       databasePath,
     });
+  }
+
+  setWebAssemblyUrl(url: string): void {
+    if (worker != null) {
+      throw new Error(
+        'Cannot set the SQLite WebAssembly URL because a database has already been opened. ' +
+          'Call `setWebAssemblyUrl()` before opening any database, for example at the top of your app entry file.'
+      );
+    }
+    webAssemblyUrl = url;
   }
 
   async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {
