@@ -98,10 +98,19 @@ let package = Package(
         // https://github.com/swiftlang/swift-evolution/blob/main/proposals/0470-isolated-conformances.md
         .enableUpcomingFeature("InferIsolatedConformances"),
 
+        // Library evolution keeps the xcframework usable across Swift compiler versions. Builds
+        // outside Apple platforms don't ship a binary framework, and there the imported C++ types
+        // land in the `__ObjC` module, which doesn't support library evolution.
+        .unsafeFlags(
+          [
+            "-enable-library-evolution",
+            "-emit-module-interface",
+            "-no-verify-emitted-module-interface",
+          ],
+          .when(platforms: [.iOS, .tvOS, .macOS, .macCatalyst])
+        ),
+
         .unsafeFlags([
-          "-enable-library-evolution",
-          "-emit-module-interface",
-          "-no-verify-emitted-module-interface",
           "-Xfrontend",
           "-clang-header-expose-decls=has-expose-attr",
 
