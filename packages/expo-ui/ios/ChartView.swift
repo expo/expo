@@ -137,15 +137,13 @@ public struct ChartView: ExpoSwiftUI.View {
         .foregroundStyle(props.lineStyle?.color ?? .blue)
         .symbol(getSymbol(props.lineStyle?.pointStyle ?? .circle))
         .symbolSize(CGFloat(props.lineStyle?.pointSize ?? 6.0))
-        .lineStyle(getLineStyle(props.lineStyle?.dashArray ?? []))
-        .lineStyle(.init(lineWidth: CGFloat(props.lineStyle?.width ?? 2.0)))
+        .lineStyle(getLineStyle(props.lineStyle))
     } else {
       LineMark(x: .value("X", dataPoint.xValue), y: .value("Y", dataPoint.y))
         .foregroundStyle(props.lineStyle?.color ?? .blue)
         .symbol(getSymbol(props.lineStyle?.pointStyle ?? .circle))
         .symbolSize(CGFloat(props.lineStyle?.pointSize ?? 6.0))
-        .lineStyle(getLineStyle(props.lineStyle?.dashArray ?? []))
-        .lineStyle(.init(lineWidth: CGFloat(props.lineStyle?.width ?? 2.0)))
+        .lineStyle(getLineStyle(props.lineStyle))
     }
   }
 
@@ -254,7 +252,11 @@ public struct ChartView: ExpoSwiftUI.View {
     }
   }
 
-  private func getLineStyle(_ dashArray: [Double]) -> StrokeStyle {
-    StrokeStyle(dash: dashArray.map { CGFloat($0) })
+  // A single stroke style: chained `.lineStyle` modifiers don't merge, the first one wins.
+  private func getLineStyle(_ style: LineChartStyle?) -> StrokeStyle {
+    StrokeStyle(
+      lineWidth: CGFloat(style?.width ?? 2.0),
+      dash: (style?.dashArray ?? []).map { CGFloat($0) }
+    )
   }
 }
