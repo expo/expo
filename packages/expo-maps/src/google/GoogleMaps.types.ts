@@ -508,6 +508,10 @@ export type SetCameraPositionConfig = CameraPosition & {
 export type GoogleMapsViewType = {
   /**
    * Update camera position.
+   * For animated moves, the returned promise resolves when the animation finishes
+   * and rejects if the animation is interrupted.
+   * If the native view is unavailable, the promise resolves without moving the camera.
+   *
    * @param config New camera position config.
    */
   setCameraPosition: (config?: SetCameraPositionConfig) => Promise<void>;

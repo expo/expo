@@ -574,6 +574,10 @@ export type AppleMapsViewType = {
    * Update camera position.
    * Animation duration is not supported on iOS.
    *
+   * The returned promise resolves after the camera update is scheduled, not when
+   * its animation finishes. Animation cancellation does not reject the promise.
+   * If the native view is unavailable, the promise resolves without moving the camera.
+   *
    * @param config New camera position.
    */
   setCameraPosition: (config?: CameraPosition) => Promise<void>;
