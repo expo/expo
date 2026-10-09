@@ -37,7 +37,8 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     this.task = task
 
     val intervalMinutes = getIntervalMinutes()
-    BackgroundTaskScheduler.registerTask(context, intervalMinutes)
+    val requiresNetworkConnectivity = getRequiresNetworkConnectivity()
+    BackgroundTaskScheduler.registerTask(context, intervalMinutes, requiresNetworkConnectivity)
   }
 
   override fun didUnregister() {
@@ -50,5 +51,10 @@ class BackgroundTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUti
     val options = task?.options as? Map<String, Any?>
     return (options?.get("minimumInterval") as? Number)?.toLong()
       ?: BackgroundTaskScheduler.DEFAULT_INTERVAL_MINUTES
+  }
+
+  private fun getRequiresNetworkConnectivity(): Boolean {
+    val options = task?.options as? Map<String, Any?>
+    return (options?.get("requiresNetworkConnectivity") as? Boolean) ?: false
   }
 }
