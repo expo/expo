@@ -2,6 +2,7 @@ import { events } from '2g';
 import type { SerializedError, SpanEnd } from '2g';
 import type { ExpoCustomTransformOptions } from '@expo/metro-config';
 import type { Terminal } from '@expo/metro/metro-core';
+import { calculateBundleProgressRatio } from '@expo/metro/metro/lib/bundleProgressUtils';
 import chalk from 'chalk';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
@@ -114,6 +115,8 @@ export class MetroTerminalReporter extends TerminalReporter {
     string,
     {
       end: SpanEnd<'metro'>;
+      total: number;
+      ratio: number;
       start: { id: string; platform: null | string; environment: null | string; entry: string };
     }
   >();
@@ -247,12 +250,6 @@ export class MetroTerminalReporter extends TerminalReporter {
       );
     }
 
-    event('bundling:progress', {
-      id: progress.bundleDetails.buildID ?? null,
-      progress: progress.ratio,
-      total: progress.totalFileCount,
-      current: progress.transformedFileCount,
-    });
     if (shouldReduceLogs()) {
       return '';
     }
@@ -472,6 +469,8 @@ export class MetroTerminalReporter extends TerminalReporter {
             : this.#normalizePath(evt.bundleDetails.entryFile);
         this.#bundleSpans.set(evt.buildID, {
           end: event.span(),
+          total: 1,
+          ratio: 0,
           start: {
             id: evt.buildID,
             platform: evt.bundleDetails.platform ?? null,
@@ -488,6 +487,24 @@ export class MetroTerminalReporter extends TerminalReporter {
           dev: evt.bundleDetails.dev,
           minify: evt.bundleDetails.minify,
         });
+        return;
+      }
+      case 'bundle_transform_progressed_throttled': {
+        const span = this.#bundleSpans.get(evt.buildID);
+        if (span) {
+          span.total = evt.totalFileCount;
+          span.ratio = calculateBundleProgressRatio(
+            evt.transformedFileCount,
+            evt.totalFileCount,
+            span.ratio
+          );
+          event('bundling:progress', {
+            id: evt.buildID,
+            progress: span.ratio,
+            total: evt.totalFileCount,
+            current: evt.transformedFileCount,
+          });
+        }
         return;
       }
       case 'resolver_warning':
