@@ -35,6 +35,7 @@ export type CameraPosition = {
    * The bearing in degrees clockwise from north. Defaults to 0 initially.
    * Finite values wrap into 0-360. Imperative orientation updates preserve
    * omitted fields from the current or latest requested camera.
+   * Imperative updates with non-finite tilt or bearing are ignored.
    */
   bearing?: number;
 };

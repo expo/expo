@@ -373,8 +373,9 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   suspend fun setCameraPosition(config: SetCameraPositionConfig?) {
     val duration = config?.duration ?: Int.MAX_VALUE
     require(duration >= 0) { "duration must be nonnegative" }
-    require(config?.tilt?.isFinite() != false && config?.bearing?.isFinite() != false) {
-      "tilt and bearing must be finite"
+    // Match iOS: ignore invalid orientation requests without changing camera state.
+    if (config?.tilt?.isFinite() == false || config?.bearing?.isFinite() == false) {
+      return
     }
 
     // Stop following location, preserving the existing no-location call behavior.
