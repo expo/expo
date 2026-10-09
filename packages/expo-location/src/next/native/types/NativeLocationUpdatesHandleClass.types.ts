@@ -1,4 +1,4 @@
-import type { LocationProfile } from '../../types';
+import type { BackgroundTaskStatus, LocationProfile } from '../../types';
 
 export declare class NativeLocationUpdatesHandleClass {
   constructor(taskName: string);
@@ -6,4 +6,5 @@ export declare class NativeLocationUpdatesHandleClass {
   start(): Promise<void>;
   stop(): Promise<void>;
   hasStarted(): Promise<boolean>;
+  status(): BackgroundTaskStatus;
 }

@@ -7,6 +7,11 @@ export {
   requestForegroundPermissions,
   getBackgroundPermissions,
   requestBackgroundPermissions,
+  getNotificationPermissions,
+  requestNotificationPermissions,
   setLocationProvider,
   getSelectedLocationProviderName,
+  ensureBackgroundSessionStarted,
+  stopBackgroundSession,
+  getBackgroundSessionStatus,
 } from './js';
