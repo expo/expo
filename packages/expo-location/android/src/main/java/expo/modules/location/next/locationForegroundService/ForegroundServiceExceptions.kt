@@ -23,14 +23,6 @@ class ServicePromotionTimedOutException :
 class NoNotificationIconException :
   CodedException("No notification icon was configured.")
 
-class MissingNotificationPermissionException :
-  CodedException(
-    "Cannot start the background session, because the `android.permission.POST_NOTIFICATIONS` " +
-      "permission is not granted. The location foreground service is promoted with a notification, " +
-      "and Android 13 and above requires that permission to post one. " +
-      "Call `requestNotificationPermissionsAsync` before `ensureStarted`."
-  )
-
 class ServiceNotFoundException :
   CodedException(
     "The location foreground service could not be started, because the system found no service to start. " +

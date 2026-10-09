@@ -40,6 +40,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+private const val MISSING_NOTIFICATION_PERMISSION_WARNING =
+  "Starting the location foreground service without the `android.permission.POST_NOTIFICATIONS` " +
+    "permission. The service runs and location updates are not throttled, but its notification " +
+    "does not appear in the notification drawer."
+
 class LocationModuleNext : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
@@ -120,11 +125,11 @@ class LocationModuleNext : Module() {
 
     AsyncFunction("requestNotificationPermissions") Coroutine { ->
       permissionsManager.requestNotificationPermissions()
-      return@Coroutine permissionsManager.getNotificationPermissions()
+      return@Coroutine permissionsManager.getNotificationPermissions(context)
     }
 
     AsyncFunction("getNotificationPermissions") Coroutine { ->
-      return@Coroutine permissionsManager.getNotificationPermissions()
+      return@Coroutine permissionsManager.getNotificationPermissions(context)
     }
 
     // Location providers
@@ -206,6 +211,9 @@ class LocationModuleNext : Module() {
           return@Coroutine
         }
         permissionsManager.ensureForegroundServicePermissions()
+        if (!permissionsManager.hasNotificationPermission()) {
+          Log.w("ExpoLocation", MISSING_NOTIFICATION_PERMISSION_WARNING)
+        }
 
         val requested = backgroundSessionOptions
         val options = if (requested != null) {

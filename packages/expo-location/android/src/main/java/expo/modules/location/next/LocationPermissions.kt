@@ -1,10 +1,11 @@
 package expo.modules.location.next
 
 import android.Manifest
+import android.content.Context
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.core.app.NotificationManagerCompat
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.location.next.locationForegroundService.MissingNotificationPermissionException
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsStatus
@@ -81,12 +82,18 @@ internal suspend fun Permissions.requestNotificationPermissions() {
   requestPermissions(Manifest.permission.POST_NOTIFICATIONS)
 }
 
-internal suspend fun Permissions.getNotificationPermissions(): NotificationPermissionResponse {
+internal suspend fun Permissions.getNotificationPermissions(context: Context): NotificationPermissionResponse {
   if (!supportsNotificationPermission()) {
+    val areNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    val status = if (areNotificationsEnabled) {
+      LocationPermissionStatus.GRANTED
+    } else {
+      LocationPermissionStatus.DENIED
+    }
     return NotificationPermissionResponse(
-      status = LocationPermissionStatus.GRANTED,
-      granted = true,
-      canAskAgain = true
+      status = status,
+      granted = areNotificationsEnabled,
+      canAskAgain = areNotificationsEnabled
     )
   }
 
@@ -161,10 +168,10 @@ internal fun Permissions.ensureForegroundServicePermissions() {
   if (supportsForegroundServiceTypePermission() && !isPermissionPresentInManifest(Manifest.permission.FOREGROUND_SERVICE_LOCATION)) {
     throw NoPermissionInManifestException("FOREGROUND_SERVICE_LOCATION")
   }
-  if (supportsNotificationPermission() && !hasGrantedPermissions(Manifest.permission.POST_NOTIFICATIONS)) {
-    throw MissingNotificationPermissionException()
-  }
 }
+
+internal fun Permissions.hasNotificationPermission(): Boolean =
+  !supportsNotificationPermission() || hasGrantedPermissions(Manifest.permission.POST_NOTIFICATIONS)
 
 internal fun Permissions.ensureBackgroundPermissions() {
   ensureForegroundPermissions()
