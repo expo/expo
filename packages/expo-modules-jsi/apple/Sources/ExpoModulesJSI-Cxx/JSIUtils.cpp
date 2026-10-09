@@ -7,6 +7,7 @@
 // with these sources from its `Microsoft.ReactNative.Cxx` NuGet package.
 #include <ApiLoaders/JSRuntimeApi.h>
 #include <NodeApiJsiRuntime.h>
+#include <jsi/decorator.h>
 #endif
 
 namespace expo {
@@ -43,6 +44,29 @@ jsi::Runtime* createHermesRuntime() {
 
 #elif defined(_WIN32)
 
+namespace {
+
+/**
+ Owns a runtime and forwards to it, except that `instrumentation().collectGarbage(_:)` runs a
+ collection. The runtime that `makeNodeApiJsiRuntime` returns keeps the default instrumentation,
+ which does nothing.
+ */
+class GarbageCollectingRuntime : public jsi::RuntimeDecorator<jsi::Runtime> {
+public:
+  GarbageCollectingRuntime(std::unique_ptr<jsi::Runtime> runtime, std::function<void()> collectGarbage)
+      : RuntimeDecorator(*runtime), runtime_(std::move(runtime)), collectGarbage_(std::move(collectGarbage)) {}
+
+private:
+  void collectGarbage(std::string cause) override {
+    collectGarbage_();
+  }
+
+  std::unique_ptr<jsi::Runtime> runtime_;
+  std::function<void()> collectGarbage_;
+};
+
+} // namespace
+
 jsi::Runtime* createHermesRuntime() {
   using namespace Microsoft::NodeApiJsi;
 
@@ -62,9 +86,15 @@ jsi::Runtime* createHermesRuntime() {
   api->jsr_runtime_get_node_api_env(jsrRuntime, &env);
 
   // `destroyRuntime` deletes the returned runtime, which calls this to delete the Hermes runtime.
-  jsi::Runtime *runtime = makeNodeApiJsiRuntime(env, api, [jsrRuntime]() {
+  std::unique_ptr<jsi::Runtime> nodeApiRuntime = makeNodeApiJsiRuntime(env, api, [jsrRuntime]() {
     api->jsr_delete_runtime(jsrRuntime);
-  }).release();
+  });
+  // `JSRuntimeApi` loads each function on its first call through the API set for the calling thread,
+  // and garbage collection can be requested from any thread.
+  jsi::Runtime *runtime = new GarbageCollectingRuntime(std::move(nodeApiRuntime), [env]() {
+    JSRuntimeApi::Scope scope(api);
+    api->jsr_collect_garbage(env);
+  });
   installSetImmediate(*runtime);
   return runtime;
 }
