@@ -21,11 +21,7 @@ let reactNative =
   ProcessInfo.processInfo.environment["RN_ROOT"]
   ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
   ?? "\(podsRoot)/../../node_modules/react-native"
-// Outside Apple platforms there are no Pods. `JSI_INCLUDE_DIR` names a directory with `jsi/jsi.h`
-// instead, such as `tools/Microsoft.ReactNative.Cxx` in react-native-windows' `Microsoft.ReactNative.Cxx`
-// NuGet package, and it's the only header root.
-let jsiIncludeDir = ProcessInfo.processInfo.environment["JSI_INCLUDE_DIR"]
-let headerSearchPaths = jsiIncludeDir.map({ [$0] }) ?? [
+let podsHeaderSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",
   "\(publicHeaders)/hermes-engine",
@@ -51,6 +47,12 @@ let headerSearchPaths = jsiIncludeDir.map({ [$0] }) ?? [
   "\(podsRoot)/glog/src",
   "\(podsRoot)/DoubleConversion",
 ]
+
+// Outside Apple platforms there are no Pods. `JSI_INCLUDE_DIR` names a directory with `jsi/jsi.h`
+// instead, for example with the headers from react-native-windows' `Microsoft.ReactNative.Cxx`
+// NuGet package, and it's the only header root.
+let headerSearchPaths =
+  ProcessInfo.processInfo.environment["JSI_INCLUDE_DIR"].map({ [$0] }) ?? podsHeaderSearchPaths
 
 // Path to the generated module map for the `jsi` Clang module. The
 // `scripts/generate-modulemap.sh` script writes this file at build time so

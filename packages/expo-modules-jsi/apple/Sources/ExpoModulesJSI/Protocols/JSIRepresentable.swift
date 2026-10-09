@@ -1,11 +1,12 @@
+internal import ExpoModulesJSI_Cxx
+internal import jsi
+
 #if canImport(CoreGraphics)
 import CoreGraphics
 #else
 // `CGFloat` is part of Foundation outside Apple platforms.
 import Foundation
 #endif
-internal import ExpoModulesJSI_Cxx
-internal import jsi
 
 /// A type whose values can be represented as `facebook.jsi.Value`.
 ///
