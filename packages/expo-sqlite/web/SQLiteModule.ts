@@ -32,11 +32,7 @@ function getWorker(): Worker {
       }
       workerMessageHandler(event);
     });
-    const configureMessage: ConfigureWorkerMessage = {
-      type: 'configure',
-      data: { wasmURL: webOptions.wasmURL ?? null },
-    };
-    worker.postMessage(configureMessage);
+    worker.postMessage({ type: 'configure', data: webOptions } satisfies ConfigureWorkerMessage);
   }
   return worker;
 }

@@ -34,7 +34,6 @@ const isServer = typeof window === 'undefined';
   });
 
   async function startWorkerAsync(): Promise<MockWorker> {
-    // The mock worker never replies, so the open never resolves. Wait until it has posted messages instead.
     SQLite.openDatabaseAsync(':memory:').catch(() => {});
     for (let i = 0; i < 20 && MockWorker.instances.length === 0; i++) {
       await new Promise((resolve) => setTimeout(resolve, 10));
@@ -43,12 +42,9 @@ const isServer = typeof window === 'undefined';
     return MockWorker.instances[0]!;
   }
 
-  it('should configure the worker with a null url by default', async () => {
+  it('should configure the worker with no options by default', async () => {
     const worker = await startWorkerAsync();
-    expect(worker.postMessage.mock.calls[0][0]).toEqual({
-      type: 'configure',
-      data: { wasmURL: null },
-    });
+    expect(worker.postMessage.mock.calls[0][0]).toEqual({ type: 'configure', data: {} });
   });
 
   it('should configure the worker with the custom wasm url before any request', async () => {
@@ -72,7 +68,7 @@ const isServer = typeof window === 'undefined';
     SQLite.configureWeb({ wasmURL: '/first.wasm' });
     SQLite.configureWeb({});
     const worker = await startWorkerAsync();
-    expect(worker.postMessage.mock.calls[0][0].data.wasmURL).toBeNull();
+    expect(worker.postMessage.mock.calls[0][0].data.wasmURL).toBeUndefined();
   });
 
   it('should throw when called after a database is opened', async () => {

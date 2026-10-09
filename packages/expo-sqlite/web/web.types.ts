@@ -8,6 +8,7 @@ import {
   type SQLiteColumnNames,
   type SQLiteColumnValues,
 } from '../src/NativeStatement';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
 import { type SQLAction } from './SQLAction';
 
 export interface SyncWorkerMessage {
@@ -250,12 +251,9 @@ type SessionInvertChangesetMessage = BaseWorkerMessage & {
   };
 };
 
-// Fire-and-forget message posted once right after the worker starts, before any request.
 export interface ConfigureWorkerMessage {
   type: 'configure';
-  data: {
-    wasmURL: string | null;
-  };
+  data: SQLiteWebOptions;
 }
 
 //#endregion Request messages
