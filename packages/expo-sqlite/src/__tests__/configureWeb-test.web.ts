@@ -14,9 +14,10 @@ class MockWorker {
 }
 
 // The Node project also runs `.web` tests to cover server rendering, where there is no worker.
-const isServer = typeof window === 'undefined';
+const describeWeb = typeof window !== 'undefined' ? describe : describe.skip;
+const describeServer = typeof window === 'undefined' ? describe : describe.skip;
 
-(isServer ? describe.skip : describe)('Configuring web', () => {
+describeWeb('Configuring web', () => {
   let SQLite: typeof SQLiteModule;
 
   beforeEach(() => {
@@ -79,7 +80,7 @@ const isServer = typeof window === 'undefined';
   });
 });
 
-(isServer ? describe : describe.skip)('Configuring web on the server', () => {
+describeServer('Configuring web on the server', () => {
   it('should do nothing when rendering on the server', () => {
     const SQLite: typeof SQLiteModule = require('../index');
     expect(() => SQLite.configureWeb({ wasmURL: '/sqlite/wa-sqlite-fts.wasm' })).not.toThrow();

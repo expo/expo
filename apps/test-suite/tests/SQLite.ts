@@ -11,7 +11,6 @@ import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'SQLite';
 
-// expo/wa-sqlite@c4d107f built with FTS, as in the "Use a custom WebAssembly build" docs.
 if (process.env.EXPO_OS === 'web') {
   SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
 }
@@ -1368,12 +1367,9 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
           "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
         );
         await db.closeAsync();
-        if (process.env.EXPO_OS === 'web') {
-          // TODO(kudo,20261009): Check the message once web sync calls keep the error message.
-          expect(() => statement.getColumnNamesSync()).toThrow();
-        } else {
-          expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
-        }
+        expect(() => statement.getColumnNamesSync()).toThrowError(
+          /Access to closed resource|Statement not found/
+        );
       });
     }
   });
