@@ -725,6 +725,22 @@ struct JavaScriptValueTests {
     let pointee2 = value.withUnsafePointee { return $0 }
     #expect(pointee1 == pointee2)
   }
+
+  @Test
+  func `isThenable is true for a promise or an object with a callable then`() throws {
+    #expect(try runtime.eval("Promise.resolve(1)").isThenable())
+    #expect(try runtime.eval("({ then() {} })").isThenable())
+  }
+
+  @Test
+  func `isThenable is false for other values`() throws {
+    #expect(try runtime.eval("({ then: 1 })").isThenable() == false)
+    #expect(try runtime.eval("({})").isThenable() == false)
+    #expect(try runtime.eval("() => {}").isThenable() == false)
+    #expect(try runtime.eval("42").isThenable() == false)
+    #expect(JavaScriptValue.null.isThenable() == false)
+    #expect(JavaScriptValue.undefined.isThenable() == false)
+  }
 }
 
 @Suite

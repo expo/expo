@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "commander": "^14.0.3",
-    "expo-modules-macros": "^0.15.0"
+    "expo-modules-macros": "^0.16.0"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",

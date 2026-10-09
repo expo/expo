@@ -194,6 +194,27 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   /// to `runtime` or be runtime-free; mixing runtimes will crash deep inside JSI.
   @JavaScriptActor
   public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
+    let buffer = values.withUnsafeBufferPointer { values in
+      copyingPointees(in: runtime, values: values)
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+  }
+
+  /// The `ContiguousArray` variant of ``copying(in:values:)``.
+  @JavaScriptActor
+  internal static func copying(in runtime: JavaScriptRuntime, values: ContiguousArray<JavaScriptValue>)
+    -> JavaScriptValuesBuffer
+  {
+    let buffer = values.withUnsafeBufferPointer { values in
+      copyingPointees(in: runtime, values: values)
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+  }
+
+  @JavaScriptActor
+  private static func copyingPointees(in runtime: JavaScriptRuntime, values: UnsafeBufferPointer<JavaScriptValue>)
+    -> UnsafeMutableBufferPointer<facebook.jsi.Value>
+  {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
     for (index, value) in values.enumerated() {
       // Runtime-free values (undefined, null, booleans and numbers) have no handle and fit any runtime.
@@ -203,6 +224,6 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
       )
       buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
     }
-    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
+    return buffer
   }
 }
