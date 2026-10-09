@@ -68,7 +68,7 @@ Both run against an installed host app's `Pods` directory, which defaults to `ap
 The package also builds on Windows (x64 and arm64) and runs its tests there (x64 only for now) with the Swift toolchain for Windows, against the JSI headers and the Hermes runtime that `react-native-windows` uses. Nothing ships for Windows yet; the `expo-modules-jsi (Windows)` workflow keeps this working.
 
 - `JSI_INCLUDE_DIR` points `Package.swift` at a directory with `jsi/jsi.h` instead of the CocoaPods paths. The workflow fills it from the `Microsoft.ReactNative.Cxx` and `Microsoft.JavaScript.Hermes` NuGet packages, and copies the `react-native-windows` sources that create a JSI runtime on top of `hermes.dll` into `apple/Sources/ExpoModulesJSI-Cxx/react-native-windows` (ignored by git).
-- Library evolution is enabled only on Apple platforms. Without it, a module that imports `ExpoModulesJSI` also loads its C++ dependencies, so it needs C++ interoperability and the same header paths (the test targets set them outside Apple platforms).
+- Library evolution is enabled on Windows too, so modules that import `ExpoModulesJSI` don't need C++ interoperability: they don't load its `internal import` C++ dependencies. The test targets build that way. The Windows toolchain's own modules (the standard library, Foundation) aren't built with library evolution, so the compiler warns that binary compatibility can't be guaranteed there.
 - A few tests are disabled on Windows with `.disabled(if: isWindows, ...)` because they hang or crash with the standalone Windows runtime.
 
 # Using JSI types from a module

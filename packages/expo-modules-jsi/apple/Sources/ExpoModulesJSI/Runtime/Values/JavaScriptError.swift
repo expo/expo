@@ -90,7 +90,7 @@ public struct ScriptEvaluationError: Error {
 /// via the `SWIFT_NAME(_message)` annotation in `CppError.h`. This extension
 /// wraps it in a Swift `String` for cleaner call-site usage.
 extension expo.CppError: Error {
-  public var message: String {
+  var message: String {
     return String(_getMessage())
   }
 }
