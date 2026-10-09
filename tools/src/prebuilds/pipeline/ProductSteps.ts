@@ -11,6 +11,10 @@ import logger from '../../Logger';
 import { Codegen } from '../Codegen';
 import { composeCustomBuildAsync, runCustomBuildAsync } from '../CustomBuild';
 import { Frameworks } from '../Frameworks';
+import {
+  composeHeadersXCFrameworkAsync,
+  shouldWriteHeadersXCFramework,
+} from '../HeadersXCFramework';
 import { SPMBuild } from '../SPMBuild';
 import { SPMGenerator } from '../SPMGenerator';
 import { FrameworkVerifier } from '../Verifier';
@@ -176,18 +180,20 @@ export const composeStep: Step<PrebuildContext> = {
 
     if (product.customBuild) {
       await composeCustomBuildAsync(pkg, product, flavor);
-      setStage(ctx, 'compose', 'success');
-      return;
+    } else {
+      await Frameworks.composeXCFrameworkAsync(
+        pkg,
+        product,
+        flavor,
+        ctx.request.platformFilter,
+        ctx.request.signing,
+        { bundleSharedDeps: ctx.request.bundleSharedDeps }
+      );
     }
 
-    await Frameworks.composeXCFrameworkAsync(
-      pkg,
-      product,
-      flavor,
-      ctx.request.platformFilter,
-      ctx.request.signing,
-      { bundleSharedDeps: ctx.request.bundleSharedDeps }
-    );
+    if (shouldWriteHeadersXCFramework(product, flavor, ctx.request.buildFlavors)) {
+      await composeHeadersXCFrameworkAsync(pkg, product, flavor);
+    }
 
     setStage(ctx, 'compose', 'success');
   },

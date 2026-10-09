@@ -22,23 +22,30 @@ function getSpmDependencyNames(products) {
   ];
 }
 
+function getFlavors(product) {
+  return product.headersXCFramework === true ? [...FLAVORS, 'headers'] : FLAVORS;
+}
+
 function expectedPaths(packageRoot, product, flavor, root) {
   const directory = path.join(packageRoot, root, flavor, 'xcframeworks');
+  const name = flavor === 'headers' ? `${product.name}Headers` : product.name;
   return {
     directory,
-    framework: path.join(directory, `${product.name}.xcframework`),
-    tarball: path.join(directory, `${product.name}.tar.gz`),
+    name,
+    framework: path.join(directory, `${name}.xcframework`),
+    tarball: path.join(directory, `${name}.tar.gz`),
   };
 }
 
-function requireDirectory(directory, description) {
+function requireDirectory(directory, description, hint) {
+  const details = hint ? `\n${hint}` : '';
   let stat;
   try {
     stat = fs.statSync(directory);
   } catch {}
-  if (!stat?.isDirectory()) throw new Error(`${description} is missing: ${directory}`);
+  if (!stat?.isDirectory()) throw new Error(`${description} is missing: ${directory}${details}`);
   if (!fs.existsSync(path.join(directory, 'Info.plist'))) {
-    throw new Error(`${description} has no Info.plist: ${directory}`);
+    throw new Error(`${description} has no Info.plist: ${directory}${details}`);
   }
 }
 
@@ -46,9 +53,15 @@ export function validateRawIosPrebuilds(packageRoot = process.cwd()) {
   const products = readPublishedIosProducts(packageRoot);
   if (!products) return false;
   for (const product of products) {
-    for (const flavor of FLAVORS) {
+    for (const flavor of getFlavors(product)) {
       const { framework } = expectedPaths(packageRoot, product, flavor, '.expo-prebuild/output');
-      requireDirectory(framework, `${product.name} ${flavor} XCFramework`);
+      const hint =
+        flavor === 'headers'
+          ? `spm.config.json sets "headersXCFramework": true for ${product.name}, but the ` +
+            'prebuild did not produce its headers XCFramework. Run ' +
+            '`et prebuild-package-for-publish` in this package to rebuild the prebuilds.'
+          : undefined;
+      requireDirectory(framework, `${product.name} ${flavor} XCFramework`, hint);
     }
   }
   for (const dependencyName of getSpmDependencyNames(products)) {
@@ -70,8 +83,8 @@ export function validatePublishedIosPrebuilds(packageRoot = process.cwd()) {
   const products = readPublishedIosProducts(packageRoot);
   if (!products) return false;
   for (const product of products) {
-    for (const flavor of FLAVORS) {
-      const { tarball } = expectedPaths(packageRoot, product, flavor, 'prebuilds/output');
+    for (const flavor of getFlavors(product)) {
+      const { name, tarball } = expectedPaths(packageRoot, product, flavor, 'prebuilds/output');
       if (!fs.statSync(tarball, { throwIfNoEntry: false })?.isFile()) {
         throw new Error(`${product.name} ${flavor} publish tarball is missing: ${tarball}`);
       }
@@ -79,9 +92,9 @@ export function validatePublishedIosPrebuilds(packageRoot = process.cwd()) {
       if (listing.status !== 0) {
         throw new Error(`Invalid publish tarball ${tarball}: ${listing.stderr.trim()}`);
       }
-      const frameworkPrefix = `${product.name}.xcframework/`;
+      const frameworkPrefix = `${name}.xcframework/`;
       if (!listing.stdout.split('\n').some((entry) => entry.startsWith(frameworkPrefix))) {
-        throw new Error(`${tarball} does not contain ${product.name}.xcframework`);
+        throw new Error(`${tarball} does not contain ${name}.xcframework`);
       }
     }
   }
@@ -110,13 +123,13 @@ export function stageIosPrebuilds(packageRoot = process.cwd(), runTar = spawnSyn
   const stagingRoot = path.join(packageRoot, 'prebuilds');
   fs.rmSync(stagingRoot, { recursive: true, force: true });
   for (const product of products) {
-    for (const flavor of FLAVORS) {
+    for (const flavor of getFlavors(product)) {
       const raw = expectedPaths(packageRoot, product, flavor, '.expo-prebuild/output');
       const staged = expectedPaths(packageRoot, product, flavor, 'prebuilds/output');
       fs.mkdirSync(staged.directory, { recursive: true });
       const result = runTar(
         'tar',
-        ['-czf', staged.tarball, '-C', raw.directory, `${product.name}.xcframework`],
+        ['-czf', staged.tarball, '-C', raw.directory, `${raw.name}.xcframework`],
         { encoding: 'utf8' }
       );
       if (result.status !== 0) {
