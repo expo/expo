@@ -90,6 +90,8 @@ Observe.configure({
 
 The integration removes filtered keys from `routeParams`, and the event omits `url` and includes `urlHidden: true` instead. `routeName` is not affected because it is a pattern and never contains parameter values.
 
+To remove every route and query parameter, include `'*'` in `filteredParams`. Routes that have parameters then export an empty `routeParams` and `urlHidden: true`, and routes without parameters keep their `url`.
+
 ## Metrics
 
 ### Per-route first render (`cold_ttr`)

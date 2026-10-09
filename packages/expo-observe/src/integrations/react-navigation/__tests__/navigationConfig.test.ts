@@ -50,4 +50,11 @@ describe('react-navigation navigation config', () => {
       urlHidden: true,
     });
   });
+
+  it('filters every route param when filteredParams contains "*"', () => {
+    expect(
+      getNavigationRouteParams({ filteredParams: ['*'] }, { id: '779', tab: 'timeline' })
+    ).toEqual({ routeParams: {}, urlHidden: true });
+    expect(getNavigationRouteParams({ filteredParams: ['*'] }, {})).toEqual({ routeParams: {} });
+  });
 });
