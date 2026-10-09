@@ -2,6 +2,7 @@ import assert from 'assert';
 import type { Choice, Options, PromptObject } from 'prompts';
 import prompts from 'prompts';
 
+import { stripAnsi } from './ansi';
 import { AbortCommandError, CommandError } from './errors';
 import { event } from './events';
 import { isInteractive } from './interactive';
@@ -14,7 +15,10 @@ export interface ExpoChoice<T> extends Choice {
   value: T;
 }
 
-type PromptOptions = { nonInteractiveHelp?: string } & Options;
+type PromptOptions = {
+  nonInteractiveHelp?: string;
+  programStatusKind?: 'permission' | 'question' | 'auth';
+} & Options;
 
 export type NamelessQuestion = Omit<Question<'value'>, 'name' | 'type'>;
 
@@ -27,7 +31,7 @@ const listeners: InteractionCallback[] = [];
 
 export default async function prompt(
   questions: Question | Question[],
-  { nonInteractiveHelp, ...options }: PromptOptions = {}
+  { nonInteractiveHelp, programStatusKind, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
   if (!isInteractive() && questions.length) {
@@ -46,6 +50,22 @@ export default async function prompt(
     throw new CommandError('NON_INTERACTIVE', message);
   }
 
+  const kind =
+    programStatusKind ??
+    (questions.some((question) => question.type === 'password')
+      ? 'auth'
+      : questions[0]?.type === 'confirm'
+        ? 'permission'
+        : 'question');
+  const msg =
+    typeof questions[0]?.message === 'string'
+      ? stripAnsi(questions[0].message)
+          ?.replace(/[\s\p{Cc}]+/gu, ' ')
+          .trim()
+      : undefined;
+  writeProgramStatus(
+    `state=blocked:app=expo:kind=${kind}${msg ? `:msg=${Buffer.from(msg).toString('base64')}` : ''}`
+  );
   pauseInteractions();
   try {
     const results = await prompts(questions, {
@@ -58,7 +78,12 @@ export default async function prompt(
     return results;
   } finally {
     resumeInteractions();
+    writeProgramStatus('state=clear');
   }
+}
+
+function writeProgramStatus(body: string) {
+  process.stdout.write(`\x1b]7501;${body}\x1b\\`);
 }
 
 /**
