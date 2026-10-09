@@ -120,6 +120,7 @@ The config plugin properties, such as `enableFTS`, only apply to Android and iOS
 ```sh Terminal
 git clone https://github.com/expo/wa-sqlite.git
 cd wa-sqlite
+make deps
 make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"
 ```
 
