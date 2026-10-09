@@ -13,6 +13,7 @@ import {
   getTestPath,
   projectRoot,
   readJson,
+  runScriptPassing,
 } from './utils';
 
 /** Absolute path to the local expo-module-template package */
@@ -347,6 +348,23 @@ describe('non-interactive module creation', () => {
 
     // The module should be built (TypeScript compiled)
     expectFileExists(projectName, 'build');
+
+    // The template's lint and test setup should work with its dependencies
+    await runScriptPassing(projectName, 'lint');
+    fs.mkdirSync(getTestPath(projectName, 'src/__tests__'));
+    fs.writeFileSync(
+      getTestPath(projectName, 'src/__tests__/smoke-test.ts'),
+      [
+        `import { Platform } from 'react-native';`,
+        ``,
+        `it('runs with the jest-expo preset', () => {`,
+        `  expect(Platform.OS).toBe('ios');`,
+        `});`,
+        ``,
+      ].join('\n')
+    );
+    const testResult = await runScriptPassing(projectName, 'test');
+    expect(testResult.stderr).toMatch(/Tests:\s+1 passed/);
   });
 
   it('warns when target directory is not empty but continues', async () => {
