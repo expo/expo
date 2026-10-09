@@ -1,3 +1,4 @@
+import { AndroidConfig } from '@expo/config-plugins';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -20,8 +21,9 @@ import { resolveOptionsAsync } from './resolveOptions';
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // Guess the mode from the selected native build variant.
-  const isProduction = !['debug', 'debugoptimized'].includes(
-    (options.variant ?? 'debug').toLowerCase()
+  const variant = (options.variant ?? 'debug').toLowerCase();
+  const isProduction = !(await getDebuggableVariantsAsync(projectRoot)).some(
+    (debuggableVariant) => debuggableVariant.toLowerCase() === variant
   );
   const mode = isProduction ? 'production' : 'development';
   loadEnvFiles(projectRoot, {
@@ -168,4 +170,15 @@ async function installAppAsync(androidProjectRoot: string, props: ResolvedOption
     appName: props.appName ?? 'app',
     port: props.port,
   });
+}
+
+async function getDebuggableVariantsAsync(projectRoot: string): Promise<string[]> {
+  try {
+    const { contents } = await AndroidConfig.Paths.getAppBuildGradleAsync(projectRoot);
+    const list = contents.match(/^\s*debuggableVariants\s*=\s*\[([^\]]*)\]/m)?.[1];
+    if (list) {
+      return list.match(/[^\s,"']+/g) ?? [];
+    }
+  } catch {}
+  return ['debug', 'debugOptimized'];
 }
