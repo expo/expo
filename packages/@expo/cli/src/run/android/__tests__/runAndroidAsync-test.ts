@@ -95,6 +95,11 @@ describe(runAndroidAsync, () => {
   it.each([
     { debuggableVariants: '["freeDebug"]', variant: 'freeDebug', mode: 'development' },
     { debuggableVariants: '[]', variant: 'debug', mode: 'production' },
+    {
+      debuggableVariants: '[\n  "freeDebug", // not release\n]',
+      variant: 'release',
+      mode: 'production',
+    },
   ])(
     'uses $mode mode for $variant with debuggableVariants = $debuggableVariants',
     async ({ debuggableVariants, variant, mode }) => {
