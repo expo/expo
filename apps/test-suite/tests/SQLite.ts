@@ -1263,7 +1263,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
     });
 
     for (const useNewConnection of [false, true]) {
-      nativeIt(
+      it(
         'can clean up and retry a failed close (useNewConnection=' + useNewConnection + ')',
         async () => {
           const options = {
@@ -1312,7 +1312,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       );
     }
 
-    nativeIt('can clean up and retry a failed synchronous close', () => {
+    it('can clean up and retry a failed synchronous close', () => {
       const db = SQLite.openDatabaseSync(':memory:', {
         useNewConnection: true,
         finalizeUnusedStatementsBeforeClosing: false,
