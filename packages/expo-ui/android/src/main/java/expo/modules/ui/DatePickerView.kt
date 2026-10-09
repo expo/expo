@@ -4,6 +4,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
@@ -158,6 +159,8 @@ data class DateTimePickerProps(
   val variant: Variant = Variant.PICKER,
   val displayedComponents: DisplayedComponents = DisplayedComponents.DATE,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val is24Hour: Boolean = true,
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
@@ -170,6 +173,8 @@ data class DatePickerDialogProps(
   val initialDate: Long? = null,
   val variant: Variant = Variant.PICKER,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
@@ -388,7 +393,7 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
     // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
     CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-      DatePicker(
+      MaterialDatePicker(
         modifier = if (displayMode == DisplayMode.Picker) {
           Modifier.wrapContentHeight(align = Alignment.Top, unbounded = true)
         } else {
@@ -396,6 +401,8 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
         },
         state = state,
         showModeToggle = props.showVariantToggle,
+        showTitle = props.showTitle,
+        showHeadline = props.showHeadline,
         colors = colors
       )
     }
@@ -499,12 +506,38 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
   // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
   // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
   CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-    DatePicker(
+    MaterialDatePicker(
       modifier = modifier,
       state = state,
       showModeToggle = props.showVariantToggle,
+      showTitle = props.showTitle,
+      showHeadline = props.showHeadline,
       colors = colors
     )
+  }
+}
+
+// Material 3 hides the title or headline when its slot is `null`. Its default slots pad themselves
+// with private constants, so branch on the call instead of copying them, keeping the defaults exact.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MaterialDatePicker(
+  modifier: Modifier = Modifier,
+  state: DatePickerState,
+  showModeToggle: Boolean,
+  showTitle: Boolean,
+  showHeadline: Boolean,
+  colors: DatePickerColors
+) {
+  when {
+    showTitle && showHeadline ->
+      DatePicker(state = state, modifier = modifier, colors = colors, showModeToggle = showModeToggle)
+    showTitle ->
+      DatePicker(state = state, modifier = modifier, colors = colors, headline = null, showModeToggle = showModeToggle)
+    showHeadline ->
+      DatePicker(state = state, modifier = modifier, colors = colors, title = null, showModeToggle = showModeToggle)
+    else ->
+      DatePicker(state = state, modifier = modifier, colors = colors, title = null, headline = null, showModeToggle = showModeToggle)
   }
 }
 

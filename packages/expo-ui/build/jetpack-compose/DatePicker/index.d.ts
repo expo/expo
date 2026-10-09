@@ -123,6 +123,20 @@ export interface DateTimePickerProps {
      */
     showVariantToggle?: boolean;
     /**
+     * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+     * `null` to Material 3's `title` slot. This prop has no effect when `displayedComponents` is
+     * `'hourAndMinute'`.
+     * @default true
+     */
+    showTitle?: boolean;
+    /**
+     * Whether the picker shows its headline, which displays the current selection. When `false`,
+     * the picker passes `null` to Material 3's `headline` slot. This prop has no effect when
+     * `displayedComponents` is `'hourAndMinute'`.
+     * @default true
+     */
+    showHeadline?: boolean;
+    /**
      * The components that the picker should display.
      * On Android, you can have a picker that selects just the date or just the time.
      * `dateAndTime` is only available on iOS and will result in a date picker on Android.
@@ -192,6 +206,18 @@ export interface DateRangePickerProps {
      */
     showVariantToggle?: boolean;
     /**
+     * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+     * `null` to Material 3's `title` slot.
+     * @default true
+     */
+    showTitle?: boolean;
+    /**
+     * Whether the picker shows its headline, which displays the current selection. When `false`,
+     * the picker passes `null` to Material 3's `headline` slot.
+     * @default true
+     */
+    showHeadline?: boolean;
+    /**
      * The tint color to use on the picker elements.
      */
     color?: ColorValue;
@@ -224,6 +250,18 @@ export interface DatePickerDialogProps {
     initialDate?: string | null;
     variant?: AndroidVariant;
     showVariantToggle?: boolean;
+    /**
+     * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+     * `null` to Material 3's `title` slot.
+     * @default true
+     */
+    showTitle?: boolean;
+    /**
+     * Whether the picker shows its headline, which displays the current selection. When `false`,
+     * the picker passes `null` to Material 3's `headline` slot.
+     * @default true
+     */
+    showHeadline?: boolean;
     confirmButtonLabel?: string;
     dismissButtonLabel?: string;
     color?: ColorValue;
