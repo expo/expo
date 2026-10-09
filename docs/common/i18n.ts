@@ -50,7 +50,6 @@ const JA_TRANSLATED_PAGES: Record<EnglishCanonicalPath, JapaneseSidebarTitle> = 
   '/tutorial/create-a-modal': 'モーダルを作成する',
   '/tutorial/gestures': 'ジェスチャーを追加する',
   '/tutorial/screenshot': 'スクリーンショットを撮影する',
-  '/tutorial/platform-differences': 'プラットフォームの違いに対応する',
   '/tutorial/configuration': 'ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する',
   '/tutorial/follow-up': '学習リソース',
   '/tutorial/build-with-ai/introduction': 'はじめに',

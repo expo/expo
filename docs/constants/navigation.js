@@ -694,7 +694,6 @@ export const learn = [
       makePage('tutorial/create-a-modal.mdx'),
       makePage('tutorial/gestures.mdx'),
       makePage('tutorial/screenshot.mdx'),
-      makePage('tutorial/platform-differences.mdx'),
       makePage('tutorial/configuration.mdx'),
       makePage('tutorial/follow-up.mdx'),
     ],
