@@ -381,6 +381,38 @@ export type LocationHeadingObject = {
    * - `0`: > 50 degrees
    */
   accuracy: number;
+  /**
+   * Unbucketed heading accuracy, unlike the `accuracy` field above.
+   *
+   * On iOS it is `CLHeading.headingAccuracy`, the accuracy of the heading in
+   * degrees. A negative value means the heading is invalid.
+   *
+   * On Android it is the raw sensor accuracy status, not degrees. It is one of
+   * the `SensorManager` status codes: `3` high, `2` medium, `1` low,
+   * `0` unreliable and `-1` no contact.
+   */
+  headingAccuracy?: number;
+};
+
+// @needsAudit
+/**
+ * Type representing options object that can be passed to `watchHeadingAsync`.
+ */
+export type LocationHeadingOptions = {
+  /**
+   * Minimum change in heading, in degrees, required to emit an update.
+   *
+   * On iOS it sets `CLLocationManager.headingFilter`. When unset, the system
+   * default of `1` degree applies. Pass `-1` (CoreLocation's
+   * `kCLHeadingFilterNone`) to receive every reading.
+   *
+   * On Android it sets the change threshold that gates each update. When unset,
+   * updates require a change of about `2` degrees. Pass `0` to disable the
+   * threshold, so updates are rate-limited only by a short time interval.
+   *
+   * @default unset (platform default)
+   */
+  headingFilter?: number;
 };
 
 // @needsAudit
