@@ -376,6 +376,7 @@ export abstract class BundlerDevServer {
   /** Stop the running dev server instance. */
   async stopAsync() {
     const stoppedAt = Date.now();
+    const hadInstance = this.instance != null;
     // Reset url creator
     this.urlCreator = undefined;
     // Keep `resolvedPort`: the manifest middleware still builds URLs until the server closes below.
@@ -425,7 +426,9 @@ export abstract class BundlerDevServer {
       }
     );
 
-    event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
+    if (hadInstance) {
+      event('stop', { bundler: this.name, ms: Date.now() - stoppedAt });
+    }
   }
 
   // TODO(@kitten): This should be created top-down rather than bottom up from implementors
