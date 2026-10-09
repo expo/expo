@@ -1,3 +1,5 @@
+import { Platform, UnavailabilityError } from 'expo';
+import type { PermissionResponse } from 'expo';
 import { createPermissionHook } from 'expo-modules-core';
 
 import { NativeLocationModuleNext } from '../native';
@@ -57,6 +59,34 @@ export async function requestBackgroundPermissions(
 }
 
 /**
+ * Checks the user's permission for posting the notification shown by the location foreground
+ * service. The service runs without it — only its notification stays hidden.
+ * @return A promise that fulfills with an object of type `PermissionResponse`.
+ * @platform android
+ */
+export async function getNotificationPermissions(): Promise<PermissionResponse> {
+  if (Platform.OS !== 'android') {
+    throw new UnavailabilityError('expo-location', 'getNotificationPermissions');
+  }
+
+  return NativeLocationModuleNext.getNotificationPermissions();
+}
+
+/**
+ * Asks the user to grant the permission for posting the notification shown by the location
+ * foreground service. The service runs without it — only its notification stays hidden.
+ * @return A promise that fulfills with an object of type `PermissionResponse`.
+ * @platform android
+ */
+export async function requestNotificationPermissions(): Promise<PermissionResponse> {
+  if (Platform.OS !== 'android') {
+    throw new UnavailabilityError('expo-location', 'requestNotificationPermissions');
+  }
+
+  return NativeLocationModuleNext.requestNotificationPermissions();
+}
+
+/** 
  * Checks or requests the foreground location permission from a component.
  * See [Request the precise location](#request-the-precise-location).
  *
@@ -94,4 +124,14 @@ export const useForegroundLocationPermissions = createPermissionHook({
 export const useBackgroundLocationPermissions = createPermissionHook({
   getMethod: getBackgroundPermissions,
   requestMethod: requestBackgroundPermissions,
+});
+
+/**
+ * Check or request the permission for the notification shown by the location foreground service.
+ * This uses both `getNotificationPermissions` and `requestNotificationPermissions`.
+ * @platform android
+ */
+export const useNotificationPermissions = createPermissionHook({
+  getMethod: getNotificationPermissions,
+  requestMethod: requestNotificationPermissions,
 });

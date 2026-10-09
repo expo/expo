@@ -1,6 +1,6 @@
 import { NativeLocationUpdatesHandle } from '../native';
 import type { NativeLocationUpdatesHandleClass } from '../native';
-import type { LocationProfile, LocationTaskOptions, Position } from '../types';
+import type { BackgroundTaskStatus, LocationProfile, LocationTaskOptions, Position } from '../types';
 
 const DEFAULT_LOCATION_TASK_NAME = 'expo-location-background-location';
 
@@ -62,6 +62,16 @@ export class LocationUpdatesHandle {
    */
   hasStarted(): Promise<boolean> {
     return this.nativeHandle.hasStarted();
+  }
+
+  /**
+   * Reads the state of the task. The state lives in the app process, so it is reset whenever the
+   * process is recreated, even while the task stays registered with the system.
+   *
+   * @platform android
+   */
+  status(): BackgroundTaskStatus {
+    return this.nativeHandle.status();
   }
 }
 
