@@ -227,20 +227,6 @@ export class MetroTerminalReporter extends TerminalReporter {
         }
       }
 
-      if (phase === 'done') {
-        const buildID = progress.bundleDetails.buildID;
-        const span = buildID != null ? this.#bundleSpans.get(buildID) : undefined;
-        if (span) {
-          this.#bundleSpans.delete(buildID!);
-          span.end('bundling:done', { ...span.start, total: progress.totalFileCount });
-        } else {
-          event('bundling:done', {
-            id: buildID ?? null,
-            total: progress.totalFileCount,
-          });
-        }
-      }
-
       // iOS Bundled 150ms
       const plural = progress.totalFileCount === 1 ? '' : 's';
       return (
@@ -504,6 +490,14 @@ export class MetroTerminalReporter extends TerminalReporter {
             total: evt.totalFileCount,
             current: evt.transformedFileCount,
           });
+        }
+        return;
+      }
+      case 'bundle_build_done': {
+        const span = this.#bundleSpans.get(evt.buildID);
+        if (span) {
+          this.#bundleSpans.delete(evt.buildID);
+          span.end('bundling:done', { ...span.start, total: span.total });
         }
         return;
       }

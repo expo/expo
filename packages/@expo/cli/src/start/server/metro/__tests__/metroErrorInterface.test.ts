@@ -281,6 +281,8 @@ describe('logMetroError', () => {
   it.each([
     ['bundle', true],
     ['bundle', false],
+    ['map', true],
+    ['map', false],
   ] as const)('preserves %s lifecycle events with interactive=%s', (bundleType, isInteractive) => {
     const event = events('metro');
     const span = jest.spyOn(event, 'span').mockReturnValue(event);
