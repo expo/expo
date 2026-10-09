@@ -207,6 +207,12 @@ describe('startHeadlessAsync', () => {
       host: 'localhost',
     });
     expect(devServer.getUrlCreator().constructUrl({})).toBe('http://100.100.1.100:3000');
+    await devServer.stopAsync();
+    expect(events('devserver')).not.toHaveBeenCalledWith('stop', expect.anything());
+
+    await devServer.startAsync({ location: {}, port: 3000 });
+    await devServer.stopAsync();
+    expect(events('devserver')).toHaveBeenCalledWith('stop', expect.anything());
   });
 });
 
