@@ -72,11 +72,15 @@ describeWeb('Configuring web', () => {
     expect(worker.postMessage.mock.calls[0][0].data.wasmURL).toBeUndefined();
   });
 
-  it('should throw when called after a database is opened', async () => {
+  it('should allow the same options after a database is opened', async () => {
+    SQLite.configureWeb({ wasmURL: '/sqlite/wa-sqlite-fts.wasm' });
     await startWorkerAsync();
-    expect(() => SQLite.configureWeb({ wasmURL: '/late.wasm' })).toThrow(
-      /before opening any database/
-    );
+    expect(() => SQLite.configureWeb({ wasmURL: '/sqlite/wa-sqlite-fts.wasm' })).not.toThrow();
+  });
+
+  it('should throw when the wasm url changes after a database is opened', async () => {
+    await startWorkerAsync();
+    expect(() => SQLite.configureWeb({ wasmURL: '/late.wasm' })).toThrow(/reload/);
   });
 });
 

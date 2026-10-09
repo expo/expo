@@ -433,9 +433,11 @@ export class SQLiteModule extends NativeModule {
 
   configureWeb(options: SQLiteWebOptions): void {
     if (worker != null) {
+      // Fast Refresh runs the same call again after a database is open.
+      if (options.wasmURL === webOptions.wasmURL) return;
       throw new Error(
-        'Cannot configure SQLite for web because a database has already been opened, and the web worker loads SQLite only once. ' +
-          'Call `configureWeb()` before opening any database, for example at the top of your app entry file.'
+        'Cannot change the SQLite WebAssembly URL because a database has already been opened, and the web worker loads SQLite only once. ' +
+          'Call `configureWeb()` before opening any database, and reload the app after you change `wasmURL`.'
       );
     }
     webOptions = { ...options };

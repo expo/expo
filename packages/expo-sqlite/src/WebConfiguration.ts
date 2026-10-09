@@ -21,7 +21,7 @@ export interface SQLiteWebOptions {
  * It has no effect on Android, iOS, and server rendering.
  *
  * Call it before opening any database.
- * It throws after a database is opened, because the web worker loads SQLite only once.
+ * It throws if `wasmURL` changes after a database is opened, because the web worker loads SQLite only once.
  *
  * @example
  * ```ts
