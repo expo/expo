@@ -64,6 +64,8 @@ UUID means universally unique identifier.
 
 The application source options install and launch the app for every session type, including `appium`.
 
+The REST API ignores fields that it does not list here. Build fingerprint matching, local egress, and network capture are available only through EAS CLI: `--build-fingerprint`, `--egress local`, and `--network-capture`.
+
 A `web-preview-only` session provides the browser preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a browser preview. Sessions created before EAS removed `serve-sim` still return `"type": "serve-sim"`.
 
 ### Example
