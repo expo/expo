@@ -15,6 +15,7 @@ import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
 
 class DevLauncherDevSupportManagerFactory : DevSupportManagerFactory {
+  @Deprecated("Use the other create() method with useDevSupport parameter for New Architecture. This method will be removed in a future release.", replaceWith = ReplaceWith("create(applicationContext, reactInstanceManagerHelper, packagerPathForJSBundleName, enableOnCreate, redBoxHandler, devBundleDownloadListener, minNumShakes, customPackagerCommandHandlers, surfaceDelegateFactory, devLoadingViewManager, pausedInDebuggerOverlayManager)"))
   override fun create(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
