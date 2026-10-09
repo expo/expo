@@ -184,33 +184,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-menu/UITests (58.0.10):
-    - ExpoModulesTestCore
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React
-    - React-bridging
-    - React-Core
-    - React-Core-prebuilt
-    - React-CoreModules
-    - React-cxxstableapi
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactAppDependencyProvider
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
   - Expo/Tests (58.0.6):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -2695,7 +2668,6 @@ DEPENDENCIES:
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
-  - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - Expo/Tests (from `../../../packages/expo`)
   - ExpoApplication (from `../../../packages/expo-application/ios`)
   - ExpoApplication/Tests (from `../../../packages/expo-application/ios`)
@@ -3234,6 +3206,6 @@ SPEC CHECKSUMS:
   UMAppLoader: 813e4d172a12484f5bb149d9e99b1e7c11ae0b0c
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
-PODFILE CHECKSUM: c1fa3c47ac8104c9b87b9c45bbdfecedc9b1ae15
+PODFILE CHECKSUM: eb36b15506d199a0436a7432835ec9d30f516b6e
 
 COCOAPODS: 1.16.2
