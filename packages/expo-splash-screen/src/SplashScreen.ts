@@ -26,7 +26,7 @@ export async function preventAutoHideAsync(): Promise<boolean> {
 
 /**
  *
- * Configures the splashscreens default animation behavior.
+ * Configures the splash screen's animation and reload behavior.
  *
  */
 export function setOptions(options: SplashScreenOptions): void {}
