@@ -1,3 +1,7 @@
+import { events } from '2g';
+import resolveFrom from 'resolve-from';
+
+import { Log } from '../../../../log';
 import { LogBoxLog } from '../log-box/LogBoxLog';
 import {
   attachImportStackToRootMessage,
@@ -5,9 +9,20 @@ import {
   likelyContainsCodeFrame,
   dropStackIfContainsCodeFrame,
   logMetroError,
+  logMetroErrorAsync,
+  logMetroErrorWithStack,
+  getErrorOverlayHtmlAsync,
 } from '../metroErrorInterface';
 
 jest.mock('../../../../log');
+jest.mock('../../getStaticRenderFunctions', () => ({
+  createMetroEndpointAsync: jest.fn().mockResolvedValue('/_expo/error.bundle'),
+}));
+jest.mock('2g', () => {
+  const actual = jest.requireActual('2g');
+  const event = Object.assign(jest.fn(), actual.events('metro'));
+  return { ...actual, events: Object.assign(() => event, actual.events) };
+});
 jest.mock('../log-box/LogBoxLog', () => ({
   LogBoxLog: jest.fn(() => ({
     symbolicate: (_type: string, callback: () => void) => callback(),
@@ -260,6 +275,18 @@ describe('dropStackIfContainsCodeFrame', () => {
 });
 
 describe('logMetroError', () => {
+  it('does not repeat a formatted error but still generates its overlay', async () => {
+    jest.mocked(resolveFrom).mockReturnValueOnce('/app/node_modules/expo-router/_error.js');
+    const error = new Error('render failed');
+    await logMetroErrorWithStack('/app', { error, stack: [] });
+    await logMetroErrorAsync({ projectRoot: '/app', error });
+    const html = await getErrorOverlayHtmlAsync({ projectRoot: '/app', routerRoot: 'app', error });
+    expect(events('metro')).toHaveBeenCalledTimes(1);
+    expect(Log.log).toHaveBeenCalledTimes(4);
+    expect(html).toContain('_expo-static-error');
+    expect(html).toContain('/_expo/error.bundle');
+  });
+
   it('symbolicates server bundle frames inside node_modules', async () => {
     const error = new Error('fake-lib: failed during module init');
     error.stack = [
