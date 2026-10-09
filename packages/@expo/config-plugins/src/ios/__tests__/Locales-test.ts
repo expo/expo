@@ -167,15 +167,12 @@ describe('e2e: iOS locales', () => {
   it('skips non-string values instead of writing "[object Object]"', async () => {
     let project = getPbxproj(projectRoot);
 
-    project = await setLocalesAsync(
-      { locales: { pt: 'lang/pt.json' } },
-      { project, projectRoot }
-    );
+    project = await setLocalesAsync({ locales: { pt: 'lang/pt.json' } }, { project, projectRoot });
     fs.writeFileSync(project.filepath, project.writeSync());
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     const infoPlist = after['ios/testproject/Supporting/pt.lproj/InfoPlist.strings'];
-    expect(infoPlist).toBe('NSCameraUsageDescription = "pt-camera";');
+    expect(infoPlist).toBe('"NSCameraUsageDescription" = "pt-camera";');
     expect(infoPlist).not.toMatch(/object Object/);
 
     expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
