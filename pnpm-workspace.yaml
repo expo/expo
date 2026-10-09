@@ -26,7 +26,7 @@ minimumReleaseAgeExclude:
   - '@expo/*'
   - '@noxcturnal/*'
   - '@react-native/*'
-  - 'react-native'
+  - react-native
   - babel-plugin-react-native-web
   - react-native-web
   - expo-modules-macros
@@ -35,6 +35,7 @@ minimumReleaseAgeExclude:
   - '@changesets/apply-release-plan@8.1.1'
   - '@changesets/cli@3.0.3'
   - '@changesets/config@4.0.1'
+  - 2g@1.0.0
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
