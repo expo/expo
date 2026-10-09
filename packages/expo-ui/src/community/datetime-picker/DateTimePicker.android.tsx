@@ -129,6 +129,10 @@ export function DateTimePicker(props: DateTimePickerProps) {
         color={accentColor}
         onDateSelected={onDateSelected}
         showVariantToggle={false}
+        // Match iOS, where the inline picker has no label: hide Material 3's "Select date" title
+        // and its selected-date headline.
+        showTitle={false}
+        showHeadline={false}
         {...(testID ? { testID } : undefined)}
       />
     </Host>

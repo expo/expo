@@ -120,6 +120,19 @@ export default function DatePickerScreen() {
           </Host>
         </Section>
 
+        <Section title="Without title and headline">
+          <Host matchContents={{ vertical: true }}>
+            <DateTimePicker
+              onDateSelected={(date) => setSelectedDate(date)}
+              displayedComponents="date"
+              initialDate={selectedDate.toISOString()}
+              showVariantToggle={false}
+              showTitle={false}
+              showHeadline={false}
+            />
+          </Host>
+        </Section>
+
         <Section title="DatePickerDialog">
           <Button title="Show Date Dialog" onPress={() => setShowDateDialog(true)} />
           {showDateDialog && (
