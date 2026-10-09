@@ -66,6 +66,7 @@
     "expo-constants": "workspace:*",
     "expo-contacts": "workspace:*",
     "expo-crypto": "workspace:*",
+    "expo-dev-menu": "workspace:*",
     "expo-device": "workspace:*",
     "expo-document-picker": "workspace:*",
     "expo-file-system": "workspace:*",
