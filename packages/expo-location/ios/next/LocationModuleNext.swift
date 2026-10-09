@@ -28,6 +28,10 @@ public final class LocationModuleNext: Module {
       try permissions.requestBackgroundPermissions(options: options ?? PermissionsRequestOptions(), promise)
     }
 
+    Function("hasLocationServicesEnabled") { () -> Bool in
+      CLLocationManager.locationServicesEnabled()
+    }
+
     AsyncFunction("getPosition") { (options: GetPositionOptions?) -> Position? in
       guard CLLocationManager.locationServicesEnabled() else {
         throw LocationServicesDisabledGlobally()
