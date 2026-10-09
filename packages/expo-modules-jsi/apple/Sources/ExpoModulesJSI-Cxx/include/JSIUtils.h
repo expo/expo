@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 
+#include <cstddef>
 #include <new>
 #if __APPLE__
 #include <TargetConditionals.h>
@@ -57,7 +58,8 @@ inline void setValueAtIndex(jsi::IRuntime &runtime, const jsi::Array &array, siz
   array.setValueAtIndex(runtime, index, value);
 }
 
-inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, long length) {
+// `ptrdiff_t` rather than `long`, which is 32 bits wide on Windows: Swift imports it as `Int` everywhere.
+inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, ptrdiff_t length) {
   auto oldLength = (int)array.size(runtime);
   auto newLength = (int)length;
 
