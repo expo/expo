@@ -485,6 +485,8 @@ export class MetroTerminalReporter extends TerminalReporter {
         });
         return;
       }
+      case 'resolver_warning':
+        return event('server_log', { level: 'warn', data: evt.message });
       case 'unstable_server_log':
         return event('server_log', {
           level: evt.level ?? null,
