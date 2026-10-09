@@ -36,7 +36,8 @@ class PositionWatchStatus(
   @Field val isHandleAlive: Boolean = false,
   @Field val isStarted: Boolean = false,
   @Field val isPaused: Boolean = false,
-  @Field val areUpdatesAllowed: Boolean = true
+  @Field val areUpdatesAllowed: Boolean = true,
+  @Field val isInForeground: Boolean = true
 ) : Record
 
 class PausableWatchSession(
@@ -138,14 +139,15 @@ class PausableWatchSession(
   }
 
   @Synchronized
-  fun status(): PositionWatchStatus {
+  fun status(isInForeground: Boolean): PositionWatchStatus {
     return PositionWatchStatus(
       isSubscribed = session.isSubscribed(),
       canDeliverUpdates = session.canDeliverUpdates(),
       isHandleAlive = !isReleased,
       isStarted = isStarted,
       isPaused = isPaused,
-      areUpdatesAllowed = areUpdatesAllowed
+      areUpdatesAllowed = areUpdatesAllowed,
+      isInForeground = isInForeground
     )
   }
 }

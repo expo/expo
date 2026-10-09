@@ -283,7 +283,7 @@ class LocationModuleNext : Module() {
       }
 
       Function("status") { locationWatchHandle: PositionWatchHandle ->
-        locationWatchHandle.session.status()
+        locationWatchHandle.session.status(isForegrounded)
       }
     }
 
