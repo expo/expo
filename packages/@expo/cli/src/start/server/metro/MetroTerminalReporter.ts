@@ -84,6 +84,7 @@ declare module '2g' {
     };
     'metro:client_log': {
       level: ClientLogLevel | null;
+      mode: string | null;
       data: unknown[] | null;
     };
     'metro:hmr_client_error': {
@@ -446,14 +447,14 @@ export class MetroTerminalReporter extends TerminalReporter {
               ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
               : symbolicated;
 
-          event('client_log', { level, data: symbolicated });
+          event('client_log', { level, mode: evt.mode ?? null, data: symbolicated });
           logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...filtered);
         })();
         return;
       }
     }
 
-    event('client_log', { level, data });
+    event('client_log', { level, mode: evt.mode ?? null, data });
     // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
     logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...data);
   }
