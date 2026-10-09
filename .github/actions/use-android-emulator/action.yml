@@ -33,6 +33,84 @@ runs:
         sudo udevadm control --reload-rules
         sudo udevadm trigger --name-match=kvm
 
+    # An AVD with a boot snapshot is cached, following the AVD snapshot caching section of the
+    # android-emulator-runner v2.38.0 README. The cache is saved only on `main` and `sdk-*`.
+    - name: 🔍️ Check if caches are read-only
+      id: cache-policy
+      shell: bash
+      run: echo "read-only=${{ github.ref != 'refs/heads/main' && !contains(github.ref, 'sdk-') }}" >> $GITHUB_OUTPUT
+
+    # The key has the hash of this file, because a snapshot loads only with the AVD settings that created it.
+    - name: ♻️ Restore AVD cache
+      id: avd-cache
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-${{ runner.os }}-api-${{ inputs.avd-api }}-${{ inputs.avd-name }}-${{ hashFiles('.github/actions/use-android-emulator/action.yml') }}
+
+    # Boots once on a fresh AVD and saves the boot snapshot when the emulator is killed, before any app is installed.
+    # Keep the AVD settings and emulator options the same as in the emulator steps below (except `-no-snapshot-save`),
+    # because a snapshot only loads with the hardware configuration that created it.
+    - name: '💿 Create AVD and generate snapshot for caching'
+      id: avd-snapshot
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      continue-on-error: true
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+      env:
+        # The emulator writes the snapshot while it shuts down. Give it more than the default 20 seconds before it is force-killed.
+        ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: '120'
+      with:
+        api-level: ${{ inputs.avd-api }}
+        avd-name: ${{ inputs.avd-name }}
+        arch: x86_64
+        disable-animations: false
+        target: google_apis
+        profile: pixel_7_pro
+        disk-size: 4G
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        script: echo "Generated AVD snapshot for caching."
+
+    - name: 🔍️ Check AVD snapshot
+      id: avd-snapshot-check
+      shell: bash
+      env:
+        AVD_NAME: ${{ inputs.avd-name }}
+        SNAPSHOT_OUTCOME: ${{ steps.avd-snapshot.outcome }}
+      run: |
+        # `adb emu kill` only asks the emulator to quit, so it can still be writing the snapshot.
+        # Wait for it to exit before the AVD is cached or booted again.
+        for _ in $(seq 1 150); do
+          pgrep qemu-system > /dev/null || break
+          sleep 1
+        done
+        AVD_DIR="$HOME/.android/avd/$AVD_NAME.avd"
+        if pgrep qemu-system > /dev/null; then
+          echo "::warning::The emulator that generated the AVD snapshot didn't exit within 150 seconds, so the snapshot can be incomplete. The emulator steps create a new AVD and cold-boot instead."
+          pkill -9 qemu-system || true
+        elif [ "$SNAPSHOT_OUTCOME" = "failure" ]; then
+          echo "::warning::Generating the AVD snapshot failed (see the previous step). The emulator steps create a new AVD and cold-boot instead."
+        elif [ ! -f "$AVD_DIR/snapshots/default_boot/snapshot.pb" ]; then
+          echo "::warning::The AVD in $AVD_DIR has no boot snapshot. The emulator steps create a new AVD and cold-boot instead."
+        else
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        # Remove the unusable AVD, so that it isn't cached and no emulator step boots from it.
+        rm -rf "$AVD_DIR" "$HOME/.android/avd/$AVD_NAME.ini"
+
+    # Saved right after the snapshot is generated, so the cache never contains apps or data from the test script.
+    - name: 💾 Save AVD cache
+      if: steps.cache-policy.outputs.read-only != 'true' && steps.avd-cache.outputs.cache-hit != 'true' && steps.avd-snapshot-check.outputs.ready == 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: ${{ steps.avd-cache.outputs.cache-primary-key }}
+
     # NOTE: When updating any emulator settings, please make sure all the settings are also updated in each retry step.
     # We can't use a loop here, because GitHub Actions doesn't support it yet.
     # When e2e tests fail on one emulator, the next step will retry the whole setup again with the next emulator.
@@ -49,7 +127,9 @@ runs:
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
         disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
         # gpu hw acceleration is not available on GitHub-hosted runners
-        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        # Boot from the clean snapshot, so every attempt starts fresh. Without a usable snapshot, create a new AVD and cold-boot.
+        force-avd-creation: ${{ steps.avd-snapshot-check.outputs.ready != 'true' }}
         script: |
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
@@ -71,7 +151,9 @@ runs:
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
         disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
-        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        # Boot from the clean snapshot, so every attempt starts fresh. Without a usable snapshot, create a new AVD and cold-boot.
+        force-avd-creation: ${{ steps.avd-snapshot-check.outputs.ready != 'true' }}
         script: |
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
@@ -93,7 +175,9 @@ runs:
         target: google_apis
         profile: pixel_7_pro # We use pixel 7 pro for alignment with iPhone. Similar screen sizes mean easier test reuse.
         disk-size: 4G # Reduced disk size to avoid running out of disk space when setting up the emulator
-        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        # Boot from the clean snapshot, so every attempt starts fresh. Without a usable snapshot, create a new AVD and cold-boot.
+        force-avd-creation: ${{ steps.avd-snapshot-check.outputs.ready != 'true' }}
         script: |
           # Try to close SystemUI ANR prompt
           adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
