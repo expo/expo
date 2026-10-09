@@ -147,7 +147,7 @@ internal enum class IntrinsicSizeType(val value: String) : Enumerable {
 
 @OptimizedRecord
 internal data class ComposeWidthParams(
-  @Field val width: Either<Int, IntrinsicSizeType>? = null
+  @Field val width: Either<Double, IntrinsicSizeType>? = null
 ) : Record
 
 @OptimizedRecord
@@ -496,7 +496,7 @@ object ModifierRegistry {
       if (width?.`is`(IntrinsicSizeType::class) == true) {
         Modifier.width(width.second().toComposeIntrinsicSize())
       } else {
-        Modifier.width((width?.first() ?: 0).dp)
+        Modifier.width((width?.first() ?: 0.0).dp)
       }
     }
 
