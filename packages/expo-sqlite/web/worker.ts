@@ -263,7 +263,6 @@ async function closeDatabase(nativeDatabaseId: number) {
   );
   if (!isConnectionShared) {
     await maybeFinalizeAllStatements(sqlite3, dbEntity);
-    // A failed close leaves the connection open, so keep it mapped for cleanup and retry.
     await sqlite3.close(dbEntity.pointer);
   }
   databaseIdMap.delete(nativeDatabaseId);
@@ -757,7 +756,6 @@ async function maybeFinalizeAllStatements(sqlite3: SQLiteAPI, dbEntity: Database
     if (stmtEntity.databasePointer !== dbEntity.pointer) {
       continue;
     }
-    // SQLite destroys the statement even when it returns an error.
     statementIdMap.delete(nativeStatementId);
     const result = await sqlite3.finalize(stmtEntity.pointer);
     if (result !== SQLITE_OK) {
