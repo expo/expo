@@ -4,11 +4,12 @@ import { AppRegistry } from 'react-native';
 
 import ExpoTaskManager from './ExpoTaskManager';
 
-// Register a no-op headless task so that HeadlessJsTaskContext.startTask()
-// doesn't log a warning. On Android, TaskService registers a headless task
-// in native code to keep JS timers alive during background task execution.
+// On Android, TaskService starts this headless task in native code to keep JS timers
+// alive during background task execution, and finishes it natively once the task is done.
+// The JS side must never settle: a resolved promise makes AppRegistry call
+// notifyTaskFinished, which ends the task right away and pauses timers again.
 if (Platform.OS === 'android') {
-  AppRegistry.registerHeadlessTask('expo-task-manager', () => async () => {});
+  AppRegistry.registerHeadlessTask('expo-task-manager', () => () => new Promise(() => {}));
 }
 
 // @needsAudit @docsMissing
