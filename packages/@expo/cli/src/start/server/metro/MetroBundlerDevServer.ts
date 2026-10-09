@@ -2287,11 +2287,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         options
       );
 
-      this.metro._reporter.update({
-        buildID: getBuildID(buildNumber),
-        type: 'bundle_build_done',
-      });
-
       bundlePerfLogger?.point('serializingBundle_end');
 
       let bundleCode: string | null = null;
@@ -2312,7 +2307,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const bundleCode = artifacts.find((asset) => asset.type === 'js');
           const bundleMap = artifacts.find((asset) => asset.type === 'map')?.source ?? '';
 
-          return {
+          const result = {
             numModifiedFiles: delta.reset
               ? delta.added.size + revision.prepend.length
               : delta.added.size + delta.modified.size + delta.deleted.size,
@@ -2323,6 +2318,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             artifacts,
             assets,
           };
+          this.metro._reporter.update({
+            buildID: getBuildID(buildNumber),
+            type: 'bundle_build_done',
+          });
+          return result;
         } catch (error: any) {
           throw new Error(
             'Serializer did not return expected format. The project copy of `expo/metro-config` may be out of date. Error: ' +
@@ -2357,7 +2357,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         bundleMap = bundle.map;
       }
 
-      return {
+      const result = {
         numModifiedFiles: delta.reset
           ? delta.added.size + revision.prepend.length
           : delta.added.size + delta.modified.size + delta.deleted.size,
@@ -2366,6 +2366,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         bundle: bundleCode,
         map: bundleMap,
       };
+      this.metro._reporter.update({
+        buildID: getBuildID(buildNumber),
+        type: 'bundle_build_done',
+      });
+      return result;
     } catch (error: any) {
       // Mark the error so we know how to format and return it later.
       if (error) {
