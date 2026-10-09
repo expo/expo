@@ -177,7 +177,7 @@ async function getDebuggableVariantsAsync(projectRoot: string): Promise<string[]
     const { contents } = await AndroidConfig.Paths.getAppBuildGradleAsync(projectRoot);
     const list = contents.match(/^\s*debuggableVariants\s*=\s*\[([^\]]*)\]/m)?.[1];
     if (list !== undefined) {
-      return list.match(/[^\s,"']+/g) ?? [];
+      return [...list.matchAll(/["']([^"']+)["']/g)].map((match) => match[1]!);
     }
   } catch {}
   return ['debug', 'debugOptimized'];
