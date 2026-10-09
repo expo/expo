@@ -1,8 +1,10 @@
 package expo.modules.location.next
 
 import android.Manifest
+import android.content.Context
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
+import androidx.core.app.NotificationManagerCompat
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
@@ -59,6 +61,52 @@ internal suspend fun Permissions.requestBackgroundPermissions() {
   requestPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
 }
 
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.TIRAMISU)
+private fun supportsNotificationPermission(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.P)
+private fun supportsForegroundServicePermission(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+
+@ChecksSdkIntAtLeast(api = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+private fun supportsForegroundServiceTypePermission(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+
+internal suspend fun Permissions.requestNotificationPermissions() {
+  if (!supportsNotificationPermission()) {
+    return
+  }
+
+  if (!isPermissionPresentInManifest(Manifest.permission.POST_NOTIFICATIONS)) {
+    throw NoPermissionInManifestException("POST_NOTIFICATIONS")
+  }
+
+  requestPermissions(Manifest.permission.POST_NOTIFICATIONS)
+}
+
+internal suspend fun Permissions.getNotificationPermissions(context: Context): NotificationPermissionResponse {
+  if (!supportsNotificationPermission()) {
+    val areNotificationsEnabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+    val status = if (areNotificationsEnabled) {
+      LocationPermissionStatus.GRANTED
+    } else {
+      LocationPermissionStatus.DENIED
+    }
+    return NotificationPermissionResponse(
+      status = status,
+      granted = areNotificationsEnabled,
+      canAskAgain = areNotificationsEnabled
+    )
+  }
+
+  val permission = queryPermissions(Manifest.permission.POST_NOTIFICATIONS)
+    .responseFor(Manifest.permission.POST_NOTIFICATIONS)
+
+  return NotificationPermissionResponse(
+    status = LocationPermissionStatus.fromString(permission.status.status),
+    granted = permission.status == PermissionsStatus.GRANTED,
+    canAskAgain = permission.canAskAgain
+  )
+}
+
 internal suspend fun Permissions.requestForegroundPermissions(options: RequestPermissionsOptions?) {
   val permissions = when (options?.accuracy ?: LocationAccuracyOption.FULL) {
     LocationAccuracyOption.FULL -> FOREGROUND_PERMISSIONS
@@ -110,6 +158,20 @@ internal fun Permissions.ensureForegroundPermissions() {
     throw ForegroundLocationPermissionsNotGrantedException()
   }
 }
+
+internal fun Permissions.ensureForegroundServicePermissions() {
+  ensureForegroundPermissions()
+
+  if (supportsForegroundServicePermission() && !isPermissionPresentInManifest(Manifest.permission.FOREGROUND_SERVICE)) {
+    throw NoPermissionInManifestException("FOREGROUND_SERVICE")
+  }
+  if (supportsForegroundServiceTypePermission() && !isPermissionPresentInManifest(Manifest.permission.FOREGROUND_SERVICE_LOCATION)) {
+    throw NoPermissionInManifestException("FOREGROUND_SERVICE_LOCATION")
+  }
+}
+
+internal fun Permissions.hasNotificationPermission(): Boolean =
+  !supportsNotificationPermission() || hasGrantedPermissions(Manifest.permission.POST_NOTIFICATIONS)
 
 internal fun Permissions.ensureBackgroundPermissions() {
   ensureForegroundPermissions()

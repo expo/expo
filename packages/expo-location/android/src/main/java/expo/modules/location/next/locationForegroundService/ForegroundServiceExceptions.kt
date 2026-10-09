@@ -1,0 +1,53 @@
+package expo.modules.location.next.locationForegroundService
+
+import expo.modules.kotlin.exception.CodedException
+
+class BackgroundSessionRequiresForegroundException :
+  CodedException(
+    "Cannot start the background session, because the app is in the background. " +
+      "Android 12 and above only allows a foreground service to start while the app is in the foreground. " +
+      "Call `ensureStarted` while the app is in the foreground - a request made from the background is " +
+      "recorded and honoured the next time the app returns to the foreground."
+  )
+
+class ServicePromotionFailedException(cause: Throwable) :
+  CodedException(cause.localizedMessage, cause)
+
+class ServicePromotionTimedOutException :
+  CodedException(
+    "The foreground service did not confirm that it was promoted in time, so the state of the " +
+      "background session is unknown. It may still promote shortly. " +
+      "Read `BackgroundSession.status()` to find out whether it did."
+  )
+
+class NoNotificationIconException :
+  CodedException("No notification icon was configured.")
+
+class ServiceNotFoundException :
+  CodedException(
+    "The location foreground service could not be started, because the system found no service to start. " +
+      "`expo.modules.location.next.locationForegroundService.LocationForegroundService` is declared in " +
+      "expo-location's own manifest, so this almost always means the app's manifest merge dropped it. " +
+      "Check for a `tools:node=\"remove\"` or `tools:replace` rule on that service and re-run " +
+      "`npx expo prebuild --clean`."
+  )
+
+class ServiceDestroyedDuringPromotionException :
+  CodedException(
+    "The foreground service was destroyed before it finished promoting, so the background session did " +
+      "not start. The service was most likely stopped while starting up. " +
+      "Call `ensureStarted` again while the app is in the foreground."
+  )
+
+class BackgroundSessionStoppingException :
+  CodedException(
+    "Cannot start the background session, because the previous one is still stopping. The foreground " +
+      "service is being torn down and a new one cannot start until it is gone. " +
+      "Call `ensureStarted` again in a moment."
+  )
+
+class BackgroundSessionStoppedDuringPromotionException :
+  CodedException(
+    "The background session was stopped while the foreground service was starting, so the service did " +
+      "not start. Call `ensureStarted` again if you still want a background session."
+  )
