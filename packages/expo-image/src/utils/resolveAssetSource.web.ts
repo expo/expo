@@ -1,4 +1,4 @@
-import { getAssetByID } from 'react-native/asset-registry';
+import { AssetRegistry } from 'react-native';
 
 import type { ResolvedAssetSource } from './AssetSourceResolver.web';
 import AssetSourceResolver from './AssetSourceResolver.web';
@@ -20,7 +20,7 @@ export default function resolveAssetSource(source: any): ResolvedAssetSource | u
     return source;
   }
 
-  const asset = getAssetByID(source);
+  const asset = AssetRegistry.getAssetByID(source);
   if (!asset) {
     return undefined;
   }
