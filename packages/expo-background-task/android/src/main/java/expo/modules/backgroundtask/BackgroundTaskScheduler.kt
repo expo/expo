@@ -266,7 +266,11 @@ object BackgroundTaskScheduler {
 
     return try {
       val workInfos = workManager.getWorkInfosForUniqueWork(WORKER_IDENTIFIER).await()
-      return workInfos.firstOrNull()
+      // The list also holds finished runs of the chain, so the first entry
+      // isn't necessarily the worker that is running or queued.
+      return workInfos.firstOrNull { it.state == WorkInfo.State.RUNNING }
+        ?: workInfos.firstOrNull { it.state == WorkInfo.State.ENQUEUED }
+        ?: workInfos.firstOrNull()
     } catch (e: Exception) {
       Log.d(TAG, "Calling getWorkInfosForUniqueWork failed with error " + e.message)
       null
