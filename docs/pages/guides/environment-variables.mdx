@@ -77,13 +77,13 @@ You may choose to commit the default **.env** file or other standard configurati
 
 In SDK 58 and later, each command sets `NODE_ENV` to its mode and replaces any value you set. For example, `NODE_ENV=production npx expo start` runs in development mode and loads **.env.development**.
 
-| Command                                                   | Mode                                                                                                              |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `npx expo start`                                          | Development. Production with `--no-dev`.                                                                          |
-| `npx expo export`                                         | Production. Development with `--dev`.                                                                             |
-| `npx expo run:android`                                    | Development for variants in `debuggableVariants` (`debug` and `debugOptimized` by default). Production otherwise. |
-| `npx expo run:ios`                                        | Development for configurations with `Debug` in their name. Production otherwise.                                  |
-| `npx expo config`, `npx expo prebuild`, `npx expo-doctor` | Development. Production on EAS Build.                                                                             |
+| Command                                                   | Mode                                                                             |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `npx expo start`                                          | Development. Production with `--no-dev`.                                         |
+| `npx expo export`                                         | Production. Development with `--dev`.                                            |
+| `npx expo run:android`                                    | Development for the `debug` and `debugOptimized` variants. Production otherwise. |
+| `npx expo run:ios`                                        | Development for configurations with `Debug` in their name. Production otherwise. |
+| `npx expo config`, `npx expo prebuild`, `npx expo-doctor` | Development. Production on EAS Build.                                            |
 
 Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further to switch between **.env** files.
 
@@ -91,7 +91,7 @@ If you use EAS, consider using `eas env:pull` instead. This will swap your **.en
 
 In SDK 58 and later, debug builds use development mode and release builds use production mode.
 
-- **Android**: Variants listed in `debuggableVariants` in **android/app/build.gradle** are debug builds (`debug` and `debugOptimized` by default). If you use product flavors, add your debug variants, such as `freeDebug`.
+- **Android**: Variants listed in `debuggableVariants` in **android/app/build.gradle** are debug builds (`debug` and `debugOptimized` by default). If you use product flavors, add your debug variants, such as `freeDebug`. `npx expo run:android` doesn't read this list. It uses development mode only for `debug` and `debugOptimized`, and production mode for every other variant.
 - **iOS**: Configurations with `Debug` in the name are debug builds.
 
 ### Disabling environment variables
