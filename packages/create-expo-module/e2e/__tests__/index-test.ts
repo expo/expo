@@ -263,7 +263,16 @@ describe('--platform option', () => {
     const fakeProject = createFakeProject('local-platform-project');
 
     await executePassing(
-      ['my-module', '--local', '--platform', 'android', '--source', localTemplatePath],
+      [
+        'my-module',
+        '--local',
+        '--platform',
+        'android',
+        '--source',
+        localTemplatePath,
+        '--package-manager',
+        'pnpm',
+      ],
       { cwd: fakeProject }
     );
 
@@ -278,6 +287,9 @@ describe('--platform option', () => {
     // android/ should exist, ios/ should not
     expectFileExists('local-platform-project/modules/my-module', 'android');
     expectFileNotExists('local-platform-project/modules/my-module', 'ios');
+
+    // Local modules never get their own pnpm-workspace.yaml
+    expectFileNotExists('local-platform-project/modules/my-module', 'pnpm-workspace.yaml');
 
     // Web stub should be present
     expect(
@@ -312,6 +324,8 @@ describe('non-interactive module creation', () => {
       'https://github.com/test',
       '--repo',
       'https://github.com/test/ci-module',
+      '--package-manager',
+      'pnpm',
     ]);
 
     // Check essential files exist
