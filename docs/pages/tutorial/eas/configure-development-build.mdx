@@ -69,11 +69,11 @@ Run the `npx expo start` to start the [development server](/get-started/start-de
   }}
 />
 
-This command starts the metro bundler. In the terminal window, we see the QR code followed by the `Metro waiting on...` and a manifest URL:
+This command starts the Metro bundler. In the terminal window, we see the QR code followed by `Metro:` and a manifest URL:
 
 <ContentSpotlight
   alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.webp"
+  src="/static/images/tutorial/eas/configure-development-build-development-server.webp"
   className="max-w-[600px]"
 />
 
@@ -177,7 +177,7 @@ On running, this command:
 ```json eas.json
 {
   "cli": {
-    "version": ">= 16.18.0",
+    "version": ">= 24.12.1",
     "appVersionSource": "remote"
   },
   "build": {

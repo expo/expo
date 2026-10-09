@@ -69,11 +69,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   }}
 />
 
-このコマンドは Metro バンドラーを起動します。ターミナルウィンドウには QR コードに続いて `Metro waiting on...` とマニフェスト URL が表示されます。
+このコマンドは Metro バンドラーを起動します。ターミナルウィンドウには QR コードに続いて `Metro:` とマニフェスト URL が表示されます。
 
 <ContentSpotlight
   alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.webp"
+  src="/static/images/tutorial/eas/configure-development-build-development-server.webp"
   className="max-w-[600px]"
 />
 
@@ -177,7 +177,7 @@ EAS Build 用にプロジェクトをセットアップするには、次のコ�
 ```json eas.json
 {
   "cli": {
-    "version": ">= 16.18.0",
+    "version": ">= 24.12.1",
     "appVersionSource": "remote"
   },
   "build": {
