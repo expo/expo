@@ -15,7 +15,11 @@ export type SerialAsset = {
     chunkingStrategy?: ChunkingStrategy;
     /** Absolute entry module paths represented by this file. Empty for runtime, shared, and worker chunks. */
     entryPaths?: string[];
-    /** Entry module paths to required JS filenames, stored on the initial asset. */
+    /**
+     * Entry module paths to required JS filenames, stored on the initial asset.
+     * Excludes the initial chunk, but includes files an importer may already have loaded.
+     * Runtime dependencies are recorded separately in asset `requires` lists.
+     */
     entryChunks?: Record<string, string[]>;
     hmrId?: string;
     /** Media query for a `css-external` stylesheet (e.g. `screen and (min-width: 900px)`). */
