@@ -311,6 +311,8 @@ export class MetroTerminalReporter extends TerminalReporter {
   }
 
   _logBundlingError(error: SnippetError & { [HAS_LOGGED_SYMBOL]?: boolean }): void {
+    const buildID = this.#lastFailedBuildID ?? null;
+    this.#lastFailedBuildID = undefined;
     error[HAS_LOGGED_SYMBOL] = true;
     const importStack = nearestImportStack(error);
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.serverRoot, error);
@@ -318,7 +320,7 @@ export class MetroTerminalReporter extends TerminalReporter {
     if (moduleResolutionError) {
       const message = maybeAppendCodeFrame(moduleResolutionError, error.message);
       event('bundling:failed', {
-        id: this.#lastFailedBuildID ?? null,
+        id: buildID,
         error: event.error(error),
         lineNumber: error.lineNumber ?? null,
         column: error.column ?? null,
@@ -331,7 +333,7 @@ export class MetroTerminalReporter extends TerminalReporter {
       return this.terminal.log(importStack ? `${message}\n\n${importStack}` : message);
     } else {
       event('bundling:failed', {
-        id: this.#lastFailedBuildID ?? null,
+        id: buildID,
         error: event.error(error),
         lineNumber: error.lineNumber ?? null,
         column: error.column ?? null,
