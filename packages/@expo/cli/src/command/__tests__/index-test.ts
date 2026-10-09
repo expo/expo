@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { expoCommandEvents } from '../events';
 import { expoCommand } from '../index';
 import { expoCommandPs } from '../ps';
+import { handleOutputError } from '../utils';
 
 jest.mock('2g/api', () => ({ list: jest.fn(), tap: jest.fn() }));
 
@@ -48,6 +49,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  while (process.stdout.listeners('error').includes(handleOutputError)) {
+    process.stdout.removeListener('error', handleOutputError);
+  }
   stdout.mockRestore();
   stderr.mockRestore();
   process.exitCode = originalExitCode;
@@ -90,9 +94,46 @@ it('lists only Expo sessions and excludes observers', async () => {
 
 it('prints an empty JSON array when no sessions match', async () => {
   await expoCommandPs(['--json', 'missing']);
-  expect(list).toHaveBeenCalledWith({ selector: 'missing' });
+  expect(list).toHaveBeenCalledWith();
   expect(JSON.parse(output())).toEqual([]);
   expect(process.exitCode).toBe(0);
+});
+
+it.each([expoCommandPs, expoCommandEvents])(
+  'scopes sessions before applying exact-match precedence',
+  async (command) => {
+    const expo = session('100', 'expo start');
+    const unrelated = session('101', 'start');
+    jest
+      .mocked(list)
+      .mockImplementation(async (options) =>
+        options?.selector === 'start' ? [unrelated] : [unrelated, expo]
+      );
+
+    await command(command === expoCommandPs ? ['start', '--json'] : ['start']);
+
+    expect(list).toHaveBeenCalledWith();
+    if (command === expoCommandPs) {
+      expect(JSON.parse(output())).toEqual([expo]);
+    } else {
+      expect(tap).toHaveBeenCalledWith(expo.sessionDir, expect.any(Object));
+    }
+    expect(stderr).not.toHaveBeenCalled();
+  }
+);
+
+it.each([
+  ['100', ['100']],
+  ['expo start', ['100']],
+  [' START ', ['100', '1000']],
+  ['/app', ['100', '1000']],
+  ['missing', []],
+])('matches Expo selector %j with exact matches preferred', async (selector, ids) => {
+  jest
+    .mocked(list)
+    .mockResolvedValue([session('100', 'expo start'), session('1000', 'expo start --web')]);
+  await expoCommandPs([selector as string, '--json']);
+  expect(JSON.parse(output()).map((item: ListedSession) => item.id)).toEqual(ids);
 });
 
 it('shows command and ready server details using the resolved project root', async () => {
@@ -186,7 +227,7 @@ it('prefers the only running Expo session and delegates event filtering to 2g', 
     '--tail',
     '--spans',
   ]);
-  expect(list).toHaveBeenCalledWith({ selector: 'expo start' });
+  expect(list).toHaveBeenCalledWith();
   expect(tap).toHaveBeenCalledWith('/sessions/101', {
     since: '5m',
     filter: ['metro:bundling', 'devserver:*'],
@@ -196,9 +237,9 @@ it('prefers the only running Expo session and delegates event filtering to 2g', 
 });
 
 it('handles a selector after the option terminator', async () => {
-  jest.mocked(list).mockResolvedValue([session('101', 'expo start')]);
+  jest.mocked(list).mockResolvedValue([{ ...session('101', 'expo start'), cwd: '/app/-project' }]);
   await expoCommandEvents(['--', '-project']);
-  expect(list).toHaveBeenCalledWith({ selector: '-project' });
+  expect(list).toHaveBeenCalledWith();
   expect(tap).toHaveBeenCalledWith('/sessions/101', expect.any(Object));
 });
 
@@ -295,7 +336,7 @@ it('dispatches ps arguments without changing them', async () => {
     .mockResolvedValue([session('100', 'expo start'), session('101', 'expo start', false)]);
   const args = ['ps', 'expo start', '--active', '--json'];
   await expoCommand(args);
-  expect(list).toHaveBeenCalledWith({ selector: 'expo start' });
+  expect(list).toHaveBeenCalledWith();
   expect(JSON.parse(output())).toEqual([session('100', 'expo start')]);
   expect(args).toEqual(['ps', 'expo start', '--active', '--json']);
 });
