@@ -2,28 +2,26 @@ import { getStateId, type ObservableState } from '../../State';
 import { createModifier, createModifierWithEventListener } from './createModifier';
 
 /**
- * Placement of the search field created by the `searchable` modifier.
+ * The placement of a search field in a view hierarchy.
  *
- * - `automatic`: the system picks the placement for the current context.
- * - `toolbar`: the search field is placed in the toolbar.
- * - `sidebar`: the search field is placed in the sidebar of a navigation split view.
- *   Falls back to `automatic` on tvOS.
- * - `navigationBarDrawer`: the search field is placed in a drawer below the navigation bar.
- *   Falls back to `automatic` on tvOS and macOS.
+ * - `automatic`: SwiftUI places the search field automatically.
+ * - `toolbar`: The search field appears in the toolbar. Falls back to `automatic` on tvOS.
+ * - `sidebar`: The search field appears in the sidebar of a navigation view. Falls back to
+ *   `automatic` on tvOS.
+ * - `navigationBarDrawer`: The search field appears in the navigation bar. Falls back to
+ *   `automatic` on macOS and tvOS.
  */
 export type SearchFieldPlacement = 'automatic' | 'toolbar' | 'sidebar' | 'navigationBarDrawer';
 
 /**
- * Marks a view as searchable and binds the query to an observable native state.
+ * Marks this view as searchable, which configures the display of a search field.
  *
- * Reading `state.value` returns the current query. Writing to it updates the search field.
- * Apply the modifier to a view inside a `NavigationStack` or `NavigationSplitView`, the same way
- * SwiftUI requires it. Filtering of the content stays in JavaScript.
- *
- * @param text - An `ObservableState<string>` created with `useNativeState`.
- * @param options.placement - Where the search field is placed. Maps to the `placement:` parameter
- *   of SwiftUI's `.searchable(text:placement:prompt:)`. Defaults to `automatic`.
- * @param options.prompt - Text that describes the search field, shown when it is empty.
+ * @param text - The text to display and edit in the search field. An `ObservableState<string>`
+ *   created with `useNativeState`.
+ * @param options.placement - The preferred placement of the search field within the containing
+ *   view hierarchy. Defaults to `automatic`.
+ * @param options.prompt - The prompt of the search field, which provides users with guidance on
+ *   what to search for.
  * @param options.onChange - Fires on the JS thread when the user edits or clears the search field.
  *   It does not fire for values written from JavaScript.
  *
@@ -79,18 +77,16 @@ export const searchable = (
 };
 
 /**
- * Behavior of the search field that the `searchable` modifier places in the toolbar.
+ * The behavior of a search field in a toolbar.
  *
- * - `automatic`: the system picks the behavior for the current context.
- * - `minimize`: the search field collapses to a button and expands when the user taps it.
+ * - `automatic`: The automatic behavior.
+ * - `minimize`: A search toolbar behavior that prefers rendering a search field as a button-like
+ *   control. Falls back to `automatic` on macOS and tvOS.
  */
 export type SearchToolbarBehavior = 'automatic' | 'minimize';
 
 /**
- * Sets how the toolbar search field behaves.
- *
- * Use `minimize` to get the collapsed search button that expands over the toolbar.
- * Apply it next to `searchable` on the same view.
+ * Configures the behavior for search in the toolbar.
  *
  * On iOS below 26.0, the modifier is a no-op.
  *

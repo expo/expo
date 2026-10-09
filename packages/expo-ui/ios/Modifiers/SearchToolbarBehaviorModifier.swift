@@ -19,7 +19,11 @@ internal struct SearchToolbarBehaviorModifier: ViewModifier, Record {
       case .automatic:
         content.searchToolbarBehavior(.automatic)
       case .minimize:
+#if os(macOS) || os(tvOS)
+        content.searchToolbarBehavior(.automatic)
+#else
         content.searchToolbarBehavior(.minimize)
+#endif
       }
 #else
       content

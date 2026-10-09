@@ -14,7 +14,11 @@ internal enum SearchFieldPlacementType: String, Enumerable {
     case .automatic:
       return .automatic
     case .toolbar:
+#if os(tvOS)
+      return .automatic
+#else
       return .toolbar
+#endif
     case .sidebar:
 #if os(tvOS)
       return .automatic
