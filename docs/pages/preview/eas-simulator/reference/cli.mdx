@@ -25,7 +25,7 @@ To manage sessions without EAS CLI, use the [EAS Simulator REST API](/preview/ea
 | -------------------------------------------------- | ---------------------------------------------------------------------------- |
 | [`simulator:availability`](#simulatoravailability) | Check whether the current project's account can use EAS Simulator            |
 | [`simulator:start`](#simulatorstart)               | Create a session and wait for its controller configuration                   |
-| [`simulator`](#simulatorstart)                     | Alias for `simulator:start`                                                  |
+| [`simulator`](#simulatorstart)                     | Same command as `simulator:start`                                            |
 | [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                       |
 | [`simulator:events`](#simulatorevents)             | Show recorded activity or follow activity from a running session             |
 | [`simulator:egress`](#simulatoregress)             | Run the local egress client for an iOS session started with `--egress local` |
@@ -102,7 +102,7 @@ Important flags:
 | `-p, --platform`            | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                                                                                                                                                                                                                               |
 | `--name`                    | Human-readable session name shown by `simulator:list`, `simulator:get`, and expo.dev                                                                                                                                                                                                                                                        |
 | `--tag`                     | Label that groups sessions, such as one tag for each app variant. Repeat the flag for multiple tags. Stored in lowercase                                                                                                                                                                                                                    |
-| `--device`                  | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted                                                                                                                                                                                                 |
+| `--device`                  | Android virtual device hardware profile, or iOS Simulator name or unique device identifier (UDID). The runner chooses a device when omitted                                                                                                                                                                                                 |
 | `--build-id`                | EAS Build to install and launch before the session is ready                                                                                                                                                                                                                                                                                 |
 | `--build-fingerprint`       | Fingerprint hash of an EAS Build. Installs the most recent finished build with this fingerprint that the simulator can install                                                                                                                                                                                                              |
 | `--application-archive-url` | Application archive to download, install, and launch before the session is ready                                                                                                                                                                                                                                                            |
@@ -115,6 +115,8 @@ Important flags:
 | `--max-duration-minutes`    | Automatic session stop time, up to the plan limit: 40 minutes on the Free plan and 115 minutes on paid plans. Defaults to the plan limit                                                                                                                                                                                                    |
 | `--egress`                  | `local` routes iOS Simulator HTTP(S) and WebSocket traffic through this machine. This includes traffic that honors the system proxy and clients that read proxy environment variables, such as gRPC and libcurl. iOS only. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/) |
 | `--egress-allow`            | Exact `host:port` on this machine or its network that the simulator can reach through local egress, such as `localhost:3000`. Repeat for multiple destinations. Requires `--egress local`                                                                                                                                                   |
+| `--network-capture`         | Record HTTP(S) traffic from apps on an iOS device as an HTTP Archive (HAR). iOS only. Not compatible with `--egress local`. See [Record network traffic](/preview/eas-simulator/how-it-works/network-inspection/#record-network-traffic)                                                                                                    |
+| `--network-capture-field`   | What a recording also keeps: `header`, `query`, `request-body`, or `response-body`. Repeat the flag or pass a comma-separated list. Requires `--network-capture`                                                                                                                                                                            |
 | `--max-idle-time-minutes`   | Stop after this many minutes without session activity. When omitted, the session has no idle timeout and runs until its maximum duration. Not supported for `web-preview-only`                                                                                                                                                              |
 | `--out-config-type`         | `dotenv` (default) to write **.env.eas-simulator**, or `env` to print shell exports                                                                                                                                                                                                                                                         |
 | `--[no-]force`              | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                                                                                                                                                                                                                     |
@@ -123,7 +125,7 @@ Important flags:
 
 `--build-id`, `--build-fingerprint`, `--application-archive-url`, and `--expo-go` are mutually exclusive application sources. `--launch-arg` and `--open-url` require one of those sources because the start command needs an installed application to launch.
 
-The default `dotenv` output writes configuration even when `--json` is used. Use `--out-config-type env` when you explicitly do not want the file. The `env` output does not export `EAS_SIMULATOR_SESSION_ID`, so pass `--id <session-id>` to `simulator:get`, `simulator:stop`, and `simulator:events`.
+The default `dotenv` output writes configuration even when you pass `--json`. Use `--out-config-type env` when you explicitly do not want the file. The `env` output does not export `EAS_SIMULATOR_SESSION_ID`, so pass `--id <session-id>` to `simulator:get`, `simulator:stop`, and `simulator:events`.
 
 Common JSON output fields have this shape. The fields inside `remoteConfig` depend on the selected controller:
 
@@ -143,7 +145,7 @@ Treat `remoteConfig` as secret because it includes controller credentials. In `-
 
 ### Interactive and non-interactive behavior
 
-Without `--non-interactive`, the start command stays attached and polls the session. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop it. EAS CLI resets **.env.eas-simulator** after it confirms the session ended.
+Without `--non-interactive` or `--json`, the start command stays attached in an interactive terminal and polls the session. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop it. EAS CLI resets **.env.eas-simulator** after it confirms the session ended. When `CI` is set or standard input is not a terminal, such as in an agent shell, the command runs non-interactively even without the flag.
 
 With `--non-interactive` or `--json`, the command returns after the controller is ready. You must stop the session separately.
 
@@ -237,13 +239,13 @@ The response includes:
 
 Filters can be repeated:
 
-| Filter       | Values                                                    |
-| ------------ | --------------------------------------------------------- |
-| `--platform` | `ios`, `android`                                          |
-| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only`    |
-| `--status`   | `new`, `in-progress`, `stopped`, `errored`                |
-| `--name`     | Text that the session name contains. Case does not matter |
-| `--tag`      | Tag. A session must have every listed tag                 |
+| Filter       | Values                                                                        |
+| ------------ | ----------------------------------------------------------------------------- |
+| `--platform` | `android`, `ios`                                                              |
+| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only`                        |
+| `--status`   | `new`, `in-progress`, `stopped`, `errored`                                    |
+| `--name`     | Text that the session name starts with. Case does not matter. Takes one value |
+| `--tag`      | Tag. A session must have every listed tag                                     |
 
 Use `--limit` to control page size (10 by default, 100 at most) and `--after` with the previous response's `endCursor` for pagination.
 

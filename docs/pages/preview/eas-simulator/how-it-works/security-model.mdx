@@ -50,7 +50,7 @@ Because the preview does not require a login, share the preview URL only with pe
 
 ## Artifact download URLs
 
-Each artifact has a download URL that contains a random key. The URL does not require an Expo login, so it works as a capability: anyone who has the URL can download the file. The URL redirects to a signed storage URL that expires after one hour. If the account is disabled, the download is blocked.
+Each artifact has a download URL that contains a random key. The URL does not require an Expo login, so anyone who has the URL can download the file. The URL redirects to a signed storage URL that expires after one hour. If the account is disabled, EAS blocks the download.
 
 ## Metro tunnels
 
@@ -82,7 +82,7 @@ Stop the session. After the session stops, the remote device and its controller 
 
 <Collapsible summary="Is the app I install private?">
 
-Yes, within the session. The app installs only on the remote device for the session. Anyone who has the controller token or the browser preview URL can use the app while the session runs. Artifacts from the session, such as screenshots, use capability URLs. See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/) for retention.
+Yes, within the session. The app installs only on the remote device for the session. Anyone who has the controller token or the browser preview URL can use the app while the session runs. Anyone who has the download URL of an artifact, such as a screenshot, can download it. See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/) for retention.
 
 </Collapsible>
 

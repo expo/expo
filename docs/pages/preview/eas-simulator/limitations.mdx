@@ -10,22 +10,22 @@ EAS Simulator is an experimental preview. Its commands, flags, and behavior can 
 
 ## Access and versions
 
-| Limit                                                                | Alternative                                                                                                |
-| -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Only accounts with limited-access preview access can start sessions. | Check access with `eas simulator:availability`. [Join the waitlist](https://expo.dev/services/simulators). |
-| The `simulator:*` commands and flags change often.                   | Use the latest EAS CLI, and read `eas simulator:start --help`.                                             |
-| The `--name` flag is not available in older EAS CLI versions.        | Run `npx --yes eas-cli@latest`.                                                                            |
+| Limit                                                           | Alternative                                                                                                |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Only accounts in the limited-access preview can start sessions. | Check access with `eas simulator:availability`. [Join the waitlist](https://expo.dev/services/simulators). |
+| The `simulator:*` commands and flags change often.              | Use the latest EAS CLI, and read `eas simulator:start --help`.                                             |
+| EAS CLI versions before 21.4.0 do not have the `--name` flag.   | Run `npx --yes eas-cli@latest`.                                                                            |
 
 ## Platforms and devices
 
-| Limit                                                                                                                                                                | Alternative                                                                                                                                                                        |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Android support is still in development. Some features that work on iOS may not work on Android yet.                                                                 | Use iOS when you need a feature that does not work on Android yet.                                                                                                                 |
-| The expo.dev session page does not show the Android browser preview inline yet.                                                                                      | Select **Open preview** on the session page to open the preview in a new tab. If the preview does not respond to input, control the emulator with agent-device, Argent, or Appium. |
-| EAS Simulator does not provide physical devices.                                                                                                                     | Use a physical device with local tools or a device cloud.                                                                                                                          |
-| A session can run only a simulator build on iOS and an APK on Android. An iOS application archive must be a **.tar.gz** or **.tgz** file that contains the **.app**. | Create an iOS Simulator build or an APK. See [Install an app on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/how-to/install-your-app/).                      |
-| Create session links for Android are still in development, and Android links need an **.apk** archive.                                                               | Use EAS CLI or the REST API if an Android link does not work.                                                                                                                      |
-| Local egress works only on iOS, and it is an experimental feature that must be enabled for your account.                                                             | Contact Expo to enable it. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/).                                       |
+| Limit                                                                                                                                                                | Alternative                                                                                                                                                   |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Android support is still in development. Some features that work on iOS may not work on Android yet.                                                                 | Use iOS when you need a feature that does not work on Android yet.                                                                                            |
+| The Android browser preview shows the emulator, but it may not respond to input yet.                                                                                 | Control the emulator with agent-device, Argent, or Appium.                                                                                                    |
+| EAS Simulator does not provide physical devices.                                                                                                                     | Use a physical device with local tools or a device cloud.                                                                                                     |
+| A session can run only a simulator build on iOS and an APK on Android. An iOS application archive must be a **.tar.gz** or **.tgz** file that contains the **.app**. | Create an iOS Simulator build or an APK. See [Install an app on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/how-to/install-your-app/). |
+| Create session links for Android are still in development, and Android links need an **.apk** archive.                                                               | Use EAS CLI or the REST API if an Android link does not work.                                                                                                 |
+| Local egress works only on iOS, and it is an experimental feature that must be enabled for your account.                                                             | Contact Expo to enable it. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/).                  |
 
 ## Session lifetime
 
@@ -59,8 +59,8 @@ See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works
 
 ## Data
 
-| Limit                                                                                | Alternative                                                                                             |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| Job logs on the session page are available for 30 days after the session is created. | Download the artifacts that you want to keep. EAS keeps session artifacts until you delete the session. |
+| Limit                                                                                | Alternative                                                                                                                               |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| Job logs on the session page are available for 30 days after the session is created. | Copy the job logs that you need before they expire. Artifacts are not affected: EAS keeps session artifacts until you delete the session. |
 
 See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/).

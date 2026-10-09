@@ -33,7 +33,7 @@ Pass `--max-idle-time-minutes` to stop the session after that many minutes witho
 | Session types without idle timeout     | `web-preview-only`                                                                                          |
 | Allowed values                         | A positive number less than 115. If you also set a maximum duration, the idle timeout must be less than it. |
 
-Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. For a session that a person uses in the browser preview, use the maximum duration to limit the session, because the idle timeout can stop the session while the person uses it.
+For a session that a person uses in the browser preview, limit the session with the maximum duration. The idle timeout can stop the session while the person uses it.
 
 ## Ways that a session stops
 
@@ -56,7 +56,7 @@ These events do **not** stop a session:
 - A second `simulator:start` replaces **.env.eas-simulator**.
 - The local egress client disconnects. Proxied requests fail, and the session continues to run.
 
-## If the controller connection drops
+## Dropped controller connections
 
 If a controller command returns `ERR_NGROK_3200` or `Remote daemon is unavailable` after the session sat idle, the controller connection dropped. A lost connection also removes the installed app state and the snapshot references. Do not retry the command. Stop the session, start a new one, and then install and drive the app immediately. Create builds before you start the session, not during it.
 

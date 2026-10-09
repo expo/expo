@@ -19,7 +19,7 @@ The installed EAS CLI is too old. [Install or update EAS CLI](/eas/cli/), then i
 
 <Terminal cmd={['$ eas simulator:start --help']} />
 
-The `simulator:*` commands appear in `eas --help` from EAS CLI 24.8.0. In earlier versions, the commands are hidden from the help output.
+The `simulator:*` commands appear in `eas --help` from EAS CLI 24.8.0. Earlier versions hide the commands from the help output.
 
 ### `simulator:start` rejects a documented flag
 
@@ -103,11 +103,11 @@ Stop the session if it is still active, then start a fresh session and repeat in
 
 If **.env.eas-simulator** has no connection details, agent-device can use a local simulator without an error. This can happen when another `simulator:start` command replaced the file. Confirm that `eas simulator:get --json` returns the session ID that the start command printed.
 
-Run `eas simulator:exec npx agent-device@latest open <app>`. In a remote session, the **Session state** path starts with **/Users/expo/** on iOS or **/home/expo/** on Android. A path under your own home directory means that the agent controls a local device. See [How EAS CLI and agents select an EAS Simulator session](/preview/eas-simulator/how-it-works/agent-targeting/).
+Run `eas simulator:exec npx agent-device@latest open <app>`. In a remote session, the **Session state** path starts with **/home/expo/** on Android or **/Users/expo/** on iOS. A path under your own home directory means that the agent controls a local device. See [How EAS CLI and agents select an EAS Simulator session](/preview/eas-simulator/how-it-works/agent-targeting/).
 
 ### `DEVICE_NOT_FOUND` when you select a second device
 
-The agent-device `--device` flag accepts a device name only. To select a device by its UDID, use `--udid <UDID>` instead. To control a second device, also pass a separate `--session <name>`. See [Use a second device in the same session](/preview/eas-simulator/reference/devices/#use-a-second-device-in-the-same-session). List the device names:
+The agent-device `--device` flag accepts a device name only. To select a device by its unique device identifier (UDID), use `--udid <UDID>` instead. To control a second device, also pass a separate `--session <name>`. See [Use a second device in the same session](/preview/eas-simulator/reference/devices/#use-a-second-device-in-the-same-session). List the device names:
 
 <Terminal cmd={['$ eas simulator:exec npx agent-device@latest devices --platform ios']} />
 
@@ -116,6 +116,8 @@ The agent-device `--device` flag accepts a device name only. To select a device 
 `argent link` without `--yes` keeps the old token when the URL is already linked. Link again with `--yes`:
 
 <Terminal cmd={["$ argent link '<ARGENT_TOOLS_URL>' --token '<ARGENT_AUTH_TOKEN>' --yes"]} />
+
+If your editor already runs `argent mcp`, restart the editor so that it uses the new link.
 
 ### A controller action hangs
 
@@ -194,13 +196,13 @@ If the first connection fails, reset the simulator session and Metro once, then 
 
 ## Browser preview problems
 
-### The session page does not show the Android preview
+### The session page does not show the preview inline
 
-Android sessions also include a browser preview that streams the emulator. The expo.dev session page does not show it inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet. If the Android preview does not respond to input, control the emulator with agent-device, Argent, or Appium.
+Android sessions also include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet. If the Android preview does not respond to input, control the emulator with agent-device, Argent, or Appium.
 
 ### The preview appears inside the simulator
 
-The browser preview URL was opened as though it were an app URL. Open it in the desktop browser instead. It is a browser stream, not an application deep link.
+A controller command opened the browser preview URL as an app URL on the remote device. Open the URL in a desktop browser instead. It is a browser stream, not an application deep link.
 
 ## Network problems
 
@@ -210,7 +212,7 @@ Local egress uses the macOS system proxy, so it works only for iOS sessions.
 
 ### Local egress is not enabled for the account
 
-Local egress is an experimental feature. Contact Expo to enable it for your account.
+Local egress is an experimental feature. [Contact Expo](https://expo.dev/contact) to enable it for your account.
 
 ### Requests fail after the egress client disconnects
 

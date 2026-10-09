@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Every EAS Simulator session belongs to an EAS project. A session can have a **name**, which tells people what the session is for, and **tags**, which group related sessions. Use names and tags to find a session later, to find sessions that are still running, and to stop the sessions that you no longer need.
+Every EAS Simulator session belongs to an EAS project. A session can have a **name**, which tells people what the session is for, and **tags**, which group related sessions. Use names and tags to find a session later and to find sessions that are still running. Then stop the sessions that you no longer need.
 
 ## Name each session
 
@@ -32,16 +32,16 @@ Write the name for a person who reads the list days later:
 
 Follow these rules:
 
-- Use 3 to 6 words. The list shows the name on one line, so a long name is cut off. The limit is 255 characters.
+- Use 3 to 6 words. The list shows the name on one line and cuts off a long name. The limit is 255 characters.
 - Use sentence case, without a period at the end.
 - Do not repeat what the list already shows, such as the platform, the date, or the person who started the session.
 - Include a ticket or pull request number when there is one.
 
-A name that contains only spaces counts as no name.
+EAS CLI and the expo.dev dialog treat a name that contains only spaces as no name. The REST API and create session links reject it.
 
 ## Tag related sessions
 
-A tag is a label that groups sessions, for example one tag for each app variant or each pull request. Repeat `--tag` for each tag:
+A tag is a label that groups sessions, for example, one tag for each app variant or each pull request. Repeat `--tag` for each tag:
 
 <Terminal
   cmd={[
@@ -59,15 +59,15 @@ You can also add tags in the **Advanced options** of the **Create new simulator*
 
 <Terminal cmd={['$ eas simulator:list --status in-progress']} />
 
-You can combine and repeat these filters:
+You can combine these filters, and repeat each one except `--name`:
 
-| Filter       | Values                                                 | Match rule                                    |
-| ------------ | ------------------------------------------------------ | --------------------------------------------- |
-| `--status`   | `new`, `in-progress`, `stopped`, `errored`             | Any of the listed values                      |
-| `--platform` | `android`, `ios`                                       | Any of the listed values                      |
-| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only` | Any of the listed values                      |
-| `--name`     | Text                                                   | Name contains the text. Case does not matter. |
-| `--tag`      | Text                                                   | The session has every listed tag              |
+| Filter       | Values                                                 | Match rule                                       |
+| ------------ | ------------------------------------------------------ | ------------------------------------------------ |
+| `--status`   | `new`, `in-progress`, `stopped`, `errored`             | Any of the listed values                         |
+| `--platform` | `android`, `ios`                                       | Any of the listed values                         |
+| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only` | Any of the listed values                         |
+| `--name`     | Text                                                   | Name starts with the text. Case does not matter. |
+| `--tag`      | Text                                                   | The session has every listed tag                 |
 
 The list shows 10 sessions by default. Use `--limit` for up to 100 sessions on each page. To get the next page, pass the `endCursor` value from the previous JSON response to `--after`:
 

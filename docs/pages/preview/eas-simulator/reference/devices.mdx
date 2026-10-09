@@ -1,7 +1,7 @@
 ---
 title: EAS Simulator devices
 sidebar_title: Devices
-description: See which iPhone, iPad, and Android Emulator devices EAS Simulator can start, the default Android profile, and how to select a device.
+description: See which Android Emulator, iPhone, and iPad devices EAS Simulator can start, the default Android profile, and how to select a device.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-EAS Simulator starts one virtual device for each session. On Android, it is an Android Emulator with a hardware profile. On iOS, it is an iOS Simulator device. Select the device with `--device` when the session starts. If you omit the flag, the runner uses `iPhone 17` on iOS and `medium_phone` on Android.
+EAS Simulator starts one virtual device for each session. On Android, it is an Android Emulator with a hardware profile. On iOS, it is an iOS Simulator device. Select the device with `--device` when the session starts. If you omit the flag, the runner uses `medium_phone` on Android and `iPhone 17` on iOS.
 
 ## Android Emulator profiles
 
@@ -115,7 +115,7 @@ EAS CLI has a hidden, experimental `--resource-class` flag. It is not generally 
 
 <Collapsible summary="Can I test on a physical device?">
 
-No. EAS Simulator runs only iOS Simulators and Android Emulators. Use local device tooling for physical devices.
+No. EAS Simulator runs only Android Emulators and iOS Simulators. Use local device tooling for physical devices.
 
 </Collapsible>
 

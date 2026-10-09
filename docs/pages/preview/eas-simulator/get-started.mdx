@@ -149,9 +149,9 @@ Use the browser preview without provisioning a programmatic controller.
 
 Give each session a short name that describes its purpose. The name appears in `simulator:list`, `simulator:get`, and on expo.dev, which makes parallel and historical sessions easier to identify.
 
-Use `--platform android` for an Android Emulator. On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+Use `--platform android` for an Android Emulator. The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
-Use `--device` to select a specific iOS Simulator name or unique device identifier (UDID), or an Android virtual device hardware profile. If the flag is omitted, the remote runner uses `iPhone 17` on iOS and `medium_phone` on Android. See [EAS Simulator devices](/preview/eas-simulator/reference/devices/).
+Use `--device` to select an Android virtual device hardware profile, or a specific iOS Simulator name or unique device identifier (UDID). If you omit the flag, the remote runner uses `medium_phone` on Android and `iPhone 17` on iOS. See [EAS Simulator devices](/preview/eas-simulator/reference/devices/).
 
 For an unattended or shareable session, use `--max-duration-minutes` to set an automatic stop time. Any plan can set a value up to the account limit. The limit is 40 minutes on the Free plan and 115 minutes on paid plans. A value above the limit returns an error. Without the flag, the maximum duration is the account limit. You can also use `--max-idle-time-minutes` to stop after a period without session activity.
 
@@ -163,7 +163,7 @@ The start command waits for the session to become ready, then writes **.env.eas-
 - A temporary browser preview URL
 - The command pattern for controlling the device
 
-To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Install an app on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/how-to/install-your-app/) for complete examples.
+To install and launch an app before the session becomes ready, pass exactly one of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go`. You can also pass launch arguments and an Expo or development-client URL. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/eas-simulator/how-to/install-your-app/) for complete examples.
 
 > **warning** `--non-interactive` does not automatically stop the session. The command returns when the session is ready, and the remote device remains active.
 
@@ -209,6 +209,6 @@ When you finish, stop the current session:
 
 <Terminal cmd={['$ eas simulator:stop']} />
 
-If you started EAS CLI without `--non-interactive`, it remains attached. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop the session and let EAS CLI reset **.env.eas-simulator**.
+If EAS CLI is still attached, press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop the session and let EAS CLI reset **.env.eas-simulator**. EAS CLI stays attached only in an interactive terminal without `--non-interactive`.
 
 </Step>

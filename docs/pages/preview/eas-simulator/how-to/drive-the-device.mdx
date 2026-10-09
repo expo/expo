@@ -74,7 +74,7 @@ On iOS, a snapshot can take tens of seconds. If an action times out, take a new 
   cmd={['$ eas simulator:exec npx agent-device@latest open "myapp://profile/42" --platform ios']}
 />
 
-The first time a scheme opens, iOS can show an **Open in** dialog. Accept it with `alert accept`. You can also start the session with `--open-url`. EAS then tries to approve the scheme so that the dialog does not appear. `--open-url` requires an application source, such as `--build-id`. See [Install an app on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/how-to/install-your-app/).
+The first time a scheme opens, iOS can show an **Open in** dialog. Accept it with `alert accept`. You can also start the session with `--open-url`. EAS then tries to approve the scheme so that the dialog does not appear. `--open-url` requires an application source, such as `--build-id`. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/eas-simulator/how-to/install-your-app/).
 
 Do not open the browser preview URL on the device. The preview URL is a browser stream for people, not a deep link.
 
@@ -107,9 +107,11 @@ To use Argent through its Model Context Protocol (MCP) server instead, link the 
 
 <Terminal cmd={["$ argent link '<ARGENT_TOOLS_URL>' --token '<ARGENT_AUTH_TOKEN>' --yes"]} />
 
+If your editor already runs `argent mcp`, restart the editor so that it uses the new link.
+
 ## Control the app with Appium
 
-Start an `appium` session, then run your Appium client through `simulator:exec`. The client reads the server URL from `APPIUM_URL` and the capabilities from `APPIUM_CAPS`, which contains JSON:
+Start an `appium` session, then run your Appium client through `simulator:exec`. Configure the client to read the server URL from `APPIUM_URL` and the capabilities from `APPIUM_CAPS`, which contains JSON:
 
 <Terminal
   cmd={[
@@ -118,13 +120,13 @@ Start an `appium` session, then run your Appium client through `simulator:exec`.
   ]}
 />
 
-For more information, see [Run Appium tests on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/works-with/appium/).
+For more information, see [Run Appium tests on a remote Android Emulator or iOS Simulator](/preview/eas-simulator/works-with/appium/).
 
 ## Control the device from a browser
 
-Every session type includes a live browser preview. Open the browser preview URL from the start output, or open the session page on expo.dev, to see the device. On iOS, you can also interact with it. In `--json` output, the URL is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. See [Share a live EAS Simulator session or start one from a link](/preview/eas-simulator/how-to/hand-off-a-session/).
+Every session type includes a live browser preview. Open the browser preview URL from the start output, or select **Open preview** on the session page on expo.dev, to see the device. On iOS, you can also interact with it. In `--json` output, the URL is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. See [Share a live EAS Simulator session or start one from a link](/preview/eas-simulator/how-to/hand-off-a-session/).
 
-On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 Browser preview activity does not reset the idle timer. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
 
@@ -140,7 +142,7 @@ The controller connection dropped, or the session stopped. A dropped connection 
 
 <Collapsible summary="Can I control two devices in one session?">
 
-Yes, in an iOS session. agent-device can boot and control more than one iOS Simulator in a session. Use a separate named agent-device session for the second device: pass `--session <name>` and `--device "<name>"` when you boot it, and pass `--session <name>` on each later command for that device. The agent-device `--device` flag accepts only a device name. To select a device by its UDID, use `--udid <UDID>`. See [Use a second device in the same session](/preview/eas-simulator/reference/devices/#use-a-second-device-in-the-same-session).
+Yes, in an iOS session. agent-device can boot and control more than one iOS Simulator in a session. Use a separate named agent-device session for the second device. Pass `--session <name>` and `--device "<name>"` when you boot it. Then pass `--session <name>` on each later command for that device. The agent-device `--device` flag accepts only a device name. To select a device by its unique device identifier (UDID), use `--udid <UDID>`. See [Use a second device in the same session](/preview/eas-simulator/reference/devices/#use-a-second-device-in-the-same-session).
 
 </Collapsible>
 

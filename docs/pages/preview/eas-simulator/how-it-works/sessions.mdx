@@ -1,7 +1,7 @@
 ---
 title: How EAS Simulator sessions work
 sidebar_title: Sessions
-description: An EAS Simulator session is a time-limited job on EAS that starts a remote iOS Simulator or Android Emulator with a controller. Learn its states, its startup sequence, and its session page.
+description: An EAS Simulator session is a time-limited job on EAS that starts a remote Android Emulator or iOS Simulator with a controller. Learn its states, its startup sequence, and its session page.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -20,7 +20,7 @@ An EAS Simulator **session** is one remote device that runs for a limited time o
 | Browser preview | A live stream of the device that people can see in a desktop browser and, on iOS, control.                       |
 | Session record  | The ID, name, tags, status, timestamps, activity events, and artifacts. You can read it after the session stops. |
 
-Android sessions also include a browser preview that streams the emulator. The expo.dev session page does not show it inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+Android sessions also include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 For a list of the session types, see [EAS Simulator session types](/preview/eas-simulator/reference/session-types/).
 
@@ -83,10 +83,10 @@ https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<sessi
 The page has these sections, from top to bottom:
 
 1. **Summary.** The status, duration, the person who started the session, the start time, and a **Stop session** button.
-2. **Preview or recordings.** The live browser preview while the session runs, or the screen recordings after it stops.
+2. **Preview or recordings.** An **Open preview** button while the session runs, or the screen recordings after it stops.
 3. **Session activity.** The controller actions, with a **Drive this session** button while the session runs.
 4. **Artifacts.** Files from the session, in groups: screenshots, screen recordings, traces, performance metrics, native profiles, React profiles, session events, and other files.
-5. **Job logs.** The logs of the job that ran the session. This section starts collapsed.
+5. **Logs.** The logs of the job that ran the session. This section starts collapsed.
 
 Android session pages also show a warning that Android Emulator support is still in development.
 

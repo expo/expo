@@ -1,5 +1,5 @@
 ---
-title: Review a pull request on a remote iOS Simulator or Android Emulator
+title: Review a pull request on a remote Android Emulator or iOS Simulator
 sidebar_title: Review a pull request
 description: Add a link to a pull request that opens the change on an EAS Simulator session in the browser, so reviewers can test it without building it.
 ---
@@ -42,7 +42,7 @@ Use the account name, the project slug, and the build ID. Add a name that includ
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID&name=PR%201234%20review
 ```
 
-To use the most recent build that matches the native code of the pull request, use `buildFingerprint` and `platform` (`ios` or `android`) instead of `buildId`. For all parameters, see [Start a session from a link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
+To use the most recent build that matches the native code of the pull request, use `buildFingerprint` and `platform` (`android` or `ios`) instead of `buildId`. For all parameters, see [Start a session from a link](/preview/eas-simulator/how-to/hand-off-a-session/#start-a-session-from-a-link).
 
 </Step>
 
@@ -65,7 +65,7 @@ To return to the same session, the reviewer opens it from the project's **Simula
 
 ## Let an agent review the change
 
-An agent can also test the pull request and post evidence. Ask the agent to use the EAS Simulator skill, start a session with the pull request build, run the changed flow, and attach screenshots or a recording. See [Let an AI coding agent verify a change on a remote simulator](/preview/eas-simulator/how-to/verify-a-change-with-an-agent/). For an EAS Workflows example, see Callstack's [agent-device EAS Workflow template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml).
+An agent can also test the pull request and post evidence. Ask the agent to use the EAS Simulator skill and start a session with the pull request build. Then ask it to run the changed flow and attach screenshots or a recording. See [Let an AI coding agent verify a change on a remote simulator](/preview/eas-simulator/how-to/verify-a-change-with-an-agent/). Callstack's [agent-device EAS Workflows template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml) shows a similar flow in EAS Workflows, with its own emulator and simulator instead of EAS Simulator sessions.
 
 ## Common questions
 
@@ -73,7 +73,7 @@ An agent can also test the pull request and post evidence. Ask the agent to use 
 
 <Collapsible summary="Can reviewers test an Android build from the link?">
 
-Yes. Create session links support Android and iOS. Use the build ID of an Android APK build, or use `buildFingerprint` with `platform=android`. A link with an application archive URL that ends in `.apk` also starts an Android session. The Android build or archive must be an `.apk` file, because an `.aab` file does not install. Android support is still in development, and some features that work on iOS may not work on Android yet.
+Yes. Create session links support Android and iOS. Use the build ID of an Android APK build, or use `buildFingerprint` with `platform=android`. A link with an application archive URL that ends in **.apk** also starts an Android session. The Android build or archive must be an **.apk** file, because an **.aab** file does not install. Android support is still in development, and some features that work on iOS may not work on Android yet.
 
 </Collapsible>
 
@@ -85,7 +85,7 @@ No. The person must sign in to an Expo account that can access the project. To s
 
 <Collapsible summary="How do I limit usage from review links?">
 
-Ask reviewers to stop the session when they finish. Each click on the link starts a session that runs until it stops. Create session links do not set a custom duration, so the session gets the default maximum duration for your plan. See [EAS Simulator usage, limits, and billing](/preview/eas-simulator/reference/usage-and-billing/).
+Ask reviewers to stop the session when they finish. Each click on the link starts a new session that runs until someone stops it. Create session links do not set a custom duration, so the session gets the default maximum duration for your plan. See [EAS Simulator usage, limits, and billing](/preview/eas-simulator/reference/usage-and-billing/).
 
 </Collapsible>
 

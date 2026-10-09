@@ -23,7 +23,7 @@ CI jobs cannot use `eas login`. EAS CLI reads `EXPO_TOKEN` from the environment.
 A CI job follows these steps:
 
 1. Check access with `eas simulator:availability --json`, and stop the job if `available` is `false`.
-2. Find or create an iOS Simulator build or an Android APK.
+2. Find or create an Android APK or an iOS Simulator build.
 3. Start the session with the build and a maximum duration.
 4. Run your checks through `eas simulator:exec`.
 5. Stop the session in a step that runs even when an earlier step fails.
@@ -67,12 +67,12 @@ See [EAS Simulator REST API](/preview/eas-simulator/reference/rest-api/).
 
 In [EAS Workflows](/eas/workflows/introduction/), the pre-packaged `get-build` job can find an existing iOS Simulator build that matches a filter, and a `build` job can create one. Pass the build to a later step that starts the session. See [Pre-packaged jobs](/eas/workflows/pre-packaged-jobs/).
 
-For an example of AI QA on pull requests, see Callstack's [agent-device EAS Workflow template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml).
+For an example of agent-driven testing on pull requests, see Callstack's [agent-device EAS Workflows template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml). It runs its own emulator and simulator in EAS Workflows jobs, not EAS Simulator sessions.
 
 ## Run end-to-end tests
 
 - To run [e2e](/guides/using-e2e/#run-e2e-on-eas-simulator) tests on EAS Simulator, use the `@e2e-dev/eas` integration. It starts one session for each e2e worker and stops the sessions when the run ends.
-- To run an existing Appium suite, start an `appium` session. See [Run Appium tests on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/works-with/appium/).
+- To run an existing Appium suite, start an `appium` session. See [Run Appium tests on a remote Android Emulator or iOS Simulator](/preview/eas-simulator/works-with/appium/).
 - To run Maestro flows, see [Use Maestro flows with EAS Simulator](/preview/eas-simulator/works-with/maestro/).
 
 ## Keep secrets out of CI logs

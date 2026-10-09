@@ -19,13 +19,13 @@ EAS Simulator runs Unity apps. Unity exports a native project. Build that projec
 
 <Tab label="Android">
 
-Build an **.apk** from Unity and include the `x86_64` target architecture. The Android Emulator needs this architecture.
+Build an **.apk** from Unity and include the `x86_64` target architecture, because the Android Emulator runs that architecture. In **Player Settings**, under **Target Architectures**, select **x86-64**. New projects in Unity 6.3 and later list only **ARMv7** and **ARM64** for Android, so check that your Unity version can build an `x86_64` APK before you choose it for emulator testing.
 
 </Tab>
 
 <Tab label="iOS">
 
-Unity exports an Xcode project for iOS. Build that project against the simulator SDK, then compress the **.app** in the build output folder. Its name comes from your Unity product name. Replace `<YourApp>` with that name:
+Unity exports an Xcode project for iOS. Before you export, set **Target SDK** to **Simulator SDK** in the iOS Player settings. Then build the project against the simulator SDK, and compress the **.app** in the build output folder. Its name comes from your Unity product name. Replace `<YourApp>` with that name:
 
 <Terminal
   cmd={[
@@ -52,7 +52,7 @@ For the project setup that EAS CLI or the REST API needs, see [Native Android an
 
 ## Control the app
 
-Use device-level commands, such as `open`, `snapshot -i`, `press`, and `screenshot`. See [Control a remote simulator with agent-device, Argent, or Appium](/preview/eas-simulator/how-to/drive-the-device/).
+Use device-level commands, such as `open`, `screenshot`, and `press` with coordinates (`press <x> <y>`). A Unity app exposes no accessibility tree unless it builds one with the Unity Accessibility module, so `snapshot -i` finds no elements to press. See [Control a remote simulator with agent-device, Argent, or Appium](/preview/eas-simulator/how-to/drive-the-device/).
 
 ## Hybrid apps
 

@@ -52,19 +52,19 @@ UUID means universally unique identifier.
 | `tags`                  | string[]      | No       | Labels that group sessions, such as one tag for each app variant. Up to 16 tags of 1 to 64 characters each. EAS stores tags in lowercase, trims whitespace, and removes duplicate tags.                                                |
 | `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. Defaults to `agent-device`. The removed `serve-sim` type returns `400`. Use `web-preview-only` instead.                                                                     |
 | `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                                 |
-| `deviceIdentifier`      | string        | No       | iOS Simulator name or unique device identifier (UDID), or Android virtual device hardware profile. The runner chooses a device when omitted.                                                                                           |
+| `deviceIdentifier`      | string        | No       | Android virtual device hardware profile, or iOS Simulator name or unique device identifier (UDID). The runner chooses a device when omitted.                                                                                           |
 | `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The job that runs the session has a hard limit of this value plus five minutes. Omit to use the account maximum. |
 | `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. It must be smaller than `maxDurationMinutes` when both are set. Omit to disable the idle timeout. Not supported for `web-preview-only`.     |
 | `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                      |
 | `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters. On iOS, use a **.tar.gz** or **.tgz** file that contains the **.app**. On Android, use an **.apk**.                                               |
 | `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go.                                                                                                                                                                                           |
-| `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"57"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                     |
+| `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"58"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                     |
 | `launchArgs`            | string[]      | No       | Arguments passed to the installed app when it launches. Requires an application source.                                                                                                                                                |
 | `openUrl`               | string        | No       | A URL to open after launching the app, such as an Expo or development-client URL. Requires an application source.                                                                                                                      |
 
 The application source options install and launch the app for every session type, including `appium`.
 
-A `web-preview-only` session provides the browser preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a browser preview. Sessions created before `serve-sim` was removed still return `"type": "serve-sim"`.
+A `web-preview-only` session provides the browser preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a browser preview. Sessions created before EAS removed `serve-sim` still return `"type": "serve-sim"`.
 
 ### Example
 
@@ -221,7 +221,7 @@ When `webPreviewToken` is present, the preview is gated, and `webPreviewUrl` doe
 
 To call `previewApiUrl`, add the token as a `token` query parameter. URL-encode the token in each case. EAS CLI builds these URLs for you in `eas simulator:get --json` output.
 
-Android sessions also include a browser preview that streams the emulator. The expo.dev session page does not show it inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+Android sessions also include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 ## Stop a session
 
@@ -261,7 +261,7 @@ Use the returned error message to identify which option or permission needs atte
 ## Next step
 
 <BoxLink
-  title="Install an app on a remote iOS Simulator or Android Emulator"
+  title="Install an app on a remote Android Emulator or iOS Simulator"
   description="Choose a compatible build, connect a controller, and interact with the remote device."
   href="/preview/eas-simulator/how-to/install-your-app/"
   Icon={Cloud01Icon}

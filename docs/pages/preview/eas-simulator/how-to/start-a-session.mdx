@@ -1,5 +1,5 @@
 ---
-title: Start a remote iOS Simulator or Android Emulator session
+title: Start a remote Android Emulator or iOS Simulator session
 sidebar_title: Start a session
 description: Start an EAS Simulator session from EAS CLI, the REST API, or expo.dev, then confirm that the remote device is ready to use.
 ---
@@ -11,7 +11,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-An EAS Simulator **session** is one remote iOS Simulator or Android Emulator that runs on EAS infrastructure for a limited time. To start a session, run `eas simulator:start` with a platform and a session type. The command waits until the device is ready, then writes the connection details to **.env.eas-simulator**.
+An EAS Simulator **session** is one remote Android Emulator or iOS Simulator that runs on EAS infrastructure for a limited time. To start a session, run `eas simulator:start` with a platform and a session type. The command waits until the device is ready, then writes the connection details to **.env.eas-simulator**.
 
 This page shows the four ways to start a session and how to confirm that the session is ready. For a first-time walkthrough that includes account setup, see [Get started with EAS Simulator](/preview/eas-simulator/get-started/).
 
@@ -38,7 +38,7 @@ Run the command from the project directory. Pass the platform, the [session type
   ]}
 />
 
-EAS CLI shows a warning when you start an Android session: Android Emulator support is still in development, and some features that work on iOS may not work on Android yet.
+EAS CLI shows a warning when you start an Android session. Android Emulator support is still in development, and some features that work on iOS may not work on Android yet.
 
 </Tab>
 
@@ -67,11 +67,11 @@ If the session stops or fails before it is ready, the command reports the failur
 
 ### Stay attached or return immediately
 
-| Mode                  | Behavior                                                                                                          |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Interactive (default) | The command stays attached until the session ends. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop the session. |
-| `--non-interactive`   | The command returns when the session is ready. Stop the session later with `eas simulator:stop`.                  |
-| `--json`              | Same as `--non-interactive`, and the output is a JSON object for scripts and agents.                              |
+| Mode                | Behavior                                                                                                                                                          |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Interactive         | The command stays attached until the session ends. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop the session. This is the default in an interactive terminal. |
+| `--non-interactive` | The command returns when the session is ready. Stop the session later with `eas simulator:stop`. This is the default when `CI` is set or there is no terminal.    |
+| `--json`            | Same as `--non-interactive`, and the output is a JSON object for scripts and agents.                                                                              |
 
 ### Add an app, a device, or limits
 
@@ -80,7 +80,7 @@ You can add more flags to the same command:
 | Goal                                            | Flags                                                                                   | More information                                                              |
 | ----------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | Install and launch an app during startup        | One of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go` | [Install your app](/preview/eas-simulator/how-to/install-your-app/)           |
-| Select a device model                           | `--device "<name-or-UDID>"` on iOS, or `--device <avd-profile>` on Android              | [Devices](/preview/eas-simulator/reference/devices/)                          |
+| Select a device model                           | `--device <avd-profile>` on Android, or `--device "<name-or-UDID>"` on iOS              | [Devices](/preview/eas-simulator/reference/devices/)                          |
 | Stop the session automatically                  | `--max-duration-minutes <minutes>`, `--max-idle-time-minutes <minutes>`                 | [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/)     |
 | Group the session with others                   | `--tag <tag>`, repeated for each tag                                                    | [Organize sessions](/preview/eas-simulator/how-to/organize-sessions/)         |
 | Route iOS network traffic through your computer | `--egress local`                                                                        | [Network inspection](/preview/eas-simulator/how-it-works/network-inspection/) |
@@ -189,7 +189,7 @@ Yes. You need an EAS project, but not a local Expo project directory. The REST A
 
 <Collapsible summary="Does closing the terminal stop the session?">
 
-No, not when you use `--non-interactive` or `--json`. The session runs until you stop it or until it reaches its maximum duration or idle limit.
+No. Closing the terminal does not stop the session, even when EAS CLI is attached. The session runs until you stop it or until it reaches its maximum duration or idle limit.
 
 </Collapsible>
 

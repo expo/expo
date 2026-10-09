@@ -17,7 +17,7 @@ EAS Simulator runs native Android and iOS apps. It starts a stock Android Emulat
 
 <Prerequisites>
   <Requirement title="An Expo account with EAS Simulator access">
-    Access is granted directly to select partners. Check the account before you start a session.
+    Expo grants access directly to select partners. Check the account before you start a session.
   </Requirement>
   <Requirement title="An EAS project">
     A session belongs to an EAS project. Create one at [expo.dev](https://expo.dev). The project
@@ -37,10 +37,10 @@ EAS Simulator runs native Android and iOS apps. It starts a stock Android Emulat
 
 The remote device is an emulator or a simulator, not a physical phone:
 
-| Platform | Required artifact             | Constraint                                                                   |
-| -------- | ----------------------------- | ---------------------------------------------------------------------------- |
-| Android  | An **.apk**                   | Include an emulator ABI, such as `x86_64`. An **.aab** fails to install.     |
-| iOS      | A **.tar.gz** of the **.app** | Build against the `iphonesimulator` SDK. A device **.ipa** fails to install. |
+| Platform | Required artifact             | Constraint                                                                                                                               |
+| -------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Android  | An **.apk**                   | If the app has native libraries, include an emulator application binary interface (ABI), such as `x86_64`. An **.aab** fails to install. |
+| iOS      | A **.tar.gz** of the **.app** | Build against the `iphonesimulator` SDK. A device **.ipa** fails to install.                                                             |
 
 <Terminal
   cmd={[
@@ -108,6 +108,7 @@ Start the session and pass the archive URL:
 Use the REST API when you do not want an app config in the repository. Authenticate with an [Expo access token](/accounts/programmatic-access/):
 
 <Terminal
+  cmdCopy={`curl -X POST https://api.expo.dev/v2/device-run-sessions -H "Authorization: Bearer $EXPO_TOKEN" -H "Content-Type: application/json" -d '{"appId":"<project-id>","platform":"ios","type":"agent-device","name":"Native build review","applicationArchiveUrl":"https://example.com/MyApp.app.tar.gz"}'`}
   cmd={[
     '$ curl -X POST https://api.expo.dev/v2/device-run-sessions \\',
     '  -H "Authorization: Bearer $EXPO_TOKEN" \\',
@@ -180,7 +181,7 @@ Yes. Start a blank session, then upload the build with agent-device `install`. S
 
 <Collapsible summary="Why does the install fail?">
 
-Check the artifact format first. An **.aab**, a device **.ipa**, or a **.zip** of an iOS app does not install. An Android APK without an emulator ABI does not run. See [Troubleshoot EAS Simulator](/preview/eas-simulator/troubleshooting/).
+Check the artifact format first. An **.aab**, a device **.ipa**, or a **.zip** of an iOS app does not install. An Android APK with native libraries but no emulator ABI does not run. See [Troubleshoot EAS Simulator](/preview/eas-simulator/troubleshooting/).
 
 </Collapsible>
 

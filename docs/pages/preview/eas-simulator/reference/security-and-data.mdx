@@ -11,7 +11,7 @@ import { FAQ } from '~/ui/components/FAQ';
 
 An EAS Simulator session belongs to an EAS project. Account roles control who can start, view, and stop sessions. Session tokens and preview links give direct access to the remote device, so treat them as secrets.
 
-Job logs on the session page are available for 30 days after the session is created. EAS keeps session artifacts, such as screenshots and recordings, until you delete the session.
+For how long EAS keeps job logs and artifacts, see [Retention and deletion](#retention-and-deletion).
 
 For how the parts connect, see [EAS Simulator security model](/preview/eas-simulator/how-it-works/security-model/).
 
@@ -34,14 +34,14 @@ If the user who started a session is deleted, EAS stops the session.
 
 The connection details of a session include tokens for the controller. EAS stores the connection details encrypted.
 
-| Where the tokens appear              | What to do                                                         |
-| ------------------------------------ | ------------------------------------------------------------------ |
-| **.env.eas-simulator**               | Add the file to **.gitignore**. Do not upload it as a CI artifact. |
-| `remoteConfig` in `--json` output    | Do not print it in CI logs.                                        |
-| `remoteConfig` in REST API responses | Do not log or cache it.                                            |
-| MCP configuration files for Argent   | Add the file to **.gitignore**.                                    |
+| Where the tokens appear                                     | What to do                                                         |
+| ----------------------------------------------------------- | ------------------------------------------------------------------ |
+| **.env.eas-simulator**                                      | Add the file to **.gitignore**. Do not upload it as a CI artifact. |
+| `remoteConfig` in `--json` output                           | Do not print it in CI logs.                                        |
+| `remoteConfig` in REST API responses                        | Do not log or cache it.                                            |
+| Model Context Protocol (MCP) configuration files for Argent | Add the file to **.gitignore**.                                    |
 
-The REST API returns `remoteConfig` only while the session is `in-progress`. After the session stops or fails, `remoteConfig` is `null`. EAS CLI (`eas simulator:get`) and the Expo GraphQL API still return the stored connection details after the session stops, but the remote device and its controller endpoints no longer exist. Session responses include `Cache-Control: private, no-store` and `Pragma: no-cache`.
+The REST API returns `remoteConfig` only while the session is `in-progress`. After the session stops or fails, `remoteConfig` is `null`. EAS CLI (`eas simulator:get`) and the Expo GraphQL API still return the stored connection details after the session stops. By then, the remote device and its controller endpoints no longer exist. Session responses include `Cache-Control: private, no-store` and `Pragma: no-cache`.
 
 The session page on expo.dev masks the token values by default. Anyone who can view the session page can reveal or copy them.
 
@@ -84,9 +84,9 @@ The `downloadUrl` does not change. Each request to it redirects to a new signed 
 
 - Job logs on the session page are available for 30 days after the session is created.
 - EAS keeps session artifacts, such as screenshots and recordings, until you delete the session.
-- You can delete a session after it finishes. A running session cannot be deleted.
+- You can delete a session after it finishes. You cannot delete a running session.
 - When you delete a session, EAS also deletes its recordings and screenshots. You cannot undo this.
-- When you delete the app, EAS also deletes its sessions and their artifacts.
+- When you delete the project, EAS also deletes its sessions and their artifacts.
 
 ## Common questions
 

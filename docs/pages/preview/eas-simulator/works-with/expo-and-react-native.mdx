@@ -1,7 +1,7 @@
 ---
 title: Run an Expo or React Native app on EAS Simulator
 sidebar_title: Expo and React Native
-description: Install an Expo or React Native development build or release build on a remote iOS Simulator or Android Emulator, and use Fast Refresh, component inspection, and profiling.
+description: Install an Expo or React Native development build or release build on a remote Android Emulator or iOS Simulator, and use Fast Refresh, component inspection, and profiling.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -17,7 +17,7 @@ EAS Simulator supports all of its features for Expo and React Native apps. Creat
 | Goal                                      | Build                                | Guide                                                                       |
 | ----------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------- |
 | See source changes with Fast Refresh      | Development build connected to Metro | [Iterate on your code](/preview/eas-simulator/how-to/iterate-on-your-code/) |
-| Inspect a fixed build or capture evidence | Release build or EAS simulator build | [Install your app](/preview/eas-simulator/how-to/install-your-app/)         |
+| Inspect a fixed build or capture evidence | Release build                        | [Install your app](/preview/eas-simulator/how-to/install-your-app/)         |
 | Test a project without custom native code | Expo Go                              | [Expo Go](/preview/eas-simulator/works-with/expo-go/)                       |
 
 A release build contains the JavaScript from build time. It does not show later source changes, even when you connect it to Metro.
@@ -37,7 +37,7 @@ An Expo project already has what EAS CLI needs. Link it to EAS one time:
   ]}
 />
 
-The `remote-device` profile needs `ios.simulator: true` for iOS and an APK build type for Android. See [Build a simulator-compatible app](/preview/eas-simulator/how-to/install-your-app/#build-a-simulator-compatible-app).
+The `remote-device` profile needs an APK build type for Android and `ios.simulator: true` for iOS. See [Build a simulator-compatible app](/preview/eas-simulator/how-to/install-your-app/#build-a-simulator-compatible-app).
 
 ## React Native projects without Expo
 
@@ -67,7 +67,7 @@ agent-device has features for React Native apps:
 - React render profiling, such as slow commits and re-renders
 - JavaScript evaluation through the Chrome DevTools Protocol (CDP) of Metro
 
-These features need a development server and a compatible React DevTools connection. Keep Metro running while you use them. For version-matched guidance, read the agent-device help through the session:
+Component inspection and render profiling need Metro and a React DevTools connection. On React Native 0.87 and later, add `agent-react-devtools` as a dev dependency and run `npx agent-react-devtools init` once. JavaScript evaluation needs only Metro. Keep Metro running while you use these features. For version-matched guidance, read the agent-device help through the session:
 
 <Terminal
   cmd={[

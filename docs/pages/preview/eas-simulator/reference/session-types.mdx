@@ -48,7 +48,7 @@ The tokens in these values give access to the remote device. Keep them secret. S
 
 Notes:
 
-- The start flags are `--build-id`, `--build-fingerprint`, `--application-archive-url`, `--expo-go`, `--launch-arg`, and `--open-url`. To connect an Appium client, see [Run Appium tests on a remote iOS Simulator or Android Emulator](/preview/eas-simulator/works-with/appium/).
+- The start flags are `--build-id`, `--build-fingerprint`, `--application-archive-url`, `--expo-go`, `--launch-arg`, and `--open-url`. To connect an Appium client, see [Run Appium tests on a remote Android Emulator or iOS Simulator](/preview/eas-simulator/works-with/appium/).
 - Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. For sessions that a person controls in the browser preview, use `--max-duration-minutes` to limit the session. See [How long an EAS Simulator session runs](/preview/eas-simulator/how-it-works/session-lifetime/).
 - A `web-preview-only` session does not report activity, so it does not support an idle timeout.
 
@@ -79,7 +79,7 @@ No. EAS sets the session type when the session starts. Start a new session with 
 
 <Collapsible summary="Do Android sessions include a browser preview?">
 
-Yes. Android sessions include a browser preview that streams the emulator. The expo.dev session page does not show it inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+Yes. Android sessions include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 </Collapsible>
 

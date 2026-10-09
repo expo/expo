@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Evidence shows what the app did on the remote device. Use a **screenshot** for a still state, a **recording** for motion, and **session activity** for the list of actions that a person or an agent did. EAS also keeps **session artifacts**, such as recordings and screenshots, that you can download from EAS CLI or from the session page on expo.dev.
+Evidence shows what the app did on the remote device. Use a **screenshot** for a still state and a **recording** for motion. Use **session activity** for the list of actions that a person or an agent did. EAS also keeps **session artifacts**, such as recordings and screenshots, that you can download from EAS CLI or from the session page on expo.dev.
 
 ## Choose the evidence
 
@@ -19,7 +19,7 @@ Evidence shows what the app did on the remote device. Use a **screenshot** for a
 | Does the screen look correct?                      | Screenshot                                   |
 | Does an animation, gesture, or transition work?    | Screen recording                             |
 | Which actions did the agent do, and in what order? | Session activity from `eas simulator:events` |
-| What did the app print?                            | Device logs from the controller              |
+| What did the app print?                            | App logs from the controller                 |
 
 ## Take a screenshot
 
@@ -33,8 +33,6 @@ Open the app first. agent-device needs an open app session before it can take a 
 />
 
 The screenshot downloads to the computer that runs the command. Take the screenshot only after the correct build is on screen. A release build shows the code from build time. See [Which build to install on EAS Simulator](/preview/eas-simulator/how-it-works/builds-and-bundles/). To confirm that a screenshot came from the remote device, see [Confirm that the agent controls the remote device](/preview/eas-simulator/how-it-works/agent-targeting/#confirm-that-the-agent-controls-the-remote-device).
-
-The status bar of the iOS Simulator shows `9:41` by default. This time does not mean that the screenshot is old.
 
 ### Control the screenshot size
 
@@ -50,6 +48,7 @@ Use the full resolution for an image that you compare pixel by pixel with anothe
 
 <Terminal
   cmd={[
+    '$ eas simulator:exec npx agent-device@latest open com.example.app --platform ios',
     '$ eas simulator:exec npx agent-device@latest record start ./artifacts/flow.mp4',
     '# Use the app',
     '$ eas simulator:exec npx agent-device@latest record stop',
@@ -88,9 +87,9 @@ Follow new activity in another terminal while you or an agent use the device:
 
 Use `--json` to get the raw event records for a script or an agent. You cannot use `--json` together with `--follow`. Session activity shows controller actions. It does not show the logs of your app.
 
-## Read device logs
+## Read app logs
 
-agent-device has a `logs` command that collects device logs. Logging is off by default. Open a log window for one reproduction instead of collecting all device logs. Read the version-matched help for the syntax:
+agent-device has a `logs` command that collects the logs of the app that it opened. Logging is off by default. Open a log window for one reproduction instead of collecting all logs. Read the version-matched help for the syntax:
 
 <Terminal cmd={['$ eas simulator:exec npx agent-device@latest help debugging']} />
 
@@ -100,12 +99,12 @@ The session page on expo.dev shows the evidence that EAS stores for the session:
 
 | Section              | Content                                                                                                                                         |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Preview or recording | The live browser preview while the session runs. After it ends, the recording player.                                                           |
+| Preview or recording | An **Open preview** button while the session runs. After it ends, the recording player.                                                         |
 | Session activity     | The recorded controller actions.                                                                                                                |
 | Artifacts            | Files grouped as screenshots, screen recordings, traces, performance metrics, native profiles, React profiles, session events, and other files. |
 | Logs                 | The logs of the job that ran the session. This section starts collapsed.                                                                        |
 
-Android sessions also produce a session screen recording artifact. On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+Android sessions also produce a session screen recording artifact. The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 Job logs on the session page are available for 30 days after the session is created. EAS keeps session artifacts, such as screenshots and recordings, until you delete the session. You can delete a finished session from its expo.dev page with the Developer role or higher. Download the files that you want to keep. See [EAS Simulator security, permissions, and data retention](/preview/eas-simulator/reference/security-and-data/).
 

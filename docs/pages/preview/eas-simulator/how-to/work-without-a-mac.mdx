@@ -58,7 +58,7 @@ Record the build ID from the output.
 
 <Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
 
-On Windows, see [Run commands on Windows](#run-commands-on-windows) for the syntax that sets `EXPO_UNSTABLE_TUNNEL_V2`.
+From SDK 58, `npx expo start --tunnel` uses this tunnel by default and ignores `EXPO_UNSTABLE_TUNNEL_V2`. On Windows, see [Run commands on Windows](#run-commands-on-windows) for the syntax that sets the variable.
 
 </Step>
 
@@ -67,6 +67,7 @@ On Windows, see [Run commands on Windows](#run-commands-on-windows) for the synt
 ### Start the session with the build
 
 <Terminal
+  cmdCopy={`eas simulator:start --platform ios --type agent-device --build-id <build-id> --open-url "<scheme>://expo-development-client/?url=<encoded-public-metro-url>" --name "Profile screen live edits" --non-interactive`}
   cmd={[
     '$ eas simulator:start --platform ios --type agent-device --build-id <build-id> \\',
     '    --open-url "<scheme>://expo-development-client/?url=<encoded-public-metro-url>" \\',
@@ -96,7 +97,7 @@ Stop Metro too.
 
 ## Run commands on Windows
 
-The `eas` CLI runs on Windows. The shell examples in these docs use POSIX syntax. For example, `EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel` sets an environment variable for one command, which does not work in PowerShell or Command Prompt. In PowerShell, set the variable first:
+EAS CLI runs on Windows. The shell examples in these docs use the shell syntax of macOS and Linux. For example, `EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel` sets an environment variable for one command, which does not work in PowerShell or Command Prompt. In PowerShell, set the variable first:
 
 <Terminal cmd={['$ $env:EXPO_UNSTABLE_TUNNEL_V2=1; npx expo start --tunnel']} />
 

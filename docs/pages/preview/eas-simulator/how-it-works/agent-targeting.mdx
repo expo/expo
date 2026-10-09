@@ -24,7 +24,7 @@ Each EAS Simulator command must know which session to use. By default, the comma
 `simulator:exec` loads values in this order:
 
 1. It loads the project's environment files.
-2. If **.env.eas-simulator** contains a session ID, the values in the file replace the same variables in your shell. Variables that the file does not contain are removed, so values from an older session do not mix with the current session.
+2. If **.env.eas-simulator** contains a session ID, the values in the file replace the same variables in your shell. `simulator:exec` also removes the connection variables that the file does not contain, so values from an older session do not mix with the current session.
 3. If the file does not contain a session ID, the variables that you exported in your shell apply.
 
 ## Run parallel sessions
@@ -52,11 +52,11 @@ To confirm the remote device:
 
 1. Run `eas simulator:get --json` and check that the ID matches the ID that the start command printed.
 2. Check that the status is `IN_PROGRESS`.
-3. Run `eas simulator:exec npx agent-device@latest open <app>`, and check that the **Session state** path starts with **/Users/expo/** on iOS or **/home/expo/** on Android. A path under your own home directory means that the agent controls a local device. The `agent-device session state-dir` command prints a local path, so do not use it for this check.
+3. Run `eas simulator:exec npx agent-device@latest open <app>`, and check that the **Session state** path starts with **/home/expo/** on Android or **/Users/expo/** on iOS. A path under your own home directory means that the agent controls a local device. The `agent-device session state-dir` command prints a local path, so do not use it for this check.
 
 ## Control more than one simulator in one session
 
-An iOS session can boot more than one iOS Simulator. At start, the session boots one device. The default agent-device session is bound to that device, so `--device` in the default session returns `INVALID_ARGS`. To boot and control another device, use a separate named agent-device session: pass `--session <name>` and `--device "<name>"` when you boot it, and pass `--session <name>` on each later command for that device. The agent-device `--device` flag accepts only a device name. To select a device by its UDID, use `--udid <UDID>`.
+An iOS session can boot more than one iOS Simulator. At start, the session boots one device. The default agent-device session is bound to that device, so `--device` in the default session returns `INVALID_ARGS`. To boot and control another device, use a separate named agent-device session. Pass `--session <name>` and `--device "<name>"` when you boot it. Then pass `--session <name>` on each later command for that device. The agent-device `--device` flag accepts only a device name. To select a device by its unique device identifier (UDID), use `--udid <UDID>`.
 
 <Terminal
   cmd={[
@@ -68,7 +68,7 @@ An iOS session can boot more than one iOS Simulator. At start, the session boots
 
 ## Agent identifiers
 
-When an agent creates a session, EAS can record where the request came from, such as the website, EAS CLI, or the Expo MCP server, and an agent ID. EAS uses these values for analytics only. They do not grant access or select a session.
+When an agent creates a session, EAS can record where the request came from and an agent ID. The request can come from the website, EAS CLI, or the Expo Model Context Protocol (MCP) server. EAS uses these values for analytics only. They do not grant access or select a session.
 
 ## Common questions
 

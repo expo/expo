@@ -1,7 +1,7 @@
 ---
 title: Let an AI coding agent verify a change on a remote simulator
 sidebar_title: Verify a change with an agent
-description: Give a coding agent such as Claude Code, Codex, or Cursor a real iOS Simulator or Android Emulator on EAS so that it can test its own change and return screenshots or recordings.
+description: Give a coding agent such as Claude Code, Codex, or Cursor a real Android Emulator or iOS Simulator on EAS so that it can test its own change and return screenshots or recordings.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -11,11 +11,11 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-A coding agent can read and change your code, but it cannot see whether the change works unless it can run the app. EAS Simulator gives the agent a remote iOS Simulator or Android Emulator. The agent installs the app, uses it through a controller, and returns screenshots, recordings, or logs as evidence.
+A coding agent can read and change your code, but it cannot see whether the change works unless it can run the app. EAS Simulator gives the agent a remote Android Emulator or iOS Simulator. The agent installs the app, uses it through a controller, and returns screenshots, recordings, or logs as evidence.
 
 ## Install the EAS Simulator skill
 
-The fastest setup is the official EAS Simulator skill. Install [Expo Skills](/skills/), then ask your agent to use the skill. The skill contains the tested steps for the access check, the build choice, the session, the controller, the evidence, and the cleanup.
+Start with the official EAS Simulator skill. Install [Expo Skills](/skills/), then ask your agent to use the skill. The skill contains the tested steps for the access check, the build choice, the session, the controller, the evidence, and the cleanup.
 
 <RelatedSkills names={['eas-simulator']} />
 
@@ -36,7 +36,7 @@ Describe the result that you want and the evidence that proves it:
 
 With the skill, the agent follows the same loop each time:
 
-1. It runs `eas simulator:availability --json`. If EAS Simulator is not available for the account, it tells you, and it uses a local workflow instead, such as a local simulator or emulator.
+1. It runs `eas simulator:availability --json`. If EAS Simulator is not available for the account, it tells you. Then it uses a local workflow instead, such as a local simulator or emulator.
 2. It selects a build that fits the goal. For live edits, it uses a development build with Metro. For a fixed screenshot, it uses a build that matches the current source.
 3. It starts a named session and confirms that the status is `IN_PROGRESS`.
 4. It installs and opens the app, then uses agent-device commands such as `snapshot -i`, `press`, and `fill`.
@@ -65,7 +65,7 @@ Confirm the setup:
 
 The start command prints a browser preview URL. Open it in a desktop browser to see the simulator while the agent uses it. In Cursor or VS Code, you can open the URL in the **Simple Browser** panel.
 
-On Android, the expo.dev session page does not show the browser preview inline yet; select **Open preview** to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 To see each controller action as it happens, run this command in another terminal:
 
@@ -75,7 +75,7 @@ To confirm that the agent controls the remote device and not a local simulator, 
 
 ## Set limits for the agent
 
-A session keeps running until it stops or reaches its maximum duration. Give the agent limits in the prompt, and add a maximum duration to each session:
+A session keeps running until someone stops it, or until it reaches its maximum duration or idle limit. Give the agent limits in the prompt, and add a maximum duration to each session:
 
 - Ask the agent to stop each session that it creates when it finishes or fails.
 - Ask the agent to start no more than one session at a time, unless the task needs more.

@@ -25,6 +25,8 @@ The remote device must reach Metro over the internet. Start Metro first, because
 
 <Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
 
+`EXPO_UNSTABLE_TUNNEL_V2=1` selects a tunnel that is signed for your Expo account. From SDK 58, `npx expo start --tunnel` uses this tunnel by default and ignores the variable.
+
 </Step>
 
 <Step label="2">
@@ -32,6 +34,7 @@ The remote device must reach Metro over the internet. Start Metro first, because
 ### Start the session with Expo Go
 
 <Terminal
+  cmdCopy={`eas simulator:start --platform ios --type agent-device --expo-go --open-url "exp://<metro-host>" --name "Expo Go live preview" --non-interactive`}
   cmd={[
     '$ eas simulator:start --platform ios --type agent-device --expo-go \\',
     '    --open-url "exp://<metro-host>" \\',
@@ -70,8 +73,8 @@ EAS CLI reads the Expo SDK version from the project. To use a different version,
 A create session link can also start Expo Go. Set these parameters:
 
 - `expoGo=true`
-- `platform=ios` or `platform=android`. Android support is still in development.
-- `sdkVersion`: the Expo SDK version of your project, such as `57`
+- `platform=android` or `platform=ios`. Android support is still in development.
+- `sdkVersion`: the Expo SDK version of your project, such as `58`
 - `openUrl`: the Metro URL
 
 ```text
