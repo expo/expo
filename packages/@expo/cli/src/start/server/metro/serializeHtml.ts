@@ -1,3 +1,4 @@
+import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { injectAssetsIntoHtml } from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
@@ -88,6 +89,18 @@ export function serialAssetsToStaticContentAssets(
     return { css, js: [bundleUrl], favicon };
   }
 
+  if (
+    assets.some((asset) => asset.type === 'js' && asset.metadata.chunkingStrategy === 'granular')
+  ) {
+    return {
+      css,
+      js: getGranularAssetsForRoute(assets, route?.entryPoints).map((asset) =>
+        getChunkUrl(baseUrl, asset.filename)
+      ),
+      favicon,
+    };
+  }
+
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
   if (route?.entryPoints && Array.isArray(route.entryPoints)) {
@@ -152,10 +165,51 @@ export function sortMatchedAssetsByEntryPoints(
   );
 }
 
+export function getGranularAssetsForRoute(
+  assets: SerialAsset[],
+  entryPoints: readonly string[] = []
+): SerialAsset[] {
+  const jsAssets = assets.filter((asset) => asset.type === 'js');
+  for (const asset of jsAssets) {
+    if (asset.metadata.chunkingStrategy !== 'granular') {
+      throw new Error(
+        `Mixed chunking strategy for ${asset.filename}. Serialize the page with one strategy.`
+      );
+    }
+    if (!Array.isArray(asset.metadata.entryPaths) || !Array.isArray(asset.metadata.requires)) {
+      throw new Error(
+        `Missing entryPaths or requires for Granular asset ${asset.filename}. Regenerate the export with canonical chunk metadata.`
+      );
+    }
+  }
+  const entryAssets = jsAssets.filter((asset) => asset.metadata.entryChunks !== undefined);
+  if (entryAssets.length !== 1) {
+    throw new Error('Expected one Granular entry-to-chunks mapping.');
+  }
+  const entryChunks = entryAssets[0]!.metadata.entryChunks!;
+  const assetsByFilename = new Map(jsAssets.map((asset) => [asset.filename, asset]));
+  const rootAssets = entryPoints.flatMap((entryPath) =>
+    (entryChunks[entryPath] ?? []).map((filename) => {
+      const asset = assetsByFilename.get(filename);
+      if (!asset) {
+        throw new Error(`Asset not found for entry ${entryPath}: ${filename}`);
+      }
+      return asset;
+    })
+  );
+  return assetsRequiresSort(jsAssets, [
+    ...rootAssets,
+    ...jsAssets.filter((asset) => !asset.metadata.isAsync),
+  ]);
+}
+
 /**
  * Sorts assets based on the requires tree. DFS order.
  */
-export function assetsRequiresSort(assets: SerialAsset[]): SerialAsset[] {
+export function assetsRequiresSort(
+  assets: SerialAsset[],
+  roots: SerialAsset[] = assets
+): SerialAsset[] {
   const lookup = new Map<string, SerialAsset>();
   const visited = new Set();
   const visiting = new Set();
@@ -186,7 +240,7 @@ export function assetsRequiresSort(assets: SerialAsset[]): SerialAsset[] {
     result.push(module);
   }
 
-  assets.forEach((a) => {
+  roots.forEach((a) => {
     if (!visited.has(a.filename)) {
       visit(a.filename);
     }

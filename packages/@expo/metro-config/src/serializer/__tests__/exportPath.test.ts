@@ -1,4 +1,15 @@
-import { getExportPathForDependencyWithOptions } from '../exportPath';
+import { getChunkUrl, getExportPathForDependencyWithOptions } from '../exportPath';
+
+it.each([
+  ['', 'dist/a.js', '/dist/a.js'],
+  ['/', '/dist/a.js', '/dist/a.js'],
+  ['/sub/', '/dist/a.js', '/sub/dist/a.js'],
+  ['/sub', 'dist/a.js', '/sub/dist/a.js'],
+  ['https://cdn.example.com/sub/', '/dist/a.js', 'https://cdn.example.com/sub/dist/a.js'],
+  ['./', 'dist/a.js', './dist/a.js'],
+])('joins chunk URL %s and %s', (base, filename, expected) => {
+  expect(getChunkUrl(base, filename)).toBe(expected);
+});
 
 describe(getExportPathForDependencyWithOptions, () => {
   it(`returns consistent local path`, () => {
