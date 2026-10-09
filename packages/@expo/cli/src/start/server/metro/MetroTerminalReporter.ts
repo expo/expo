@@ -78,6 +78,10 @@ declare module '2g' {
       level: 'info' | 'warn' | 'error' | null;
       data: string | unknown[] | null;
     };
+    'metro:worker_log': {
+      stream: 'stdout' | 'stderr';
+      data: string;
+    };
     'metro:client_log': {
       level: ClientLogLevel | null;
       data: unknown[] | null;
@@ -487,6 +491,12 @@ export class MetroTerminalReporter extends TerminalReporter {
       }
       case 'resolver_warning':
         return event('server_log', { level: 'warn', data: evt.message });
+      case 'worker_stdout_chunk':
+      case 'worker_stderr_chunk':
+        return event('worker_log', {
+          stream: evt.type === 'worker_stdout_chunk' ? 'stdout' : 'stderr',
+          data: evt.chunk,
+        });
       case 'unstable_server_log':
         return event('server_log', {
           level: evt.level ?? null,
