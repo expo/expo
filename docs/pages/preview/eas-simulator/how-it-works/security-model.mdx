@@ -58,7 +58,7 @@ For live edits, you start Metro with a public tunnel. The tunnel URL is random, 
 
 ## Network traffic
 
-By default, all network traffic from the remote device exits from EAS infrastructure. With local egress, iOS Simulator traffic that honors the system proxy exits from your computer instead. The local egress client refuses connections to local, private, link-local, and multicast addresses on your network. To let the simulator reach a server on your computer or your network, list each destination as an exact `host:port` with `--egress-allow`. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/).
+By default, all network traffic from the remote device exits from EAS infrastructure. With local egress, device traffic exits from your computer instead: all TCP traffic on Android, and traffic that honors the system proxy on iOS. The local egress client refuses connections to local, private, link-local, and multicast addresses on your network. To let the simulator reach a server on your computer or your network, list each destination as an exact `host:port` with `--egress-allow`. See [Network traffic and local egress in EAS Simulator](/preview/eas-simulator/how-it-works/network-inspection/).
 
 ## What EAS does when a user is deleted
 

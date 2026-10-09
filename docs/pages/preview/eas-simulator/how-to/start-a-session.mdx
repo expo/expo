@@ -77,13 +77,13 @@ If the session stops or fails before it is ready, the command reports the failur
 
 You can add more flags to the same command:
 
-| Goal                                            | Flags                                                                                   | More information                                                              |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Install and launch an app during startup        | One of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go` | [Install your app](/preview/eas-simulator/how-to/install-your-app/)           |
-| Select a device model                           | `--device <avd-profile>` on Android, or `--device "<name-or-UDID>"` on iOS              | [Devices](/preview/eas-simulator/reference/devices/)                          |
-| Stop the session automatically                  | `--max-duration-minutes <minutes>`, `--max-idle-time-minutes <minutes>`                 | [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/)     |
-| Group the session with others                   | `--tag <tag>`, repeated for each tag                                                    | [Organize sessions](/preview/eas-simulator/how-to/organize-sessions/)         |
-| Route iOS network traffic through your computer | `--egress local`                                                                        | [Network inspection](/preview/eas-simulator/how-it-works/network-inspection/) |
+| Goal                                               | Flags                                                                                   | More information                                                              |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Install and launch an app during startup           | One of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go` | [Install your app](/preview/eas-simulator/how-to/install-your-app/)           |
+| Select a device model                              | `--device <avd-profile>` on Android, or `--device "<name-or-UDID>"` on iOS              | [Devices](/preview/eas-simulator/reference/devices/)                          |
+| Stop the session automatically                     | `--max-duration-minutes <minutes>`, `--max-idle-time-minutes <minutes>`                 | [Session lifetime](/preview/eas-simulator/how-it-works/session-lifetime/)     |
+| Group the session with others                      | `--tag <tag>`, repeated for each tag                                                    | [Organize sessions](/preview/eas-simulator/how-to/organize-sessions/)         |
+| Route device network traffic through your computer | `--egress local`                                                                        | [Network inspection](/preview/eas-simulator/how-it-works/network-inspection/) |
 
 ## Start a session with the REST API
 

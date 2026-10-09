@@ -1,7 +1,7 @@
 ---
 title: Network traffic and local egress in EAS Simulator
 sidebar_title: Network traffic
-description: Learn where network traffic from a remote EAS Simulator device exits, how local egress routes iOS traffic through your computer, and how to inspect and record requests.
+description: Learn where network traffic from a remote EAS Simulator device exits, how local egress routes device traffic through your computer, and how to inspect and record requests.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -22,11 +22,11 @@ To reach Metro on your computer without local egress, start Metro with a public 
 
 ## How local egress works
 
-Local egress is an experimental feature for iOS sessions. It is available only on accounts where Expo enables it. [Contact Expo](https://expo.dev/contact) to enable it.
+Local egress is an experimental feature for Android and iOS sessions. On Android, it requires EAS CLI 24.9.0 or later. It is available only on accounts where Expo enables it. [Contact Expo](https://expo.dev/contact) to enable it.
 
 When you start a session with `--egress local`, these steps occur:
 
-1. The machine on EAS points its macOS system proxy, which the iOS Simulator uses, at a port on that machine.
+1. On Android, the emulator sends all of its TCP traffic to a proxy on the EAS machine. On iOS, the EAS machine points its macOS system proxy, which the iOS Simulator uses, at a port on that machine.
 2. A reverse tunnel connects that port to the egress client on your computer.
 3. The egress client sends each request to the internet from your computer.
 4. The response returns through the tunnel to the simulator.
@@ -42,6 +42,10 @@ The egress client runs on the computer that runs EAS CLI. It must keep running f
 In interactive mode, the start command runs the egress client in the same terminal. With `--non-interactive`, run `eas simulator:egress` in another terminal. See [`simulator:egress`](/preview/eas-simulator/reference/cli/#simulatoregress).
 
 ## Which traffic local egress covers
+
+On Android, all TCP traffic from the emulator exits from your computer. Traffic that cannot use the proxy, such as UDP and QUIC, is refused. DNS for apps that ignore the system proxy resolves on the EAS machine.
+
+On iOS, coverage depends on the client:
 
 | Client type                                                             | Behavior with local egress    |
 | ----------------------------------------------------------------------- | ----------------------------- |
@@ -62,7 +66,7 @@ The egress client refuses connections to local, private, link-local, and multica
   ]}
 />
 
-Repeat the flag for each destination. `--egress-allow` does not accept ranges. A `localhost` or `127.0.0.1` entry also forwards that port from the simulator's machine to your computer, in the same way as `adb reverse`. Then a development server URL that uses `127.0.0.1:3000` works in the remote simulator. EAS CLI does not forward ports below 1024 or the port of the egress proxy. The simulator can reach those destinations only by host name.
+Repeat the flag for each destination. `--egress-allow` does not accept ranges. A `localhost` or `127.0.0.1` entry also forwards that port from the simulator's machine to your computer, in the same way as `adb reverse`. Then a development server URL that uses `127.0.0.1:3000` works in the remote simulator. On Android, the entry also covers `10.0.2.2` on the same port. EAS CLI does not forward ports below 1024 or the port of the egress proxy. The simulator can reach those destinations only by host name.
 
 ## Inspect requests
 
@@ -143,7 +147,7 @@ Capture sends the app's traffic through a proxy on the session's machine and dec
 
 <Collapsible summary="Does local egress work on Android?">
 
-No. Local egress uses the macOS system proxy, so it is available only with `--platform ios`.
+Yes, with EAS CLI 24.9.0 or later. On Android, all TCP traffic from the emulator goes through the proxy to your computer, and `--egress-allow localhost:<port>` also covers `10.0.2.2:<port>`. Earlier EAS CLI versions fail with `--egress local is only supported with --platform ios`.
 
 </Collapsible>
 
