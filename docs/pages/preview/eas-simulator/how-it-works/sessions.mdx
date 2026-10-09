@@ -20,22 +20,24 @@ An EAS Simulator **session** is one remote device that runs for a limited time o
 | Browser preview | A live stream of the device that people can see in a desktop browser and, on iOS, control.                       |
 | Session record  | The ID, name, tags, status, timestamps, activity events, and artifacts. You can read it after the session stops. |
 
-Android sessions also include a browser preview that streams the emulator. Select **Open preview** on the session page on expo.dev to open it in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+Select **Open preview** on the session page on expo.dev to open the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
 For a list of the session types, see [EAS Simulator session types](/preview/eas-simulator/reference/session-types/).
 
 ## Session states
 
-A session moves through four states:
+A session moves through these states:
 
-| State       | EAS CLI       | REST API      | expo.dev label | Meaning                                                             |
-| ----------- | ------------- | ------------- | -------------- | ------------------------------------------------------------------- |
-| New         | `NEW`         | `new`         | Starting       | The session waits in the queue, or the device and controller start. |
-| In progress | `IN_PROGRESS` | `in-progress` | Live           | The session runs. Connection details are available.                 |
-| Stopped     | `STOPPED`     | `stopped`     | Finished       | The session ended normally. This state is final.                    |
-| Errored     | `ERRORED`     | `errored`     | Failed         | The session ended with an error. This state is final.               |
+| State       | EAS CLI       | REST API      | expo.dev label | Meaning                                                           |
+| ----------- | ------------- | ------------- | -------------- | ----------------------------------------------------------------- |
+| New         | `NEW`         | `new`         | Starting       | EAS created the session and has not queued its job yet.           |
+| Queued      | `QUEUED`      | `queued`      | Starting       | The session's job waits in the queue for a worker.                |
+| Starting    | `STARTING`    | `starting`    | Starting       | A worker runs the job and prepares the device and the controller. |
+| In progress | `IN_PROGRESS` | `in-progress` | Live           | The session runs. Connection details are available.               |
+| Stopped     | `STOPPED`     | `stopped`     | Finished       | The session ended normally. This state is final.                  |
+| Errored     | `ERRORED`     | `errored`     | Failed         | The session ended with an error. This state is final.             |
 
-A session goes from new to in progress when the device and the controller are ready. It goes to stopped when you stop it, when it reaches a limit, or when its job finishes or is canceled. It goes to errored when its job fails. An errored session stays errored, even if you send a stop request.
+A session goes from starting to in progress when the device and the controller are ready. New, queued, and starting sessions are not final, so a stop request ends them. It goes to stopped when you stop it, when it reaches a limit, or when its job finishes or is canceled. It goes to errored when its job fails. An errored session stays errored, even if you send a stop request.
 
 The REST API returns connection details, such as controller tokens, only while the session is in progress.
 

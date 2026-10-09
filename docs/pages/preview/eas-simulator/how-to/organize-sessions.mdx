@@ -61,13 +61,13 @@ You can also add tags in the **Advanced options** of the **Create new simulator*
 
 You can combine these filters, and repeat each one except `--name`:
 
-| Filter       | Values                                                 | Match rule                                       |
-| ------------ | ------------------------------------------------------ | ------------------------------------------------ |
-| `--status`   | `new`, `in-progress`, `stopped`, `errored`             | Any of the listed values                         |
-| `--platform` | `android`, `ios`                                       | Any of the listed values                         |
-| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only` | Any of the listed values                         |
-| `--name`     | Text                                                   | Name starts with the text. Case does not matter. |
-| `--tag`      | Text                                                   | The session has every listed tag                 |
+| Filter       | Values                                                           | Match rule                                       |
+| ------------ | ---------------------------------------------------------------- | ------------------------------------------------ |
+| `--status`   | `new`, `queued`, `starting`, `in-progress`, `stopped`, `errored` | Any of the listed values                         |
+| `--platform` | `android`, `ios`                                                 | Any of the listed values                         |
+| `--type`     | `agent-device`, `appium`, `argent`, `web-preview-only`           | Any of the listed values                         |
+| `--name`     | Text                                                             | Name starts with the text. Case does not matter. |
+| `--tag`      | Text                                                             | The session has every listed tag                 |
 
 The list shows 10 sessions by default. Use `--limit` for up to 100 sessions on each page. To get the next page, pass the `endCursor` value from the previous JSON response to `--after`:
 
@@ -86,12 +86,12 @@ A session that you started with `--non-interactive` runs until you stop it or un
 
 <Terminal
   cmd={[
-    '$ eas simulator:list --status new --status in-progress',
+    '$ eas simulator:list --status new --status queued --status starting --status in-progress',
     '$ eas simulator:stop --id <session-id>',
   ]}
 />
 
-The `new` status includes sessions that are in the queue or starting.
+The `queued` and `starting` filters need EAS CLI 24.9.0 or later. Earlier versions report those sessions as `new`.
 
 ## See sessions on expo.dev
 
@@ -101,7 +101,7 @@ The **Simulator sessions** page of a project lists its sessions:
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions
 ```
 
-The list shows a status for each session: **Starting**, **Live**, **Finished**, or **Failed**. These labels match the `new`, `in-progress`, `stopped`, and `errored` status values.
+The list shows a status for each session: **Starting**, **Live**, **Finished**, or **Failed**. These labels match the `new`, `queued`, `starting`, `in-progress`, `stopped`, and `errored` status values.
 
 Each session has its own page. The start command prints this URL, and `eas simulator:get` returns it:
 

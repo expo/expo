@@ -127,7 +127,7 @@ The response's `maxDurationMinutes` matches the requested session duration. A re
 
 The account's duration limit depends on its plan: 40 minutes on the Free plan and 115 minutes on paid plans. When you omit `maxDurationMinutes`, the session gets the plan maximum. See [Session duration limits](/preview/eas-simulator/reference/usage-and-billing/#session-duration-limits).
 
-`remoteConfig` is `null` while the session is starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
+`remoteConfig` is `null` while the session is new, queued, or starting. Poll the [get endpoint](#get-a-session) for status and connection details together.
 
 ## Get a session
 
@@ -186,12 +186,14 @@ An agent-device session that is ready returns connection details alongside its m
 
 The REST API returns lowercase status values:
 
-| Value         | Meaning                                                                                 |
-| ------------- | --------------------------------------------------------------------------------------- |
-| `new`         | The session is queued or preparing the device and controller. `remoteConfig` is `null`. |
-| `in-progress` | The session is running. Connect when `remoteConfig` is not `null`.                      |
-| `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                            |
-| `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.                    |
+| Value         | Meaning                                                                           |
+| ------------- | --------------------------------------------------------------------------------- |
+| `new`         | EAS created the session and has not queued its job yet. `remoteConfig` is `null`. |
+| `queued`      | The session's job waits in the queue for a worker. `remoteConfig` is `null`.      |
+| `starting`    | A worker prepares the device and the controller. `remoteConfig` is `null`.        |
+| `in-progress` | The session is running. Connect when `remoteConfig` is not `null`.                |
+| `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                      |
+| `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.              |
 
 Poll this endpoint every five seconds until `status` is `in-progress` and `remoteConfig` is not `null`, then connect using that configuration. Set a timeout in your integration. If the status becomes `stopped` or `errored`, stop polling and inspect the session page at `url`.
 
