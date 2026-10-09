@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "58.0.0-preview.3",
+  "version": "58.0.6",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -33,6 +33,7 @@
     "src",
     "AppEntry.js",
     "Expo.podspec",
+    "Package.swift",
     "bundledNativeModules.json",
     "expo-module.config.json",
     "metro-config.js",
@@ -177,6 +178,7 @@
     "./dom/entry.js": "./dom/entry.js",
     "./dom/entry": "./dom/entry.js",
     "./AppEntry.js": "./AppEntry.js",
+    "./template.tgz": "./template.tgz",
     "./virtual/*.js": "./virtual/*.js",
     "./virtual/*": "./virtual/*.js",
     "./scripts/*.js": "./scripts/*.js",
@@ -199,12 +201,14 @@
     ]
   },
   "scripts": {
-    "build": "../expo-module-scripts/bin/expo-build src",
+    "build": "../@expo/internal-scripts/bin/expo-build src",
     "clean": "rimraf build",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
-    "test": "jest && jest --config scripts/spm/jest.config.js",
+    "test": "jest && jest --config scripts/spm/jest.config.js && pnpm test:templates",
     "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
+    "test:templates": "et check-template-packages",
+    "prepack": "et create-expo-template-tarball",
     "prepublishOnly": "run-s clean build",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
@@ -236,7 +240,6 @@
     "whatwg-url-minimum": "^0.2.0"
   },
   "devDependencies": {
-    "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
@@ -244,7 +247,7 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0-rc.1",
+    "react-native": "0.88.0-rc.4",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },
@@ -275,7 +278,7 @@
     }
   },
   "jest": {
-    "preset": "../expo-module-scripts/jest-preset.cjs"
+    "preset": "../@expo/internal-scripts/jest-preset.cjs"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"

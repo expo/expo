@@ -1,6 +1,6 @@
 {
   "name": "@expo/config",
-  "version": "58.0.0",
+  "version": "58.0.3",
   "description": "A library for interacting with the app.json",
   "keywords": [
     "expo",
@@ -60,19 +60,20 @@
     "@expo/config-plugins": "workspace:~",
     "@expo/config-types": "workspace:^",
     "@expo/json-file": "workspace:^",
+    "@expo/platforms": "workspace:^",
     "@expo/require-utils": "workspace:^",
     "deepmerge": "^4.3.1",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "resolve-workspace-root": "^2.0.0",
-    "semver": "^7.6.0",
+    "semver": "^7.7.4",
     "slugify": "^1.3.4"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/babel__code-frame": "^7.27.0",
-    "@types/getenv": "^1.0.0",
-    "@types/semver": "^7.5.8",
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "@types/getenv": "^1.0.3",
+    "@types/semver": "^7.7.1",
+    "memfs": "^3.6.0"
   }
 }

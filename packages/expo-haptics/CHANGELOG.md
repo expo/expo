@@ -1,14 +1,28 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Migrate to the Expo Modules API 2.0. ([#51088](https://github.com/expo/expo/pull/51088) by [@lukmccall](https://github.com/lukmccall))
 
-### 🐛 Bug fixes
+## 58.0.4
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
 
 ### 💡 Others
+
+- [iOS] Derive the prebuilt XCFramework's target layout from a checked-in `Package.swift` instead of generating it at build time. The built artifact is unchanged. ([#50417](https://github.com/expo/expo/pull/50417) by [@chrfalch](https://github.com/chrfalch))
 
 ## 58.0.1 — 2026-09-14
 

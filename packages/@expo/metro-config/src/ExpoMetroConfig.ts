@@ -11,6 +11,12 @@ import type {
   ReadOnlyGraph,
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
+import {
+  OUT_OF_TREE_PLATFORMS,
+  getReactNativeHostPackage as getHostPackageForPlatform,
+  isOutOfTreePlatform,
+} from '@expo/platforms';
+import * as requireUtils from '@expo/require-utils';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -59,15 +65,7 @@ export interface DefaultConfigOptions {
 let hasWarnedAboutReactNative = false;
 
 function getReactNativeHostPackage(platform?: string | null): string {
-  // NOTE(@kitten): Duplicated as `getSupportPackageForPlatform` in expo-modules-autolinking
-  switch (platform) {
-    case 'tvos':
-      return 'react-native-tvos';
-    case 'macos':
-      return 'react-native-macos';
-    default:
-      return 'react-native';
-  }
+  return isOutOfTreePlatform(platform) ? getHostPackageForPlatform(platform)! : 'react-native';
 }
 
 function getReactNativeHostPath(projectRoot: string, platform?: string | null): string {
@@ -310,13 +308,14 @@ export function getDefaultConfig(
       unstable_conditionsByPlatform: {
         ios: ['react-native'],
         android: ['react-native'],
-        tvos: ['react-native'],
-        macos: ['react-native'],
+        ...Object.fromEntries(
+          OUT_OF_TREE_PLATFORMS.map((platform) => [platform, ['react-native']])
+        ),
         // This is removed for server platforms.
         web: ['browser'],
       },
       resolverMainFields: ['react-native', 'browser', 'main'],
-      platforms: ['ios', 'android', 'tvos', 'macos'],
+      platforms: ['ios', 'android', ...OUT_OF_TREE_PLATFORMS],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
           // Additional font files missing from default values
@@ -362,12 +361,13 @@ export function getDefaultConfig(
         : createNumericModuleIdFactory,
 
       getModulesRunBeforeMainModule: () => {
+        const reactNativeHostPath = getReactNativeHostPath(projectRoot);
         const preModules: string[] = [
           // NOTE(@kitten): `getModulesRunBeforeMainModule` is deprecated, but still partially expected
           // We instead add the canonical path, but don't expect or enforce Metro to re-order modules
-          require.resolve(
-            path.join(getReactNativeHostPath(projectRoot), 'Libraries/Core/InitializeCore')
-          ),
+          // Out-of-tree platforms on React Native < 0.87 ship only `InitializeCore`
+          requireUtils.resolveFrom(reactNativeHostPath, './src/setup-env') ??
+            require.resolve(path.join(reactNativeHostPath, 'Libraries/Core/InitializeCore')),
         ];
 
         const stdRuntime = resolveFrom.silent(projectRoot, 'expo/src/winter/index.ts');

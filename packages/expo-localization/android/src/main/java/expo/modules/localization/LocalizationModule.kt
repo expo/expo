@@ -113,7 +113,11 @@ class LocalizationModule : Module() {
             // On Android `regionCode` is the same as `countryCode`, except for miui where there's an additional region picker.
             "regionCode" to getRegionCode(locale),
             "languageRegionCode" to getCountryCode(locale),
-            "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
+            "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) {
+              "rtl"
+            } else {
+              "ltr"
+            },
             "languageCode" to locale.language,
             "languageScriptCode" to locale.script.ifEmpty { null },
             // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
@@ -134,7 +138,9 @@ class LocalizationModule : Module() {
   }
 
   private fun uses24HourClock(): Boolean {
-    if (appContext.reactContext == null) return false
+    if (appContext.reactContext == null) {
+      return false
+    }
     return DateFormat.is24HourFormat(appContext.reactContext)
   }
 
@@ -150,7 +156,7 @@ class LocalizationModule : Module() {
     return listOf(
       mapOf(
         "calendar" to getCalendarType(),
-        "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android and ios
+        "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android
         "firstWeekday" to Calendar.getInstance().firstDayOfWeek,
         "timeZone" to Calendar.getInstance().timeZone.id
       )

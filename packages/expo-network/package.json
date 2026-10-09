@@ -1,6 +1,6 @@
 {
   "name": "expo-network",
-  "version": "58.0.0",
+  "version": "58.0.3",
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "keywords": [
     "expo",
@@ -21,6 +21,7 @@
   "main": "build/Network.js",
   "types": "build/Network.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -29,13 +30,14 @@
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {},
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/react": "~19.3.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

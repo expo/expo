@@ -184,6 +184,10 @@ export interface ExpoConfig {
      * iOS only. Whether to exclude the expo-updates directory from device backups (iCloud). Defaults to false. When set to true, downloaded updates are not included in backups, which can significantly shrink backup size for apps with large updates. On restore the device has no cached update and runs the embedded update until the latest update is downloaded again.
      */
     excludeFromBackup?: boolean;
+    /**
+     * Number of updates to keep, including the one currently running. For example, 3 keeps the running update and up to two older updates. Updates that match the manifest filters take priority, with the newest updates kept first. Defaults to 2. This value controls how many older updates to keep alongside the running update. Cleanup leaves updates from other scopes and updates with the same or a newer commit time than the running update untouched, so the cache can contain more updates than this value.
+     */
+    maxUpdatesToKeep?: number;
   };
   /**
    * Provide per-locale values for System Dialog prompts such as Permissions Boxes, and create Localizable.strings file to localize (for example) push notifications. Platform-specific locale strings should be nested under `ios` and `android` keys.
@@ -650,7 +654,7 @@ export interface AndroidIntentFiltersData {
  */
 export interface Web {
   /**
-   * Sets the export method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. `server` outputs static HTML, and API Routes for hosting with a custom Node.js server. Defaults to `single`.
+   * Sets the export method for the web app for both `expo start` and `expo export`. `static` statically renders HTML files for every route in the `app/` directory, which is available only in Expo Router apps. `single` outputs a Single Page Application (SPA), with a single `index.html` in the output folder, and has no statically indexable HTML. `server` renders HTML pages on each request and supports API routes, requiring deployment to a server. Defaults to `single`.
    */
   output?: 'single' | 'static' | 'server';
   /**

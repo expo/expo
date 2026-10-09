@@ -9,7 +9,9 @@
   "dependencies": {
     "expo": "workspace:*",
     "expo-constants": "workspace:*",
+    "expo-crypto": "workspace:*",
+    "expo-image": "workspace:*",
     "react": "19.3.0",
-    "react-native": "0.88.0-rc.1"
+    "react-native": "0.88.0-rc.4"
   }
 }

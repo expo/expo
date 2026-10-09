@@ -1,14 +1,56 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#51059](https://github.com/expo/expo/pull/51059), [#51077](https://github.com/expo/expo/pull/51077), [#51091](https://github.com/expo/expo/pull/51091))
+  - expo-web-browser@58.0.6
+  - expo-application@58.0.4
+  - expo-crypto@58.0.5
+  - expo-constants@58.0.10
+  - expo-linking@58.0.11
 
-### 🐛 Bug fixes
+## 58.0.8
 
-### 💡 Others
+### Patch Changes
+
+- Updated dependencies. ([#50965](https://github.com/expo/expo/pull/50965))
+  - expo-web-browser@58.0.5
+
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-application@58.0.3
+  - expo-crypto@58.0.4
+  - expo-linking@58.0.10
+  - expo-web-browser@58.0.4
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#49511](https://github.com/expo/expo/pull/49511), [#50661](https://github.com/expo/expo/pull/50661), [#50289](https://github.com/expo/expo/pull/50289))
+  - expo-application@58.0.2
+  - expo-constants@58.0.9
+  - expo-crypto@58.0.3
+  - expo-linking@58.0.9
+  - expo-web-browser@58.0.3
+
+## 58.0.5 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.2 — 2026-09-16
 

@@ -175,6 +175,41 @@ describe('Database', () => {
     expect(results.length).toBe(0);
   });
 
+  it.each(['async', 'exclusive', 'sync'] as const)(
+    '%s transactions preserve the original error after SQLite rolls back automatically',
+    async (mode) => {
+      // Exclusive transactions open a separate connection, so use a file database.
+      const database = await openDatabaseAsync('test.db');
+      db = database;
+      await database.execAsync(`
+        DROP TABLE IF EXISTS rollback_test;
+        CREATE TABLE rollback_test (value INTEGER UNIQUE ON CONFLICT ROLLBACK);
+        INSERT INTO rollback_test VALUES (1);
+      `);
+      const write = 'INSERT INTO rollback_test VALUES (2); INSERT INTO rollback_test VALUES (1)';
+
+      if (mode === 'sync') {
+        expect(() => database.withTransactionSync(() => database.execSync(write))).toThrow(
+          /UNIQUE constraint failed/
+        );
+      } else {
+        const result =
+          mode === 'exclusive'
+            ? database.withExclusiveTransactionAsync((txn) => txn.execAsync(write))
+            : database.withTransactionAsync(() => database.execAsync(write));
+        await expect(result).rejects.toThrow(/UNIQUE constraint failed/);
+      }
+
+      expect(await database.isInTransactionAsync()).toBe(false);
+      expect(await database.getAllAsync('SELECT value FROM rollback_test')).toEqual([{ value: 1 }]);
+      await database.execAsync('INSERT INTO rollback_test VALUES (3)');
+      expect(await database.getAllAsync('SELECT value FROM rollback_test ORDER BY value')).toEqual([
+        { value: 1 },
+        { value: 3 },
+      ]);
+    }
+  );
+
   it('withTransactionAsync could possibly have other async queries interrupted inside the transaction', async () => {
     db = await openDatabaseAsync('test.db');
     await db.execAsync(`
@@ -430,3 +465,42 @@ function supportsSerialize(): boolean {
 async function delayAsync(timeMs: number) {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
+
+describe('Database - serialize result', () => {
+  // Android hands the serialized bytes over as an ArrayBuffer and iOS as a Uint8Array; both
+  // reach the caller as a Uint8Array over the same bytes.
+  it('serializeAsync turns an ArrayBuffer from the native database into a Uint8Array', async () => {
+    const db = await openDatabaseAsync(':memory:');
+    const bytes = new Uint8Array([1, 2, 3]);
+    jest.spyOn(db.nativeDatabase, 'serializeAsync').mockResolvedValueOnce(bytes.buffer);
+
+    const serialized = await db.serializeAsync();
+    await db.closeAsync();
+
+    expect(serialized).toBeInstanceOf(Uint8Array);
+    expect(Array.from(serialized)).toEqual([1, 2, 3]);
+  });
+
+  it('serializeSync turns an ArrayBuffer from the native database into a Uint8Array', () => {
+    const db = openDatabaseSync(':memory:');
+    const bytes = new Uint8Array([4, 5]);
+    jest.spyOn(db.nativeDatabase, 'serializeSync').mockReturnValueOnce(bytes.buffer);
+
+    const serialized = db.serializeSync();
+    db.closeSync();
+
+    expect(serialized).toBeInstanceOf(Uint8Array);
+    expect(Array.from(serialized)).toEqual([4, 5]);
+  });
+
+  it('serializeSync passes a Uint8Array from the native database through', () => {
+    const db = openDatabaseSync(':memory:');
+    const bytes = new Uint8Array([6]);
+    jest.spyOn(db.nativeDatabase, 'serializeSync').mockReturnValueOnce(bytes);
+
+    const serialized = db.serializeSync();
+    db.closeSync();
+
+    expect(serialized).toBe(bytes);
+  });
+});

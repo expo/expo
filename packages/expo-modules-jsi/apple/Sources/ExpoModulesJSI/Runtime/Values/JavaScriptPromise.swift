@@ -242,7 +242,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // thread, the same hop `resolve` and `reject` make. `@JavaScriptActor` does not get there on
     // its own: its executor runs jobs inline on the calling thread. `execute` runs the closure
     // inline when the caller is already on the JavaScript thread.
-    try await runtime.execute { [longLivedState] in
+    try await runtime.execute { [longLivedState, deferredPromise] in
       let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
         guard let deferredPromise else { return .undefined }
         let value = arguments[0]
@@ -284,20 +284,20 @@ extension JavaScriptRuntime {
   /// optimize like any other closure.
   @JavaScriptActor
   fileprivate func deferredPromiseFactory() throws -> JavaScriptValue {
-    if let factory = cachedDeferredPromiseFactory {
-      return factory
+    return try cached(deferredPromiseFactoryKey) {
+      return try eval(
+        label: "expo-modules-jsi/deferred-promise.js",
+        """
+        (function () {
+          let resolve, reject;
+          const promise = new Promise(function (a, b) { resolve = a; reject = b; });
+          return [promise, resolve, reject];
+        })
+        """
+      )
     }
-    let factory = try eval(
-      label: "expo-modules-jsi/deferred-promise.js",
-      """
-      (function () {
-        let resolve, reject;
-        const promise = new Promise(function (a, b) { resolve = a; reject = b; });
-        return [promise, resolve, reject];
-      })
-      """
-    )
-    cachedDeferredPromiseFactory = factory
-    return factory
   }
 }
+
+/// Key of the deferred promise factory in each runtime's cache.
+private let deferredPromiseFactoryKey = JavaScriptRuntime.Cache.Key<JavaScriptValue>()

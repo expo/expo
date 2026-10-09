@@ -339,6 +339,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyColumn.Items and LazyRow.Items data (experimental)',
+    route: 'ui/lazy-items',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyItemsScreen'));
+    },
+  },
+  {
     name: 'Jetpack Compose primitives',
     route: 'ui/jetpack-compose-primitives',
     options: {},

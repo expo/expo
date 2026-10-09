@@ -7,7 +7,7 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
    String describing the reason of the exception.
    */
   open var reason: String {
-    "undefined reason"
+    customReason ?? "undefined reason"
   }
 
   /**
@@ -21,19 +21,26 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
   let customCode: String?
 
   /**
+   A custom reason of the exception, given as the `description` to the initializer that takes a name.
+   When unset, the `reason` is expected to come from an override in a subclass.
+   */
+  let customReason: String?
+
+  /**
    The default initializer that captures the place in the code where the exception was created.
    - Warning: Call it only without arguments!
    */
   public init(file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.origin = ExceptionOrigin(file: file, line: line, function: function)
     self.customCode = nil
+    self.customReason = nil
   }
 
   public init(name: String, description: String, code: String? = nil, file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.origin = ExceptionOrigin(file: file, line: line, function: function)
     self.customCode = code
+    self.customReason = description
     self.name = name
-    self.description = description
   }
 
   // MARK: - CodedError
@@ -55,6 +62,19 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
   open var debugDescription: String {
     let debugDescription = "\(name): \(reason) (at \(origin.file):\(origin.line))"
     return concatDescription(debugDescription, withCause: cause, debug: true)
+  }
+
+  // MARK: - JavaScriptThrowable
+
+  /**
+   The message of the JavaScript error this exception is converted to. Defaults to `description`
+   (the reason and its cause chain), matching Android and what JavaScript received before the
+   JSI rewrite, instead of the protocol's default `debugDescription`, which also leaks the type
+   name and the native `file:line`. It is declared on the class, rather than inherited from the
+   protocol extension, so that subclasses can override it.
+   */
+  open var message: String {
+    description
   }
 }
 

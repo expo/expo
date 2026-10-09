@@ -1,14 +1,40 @@
 # Changelog
 
-## Unpublished
+## 58.0.10
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/schema-utils@58.0.1
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- Add `android.buildExpoModulesCoreFromSource` to compile the `expo-modules-core` native libraries from source instead of using the prebuilt ones. ([#50452](https://github.com/expo/expo/pull/50452) by [@lukmccall](https://github.com/lukmccall))
 
-### 💡 Others
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.3 — 2026-09-16
 
@@ -27,6 +53,10 @@
 _This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
+- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
 
 ### 🐛 Bug fixes
 
@@ -165,7 +195,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
 
 ### 💡 Others
 

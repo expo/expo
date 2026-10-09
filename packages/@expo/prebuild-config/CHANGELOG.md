@@ -1,14 +1,65 @@
 # Changelog
 
-## Unpublished
+## 58.0.10
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#51047](https://github.com/expo/expo/pull/51047))
+  - expo-modules-autolinking@58.0.10
 
-### 🐛 Bug fixes
+## 58.0.9
 
-### 💡 Others
+### Patch Changes
+
+- Updated dependencies. ([#51080](https://github.com/expo/expo/pull/51080))
+  - @expo/config-plugins@58.0.6
+  - @expo/config@58.0.3
+  - @expo/image-utils@0.12.4
+  - expo-modules-autolinking@58.0.9
+
+## 58.0.8
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#50955](https://github.com/expo/expo/pull/50955), [#50946](https://github.com/expo/expo/pull/50946), [#50354](https://github.com/expo/expo/pull/50354), [#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/config-plugins@58.0.5
+  - expo-modules-autolinking@58.0.8
+  - @expo/config@58.0.2
+  - @expo/image-utils@0.12.3
+
+## 58.0.7
+
+### Patch Changes
+
+- Updated dependencies. ([#50549](https://github.com/expo/expo/pull/50549))
+  - expo-modules-autolinking@58.0.7
+
+## 58.0.6
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- [iOS] Point the `ios.backgroundColor` prebuild warning at the `expo-system-ui` reference instead of the removed `build-reference/migrating` page, which returns a 404. ([#49791](https://github.com/expo/expo/pull/49791) by [@dennytosp](https://github.com/dennytosp))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#45964](https://github.com/expo/expo/pull/45964), [#50680](https://github.com/expo/expo/pull/50680))
+  - @expo/config@58.0.1
+  - @expo/config-plugins@58.0.4
+  - @expo/config-types@58.0.2
+  - @expo/image-utils@0.12.2
+  - @expo/json-file@11.2.1
+  - expo-modules-autolinking@58.0.6
+
+## 58.0.5 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.2 — 2026-09-15
 

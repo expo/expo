@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "58.0.3",
+  "version": "58.1.1",
   "description": "Provides an API to fetch push notification tokens and to present, schedule, receive, and respond to notifications.",
   "keywords": [
     "expo",
@@ -26,6 +26,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -35,7 +36,8 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {
     "@expo/image-utils": "workspace:^",
@@ -45,12 +47,12 @@
     "expo-constants": "workspace:~"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "memfs": "^3.6.0"
   },
   "peerDependencies": {
     "expo": "*",

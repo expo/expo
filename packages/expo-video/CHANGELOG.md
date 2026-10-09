@@ -1,14 +1,42 @@
 # Changelog
 
-## Unpublished
+## 58.0.8
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Internal] Use `Image.resolveAssetSource` from `react-native` instead of the `Libraries/Image/resolveAssetSource` deep import. ([#51092](https://github.com/expo/expo/pull/51092) by [@huntie](https://github.com/huntie))
+
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.6
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.3 — 2026-09-23
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Wait for pending source replacements before releasing players created by `useVideoPlayer`. ([#49981](https://github.com/expo/expo/pull/49981) by [@behenate](https://github.com/behenate))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.1 — 2026-09-11
 
@@ -24,6 +52,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed pipHelperFragment memory leak in PictureInPictureManager ([#49222](https://github.com/expo/expo/pull/49222) by [@minhuwv](https://github.com/minhuwv))
 - [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fixed a data race on the video cache's open-file registry, which could crash the app while the cache was being trimmed. ([#49286](https://github.com/expo/expo/pull/49286) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fixed a crash when the device runs out of storage while writing to the video cache. `FileHandle.writeData:` raises an uncatchable Objective-C `NSFileHandleOperationException` on `ENOSPC`; the throwing Swift APIs are now used so the error is caught and logged instead. ([#49284](https://github.com/expo/expo/pull/49284) by [@huextrat](https://github.com/huextrat))

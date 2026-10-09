@@ -103,6 +103,9 @@ export const expoExportEmbed: Command = async (argv) => {
 
     const projectRoot = path.resolve(parsed.projectRoot);
 
+    const { getOriginalEnv } = await import('@expo/env');
+    process.env = getOriginalEnv() as NodeJS.ProcessEnv;
+
     const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
     loadEnvFiles(projectRoot, {
       mode: (parsed.args['--dev'] ?? true) ? 'development' : 'production',

@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "58.0.3",
+  "version": "58.0.11",
   "description": "Create and open deep links universally",
   "keywords": [
     "expo",
@@ -40,6 +40,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
@@ -49,16 +50,17 @@
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "prepack": "expo-module prepack"
   },
   "dependencies": {
     "expo-constants": "workspace:~",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/invariant": "^2.2.33",
-    "@types/react": "~19.3.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/react": "~19.3.0"
   },
   "peerDependencies": {
     "expo": "*",

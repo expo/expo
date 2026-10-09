@@ -365,7 +365,7 @@ function parseErrorStack(
         column: frame.column != null ? frame.column - 1 : null,
       };
     })
-    .filter((frame) => frame.file && !frame.file.includes('node_modules'));
+    .filter((frame) => frame.file);
 }
 
 function canParse(url: string): boolean {

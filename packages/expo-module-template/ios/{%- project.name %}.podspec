@@ -1,4 +1,5 @@
-<% if (type === 'remote') { -%>
+<% const isStandalone = type === 'standalone' || type === 'remote'; -%>
+<% if (isStandalone) { -%>
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
@@ -6,7 +7,7 @@ package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 <% } -%>
 Pod::Spec.new do |s|
   s.name           = '<%- project.name %>'
-<% if (type === 'remote') { -%>
+<% if (isStandalone) { -%>
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -24,10 +25,10 @@ Pod::Spec.new do |s|
     :ios => '16.4',
     :tvos => '16.4'
   }
-<% if (type === 'remote') { -%>
+<% if (isStandalone) { -%>
   s.swift_version  = '5.9'
 <% } -%>
-  s.source         = { git: '<% if (type === 'remote') { %><%- repo %><% } %>' }
+  s.source         = { git: '<% if (isStandalone) { %><%- repo %><% } %>' }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'

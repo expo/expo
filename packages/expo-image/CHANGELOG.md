@@ -1,14 +1,71 @@
 # Changelog
 
-## Unpublished
+## 58.0.13
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Internal] Use `Image.resolveAssetSource` from `react-native` instead of the `Libraries/Image/resolveAssetSource` deep import. ([#51092](https://github.com/expo/expo/pull/51092) by [@huntie](https://github.com/huntie))
+- Fix blurry SVG images on Android 8.1 and older by drawing them in a software layer. ([#50916](https://github.com/expo/expo/pull/50916) by [@jackstudd](https://github.com/jackstudd))
+
+## 58.0.12
+
+### Patch Changes
+
+- Export `app.plugin.js` from `package.json:exports` so tools that resolve config plugins through Node's package exports, such as the config fallback in EAS CLI, find the config plugin again instead of failing with "Unable to resolve a valid config plugin". ([#51059](https://github.com/expo/expo/pull/51059) by [@huntie](https://github.com/huntie))
+
+## 58.0.11
+
+### Patch Changes
+
+- Restored the `./plugin` subpath export so typed config plugins can be imported from `<package>/plugin` again. ([#50965](https://github.com/expo/expo/pull/50965) by [@Titozzz](https://github.com/Titozzz))
+
+## 58.0.10
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Android] Fix `tintColor` not applying to SVG colors set to `currentColor`. ([#50744](https://github.com/expo/expo/pull/50744) by [@apuyou](https://github.com/apuyou))
+
+## 58.0.8
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.7 — 2026-09-28
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Fixed native crashes when decoding and clearing some animated GIFs. ([#49533](https://github.com/expo/expo/pull/49533) by [@MangelSpec](https://github.com/MangelSpec))
+- [Android] Avoid reporting an image load error when displaying a placeholder without a source. ([#50668](https://github.com/expo/expo/pull/50668) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed a `You can't start or clear loads in RequestListener or Target callbacks` crash when an image fails to load while layout updates are pending, for example from `react-native-reanimated`. The `onError` event is now dispatched after Glide's failure callback returns, as `onLoad` already was. ([#50550](https://github.com/expo/expo/pull/50550) by [@Joozty](https://github.com/Joozty))
+
+## 58.0.6 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `prefetch` crashing with `PromiseAlreadySettledException` when Glide restarts a failed request after connectivity is restored, resolving the already-settled promise a second time. ([#49944](https://github.com/expo/expo/pull/49944) by [@riorafe](https://github.com/riorafe))
+
+## 58.0.5 — 2026-09-23
+
+### 🐛 Bug fixes
+
+- [Android] Fixed images in recycled lists going permanently blank: the transition's cleanup ran through `withEndAction`, which `ViewPropertyAnimator` drops when the animation is cancelled, so the Glide target was never returned to the pool. ([#49283](https://github.com/expo/expo/pull/49283) by [@oscnord](https://github.com/oscnord))
+
+## 58.0.4 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `contentPosition` being visually lost when React Native recreates the clipping mask on the image subview (e.g. after an orientation change round-trip). ([#50312](https://github.com/expo/expo/pull/50312) by [@jzhu1224](https://github.com/jzhu1224))
+
+## 58.0.3 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.2 — 2026-09-15
 
@@ -40,6 +97,8 @@ _This version does not introduce any user-facing changes._
 - [iOS] Fixed `generateBlurhashAsync` and `generateThumbhashAsync` never settling when the image could not be downloaded. ([#PR](https://github.com/expo/expo/pull/PR) ([#48894](https://github.com/expo/expo/pull/48894) by [@vonovak](https://github.com/vonovak))
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] prevent `Canvas: trying to draw too large bitmap` crash by enforcing the hardware bitmap size limit in both `ContentFitDownsampleStrategy` and `loadAsync`. ([#47212](https://github.com/expo/expo/pull/47212) by [@roitium](https://github.com/roitium))
+- [iOS] Support the `accessibilityElementsHidden` prop. ([#46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ### 💡 Others
 
@@ -84,7 +143,6 @@ _This version does not introduce any user-facing changes._
 
 - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Support the `accessibilityElementsHidden` prop. ([#46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ## 56.0.7 — 2026-05-21
 

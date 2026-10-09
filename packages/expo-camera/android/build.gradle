@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.1'
+version = '58.0.9'
 
 def barcodeScannerEnabled = findProperty('expo.camera.barcode-scanner-enabled')
 def isBarcodeScannerEnabled = (barcodeScannerEnabled ?: "true").toString() != "false"
@@ -16,7 +16,7 @@ android {
   namespace "expo.modules.camera"
   defaultConfig {
     versionCode 32
-    versionName "58.0.1"
+    versionName "58.0.9"
   }
 }
 
@@ -49,4 +49,8 @@ dependencies {
 
   def documentScannerDependencyConfiguration = isDocumentScannerEnabled ? "implementation" : "compileOnly"
   add(documentScannerDependencyConfiguration, "com.google.android.gms:play-services-mlkit-document-scanner:16.0.0-beta1")
+
+  testImplementation "org.robolectric:robolectric:4.16"
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation 'io.mockk:mockk:1.14.9'
 }

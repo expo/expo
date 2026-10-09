@@ -1,14 +1,75 @@
 # Changelog
 
-## Unpublished
+## 58.0.14
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#50941](https://github.com/expo/expo/pull/50941), [#50860](https://github.com/expo/expo/pull/50860))
+  - @expo/ui@58.0.14
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#50893](https://github.com/expo/expo/pull/50893), [#51116](https://github.com/expo/expo/pull/51116), [#51007](https://github.com/expo/expo/pull/51007), [#50910](https://github.com/expo/expo/pull/50910), [#50909](https://github.com/expo/expo/pull/50909), [#51108](https://github.com/expo/expo/pull/51108))
+  - @expo/ui@58.0.13
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#50984](https://github.com/expo/expo/pull/50984), [#50927](https://github.com/expo/expo/pull/50927), [#50687](https://github.com/expo/expo/pull/50687))
+  - @expo/ui@58.0.12
+
+## 58.0.11
+
+### Patch Changes
+
+- [Android] Fix update during active Glance sessions. ([#50850](https://github.com/expo/expo/pull/50850) by [@jakex7](https://github.com/jakex7))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881), [#49933](https://github.com/expo/expo/pull/49933))
+  - @expo/ui@58.0.11
+
+## 58.0.10
+
+### Patch Changes
+
+- Add React hook and component helper stubs to prevent missing API errors when rendering widgets, including `memo` and `forwardRef`. ([#50834](https://github.com/expo/expo/pull/50834) by [@jakex7](https://github.com/jakex7))
+- [iOS] Stop linking WidgetKit into apps that use `@expo/ui` without widgets. The `widgetURL`, `activityBackgroundTint`, `widgetAccentedRenderingMode`, and `containerBackground` (`widget` placement) modifiers and the `AccessoryWidgetBackground` view now take effect only inside `expo-widgets` widgets and Live Activities. ([#50786](https://github.com/expo/expo/pull/50786) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#50801](https://github.com/expo/expo/pull/50801), [#49986](https://github.com/expo/expo/pull/49986), [#50674](https://github.com/expo/expo/pull/50674), [#50786](https://github.com/expo/expo/pull/50786), [#50851](https://github.com/expo/expo/pull/50851))
+  - @expo/ui@58.0.10
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#50579](https://github.com/expo/expo/pull/50579), [#50693](https://github.com/expo/expo/pull/50693))
+  - @expo/plist@0.10.1
+  - @expo/ui@58.0.9
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Fix `with-node.sh` ignoring the app's `NODE_BINARY` and `.xcode.env` when building without CocoaPods. ([#50084](https://github.com/expo/expo/pull/50084) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
+
+### 🎉 New features
+
+- [Android] Added support for the `cornerRadius` modifier. ([#50333](https://github.com/expo/expo/pull/50333) by [@jakex7](https://github.com/jakex7))
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.3 — 2026-09-16
 
@@ -78,6 +139,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - [iOS] Remove availability check for iOS 16. ([#48651](https://github.com/expo/expo/pull/48651) by [@jakex7](https://github.com/jakex7))
+- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.7 - 2026-07-29
 
@@ -128,7 +190,6 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Temporarily make the Android config plugin opt-in with `enableAndroid`. ([#46463](https://github.com/expo/expo/pull/46463) by [@jakex7](https://github.com/jakex7))
-- [Android] Migrate to Peek 0.2.0 ([#48340](https://github.com/expo/expo/pull/48340) by [@jakex7](https://github.com/jakex7))
 
 ## 56.0.16 - 2026-05-29
 

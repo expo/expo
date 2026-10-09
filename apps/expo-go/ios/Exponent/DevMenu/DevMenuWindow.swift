@@ -56,8 +56,11 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
     if let sheet = devMenuViewController.sheetPresentationController {
       if #available(iOS 16.0, *) {
         sheet.detents = [
-          .custom(resolver: { context in
-            return context.maximumDetentValue * 0.6
+          .custom(resolver: { [weak self] context in
+            DevMenuSheetDetent.height(
+              maximum: context.maximumDetentValue,
+              onboardingHeight: self?.manager.onboardingContentHeight
+            )
           }),
           .large()
         ]
@@ -72,6 +75,15 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
 
     rootVC.present(devMenuViewController, animated: true) { [weak self] in
       self?.isPresenting = false
+    }
+  }
+
+  func invalidateSheetDetents() {
+    guard #available(iOS 16.0, *), let sheet = devMenuViewController.sheetPresentationController else {
+      return
+    }
+    sheet.animateChanges {
+      sheet.invalidateDetents()
     }
   }
 

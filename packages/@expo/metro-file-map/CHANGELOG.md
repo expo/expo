@@ -1,14 +1,23 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Remove the `micromatch` dependency, and with it the transitive dependency on `braces` ([GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)). Watchers now filter changes by extension, file name and file name prefix instead of globs. ([#51093](https://github.com/expo/expo/pull/51093) by [@robhogan](https://github.com/robhogan))
 
-### 🐛 Bug fixes
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.2 — 2026-09-28
 
 ### 💡 Others
+
+- [Internal] Remove the unused `forceNodeFilesystemAPI` option. ([#50193](https://github.com/expo/expo/pull/50193) by [@robhogan](https://github.com/robhogan))
+- [Internal] Declare the perf logger types locally and drop the `@expo/metro` devDependency. ([#50651](https://github.com/expo/expo/pull/50651) by [@robhogan](https://github.com/robhogan))
 
 ## 58.0.1 — 2026-09-15
 

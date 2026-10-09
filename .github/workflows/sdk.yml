@@ -9,19 +9,15 @@ on:
         default: ''
   push:
     branches: [main, 'sdk-*']
-    paths:
+    paths: &trigger_paths
       - .github/workflows/sdk.yml
       - packages/**
+      - templates/**
       - pnpm-lock.yaml
       - pnpm-workspace.yaml
       - turbo.json
   pull_request:
-    paths:
-      - .github/workflows/sdk.yml
-      - packages/**
-      - pnpm-lock.yaml
-      - pnpm-workspace.yaml
-      - turbo.json
+    paths: *trigger_paths
   schedule:
     - cron: 0 14 * * *
 

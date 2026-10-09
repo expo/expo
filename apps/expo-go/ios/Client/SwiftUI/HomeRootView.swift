@@ -10,6 +10,26 @@ enum HomeTab: Hashable {
   case settings
 }
 
+extension HomeTab {
+  var title: String {
+    switch self {
+    case .home: return "Home"
+    case .learn: return "Learn"
+    case .diagnostics: return "Diagnostics"
+    case .settings: return "Settings"
+    }
+  }
+
+  var systemImage: String {
+    switch self {
+    case .home: return "house.fill"
+    case .learn: return "book.fill"
+    case .diagnostics: return "stethoscope"
+    case .settings: return "gearshape"
+    }
+  }
+}
+
 // Dev flag: flip to `true` to see the onboarding flow in the simulator on every launch.
 // Normally simulator runs skip onboarding (treated as already completed).
 // Has no effect on physical devices — they always use the persisted state.
@@ -51,8 +71,7 @@ struct HomeRootView: View {
         }
         .navigationViewStyle(.stack)
         .tabItem {
-          Image(systemName: "house.fill")
-          Text("Home")
+          Label(HomeTab.home.title, systemImage: HomeTab.home.systemImage)
         }
         .tag(HomeTab.home)
 
@@ -61,8 +80,7 @@ struct HomeRootView: View {
         }
         .navigationViewStyle(.stack)
         .tabItem {
-          Image(systemName: "book.fill")
-          Text("Learn")
+          Label(HomeTab.learn.title, systemImage: HomeTab.learn.systemImage)
         }
         .tag(HomeTab.learn)
 
@@ -71,17 +89,18 @@ struct HomeRootView: View {
         }
         .navigationViewStyle(.stack)
         .tabItem {
-          Image(systemName: "stethoscope")
-          Text("Diagnostics")
+          Label(HomeTab.diagnostics.title, systemImage: HomeTab.diagnostics.systemImage)
         }
         .tag(HomeTab.diagnostics)
 
-        SettingsTabView(selectedTab: $selectedTab)
-          .tabItem {
-            Image(systemName: "gearshape")
-            Text("Settings")
-          }
-          .tag(HomeTab.settings)
+        NavigationView {
+          SettingsTabView(selectedTab: $selectedTab)
+        }
+        .navigationViewStyle(.stack)
+        .tabItem {
+          Label(HomeTab.settings.title, systemImage: HomeTab.settings.systemImage)
+        }
+        .tag(HomeTab.settings)
       }
       .environmentObject(viewModel)
       .environmentObject(ExpoGoNavigation(showingUserProfile: $showingUserProfile))
@@ -101,7 +120,7 @@ struct HomeRootView: View {
       }
       .alert(item: $viewModel.errorToShow) { error in
         Alert(
-          title: Text("Error"),
+          title: Text(error.title),
           message: Text(error.message),
           dismissButton: .default(Text("OK"))
         )

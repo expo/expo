@@ -1,14 +1,53 @@
 # Changelog
 
-## Unpublished
+## 58.0.9
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Fixed barcode scanning stopping after the camera delivers a frame without an image. Also fixed a leak of the ML Kit barcode scanner each time the camera is recreated or unmounted. ([#51050](https://github.com/expo/expo/pull/51050) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed `recordAsync()` never settling when it is called while a recording is already active. It now rejects with an error. ([#51049](https://github.com/expo/expo/pull/51049) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Fixed the window staying white when the camera view unmounts during the shutter animation ([#50904](https://github.com/expo/expo/issues/50904)). ([#50950](https://github.com/expo/expo/pull/50950) by [@alanjhughes](https://github.com/alanjhughes))
+- [Web] Fire `onCameraReady` only once the video has a frame that can be captured, instead of as soon as the camera stream is obtained, so calling `takePictureAsync` from `onCameraReady` no longer throws `ERR_CAMERA_NOT_READY`. `takePictureAsync` now only requires a decoded frame instead of `HAVE_ENOUGH_DATA`, which live streams may never reach in Safari. `onCameraReady` is no longer called when the camera fails to start; use `onMountError` instead. ([#50884](https://github.com/expo/expo/pull/50884) by [@Cedric921](https://github.com/Cedric921))
+
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Android] Bind the barcode image analyzer only while barcode scanning is enabled, so the camera preview and captured photo use the same frame. ([#50808](https://github.com/expo/expo/pull/50808) by [@hitanshur](https://github.com/hitanshur))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
+
+### 💡 Others
+
+- [iOS] Remove a dead `compilerFlags` block from the SwiftPM build configuration. It had no effect on either build path. ([#50417](https://github.com/expo/expo/pull/50417) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.3 — 2026-09-22
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [iOS] Import `CoreImage` in `BarcodeUtils`, which relied on another file in the module importing it. ([#50479](https://github.com/expo/expo/pull/50479) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Pin `ZXingObjC` by revision rather than by version, so that Swift Package Manager can resolve it. SwiftPM refuses a version-pinned remote dependency that declares `unsafeFlags`, which `zxingify-objc` does. ([#50491](https://github.com/expo/expo/pull/50491) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.2 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.1 — 2026-09-11
 

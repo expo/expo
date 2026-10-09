@@ -167,7 +167,11 @@ class ExpoUIModule : Module() {
         ?: appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
       val resolvedScheme = options?.scheme
-        ?: if (context.isSystemInDarkTheme()) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+        ?: if (context.isSystemInDarkTheme()) {
+          ExpoColorScheme.DARK
+        } else {
+          ExpoColorScheme.LIGHT
+        }
       val isDark = resolvedScheme == ExpoColorScheme.DARK
       val seedArgb = options?.seedColor?.composeOrNull?.toArgb()
       val colorScheme = if (seedArgb != null) {
@@ -203,6 +207,15 @@ class ExpoUIModule : Module() {
     }
     View(LazyColumnView::class)
     View(LazyRowView::class)
+    View(LazyItemsView::class) {
+      Events("onWindowChange")
+
+      OnViewDestroys { view: LazyItemsView ->
+        view.cancelPendingWindowChange()
+      }
+    }
+    View(LazyItemsPoolView::class)
+    View(LazyItemsSlotView::class)
 
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)

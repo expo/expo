@@ -1,14 +1,72 @@
 # Changelog
 
-## Unpublished
+## 58.1.1
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [Android] Add support for grouping notifications via `threadIdentifier`. ([#43388](https://github.com/expo/expo/pull/43388) by [@vonovak](https://github.com/vonovak))
+- [Android] Add `getExactAlarmPermissionsAsync` and `requestExactAlarmPermissionsAsync` to check and request the exact alarm permission. ([#50919](https://github.com/expo/expo/pull/50919) by [@vonovak](https://github.com/vonovak))
+- [Internal] [Android] Return notification permission responses as records instead of bundles. ([#51060](https://github.com/expo/expo/pull/51060) by [@vonovak](https://github.com/vonovak))
+- Updated dependencies. ([#51077](https://github.com/expo/expo/pull/51077))
+  - expo-application@58.0.4
+  - @expo/image-utils@0.12.4
+  - expo-constants@58.0.10
 
-### 🐛 Bug fixes
+## 58.1.0
 
-### 💡 Others
+### Minor Changes
+
+- Add `enableRemoteNotifications` config plugin option. Set it to `false` to skip the APNs entitlement for apps that use only local notifications. Defaults to `true`. ([#50891](https://github.com/expo/expo/pull/50891) by [@netmaxt3r](https://github.com/netmaxt3r))
+
+### Patch Changes
+
+- Updated dependencies. ([#50391](https://github.com/expo/expo/pull/50391))
+  - @expo/image-utils@0.12.3
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50881](https://github.com/expo/expo/pull/50881))
+  - expo-application@58.0.3
+
+## 58.0.10
+
+### Patch Changes
+
+- Allow native push token requests to retry after a transient failure while preserving shared in-flight requests. ([#50848](https://github.com/expo/expo/pull/50848) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
+- [Android] Fix notification action buttons going missing after an app update that changes R8 minification, until the app is opened again. ([#50799](https://github.com/expo/expo/pull/50799) by [@icoric4](https://github.com/icoric4))
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762), [#49511](https://github.com/expo/expo/pull/49511), [#50661](https://github.com/expo/expo/pull/50661))
+  - @expo/image-utils@0.12.2
+  - expo-application@58.0.2
+  - expo-constants@58.0.9
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.6 — 2026-09-23
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.5 — 2026-09-22
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.4 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.3 — 2026-09-16
 

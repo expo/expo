@@ -1,6 +1,6 @@
 {
   "name": "expo-cellular",
-  "version": "58.0.0",
+  "version": "58.0.2",
   "description": "Provides information about the user’s cellular service provider",
   "keywords": [
     "expo",
@@ -21,6 +21,7 @@
   "main": "build/Cellular.js",
   "types": "build/Cellular.d.ts",
   "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
@@ -31,13 +32,14 @@
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "prepack": "expo-module prepack"
   },
   "devDependencies": {
-    "@types/jest": "^29.2.1",
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

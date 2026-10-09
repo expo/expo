@@ -6,15 +6,12 @@ on:
     - cron: '0 10 * * SAT' # 10:00 AM UTC time every Saturday
   push:
     branches: [main]
-    paths:
+    paths: &trigger_paths
       - .github/workflows/test-suite-nightly.yml
       - .github/actions/setup-maestro/action.yml
       - tools/src/commands/SetupReactNativeNightly.ts
   pull_request:
-    paths:
-      - .github/workflows/test-suite-nightly.yml
-      - .github/actions/setup-maestro/action.yml
-      - tools/src/commands/SetupReactNativeNightly.ts
+    paths: *trigger_paths
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -77,6 +74,7 @@ jobs:
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
+          XCODE_XCCONFIG_FILE: ${{ github.workspace }}/.github/xcode/active-arch-only.xcconfig
       - name: 📸 Upload builds
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

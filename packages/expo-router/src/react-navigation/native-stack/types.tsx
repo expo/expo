@@ -338,6 +338,15 @@ export type NativeStackNavigationOptions = {
    */
   headerBlurEffect?: ScreenStackHeaderConfigProps['blurEffect'];
   /**
+   * Interface style of the native header. Defaults to the navigation theme's style. The native
+   * header does not support changes to this option while the screen is visible.
+   *
+   * Only supported on iOS.
+   *
+   * @platform ios
+   */
+  headerUserInterfaceStyle?: 'light' | 'dark';
+  /**
    * Tint color for the header. Changes the color of back button and title.
    */
   headerTintColor?: ColorValue;

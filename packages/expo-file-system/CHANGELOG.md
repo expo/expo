@@ -1,14 +1,49 @@
 # Changelog
 
-## Unpublished
+## 58.0.7
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS] Add opt-in control over background download completion with `DownloadTask.acknowledgeBackgroundCompletionAsync()`, so apps can finish processing downloads before returning control to iOS. ([#50543](https://github.com/expo/expo/pull/50543) by [@savv](https://github.com/savv))
+- Added static `File.preview()` and `File.canPreview()` methods for a file or array of files, with multi-file previews and initial selection on iOS. ([#50696](https://github.com/expo/expo/pull/50696) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 58.0.6
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.13. ([#51138](https://github.com/expo/expo/pull/51138) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.5
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.4
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.3 — 2026-09-28
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- [Android] Added missing permission checks to upload tasks and to file watchers. ([#50582](https://github.com/expo/expo/pull/50582) by [@barthap](https://github.com/barthap))
+- [iOS] Added a missing permission check when opening a file handle. ([#50583](https://github.com/expo/expo/pull/50583) by [@barthap](https://github.com/barthap))
+- [Android] Check permissions for `content://` URIs served by the app's own file providers. ([#50584](https://github.com/expo/expo/pull/50584) by [@barthap](https://github.com/barthap))
+
+## 58.0.2 — 2026-09-25
+
+### 🐛 Bug fixes
+
+- [iOS] Include the privacy manifest in prebuilt frameworks. ([#50503](https://github.com/expo/expo/pull/50503) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.1 — 2026-09-22
+
+### 🐛 Bug fixes
+
+- [iOS] Anchored the file picker popover on every regular-width display, not only iPad, so it presents correctly on iPhone Duo. ([#50434](https://github.com/expo/expo/pull/50434) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 58.0.0 — 2026-09-10
 

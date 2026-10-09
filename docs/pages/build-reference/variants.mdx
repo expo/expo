@@ -267,10 +267,10 @@ android {
 }
 ```
 
-The rest of the configuration at this point is not specific to EAS, it's the same as it would be for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
+The rest of the configuration at this point is the same as for any Android project with flavors. There are a few common configurations that you might want to apply to your project:
 
-- To change the name of the app built with the development profile, create a **android/app/src/development/res/value/strings.xml** file:
-  ```xml android/app/src/development/res/value/strings.xml
+- To change the name of the app built with the development profile, create an **android/app/src/development/res/values/strings.xml** file:
+  ```xml android/app/src/development/res/values/strings.xml
   <resources>
       <string name="app_name">MyApp - Dev</string>
   </resources>

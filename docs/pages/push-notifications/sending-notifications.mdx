@@ -57,7 +57,7 @@ The first step in sending push notifications is to deliver them to the Expo push
 - misconfigured push credentials
 - an invalid notification payload
 
-Some of these failures are temporary. For example, if the Expo push notification service is down or unreachable and you get a network error - a HTTP 429 error (Too Many Requests), or a HTTP 5xx error (Server Errors) - use [exponential backoff](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) to wait a few seconds before retrying. If the first retry attempt is unsuccessful, wait for longer (follow exponential backoff) and retry again. This lets the temporarily unavailable service recover before you retry.
+Some of these failures are temporary. For example, if the Expo push notification service is down or unreachable and you get a network error - an HTTP 429 error (Too Many Requests), or an HTTP 5xx error (Server Errors) - use [exponential backoff](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) to wait a few seconds before retrying. If the first retry attempt is unsuccessful, wait longer (follow exponential backoff) and retry again. This lets the temporarily unavailable service recover before you retry.
 
 Other failures will not resolve themselves. For example, if your push notification payload is malformed, you may get an HTTP 400 response explaining the issue with the payload. You will also get an error if there are no push credentials for your project or if you send push notifications for different projects in the same request.
 
@@ -73,7 +73,7 @@ We recommend checking push receipts 15 minutes after sending your push notificat
 
 ### SLAs
 
-The Expo push notification service does not have an SLA and the FCM and APNs services also may have occasional outages. By following the guidance above, you can make your application robust against temporary service interruptions.
+The Expo push notification service does not have an SLA and the FCM and APNs services also may have occasional outages. If you follow the guidance above, your app can handle temporary service interruptions.
 
 ## HTTP/2 API
 

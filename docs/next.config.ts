@@ -25,6 +25,7 @@ import remarkSDKCompatibility from './mdx-plugins/remark-sdk-compatibility.js';
 import navigation from './public/static/constants/navigation.json';
 import { VERSIONS } from './public/static/constants/versions.json';
 import createSitemap from './scripts/create-sitemap.js';
+import createUrlRecoveryIndex from './scripts/create-url-recovery-index.js';
 
 const packageJsonObject: Record<string, unknown> = packageJson;
 const betaVersion =
@@ -48,7 +49,7 @@ const removeConsoleConfig =
 const nextConfig: NextConfig = {
   outputFileTracingRoot: join(__dirname),
   transpilePackages: [
-    '@expo/*',
+    '@expo/styleguide',
     '@radix-ui/react-dropdown-menu',
     '@radix-ui/react-select',
     'framer-motion',
@@ -58,8 +59,9 @@ const nextConfig: NextConfig = {
   devIndicators: {
     position: 'bottom-right',
   },
+  agentRules: false,
   experimental: {
-    optimizePackageImports: ['@expo/*', '@radix-ui/*', 'cmdk', 'framer-motion', 'prismjs'],
+    optimizePackageImports: ['cmdk', 'framer-motion', 'prismjs'],
     parallelServerCompiles: true,
     parallelServerBuildTraces: true,
     esmExternals: true,
@@ -207,6 +209,12 @@ const nextConfig: NextConfig = {
       modificationDates,
     });
     event(`Generated sitemap with ${sitemapEntries.length} entries`);
+
+    createUrlRecoveryIndex({
+      urls: sitemapEntries,
+      pagesDirectory: pagesDir,
+      output: join(outDir, '_url-recovery.json'),
+    });
 
     return pathMap;
   },

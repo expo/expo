@@ -1,6 +1,6 @@
 {
   "name": "expo-manifests",
-  "version": "58.0.0",
+  "version": "58.0.1",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "keywords": [
     "expo",
@@ -46,12 +46,12 @@
     "expo-json-utils": "workspace:~"
   },
   "devDependencies": {
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

@@ -199,7 +199,7 @@ RCT_EXPORT_METHOD(_applyPropertiesAndForget:(NSDictionary *)properties)
 {
   UIApplication *currentApplication = RCTSharedApplication();
   return @{
-    @"style": @(currentApplication.statusBarStyle),
+    @"style": @(RCTUIStatusBarManager().statusBarStyle),
     @"networkActivityIndicatorVisible": @(currentApplication.isNetworkActivityIndicatorVisible),
     @"hidden": @(currentApplication.isStatusBarHidden),
   };

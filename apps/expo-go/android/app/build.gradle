@@ -59,7 +59,7 @@ android {
     minSdkVersion rootProject.ext.minSdkVersion
     targetSdkVersion rootProject.ext.targetSdkVersion
     versionCode 229
-    versionName '58.0.0'
+    versionName '58.0.2'
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // Deprecated. Used by net.openid:appauth
@@ -71,7 +71,11 @@ android {
 
   flavorDimensions += "device"
   productFlavors {
-    quest { dimension "device" }
+    quest {
+      dimension "device"
+      applicationIdSuffix ".quest"
+      minSdkVersion 29
+    }
     mobile { dimension "device" }
   }
 

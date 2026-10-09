@@ -14,7 +14,6 @@ import {
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
@@ -276,7 +275,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
-  if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
+  if (process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy') {
     ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
       const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
       // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
@@ -349,7 +348,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     }, [isGuarded, isRouteType, routeInfo]);
 
     const ResolvedSuspenseFallback =
-      EXPO_ROUTER_IMPORT_MODE === 'lazy'
+      process.env.EXPO_ROUTER_IMPORT_MODE === 'lazy'
         ? DefaultSuspenseFallback
         : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? DefaultSuspenseFallback);
     const providedSuspenseFallback =

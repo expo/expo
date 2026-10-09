@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 /// The `.mail.draft` schema does not require `Transferable`, but conforming lets the system share
 /// and export a draft, for example when dragging it out of the app.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 extension MailDraftEntity: Transferable {
   static var transferRepresentation: some TransferRepresentation {
     FileRepresentation(exportedContentType: .plainText) { draft in
@@ -45,7 +45,7 @@ extension MailDraftEntity: Transferable {
   }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 private struct MailDraftTransferRecord: Encodable {
   let id: String
   let subject: String

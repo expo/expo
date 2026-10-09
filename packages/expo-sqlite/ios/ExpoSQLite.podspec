@@ -71,12 +71,22 @@ Pod::Spec.new do |s|
     'OTHER_SWIFT_FLAGS' => '$(inherited) ' + swift_flags,
   }
   s.source_files = "**/*.{c,h,m,swift}"
-  s.exclude_files = 'Tests'
+  s.exclude_files = ['Tests', 'Benchmarks']
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests'
     test_spec.pod_target_xcconfig = {
       # The test bundle links the static ExpoModulesCore dependency chain, which contains C++.
+      'OTHER_LDFLAGS' => '-lc++'
+    }
+  end
+
+  # Performance benchmarks, run with `et native-unit-tests --benchmarks`. A separate spec, so unit
+  # test runs neither build nor run them.
+  s.test_spec 'Benchmarks' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
+    test_spec.source_files = 'Benchmarks'
+    test_spec.pod_target_xcconfig = {
       'OTHER_LDFLAGS' => '-lc++'
     }
   end

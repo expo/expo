@@ -59,6 +59,29 @@ describe('installModuleCaptureHook', () => {
     expect(captured.every((m) => !m.filename.endsWith('with-local-plugin.js'))).toBe(true);
   });
 
+  it('should forward extra _compile arguments', () => {
+    const moduleProto = (
+      require('module') as { prototype: { _compile: (...args: unknown[]) => unknown } }
+    ).prototype;
+    const originalCompile = moduleProto._compile;
+    const compileSpy = jest.fn();
+    moduleProto._compile = compileSpy;
+    try {
+      hook = installModuleCaptureHook();
+      const filename = path.join(tmpDir, 'typed.ts');
+      moduleProto._compile.call({}, 'module.exports = 1;', filename, 'commonjs-typescript');
+      expect(compileSpy).toHaveBeenCalledWith(
+        'module.exports = 1;',
+        filename,
+        'commonjs-typescript'
+      );
+    } finally {
+      hook?.uninstall();
+      hook = null;
+      moduleProto._compile = originalCompile;
+    }
+  });
+
   it('should stop capturing after uninstall', () => {
     hook = installModuleCaptureHook();
     hook.uninstall();

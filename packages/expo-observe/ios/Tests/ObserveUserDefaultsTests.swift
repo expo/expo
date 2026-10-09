@@ -136,4 +136,22 @@ struct ObserveUserDefaultsTests {
     #expect(ObserveUserDefaults.bundleDefaults?.environment == "development")
     #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == true)
   }
+
+  @Test
+  func `cleanUpLegacyKeys removes only the legacy keys`() throws {
+    let suiteName = "dev.expo.observe.tests.legacy-keys"
+    let defaults = try #require(UserDefaults(suiteName: suiteName))
+    defer {
+      defaults.removePersistentDomain(forName: suiteName)
+    }
+    defaults.set(true, forKey: "dispatchingEnabled")
+    defaults.set(3, forKey: "lastDispatchedEntryId")
+    defaults.set(4, forKey: "lastDispatchedLogEntryId")
+    defaults.set(Int64(5), forKey: "lastDispatchedMetricId")
+    ObserveUserDefaults.cleanUpLegacyKeys(from: defaults)
+    #expect(defaults.object(forKey: "dispatchingEnabled") == nil)
+    #expect(defaults.object(forKey: "lastDispatchedEntryId") == nil)
+    #expect(defaults.object(forKey: "lastDispatchedLogEntryId") == nil)
+    #expect(defaults.object(forKey: "lastDispatchedMetricId") as? Int64 == 5)
+  }
 }

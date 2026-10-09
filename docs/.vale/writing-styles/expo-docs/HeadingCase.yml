@@ -90,6 +90,7 @@ exceptions:
   - '.*detach.*'
   - '.*develop.*apps.*Windows.*'
   - '.*DNS.*'
+  - '.*DOM.*'
   - '.*E2E.*'
   - '.*EAS.*'
   - '.*EAS Build.*'
@@ -155,6 +156,7 @@ exceptions:
   - '.*Legend-State.*'
   - '.*Link component.*'
   - '.*Linking.*'
+  - '.*Linux.*'
   - '.*MCP*'
   - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'
@@ -238,6 +240,7 @@ exceptions:
   - '.*VS Code.*'
   - '.*WebGL.*'
   - '.*WebView.*'
+  - '.*Windows.*'
   - '.*Wix.*'
   - '.*webpack.*'
   - '.*Xcode.*'
@@ -335,3 +338,5 @@ exceptions:
   - HorizontalUncontainedCarousel
   - Serving Markdown to AI Agents
   - Clerk Publishable Key
+  - Compose
+  - Pressable
