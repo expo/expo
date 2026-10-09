@@ -4,6 +4,7 @@
 
 import { type Changeset } from '../src/NativeSession';
 import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
 import { createSQLAction } from './SQLAction';
 import { SQLiteOptions } from './SQLiteOptions';
 import { sendWorkerResult } from './WorkerChannel';
@@ -56,7 +57,7 @@ const MIN_INT32 = -0x80000000;
 let _sqlite3: SQLiteAPI | null = null;
 let _vfs: AccessHandlePoolVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
-let _customWasmURL: string | null = null;
+let _webOptions: SQLiteWebOptions = {};
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
@@ -66,7 +67,7 @@ class SQLiteErrorException extends Error {}
 
 self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage | ConfigureWorkerMessage>) => {
   if (event.data.type === 'configure') {
-    _customWasmURL = event.data.data.wasmURL;
+    _webOptions = event.data.data;
     return;
   }
 
@@ -806,17 +807,14 @@ async function maybeInitAsync(): Promise<{
 }
 
 async function loadWaSQLiteModuleAsync(): Promise<any> {
-  const customUrl = _customWasmURL;
-  if (customUrl == null) {
-    return await WaSQLiteFactory({ locateFile: () => wasmModule });
-  }
-
+  const { wasmURL } = _webOptions;
   try {
-    return await WaSQLiteFactory({ locateFile: () => customUrl });
+    return await WaSQLiteFactory({ locateFile: () => wasmURL ?? wasmModule });
   } catch (e) {
+    if (wasmURL == null) throw e;
     throw new Error(
-      `Failed to load the custom SQLite WebAssembly module from "${customUrl}". ` +
-        'Check that the `wasmURL` passed to `configureWeb()` is reachable and served as `application/wasm`, and that the build comes from the same `expo/wa-sqlite` revision that this version of `expo-sqlite` uses. ' +
+      `Failed to load the SQLite WebAssembly module from "${wasmURL}". ` +
+        'Check that the `wasmURL` passed to `configureWeb()` is reachable and built from the `expo/wa-sqlite` revision that this `expo-sqlite` uses. ' +
         `Cause: ${e instanceof Error ? e.message : String(e)}`
     );
   }

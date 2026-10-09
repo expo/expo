@@ -32,6 +32,5 @@ export interface SQLiteWebOptions {
  * @platform web
  */
 export function configureWeb(options: SQLiteWebOptions): void {
-  // Only the browser web module implements it.
   ExpoSQLite.configureWeb?.(options);
 }
