@@ -248,15 +248,39 @@ it('rejects ambiguity without exposing other tools as candidates', async () => {
     .mocked(list)
     .mockResolvedValue([
       session('100', 'expo start'),
-      session('101', 'expo start'),
+      { ...session('101', 'expo start'), metadata: { ready: true, port: 8082 } },
       session('102', 'other-tool'),
+      session('103', 'expo start', false),
     ]);
   await expoCommandEvents([]);
   expect(tap).not.toHaveBeenCalled();
   expect(stdout).not.toHaveBeenCalled();
   expect(stderr).toHaveBeenCalledWith(expect.stringContaining('Ambiguous Expo CLI session'));
   expect(stderr.mock.calls[0][0]).not.toContain('other-tool');
+  expect(stderr.mock.calls[0][0]).toContain('100 (PID 100, alive, start, port 8081, "/app")');
+  expect(stderr.mock.calls[0][0]).toContain('101 (PID 101, alive, start, port 8082, "/app")');
+  expect(stderr.mock.calls[0][0]).not.toContain('PID 103');
+  expect(stderr.mock.calls[0][0]).toContain('1 matching stopped session omitted.');
+  expect(stderr.mock.calls[0][0]).toContain('npx expo command:ps --json');
   expect(process.exitCode).toBe(1);
+});
+
+it('describes stopped ambiguity candidates with historical ports and start times', async () => {
+  jest.mocked(list).mockResolvedValue([
+    session('100', 'expo start', false),
+    {
+      ...session('101', 'expo start', false),
+      metadata: { projectRoot: '/project' },
+    },
+  ]);
+  await expoCommandEvents([]);
+  expect(stderr.mock.calls[0][0]).toContain(
+    '100 (PID 100, exited, start, started 1970-01-01T00:00:01.000Z, last port 8081, "/app")'
+  );
+  expect(stderr.mock.calls[0][0]).toContain(
+    '101 (PID 101, exited, start, started 1970-01-01T00:00:01.000Z, "/project")'
+  );
+  expect(stderr.mock.calls[0][0]).not.toContain('omitted');
 });
 
 it('does not tap a selector matching only another tool', async () => {
