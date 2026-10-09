@@ -40,6 +40,7 @@ interface DatabaseEntity {
 }
 interface StatementEntity {
   pointer: StatementPointer;
+  databasePointer: DatabasePointer;
 }
 interface SessionEntity {
   pointer: SessionPointer;
@@ -253,13 +254,19 @@ async function backupDatabase(
 }
 
 async function closeDatabase(nativeDatabaseId: number) {
-  maybeFinalizeAllStatements(nativeDatabaseId);
   const { sqlite3 } = await maybeInitAsync();
   const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (dbEntity) {
-    databaseIdMap.delete(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+
+  const isConnectionShared = [...databaseIdMap.entries()].some(
+    ([id, entity]) => id !== nativeDatabaseId && entity === dbEntity
+  );
+  if (!isConnectionShared) {
+    await maybeFinalizeAllStatements(sqlite3, dbEntity);
+    // A failed close leaves the connection open, so keep it mapped for cleanup and retry.
     await sqlite3.close(dbEntity.pointer);
   }
+  databaseIdMap.delete(nativeDatabaseId);
 }
 
 async function deleteDatabase(databasePath: string): Promise<void> {
@@ -429,7 +436,10 @@ async function prepare(
   const { value: statementPointer } = await asyncIterator.next();
   asyncIterator.return?.();
   if (!statementPointer) throw new Error('Failed to prepare statement');
-  statementIdMap.set(nativeStatementId, { pointer: statementPointer });
+  statementIdMap.set(nativeStatementId, {
+    pointer: statementPointer,
+    databasePointer: dbEntity.pointer,
+  });
 }
 
 async function run(
@@ -736,40 +746,24 @@ async function initDb(sqlite3: SQLiteAPI, dbEntity: DatabaseEntity) {
   }
 }
 
-async function maybeFinalizeAllStatements(nativeDatabaseId: number) {
-  const { sqlite3 } = await maybeInitAsync();
-  const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+async function maybeFinalizeAllStatements(sqlite3: SQLiteAPI, dbEntity: DatabaseEntity) {
   if (!dbEntity.openOptions.finalizeUnusedStatementsBeforeClosing) {
     return;
   }
 
-  let error: Error | null = null;
-  const finalizedStatements: StatementPointer[] = [];
-  let stmt: StatementPointer | null = sqlite3.next_stmt(dbEntity.pointer, null);
-  while (stmt != null && stmt !== 0) {
-    const nextStmt: StatementPointer = sqlite3.next_stmt(dbEntity.pointer, stmt);
-    try {
-      sqlite3.finalize(stmt);
-      finalizedStatements.push(stmt);
-    } catch (e) {
-      error = e;
-    }
-    stmt = nextStmt;
-  }
-
-  // Delete finalized statements from the map
-  const statementsToDelete: number[] = [];
+  // Finalize only statements we prepared. `sqlite3_next_stmt()` also returns statements that
+  // virtual tables like FTS5 own, and finalizing those makes the close fail.
   for (const [nativeStatementId, stmtEntity] of statementIdMap.entries()) {
-    if (finalizedStatements.includes(stmtEntity.pointer)) {
-      statementsToDelete.push(nativeStatementId);
+    if (stmtEntity.databasePointer !== dbEntity.pointer) {
+      continue;
+    }
+    // SQLite destroys the statement even when it returns an error.
+    statementIdMap.delete(nativeStatementId);
+    const result = await sqlite3.finalize(stmtEntity.pointer);
+    if (result !== SQLITE_OK) {
+      console.warn(`Finalizing a statement during close failed - error code[${result}]`);
     }
   }
-  for (const nativeStatementId of statementsToDelete) {
-    statementIdMap.delete(nativeStatementId);
-  }
-
-  if (error) throw error;
 }
 
 async function maybeInitAsync(): Promise<{
