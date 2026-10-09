@@ -36,6 +36,9 @@ jobs:
           - arch: x64
             runner: windows-latest
             build_arch: amd64
+          - arch: arm64
+            runner: windows-11-arm
+            build_arch: arm64
     defaults:
       run:
         working-directory: packages/expo-modules-jsi/apple
@@ -117,4 +120,7 @@ jobs:
         run: swift build --build-tests
 
       - name: 🧪 Test
+        # On arm64 the test process exits partway through the run without a crash report, so only
+        # x64 runs the tests for now. arm64 still builds the package and the tests.
+        if: matrix.arch == 'x64'
         run: swift test --skip-build
