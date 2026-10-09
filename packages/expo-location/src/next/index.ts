@@ -22,6 +22,7 @@ export {
   type PositionWatchStatus,
   type WatchPositionParams,
   type GetPositionOptions,
+  type LocationTaskOptions,
   type LocationPermissionResponse,
   type RequestPermissionsOptions,
   type LocationProviderRefType,

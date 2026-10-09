@@ -23,6 +23,7 @@ import APISectionNamespaces from '~/components/plugins/api/APISectionNamespaces'
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import {
+  APISectionPackageContext,
   getCommentContent,
   getPossibleComponentPropsNames,
   unwrapPropsWithChildren,
@@ -419,8 +420,14 @@ const renderAPI = (
       )
     );
 
+    const packageNames = Array.isArray(packageName)
+      ? packageName
+      : packageName
+        ? [packageName]
+        : [];
+
     return (
-      <>
+      <APISectionPackageContext.Provider value={packageNames}>
         {hasCategorizedMethods &&
           (hasHeadersMapping
             ? Object.entries(headersMapping).map(([key, header], index) => (
@@ -472,7 +479,7 @@ const renderAPI = (
           header="Config plugin types"
         />
         <APISectionEnums data={enums} />
-      </>
+      </APISectionPackageContext.Provider>
     );
   } catch (error) {
     console.error(error);

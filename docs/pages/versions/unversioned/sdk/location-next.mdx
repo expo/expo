@@ -1,0 +1,402 @@
+---
+title: Location (next)
+description: A library that provides access to the device's location.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-location/src/next'
+packageName: 'expo-location'
+iconUrl: '/static/images/packages/expo-location.png'
+platforms: ['android', 'ios']
+isNew: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
+
+> **info** The `next` version of the Location API is included in the `expo-location` library. It can be used alongside the previous API. It is in beta: the API might change between SDK versions.
+
+`expo-location/next` reads the device's location once, watches it while the app is open, and receives it in the background. On Android, it also lets you pick the location provider.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<Collapsible summary="Request the precise location">
+
+By default, a permission request asks for the precise location. On Android, this requests `ACCESS_FINE_LOCATION`. On iOS, when the user has turned **Precise Location** off for the app, the request also shows the system prompt for temporary full accuracy.
+
+```tsx
+import { Location, LocationAccuracy } from 'expo-location/next';
+
+async function requestPreciseLocation() {
+  const { granted, accuracy } = await Location.requestForegroundPermissions();
+  if (!granted) {
+    return;
+  }
+  if (accuracy === LocationAccuracy.REDUCED) {
+    // The user declined precise location. Positions are accurate to kilometers, not meters.
+  }
+  const position = await Location.getPosition();
+  if (!position) {
+    return;
+  }
+  const { coordinates, horizontalAccuracy } = position;
+  console.log(coordinates, horizontalAccuracy);
+}
+```
+
+The iOS prompt shows a default message, which the `locationFullAccuracyPermission` config plugin option can replace.
+
+</Collapsible>
+
+<Collapsible summary="Request an approximate location">
+
+An approximate location is accurate to kilometers rather than meters. To get it, request the permission with `accuracy: RequestPermissionsAccuracyOption.REDUCED`.
+
+On Android, this requests only `ACCESS_COARSE_LOCATION`, so the permission dialog does not offer the precise location.
+
+On iOS, the app does not ask to upgrade to the precise location. To make the approximate location the default in the permission dialog, set `isIosReducedAccuracyByDefault` to `true` in the config plugin. If the app never asks for the precise location, also set `locationFullAccuracyPermission` to `false` to omit the purpose string of the temporary full accuracy prompt:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "isIosReducedAccuracyByDefault": true,
+          "locationFullAccuracyPermission": false
+        }
+      ]
+    ]
+  }
+}
+```
+
+Then request reduced accuracy:
+
+```tsx
+import { Location, RequestPermissionsAccuracyOption } from 'expo-location/next';
+
+async function requestApproximateLocation() {
+  const { granted } = await Location.requestForegroundPermissions({
+    accuracy: RequestPermissionsAccuracyOption.REDUCED,
+  });
+  if (!granted) {
+    return;
+  }
+  const position = await Location.getPosition();
+  if (!position) {
+    return;
+  }
+  const { coordinates, horizontalAccuracy } = position;
+  console.log(coordinates, horizontalAccuracy);
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Get the position once">
+
+`getPosition` resolves with a single fix. It returns a cached fix when one is younger than `maxCachedAge`. Otherwise, it waits up to `timeout` seconds for a new one and falls back to the last known location when none arrives. Both values are in seconds. Check `timestamp` when freshness matters.
+
+```tsx
+import { Location, LocationProfile } from 'expo-location/next';
+
+async function getFreshPosition() {
+  const position = await Location.getPosition({
+    maxCachedAge: 30,
+    timeout: 15,
+    profile: LocationProfile.DEFAULT,
+  });
+  if (!position) {
+    console.log('No location available');
+    return null;
+  }
+  const ageSeconds = (Date.now() - position.timestamp) / 1000;
+  if (ageSeconds > 30) {
+    console.log(`Fell back to a fix from ${Math.round(ageSeconds)} seconds ago`);
+  }
+  return position;
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Handle a denied permission">
+
+When the user denies the permission, `canAskAgain` tells whether the system shows the dialog again. When it is `false`, the only way to grant the permission is the system settings, so send the user there.
+
+```tsx
+import { Location } from 'expo-location/next';
+import { Linking } from 'react-native';
+
+async function ensureForegroundPermission() {
+  const permission = await Location.requestForegroundPermissions();
+  if (permission.granted) {
+    return true;
+  }
+  if (!permission.canAskAgain) {
+    await Linking.openSettings();
+  }
+  return false;
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Request the background permission">
+
+On Android, the background permission requires the foreground permission first. Receiving positions in the background also needs the background permission declared on Android and the background mode on iOS. Enable both in the config plugin:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+On Android 11 and later, the system opens the app's settings page instead of a dialog. The request resolves when the user comes back.
+
+On iOS, the request shows the **Change to Always Allow** dialog. Answering **Keep Only While Using** resolves with `status: "denied"` and `scope: "whenInUse"`, because the foreground permission stays granted.
+
+```tsx
+import { Location, LocationScope } from 'expo-location/next';
+
+async function requestBackgroundPermission() {
+  const { granted } = await Location.requestForegroundPermissions();
+  if (!granted) {
+    return false;
+  }
+  const { scope } = await Location.requestBackgroundPermissions();
+  return scope === LocationScope.ALWAYS;
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Show live position on a screen">
+
+`watchPosition` returns a handle that controls the native watcher. Pause it when the screen loses focus, resume it when the screen is back, and dispose it when the screen unmounts. A screen that loses focus stays mounted behind another tab, a pushed screen, or a modal. On Android, the watcher also pauses on its own while the app is in the background.
+
+```tsx
+import { Location, LocationProfile, PositionWatchHandle } from 'expo-location/next';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useRef } from 'react';
+
+export default function LiveMapScreen() {
+  const watcher = useRef<PositionWatchHandle | null>(null);
+
+  useEffect(() => {
+    watcher.current = Location.watchPosition({
+      profile: LocationProfile.OTHER_NAVIGATION,
+      onPosition: position => console.log(position.coordinates),
+      onError: error => console.warn(error.message),
+    });
+    return () => {
+      watcher.current?.dispose();
+      watcher.current = null;
+    };
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      watcher.current?.resume();
+      return () => watcher.current?.pause();
+    }, [])
+  );
+
+  return null;
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Handle location services turned off">
+
+Location services are a device-wide switch, separate from the app's permission. With services off, no app receives a position. On Android, `enableLocationServices` asks the user to turn them on: Google Play services shows an in-app prompt, and the Android provider opens the system settings. On iOS, only the user can turn them on in Settings.
+
+```tsx
+import { Location } from 'expo-location/next';
+import { Alert, Platform } from 'react-native';
+
+async function ensureLocationServices() {
+  if (Location.hasLocationServicesEnabled()) {
+    return true;
+  }
+  if (Platform.OS === 'android') {
+    return Location.enableLocationServices();
+  }
+  Alert.alert(
+    'Location Services are off',
+    'Turn them on in Settings > Privacy & Security > Location Services.'
+  );
+  return false;
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Receive positions in the background">
+
+To receive positions while the app is in the background, define a task with `defineLocationTask` at the top level of a module. Then start the delivery with `LocationUpdatesHandle`. This requires `expo-task-manager`, the background permission, `ACCESS_BACKGROUND_LOCATION` declared on Android, and the `location` background mode on iOS. Enable the last two in the config plugin:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+```ts locationTask.ts
+import { defineLocationTask } from 'expo-location/next';
+
+defineLocationTask({
+  onPosition: position => {
+    console.log('Background position', position.coordinates);
+  },
+  onError: error => {
+    console.warn('Background updates failed', error.message);
+  },
+});
+```
+
+Import that module from the root layout, so the task exists on every launch, including the relaunch after the system terminated the app:
+
+```tsx app/_layout.tsx
+import '../locationTask';
+```
+
+Then control the delivery from a screen:
+
+```tsx app/index.tsx
+import {
+  Location,
+  LocationProfile,
+  LocationScope,
+  LocationUpdatesHandle,
+} from 'expo-location/next';
+import { useEffect, useState } from 'react';
+import { Button, View } from 'react-native';
+
+const locationUpdates = new LocationUpdatesHandle().withProfile(LocationProfile.LOW_POWER);
+
+export default function TrackingScreen() {
+  const [isTracking, setIsTracking] = useState(false);
+
+  useEffect(() => {
+    locationUpdates.hasStarted().then(setIsTracking);
+  }, []);
+
+  async function start() {
+    const foreground = await Location.requestForegroundPermissions();
+    if (!foreground.granted) {
+      return;
+    }
+    const { scope } = await Location.requestBackgroundPermissions();
+    if (scope !== LocationScope.ALWAYS) {
+      return;
+    }
+    await locationUpdates.start();
+    setIsTracking(true);
+  }
+
+  async function stop() {
+    await locationUpdates.stop();
+    setIsTracking(false);
+  }
+
+  return (
+    <View>
+      <Button
+        title={isTracking ? 'Stop tracking' : 'Start tracking'}
+        onPress={isTracking ? stop : start}
+      />
+    </View>
+  );
+}
+```
+
+Both sides default to the same task name, so you can omit it. To run several tasks, give each task its own name and pass that name to both `defineLocationTask` and the `LocationUpdatesHandle` constructor.
+
+</Collapsible>
+
+## API
+
+```js
+import { Location } from 'expo-location/next';
+```
+
+<APISection packageName="expo-location-next" />
+
+## Permissions
+
+### Android
+
+Installing `expo-location` adds the following permissions:
+
+- `ACCESS_COARSE_LOCATION`: for the approximate device location
+- `ACCESS_FINE_LOCATION`: for the precise device location
+
+The following permissions are optional and enabled through the config plugin:
+
+- `ACCESS_BACKGROUND_LOCATION`: to read the location while the app is in the background or closed. Enabling it in a new build requires [submitting the app for review](https://support.google.com/googleplay/android-developer/answer/9799150).
+
+<AndroidPermissions
+  permissions={[
+    'ACCESS_COARSE_LOCATION',
+    'ACCESS_FINE_LOCATION',
+    'ACCESS_BACKGROUND_LOCATION',
+  ]}
+/>
+
+### iOS
+
+This library uses the following **Info.plist** keys. The config plugin writes a default value for each of them except `NSLocationDefaultAccuracyReduced`.
+
+<IOSPermissions
+  permissions={[
+    'NSLocationWhenInUseUsageDescription',
+    'NSLocationAlwaysAndWhenInUseUsageDescription',
+    {
+      name: 'NSLocationTemporaryUsageDescriptionDictionary',
+      description: (
+        <>
+          A dictionary of purpose strings shown when the app asks for temporary full accuracy.{' '}
+          <CODE>expo-location/next</CODE> uses the <CODE>ExpoLocationFullAccuracy</CODE> key,
+          written by the <CODE>locationFullAccuracyPermission</CODE> plugin option.
+        </>
+      ),
+    },
+    {
+      name: 'NSLocationDefaultAccuracyReduced',
+      description: (
+        <>
+          A boolean that makes the permission dialog offer the approximate location by default. Set
+          by the <CODE>isIosReducedAccuracyByDefault</CODE> plugin option.
+        </>
+      ),
+    },
+  ]}
+/>
