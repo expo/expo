@@ -19,6 +19,7 @@ export async function installExpoPackageAsync(
     expoPackageToInstall,
     followUpCommandArgs,
     dev,
+    installFromCatalog,
   }: Pick<Options, 'dev'> & {
     /** Package manager to use when installing the versioned packages. */
     packageManager: PackageManager.NodePackageManager;
@@ -29,6 +30,7 @@ export async function installExpoPackageAsync(
     packageManagerArguments: string[];
     expoPackageToInstall: string;
     followUpCommandArgs: string[];
+    installFromCatalog?: boolean;
   }
 ) {
   // Check if there's potentially a dev server running in the current folder and warn about it
@@ -44,7 +46,9 @@ export async function installExpoPackageAsync(
   // Safe to use current process to upgrade Expo package- doesn't affect current process
   const done = event.span();
   try {
-    if (dev) {
+    if (installFromCatalog) {
+      await packageManager.installAsync(packageManagerArguments);
+    } else if (dev) {
       await packageManager.addDevAsync([...packageManagerArguments, expoPackageToInstall]);
     } else {
       await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
