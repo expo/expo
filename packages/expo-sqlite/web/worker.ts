@@ -750,8 +750,6 @@ async function maybeFinalizeAllStatements(sqlite3: SQLiteAPI, dbEntity: Database
     return;
   }
 
-  // Finalize only statements we prepared. `sqlite3_next_stmt()` also returns statements that
-  // virtual tables like FTS5 own, and finalizing those makes the close fail.
   for (const [nativeStatementId, stmtEntity] of statementIdMap.entries()) {
     if (stmtEntity.databasePointer !== dbEntity.pointer) {
       continue;
