@@ -77,7 +77,8 @@
       NSString *identifier = regionDict[@"identifier"] ?: [[NSUUID UUID] UUIDString];
       CLLocationDistance radius = [regionDict[@"radius"] doubleValue];
       CLLocationCoordinate2D center = [self.class coordinateFromDictionary:regionDict];
-      BOOL notifyOnEntry = [self.class boolValueFrom:regionDict[@"notifyOnEntry"] defaultValue:YES];
+      // `notifyOnEnter` is the documented key. `notifyOnEntry` is still read for apps that used it as a workaround.
+      BOOL notifyOnEntry = [self.class boolValueFrom:(regionDict[@"notifyOnEnter"] ?: regionDict[@"notifyOnEntry"]) defaultValue:YES];
       BOOL notifyOnExit = [self.class boolValueFrom:regionDict[@"notifyOnExit"] defaultValue:YES];
 
       CLCircularRegion *region = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
@@ -144,12 +145,9 @@
 
 - (void)locationManager:(CLLocationManager *)manager monitoringDidFailForRegion:(CLRegion *)region withError:(NSError *)error
 {
-  if (error && error.domain == kCLErrorDomain) {
-    // This error might happen when the device is not able to find out the location. Try to restart monitoring this region.
-    [_locationManager stopMonitoringForRegion:region];
-    [_locationManager startMonitoringForRegion:region];
-    [_locationManager requestStateForRegion:region];
-  }
+  // Do not restart monitoring the region here. A restart fails again for the same reason
+  // (for example, the app already monitors 20 regions), and CoreLocation calls this method again,
+  // which loops on the main thread.
 }
 
 - (void)locationManager:(CLLocationManager *)manager didDetermineState:(CLRegionState)state forRegion:(CLRegion *)region
