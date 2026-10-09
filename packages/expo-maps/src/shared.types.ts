@@ -23,6 +23,21 @@ export type CameraPosition = {
    * For some view sizes, lower zoom levels might not be available.
    */
   zoom?: number;
+
+  /**
+   * The tilt in degrees. Defaults to 0 for the initial camera.
+   * Finite values are clamped to 0-90 on Android and 0-89 on iOS.
+   * The native map may limit pitch further depending on camera distance.
+   */
+  tilt?: number;
+
+  /**
+   * The bearing in degrees clockwise from north. Defaults to 0 initially.
+   * Finite values wrap into 0-360. Imperative orientation updates preserve
+   * omitted fields from the current or latest requested camera.
+   * Imperative updates with non-finite tilt or bearing are ignored.
+   */
+  bearing?: number;
 };
 
 /**
