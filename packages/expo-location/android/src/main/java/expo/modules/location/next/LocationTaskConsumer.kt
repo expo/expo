@@ -5,7 +5,6 @@ import android.app.job.JobParameters
 import android.app.job.JobService
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import android.os.PersistableBundle
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskInterface
@@ -20,6 +19,7 @@ import expo.modules.location.next.locationProviders.LocationProvider
 import expo.modules.location.next.locationProviders.ProviderResult
 import expo.modules.location.next.locationProviders.toBackgroundUpdatesParameters
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 abstract class LocationTaskConsumer(
   context: Context,
@@ -113,7 +113,8 @@ abstract class LocationTaskConsumer(
     }
 
     if (LocationModuleNext.modulesStarted.get() > 0) {
-      currentTask.execute(locationData.toBundle(), null)
+      locationData.error?.let { currentTask.execute(null, Error(it)) }
+      locationData.data?.forEach { currentTask.execute(it.toBundle(), null) }
     } else {
       runCatching {
         taskManagerUtils.scheduleJob(context, currentTask, locationData.toPersistableBundleList())
@@ -121,12 +122,26 @@ abstract class LocationTaskConsumer(
     }
   }
   abstract fun decodeBatchedPositions(intent: Intent?): BatchedPositions
-
+  
   final override fun didExecuteJob(jobService: JobService?, params: JobParameters?): Boolean {
     val currentTask = task ?: return false
     val locationData = taskManagerUtils.extractDataFromJobParams(params).toBatchedPositions()
-    currentTask.execute(locationData.toBundle(), null) {
-      jobService?.jobFinished(params, false)
+    val positions = locationData.data
+
+    if (positions.isNullOrEmpty()) {
+      currentTask.execute(null, Error(locationData.error)) {
+        jobService?.jobFinished(params, false)
+      }
+      return true
+    }
+
+    val remainingTasks = AtomicInteger(positions.size)
+    positions.forEach { position ->
+      currentTask.execute(position.toBundle(), null) {
+        if (remainingTasks.decrementAndGet() == 0) {
+          jobService?.jobFinished(params, false)
+        }
+      }
     }
     return true
   }
@@ -158,13 +173,6 @@ class BatchedPositions(
   @Field val data: List<Position>? = null,
   @Field val error: String? = null
 ) : Record {
-  fun toBundle(): Bundle {
-    val bundle = Bundle()
-    data?.let { positions -> bundle.putParcelableArrayList("data", ArrayList(positions.map { it.toBundle() })) }
-    error?.let { bundle.putString("error", it) }
-    return bundle
-  }
-
   fun toPersistableBundleList(): List<PersistableBundle> {
     val bundles = if (data != null) {
       data.map { it.toPersistableBundle() }
