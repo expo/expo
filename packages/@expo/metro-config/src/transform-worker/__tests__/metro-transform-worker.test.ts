@@ -926,6 +926,72 @@ it('propagates native Expo Router loader metadata for optimized non-Hermes web b
   expect(result.output[0]!.data.loaderReference).toBe(filename);
 });
 
+describe.each(['Babel', 'Noxcturnal'])('optimized server export imports with %s', (transformer) => {
+  beforeEach(() => {
+    jest.doMock('@expo/metro/metro-transform-plugins', () => ({
+      ...jest.requireActual('@expo/metro/metro-transform-plugins'),
+      inlinePlugin: () => ({}),
+    }));
+    jest.resetModules();
+    Transformer = require('../metro-transform-worker');
+  });
+
+  afterEach(() => {
+    jest.doMock('@expo/metro/metro-transform-plugins', () => ({
+      ...jest.requireActual('@expo/metro/metro-transform-plugins'),
+      inlinePlugin: () => ({}),
+      constantFoldingPlugin: () => ({}),
+    }));
+  });
+
+  const transform = (contents: string) => {
+    const config = {
+      ...baseConfig,
+      unstable_noxcturnalTransformWorker: transformer === 'Noxcturnal',
+    };
+    return Transformer.transform(config, '/root', '/root/routes/route.jsx', Buffer.from(contents), {
+      ...baseTransformOptions,
+      dev: false,
+      platform: 'web',
+      experimentalImportSupport: true,
+      customTransformOptions: { routerRoot: 'routes', optimize: true },
+    });
+  };
+
+  it('removes loader-only dependencies after folding helpers and preserves client imports', async () => {
+    const result = await transform(`
+      import serverDefault from 'server-default';
+      import * as serverNamespace from 'server-namespace';
+      import { serverNamed } from 'server-named';
+      import { used, unused } from 'mixed';
+      import { Component } from 'components';
+      import 'side-effect';
+      function readData() { return serverDefault(serverNamespace, serverNamed); }
+      export async function loader() { return readData(); }
+      export const value = used;
+      export default function Route() { return <Component />; }
+    `);
+
+    const dependencies = result.dependencies.map((dependency) => dependency.name);
+    expect(dependencies).not.toContain('server-default');
+    expect(dependencies).not.toContain('server-namespace');
+    expect(dependencies).not.toContain('server-named');
+    expect(dependencies).toEqual(
+      expect.arrayContaining(['mixed', 'components', 'side-effect', 'react/jsx-runtime'])
+    );
+    expect(result.output[0]!.data.code).not.toContain('readData');
+    expect(result.output[0]!.data.code).toContain('unused');
+    expect(result.output[0]!.data.loaderReference).toBe('/root/routes/route.jsx');
+  });
+
+  it('keeps unused imports when no server export was stripped', async () => {
+    const result = await transform(
+      `import { unused } from 'side-effectful'; export const value = 1;`
+    );
+    expect(result.dependencies.map((dependency) => dependency.name)).toContain('side-effectful');
+  });
+});
+
 it('runs the configured minifier after a complete native dependency transform', async () => {
   const result = await Transformer.transform(
     baseConfig,
