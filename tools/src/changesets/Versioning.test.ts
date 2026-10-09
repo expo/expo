@@ -20,7 +20,7 @@ function fixture(): { root: string; packages: VersionedPackage[] } {
   );
   fs.writeFileSync(
     path.join(root, 'packages/expo-module-template/$package.json'),
-    '{"devDependencies":{"expo":"^1.0.0","expo-modules-core":"^1.0.0"}}\n'
+    '{"devDependencies":{"expo":"^1.0.0","jest-expo":"~1.0.0"},"peerDependencies":{"expo":"*"}}\n'
   );
   fs.writeFileSync(
     path.join(root, 'packages/expo-asset/android/build.gradle'),
@@ -41,8 +41,20 @@ function fixture(): { root: string; packages: VersionedPackage[] } {
         before: '1.0.0',
         after: '1.1.0',
       },
+      {
+        name: 'jest-expo',
+        path: path.join(root, 'packages/jest-expo'),
+        before: '1.0.0',
+        after: '1.0.1',
+      },
     ],
   };
+}
+
+function readModuleTemplate(root: string) {
+  return JSON.parse(
+    fs.readFileSync(path.join(root, 'packages/expo-module-template/$package.json'), 'utf8')
+  );
 }
 
 afterEach(() => {
@@ -61,10 +73,10 @@ describe('updateVersionDerivedFilesAsync', () => {
       ),
       { 'expo-asset': '~1.0.1', unchanged: '~1.0.0' }
     );
-    assert.match(
-      fs.readFileSync(path.join(root, 'packages/expo-module-template/$package.json'), 'utf8'),
-      /"expo":"\^1\.1\.0"/
-    );
+    assert.deepEqual(readModuleTemplate(root), {
+      devDependencies: { expo: '^1.1.0', 'jest-expo': '~1.0.1' },
+      peerDependencies: { expo: '*' },
+    });
     const gradle = fs.readFileSync(
       path.join(root, 'packages/expo-asset/android/build.gradle'),
       'utf8'
@@ -77,6 +89,7 @@ describe('updateVersionDerivedFilesAsync', () => {
     const { root, packages } = fixture();
     packages[0].after = '1.0.1-canary-test';
     packages[1].after = '1.1.0-canary-test';
+    packages[2].after = '1.0.1-canary-test';
     await updateVersionDerivedFilesAsync(packages, true, root);
     assert.equal(
       JSON.parse(
@@ -84,9 +97,9 @@ describe('updateVersionDerivedFilesAsync', () => {
       )['expo-asset'],
       '1.0.1-canary-test'
     );
-    assert.match(
-      fs.readFileSync(path.join(root, 'packages/expo-module-template/$package.json'), 'utf8'),
-      /"expo":"1\.1\.0-canary-test"/
-    );
+    assert.deepEqual(readModuleTemplate(root).devDependencies, {
+      expo: '1.1.0-canary-test',
+      'jest-expo': '1.0.1-canary-test',
+    });
   });
 });
