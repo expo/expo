@@ -717,5 +717,41 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
 
     private fun createNewRequestManager(activity: Activity): RequestManager = Glide.with(activity)
+
+    private var isActivityInForeground = true
+    private var areRequestsPausedWhileHidden = false
+
+    /**
+     * Clears the loaded images while the app's UI is hidden, so that their bitmaps don't stay in memory
+     * in the background, where Android vitals reports them. Glide can't trim them itself, because they
+     * are bound to views. [onActivityEntersForeground] loads them again.
+     */
+    internal fun releaseBitmapsWhileHidden(trimLevel: Int) = synchronized(Companion) {
+      // The user came back before the trim was handled, so the images are on screen.
+      if (isActivityInForeground) {
+        return
+      }
+      val manager = requestManager ?: return
+      val activity = activityRef.get() ?: return
+
+      manager.pauseAllRequests()
+      areRequestsPausedWhileHidden = true
+
+      // Glide may have trimmed its pools before these bitmaps were released, so trim them again.
+      Glide.get(activity).trimMemory(trimLevel)
+    }
+
+    internal fun onActivityEntersForeground() = synchronized(Companion) {
+      isActivityInForeground = true
+      // The request manager isn't always bound to the activity's lifecycle, so it may not resume on its own.
+      if (areRequestsPausedWhileHidden) {
+        areRequestsPausedWhileHidden = false
+        requestManager?.resumeRequests()
+      }
+    }
+
+    internal fun onActivityEntersBackground() = synchronized(Companion) {
+      isActivityInForeground = false
+    }
   }
 }
