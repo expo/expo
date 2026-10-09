@@ -44,6 +44,6 @@
     "react-native": "*"
   },
   "jest": {
-    "preset": "@expo/internal-scripts/universal"
+    "preset": "@expo/internal-scripts"
   }
 }

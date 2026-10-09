@@ -19,10 +19,10 @@ const SWC_ESM_TRANSFORM = [
 /**
  * Builds a mergeable Jest `transform` map that routes the given node_modules through SWC.
  *
- * @param {string[]} moduleNames Package names or scopes to match. Defaults to `DEFAULT_SWC_MODULES`.
+ * @param {string[]} moduleNames Package names or scopes to match.
  * @returns {import('jest').Config['transform']}
  */
-function createModulesTransform(moduleNames = DEFAULT_SWC_MODULES) {
+function createModulesTransform(moduleNames) {
   const pattern = `/node_modules/(?:${moduleNames.join('|')})/.+\\.[cm]?jsx?$`;
   return { [pattern]: SWC_ESM_TRANSFORM };
 }

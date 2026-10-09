@@ -65,13 +65,6 @@ function generateREADME() {
       throw new Error(
         `The Expo module named "${packageName}" contains an "ios" directory but does not define a Podspec, which is required for modules with iOS implementations.`
       );
-    const podspecPath = podspecs[0];
-    const podName = (() => {
-      const parts = podspecPath.split('/');
-      return parts[parts.length - 1].replace('.podspec', '');
-    })();
-
-    readme = replaceAll('podName', podName, readme);
   } else {
     readme = removeInapplicableSections('no-ios', readme);
   }
@@ -99,39 +92,12 @@ function generateREADME() {
     readme = replaceAll('docName', docName, readme);
     if (isAndroid) {
       const androidPackages = globSync('android/src/**/*Package.{java,kt}');
-      let androidPackage;
-      let androidPackagePath = 'expo.modules.yourModule.YourPackage';
-      let androidPackageName = 'YourPackage';
-      if (!androidPackages) {
-        console.warn(
-          `No Android package classes found, using: ${androidPackageName} - be sure to update this`
-        );
-      } else {
-        androidPackage = androidPackages[0];
-        if (androidPackages.length > 1) {
-          console.warn('Found multiple packages, which one should we use?');
-          androidPackage = androidPackages[0];
-        }
-
-        if (androidPackage) {
-          // From: android/src/main/java/expo/modules/localization/LocalizationPackage.java'
-          // To:   expo.modules.localization.LocalizationPackage
-          androidPackagePath = androidPackage
-            .split('/java/')[1]
-            .replace(/\//g, '.')
-            .replace('.java', '');
-          androidPackageName = (() => {
-            const parts = androidPackagePath.split('.');
-            return parts[parts.length - 1];
-          })();
-
-          readme = replaceAll('androidPackageName', androidPackageName, readme);
-        } else {
-          readme = removeInapplicableSections('no-package', readme);
-        }
+      if (androidPackages.length > 1) {
+        console.warn('Found multiple packages, which one should we use?');
       }
-
-      readme = replaceAll('androidPackagePath', androidPackagePath, readme);
+      if (!androidPackages.length) {
+        readme = removeInapplicableSections('no-package', readme);
+      }
     } else {
       readme = removeInapplicableSections('no-android', readme);
     }
