@@ -440,6 +440,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func createAsyncFunction(_ name: String, _ function: sending @escaping AsyncFunctionClosure)
     -> JavaScriptFunction
   {
+    // Captures a local copy instead of the `sending` parameter itself. When the closure below
+    // captures the parameter, the SIL ownership verifier in Swift 6.4 reports that the closure's
+    // `consuming` arguments buffer has no lifetime-ending use, and compilers built with assertions,
+    // such as the toolchain for Windows, crash on it.
+    let function = function
+
     // The explicitly typed `this` selects the unowned-`this` overload of `createFunction`,
     // skipping the per-call owning-value allocation (see ``UnownedThisSyncFunctionClosure``).
     return createFunction(name) {
