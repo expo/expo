@@ -10,6 +10,7 @@ import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { createRouteHandlerMiddleware } from '../createServerRouteMiddleware';
 import { instantiateMetroAsync } from '../instantiateMetro';
+import { HAS_LOGGED_SYMBOL, IS_METRO_BUNDLE_ERROR_SYMBOL } from '../metroErrorInterface';
 import { warnInvalidWebOutput } from '../router';
 import { observeAnyFileChanges, observeFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
@@ -94,6 +95,42 @@ function createDevServerForStaticPageTests() {
   devServer['getDevServerUrlOrAssert'] = jest.fn(() => 'http://localhost:8081');
   return devServer;
 }
+
+describe('Metro error reporting', () => {
+  it.each(['bundleApiRoute', 'bundleLoader'] as const)(
+    '%s preserves reporting flags when wrapping an error',
+    async (method) => {
+      const devServer = createDevServerForStaticPageTests();
+      const error = Object.assign(new Error('transform failed'), {
+        [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+        [HAS_LOGGED_SYMBOL]: true,
+      });
+      devServer['ssrLoadModuleContents'] = jest.fn().mockRejectedValue(error);
+      await expect(devServer[method]('/app/index.ts', { platform: 'web' })).rejects.toMatchObject({
+        [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+        [HAS_LOGGED_SYMBOL]: true,
+      });
+    }
+  );
+
+  it('preserves reporting flags when loader execution wraps a bundle failure', async () => {
+    const devServer = createDevServerForStaticPageTests();
+    const error = Object.assign(new Error('transform failed'), {
+      [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+      [HAS_LOGGED_SYMBOL]: true,
+    });
+    devServer['ssrLoadModule'] = jest.fn().mockRejectedValue(error);
+    await expect(
+      devServer.executeServerDataLoaderAsync(new URL('http://localhost/'), {
+        file: 'index.ts',
+        params: {},
+      } as any)
+    ).rejects.toMatchObject({
+      [IS_METRO_BUNDLE_ERROR_SYMBOL]: true,
+      [HAS_LOGGED_SYMBOL]: true,
+    });
+  });
+});
 
 async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
   const devServer = new MetroBundlerDevServer(

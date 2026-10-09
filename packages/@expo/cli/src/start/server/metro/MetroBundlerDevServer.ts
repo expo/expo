@@ -88,6 +88,7 @@ import {
   attachImportStackToRootMessage,
   dropStackIfContainsCodeFrame,
   getErrorOverlayHtmlAsync,
+  HAS_LOGGED_SYMBOL,
   IS_METRO_BUNDLE_ERROR_SYMBOL,
 } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
@@ -1800,9 +1801,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           chalk`Failed to bundle API Route: {bold ${relativePath}}\n\n` + error.message
         );
 
-        for (const key in error) {
-          err[key] = error[key];
-        }
+        // Preserve symbol flags as well as the bundler's error details.
+        Object.assign(err, error);
 
         throw err;
       } finally {
@@ -1922,9 +1922,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       return undefined;
     } catch (error: any) {
-      throw new CommandError(
-        'LOADER_EXECUTION_FAILED',
-        `Failed to execute loader for route "${location.pathname}": ${error.message}`
+      throw Object.assign(
+        new CommandError(
+          'LOADER_EXECUTION_FAILED',
+          `Failed to execute loader for route "${location.pathname}": ${error.message}`
+        ),
+        {
+          [IS_METRO_BUNDLE_ERROR_SYMBOL]: error[IS_METRO_BUNDLE_ERROR_SYMBOL],
+          [HAS_LOGGED_SYMBOL]: error[HAS_LOGGED_SYMBOL],
+        }
       );
     }
   }
@@ -1948,9 +1954,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         path: filePath,
         error: debugEvent.error(error as Error),
       });
-      throw new CommandError(
-        'LOADER_BUNDLE',
-        chalk`Failed to bundle loader: {bold ${filePath}}\n\n` + error.message
+      throw Object.assign(
+        new CommandError(
+          'LOADER_BUNDLE',
+          chalk`Failed to bundle loader: {bold ${filePath}}\n\n` + error.message
+        ),
+        {
+          [IS_METRO_BUNDLE_ERROR_SYMBOL]: error[IS_METRO_BUNDLE_ERROR_SYMBOL],
+          [HAS_LOGGED_SYMBOL]: error[HAS_LOGGED_SYMBOL],
+        }
       );
     }
   }

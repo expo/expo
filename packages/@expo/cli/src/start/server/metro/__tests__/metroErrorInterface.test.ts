@@ -2,6 +2,7 @@ import { events } from '2g';
 import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../../log';
+import { MetroTerminalReporter } from '../MetroTerminalReporter';
 import { LogBoxLog } from '../log-box/LogBoxLog';
 import {
   attachImportStackToRootMessage,
@@ -275,6 +276,23 @@ describe('dropStackIfContainsCodeFrame', () => {
 });
 
 describe('logMetroError', () => {
+  it.each([{}, { targetModuleName: 'fs', originModulePath: '/app/index.js' }])(
+    'does not repeat a reported bundling error: %j',
+    async (details) => {
+      const error = Object.assign(new Error('bundle failed'), details);
+      const terminal = { log: jest.fn() };
+      const reporter = new MetroTerminalReporter('/app', terminal as any);
+      reporter._logBundlingError(error);
+      await logMetroError('/app', { error });
+      await logMetroErrorWithStack('/app', { error, stack: [] });
+      expect(events('metro')).toHaveBeenCalledTimes(1);
+      expect(events('metro')).toHaveBeenCalledWith('bundling:failed', expect.any(Object));
+      expect(terminal.log).toHaveBeenCalledTimes(1);
+      expect(Log.log).not.toHaveBeenCalled();
+      expect(LogBoxLog).not.toHaveBeenCalled();
+    }
+  );
+
   it('does not repeat a formatted error but still generates its overlay', async () => {
     jest.mocked(resolveFrom).mockReturnValueOnce('/app/node_modules/expo-router/_error.js');
     const error = new Error('render failed');

@@ -24,7 +24,11 @@ import type {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
-import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
+import {
+  attachImportStackToRootMessage,
+  HAS_LOGGED_SYMBOL,
+  nearestImportStack,
+} from './metroErrorInterface';
 
 type ClientLogLevel =
   | 'trace'
@@ -317,7 +321,8 @@ export class MetroTerminalReporter extends TerminalReporter {
     super._logBundleBuildFailed(buildID);
   }
 
-  _logBundlingError(error: SnippetError): void {
+  _logBundlingError(error: SnippetError & { [HAS_LOGGED_SYMBOL]?: boolean }): void {
+    error[HAS_LOGGED_SYMBOL] = true;
     const importStack = nearestImportStack(error);
     const moduleResolutionError = formatUsingNodeStandardLibraryError(this.serverRoot, error);
 
