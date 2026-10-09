@@ -1,5 +1,5 @@
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from 'react-native/asset-registry';
+import { AssetRegistry } from 'react-native';
 
 import { type AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
@@ -166,7 +166,7 @@ export class Asset {
       });
     }
 
-    const meta = getAssetByID(virtualAssetModule);
+    const meta = AssetRegistry.getAssetByID(virtualAssetModule);
     if (!meta) {
       throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
     }
