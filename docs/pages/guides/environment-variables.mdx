@@ -42,7 +42,7 @@ When you run `npx expo start`, `process.env.EXPO_PUBLIC_API_URL` will be replace
 
 ### How variables are loaded
 
-Expo CLI loads **.env** files according to the [standard .env file resolution](#using-multiple-env-files-to-define-separate-environments) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected for security purposes.
+Expo CLI loads **.env** files according to the [standard **.env** file resolution](#using-multiple-env-files-to-define-separate-environments) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected for security purposes.
 
 ### How to read from environment variables
 
@@ -77,21 +77,21 @@ You may choose to commit the default **.env** file or other standard configurati
 
 In SDK 58 and later, each command sets `NODE_ENV` to its mode and replaces any value you set. For example, `NODE_ENV=production npx expo start` runs in development mode and loads **.env.development**.
 
-| Command                                                   | Mode                                                                             |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `npx expo start`                                          | Development. Production with `--no-dev`.                                         |
-| `npx expo export`                                         | Production. Development with `--dev`.                                            |
-| `npx expo run:android`                                    | Development for the `debug` and `debugOptimized` variants. Production otherwise. |
-| `npx expo run:ios`                                        | Development for configurations with `Debug` in their name. Production otherwise. |
-| `npx expo config`, `npx expo prebuild`, `npx expo-doctor` | Development. Production on EAS Build.                                            |
+| Command                                                   | Mode                                                                                                              |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `npx expo start`                                          | Development. Production with `--no-dev`.                                                                          |
+| `npx expo export`                                         | Production. Development with `--dev`.                                                                             |
+| `npx expo run:android`                                    | Development for variants in `debuggableVariants` (`debug` and `debugOptimized` by default). Production otherwise. |
+| `npx expo run:ios`                                        | Development for configurations with `Debug` in their name. Production otherwise.                                  |
+| `npx expo config`, `npx expo prebuild`, `npx expo-doctor` | Development. Production on EAS Build.                                                                             |
 
-Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further for this use case.
+Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further to switch between **.env** files.
 
 If you use EAS, consider using `eas env:pull` instead. This will swap your **.env.local** with an environment of your choice, rather than depending on `NODE_ENV`. You can accomplish a similar behavior without EAS by writing a script to overwrite **.env.local** or **.env** with the appropriate contents for the environment you wish to work with.
 
-Debug builds use development mode and release builds use production mode.
+In SDK 58 and later, debug builds use development mode and release builds use production mode.
 
-- **Android**: `debug` and `debugOptimized` are debug builds. If you use product flavors or custom build types, add your debug variants, such as `freeDebug`, to `debuggableVariants` in **android/app/build.gradle**.
+- **Android**: Variants listed in `debuggableVariants` in **android/app/build.gradle** are debug builds (`debug` and `debugOptimized` by default). If you use product flavors, add your debug variants, such as `freeDebug`.
 - **iOS**: Configurations with `Debug` in the name are debug builds.
 
 ### Disabling environment variables
@@ -124,7 +124,7 @@ Update your **.env** files to prefix any variables used within your JavaScript c
 + EXPO_PUBLIC_API_URL=https://myapi.com
 ```
 
-> If you have any non-standard **.env** files (for example, **.env.staging**), you will need to migrate those to one of the [standard .env files](#using-multiple-env-files-to-define-separate-environments).
+> If you have any non-standard **.env** files (for example, **.env.staging**), migrate them to one of the [standard **.env** files](#using-multiple-env-files-to-define-separate-environments).
 
 Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
