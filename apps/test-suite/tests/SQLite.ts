@@ -1263,7 +1263,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
     });
 
     for (const useNewConnection of [false, true]) {
-      nativeIt(
+      it(
         'can clean up and retry a failed close (useNewConnection=' + useNewConnection + ')',
         async () => {
           const options = {
@@ -1312,7 +1312,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       );
     }
 
-    nativeIt('can clean up and retry a failed synchronous close', () => {
+    it('can clean up and retry a failed synchronous close', () => {
       const db = SQLite.openDatabaseSync(':memory:', {
         useNewConnection: true,
         finalizeUnusedStatementsBeforeClosing: false,
@@ -1326,6 +1326,16 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
         db.closeSync();
       }
       expect(() => db.execSync('SELECT 1')).toThrow();
+    });
+
+    it('can finalize a statement after closing its handle to a shared connection', async () => {
+      const options = { finalizeUnusedStatementsBeforeClosing: false };
+      const db = await SQLite.openDatabaseAsync(':memory:', options);
+      const sharedDb = await SQLite.openDatabaseAsync(':memory:', options);
+      const statement = await sharedDb.prepareAsync('SELECT 1');
+      await sharedDb.closeAsync();
+      await statement.finalizeAsync();
+      await db.closeAsync();
     });
   });
 

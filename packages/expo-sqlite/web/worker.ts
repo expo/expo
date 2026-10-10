@@ -40,6 +40,7 @@ interface DatabaseEntity {
 }
 interface StatementEntity {
   pointer: StatementPointer;
+  databasePointer: DatabasePointer;
 }
 interface SessionEntity {
   pointer: SessionPointer;
@@ -118,7 +119,7 @@ async function handleMessageImpl<T extends SQLiteWorkerMessageType>({
     }
 
     case 'finalize': {
-      await finalize(data.nativeDatabaseId, data.nativeStatementId);
+      await finalize(data.nativeStatementId);
       break;
     }
 
@@ -253,12 +254,20 @@ async function backupDatabase(
 }
 
 async function closeDatabase(nativeDatabaseId: number) {
-  maybeFinalizeAllStatements(nativeDatabaseId);
   const { sqlite3 } = await maybeInitAsync();
   const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (dbEntity) {
-    databaseIdMap.delete(nativeDatabaseId);
+  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+
+  databaseIdMap.delete(nativeDatabaseId);
+  if ([...databaseIdMap.values()].includes(dbEntity)) {
+    return;
+  }
+  try {
+    await maybeFinalizeAllStatements(sqlite3, dbEntity);
     await sqlite3.close(dbEntity.pointer);
+  } catch (e) {
+    databaseIdMap.set(nativeDatabaseId, dbEntity);
+    throw e;
   }
 }
 
@@ -289,10 +298,9 @@ async function exec(nativeDatabaseId: number, source: string) {
   await sqlite3.exec(dbEntity.pointer, source);
 }
 
-async function finalize(nativeDatabaseId: number, nativeStatementId: number): Promise<void> {
+// A closed handle to a shared connection may still own statements, so don't require its id here.
+async function finalize(nativeStatementId: number): Promise<void> {
   const { sqlite3 } = await maybeInitAsync();
-  const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
   const stmt = statementIdMap.get(nativeStatementId);
   if (!stmt) throw new Error(`Statement not found - nativeStatementId[${nativeStatementId}]`);
 
@@ -429,7 +437,10 @@ async function prepare(
   const { value: statementPointer } = await asyncIterator.next();
   asyncIterator.return?.();
   if (!statementPointer) throw new Error('Failed to prepare statement');
-  statementIdMap.set(nativeStatementId, { pointer: statementPointer });
+  statementIdMap.set(nativeStatementId, {
+    pointer: statementPointer,
+    databasePointer: dbEntity.pointer,
+  });
 }
 
 async function run(
@@ -736,40 +747,21 @@ async function initDb(sqlite3: SQLiteAPI, dbEntity: DatabaseEntity) {
   }
 }
 
-async function maybeFinalizeAllStatements(nativeDatabaseId: number) {
-  const { sqlite3 } = await maybeInitAsync();
-  const dbEntity = databaseIdMap.get(nativeDatabaseId);
-  if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
+async function maybeFinalizeAllStatements(sqlite3: SQLiteAPI, dbEntity: DatabaseEntity) {
   if (!dbEntity.openOptions.finalizeUnusedStatementsBeforeClosing) {
     return;
   }
 
-  let error: Error | null = null;
-  const finalizedStatements: StatementPointer[] = [];
-  let stmt: StatementPointer | null = sqlite3.next_stmt(dbEntity.pointer, null);
-  while (stmt != null && stmt !== 0) {
-    const nextStmt: StatementPointer = sqlite3.next_stmt(dbEntity.pointer, stmt);
-    try {
-      sqlite3.finalize(stmt);
-      finalizedStatements.push(stmt);
-    } catch (e) {
-      error = e;
-    }
-    stmt = nextStmt;
-  }
-
-  // Delete finalized statements from the map
-  const statementsToDelete: number[] = [];
   for (const [nativeStatementId, stmtEntity] of statementIdMap.entries()) {
-    if (finalizedStatements.includes(stmtEntity.pointer)) {
-      statementsToDelete.push(nativeStatementId);
+    if (stmtEntity.databasePointer !== dbEntity.pointer) {
+      continue;
+    }
+    statementIdMap.delete(nativeStatementId);
+    const result = await sqlite3.finalize(stmtEntity.pointer);
+    if (result !== SQLITE_OK) {
+      console.warn(`Finalizing a statement during close failed - error code[${result}]`);
     }
   }
-  for (const nativeStatementId of statementsToDelete) {
-    statementIdMap.delete(nativeStatementId);
-  }
-
-  if (error) throw error;
 }
 
 async function maybeInitAsync(): Promise<{
