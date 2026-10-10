@@ -60,7 +60,7 @@ public func ExpoUIView<Content: ExpoSwiftUI.View>(
   _ contentType: Content.Type
 ) -> ExpoSwiftUI.ViewDefinition<Content.Props, UIBaseView<Content.Props, Content>> where Content.Props: UIBaseViewProps {
   let wrappedType = UIBaseView<Content.Props, Content>.self
-  let contentName = String(describing: contentType)
+  let contentName = _typeName(contentType, qualified: false)
 
   return View(wrappedType) {
     ViewName(contentName)
@@ -76,7 +76,7 @@ public func ExpoUIView<Content: ExpoSwiftUI.View>(
   @ExpoSwiftUI.ViewDefinitionBuilder<Content> _ elements: @escaping () -> [AnyViewDefinitionElement]
 ) -> ExpoSwiftUI.ViewDefinition<Content.Props, UIBaseView<Content.Props, Content>> where Content.Props: UIBaseViewProps {
   let wrappedType = UIBaseView<Content.Props, Content>.self
-  let contentName = String(describing: contentType)
+  let contentName = _typeName(contentType, qualified: false)
 
   return ExpoSwiftUI.ViewDefinition(wrappedType, name: contentName, elements: elements())
 }
