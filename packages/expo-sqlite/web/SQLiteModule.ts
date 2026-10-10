@@ -11,9 +11,12 @@ import {
   type SQLiteColumnValues,
   type SQLiteRunResult,
 } from '../src/NativeStatement';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
 import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
+import { type ConfigureWorkerMessage } from './web.types';
 
 let worker: Worker | null = null;
+let webOptions: SQLiteWebOptions = {};
 let nextNativeDatabaseId = 0;
 let nextNativeStatementId = 0;
 let nextNativeSessionId = 0;
@@ -29,6 +32,7 @@ function getWorker(): Worker {
       }
       workerMessageHandler(event);
     });
+    worker.postMessage({ type: 'configure', data: webOptions } satisfies ConfigureWorkerMessage);
   }
   return worker;
 }
@@ -425,6 +429,18 @@ export class SQLiteModule extends NativeModule {
     invokeWorkerSync(getWorker(), 'deleteDatabase', {
       databasePath,
     });
+  }
+
+  configureWeb(options: SQLiteWebOptions): void {
+    if (worker != null) {
+      // Fast Refresh runs the same call again after a database is open.
+      if (options.wasmURL === webOptions.wasmURL) return;
+      throw new Error(
+        'Cannot change the SQLite WebAssembly URL because a database has already been opened, and the web worker loads SQLite only once. ' +
+          'Call `configureWeb()` before opening any database, and reload the app after you change `wasmURL`.'
+      );
+    }
+    webOptions = { ...options };
   }
 
   async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {

@@ -4,6 +4,7 @@
 
 import { type Changeset } from '../src/NativeSession';
 import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
 import { createSQLAction } from './SQLAction';
 import { SQLiteOptions } from './SQLiteOptions';
 import { sendWorkerResult } from './WorkerChannel';
@@ -21,6 +22,7 @@ import WaSQLiteFactory from './wa-sqlite/wa-sqlite';
 // @ts-expect-error wasm module is not typed
 import wasmModule from './wa-sqlite/wa-sqlite.wasm';
 import {
+  type ConfigureWorkerMessage,
   type SQLiteWorkerMessage,
   type SQLiteWorkerMessageType,
   type MessageTypeMap,
@@ -55,6 +57,7 @@ const MIN_INT32 = -0x80000000;
 let _sqlite3: SQLiteAPI | null = null;
 let _vfs: AccessHandlePoolVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
+let _webOptions: SQLiteWebOptions = {};
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
@@ -62,7 +65,12 @@ const sessionIdMap = new Map<number, SessionEntity>();
 
 class SQLiteErrorException extends Error {}
 
-self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage>) => {
+self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage | ConfigureWorkerMessage>) => {
+  if (event.data.type === 'configure') {
+    _webOptions = event.data.data;
+    return;
+  }
+
   let result: ResultType | null = null;
   let error: Error | null = null;
   try {
@@ -770,9 +778,7 @@ async function maybeInitAsync(): Promise<{
   vfsMemory: MemoryVFS;
 }> {
   if (!_sqlite3) {
-    const module = await WaSQLiteFactory({
-      locateFile: () => wasmModule,
-    });
+    const module = await loadWaSQLiteModuleAsync();
     _sqlite3 = SQLite.Factory(module) as SQLiteAPI;
     if (!_sqlite3) {
       throw new Error('Failed to initialize wa-sqlite');
@@ -798,6 +804,20 @@ async function maybeInitAsync(): Promise<{
     throw new Error('Invalid VFS state');
   }
   return { sqlite3: _sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
+}
+
+async function loadWaSQLiteModuleAsync(): Promise<any> {
+  const { wasmURL } = _webOptions;
+  try {
+    return await WaSQLiteFactory({ locateFile: () => wasmURL ?? wasmModule });
+  } catch (e) {
+    if (wasmURL == null) throw e;
+    throw new Error(
+      `Failed to load the SQLite WebAssembly module from "${wasmURL}". ` +
+        'Check that the `wasmURL` passed to `configureWeb()` is reachable and built from the `expo/wa-sqlite` revision that this `expo-sqlite` uses. ' +
+        `Cause: ${e instanceof Error ? e.message : String(e)}`
+    );
+  }
 }
 
 //#endregion Internal helpers

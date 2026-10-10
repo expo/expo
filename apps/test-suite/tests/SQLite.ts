@@ -11,6 +11,10 @@ import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'SQLite';
 
+if (process.env.EXPO_OS === 'web') {
+  SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
+}
+
 interface UserEntity {
   name: string;
   k: number;
@@ -1341,7 +1345,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
 
   describe('Virtual tables', () => {
     for (const moduleName of ['fts5', 'fts4']) {
-      nativeIt(`should close a ${moduleName} database after the query is finalized`, async () => {
+      it(`should close a ${moduleName} database after the query is finalized`, async () => {
         const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
         await db.execAsync(`
           CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
@@ -1353,21 +1357,20 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
         await db.closeAsync();
       });
 
-      nativeIt(
-        `should close a ${moduleName} database while a query statement is still open`,
-        async () => {
-          const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
-          await db.execAsync(`
+      it(`should close a ${moduleName} database while a query statement is still open`, async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        await db.execAsync(`
             CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
             INSERT INTO fts_probe(body) VALUES ('hello world');
           `);
-          const statement = await db.prepareAsync(
-            "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
-          );
-          await db.closeAsync();
-          expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
-        }
-      );
+        const statement = await db.prepareAsync(
+          "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
+        );
+        await db.closeAsync();
+        expect(() => statement.getColumnNamesSync()).toThrowError(
+          /Access to closed resource|Statement not found/
+        );
+      });
     }
   });
 

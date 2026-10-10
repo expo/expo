@@ -113,6 +113,29 @@ If you deploy your app on [EAS Hosting](/eas/hosting/introduction/), you can con
 }
 ```
 
+### Use a custom WebAssembly build
+
+The config plugin properties, such as `enableFTS`, only apply to Android and iOS. On web, `expo-sqlite` uses a prebuilt WebAssembly build of SQLite without FTS. To enable FTS or other compile options on web, build your own WebAssembly file from [`expo/wa-sqlite`](https://github.com/expo/wa-sqlite) with [Emscripten](https://emscripten.org/):
+
+```sh Terminal
+git clone https://github.com/expo/wa-sqlite.git
+cd wa-sqlite
+make deps
+make dist/wa-sqlite.js WASQLITE_EXTRA_DEFINES="-DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1"
+```
+
+Copy **dist/wa-sqlite.wasm** into your project, then pass it to [`configureWeb()`](#sqliteconfigureweboptions) before opening any database, for example, in your root layout:
+
+```js app/_layout.tsx
+import * as SQLite from 'expo-sqlite';
+
+if (process.env.EXPO_OS === 'web') {
+  SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
+}
+```
+
+> **warning** Build from the `expo/wa-sqlite` revision that matches your `expo-sqlite` version. A build from another revision may fail to load.
+
 ## Usage
 
 Import the module from `expo-sqlite`.
