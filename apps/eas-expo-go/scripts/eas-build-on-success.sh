@@ -37,6 +37,20 @@ upload_crashlytics_symbols() {
   popd
 }
 
+if [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
+  df -h /
+  du -sh \
+    "$ROOT_DIR/apps/expo-go/ios/build" \
+    "$ROOT_DIR/apps/expo-go/ios/build/Build/Intermediates.noindex" \
+    "$ROOT_DIR/apps/expo-go/ios/build/Build/Products" \
+    "$ROOT_DIR/apps/expo-go/ios/build/ModuleCache.noindex" \
+    "$ROOT_DIR/apps/expo-go/ios/Pods" \
+    "$ROOT_DIR/node_modules" \
+    "$ROOT_DIR/react-native-lab/react-native/node_modules" \
+    "$(pnpm store path)" \
+    "$HOME/Library/Caches/CocoaPods" || true
+fi
+
 if [[ "$EAS_BUILD_PROFILE" == "release-client" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
     upload_crashlytics_symbols

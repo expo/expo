@@ -33,7 +33,8 @@
           "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
           "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
           "EAS_RESTORE_CACHE": "0",
-          "USE_CCACHE": "0"
+          "USE_CCACHE": "0",
+          "XCODE_XCCONFIG_FILE": "/Users/expo/workingdir/build/apps/eas-expo-go/ci-simulator.xcconfig"
         }
       }
     },
