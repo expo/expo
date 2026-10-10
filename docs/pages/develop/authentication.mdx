@@ -143,7 +143,10 @@ Expo lets you implement the entire OAuth flow directly in your app using:
 
 <BoxLink title="Expo AuthSession" href="/versions/latest/sdk/auth-session" Icon={DocsLogo} />
 
-Some providers offer native APIs to handle the sign-in flow directly within the app. Google offers a native Sign in with Google experience on Android. If you're looking for a native implementation, see the [Google authentication guide](/guides/google-authentication). Apple provides Sign in with Apple, which uses a native bottom sheet and Face ID on iOS. See [`expo-apple-authentication`](/versions/latest/sdk/apple-authentication) reference.
+Some providers offer native APIs to handle the sign-in flow directly within the app. Google offers a native Sign in with Google experience on Android. If you're looking for a native implementation, see the [Google authentication guide](/guides/google-authentication). Apple provides Sign in with Apple, which uses a native bottom sheet and Face ID on iOS. You can integrate it using either of the following libraries:
+
+- [`expo-apple-authentication`](/versions/latest/sdk/apple-authentication): An Expo SDK library for Sign in with Apple on iOS.
+- [`expo-apple-sign-in`](https://exsi.smartsquad.io): A library that adds Sign in with Apple on Android and web using Apple's web flow, alongside the native sheet on iOS. It requires a development build and Expo SDK 58.
 
 The following setup gives you full control over the login experience across Android, iOS, and web.
 
