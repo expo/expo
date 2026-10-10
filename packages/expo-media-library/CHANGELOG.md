@@ -63,6 +63,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Re-organize TS code ([#45953](https://github.com/expo/expo/pull/45953) by [@Wenszel](https://github.com/Wenszel))
+- [Android][iOS] Add native unit tests for the class-based API mapping layer: `AssetMapper` unit conversions, `MediaStoreQueryFormatter`, `MediaType`, `MimeType`, `RelativePath`, `AssetField`, `SortDescriptor`, `buildUniqueDisplayName`, `extractAssetContentUri`, `AssetDimensionsResolver`, `AssetFieldPredicateBuilder` and the legacy `assetType`/`exportDate` helpers.
 
 ## 57.0.3 - 2026-07-17
 
