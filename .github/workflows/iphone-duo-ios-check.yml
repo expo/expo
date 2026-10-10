@@ -1,0 +1,103 @@
+name: iPhone Duo - iOS Native Check (expo-display-features)
+
+# Standalone, manually-dispatched variant of ios-unit-tests.yml, scoped to just
+# packages/expo-display-features and with a dynamic (not hardcoded) Xcode
+# selection, so it can validate this branch against Xcode 27.1 specifically
+# without waiting for the main workflow to be updated.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 60
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🔨 Select Xcode (prefer 27.1, else latest installed)
+        id: xcode
+        run: |
+          echo "Installed Xcode versions on this runner:"
+          ls /Applications | grep -i '^Xcode' || true
+          if [ -d "/Applications/Xcode_27.1.app" ]; then
+            SELECTED="/Applications/Xcode_27.1.app"
+          else
+            SELECTED=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          fi
+          if [ -z "$SELECTED" ]; then
+            echo "::error::No Xcode installation found on this runner image."
+            exit 1
+          fi
+          sudo xcode-select --switch "$SELECTED"
+          xcodebuild -version
+          echo "selected=$SELECTED" >> "$GITHUB_OUTPUT"
+          if [ "$SELECTED" != "/Applications/Xcode_27.1.app" ]; then
+            echo "::warning::Xcode 27.1 is not on this GitHub-hosted runner image yet; fell back to $SELECTED. This run does NOT confirm compatibility with Xcode 27.1 specifically."
+          fi
+
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
+
+      - name: 🧹 Cleanup unused simulator runtimes
+        run: |
+          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
+          xcrun simctl list devices --json
+          xcrun simctl erase all
+          xcrun simctl shutdown all
+          sudo xcodebuild -runFirstLaunch
+
+      - name: 🔨 Install pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+
+      - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
+        run: pod install
+        working-directory: apps/bare-expo/ios
+
+      # expo-display-features has no packages/expo-display-features/ios/Tests/
+      # (no native unit tests were written), so `et native-unit-tests` has
+      # nothing to run. It was just added as a bare-expo dependency above,
+      # so building the app itself is what actually compiles the new Swift
+      # module against a real iOS SDK + ExpoModulesCore.
+      - name: 🧪 Build BareExpo for iOS Simulator (compiles DisplayFeaturesModule.swift)
+        timeout-minutes: 45
+        working-directory: apps/bare-expo/ios
+        run: |
+          # Use xcodebuild's own exit code, not log-text grepping — a "error:"
+          # substring shows up harmlessly in retry/warning noise (npm fetch
+          # retries, Xcode's own internal cache messages) even on a build
+          # that ultimately succeeds.
+          set -o pipefail
+          xcodebuild \
+            -workspace BareExpo.xcworkspace \
+            -scheme BareExpo \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            build 2>&1 | tee /tmp/xcodebuild.log
+          echo "BareExpo (Debug, iphonesimulator) built cleanly, including expo-display-features."
+
+      - name: 📤 Upload build log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: iphone-duo-ios-build-log
+          path: /tmp/xcodebuild.log

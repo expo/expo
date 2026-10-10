@@ -43,6 +43,7 @@
     "expo-camera": "workspace:*",
     "expo-dev-client": "workspace:*",
     "expo-dev-menu": "workspace:*",
+    "expo-display-features": "workspace:*",
     "expo-font": "workspace:*",
     "expo-image": "workspace:*",
     "expo-insights": "workspace:*",
