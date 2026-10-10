@@ -2,48 +2,31 @@
 import chalk from 'chalk';
 
 import type { Command } from '../index';
-import { Log } from '../log';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { printHelp } from '../utils/args';
 import { CommandError, logCmdError } from '../utils/errors';
 
-export const expoCompile: Command = async (argv) => {
-  const args = assertWithOptionsArgs(
-    {
-      '--help': Boolean,
-      '-h': '--help',
-    },
-    {
-      argv,
-      permissive: true,
-    }
-  );
-
+export const expoCompile: Command = async (argv = []) => {
   try {
-    let [platform] = args._ ?? [];
+    const [platform, ...argsWithoutPlatform] = argv;
 
-    if (platform?.startsWith('-')) {
-      platform = '';
-    }
-
-    const argsWithoutPlatform = !platform ? argv : argv?.splice(1);
-
-    if (!platform && args['--help']) {
+    if (!platform || platform.startsWith('-')) {
       printHelp(
         'Build the native app binary locally',
         `npx expo compile <android|ios>`,
-        chalk`{dim $} npx expo compile <android|ios> --help  Output usage information`
+        [
+          `android     Build the Android app binary`,
+          `ios         Build the iOS app binary`,
+          `-h, --help  Usage info`,
+        ].join('\n'),
+        [
+          '',
+          chalk`  The {bold compile:android} and {bold compile:ios} forms are also supported.`,
+          chalk`  Add {bold --help} to either one for its options:`,
+          chalk`    {dim $} npx expo compile ios --help`,
+          '',
+        ].join('\n')
       );
     }
-
-    if (!platform) {
-      const { selectAsync } = await import('../utils/prompts.js');
-      platform = await selectAsync('Select the platform to compile', [
-        { title: 'Android', value: 'android' },
-        { title: 'iOS', value: 'ios' },
-      ]);
-    }
-
-    Log.log(chalk.dim(`› Using expo compile:${platform} ${(argsWithoutPlatform ?? []).join(' ')}`));
 
     switch (platform) {
       case 'android': {
@@ -57,7 +40,10 @@ export const expoCompile: Command = async (argv) => {
       }
 
       default:
-        throw new CommandError('UNSUPPORTED_PLATFORM', `Unsupported platform: ${platform}`);
+        throw new CommandError(
+          'UNSUPPORTED_PLATFORM',
+          `Unsupported platform: ${platform}. Run \`npx expo compile --help\` for usage.`
+        );
     }
   } catch (error: any) {
     logCmdError(error);
