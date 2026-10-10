@@ -427,6 +427,14 @@ export class SQLiteModule extends NativeModule {
     });
   }
 
+  createNativeDatabase(
+    databasePath: string,
+    options?: SQLiteOpenOptions,
+    serializedData?: Uint8Array
+  ): NativeDatabase {
+    return new NativeDatabase(databasePath, options, serializedData);
+  }
+
   async ensureDatabasePathExistsAsync(databasePath: string): Promise<void> {
     // No-op for web
   }
@@ -473,7 +481,6 @@ export class SQLiteModule extends NativeModule {
     });
   }
 
-  readonly NativeDatabase: typeof NativeDatabase = NativeDatabase;
   readonly NativeStatement: typeof NativeStatement = NativeStatement;
   readonly NativeSession: typeof NativeSession = NativeSession;
 }

@@ -4,8 +4,6 @@ import ExpoModulesCore
 
 private let MEMORY_DB_NAME = ":memory:"
 
-private let moduleQueue = DispatchQueue(label: "expo.module.sqlite.AsyncQueue", qos: .userInitiated, attributes: .concurrent)
-
 // `@unchecked Sendable`: the `@JS(.concurrent)` members send the module off the JavaScript thread, which
 // Swift 6 mode allows only for a `Sendable` module. The mutable state is either guarded by `cacheLock` or
 // only read off the JavaScript thread (`hasListeners`).
@@ -117,61 +115,33 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     )
   }
 
-  public func definition() -> ModuleDefinition {
-    // MARK: - NativeDatabase
+  // A factory rather than a `@JS init`: an initializer can't return the cached instance.
+  @JS
+  func createNativeDatabase(databasePath: String, options: OpenDatabaseOptions, serializedData: Data?) throws -> NativeDatabase {
+    var db: OpaquePointer?
 
-    // swiftlint:disable:next closure_body_length
-    Class(NativeDatabase.self) {
-      Constructor { (databasePath: String, options: OpenDatabaseOptions, serializedData: Data?) -> NativeDatabase in
-        var db: OpaquePointer?
-
-        if let serializedData = serializedData {
-          db = try deserializeDatabase(serializedData)
-        } else {
-          // Try to find opened database for fast refresh
-          if let cachedDb = findCachedDatabase(where: { $0.databasePath == databasePath && $0.openOptions == options && !options.useNewConnection }) {
-            cachedDb.addRef()
-            return cachedDb
-          }
-
-          let path = try ensureDatabasePathExists(path: databasePath)
-          if exsqlite3_open(path.toFilePath(), &db) != SQLITE_OK {
-            throw DatabaseException()
-          }
-        }
-
-        let database = NativeDatabase(db, databasePath: databasePath, openOptions: options)
-        addCachedDatabase(database)
-        return database
+    if let serializedData = serializedData {
+      db = try deserializeDatabase(serializedData)
+    } else {
+      // Try to find opened database for fast refresh
+      if let cachedDb = findCachedDatabase(where: { $0.databasePath == databasePath && $0.openOptions == options && !options.useNewConnection }) {
+        cachedDb.addRef()
+        return cachedDb
       }
 
-      AsyncFunction("initAsync") { (database: NativeDatabase) in
-        try initDb(database: database)
-      }.runOnQueue(moduleQueue)
-      Function("initSync") { (database: NativeDatabase) in
-        try initDb(database: database)
-      }
-
-      AsyncFunction("closeAsync") { (database: NativeDatabase) in
-        try closeDatabaseIfNeeded(database)
-      }.runOnQueue(moduleQueue)
-      // Interrupt must reach SQLite immediately, without waiting for the running query's queue.
-      Function("interruptSync") { (database: NativeDatabase) in
-        // Do not block the JS thread or touch a connection being closed on another thread.
-        guard database.closeLock.try() else {
-          throw DatabaseClosingException()
-        }
-        defer { database.closeLock.unlock() }
-        try maybeThrowForClosedDatabase(database)
-        exsqlite3_interrupt(database.pointer)
-      }
-      Function("closeSync") { (database: NativeDatabase) in
-        try closeDatabaseIfNeeded(database)
+      let path = try ensureDatabasePathExists(path: databasePath)
+      if exsqlite3_open(path.toFilePath(), &db) != SQLITE_OK {
+        throw DatabaseException()
       }
     }
 
-    // MARK: - NativeStatement and NativeSession
+    let database = NativeDatabase(db, databasePath: databasePath, openOptions: options, module: self)
+    addCachedDatabase(database)
+    return database
+  }
 
+  public func definition() -> ModuleDefinition {
+    NativeDatabase._synthesizedClassDefinition()
     NativeStatement._synthesizedClassDefinition()
     NativeSession._synthesizedClassDefinition()
   }
@@ -219,7 +189,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     return db
   }
 
-  private func initDb(database: NativeDatabase) throws {
+  func initDb(database: NativeDatabase) throws {
     try maybeThrowForClosedDatabase(database)
     if database.openOptions.enableChangeListener {
       addUpdateHook(database)
@@ -341,7 +311,7 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     }
   }
 
-  private func closeDatabaseIfNeeded(_ database: NativeDatabase) throws {
+  func closeDatabaseIfNeeded(_ database: NativeDatabase) throws {
     try Self.cacheLock.withLock {
       try maybeThrowForClosedDatabase(database)
       if let index = cachedDatabases.firstIndex(of: database) {

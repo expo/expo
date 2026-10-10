@@ -605,7 +605,7 @@ export async function openDatabaseAsync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
+  const nativeDatabase = ExpoSQLite.createNativeDatabase(databasePath, openOptions);
   await nativeDatabase.initAsync();
   const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
   if (options?.useNewConnection !== true) {
@@ -631,7 +631,7 @@ export function openDatabaseSync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
+  const nativeDatabase = ExpoSQLite.createNativeDatabase(databasePath, openOptions);
   nativeDatabase.initSync();
   const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
   if (options?.useNewConnection !== true) {
@@ -651,7 +651,7 @@ export async function deserializeDatabaseAsync(
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  const nativeDatabase = ExpoSQLite.createNativeDatabase(':memory:', openOptions, serializedData);
   await nativeDatabase.initAsync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -669,7 +669,7 @@ export function deserializeDatabaseSync(
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
+  const nativeDatabase = ExpoSQLite.createNativeDatabase(':memory:', openOptions, serializedData);
   nativeDatabase.initSync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -797,7 +797,7 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databasePath, options);
+    const nativeDatabase = ExpoSQLite.createNativeDatabase(db.databasePath, options);
     await nativeDatabase.initAsync();
     return new Transaction(db.databasePath, options, nativeDatabase);
   }
