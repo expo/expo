@@ -42,7 +42,7 @@ When you run `npx expo start`, `process.env.EXPO_PUBLIC_API_URL` will be replace
 
 ### How variables are loaded
 
-Expo CLI loads **.env** files according to the [standard .env file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected for security purposes.
+Expo CLI loads **.env** files according to the [standard **.env** file resolution](#using-multiple-env-files-to-define-separate-environments) and then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARNAME]` with the corresponding value set in the **.env** files. Code inside **node_modules** is not affected for security purposes.
 
 ### How to read from environment variables
 
@@ -56,7 +56,14 @@ Expo CLI loads **.env** files according to the [standard .env file resolution](h
 
 ### Using multiple .env files to define separate environments
 
-You can define any of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use), so it is possible to have separate **.env** and **.env.local**, files and they will load according to the standard priority.
+Each Expo command runs in development or production mode. The mode determines which **.env** files load, and files listed first take priority:
+
+| Mode        | Files                                                                      |
+| ----------- | -------------------------------------------------------------------------- |
+| Development | **.env.development.local**, **.env.local**, **.env.development**, **.env** |
+| Production  | **.env.production.local**, **.env.local**, **.env.production**, **.env**   |
+
+In SDK 58 and later, Expo commands don't load other **.env** files, such as **.env.staging** or **.env.test**.
 
 You may choose to commit the default **.env** file or other standard configurations, but generally **.env.local** files should be added to your **.gitignore**, because they are used to specify environment configuration specific to your local machine (such as, for example, your network IP address if you need it to make a request against a local server).
 
@@ -68,11 +75,24 @@ You may choose to commit the default **.env** file or other standard configurati
 
 `NODE_ENV` is the standard Node.js variable that identifies which mode your code is running in (typically `development`, `production`, or `test`). Tools like module resolvers, bundlers, and test runners read it to decide how to build, install, or run your code.
 
-We recommend against using `NODE_ENV` to switch between **.env** files (such as **.env.test** and **.env.production**). While it is technically possible (`NODE_ENV=test npx expo start` will load **.env.test**) — it may not behave as you would expect. For example, `npx expo export` always forces `NODE_ENV` to `production`, so `NODE_ENV=test npx expo export` will not actually run the command with the `NODE_ENV` set to `test`.
+In SDK 58 and later, each command sets `NODE_ENV` to its mode and replaces any value you set. For example, `NODE_ENV=production npx expo start` runs in development mode and loads **.env.development**.
 
-Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further for this use case.
+| Command                                                   | Mode                                                                             |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `npx expo start`                                          | Development. Production with `--no-dev`.                                         |
+| `npx expo export`                                         | Production. Development with `--dev`.                                            |
+| `npx expo run:android`                                    | Development for the `debug` and `debugOptimized` variants. Production otherwise. |
+| `npx expo run:ios`                                        | Development for configurations with `Debug` in their name. Production otherwise. |
+| `npx expo config`, `npx expo prebuild`, `npx expo-doctor` | Development. Production on EAS Build.                                            |
+
+Other tools that build on top of Expo CLI commands will exhibit the same behavior — for example, `eas update` calls into `npx expo export` and, as a result, `NODE_ENV=test eas update` will similarly not run with the `NODE_ENV` set to `test` (it will be `production`). The `NODE_ENV` environment variable is used by many tools in different ways (for example, if you run `NODE_ENV=production npm install` then your `devDependencies` will not be installed) and we have found that for React Native projects, it's best not to overload it further to switch between **.env** files.
 
 If you use EAS, consider using `eas env:pull` instead. This will swap your **.env.local** with an environment of your choice, rather than depending on `NODE_ENV`. You can accomplish a similar behavior without EAS by writing a script to overwrite **.env.local** or **.env** with the appropriate contents for the environment you wish to work with.
+
+In SDK 58 and later, debug builds use development mode and release builds use production mode.
+
+- **Android**: Variants listed in `debuggableVariants` in **android/app/build.gradle** are debug builds (`debug` and `debugOptimized` by default). If you use product flavors, add your debug variants, such as `freeDebug`. `npx expo run:android` doesn't read this list. It uses development mode only for `debug` and `debugOptimized`, and production mode for every other variant.
+- **iOS**: Configurations with `Debug` in the name are debug builds.
 
 ### Disabling environment variables
 
@@ -104,7 +124,7 @@ Update your **.env** files to prefix any variables used within your JavaScript c
 + EXPO_PUBLIC_API_URL=https://myapi.com
 ```
 
-> If you have any non-standard **.env** files (for example, **.env.staging**), you will need to migrate those to one of the [standard .env files](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
+> If you have any non-standard **.env** files (for example, **.env.staging**), migrate them to one of the [standard **.env** files](#using-multiple-env-files-to-define-separate-environments).
 
 Then update your code to use `process.env.EXPO_PUBLIC_[VARNAME]`:
 
