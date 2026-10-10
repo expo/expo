@@ -147,4 +147,30 @@ describe(fixPackagesAsync, () => {
     // When expo is being upgraded, we bail early and don't run addAsync directly.
     expect(packageManager.addAsync).not.toHaveBeenCalled();
   });
+
+  it('forwards --expo-only when expo itself is outdated in Expo-only mode', async () => {
+    const packageManager = PackageManager.createForProject('/path/to/project');
+
+    await fixPackagesAsync('/path/to/project', {
+      packageManager,
+      packages: [
+        {
+          packageName: 'expo',
+          packageType: 'dependencies',
+          expectedVersionOrRange: '^55.0.0',
+          actualVersion: '54.0.0',
+        },
+      ],
+      packageManagerArguments: [],
+      sdkVersion: '55.0.0',
+      expoOnly: true,
+    });
+
+    expect(installExpoPackageAsync).toHaveBeenCalledWith('/path/to/project', {
+      packageManager,
+      packageManagerArguments: [],
+      expoPackageToInstall: 'expo@^55.0.0',
+      followUpCommandArgs: ['--fix', '--expo-only'],
+    });
+  });
 });
