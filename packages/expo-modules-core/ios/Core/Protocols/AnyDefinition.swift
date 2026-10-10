@@ -19,8 +19,20 @@ extension AnyDefinition {
   public var __isConstructor: Bool { false }
 }
 
+extension AnyDefinition where Self: AnyViewDefinition {
+  /**
+   A view definition declared outside of this module lands in `views`, as the former `as? AnyViewDefinition`
+   cast would have put it there. `ViewDefinition` overrides this in its class body.
+   */
+  public func __collect(into buckets: inout DefinitionBuckets) {
+    buckets.views.append(self)
+  }
+}
+
 /**
- Definitions grouped by kind, filled by `AnyDefinition.__collect(into:)`.
+ Definitions grouped by kind, filled by `AnyDefinition.__collect(into:)`. Buckets whose element type is
+ public are public too, so a definition type declared in another module can add itself; the remaining
+ buckets hold internal protocols that nothing outside this module can conform to.
  */
 public struct DefinitionBuckets {
   var functions: [AnyFunctionDefinition] = []
@@ -28,14 +40,14 @@ public struct DefinitionBuckets {
   var legacyConstants: [ConstantsDefinition] = []
   var constants: [AnyConstantDefinition] = []
   var properties: [AnyPropertyDefinition] = []
-  var classes: [ClassDefinition] = []
+  public var classes: [ClassDefinition] = []
   var moduleNames: [ModuleNameDefinition] = []
   var eventListeners: [EventListener] = []
-  var views: [AnyViewDefinition] = []
-  var events: [EventsDefinition] = []
+  public var views: [AnyViewDefinition] = []
+  public var events: [EventsDefinition] = []
   var eventObservers: [AnyEventObservingDefinition] = []
-  var viewProps: [AnyViewProp] = []
-  var viewNames: [ViewNameDefinition] = []
+  public var viewProps: [AnyViewProp] = []
+  public var viewNames: [ViewNameDefinition] = []
   var lifecycleMethods: [AnyViewLifecycleMethod] = []
 
   public init() {}
