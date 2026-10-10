@@ -84,9 +84,11 @@ module Expo
             # `pod install` may fail if there is no `use_modular_headers!` declaration or
             # `:modular_headers => true` is not used for this particular dependency.
             # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
-            if package.has_something_to_link?
-              use_modular_headers_for_dependencies(pod.spec.all_dependencies)
-            end
+            # Not gated on having something to link: the classes found by scanning the sources
+            # aren't known yet at this point, since that scan runs when the provider is generated.
+            # A package that resolves with nothing here may still contribute a module class to the
+            # build, and by then it is too late to enable modular headers for its dependencies.
+            use_modular_headers_for_dependencies(pod.spec.all_dependencies)
 
             debug_configurations = @target_definition.build_configurations ? @target_definition.build_configurations.select { |config| config.include?('Debug') }.keys : ['Debug']
 
@@ -158,9 +160,12 @@ module Expo
       platform = @target_definition.platform
 
       @packages.select do |package|
-        # Check whether the package has any module to autolink
-        # and if there is any pod that supports target's platform.
-        package.has_something_to_link? && package.pods.any? { |pod| pod.supports_platform?(platform) }
+        # Only the target's platform is checked here. Whether a package has anything to link is
+        # decided when the provider is generated, which is also where the sources are scanned for
+        # annotated module classes: a package whose modules come only from that scan has nothing to
+        # link yet at pod install, and gating on it here would leave the package out of the
+        # generated build phase for good.
+        package.pods.any? { |pod| pod.supports_platform?(platform) }
       end
     end
 
