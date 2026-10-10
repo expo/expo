@@ -72,10 +72,7 @@ describe('router performance marks', () => {
 
     await act(() => router.prefetch('/details'));
 
-    const preloadIdx = order.indexOf('pagePreloaded');
-    const commitIdx = order.indexOf('details-committed');
-    expect(commitIdx).toBeGreaterThanOrEqual(0);
-    expect(preloadIdx).toBeGreaterThan(commitIdx);
+    expect(order).toEqual(['details-committed', 'pagePreloaded']);
   });
 
   it('marks page-focused after the focused screen content has committed', async () => {
@@ -95,10 +92,7 @@ describe('router performance marks', () => {
     });
 
     expect(screen.getByTestId('home-content')).toBeVisible();
-    const focusIdx = order.indexOf('pageFocused');
-    const commitIdx = order.indexOf('home-committed');
-    expect(commitIdx).toBeGreaterThanOrEqual(0);
-    expect(focusIdx).toBeGreaterThan(commitIdx);
+    expect(order).toEqual(['home-committed', 'pageFocused']);
   });
 
   it('does not mark page-focused again on plain re-renders of the focused screen', async () => {
@@ -128,18 +122,17 @@ describe('router performance marks', () => {
       details: () => <Text testID="details-content">Details</Text>,
     });
 
-    expect(entries).toHaveLength(1);
-    expect(entries.at(0)?.detail.pathname).toBe('/');
+    expect(entries.map((entry) => entry.detail.pathname)).toEqual(['/']);
 
+    entries.splice(0);
     await act(() => router.push('/details'));
     expect(screen.getByTestId('details-content')).toBeVisible();
-    expect(entries).toHaveLength(2);
-    expect(entries.at(1)?.detail.pathname).toBe('/details');
+    expect(entries.map((entry) => entry.detail.pathname)).toEqual(['/details']);
 
+    entries.splice(0);
     await act(() => router.back());
     expect(screen.getByTestId('home-content')).toBeVisible();
-    expect(entries).toHaveLength(3);
-    expect(entries.at(2)?.detail.pathname).toBe('/');
+    expect(entries.map((entry) => entry.detail.pathname)).toEqual(['/']);
   });
 
   it('marks action-dispatched with the action type before the target page is focused', async () => {
