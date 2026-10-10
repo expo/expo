@@ -355,6 +355,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Host touch after ripple',
+    route: 'ui/host-touch-after-ripple',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostTouchAfterRippleScreen'));
+    },
+  },
+  {
     name: 'ToggleButton component',
     route: 'ui/toggle-button',
     options: {},
