@@ -88,11 +88,27 @@ export declare const interactiveDismissDisabled: (isDisabled?: boolean) => Modif
  */
 export type PresentationSizingType = 'automatic' | 'fitted' | 'form' | 'page';
 /**
+ * Options for the `presentationSizing` modifier.
+ */
+export type PresentationSizingOptions = {
+    /**
+     * The axes on which the sheet fits its content. An axis that is not set keeps the size from
+     * `sizing`. For example, `{ horizontal: false, vertical: true }` fits the height to the content
+     * and lets the system choose the width.
+     * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/presentationsizing/fitted(horizontal:vertical:)).
+     */
+    fitted?: {
+        horizontal?: boolean;
+        vertical?: boolean;
+    };
+};
+/**
  * Sets the sizing of a sheet presentation.
  * @param sizing - The sizing behavior to apply.
+ * @param options - Additional sizing options.
  * @platform ios 18.0+
  * @platform tvos 18.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationsizing(_:)).
  */
-export declare const presentationSizing: (sizing: PresentationSizingType) => ModifierConfig;
+export declare const presentationSizing: (sizing: PresentationSizingType, options?: PresentationSizingOptions) => ModifierConfig;
 //# sourceMappingURL=presentationModifiers.d.ts.map
