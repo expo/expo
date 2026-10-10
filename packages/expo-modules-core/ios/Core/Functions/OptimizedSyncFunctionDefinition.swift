@@ -40,17 +40,17 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
 
   public var takesOwner: Bool = false
 
-  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (consuming FunctionCallResult) -> ()) {
     callback(.failure(GenericException("OptimizedSyncFunctionDefinition cannot be called from native code")))
   }
 
   // MARK: - AnySyncFunctionDefinition
 
-  public func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> ExpoModulesJSI.JavaScriptValue {
+  public func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> ExpoModulesJSI.JavaScriptValue {
     throw GenericException("OptimizedSyncFunctionDefinition cannot be called directly")
   }
 
-  public func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
+  public func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
     throw GenericException("OptimizedSyncFunctionDefinition cannot be called directly")
   }
 

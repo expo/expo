@@ -82,10 +82,6 @@ struct FunctionTests {
           return nil
         }
 
-        Function("returnUndefined") { () -> JavaScriptValue in
-          return .undefined
-        }
-
         Function("isArgNull") { (arg: Double?) -> Bool in
           return arg == nil
         }
@@ -99,10 +95,6 @@ struct FunctionTests {
               return foo
             }
           }
-        }
-
-        Function("withFunction") { (fn: JavaScriptValue) throws -> String in
-          return try fn.asFunction().call(arguments: "foo", "bar").asString()
         }
 
         Function("withCGFloat") { (f: CGFloat) in
@@ -240,7 +232,6 @@ struct FunctionTests {
     func `returns values`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.returnPi()").asDouble() == Double.pi)
       #expect(try runtime.eval("expo.modules.TestModule.returnNull()").isNull() == true)
-      #expect(try runtime.eval("expo.modules.TestModule.returnUndefined()").isUndefined() == true)
     }
 
     @Test
@@ -261,14 +252,6 @@ struct FunctionTests {
 
       #expect(result.kind == .number)
       #expect(result.getInt() == initialValue + 1)
-    }
-
-    @Test
-    func `takes JavaScriptFunction argument`() throws {
-      let value = try runtime.eval("expo.modules.TestModule.withFunction((a, b) => a + b)")
-
-      #expect(value.kind == .string)
-      #expect(value.getString() == "foobar")
     }
 
     @Test
@@ -390,8 +373,8 @@ struct FunctionTests {
     func `returns encodable struct`() throws {
       let result = try runtime.eval("expo.modules.TestModule.returnEncodable()")
       #expect(result.kind == .object)
-      #expect(result.getObject().getPropertyNames().contains("name"))
-      #expect(result.getObject().getPropertyNames().contains("version"))
+      #expect(result.getObject().getPropertyNames().contains("name") == true)
+      #expect(result.getObject().getPropertyNames().contains("version") == true)
       #expect(try result.getObject().getProperty("name").asString() == "Expo SDK")
       #expect(try result.getObject().getProperty("version").asInt() == 55)
     }

@@ -12,7 +12,7 @@ internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition, ~Copyable {
    */
   @discardableResult
   @JavaScriptActor
-  func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue
+  func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue
 
   /**
    Runs the underlying body with the given arguments and returns the raw native result,
@@ -20,7 +20,7 @@ internal protocol AnySyncFunctionDefinition: AnyFunctionDefinition, ~Copyable {
    native result (e.g. a `SharedObject`) to pair with the JS `this` instance directly.
    */
   @JavaScriptActor
-  func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any
+  func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any
 
   /**
    Builds the sync function in a specific runtime.
@@ -82,7 +82,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 
   @JavaScriptActor
   @discardableResult
-  func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
+  func runBody(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> Any {
     do {
       try validateArgumentsNumber(function: self, received: arguments.count)
       let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
@@ -98,7 +98,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
   }
 
   @JavaScriptActor
-  func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue {
+  func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: borrowing JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue {
     let result = try runBody(appContext, in: runtime, this: this, arguments: arguments)
     do {
       return try appContext.converter.toJS(result, returnType, in: runtime)
@@ -140,7 +140,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
 internal func toNativeClosureArguments<F: AnyFunctionDefinition>(
   converter: borrowing MainValueConverter,
   fn: borrowing F,
-  this: JavaScriptValue,
+  this: borrowing JavaScriptValue,
   arguments: borrowing JavaScriptValuesBuffer
 ) throws -> [Any] {
   if !fn.takesOwner, fn.argumentsCount == 0 {

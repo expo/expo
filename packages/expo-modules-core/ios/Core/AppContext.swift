@@ -92,7 +92,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   public typealias UIRuntimeFactory = (
     _ appContext: AppContext,
-    _ pointerValue: JavaScriptValue,
+    _ pointerValue: borrowing JavaScriptValue,
     _ runtime: JavaScriptRuntime
   ) throws -> JavaScriptRuntime
 
@@ -494,6 +494,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     }
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
+
+    // Takes a raw JavaScript value, which the definition DSL cannot carry, so it is bound directly.
+    coreObject.setProperty("installOnUIRuntime") { [weak self] _, arguments in
+      guard let self else {
+        throw Exceptions.AppContextLost()
+      }
+      guard arguments.count == 1 else {
+        throw Exceptions.ArgumentsRangeMismatch((functionName: "installOnUIRuntime", received: arguments.count, required: 1, maximum: 1))
+      }
+      try self.coreModule.installOnUIRuntime(arguments[0])
+      return .undefined()
+    }
 
     // Install `global.expo.EventEmitter`.
     installer.installEventEmitterClass()

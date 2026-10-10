@@ -23,7 +23,7 @@ internal final class JSValueDecoder: Decoder {
    Initializes the decoder with the given JS value and app context.
    Throws if the runtime has been lost.
    */
-  convenience init(value: JavaScriptValue, appContext: AppContext) throws {
+  convenience init(value: consuming JavaScriptValue, appContext: AppContext) throws {
     try self.init(value: value, appContext: appContext, runtime: appContext.runtime)
   }
 
@@ -32,12 +32,12 @@ internal final class JSValueDecoder: Decoder {
    Use this when the source JS value lives in a runtime other than the one currently
    held by the app context.
    */
-  convenience init(value: JavaScriptValue, appContext: AppContext, runtime: JavaScriptRuntime) {
+  convenience init(value: consuming JavaScriptValue, appContext: AppContext, runtime: JavaScriptRuntime) {
     self.init(value: value, appContext: appContext, runtime: runtime, codingPath: [])
   }
 
   fileprivate init(
-    value: JavaScriptValue,
+    value: consuming JavaScriptValue,
     appContext: AppContext,
     runtime: JavaScriptRuntime,
     codingPath: [any CodingKey]
@@ -91,8 +91,9 @@ internal final class JSValueDecoder: Decoder {
   }
 
   func singleValueContainer() throws -> any SingleValueDecodingContainer {
+    // The decoder keeps its value, so the container gets a copy.
     return JSValueDecodingContainer(
-      value: value,
+      value: value.copy(),
       appContext: appContext,
       runtime: runtime,
       codingPath: codingPath
@@ -109,7 +110,7 @@ internal final class JSValueDecoder: Decoder {
  */
 private func decodeUsingDynamicType<ValueType: Decodable>(
   _ type: ValueType.Type,
-  from jsValue: JavaScriptValue,
+  from jsValue: borrowing JavaScriptValue,
   appContext: AppContext,
   runtime: JavaScriptRuntime,
   codingPath: [any CodingKey]
@@ -145,7 +146,7 @@ private func decodeUsingDynamicType<ValueType: Decodable>(
   }
 
   // Plain Decodable type the registry doesn't recognize — recurse via Decodable.
-  let decoder = JSValueDecoder(value: jsValue, appContext: appContext, runtime: runtime, codingPath: codingPath)
+  let decoder = JSValueDecoder(value: jsValue.copy(), appContext: appContext, runtime: runtime, codingPath: codingPath)
   return try ValueType(from: decoder)
 }
 
@@ -157,13 +158,13 @@ private func decodeUsingDynamicType<ValueType: Decodable>(
 private struct JSValueDecodingContainer: SingleValueDecodingContainer {
   private let appContext: AppContext
   private let runtime: JavaScriptRuntime
-  // Behind a ref: `SingleValueDecodingContainer` is a copyable protocol, so the struct cannot store
-  // the value directly once JavaScriptValue is non-copyable.
+  // Behind a ref: `SingleValueDecodingContainer` is a copyable protocol, so the struct cannot store a
+  // non-copyable value directly.
   private let value: JavaScriptValue.Ref
   let codingPath: [any CodingKey]
 
-  init(value: JavaScriptValue, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
-    self.value = JavaScriptValue.Ref(value)
+  init(value: consuming JavaScriptValue, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
+    self.value = value.ref()
     self.appContext = appContext
     self.runtime = runtime
     self.codingPath = codingPath

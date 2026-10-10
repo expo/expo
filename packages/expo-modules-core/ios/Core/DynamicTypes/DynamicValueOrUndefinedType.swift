@@ -14,7 +14,7 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
     return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.isUndefined() {
       return ValueOrUndefined<InnerType>.undefined
     }
@@ -33,15 +33,15 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     let value = result as! ValueOrUndefined<InnerType>
     if case .undefined = value {
-      // JavaScriptValue.undefined is not runtime specific, so it's safe to return here, even if it's not on the JS thread.
-      return JavaScriptValue.undefined
+      // `JavaScriptValue.undefined()` is not runtime specific, so it's safe to return here, even if it's not on the JS thread.
+      return ConvertedJavaScriptValue.undefined
     }
     return try dynamicInnerType.convertResult(value.optional, appContext: appContext)
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    if let jsValue = value as? JavaScriptValue {
-      return jsValue
+    if let converted = value as? ConvertedJavaScriptValue {
+      return converted.takeValue()
     }
     return try dynamicInnerType.castToJS(value, appContext: appContext)
   }

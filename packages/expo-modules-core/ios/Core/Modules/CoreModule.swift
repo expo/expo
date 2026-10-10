@@ -31,53 +31,6 @@ internal final class CoreModule: Module {
       false
     }
 
-    Function("installOnUIRuntime") { (uiRuntimeHolder: JavaScriptValue) in
-      guard let appContext else {
-        throw Exceptions.AppContextLost()
-      }
-
-      // Check if was already installed
-      if appContext._uiRuntime != nil {
-        return
-      }
-
-      let runtime = try appContext.runtime
-      guard uiRuntimeHolder.isObject() else {
-        throw WorkletUIRuntimeException()
-      }
-
-      guard let factory = AppContext.uiRuntimeFactory else {
-        throw WorkletUIRuntimeException()
-      }
-
-      // Use a Sendable box to safely capture error across isolation boundaries
-      final class ErrorHolder: @unchecked Sendable {
-        var error: (any Error)?
-      }
-      let errorHolder = ErrorHolder()
-
-      let block = {
-        do {
-          let uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
-          appContext._uiRuntime = uiRuntime
-        } catch {
-          errorHolder.error = error
-        }
-      }
-
-      if Thread.isMainThread {
-        block()
-      } else {
-        DispatchQueue.main.sync {
-          block()
-        }
-      }
-
-      if let error = errorHolder.error {
-        throw error
-      }
-    }
-
     // Expose some common classes and maybe even the `modules` host object in the future.
     Function("uuidv4") { () -> String in
       return UUID().uuidString.lowercased()
@@ -138,3 +91,61 @@ internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
   }
 }
 
+extension CoreModule {
+  /**
+   Installs the worklet UI runtime from the holder object that the worklets JS code passes to
+   `global.expo.installOnUIRuntime`. Bound as a plain host function in `AppContext.prepareRuntime`
+   rather than declared in the definition: the DSL carries arguments as `Any`, which the non-copyable
+   `JavaScriptValue` cannot be.
+   */
+  internal func installOnUIRuntime(_ uiRuntimeHolder: consuming JavaScriptValue) throws {
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
+
+    // Check if was already installed
+    if appContext._uiRuntime != nil {
+      return
+    }
+
+    let runtime = try appContext.runtime
+    guard uiRuntimeHolder.isObject() else {
+      throw WorkletUIRuntimeException()
+    }
+
+    guard let factory = AppContext.uiRuntimeFactory else {
+      throw WorkletUIRuntimeException()
+    }
+
+    // Use a Sendable box to safely capture error across isolation boundaries
+    final class ErrorHolder: @unchecked Sendable {
+      var error: (any Error)?
+    }
+    let errorHolder = ErrorHolder()
+    // The block below captures the holder, which a non-copyable value can't be, so it travels in a ref.
+    let holderRef = uiRuntimeHolder.ref()
+
+    let block = {
+      do {
+        let uiRuntime = try holderRef.withUnwrappedValue { (holder: borrowing JavaScriptValue) in
+          return try factory(appContext, holder, runtime)
+        }
+        appContext._uiRuntime = uiRuntime
+      } catch {
+        errorHolder.error = error
+      }
+    }
+
+    if Thread.isMainThread {
+      block()
+    } else {
+      DispatchQueue.main.sync {
+        block()
+      }
+    }
+
+    if let error = errorHolder.error {
+      throw error
+    }
+  }
+}

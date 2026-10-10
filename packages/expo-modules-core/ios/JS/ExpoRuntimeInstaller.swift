@@ -57,7 +57,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
     }
     let modulesHostObject = runtime.createHostObject(
       get: { [weak appContext] moduleName in
-        return appContext?.getNativeModuleObject(moduleName) ?? .undefined
+        return appContext?.getNativeModuleObject(moduleName) ?? .undefined()
       },
       set: { propertyName, _ in
         throw ReadOnlyExpoModulesPropertyException(propertyName)

@@ -129,13 +129,13 @@ private func encodeUsingDynamicType<ValueType: Encodable>(
  An object that holds a JS value, mutated by an encoding container as it makes progress.
  */
 private final class JSValueHolder {
-  // Optional so the value can be moved out once JavaScriptValue is non-copyable: a non-copyable
-  // stored property of a class cannot be consumed, but `Optional.take()` can run on it.
+  // Optional so the value can be moved out: a non-copyable stored property of a class cannot be
+  // consumed, but `Optional.take()` can run on it.
   var value: JavaScriptValue?
 
   /// Moves the encoded value out, leaving the holder empty. An empty holder yields `undefined`.
   func take() -> JavaScriptValue {
-    return value.take() ?? .undefined
+    return value.take() ?? .undefined()
   }
 }
 
@@ -156,7 +156,7 @@ private struct JSValueEncodingContainer: SingleValueEncodingContainer {
   }
 
   mutating func encodeNil() throws {
-    valueHolder.value = .null
+    valueHolder.value = .null()
   }
 
   mutating func encode<ValueType: Encodable>(_ value: ValueType) throws {
@@ -197,7 +197,7 @@ private final class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingCont
   }
 
   func encodeNil(forKey key: Key) throws {
-    object.setProperty(key.stringValue, value: JavaScriptValue.null)
+    object.setProperty(key.stringValue, value: JavaScriptValue.null())
   }
 
   func encode<ValueType: Encodable>(_ value: ValueType, forKey key: Key) throws {
@@ -306,7 +306,7 @@ private final class JSArrayEncodingContainer: UnkeyedEncodingContainer {
   }
 
   func encodeNil() throws {
-    array[count] = JavaScriptValue.null
+    array[count] = JavaScriptValue.null()
     count += 1
   }
 
