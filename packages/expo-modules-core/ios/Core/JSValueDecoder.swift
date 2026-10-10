@@ -157,28 +157,29 @@ private func decodeUsingDynamicType<ValueType: Decodable>(
 private struct JSValueDecodingContainer: SingleValueDecodingContainer {
   private let appContext: AppContext
   private let runtime: JavaScriptRuntime
-  private let value: JavaScriptValue
+  // Behind a ref: `SingleValueDecodingContainer` is a copyable protocol, so the struct cannot store
+  // the value directly once JavaScriptValue is non-copyable.
+  private let value: JavaScriptValue.Ref
   let codingPath: [any CodingKey]
 
   init(value: JavaScriptValue, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
-    self.value = value
+    self.value = JavaScriptValue.Ref(value)
     self.appContext = appContext
     self.runtime = runtime
     self.codingPath = codingPath
   }
 
   func decodeNil() -> Bool {
-    return value.isNull() || value.isUndefined()
+    return value.withUnwrappedValue { (value: borrowing JavaScriptValue) in value.isNull() || value.isUndefined() } ?? true
   }
 
   func decode<ValueType: Decodable>(_ type: ValueType.Type) throws -> ValueType {
-    return try decodeUsingDynamicType(
-      type,
-      from: value,
-      appContext: appContext,
-      runtime: runtime,
-      codingPath: codingPath
-    )
+    guard let decoded = try value.withUnwrappedValue({ (value: borrowing JavaScriptValue) in
+      try decodeUsingDynamicType(type, from: value, appContext: appContext, runtime: runtime, codingPath: codingPath)
+    }) else {
+      throw DecodingError.valueNotFound(type, DecodingError.Context(codingPath: codingPath, debugDescription: "The JavaScript value has already been consumed"))
+    }
+    return decoded
   }
 }
 
