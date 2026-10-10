@@ -13,11 +13,15 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     didSet {
       if startupState == .interrupted {
         frameMetricsRecorder.stop()
+        stallMonitor.stop()
       }
     }
   }
 
   let frameMetricsRecorder = FrameMetricsRecorder()
+
+  /// Watches the main thread over the TTI window and reports each stall with its backtrace.
+  let stallMonitor = MainThreadStallMonitor()
 
   lazy var appLaunchState = AppLaunchState()
 
@@ -54,6 +58,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       // Start tracking frame metrics from this point so the data
       // matches the TTI window (finishedLaunching → markInteractive).
       frameMetricsRecorder.start()
+      stallMonitor.start(anchor: currentTime) { [weak self] stall, endedAt in
+        AppMetricsActor.isolated {
+          self?.reportStall(stall, endedAt: endedAt)
+        }
+      }
 
       if let launchTime = markers.getLaunchTime() {
         reportMetric(category: .appStartup, name: "\(launchType.rawValue)LaunchTime", value: launchTime)
@@ -105,6 +114,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 
       if let tti = markers.getTTI() {
         let frameMetrics = frameMetricsRecorder.stop()
+        let mainThreadStalls = stallMonitor.stop()
         let deviceState = await DeviceConditions.deviceState()
         let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
         let networkRequests: NetworkRequestSummary? = {
@@ -118,7 +128,8 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
           frameMetrics: frameMetrics,
           deviceState: deviceState,
           networkPath: networkPath,
-          networkRequests: networkRequests
+          networkRequests: networkRequests,
+          mainThreadStalls: mainThreadStalls
         )
         let metric = Metric(
           category: .appStartup,
@@ -131,6 +142,19 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       }
       startupState = .launched
     }
+  }
+
+  @AppMetricsActor
+  private func reportStall(_ stall: MainThreadStall, endedAt: Date) {
+    let phase: String
+    if markers.timeToFirstRender == nil {
+      phase = "beforeFirstRender"
+    } else if markers.timeToInteractive == nil {
+      phase = "beforeInteractive"
+    } else {
+      phase = "afterInteractive"
+    }
+    reportLog(stall.toLogRecord(phase: phase, timestamp: endedAt))
   }
 
   @AppMetricsActor

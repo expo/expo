@@ -9,7 +9,12 @@ public final class AppMetricsUserDefaults: UserDefaults {
     case lastAppLaunchState
     case environment
     case networkTracesConfiguration
+    case ingestedMetricKitPayloads
   }
+
+  /// How many MetricKit payload fingerprints to remember. Payloads arrive about daily, so this
+  /// covers months of redelivery through `pastPayloads` / `pastDiagnosticPayloads`.
+  private static let maxIngestedMetricKitPayloads = 128
 
   private init() {
     // It's safe to force-unwrap as `init?(suiteName:)` fails only if `suiteName`
@@ -52,5 +57,20 @@ public final class AppMetricsUserDefaults: UserDefaults {
     set {
       defaults.set(codable: newValue, forKey: Keys.networkTracesConfiguration.rawValue)
     }
+  }
+
+  /// Records that a MetricKit payload was ingested. Returns `false` when it already had been, so
+  /// a payload redelivered on a later launch is stored once.
+  static func markMetricKitPayloadIngested(_ fingerprint: String) -> Bool {
+    var ingested = defaults.stringArray(forKey: Keys.ingestedMetricKitPayloads.rawValue) ?? []
+    if ingested.contains(fingerprint) {
+      return false
+    }
+    ingested.append(fingerprint)
+    if ingested.count > maxIngestedMetricKitPayloads {
+      ingested.removeFirst(ingested.count - maxIngestedMetricKitPayloads)
+    }
+    defaults.set(ingested, forKey: Keys.ingestedMetricKitPayloads.rawValue)
+    return true
   }
 }

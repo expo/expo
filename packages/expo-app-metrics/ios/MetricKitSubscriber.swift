@@ -3,11 +3,10 @@
 
 import MetricKit
 
-// For now let's just log data. Unfortunately debugging it is not so easy.
+// Debugging MetricKit is not easy:
 // - It doesn't work on simulator.
 // - It must be an app on the App Store or TestFlight.
 // - Can simulate from `Debug -> Simulate MetricKit Payloads` in Xcode but only on the device and the data are not real.
-// We could use it as a source for metrics that we can't measure in other ways, e.g. CPU usage.
 
 final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
   /// Processes payloads that MetricKit retained from previous app launches. Call this after
@@ -22,7 +21,31 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
 
   /// Receives payloads with performance metrics like CPU and memory usage.
   /// Sent periodically (usually every 24 hours), or when your app gets steady usage.
-  func didReceive(_ payloads: [MXMetricPayload]) {}
+  ///
+  /// We keep the launch and responsiveness histograms: the OS's time-to-first-draw over every
+  /// launch in the window, measured without any instrumentation in the app.
+  func didReceive(_ payloads: [MXMetricPayload]) {
+    let reports = payloads.map(MetricKitLaunchReport.init(payload:)).filter { !$0.isEmpty }
+    guard !reports.isEmpty else {
+      return
+    }
+    AppMetricsActor.isolated {
+      let mainSessions: [SessionRow]
+      do {
+        mainSessions = try AppMetrics.database?.getMainSessions() ?? []
+      } catch {
+        logger.warn("[AppMetrics] Failed to load main sessions for launch metrics attribution: \(error.localizedDescription)")
+        return
+      }
+      for report in reports where AppMetricsUserDefaults.markMetricKitPayloadIngested(report.fingerprint) {
+        guard let session = report.findMatchingSession(in: mainSessions) else {
+          logger.warn("[AppMetrics] Received MetricKit launch metrics with no matching session.")
+          continue
+        }
+        persistLaunchReport(report, sessionId: session.id)
+      }
+    }
+  }
 
   /// Receives payloads with diagnostic data like crash logs, hang reports, and more.
   /// Delivered on the next app launch after the event occurs.
@@ -31,6 +54,13 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       return (payload.crashDiagnostics ?? []).map { diagnostic in
         return CrashReport(diagnostic: diagnostic, payload: payload)
       }
+    }
+    let hangReports = payloads.flatMap { payload -> [HangReport] in
+      var reports = (payload.hangDiagnostics ?? []).map { HangReport(diagnostic: $0, payload: payload) }
+      if #available(iOS 16.0, *) {
+        reports += (payload.appLaunchDiagnostics ?? []).map { HangReport(diagnostic: $0, payload: payload) }
+      }
+      return reports
     }
     AppMetricsActor.isolated {
       let mainSessions: [SessionRow]
@@ -47,7 +77,41 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
           logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crashReport)")
         }
       }
+      for hangReport in hangReports where AppMetricsUserDefaults.markMetricKitPayloadIngested(hangReport.fingerprint) {
+        if let session = hangReport.findMatchingSession(in: mainSessions) {
+          persistHangReport(hangReport, sessionId: session.id)
+        } else {
+          logger.warn("[AppMetrics] Received \(hangReport.kind.rawValue) diagnostic with no matching session.")
+        }
+      }
     }
+  }
+}
+
+@AppMetricsActor
+private func persistHangReport(_ hangReport: HangReport, sessionId: String) {
+  do {
+    guard try AppMetrics.database?.getSession(id: sessionId) != nil else {
+      return
+    }
+    try AppMetrics.database?.insert(log: LogRow.from(log: hangReport.toLogRecord(), sessionId: sessionId))
+  } catch {
+    logger.warn("[AppMetrics] Failed to persist hang report for session \(sessionId): \(error.localizedDescription)")
+  }
+}
+
+@AppMetricsActor
+private func persistLaunchReport(_ report: MetricKitLaunchReport, sessionId: String) {
+  do {
+    guard try AppMetrics.database?.getSession(id: sessionId) != nil else {
+      return
+    }
+    try AppMetrics.database?.insert(log: LogRow.from(log: report.toLogRecord(), sessionId: sessionId))
+    for metric in report.toMetrics() {
+      try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: sessionId))
+    }
+  } catch {
+    logger.warn("[AppMetrics] Failed to persist launch metrics for session \(sessionId): \(error.localizedDescription)")
   }
 }
 

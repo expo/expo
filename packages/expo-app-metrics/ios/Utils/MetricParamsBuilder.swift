@@ -17,7 +17,8 @@ enum MetricParamsBuilder {
     frameMetrics: FrameRateMetrics? = nil,
     deviceState: DeviceState? = nil,
     networkPath: NetworkPath? = nil,
-    networkRequests: NetworkRequestSummary? = nil
+    networkRequests: NetworkRequestSummary? = nil,
+    mainThreadStalls: MainThreadStallSummary? = nil
   ) -> [String: Any] {
     var params: [String: Any] = userParams
     if let frameMetrics, frameMetrics.expectedFrames > 0 {
@@ -51,6 +52,11 @@ enum MetricParamsBuilder {
         params["expo.network.isExpensive"] = networkPath.isExpensive
         params["expo.network.isConstrained"] = networkPath.isConstrained
       }
+    }
+    if let mainThreadStalls, mainThreadStalls.count > 0 {
+      params["expo.startup.mainThreadStalls.count"] = mainThreadStalls.count
+      params["expo.startup.mainThreadStalls.totalDuration"] = mainThreadStalls.totalDuration
+      params["expo.startup.mainThreadStalls.longestDuration"] = mainThreadStalls.longestDuration
     }
     if let networkRequests, !networkRequests.isEmpty {
       params["expo.network.requests.count"] = networkRequests.count
