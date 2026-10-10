@@ -37,6 +37,11 @@ export interface ButtonProps {
    */
   enabled?: boolean;
   /**
+   * Whether a tap on the button opens the app. Only used by buttons in Android widgets.
+   * @default false
+   */
+  openApp?: boolean;
+  /**
    * Colors for button elements.
    */
   colors?: ButtonColors;
