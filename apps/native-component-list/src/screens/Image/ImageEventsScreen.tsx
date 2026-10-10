@@ -51,6 +51,11 @@ export default function ImageEventsScreen() {
     setLogs([...logs]);
   }, [logs]);
 
+  const onPlaceholderDisplay = useCallback(() => {
+    logs.push('🚀 onPlaceholderDisplay');
+    setLogs([...logs]);
+  }, [logs]);
+
   const loadNewImage = useCallback(() => {
     setSourceUri(getRandomImageUri());
     setLogs([]);
@@ -66,12 +71,14 @@ export default function ImageEventsScreen() {
       <Image
         style={styles.image}
         source={{ uri }}
+        placeholder={{ blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj' }}
         onLoadStart={onLoadStart}
         onLoad={onLoad}
         onProgress={onProgress}
         onError={onError}
         onLoadEnd={onLoadEnd}
         onDisplay={onDisplay}
+        onPlaceholderDisplay={onPlaceholderDisplay}
       />
 
       <View style={styles.buttons}>
