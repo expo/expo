@@ -40,6 +40,7 @@ android {
   defaultConfig {
     versionCode 1
     versionName '58.0.15'
+    consumerProguardFiles("proguard-rules.pro")
 
     externalNativeBuild {
       cmake {
