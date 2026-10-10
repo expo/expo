@@ -3,10 +3,6 @@ import type { LoadedRoute, RouteNode } from './Route';
 // The caches are keyed by `RouteNode`, so they reset when Fast Refresh builds a new route tree.
 // Only read anchors are cached, so a layout that is still loading can be read again later.
 const anchors = new WeakMap<RouteNode, string | undefined>();
-// On native, `loadRoute` returns a promise on every call, so keep the module once it loads.
-const loadedLayouts = new WeakMap<RouteNode, LoadedRoute | undefined>();
-// Shares one `loadRoute` call between all reads made while a layout is loading.
-const pendingLayouts = new WeakMap<RouteNode, Promise<LoadedRoute | undefined>>();
 // Set while `collectMissingLayouts` runs. `getLayoutAnchor` is called from deep inside seeding and
 // the reducer, so this is a module variable instead of a parameter passed through every function.
 let collector: { missing: Set<RouteNode>; skipped: ReadonlySet<RouteNode> } | undefined;
@@ -81,6 +77,11 @@ async function loadSingleLayout(node: RouteNode): Promise<boolean> {
     return false;
   }
 }
+
+// On native, `loadRoute` returns a promise on every call, so keep the module once it loads.
+const loadedLayouts = new WeakMap<RouteNode, LoadedRoute | undefined>();
+// Shares one `loadRoute` call between all reads made while a layout is loading.
+const pendingLayouts = new WeakMap<RouteNode, Promise<LoadedRoute | undefined>>();
 
 /** Returns the layout module, or a promise for it while it is loading. */
 function loadLayout(node: RouteNode): LoadedRoute | undefined | Promise<LoadedRoute | undefined> {
