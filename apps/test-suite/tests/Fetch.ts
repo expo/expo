@@ -1,5 +1,6 @@
+import { File, Paths } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
-import { fetch } from 'expo/fetch';
+import { fetch, Request } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 import type { JasmineInterface } from '../types';
@@ -9,6 +10,8 @@ import { requireNotNull } from '../utils/requireNotNull';
 export const name = 'Fetch';
 
 export async function test({ describe, expect, it, ...t }: JasmineInterface) {
+  const itNative = Platform.OS !== 'web' ? it : t.xit;
+  const itWeb = Platform.OS === 'web' ? it : t.xit;
   const httpbin = await gateOnHostAsync(
     { describe, it, pending: t.pending },
     'https://httpbin.io/get'
@@ -195,22 +198,27 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       expect(json.url).toMatch(/^http?:\/\/httpbin\.io\/get$/);
     });
 
-    it('should throw an error when redirect is set to error and a redirect occurs', async () => {
-      let error: Error | null = null;
-      try {
-        await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
-          redirect: 'error',
-        });
-      } catch (e: unknown) {
-        if (e instanceof Error) {
-          error = e;
+    // On web, `fetch` is the browser's, which uses its own error messages.
+    itNative(
+      'should throw an error when redirect is set to error and a redirect occurs',
+      async () => {
+        let error: Error | null = null;
+        try {
+          await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
+            redirect: 'error',
+          });
+        } catch (e: unknown) {
+          if (e instanceof Error) {
+            error = e;
+          }
         }
+        expect(error).not.toBeNull();
+        expect(error?.message).toContain('redirect');
       }
-      expect(error).not.toBeNull();
-      expect(error?.message).toContain('redirect');
-    });
+    );
 
-    it('should not follow redirects when redirect is set to manual', async () => {
+    // Browsers return an opaque-redirect response (status 0, no headers) for `manual`, per the spec.
+    itNative('should not follow redirects when redirect is set to manual', async () => {
       const resp = await fetch('https://httpbin.io/redirect-to?url=https://httpbin.io/get', {
         redirect: 'manual',
       });
@@ -309,6 +317,226 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
     });
   });
 
+  // Spec conformance of `Request` is covered by the WPT port in `FetchRequest.ts`. These tests cover how
+  // `fetch()` and the native runtime handle `Request` objects.
+  describe('Request', () => {
+    itWeb('exports the platform Request on web', () => {
+      // On web, `fetch` is the browser's own and only accepts the browser's `Request`.
+      expect(Request as unknown).toBe(globalThis.Request);
+    });
+
+    itNative('installs our own Request as the global Request', () => {
+      // On native, expo/fetch replaces React Native's whatwg-fetch Request with its own.
+      expect(globalThis.Request as unknown).toBe(Request);
+      const request = new Request('https://httpbin.io/get');
+      expect(request).toBeInstanceOf(Request);
+    });
+  });
+
+  httpbin.describe('Request with fetch', () => {
+    setupTestTimeout(t);
+
+    it('should fetch using a Request object', async () => {
+      const request = new Request('https://httpbin.io/get', {
+        headers: { 'X-Test': 'test' },
+      });
+      const resp = await fetch(request);
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.url).toMatch(/^https?:\/\/httpbin.io\/get$/);
+      expect(json.headers['X-Test'][0]).toBe('test');
+    });
+
+    it('should fetch using a Request built from another Request', async () => {
+      // Mirrors how @atproto/oauth-client re-wraps a request (e.g. its dpop fetch does
+      // `new Request(request, init)`); the url and body must survive the re-wrap. See
+      // https://github.com/expo/expo/issues/45909.
+      const original = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ foo: 'foo' }),
+      });
+      const wrapped = new Request(original);
+      const resp = await fetch(wrapped);
+      expect(resp.status).toBe(200);
+      const json = await resp.json();
+      expect(json.url).toMatch(/^https?:\/\/httpbin.io\/post$/);
+      expect(json.json).toEqual({ foo: 'foo' });
+    });
+
+    it('should fetch using a Request object with a json body', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ foo: 'foo' }),
+      });
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.json).toEqual({ foo: 'foo' });
+    });
+
+    it('should fetch using a Request object with an x-www-form-urlencoded body', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'foo=foo',
+      });
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.form).toEqual({ foo: ['foo'] });
+    });
+
+    it('should fetch using a Request object with a FormData body', async () => {
+      const formData = new FormData();
+      formData.append('foo', 'foo');
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        body: formData,
+      });
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.form).toEqual({ foo: ['foo'] });
+      expect(json.headers['Content-Type'][0].startsWith('multipart/form-data; boundary=')).toBe(
+        true
+      );
+    });
+
+    it('should let the init override the Request body', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'original',
+      });
+      const resp = await fetch(request, { method: 'POST', body: 'override' });
+      const json = await resp.json();
+      expect(json.data).toBe('override');
+    });
+
+    itNative('should send a FormData body with a file part, copied at construction', async () => {
+      // A unique name, so overlapping runs of the suite don't delete each other's file.
+      const file = new File(Paths.document, `request-form-data-${Date.now()}.txt`);
+      file.write('file content');
+      const formData = new FormData();
+      formData.append('foo', 'foo');
+      formData.append('file', file as unknown as Blob, 'file.txt');
+      const request = new Request('https://httpbin.io/post', { method: 'POST', body: formData });
+      // The body is extracted at construction, so later changes must not be sent.
+      formData.append('late', 'late');
+      let json;
+      try {
+        json = await (await fetch(request)).json();
+      } finally {
+        file.delete();
+      }
+      expect(json.form.foo).toEqual(['foo']);
+      expect(json.form.late).toBeUndefined();
+      expect(json.files.file).toEqual(['file content']);
+    });
+
+    itNative('should send a Blob body', async () => {
+      const blob = new Blob(['blob content'], { type: 'text/plain' });
+      const request = new Request('https://httpbin.io/post', { method: 'POST', body: blob });
+      expect(request.headers.get('content-type')).toBe('text/plain');
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.data).toBe('blob content');
+      expect(json.headers['Content-Type'][0]).toBe('text/plain');
+    });
+
+    itNative('should read a Blob body back as a blob', async () => {
+      const blob = new Blob(['blob content'], { type: 'text/plain' });
+      const request = new Request('https://httpbin.io/post', { method: 'POST', body: blob });
+      const read = await request.blob();
+      expect(read.type).toBe('text/plain');
+      // React Native's Blob has no `text()`.
+      const text = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsText(read);
+      });
+      expect(text).toBe('blob content');
+    });
+
+    const createStream = (text: string) =>
+      new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(text));
+          controller.close();
+        },
+      });
+
+    // Browsers restrict streaming uploads; Chrome fails these with 'Failed to fetch'.
+    itNative('should send a ReadableStream body', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        body: createStream('streamed'),
+        headers: { 'Content-Type': 'text/plain' },
+        duplex: 'half',
+      } as RequestInit);
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.data).toBe('streamed');
+    });
+
+    // Browsers restrict streaming uploads; Chrome fails these with 'Failed to fetch'.
+    itNative('should send both a Request with a ReadableStream body and its clone', async () => {
+      const request = new Request('https://httpbin.io/post', {
+        method: 'POST',
+        body: createStream('streamed'),
+        headers: { 'Content-Type': 'text/plain' },
+        duplex: 'half',
+      } as RequestInit);
+      const clone = request.clone();
+      const [json1, json2] = await Promise.all(
+        [request, clone].map(async (r) => (await fetch(r)).json())
+      );
+      expect(json1.data).toBe('streamed');
+      expect(json2.data).toBe('streamed');
+    });
+
+    it('should abort a Request through the init signal', async () => {
+      const controller = new AbortController();
+      const request = new Request('https://httpbin.io/delay/3', { signal: controller.signal });
+      setTimeout(() => controller.abort(), 500);
+      let error: Error | null = null;
+      try {
+        await fetch(request);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(request.signal.aborted).toBe(true);
+    });
+
+    itNative("should send a React Native whatwg-fetch Request's body", async () => {
+      // React Native's fetch module keeps the whatwg-fetch Request it had before the swap.
+      const WhatwgRequest: typeof Request | undefined =
+        require('react-native/Libraries/Network/fetch').Request;
+      if (WhatwgRequest == null || WhatwgRequest === Request) {
+        t.pending("React Native's whatwg-fetch Request isn't reachable");
+        return;
+      }
+      const request = new WhatwgRequest('https://httpbin.io/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: 'whatwg',
+      });
+      const resp = await fetch(request);
+      const json = await resp.json();
+      expect(json.url).toMatch(/^https?:\/\/httpbin.io\/post$/);
+      expect(json.data).toBe('whatwg');
+
+      const wrapped = new Request(
+        new WhatwgRequest('https://httpbin.io/post', { method: 'POST', body: 'wrapped' })
+      );
+      expect(wrapped.url).toBe('https://httpbin.io/post');
+      expect(await wrapped.text()).toBe('wrapped');
+    });
+  });
+
   httpbin.describe('Headers', () => {
     setupTestTimeout(t);
 
@@ -327,7 +555,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
   httpbin.describe('Cookies', () => {
     setupTestTimeout(t);
 
-    it('should include cookies when credentials are set to include', async () => {
+    // In Chrome, with the test page on localhost, httpbin's cookie doesn't come back.
+    itNative('should include cookies when credentials are set to include', async () => {
       const resp = await fetch('https://httpbin.io/cookies/set?foo=bar', {
         credentials: 'include',
       });
@@ -436,7 +665,8 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
 
     // Same as the previous test but abort at 0ms,
     // that to ensure the request is aborted before receiving any chunks.
-    it('should abort streaming request before receiving chunks', async () => {
+    // On web, `fetch` is the browser's, which uses its own error messages.
+    itNative('should abort streaming request before receiving chunks', async () => {
       const controller = new AbortController();
       setTimeout(() => controller.abort(), 0);
       let error: Error | null = null;
