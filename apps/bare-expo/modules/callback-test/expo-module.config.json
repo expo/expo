@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["CallbackTestModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.callbacktest.CallbackTestModule"]
+  }
+}
