@@ -1,3 +1,7 @@
+import { applyPatch } from 'diff';
+import fs from 'node:fs';
+import path from 'node:path';
+
 import { setupPlugin as setupAndroidPlugin } from '../../utils/android';
 import { setupPlugin as setupIosPlugin } from '../../utils/ios';
 import { createTempProject, cleanUpProject, createTemplateOverrides } from '../../utils/project';
@@ -19,6 +23,35 @@ describe('plugin templates', () => {
 
   /**
    * Expected behavior:
+   * - The dev-menu patches apply cleanly to the current templates. The patches
+   *   encode template lines as context, so any template edit that isn't
+   *   mirrored in the patch breaks prebuild for every expo-dev-menu user —
+   *   but only projects that actually depend on expo-dev-menu hit it, which
+   *   the temp projects here don't. Guard it directly.
+   */
+  it('applies the dev-menu patches cleanly to the current templates', () => {
+    const templatesDir = path.join(__dirname, '../../../plugin/templates');
+    const interpolate = (contents: string) =>
+      contents.replace(/\$\{\{[A-Za-z0-9]+\}\}/g, 'com.example.app');
+
+    const pairs = [
+      ['android/BrownfieldActivity.kt', 'patches/BrownfieldActivity.patch'],
+      ['android/ReactNativeHostManager.kt', 'patches/ReactNativeHostManager.patch'],
+    ];
+    for (const [template, patch] of pairs) {
+      const templateContents = interpolate(
+        fs.readFileSync(path.join(templatesDir, template), 'utf8')
+      );
+      const patchContents = fs.readFileSync(path.join(templatesDir, patch), 'utf8');
+      const result = applyPatch(templateContents, patchContents);
+      if (result === false) {
+        throw new Error(`${patch} no longer applies to ${template} — update the patch context`);
+      }
+    }
+  });
+
+  /**
+   * Expected behavior:
    * - All interpolated values are resolved in the templates for android
    */
   it('resolves all interpolated values in templates for android', async () => {
@@ -33,7 +66,7 @@ describe('plugin templates', () => {
 
     expectFile({
       projectRoot: TEMP_DIR,
-      fileName: 'build.gradle.kts',
+      filePath: 'android/brownfield/build.gradle.kts',
       content: [`group = "${GROUP}"`, `version = "${VERSION}"`, `namespace = "${PACKAGE}"`],
     });
     expectFiles({
@@ -45,6 +78,64 @@ describe('plugin templates', () => {
         'ReactNativeFragment.kt',
       ],
       content: `package ${PACKAGE}`,
+    });
+  });
+
+  /**
+   * Expected behavior:
+   * - Both fused sibling subprojects are emitted, one per variant, with
+   *   interpolated values resolved and the inert-by-default property guard
+   * - settings.gradle includes the fused siblings
+   * - gradle.properties contains the Fused Library preview opt-ins
+   * - The root build.gradle contains the conditional AGP force-bump
+   */
+  it('emits inert fused sibling projects for android', async () => {
+    const PACKAGE = 'com.example.test.mybrownfield';
+    const GROUP = 'io.example.test';
+    const VERSION = '2.56.173';
+    await setupAndroidPlugin(TEMP_DIR, {
+      package: PACKAGE,
+      group: GROUP,
+      version: VERSION,
+    });
+
+    for (const variant of ['release', 'debug']) {
+      expectFile({
+        projectRoot: TEMP_DIR,
+        filePath: `android/brownfield-fused-${variant}/build.gradle.kts`,
+        content: [
+          `group = "${GROUP}"`,
+          `version = "${VERSION}"`,
+          `namespace = "${PACKAGE}.fused.${variant}"`,
+          `val fusedVariant = "${variant}"`,
+          // Inert unless the CLI passes -Pbrownfield.fused=true — a plain
+          // `expo run:android` must not resolve the fused dependency graph
+          `findProperty("brownfield.fused") == "true"`,
+        ],
+      });
+    }
+
+    expectFile({
+      projectRoot: TEMP_DIR,
+      filePath: 'android/settings.gradle',
+      content: [
+        `include ':brownfield'`,
+        `include ':brownfield-fused-release'`,
+        `include ':brownfield-fused-debug'`,
+      ],
+    });
+    expectFile({
+      projectRoot: TEMP_DIR,
+      filePath: 'android/gradle.properties',
+      content: [
+        'android.experimental.fusedLibrarySupport=true',
+        'android.experimental.fusedLibrarySupport.publicationOnly=false',
+      ],
+    });
+    expectFile({
+      projectRoot: TEMP_DIR,
+      filePath: 'android/build.gradle',
+      content: [`findProperty('brownfield.fused') == 'true'`, 'com.android.tools.build:gradle'],
     });
   });
 

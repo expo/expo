@@ -57,9 +57,15 @@ class ReactNativeHostManager {
     loadReactNative(application)
     BrownfieldLifecycleDispatcher.onApplicationCreate(application)
 
+    // Pass `useDevSupport` explicitly (default is `ReactBuildConfig.DEBUG`). The
+    // brownfield's own `BuildConfig.DEBUG` follows the fused sibling's variant
+    // (true in `-fused-debug`, false in `-fused-release`) — using it ensures
+    // dev support fires correctly regardless of which RN variant the consumer
+    // resolves.
     reactHost = ExpoReactHostFactory.getDefaultReactHost(
       context = application.applicationContext,
-      packageList = PackageList(application).packages
+      packageList = PackageList(application).packages,
+      useDevSupport = BuildConfig.DEBUG
     )
   }
 }
