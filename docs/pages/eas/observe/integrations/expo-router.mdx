@@ -135,6 +135,21 @@ Emitted at most once per screen instance within a session.
 | `routeParams` | `object`  | Resolved route params.                                                    |
 | `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
 
+### Per-route total blocking time (`tbt`)
+
+**What it measures:** Time the JS thread is blocked during the 2 seconds after a navigation action is dispatched. Every gap between two animation frames longer than 50 ms adds the part above 50 ms to the total. The value is reported in seconds for the destination screen.
+
+The first screen after app launch is not measured. The measurement stops early when another navigation action is dispatched, and it is dropped when the app leaves the foreground or when no screen is focused during the window.
+
+**Event params:**
+
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname.                                                        |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params.                                                    |
+
 ## View navigation metrics
 
 In the dashboard, open your project, navigate to [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe), and select the **Navigation** page. It shows per-route navigation timings with cold and warm time to first render and time to interactive.

@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
+import { AppState } from 'react-native';
 
+import { startBlockingTimeMeasurement } from '../blockingTime';
 import { initListeners, initRouterIntegration } from '../init';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 
@@ -30,9 +32,25 @@ jest.mock('expo-app-metrics', () => {
 });
 
 jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: false }));
+jest.mock('../blockingTime', () => ({
+  startBlockingTimeMeasurement: jest.fn(() => ({ finish: jest.fn(), cancel: jest.fn() })),
+}));
 
 const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
+const mockStartBlockingTime = startBlockingTimeMeasurement as jest.Mock;
+
+function lastBlockingTimeMeasurement() {
+  const { lastCall, results } = mockStartBlockingTime.mock;
+  return {
+    complete: lastCall![0] as (blockingTimeMs: number) => void,
+    ...(results[results.length - 1]!.value as { finish: jest.Mock; cancel: jest.Mock }),
+  };
+}
+
+function blockingTimeMetrics() {
+  return mockAddMetric.mock.calls.map((c) => c[0]).filter((m) => m.name === 'tbt');
+}
 
 type Listener<T> = (event: T) => void;
 
@@ -462,6 +480,88 @@ describe('initListeners', () => {
     expect(mockAddMetric).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'cold_ttr', routeName: '/a' })
     );
+  });
+});
+
+describe('navigation total blocking time', () => {
+  beforeEach(async () => {
+    focus(events, 'a');
+    await flushAsync();
+    mockAddMetric.mockClear();
+  });
+
+  it('records tbt for the destination route when the measurement completes', async () => {
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', { pathname: '/b?q=1', params: { q: '1' } });
+    await flushAsync();
+    expect(blockingTimeMetrics()).toEqual([]);
+
+    lastBlockingTimeMeasurement().complete(120);
+
+    expect(blockingTimeMetrics()).toEqual([
+      {
+        timestamp: expect.any(String),
+        category: 'navigation',
+        name: 'tbt',
+        routeName: '/b',
+        value: 0.12,
+        params: { routeParams: { q: '1' }, url: '/b?q=1' },
+      },
+    ]);
+  });
+
+  it('filters route params from tbt', async () => {
+    setRouterConfig({ filteredParams: ['token'] });
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', { pathname: '/b?token=secret', params: { token: 'secret' } });
+    await flushAsync();
+    lastBlockingTimeMeasurement().complete(0);
+
+    expect(blockingTimeMetrics()[0].params).toEqual({ routeParams: {}, urlHidden: true });
+  });
+
+  it('does not measure the initial app launch', () => {
+    expect(mockStartBlockingTime).not.toHaveBeenCalled();
+  });
+
+  it('does not measure PRELOAD actions', () => {
+    dispatch(events, 'PRELOAD');
+    expect(mockStartBlockingTime).not.toHaveBeenCalled();
+  });
+
+  it('does not record tbt when no screen was focused during the window', () => {
+    dispatch(events, 'SET_PARAMS');
+    lastBlockingTimeMeasurement().complete(120);
+    expect(blockingTimeMetrics()).toEqual([]);
+  });
+
+  it('finishes the previous measurement early when a new navigation starts', async () => {
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+    const first = lastBlockingTimeMeasurement();
+
+    dispatch(events, 'NAVIGATE');
+
+    expect(first.finish).toHaveBeenCalledTimes(1);
+    expect(mockStartBlockingTime).toHaveBeenCalledTimes(2);
+  });
+
+  it('cancels the measurement when the app leaves the foreground', () => {
+    const addEventListener = jest.spyOn(AppState, 'addEventListener');
+    setRouterConfig(undefined);
+    const onAppStateChange = addEventListener.mock.lastCall![1];
+
+    dispatch(events, 'NAVIGATE');
+    onAppStateChange('background');
+
+    expect(lastBlockingTimeMeasurement().cancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('cancels the measurement on cleanup', () => {
+    dispatch(events, 'NAVIGATE');
+    cleanup();
+    expect(lastBlockingTimeMeasurement().cancel).toHaveBeenCalledTimes(1);
   });
 });
 

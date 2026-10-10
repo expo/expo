@@ -288,11 +288,12 @@ For dashboard views, per-update breakdowns, and CLI queries, see [EAS Update dow
 
 > **info** Navigation metrics require SDK 56 and later, and an enabled navigation integration.
 
-When the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration is enabled, EAS Observe collects three per-route metrics:
+When the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration is enabled, EAS Observe collects these per-route metrics:
 
 - **Per-route first render (`cold_ttr`)**: Time from a navigation action to when the destination screen first becomes focused.
 - **Per-route warm render (`warm_ttr`)**: The same measurement for screens that were already rendered before focus, for example after preloading or back navigation.
 - **Per-route time to interactive (`tti`)**: Time from a navigation action to when `markInteractive()` is called on the destination screen.
+- **Per-route total blocking time (`tbt`)**: Time the JS thread is blocked during the 2 seconds after a navigation action. Only the Expo Router integration collects it.
 
 For setup instructions and the full event params for each metric, see the integration page for [Expo Router](/eas/observe/integrations/expo-router/#metrics) or [React Navigation](/eas/observe/integrations/react-navigation/#metrics).
 
