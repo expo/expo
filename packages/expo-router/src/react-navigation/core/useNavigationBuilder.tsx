@@ -267,8 +267,13 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
+const isNavigationState = (
+  state: unknown
+): state is NavigationState | PartialState<NavigationState> =>
+  state != null && typeof state === 'object' && 'routes' in state && Array.isArray(state.routes);
+
 const getStateFromParams = (params: NavigatorRoute['params']) => {
-  if (params?.state != null) {
+  if (isNavigationState(params?.state)) {
     return params.state;
   } else if (typeof params?.screen === 'string' && params?.initial !== false) {
     return {
