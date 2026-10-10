@@ -85,7 +85,19 @@ data class MarkerRecord(
   val anchor: AnchorRecord = AnchorRecord(),
 
   @Field
-  val zIndex: Float = 0.0f
+  val zIndex: Float = 0.0f,
+
+  @Field
+  val pulseColor: Int? = null,
+
+  @Field
+  val pulseRadius: Double = 0.0,
+
+  @Field
+  val pulseDuration: Double = 2.4,
+
+  @Field
+  val moveDuration: Double = 0.0
 ) : Record
 
 @OptimizedRecord

@@ -10,6 +10,7 @@ public class AppleMapsViewiOS18State: ObservableObject {
   @Published var selection: MapSelection<MKMapItem>?
   @Published var lookAroundScene: MKLookAroundScene?
   @Published var lookAroundPresented: Bool = false
+  @Published var shownAnnotations: [MapAnnotation] = []
   var hasInitializedCamera: Bool = false
   var lastKnownDistance: Double?
   var lastKnownHeading: Double = 0
