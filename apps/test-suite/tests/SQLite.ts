@@ -1179,6 +1179,38 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       }
       expect(() => db.interruptSync()).toThrowError(/Access to closed resource/);
     });
+
+    it('interrupts a statement between steps', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+      const statement = await db.prepareAsync(
+        'WITH RECURSIVE n(i) AS (VALUES(1) UNION ALL SELECT i + 1 FROM n WHERE i < 10) SELECT i FROM n'
+      );
+      try {
+        const result = await statement.executeAsync<{ i: number }>();
+        const rows: number[] = [];
+        let error = null;
+        try {
+          for await (const row of result) {
+            rows.push(row.i);
+            if (rows.length === 2) {
+              db.interruptSync();
+            }
+          }
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).toMatch(/interrupted/);
+        expect(rows).toEqual([1, 2]);
+      } finally {
+        // SQLite reports the interrupt again when finalizing.
+        await statement.finalizeAsync().catch(() => {});
+      }
+      try {
+        expect(await db.getFirstAsync('SELECT 42 AS value')).toEqual({ value: 42 });
+      } finally {
+        await db.closeAsync();
+      }
+    });
   });
 
   describe('Error handling', () => {

@@ -56,6 +56,7 @@ const MAX_INT32 = 0x7fffffff;
 const MIN_INT32 = -0x80000000;
 
 let _sqlite3: SQLiteAPI | null = null;
+let _sqlite3Interrupt: ((db: DatabasePointer) => void) | null = null;
 let _vfs: AccessHandlePoolVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
 
@@ -613,7 +614,9 @@ async function sessionApplyChangeset(
   const dbEntity = databaseIdMap.get(nativeDatabaseId);
   if (!dbEntity) throw new Error(`Database not found - nativeDatabaseId[${nativeDatabaseId}]`);
 
-  sqlite3.changeset_apply(dbEntity.pointer, changeset);
+  await withInterruptHandler(sqlite3, dbEntity, () =>
+    sqlite3.changeset_apply(dbEntity.pointer, changeset)
+  );
 }
 
 async function sessionInvertChangeset(
@@ -784,27 +787,28 @@ async function maybeFinalizeAllStatements(nativeDatabaseId: number) {
 }
 
 /**
- * Runs `operation` with a progress handler that aborts it once `interruptSync()` sets a flag.
+ * Passes interrupts that `interruptSync()` set to SQLite, before and while `operation` runs.
  */
 async function withInterruptHandler<T>(
   sqlite3: SQLiteAPI,
   dbEntity: DatabaseEntity,
-  operation: () => Promise<T>
+  operation: () => T | Promise<T>
 ): Promise<T> {
-  const flags = dbEntity.interruptFlags;
-  if (flags.length === 0) {
+  if (dbEntity.interruptFlags.length === 0) {
     return operation();
   }
-  // An interrupt that arrives while idle does nothing, like `sqlite3_interrupt()`.
-  for (const flag of flags) {
-    Atomics.store(flag, 0, 0);
-  }
+  // Let SQLite decide what the interrupt affects, like native `sqlite3_interrupt()`.
+  // It ignores an idle connection, but still stops a statement that is between steps.
+  forwardPendingInterrupt(dbEntity);
   // wa-sqlite keeps one progress handler callback for the whole module.
   // Registering it on another connection would replace this one, so only keep it during the operation.
   sqlite3.progress_handler(
     dbEntity.pointer,
     INTERRUPT_CHECK_INTERVAL_OPS,
-    () => (flags.some((flag) => Atomics.load(flag, 0) !== 0) ? 1 : 0),
+    () => {
+      forwardPendingInterrupt(dbEntity);
+      return 0;
+    },
     null
   );
   try {
@@ -812,6 +816,18 @@ async function withInterruptHandler<T>(
   } finally {
     // @ts-expect-error: wa-sqlite removes the handler when it is null, but its types do not allow null.
     sqlite3.progress_handler(dbEntity.pointer, 0, null, null);
+  }
+}
+
+function forwardPendingInterrupt(dbEntity: DatabaseEntity) {
+  let isInterrupted = false;
+  for (const flag of dbEntity.interruptFlags) {
+    if (Atomics.exchange(flag, 0, 0) !== 0) {
+      isInterrupted = true;
+    }
+  }
+  if (isInterrupted) {
+    _sqlite3Interrupt?.(dbEntity.pointer);
   }
 }
 
@@ -825,6 +841,8 @@ async function maybeInitAsync(): Promise<{
       locateFile: () => wasmModule,
     });
     _sqlite3 = SQLite.Factory(module) as SQLiteAPI;
+    // wa-sqlite does not wrap `sqlite3_interrupt()`, so call the wasm export directly.
+    _sqlite3Interrupt = module._sqlite3_interrupt;
     if (!_sqlite3) {
       throw new Error('Failed to initialize wa-sqlite');
     }
