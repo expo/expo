@@ -48,6 +48,12 @@ it('runs `npx expo compile:ios --help`', async () => {
         --output-dir <dir>       Directory to copy the built app to
         --output-type <app|ipa>  Type of app binary to build
         -h, --help               Usage info
+
+      Build the app in development mode:
+        $ npx expo compile:ios --dev
+
+      Copy the built app into a folder in your project:
+        $ npx expo compile:ios --dev --output-dir ./build
     "
   `);
 });

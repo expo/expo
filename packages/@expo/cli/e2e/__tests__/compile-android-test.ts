@@ -48,6 +48,12 @@ it('runs `npx expo compile:android --help`', async () => {
         --output-dir <dir>       Directory to copy the built app to
         --output-type <apk|aab>  Type of app binary to build
         -h, --help               Usage info
+
+      Build the app in development mode:
+        $ npx expo compile:android --dev
+
+      Copy the built app into a folder in your project:
+        $ npx expo compile:android --dev --output-dir ./build
     "
   `);
 });
