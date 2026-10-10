@@ -9,6 +9,7 @@
 - [Android] Add `showTitle` and `showHeadline` to the Jetpack Compose `DateTimePicker`, `DatePickerDialog`, `DateRangePicker`, and `DateRangePickerDialog` to hide Material 3's title and headline. The community `DateTimePicker` with `presentation="inline"` now hides both on Android, matching iOS. To keep the title and headline, use `DateTimePicker` from `@expo/ui/jetpack-compose` instead. ([#51274](https://github.com/expo/expo/pull/51274) by [@IGx89](https://github.com/IGx89))
 - [iOS] Add `searchable` and `searchToolbarBehavior` SwiftUI modifiers. ([#50369](https://github.com/expo/expo/pull/50369) by [@expo-bot](https://github.com/expo-bot))
 - [iOS][Android] `RNHostView` `matchContents` accepts `{ horizontal, vertical }`, so hosted content can take its width from the parent and its height from the content. ([#50674](https://github.com/expo/expo/pull/50674) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add `cornerRadius` and `opacity` to `Chart`'s `pieStyle`. Pie slices could not have rounded corners, and their opacity was fixed at 0.8, so a chart drawn in solid colors always looked washed out. Both default to the previous behavior. Rounded corners let a single-slice donut work as a progress ring with rounded ends. ([#51351](https://github.com/expo/expo/pull/51351) by [@jsg2021](https://github.com/jsg2021))
 
 ### 🐛 Bug fixes
 
