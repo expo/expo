@@ -4,6 +4,7 @@ import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
+import type DeltaCalculator from '@expo/metro/metro/DeltaBundler/DeltaCalculator';
 import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
 import type {
   MixedOutput,
@@ -31,6 +32,7 @@ import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import type { JSModule } from './serializer/getCssDeps';
+import type { CSSMetadata } from './serializer/jsOutput';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
@@ -102,8 +104,7 @@ function patchMetroGraphToSupportUncachedModules() {
         // `skipCache` is set when a CSS module is found by PostCSS.
         if (
           // TODO(@kitten): MixedOutput needs to be upcast, but `data` isn't defined in `JSFile`?
-          dependency.output.find((file) => (file as any).data.css?.skipCache) &&
-          !paths.includes(dependency.path)
+          dependency.output.find((file) => (file as any).data.css?.skipCache)
         ) {
           // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
           // the Graph._processModule method.
@@ -115,7 +116,9 @@ function patchMetroGraphToSupportUncachedModules() {
 
           // Add the path to the list of modified paths so it gets run through the transformer again,
           // this will ensure it is passed to PostCSS -> Tailwind.
-          paths.push(dependency.path);
+          if (!paths.includes(dependency.path)) {
+            paths.push(dependency.path);
+          }
         }
       });
       // Invoke the original method with the new paths to ensure the standard behavior is preserved.
@@ -125,6 +128,54 @@ function patchMetroGraphToSupportUncachedModules() {
     Graph.prototype.traverseDependencies = traverseDependencies;
     traverseDependencies.__patched = true;
   }
+
+  const {
+    default: DeltaCalculator,
+  }: typeof import('@expo/metro/metro/DeltaBundler/DeltaCalculator') = require('@expo/metro/metro/DeltaBundler/DeltaCalculator');
+
+  type GetChangedDependencies = DeltaCalculator<MixedOutput>['_getChangedDependencies'] & {
+    __patched?: boolean;
+  };
+
+  const original_getChangedDependencies = DeltaCalculator.prototype
+    ._getChangedDependencies as GetChangedDependencies;
+
+  if (!original_getChangedDependencies.__patched) {
+    original_getChangedDependencies.__patched = true;
+    const getChangedDependencies: GetChangedDependencies = function (
+      this: DeltaCalculator<MixedOutput>,
+      modifiedFiles,
+      deletedFiles,
+      addedFiles
+    ) {
+      // A file PostCSS read is not a graph module, so a change to it marks the module whose compile read it.
+      const changedFiles = new Set([...modifiedFiles, ...deletedFiles, ...addedFiles]);
+      this._graph.dependencies.forEach((dependency) => {
+        if (
+          getUncachedFileDependencies(dependency).some((file) => changedFiles.has(file)) &&
+          !deletedFiles.has(dependency.path)
+        ) {
+          modifiedFiles.add(dependency.path);
+        }
+      });
+      return original_getChangedDependencies.call(this, modifiedFiles, deletedFiles, addedFiles);
+    };
+    getChangedDependencies.__patched = true;
+    DeltaCalculator.prototype._getChangedDependencies = getChangedDependencies;
+  }
+}
+
+/** The files an uncached module's compile read, as its transformer reported them on the CSS metadata. */
+function getUncachedFileDependencies(dependency: Module<MixedOutput>): readonly string[] {
+  for (const { data } of dependency.output) {
+    if (typeof data === 'object' && data !== null && 'css' in data) {
+      const { css } = data as { css?: Pick<CSSMetadata, 'skipCache' | 'fileDependencies'> };
+      if (css?.skipCache) {
+        return css.fileDependencies ?? [];
+      }
+    }
+  }
+  return [];
 }
 
 function createNumericModuleIdFactory(): (path: string) => number {
