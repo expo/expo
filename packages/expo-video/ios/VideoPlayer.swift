@@ -35,7 +35,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       if #available(iOS 16.0, tvOS 16.0, *) {
         ref.defaultRate = playbackRate
       }
-      ref.rate = playbackRate
+      if ref.rate != 0 {
+        ref.rate = playbackRate
+      }
     }
   }
 
