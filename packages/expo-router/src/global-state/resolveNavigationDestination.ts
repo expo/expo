@@ -1,6 +1,6 @@
 import isEqual from 'react-fast-compare';
 
-import { findRouteNodeByName, getValidInitialRouteName, type RouteNode } from '../Route';
+import type { RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
@@ -15,6 +15,7 @@ import type {
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
 import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
+import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import { sortRoutesWithInitial } from '../sortRoutes';
 import type { RouterRegistry } from './routerRegistry';
 

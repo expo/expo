@@ -3,8 +3,9 @@
 import { createContext, use, useMemo, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
-import { getValidInitialRoute, LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
+import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
 import { getContextKey } from '../matchers';
+import { getValidInitialRoute } from '../routeNode';
 import type { Href } from '../types';
 
 export type GuardedRedirects = Map<string, Href | undefined>;

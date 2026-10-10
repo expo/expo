@@ -4,7 +4,6 @@ import React, { use, useEffect, useMemo } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
-  getValidInitialRouteName,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -42,6 +41,7 @@ import {
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
+import { getValidInitialRouteName } from './routeNode';
 import type { UnknownOutputParams } from './types';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';

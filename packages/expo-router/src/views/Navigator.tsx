@@ -4,17 +4,13 @@
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {
-  getValidInitialRouteName,
-  ScreenErrorBoundaryContext,
-  useContextKey,
-  useRouteNode,
-} from '../Route';
+import { ScreenErrorBoundaryContext, useContextKey, useRouteNode } from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
+import { getValidInitialRouteName } from '../routeNode';
 import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';

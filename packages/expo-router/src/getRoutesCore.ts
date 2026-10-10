@@ -1,9 +1,5 @@
-import {
-  getValidInitialRoute,
-  type DynamicConvention,
-  type MiddlewareNode,
-  type RouteNode,
-} from './Route';
+import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
+import { getValidInitialRoute } from './routeNode';
 import {
   matchArrayGroupName,
   matchDynamicName,

@@ -1,11 +1,7 @@
 import type { RouteNode } from '../Route';
-import {
-  findRouteNodeAndParamsForState,
-  getValidInitialRouteName,
-  sortRoutes,
-  sortRoutesWithInitial,
-} from '../Route';
+import { sortRoutes, sortRoutesWithInitial } from '../Route';
 import { generateDynamic } from '../getRoutes';
+import { findRouteNodeAndParamsForState, getValidInitialRouteName } from '../routeNode';
 
 const asRouteNode = (route: string): RouteNode => {
   return {
