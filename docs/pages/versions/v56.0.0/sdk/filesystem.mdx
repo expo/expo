@@ -142,7 +142,7 @@ Using the built-in `pickFileAsync` or `pickDirectoryAsync` method on Android:
 import { File } from 'expo-file-system';
 
 try {
-  const file = new File.pickFileAsync();
+  const file = await File.pickFileAsync();
   console.log(file.textSync());
 } catch (error) {
   console.error(error);
@@ -228,11 +228,11 @@ try {
   file.create();
   console.log(file.uri); // '${documentDirectory}/example.txt'
   const copiedFile = new File(Paths.cache, 'example-copy.txt');
-  file.copy(copiedFile);
+  await file.copy(copiedFile); // or `file.copySync(copiedFile);` for synchronous call
   console.log(copiedFile.uri); // '${cacheDirectory}/example-copy.txt'
-  file.move(Paths.cache);
+  await file.move(Paths.cache); // or `file.moveSync(Paths.cache);` for synchronous call
   console.log(file.uri); // '${cacheDirectory}/example.txt'
-  file.move(new Directory(Paths.cache, 'newFolder'));
+  await file.move(new Directory(Paths.cache, 'newFolder'));
   console.log(file.uri); // '${cacheDirectory}/newFolder/example.txt'
 } catch (error) {
   console.error(error);
