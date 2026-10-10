@@ -19,6 +19,19 @@ public struct UIBaseView<Props: UIBaseViewProps, Content: ExpoSwiftUI.View<Props
     innerView
       .applyAccessibilityIdentifier(props.testID)
       .applyModifiers(props.modifiers, appContext: props.appContext, globalEventDispatcher: props.globalEventDispatcher)
+      .publishZeroContentOrigin(props.shadowNodeProxy)
+  }
+}
+
+extension View {
+  /**
+   SwiftUI places this view, so `measure()` must skip its Yoga origin. A zero content origin does that,
+   and `RNHostView` reports its own position inside the `Host`. Core clears the entry on teardown.
+   */
+  func publishZeroContentOrigin(_ shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy) -> some View {
+    onAppear {
+      shadowNodeProxy.setContentOrigin?(.zero)
+    }
   }
 }
 
