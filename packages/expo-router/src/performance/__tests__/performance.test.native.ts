@@ -44,17 +44,15 @@ it('delivers marks to observers synchronously with startTime and detail', () => 
   api.mark('expo-router:action-dispatched', { actionType: 'NAVIGATE' });
 
   expect(actionTypes).toEqual(['NAVIGATE']);
-  expect(api.unstable_performance.getEntriesByType('mark').map((entry) => entry.toJSON())).toEqual(
-    [
-      {
-        entryType: 'mark',
-        name: 'expo-router:action-dispatched',
-        startTime: 42,
-        duration: 0,
-        detail: { actionType: 'NAVIGATE' },
-      },
-    ]
-  );
+  expect(api.unstable_performance.getEntriesByType('mark').map((entry) => entry.toJSON())).toEqual([
+    {
+      entryType: 'mark',
+      name: 'expo-router:action-dispatched',
+      startTime: 42,
+      duration: 0,
+      detail: { actionType: 'NAVIGATE' },
+    },
+  ]);
 });
 
 it('passes the observer itself as the second callback argument', () => {
