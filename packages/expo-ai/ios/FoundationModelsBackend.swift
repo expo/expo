@@ -31,7 +31,9 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
       NativeToolDefinition(
         name: definition.name,
         description: definition.description,
-        schema: try LanguageModelSchema.compile(definition.schema, name: "Tool\(index)")
+        parameters: definition.builtin == nil
+          ? .fixed(try LanguageModelSchema.compile(definition.schema, name: "Tool\(index)"))
+          : .imageLabel
       )
     }
   }
@@ -45,7 +47,19 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
   ) async throws -> String {
     try request.checkActive()
     let schema = try options.schema.map { try LanguageModelSchema.compile($0, name: "Response") }
-    let nativeTools: [any Tool] = tools.map { RuntimeTool(definition: $0, request: request) }
+    let labels = options.images.map(\.label)
+    let nativeTools: [any Tool] = try tools.enumerated().compactMap { index, definition in
+      let parameters: GenerationSchema
+      switch definition.parameters {
+      case .fixed(let schema):
+        parameters = schema
+      case .imageLabel:
+        // Without current-request images there is no label an image tool could accept.
+        guard !labels.isEmpty else { return nil }
+        parameters = try LanguageModelSchema.imageTool(labels: labels, name: "Tool\(index)")
+      }
+      return RuntimeTool(name: definition.name, description: definition.description, parameters: parameters, request: request)
+    }
     let session: FoundationModels.LanguageModelSession
     if let transcript = history.snapshot {
       session = FoundationModels.LanguageModelSession(model: SystemLanguageModel.default, tools: nativeTools, transcript: transcript)
@@ -177,9 +191,15 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
   }
 
   private struct NativeToolDefinition: Sendable {
+    enum Parameters: Sendable {
+      case fixed(GenerationSchema)
+      /// Built-in image tools: the schema depends on each request's image labels.
+      case imageLabel
+    }
+
     let name: String
     let description: String
-    let schema: GenerationSchema
+    let parameters: Parameters
   }
 
   /// Acceptance is synchronous on the JavaScript thread. Keep the complete native
@@ -200,11 +220,10 @@ internal actor FoundationModelsBackend: LanguageModelBackend {
     typealias Arguments = GeneratedContent
     typealias Output = String
 
-    let definition: NativeToolDefinition
+    let name: String
+    let description: String
+    let parameters: GenerationSchema
     let request: LanguageModelRequest
-    var name: String { definition.name }
-    var description: String { definition.description }
-    var parameters: GenerationSchema { definition.schema }
 
     func call(arguments: GeneratedContent) async throws -> String {
       guard arguments.isComplete else {
