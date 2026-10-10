@@ -253,6 +253,19 @@ export function addUserInteractionListener(
 }
 
 /**
+ * Adds a listener for every live activity of this app, including ones the system started from a push while the
+ * app was not running. Use the `url` to tell which content an activity belongs to, and `pushToken` to address it.
+ * @param listener Callback invoked when an activity is first seen and whenever its push token changes.
+ * @return An event subscription that can be used to remove the listener.
+ * @platform iOS
+ */
+export function addActivityTokenListener(
+  listener: ExpoWidgetsEvents['onExpoWidgetsActivityToken']
+): EventSubscription {
+  return ExpoWidgetsModule.addListener('onExpoWidgetsActivityToken', listener);
+}
+
+/**
  * Adds a listener for push-to-start token events.
  * This token can be used to start live activities remotely via APNs.
  * @param listener Callback function to handle push-to-start token events.
