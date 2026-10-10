@@ -171,6 +171,7 @@ The **+html.tsx** file is only used by the server renderer and never by client c
 - It is not rehydrated on the client, and should only use [`useServerDocumentContext`](/versions/latest/sdk/router/#useserverdocumentcontext) React hook
 - You may not import global CSS in `+html.tsx` (use the [Root Layout](/router/basics/navigation-layouts/#root-layout) for styles)
 - You may not call browser APIs like `window` or `document` in your `+html.tsx`
+- The `pathname` and `params` props contain the rendered route's pathname and URL parameters. Available in **SDK 58 and later**.
 
 All `+html.tsx` components are expected to render the `children` prop they receive in their JSX content.
 

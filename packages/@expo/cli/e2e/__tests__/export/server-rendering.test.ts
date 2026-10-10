@@ -387,7 +387,7 @@ describe('exports server', () => {
       // );
     });
 
-    it('supports usePathname in +html files', async () => {
+    it('supports the pathname and params props in +html files', async () => {
       const page = await server.fetchAsync('/').then((res) => res.text());
 
       expect(page).toContain('<meta name="custom-value" content="value"/>');
@@ -427,11 +427,15 @@ describe('exports server', () => {
           .content
       ).toBe('/');
 
+      const postHtml = getHtml(
+        await server.fetchAsync('/welcome-to-the-universe').then((res) => res.text())
+      );
       expect(
-        getHtml(
-          await server.fetchAsync('/welcome-to-the-universe').then((res) => res.text())
-        ).querySelector('html > head > meta[name="expo-e2e-pathname"]')?.attributes.content
+        postHtml.querySelector('html > head > meta[name="expo-e2e-pathname"]')?.attributes.content
       ).toBe('/welcome-to-the-universe');
+      expect(
+        postHtml.querySelector('html > head > meta[name="expo-e2e-params"]')?.attributes.content
+      ).toBe('{"post":"welcome-to-the-universe"}');
     });
 
     // TODO(@hassankhan): Investigate support for nested `generateMetadata()`

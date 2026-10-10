@@ -304,7 +304,7 @@ describe('exports static', () => {
     // );
   });
 
-  it('supports usePathname in +html files', async () => {
+  it('supports the pathname and params props in +html files', async () => {
     const page = await fs.promises.readFile(path.join(outputDir, 'index.html'), 'utf8');
 
     expect(page).toContain('<meta name="custom-value" content="value"/>');
@@ -335,6 +335,12 @@ describe('exports static', () => {
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
     ).toBe('/welcome-to-the-universe');
+
+    expect(
+      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+        'html > head > meta[name="expo-e2e-params"]'
+      )?.attributes.content
+    ).toBe('{"post":"welcome-to-the-universe"}');
   });
 
   it('supports nested static head values', async () => {
