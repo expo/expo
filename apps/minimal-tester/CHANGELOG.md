@@ -1,5 +1,14 @@
 # minimal-tester
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.8
+  - expo-brownfield@58.0.13
+  - expo-updates@58.0.16
+
 ## 1.0.1
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.21.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+
 ## 0.21.4
 
 ### Patch Changes
