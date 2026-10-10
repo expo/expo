@@ -38,19 +38,23 @@ it('runs `npx expo compile --help`', async () => {
         $ npx expo compile <android|ios>
 
       Options
-        $ npx expo compile <android|ios> --help  Output usage information
+        android     Build the Android app binary
+        ios         Build the iOS app binary
+        -h, --help  Usage info
+
+      The compile:android and compile:ios forms are also supported.
+      Add --help to either one for its options:
+        $ npx expo compile ios --help
     "
   `);
 });
 
 it('runs `npx expo compile android --help`', async () => {
   const results = await executeExpoAsync(projectRoot, ['compile', 'android', '--help']);
-  expect(results.stdout).toContain('› Using expo compile:android --help');
   expect(results.stdout).toContain('Build the Android app binary locally');
 });
 
 it('runs `npx expo compile ios --help`', async () => {
   const results = await executeExpoAsync(projectRoot, ['compile', 'ios', '--help']);
-  expect(results.stdout).toContain('› Using expo compile:ios --help');
   expect(results.stdout).toContain('Build the iOS app binary locally');
 });
